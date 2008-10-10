@@ -32,9 +32,15 @@ public class SourceCodeLinkParser {
 							line = 0;
 						}
 						break;
-				}
+                    default:
+                        // url has to be really ugly
+                        break;
+                }
 				break;
-		}
+            default:
+                // url has to be really ugly
+                break;
+        }
 	}
 
 	private void parsePath(final String token) {
