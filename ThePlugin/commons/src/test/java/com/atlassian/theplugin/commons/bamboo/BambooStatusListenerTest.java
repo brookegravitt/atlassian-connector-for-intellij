@@ -319,4 +319,4 @@ public class BambooStatusListenerTest extends TestCase {
 //		fail("test fail");
 //	}
 
-}
+} 
