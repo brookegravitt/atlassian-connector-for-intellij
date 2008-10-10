@@ -27,6 +27,20 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/icn_plan_passed.gif");
 	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/icn_plan_disabled.gif");
 
+	private static final Icon ICON_MY_BUILD_RED = IconLoader.getIcon("/actions/lightning.png");
+	private static final Icon ICON_MY_BUILD_GREEN = IconLoader.getIcon("/icons/lightning_green.png");
+
+
+	public Icon getMyBuildIcon() {
+		if (getState() == BuildState.FAIL && build.isMyBuild()) {
+			return ICON_MY_BUILD_RED;
+		} else if (getState() == BuildState.PASS && build.isMyBuild()) {
+			return ICON_MY_BUILD_GREEN;
+		} else {
+			return null;
+		}
+	}
+
 	public enum BuildState {
 		PASS, FAIL, UNKNOWN 
 	}
