@@ -17,23 +17,10 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildDateColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildErrorMessageColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildKeyColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildNumberColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildReasonColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildServerColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildStatusColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.BuildTestRatioColumn;
-import com.atlassian.theplugin.idea.bamboo.table.columns.ProjectKeyColumn;
-import com.atlassian.theplugin.idea.bamboo.table.renderer.BackgroundAwareBambooRenderer;
-import com.atlassian.theplugin.idea.bamboo.table.renderer.BuildNumberCellRenderer;
-import com.atlassian.theplugin.idea.bamboo.table.renderer.BuildTestRatioCellRenderer;
-import com.atlassian.theplugin.idea.bamboo.table.renderer.DateTableCellRenderer;
-import com.atlassian.theplugin.idea.bamboo.table.renderer.RightJustifyCellRenderer;
+import com.atlassian.theplugin.idea.bamboo.table.columns.*;
+import com.atlassian.theplugin.idea.bamboo.table.renderer.*;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 
-import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 
 public class BambooTableColumnProviderImpl implements TableColumnProvider {
@@ -44,6 +31,7 @@ public class BambooTableColumnProviderImpl implements TableColumnProvider {
 		return new TableColumnInfo[]{
 				new BuildStatusColumn(),
 				new BuildKeyColumn(),
+				new MyBuildColumn(),
 				new BuildNumberColumn(),
 				new BuildDateColumn(),
 				new ProjectKeyColumn(),
@@ -56,17 +44,9 @@ public class BambooTableColumnProviderImpl implements TableColumnProvider {
 
 	public TableCellRenderer[] makeRendererInfo() {
 		return new TableCellRenderer[]{
-				new BackgroundAwareBambooRenderer() {
-					{
-						setHorizontalAlignment(JLabel.CENTER);
-					}
-
-					@Override
-					public void setValue(Object value) {
-						setIcon((value instanceof Icon) ? (Icon) value : null);
-					}
-				},
+				new IconColumnRenderer(),
 				new BackgroundAwareBambooRenderer(),
+				new IconColumnRenderer(),
 				new BuildNumberCellRenderer(),
 				new DateTableCellRenderer(),
 				new RightJustifyCellRenderer(),

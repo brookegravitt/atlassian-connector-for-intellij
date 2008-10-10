@@ -152,4 +152,8 @@ public class BambooBuildAdapter {
 	public BambooBuild getBuild() {
 		return build;
 	}
+
+		public boolean isMyBuild() {
+		return build.isMyBuild();
+	}
 }

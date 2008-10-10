@@ -258,6 +258,10 @@ public class AutoRenewBambooSessionTest extends TestCase {
 			public Date getPollingTime() {
 				return null;
 			}
+
+			public boolean isMyBuild() {
+				return false;
+			}
 		});
 
 		EasyMock.replay(mockDelegate);

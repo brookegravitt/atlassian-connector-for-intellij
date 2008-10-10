@@ -20,6 +20,8 @@ import com.atlassian.theplugin.commons.RequestDataInfo;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 
 import java.util.Date;
+import java.util.Set;
+import java.util.HashSet;
 
 public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private BambooServerCfg server;
@@ -43,6 +45,7 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 	private Date buildTime;
 	public static final String BUILD_SUCCESSFUL = "Successful";
 	public static final String BUILD_FAILED = "Failed";
+	private Set<String> commiters = new HashSet<String>();
 
 
 	public BambooBuildInfo() {
@@ -226,4 +229,27 @@ public class BambooBuildInfo extends RequestDataInfo implements BambooBuild {
 				+ " " + buildCommitComment;
 	}
 
+	/**
+	 * @return wheather I'm one of the commiters to that build or not
+	 */
+	public boolean isMyBuild() {
+		if (commiters.contains(server.getUsername())) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return list of commiters for this build
+	 */
+	public Set<String> getCommiters() {
+		return commiters;
+	}
+
+	public void setCommiters(final Set<String> commiters) {
+		if (commiters != null) {
+			this.commiters = commiters;
+		}
+	}
 }

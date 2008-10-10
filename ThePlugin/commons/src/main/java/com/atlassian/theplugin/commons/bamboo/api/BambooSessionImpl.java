@@ -34,9 +34,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /*
 @todo get logs based on url: BASE_URL/download/TP-TEST/build_logs/TP-TEST-341.log
@@ -277,7 +275,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 
         try {
             Document doc = retrieveGetResponse(buildResultUrl);
-            String exception = getExceptionMessages(doc);
+//			XmlUtil.printXml(doc);
+			String exception = getExceptionMessages(doc);
             if (null != exception) {
                 return constructBuildErrorInfo(planKey, exception, new Date());
             }
@@ -286,7 +285,9 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
             final List elements = XPath.newInstance("/response").selectNodes(doc);
             if (elements != null && !elements.isEmpty()) {
                 Element e = (Element) elements.iterator().next();
-                return constructBuildItem(e, new Date());
+				BambooBuildInfo build = constructBuildItem(e, new Date());
+				build.setCommiters(constructBuildCommiters(doc));
+				return build;
             } else {
                 return constructBuildErrorInfo(planKey, "Malformed server reply: no response element", new Date());
             }
@@ -299,7 +300,23 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
         }
     }
 
-    public List<String> getFavouriteUserPlans() throws RemoteApiSessionExpiredException {
+	private Set<String> constructBuildCommiters(final Document doc) throws JDOMException {
+
+		Set<String> commiters = new HashSet<String>();
+
+		final List<Element> commitElements = XPath.newInstance("/response/commits/commit").selectNodes(doc);
+		if (!commitElements.isEmpty()) {
+
+			for (Element element : commitElements) {
+				commiters.add(element.getAttributeValue("author"));
+//				System.out.println(element.getAttributeValue("author"));
+			}
+		}
+
+		return commiters;
+	}
+
+	public List<String> getFavouriteUserPlans() throws RemoteApiSessionExpiredException {
         List<String> builds = new ArrayList<String>();
         String buildResultUrl;
         try {
@@ -548,7 +565,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
         buildInfo.setBuildTime(parseBuildTime(getChildText(buildItemNode, "buildTime")));
         buildInfo.setPollingTime(lastPollingTime);
 
-        return buildInfo;
+		return buildInfo;
     }
 
     private static DateTimeFormatter buildDateFormat = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
