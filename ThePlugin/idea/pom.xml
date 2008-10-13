@@ -99,6 +99,14 @@
 			<classifier>jdk15</classifier>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.intellij.idea</groupId>
+			<artifactId>idea-junit</artifactId>
+			<version>7.0</version>
+			<classifier>jdk15</classifier>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!--
 		  <dependency>
 			  <groupId>com.intellij.idea</groupId>
