@@ -561,7 +561,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 					});
 
 					if (comment instanceof VersionedComment) {
-						for (CrucibleFileInfo file : CrucibleFileInfoManager.getInstance().getFiles(review.getInnerReviewObject())) {
+						for (CrucibleFileInfo file :
+								CrucibleFileInfoManager.getInstance().getFiles(review.getInnerReviewObject())) {
 							updateFileNode(review, file);
 						}
 					}
