@@ -67,7 +67,8 @@ public class CrucibleReviewActionListener {
 			GeneralComment newComment) {
 	}
 
-	public void createdOrEditedGeneralCommentReply(ReviewDataImpl review, GeneralComment parentComment, GeneralComment comment) {
+	public void createdOrEditedGeneralCommentReply(ReviewDataImpl review, GeneralComment parentComment,
+			GeneralComment comment) {
 	}
 
 	public void aboutToAddGeneralComment(ReviewDataImpl review, GeneralComment newComment) {
@@ -117,8 +118,8 @@ public class CrucibleReviewActionListener {
 			final VersionedComment comment) {
 	}
 
-	public void focusOnLineCommentEvent(final ReviewDataImpl review, final CrucibleFileInfo file, final VersionedComment comment,
-			final boolean openIfClosed) {
+	public void focusOnLineCommentEvent(final ReviewDataImpl review, final CrucibleFileInfo file,
+			final VersionedComment comment,	final boolean openIfClosed) {
 	}
 
 	public void aboutToPublishGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {

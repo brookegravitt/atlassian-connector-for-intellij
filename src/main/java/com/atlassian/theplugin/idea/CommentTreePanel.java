@@ -477,7 +477,8 @@ public class CommentTreePanel extends JPanel {
 			return null;
 		}
 
-		private void addReplyNodes(final ReviewDataImpl review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
+		private void addReplyNodes(final ReviewDataImpl review, final AtlassianTreeNode parentNode,
+				final GeneralComment comment) {
 			for (GeneralComment reply : comment.getReplies()) {
 				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(review, reply, AtlassianClickAction.EMPTY_ACTION);
 				addNewNode(parentNode, childNode);
