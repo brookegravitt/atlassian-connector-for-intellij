@@ -922,7 +922,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 							});
 						}
 					} catch (JIRAException e) {
-                        commentsPanel.setTitle("Cannot fetch comments: " + e.getMessage());
+                        commentsPanel.setTitle("Unable to retrieve comments");
                     }
                 }
             };
