@@ -16,15 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.bamboo.changes;
 
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diff.DiffContent;
-import com.intellij.openapi.diff.DiffManager;
-import com.intellij.openapi.diff.DiffRequest;
-import com.intellij.openapi.diff.DocumentContent;
-import com.intellij.openapi.diff.FileContent;
+import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;

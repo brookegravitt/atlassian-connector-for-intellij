@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import thirdparty.javaworld.ClasspathHTMLEditorKit;
 import com.intellij.openapi.util.IconLoader;
+import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputAdapter;

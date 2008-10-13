@@ -18,8 +18,8 @@ package com.atlassian.theplugin.jira.api;
 
 import org.jdom.Element;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class JIRAIssueBean implements JIRAIssue {
     private String serverUrl;

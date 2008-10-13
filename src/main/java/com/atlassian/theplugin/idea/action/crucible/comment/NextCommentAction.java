@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.tree.TreePath;
 

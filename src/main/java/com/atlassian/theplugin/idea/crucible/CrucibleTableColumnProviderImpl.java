@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.idea.TableColumnInfo;
-import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.crucible.table.column.*;
 import com.atlassian.theplugin.idea.crucible.table.renderer.*;
+import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 
 import javax.swing.table.TableCellRenderer;
 

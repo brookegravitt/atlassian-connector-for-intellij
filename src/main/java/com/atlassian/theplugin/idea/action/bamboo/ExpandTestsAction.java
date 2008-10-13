@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 public class ExpandTestsAction extends AnAction {
 	@Override

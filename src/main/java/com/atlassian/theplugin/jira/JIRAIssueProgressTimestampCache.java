@@ -2,9 +2,9 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class JIRAIssueProgressTimestampCache {
 

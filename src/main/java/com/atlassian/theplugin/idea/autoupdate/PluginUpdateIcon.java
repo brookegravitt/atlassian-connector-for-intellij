@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;

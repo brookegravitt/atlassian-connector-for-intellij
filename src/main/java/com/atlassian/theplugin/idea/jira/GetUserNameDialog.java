@@ -19,8 +19,8 @@ package com.atlassian.theplugin.idea.jira;
 import com.intellij.openapi.ui.DialogWrapper;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 
 public class GetUserNameDialog extends DialogWrapper {

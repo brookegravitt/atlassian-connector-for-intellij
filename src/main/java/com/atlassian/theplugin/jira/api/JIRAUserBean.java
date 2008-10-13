@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class JIRAUserBean extends AbstractJIRAConstantBean {
 	protected String value = "";

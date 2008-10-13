@@ -18,8 +18,8 @@ package com.atlassian.theplugin.jira.api;
 
 import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class JIRAProjectBean implements JIRAProject {
 	private String name;
