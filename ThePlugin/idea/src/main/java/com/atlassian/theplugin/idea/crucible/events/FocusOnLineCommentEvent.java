@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
@@ -29,12 +29,12 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
  * To change this template use File | Settings | File Templates.
  */
 public class FocusOnLineCommentEvent extends CrucibleEvent {
-	private ReviewDataImpl review;
+	private ReviewAdapter review;
 	private CrucibleFileInfo file;
 	private VersionedComment comment;
 	private boolean openIfClosed;
 
-	public FocusOnLineCommentEvent(final CrucibleReviewActionListener caller, final ReviewDataImpl review,
+	public FocusOnLineCommentEvent(final CrucibleReviewActionListener caller, final ReviewAdapter review,
 			final CrucibleFileInfo file, final VersionedComment comment, boolean openIfClosed) {
 		super(caller);
 		this.review = review;

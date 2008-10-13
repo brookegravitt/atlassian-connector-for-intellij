@@ -21,14 +21,14 @@ import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractTransitionReviewAction extends AnAction {
     protected abstract Action getRequestedTransition();
 
-    private ReviewDataImpl rd;
+    private ReviewAdapter rd;
 
     @Override
 	public void actionPerformed(final AnActionEvent event) {

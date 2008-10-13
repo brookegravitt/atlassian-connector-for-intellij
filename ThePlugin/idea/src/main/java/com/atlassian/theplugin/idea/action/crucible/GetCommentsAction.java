@@ -22,7 +22,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -51,10 +51,10 @@ public class GetCommentsAction extends TableSelectedAction {
 
 	@Override
 	protected void itemSelected(final Project project, Object row) {
-		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(((ReviewDataImpl) row));
+		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(((ReviewAdapter) row));
 
 		IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-				CrucibleReviewActionListener.ANONYMOUS, (ReviewDataImpl) row));
+				CrucibleReviewActionListener.ANONYMOUS, (ReviewAdapter) row));
 
 	}	
 }

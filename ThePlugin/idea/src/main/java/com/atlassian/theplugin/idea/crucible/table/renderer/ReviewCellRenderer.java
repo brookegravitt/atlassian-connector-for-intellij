@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -11,8 +11,8 @@ public abstract class ReviewCellRenderer extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable jTable,
 												   Object o, boolean isSelected, boolean hasFocus, int i, int i1) {
 		Component c = super.getTableCellRendererComponent(jTable, o, isSelected, hasFocus, i, i1);
-		if (o instanceof ReviewDataImpl) {
-			ReviewDataImpl review = (ReviewDataImpl) o;
+		if (o instanceof ReviewAdapter) {
+			ReviewAdapter review = (ReviewAdapter) o;
 			String tooltip = getCellToolTipText(review);
 			if (tooltip != null) {
 				((JLabel) c).setToolTipText(tooltip);
@@ -23,6 +23,6 @@ public abstract class ReviewCellRenderer extends DefaultTableCellRenderer {
 		return c;
 	}
 
-	protected abstract String getCellText(ReviewDataImpl review);
-	protected abstract String getCellToolTipText(ReviewDataImpl review);
+	protected abstract String getCellText(ReviewAdapter review);
+	protected abstract String getCellToolTipText(ReviewAdapter review);
 }

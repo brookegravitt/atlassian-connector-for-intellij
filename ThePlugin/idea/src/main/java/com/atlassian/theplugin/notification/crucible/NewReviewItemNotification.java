@@ -17,12 +17,12 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 public class NewReviewItemNotification extends AbstractReviewNotification {
     private CrucibleReviewItemInfo reviewItem;
 
-    public NewReviewItemNotification(ReviewDataImpl review, CrucibleReviewItemInfo reviewItem) {
+    public NewReviewItemNotification(ReviewAdapter review, CrucibleReviewItemInfo reviewItem) {
         super(review);
         this.reviewItem = reviewItem;
     }
