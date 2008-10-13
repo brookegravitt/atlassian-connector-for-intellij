@@ -14,7 +14,7 @@ public class RunFailedTestsAction extends AnAction {
 	public void update(AnActionEvent e) {
 		TestResultsToolWindow window = IdeaHelper.getProjectComponent(e, TestResultsToolWindow.class);
 		if (window != null) {
-			e.getPresentation().setEnabled(window.canRunFailedTests());
+			e.getPresentation().setEnabled(window.canRunFailedTests(e));
 		}
 		super.update(e);
 	}

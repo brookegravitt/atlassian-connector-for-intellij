@@ -23,6 +23,13 @@ import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.*;
+import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.junit.JUnitConfiguration;
+import com.intellij.execution.junit.JUnitUtil;
+import com.intellij.execution.impl.RunManagerImpl;
+import com.intellij.execution.runners.RunStrategy;
+import com.intellij.execution.runners.JavaProgramRunner;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -48,10 +55,8 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public final class TestResultsToolWindow {
 	private final Project project;
@@ -61,6 +66,7 @@ public final class TestResultsToolWindow {
 		
         void setPassedTestsVisible(boolean visible);
 		boolean isPassedTestsVisible();
+		boolean createTestConfiguration(JUnitConfiguration configuration);
 	}
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Failed Tests";
@@ -109,34 +115,40 @@ public final class TestResultsToolWindow {
 	}
 
 	public void runFailedTests(AnActionEvent ev, boolean debug) {
+		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
+		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
+		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
+		JUnitConfiguration conf = (JUnitConfiguration) settings.getConfiguration();
 
-//		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
-//		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
-//		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
-//		JUnitConfiguration conf = (JUnitConfiguration) settings.getConfiguration();
-//
-//		PsiManager mgr = PsiManager.getInstance(project);
-//		PsiClass cls = mgr.findClass("com.atlassian.theplugin.commons.bamboo.BambooServerFacadeTest",
-//				GlobalSearchScope.allScope(project));
-//		conf.beClassConfiguration(cls);
-//
-//		JavaProgramRunner runner;
-//		if (debug) {
-//			runner = ExecutionRegistry.getInstance().getDebuggerRunner();
-//		} else {
-//			runner = ExecutionRegistry.getInstance().getDefaultRunner();
-//		}
-//
-//		RunStrategy strategy = RunStrategy.getInstance();
-//		try {
-//			strategy.execute(settings, runner, ev.getDataContext());
-//		} catch (ExecutionException e) {
-//			e.printStackTrace();
-//		}
+		TestTree tree = getTestTree(ev.getPlace());
+		if (tree == null) {
+			return;
+		}
+		if (!tree.createTestConfiguration(conf)) {
+			return;
+		}
+
+		JavaProgramRunner runner;
+		if (debug) {
+			runner = ExecutionRegistry.getInstance().getDebuggerRunner();
+		} else {
+			runner = ExecutionRegistry.getInstance().getDefaultRunner();
+		}
+
+		RunStrategy strategy = RunStrategy.getInstance();
+		try {
+			strategy.execute(settings, runner, ev.getDataContext());
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public boolean canRunFailedTests() {
-		return false;
+	public boolean canRunFailedTests(AnActionEvent ev) {
+		TestTree tree = getTestTree(ev.getPlace());
+		if (tree == null) {
+			return false;
+		}
+		return tree.createTestConfiguration(null);
 	}
 
 	private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
@@ -151,6 +163,8 @@ public final class TestResultsToolWindow {
         }
 
         public abstract void navigate();
+
+		public abstract boolean createTestConfiguration(JUnitConfiguration configuration);
     }
 
     private class TestDetailsPanel extends JPanel implements TestTree {
@@ -217,6 +231,10 @@ public final class TestResultsToolWindow {
 				// no-op for packages
 			}
 
+			public boolean createTestConfiguration(JUnitConfiguration configuration) {
+				// bummer, JUnit does not support testing the whole package
+				return false;
+			}
 		}
 
 		private class ClassNode extends NonLeafNode {
@@ -235,6 +253,19 @@ public final class TestResultsToolWindow {
 					cls.navigate(true);
 				}
 			}
+
+			public boolean createTestConfiguration(JUnitConfiguration configuration) {
+				PsiManager mgr = PsiManager.getInstance(project);
+
+				PsiClass cls = mgr.findClass(className, GlobalSearchScope.allScope(project));
+				if (cls == null) {
+					return false;
+				}
+				if (configuration != null) {
+					configuration.beClassConfiguration(cls);
+				}
+				return true;
+			}
 		}
 
 		private abstract class TestNode extends AbstractTreeNode {
@@ -245,20 +276,41 @@ public final class TestResultsToolWindow {
 				this.details = details;
 			}
 
-			@Override
-			public void navigate() {
+			private PsiMethod getMethod() {
 				PsiClass cls = PsiManager.getInstance(project).findClass(details.getTestClassName(),
 						GlobalSearchScope.allScope(project));
 				if (cls == null) {
-					return;
+					return null;
 				}
 				PsiMethod[] methods = cls.findMethodsByName(details.getTestMethodName(), false);
-				if (methods == null || methods.length == 0 || methods[0] == null) {
-					return;
+				if (methods.length == 0 || methods[0] == null) {
+					return null;
 				}
-				methods[0].navigate(true);
+
+				return methods[0];
+			}
+
+			@Override
+			public void navigate() {
+				PsiMethod m = getMethod();
+				if (m != null) {
+					m.navigate(true);
+				}
+			}
+
+			public boolean createTestConfiguration(JUnitConfiguration configuration) {
+				PsiMethod m = getMethod();
+
+				if (m != null) {
+					if (configuration != null) {
+						configuration.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
+					}
+					return true;
+				}
+				return false;
 			}
 		}
+
 		private class TestErrorInfoNode extends TestNode {
 			public TestErrorInfoNode(TestDetails details) {
 				super(details);
@@ -507,6 +559,10 @@ public final class TestResultsToolWindow {
 			return passedTestsVisible;
 		}
 
+	    public boolean createTestConfiguration(JUnitConfiguration configuration) {
+		    TreePath p = tree.getSelectionPath();
+		    return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
+	    }
     }
 
     private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
