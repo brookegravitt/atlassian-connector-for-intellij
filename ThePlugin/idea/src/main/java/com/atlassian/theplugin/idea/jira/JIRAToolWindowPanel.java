@@ -27,17 +27,17 @@ import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.jira.*;
 import com.atlassian.theplugin.idea.jira.table.JIRATableColumnProviderImpl;
 import com.atlassian.theplugin.idea.jira.table.columns.*;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
@@ -56,8 +56,10 @@ import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueAdapter> {
 	private static final int PAGE_SIZE = 50;

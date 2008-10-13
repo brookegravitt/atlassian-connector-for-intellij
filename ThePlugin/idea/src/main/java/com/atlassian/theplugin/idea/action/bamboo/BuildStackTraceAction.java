@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class BuildStackTraceAction extends AnAction {
 	@Override

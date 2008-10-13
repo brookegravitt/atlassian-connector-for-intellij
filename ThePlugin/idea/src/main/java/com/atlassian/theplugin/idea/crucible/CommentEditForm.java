@@ -29,10 +29,9 @@ import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class CommentEditForm extends DialogWrapper {

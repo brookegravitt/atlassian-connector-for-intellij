@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.TestConnectionListener;
@@ -27,8 +27,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;

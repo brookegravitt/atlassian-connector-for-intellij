@@ -22,18 +22,17 @@ import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.security.cert.X509Certificate;
-import java.security.MessageDigest;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.*;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.security.MessageDigest;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
-
-import org.jetbrains.annotations.Nullable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class CertMessageDialog extends DialogWrapper {
 		private String server;

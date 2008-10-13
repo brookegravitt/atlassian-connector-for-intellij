@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;

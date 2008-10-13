@@ -17,10 +17,9 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;

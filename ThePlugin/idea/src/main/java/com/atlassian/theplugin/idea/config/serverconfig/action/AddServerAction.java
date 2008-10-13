@@ -16,11 +16,7 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.*;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

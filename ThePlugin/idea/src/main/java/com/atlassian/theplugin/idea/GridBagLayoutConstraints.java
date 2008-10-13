@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import java.awt.GridBagConstraints;
+import java.awt.*;
 
 /**
  This class simplifies the use of the GridBagConstraints

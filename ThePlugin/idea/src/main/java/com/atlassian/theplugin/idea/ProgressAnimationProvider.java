@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.intellij.util.ui.AsyncProcessIcon;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.ui.AsyncProcessIcon;
 
 import javax.swing.*;
 import java.awt.*;

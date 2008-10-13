@@ -17,13 +17,13 @@
 package com.atlassian.theplugin.idea.action.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
