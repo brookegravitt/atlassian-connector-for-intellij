@@ -39,7 +39,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		this.userCache = userCache;
 	}
 
-	public static CrucibleServerFacade getInstance() {
+	public static synchronized CrucibleServerFacade getInstance() {
 		if (instance == null) {
 			instance = new CrucibleServerFacadeImpl(CrucibleUserCacheImpl.getInstance());
 		}

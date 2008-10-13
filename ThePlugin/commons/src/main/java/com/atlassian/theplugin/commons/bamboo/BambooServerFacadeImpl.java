@@ -18,20 +18,15 @@ package com.atlassian.theplugin.commons.bamboo;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.util.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 
 
 /**
@@ -50,7 +45,7 @@ public final class BambooServerFacadeImpl implements BambooServerFacade {
         this.loger = loger;
     }                                                                                            
 
-    public static BambooServerFacade getInstance(Logger loger) {
+    public static synchronized BambooServerFacade getInstance(Logger loger) {
         if (instance == null) {
             instance = new BambooServerFacadeImpl(loger);
         }
