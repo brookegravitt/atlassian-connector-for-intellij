@@ -1,20 +1,20 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleChangeSetClickAction implements AtlassianClickAction {
 
 	private Project project;
-	private Review review;
+	private ReviewDataImpl review;
 
-	public CrucibleChangeSetClickAction(Project project, Review review) {
+	public CrucibleChangeSetClickAction(Project project, ReviewDataImpl review) {
 		this.project = project;
 		this.review = review;
 	}

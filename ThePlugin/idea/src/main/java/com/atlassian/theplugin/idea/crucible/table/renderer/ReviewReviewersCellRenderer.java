@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.util.ReviewInfoUtil;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.RowIcon;
@@ -46,9 +46,9 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 		//label.setHorizontalAlignment(SwingConstants.CENTER);
 
-		if (value instanceof Review) {
+		if (value instanceof ReviewDataImpl) {
 
-			Review review = (Review) value;
+			ReviewDataImpl review = (ReviewDataImpl) value;
 
 			try {
 				if (review.getReviewers().size() > NUM_REV_ICON) {
@@ -69,7 +69,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 
 
-    private Icon createIconContent(Review review) {
+    private Icon createIconContent(ReviewDataImpl review) {
 		int index = 0;
 		RowIcon rowIcon = null;
 
@@ -90,7 +90,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 		return rowIcon;
 	}
 
-	private String createStringContent(Review review) {
+	private String createStringContent(ReviewDataImpl review) {
 
 		int numReviews = 0;
 		try {
@@ -107,7 +107,7 @@ public class ReviewReviewersCellRenderer  extends DefaultTableCellRenderer {
 
 	}
 
-	private String createHtmlTooltip(Review review) {
+	private String createHtmlTooltip(ReviewDataImpl review) {
 
 		StringBuffer html = new StringBuffer();
 

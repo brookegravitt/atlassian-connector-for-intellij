@@ -17,16 +17,17 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DateFormat;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.DateFormat;
 
 public final class CommentPanelBuilder {
 	private static final Color NOT_MINE_HEADER_COLOR = new Color(224, 224, 224);
@@ -39,11 +40,11 @@ public final class CommentPanelBuilder {
 		// this is utility class
 	}
 
-	public static JPanel createEditPanelOfGeneralComment(Review review, GeneralComment comment) {
+	public static JPanel createEditPanelOfGeneralComment(ReviewDataImpl review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment, false); // no editing temporarily
 	}
 
-	public static JPanel createViewPanelOfGeneralComment(final Review review, final GeneralComment comment,
+	public static JPanel createViewPanelOfGeneralComment(final ReviewDataImpl review, final GeneralComment comment,
 														 final boolean isSelected) {
 		return new CommentPanel(review, null, comment) {
 			@Override
@@ -66,12 +67,12 @@ public final class CommentPanelBuilder {
 		};
 	}
 
-	public static JPanel createEditPanelOfVersionedComment(Review review, CrucibleFileInfo file,
+	public static JPanel createEditPanelOfVersionedComment(ReviewDataImpl review, CrucibleFileInfo file,
 			VersionedComment comment) {
 		return createViewPanelOfVersionedComment(review, file, comment, false);
 	}
 
-	public static JPanel createViewPanelOfVersionedComment(final Review review, CrucibleFileInfo file,
+	public static JPanel createViewPanelOfVersionedComment(final ReviewDataImpl review, CrucibleFileInfo file,
 			final VersionedComment comment, final boolean isSelected) {
 		return new CommentPanel(review, file, comment) {
 			@Override
@@ -102,7 +103,7 @@ public final class CommentPanelBuilder {
 
 	private abstract static class CommentPanel extends JPanel {
 		private Comment comment;
-		private Review review;
+		private ReviewDataImpl review;
 		private CrucibleFileInfo file;
 
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
@@ -116,7 +117,7 @@ public final class CommentPanelBuilder {
 
 		private static final float MINIMUM_FONT_SIZE = 3;
 
-		private CommentPanel(Review review, CrucibleFileInfo file, Comment comment) {
+		private CommentPanel(ReviewDataImpl review, CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 

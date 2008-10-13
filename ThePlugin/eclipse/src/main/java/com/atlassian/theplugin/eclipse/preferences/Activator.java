@@ -96,8 +96,8 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 
 		// create logger
-		PluginUtil.setLogger(new EclipseLogger(getLog())); // now you can use
-		// PluginUtil.getLogger
+		PluginUtil.setLogger(new EclipseLogger(getLog())); 
+		// now you can use PluginUtil.getLogger
 		PluginUtil.getLogger().info(PluginUtil.getPluginName() + " started.");
 
 		// create configuration

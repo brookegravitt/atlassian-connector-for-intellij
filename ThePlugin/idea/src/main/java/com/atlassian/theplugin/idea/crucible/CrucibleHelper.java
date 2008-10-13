@@ -58,7 +58,7 @@ public final class CrucibleHelper {
 	 * @param reviewItem review item
 	 */
 	public static void showVirtualFileWithComments(final Project project,
-			final Review review,
+			final ReviewDataImpl review,
 			final CrucibleFileInfo reviewItem) {
 
 		int line = 1;
@@ -158,7 +158,8 @@ public final class CrucibleHelper {
 		});
 	}
 
-	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project, @NotNull final Review review) {
+	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project,
+			@NotNull final ReviewDataImpl review) {
 		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		try {
 			metrics = CrucibleServerFacadeImpl.getInstance()
@@ -171,10 +172,10 @@ public final class CrucibleHelper {
 		return metrics;
 	}
 
-	public static Editor getEditorForCrucibleFile(Review review, CrucibleFileInfo file) {
+	public static Editor getEditorForCrucibleFile(ReviewDataImpl review, CrucibleFileInfo file) {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
-			final Review mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+			final ReviewDataImpl mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 			if (mr != null && mf != null) {
 				if (review.getPermId().equals(mr.getPermId()) && file.getItemInfo().getId().equals(mf.getItemInfo().getId())) {
@@ -185,7 +186,7 @@ public final class CrucibleHelper {
 		return null;
 	}
 
-	public static void openFileOnComment(final Project project, final Review review, final CrucibleFileInfo file,
+	public static void openFileOnComment(final Project project, final ReviewDataImpl review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 
 		ApplicationManager.getApplication().runReadAction(new Runnable() {

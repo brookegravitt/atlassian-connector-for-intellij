@@ -22,12 +22,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleSetReviewersWorker implements Runnable {
-	private Review reviewInfo;
+	private ReviewDataImpl reviewInfo;
 	private Project project;
 
 
 	public CrucibleSetReviewersWorker(Project project,
-			Review reviewInfo) {
+			ReviewDataImpl reviewInfo) {
 		this.reviewInfo = reviewInfo;
 		this.project = project;
 	}

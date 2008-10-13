@@ -40,7 +40,7 @@ public final class CommentHighlighter {
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
 
 	private static final String REVIEW_DATA_KEY_NAME = "REVIEW_DATA_KEY";
-	public static final Key<Review> REVIEW_DATA_KEY = Key.create(REVIEW_DATA_KEY_NAME);
+	public static final Key<ReviewDataImpl> REVIEW_DATA_KEY = Key.create(REVIEW_DATA_KEY_NAME);
 
 	private static final String REVIEWITEM_DATA_KEY_NAME = "REVIEW_ITEM_DATA_KEY";
 	public static final Key<CrucibleFileInfo> REVIEWITEM_DATA_KEY = Key.create(REVIEWITEM_DATA_KEY_NAME);
@@ -53,7 +53,7 @@ public final class CommentHighlighter {
 	private CommentHighlighter() {
 	}
 
-	public static void highlightCommentsInEditor(final Project project, final Editor editor, Review review,
+	public static void highlightCommentsInEditor(final Project project, final Editor editor, ReviewDataImpl review,
 			CrucibleFileInfo reviewItem) {
 		if (editor != null) {
 
@@ -82,10 +82,10 @@ public final class CommentHighlighter {
 		}
 	}
 
-	public static void updateCommentsInEditors(Project project, Review review, CrucibleFileInfo reviewItem) {
+	public static void updateCommentsInEditors(Project project, ReviewDataImpl review, CrucibleFileInfo reviewItem) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			if (editor.getUserData(COMMENT_DATA_KEY) != null) {
-				final Review data = editor.getUserData(REVIEW_DATA_KEY);
+				final ReviewDataImpl data = editor.getUserData(REVIEW_DATA_KEY);
 				final CrucibleFileInfo file = editor.getUserData(REVIEWITEM_DATA_KEY);
 				if (data != null && file != null) {
 					if (data.getPermId().equals(review.getPermId())

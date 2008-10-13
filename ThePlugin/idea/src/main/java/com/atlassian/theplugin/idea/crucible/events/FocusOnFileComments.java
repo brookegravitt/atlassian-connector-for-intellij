@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,10 +28,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
  * To change this template use File | Settings | File Templates.
  */
 public class FocusOnFileComments extends CrucibleEvent {
-	private Review review;
+	private ReviewDataImpl review;
 	private CrucibleFileInfo file;
 
-	public FocusOnFileComments(CrucibleReviewActionListener caller, Review review, CrucibleFileInfo file) {
+	public FocusOnFileComments(CrucibleReviewActionListener caller, ReviewDataImpl review, CrucibleFileInfo file) {
 		super(caller);
 		this.review = review;
 		this.file = file;

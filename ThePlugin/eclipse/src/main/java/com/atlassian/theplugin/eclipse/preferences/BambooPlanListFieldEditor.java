@@ -328,13 +328,11 @@ public class BambooPlanListFieldEditor extends FieldEditor implements
 			}
 
 			if (plan.isFavourite()) {
-				item.setImage(Column.FAVOURITE.ordinal(), PluginIcons
-						.getImageRegistry().get(PluginIcons.ICON_FAVOURITE_ON));
+				item.setImage(Column.FAVOURITE.ordinal(), 
+						PluginIcons.getImageRegistry().get(PluginIcons.ICON_FAVOURITE_ON));
 			} else {
-				item
-						.setImage(Column.FAVOURITE.ordinal(), PluginIcons
-								.getImageRegistry().get(
-										PluginIcons.ICON_FAVOURITE_OFF));
+				item.setImage(Column.FAVOURITE.ordinal(), 
+						PluginIcons.getImageRegistry().get(PluginIcons.ICON_FAVOURITE_OFF));
 			}
 			item.setText(Column.PLAN_KEY.ordinal(), plan.getPlanKey());
 		}
@@ -374,8 +372,9 @@ public class BambooPlanListFieldEditor extends FieldEditor implements
 	}
 
 	private enum Column {
-		WATCHED("Watched", 25), FAVOURITE("Favourite", 20), PLAN_KEY(
-				"Plan Key", 150);
+		WATCHED("Watched", 25), 
+		FAVOURITE("Favourite", 20), 
+		PLAN_KEY("Plan Key", 150);
 
 		private String columnName;
 		private int columnWidth;

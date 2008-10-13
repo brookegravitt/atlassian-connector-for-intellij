@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
 
 public class CrucibleFilesNode extends CrucibleContainerNode {
 
-	public CrucibleFilesNode(Review review) {
+	public CrucibleFilesNode(ReviewDataImpl review) {
 		super(review);
 	}
 

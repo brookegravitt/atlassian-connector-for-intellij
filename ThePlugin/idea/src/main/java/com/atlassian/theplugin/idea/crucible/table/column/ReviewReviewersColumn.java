@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import static com.atlassian.theplugin.util.ReviewInfoUtil.getNumOfCompletedReviewers;
 
 import javax.swing.*;
@@ -54,8 +55,8 @@ public class ReviewReviewersColumn extends TableColumnInfo {
 
 		 return new Comparator() {
             public int compare(Object o, Object o1) {
-				Review review1 = (Review) o;
-				Review review2 = (Review) o1;
+				ReviewDataImpl review1 = (ReviewDataImpl) o;
+				ReviewDataImpl review2 = (ReviewDataImpl) o1;
 				List<Reviewer> r1 = null;
 				List<Reviewer> r2 = null;
 				int r1s = 0;
