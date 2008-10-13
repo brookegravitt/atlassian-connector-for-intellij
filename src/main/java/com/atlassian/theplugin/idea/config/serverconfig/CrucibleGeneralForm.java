@@ -16,8 +16,9 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.*;
+import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
+import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;

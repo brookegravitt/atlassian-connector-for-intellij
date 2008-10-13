@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
-import com.intellij.util.net.HttpConfigurable;
 import com.intellij.util.net.HTTPProxySettingsDialog;
+import com.intellij.util.net.HttpConfigurable;
 
 public final class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 

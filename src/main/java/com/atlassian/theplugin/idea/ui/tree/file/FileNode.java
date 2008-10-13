@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class FileNode extends AtlassianTreeNode {
 

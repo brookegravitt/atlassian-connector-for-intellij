@@ -16,28 +16,13 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAFixForVersionBean;
-import com.atlassian.theplugin.jira.api.JIRAIssueTypeBean;
-import com.atlassian.theplugin.jira.api.JIRAPriorityBean;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRAProjectBean;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.jira.api.JIRAStatusBean;
-import com.atlassian.theplugin.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.util.PluginUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JIRAServer {
     private static final int VERSION_SPECIAL_VALUES_COUNT = 4;

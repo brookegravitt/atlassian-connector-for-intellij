@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.idea.bamboo.table.columns;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.TableColumnInfo;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Calendar;
 
 
 public class BuildDateColumn extends TableColumnInfo {

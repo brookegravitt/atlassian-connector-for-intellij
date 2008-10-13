@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.util.Connector;
 
 public class ProductConnector extends Connector {
 	private final ProductServerFacade facade;

@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.ui;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.

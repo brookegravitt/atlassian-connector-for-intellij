@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.jira.api.*;
 
 import java.util.Calendar;

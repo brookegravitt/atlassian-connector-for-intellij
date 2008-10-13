@@ -17,11 +17,11 @@
 package com.atlassian.theplugin.idea.crucible;
 
 
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.text.MessageFormat;
+import java.util.regex.Pattern;
 
 /**
  * Utility class to provide new filter names

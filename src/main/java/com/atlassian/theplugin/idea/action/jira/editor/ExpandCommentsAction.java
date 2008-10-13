@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.action.jira.editor;
 
+import com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent;
 
 public class ExpandCommentsAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {

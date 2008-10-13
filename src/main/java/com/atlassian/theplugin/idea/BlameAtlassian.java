@@ -17,12 +17,12 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.ErrorReportSubmitter;
 import com.intellij.openapi.diagnostic.IdeaLoggingEvent;
 import com.intellij.openapi.diagnostic.SubmittedReportInfo;
-import com.intellij.openapi.application.ApplicationInfo;
 
-import java.awt.Component;
+import java.awt.*;
 
 
 public class BlameAtlassian extends ErrorReportSubmitter {

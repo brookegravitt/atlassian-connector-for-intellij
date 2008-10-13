@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleChangeStateWorker {

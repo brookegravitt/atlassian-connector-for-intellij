@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.atlassian.theplugin.idea.Constants;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractServerAction extends AnAction {

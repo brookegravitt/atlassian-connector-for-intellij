@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
+import com.atlassian.theplugin.idea.crucible.events.FocusOnLineCommentEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnLineCommentEvent;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleVersionedCommentClickAction implements AtlassianClickAction {

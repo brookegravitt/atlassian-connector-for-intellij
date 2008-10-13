@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.idea.BugReporting;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
-import com.atlassian.theplugin.idea.BugReporting;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.openapi.application.ApplicationInfo;
+import com.intellij.ui.HyperlinkLabel;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
