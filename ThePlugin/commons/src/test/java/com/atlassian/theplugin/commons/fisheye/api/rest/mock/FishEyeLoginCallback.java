@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.commons.fisheye.api.rest.mock;
 
-import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
+import com.atlassian.theplugin.commons.util.ResourceUtil;
 import static junit.framework.Assert.*;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 
@@ -29,7 +29,7 @@ public class FishEyeLoginCallback implements JettyMockServer.Callback {
 	private final boolean fail;
 
 	public static final boolean ALWAYS_FAIL = true;
-	public static final String AUTH_TOKEN = "authtokenstring";
+	public static final String AUTH_TOKEN = "username:559:eb9118f34d38fac5946953220fac7fff";
 
 	public FishEyeLoginCallback(String expectedUsername, String expectedPassword) {
 		this(expectedUsername, expectedPassword, false);
@@ -64,7 +64,7 @@ public class FishEyeLoginCallback implements JettyMockServer.Callback {
 		assertEquals(expectedUsername, username);
 		assertEquals(expectedPassword, password);
 
-		Util.copyResource(response.getOutputStream(), fail ? "loginFailedResponse.xml" : "loginSuccessResponse.xml");
+		ResourceUtil.copyResource(response.getOutputStream(), FishEyeLoginCallback.class, fail ? "loginFailedResponse.xml" : "loginSuccessResponse.xml");
 		response.getOutputStream().flush();
 
 	}

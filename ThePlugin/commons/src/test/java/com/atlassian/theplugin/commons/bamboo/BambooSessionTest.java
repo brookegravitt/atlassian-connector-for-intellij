@@ -16,69 +16,25 @@
 
 package com.atlassian.theplugin.commons.bamboo;
 
-import com.atlassian.theplugin.bamboo.api.bamboomock.AddCommentToBuildCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.AddLabelToBuildCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.BuildDetailsResultCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorMessageCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ExecuteBuildCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.FavouritePlanListCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LatestBuildResultCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LoginCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.LogoutCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.PlanListCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.ProjectListCallback;
-import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
+import com.atlassian.theplugin.api.AbstractSessionTest;
+import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.commons.bamboo.api.AutoRenewBambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSessionImpl;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.remoteapi.ProductSession;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import junit.framework.TestCase;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import org.ddsteps.mock.httpserver.JettyMockServer;
-import org.mortbay.jetty.Server;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 
 /**
  * Test case for {#link BambooSessionImpl}
  */
-public class BambooSessionTest extends TestCase {
-	private static final String USER_NAME = "someUser";
-	private static final String PASSWORD = "somePassword";
-
-	private Server server;
-	private JettyMockServer mockServer;
-	private String mockBaseUrl;
-
-	@Override
-	protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
-
-        server = new Server(0);
-		server.start();
-		while (server.isStarted() == false) {
-			Thread.sleep(100);
-		}
-
-		mockBaseUrl = "http://localhost:" + server.getConnectors()[0].getLocalPort();
-
-		mockServer = new JettyMockServer(server);
-    }
-
-	@Override
-	protected void tearDown() throws Exception {
-		mockServer = null;
-		mockBaseUrl = null;
-		server.stop();
-	}
-
+public class BambooSessionTest extends AbstractSessionTest {
 	public void testSuccessBambooLogin() throws Exception {
 
 		BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
@@ -122,95 +78,19 @@ public class BambooSessionTest extends TestCase {
 		}
 	}
 
-	public void testWrongUrlBambooLogin() throws Exception {
-		ErrorResponse error = new ErrorResponse(400, "Bad Request");
-		mockServer.expect("/wrongurl/api/rest/login.action", error);
-		RemoteApiLoginException exception = null;
-
-		try {
-			BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl + "/wrongurl");
-			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (RemoteApiLoginException ex) {
-			exception = ex;
-		}
-		mockServer.verify();
-
-		assertNotNull("Exception expected", exception);
-		assertNotNull("Exception should have a cause", exception.getCause());
-		assertSame(IOException.class, exception.getCause().getClass());
-		assertTrue(exception.getMessage().contains(error.getErrorMessage()));
+	protected ProductSession getProductSession(final String url) throws RemoteApiMalformedUrlException {
+		return new BambooSessionImpl(url);
 	}
 
-	public void testNonExistingServerBambooLogin() throws Exception {
-		RemoteApiLoginException exception = null;
 
-		try {
-			BambooSession apiHandler = new BambooSessionImpl("http://non.existing.server.utest");
-			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (RemoteApiLoginException ex) {
-			exception = ex;
-		}
 
-		assertNotNull("Exception expected", exception);
-		assertNotNull("Exception should have a cause", exception.getCause());
-		assertSame("UnknownHostException expected", UnknownHostException.class, exception.getCause().getClass());
-		assertEquals("Checking exception message", "Unknown host: non.existing.server.utest", exception.getMessage());
+	protected JettyMockServer.Callback getLoginCallback(final boolean isFail) {
+		return new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL);
 	}
 
-	public void testMalformedUrlBambooLogin() {
-		tryMalformedUrl("noprotocol.url/path");
-		tryMalformedUrl("http:localhost/path");
-		tryMalformedUrl("http:/localhost/path");
-		tryMalformedUrl("http:///localhost/path");
-		tryMalformedUrl("http:localhost");
-		tryMalformedUrl("http:/localhost");
-		tryMalformedUrl("http:///localhost");
-		tryMalformedUrl("http://");
-		tryMalformedUrl("ncxvx:/localhost/path");
-		tryMalformedUrl("ncxvx:///localhost/path");
-		tryMalformedUrl("ncxvx://localhost/path");
-		tryMalformedUrl("ncxvx:///localhost/path");
-		tryMalformedUrl("https:localhost/path");
-		tryMalformedUrl("https:/localhost/path");
-		tryMalformedUrl("https:///localhost/path");
-		tryMalformedUrl("https:localhost");
-		tryMalformedUrl("https:/localhost");
-		tryMalformedUrl("https:///localhost");
-		tryMalformedUrl("https://");
-		tryMalformedUrl("http::localhost/path");
-		tryMalformedUrl("http://loca:lhost/path");
+		protected String getLoginUrl() {
+		return "/api/rest/login.action";
 	}
-
-	private void tryMalformedUrl(final String url) {
-		RemoteApiLoginException exception = null;
-		try {
-			BambooSession apiHandler = new BambooSessionImpl(url);
-			apiHandler.login(USER_NAME, PASSWORD.toCharArray());
-		} catch (RemoteApiException e) {
-			exception = new RemoteApiLoginException(e.getMessage(), e);
-		}
-
-		assertNotNull("Exception expected", exception);
-		assertNotNull("Exception should have a cause", exception.getCause());
-		assertTrue("RemoteApiException expected", exception.getCause() instanceof RemoteApiException);
-		assertTrue("MalformedURLExceptionException expected", exception.getCause().getCause() instanceof MalformedURLException);
-		assertEquals("Malformed server URL: " + url, exception.getMessage());
-	}
-
-	public void testWrongUserBambooLogin() throws Exception {
-		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD, LoginCallback.ALWAYS_FAIL));
-
-		try {
-			BambooSession apiHandler = new BambooSessionImpl(mockBaseUrl);
-			apiHandler.login(USER_NAME, PASSWORD.toCharArray()); // mock will fail this
-			fail();
-		} catch (RemoteApiLoginException ex) {
-			System.out.println("Exception: " + ex.getMessage());
-		}
-
-		mockServer.verify();
-	}
-
 
 	public void testWrongParamsBambooLogin() throws Exception {
 		try {

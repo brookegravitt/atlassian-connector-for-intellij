@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.ResourceUtil;
+import com.atlassian.theplugin.remoteapi.ErrorResponse;
 import junit.framework.Assert;
 import static junit.framework.Assert.assertEquals;
 
@@ -39,7 +40,7 @@ public abstract class Util {
 	}
 
 	public static void copyResource(OutputStream outputStream, String resource) {
-		ResourceUtil.copyResource(outputStream, RESOURCE_BASE + resource);
+		ResourceUtil.copyResource(outputStream, Util.class, RESOURCE_BASE + resource);
 	}
 
 	public static void verifySuccessfulBuildResult(BambooBuild build, String baseUrl) {
