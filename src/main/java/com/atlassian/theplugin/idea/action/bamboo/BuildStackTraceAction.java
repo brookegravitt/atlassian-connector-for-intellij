@@ -19,17 +19,24 @@ package com.atlassian.theplugin.idea.action.bamboo;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 
 public class BuildStackTraceAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).showBuildStackTrace();
+		BambooTableToolWindowPanel tw = IdeaHelper.getBambooToolWindowPanel(event);
+		if (tw != null) {
+			tw.showBuildStackTrace();
+		}
     }
 
 	@Override
 	public void update(AnActionEvent event) {
-		if (IdeaHelper.getBambooToolWindowPanel(event) != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getBambooToolWindowPanel(event).canShowFailedTests());
+		BambooTableToolWindowPanel tw = IdeaHelper.getBambooToolWindowPanel(event);
+		boolean enabled = false;
+		if (tw != null) {
+			enabled = tw.canShowFailedTests();
 		}
+		event.getPresentation().setEnabled(enabled);
 	}
 }
