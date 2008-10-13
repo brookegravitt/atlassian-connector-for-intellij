@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.BambooFileInfoImpl;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -89,19 +90,17 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
      */
     public void login(String name, char[] aPassword) throws RemoteApiLoginException {
         String loginUrl;
-        try {
-            if (name == null || aPassword == null) {
-                throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
-            }
-            String pass = String.valueOf(aPassword);
-            loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
-                    + URLEncoder.encode(pass, "UTF-8") + "&os_username="
-                    + URLEncoder.encode(name, "UTF-8") + "&os_password=" + URLEncoder.encode(pass, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-        }
 
-        try {
+		if (name == null || aPassword == null) {
+			throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
+		}
+		String pass = String.valueOf(aPassword);
+		loginUrl = baseUrl + LOGIN_ACTION + "?username=" + UrlUtil.encodeUrl(name) + "&password="
+				+ UrlUtil.encodeUrl(pass) + "&os_username="
+				+ UrlUtil.encodeUrl(name) + "&os_password=" + UrlUtil.encodeUrl(pass);
+
+
+		try {
             Document doc = retrieveGetResponse(loginUrl);
             String exception = getExceptionMessages(doc);
             if (null != exception) {
@@ -158,12 +157,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public int getBamboBuildNumber() throws RemoteApiException {
-        String queryUrl;
-        try {
-            queryUrl = baseUrl + GET_BAMBOO_BUILD_NUMBER_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+        String queryUrl = baseUrl + GET_BAMBOO_BUILD_NUMBER_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken);
 
         try {
             Document doc = retrieveGetResponse(queryUrl);
@@ -190,12 +184,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public List<BambooProject> listProjectNames() throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+        String buildResultUrl = baseUrl + LIST_PROJECT_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken);
 
         List<BambooProject> projects = new ArrayList<BambooProject>();
         try {
@@ -220,12 +209,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public List<BambooPlan> listPlanNames() throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+        String buildResultUrl = baseUrl + LIST_PLAN_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken);
 
         List<BambooPlan> plans = new ArrayList<BambooPlan>();
         try {
@@ -265,13 +249,8 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
      * @return Information about the last build or error message
      */
     public BambooBuild getLatestBuildForPlan(String planKey) throws RemoteApiSessionExpiredException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
-                    + "&buildKey=" + URLEncoder.encode(planKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-        }
+        String buildResultUrl = baseUrl + LATEST_BUILD_FOR_PLAN_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken)
+                    + "&buildKey=" + UrlUtil.encodeUrl(planKey);
 
         try {
             Document doc = retrieveGetResponse(buildResultUrl);
@@ -303,13 +282,12 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 	private Set<String> constructBuildCommiters(final Document doc) throws JDOMException {
 
 		Set<String> commiters = new HashSet<String>();
-
+		@SuppressWarnings("unchecked")
 		final List<Element> commitElements = XPath.newInstance("/response/commits/commit").selectNodes(doc);
 		if (!commitElements.isEmpty()) {
 
 			for (Element element : commitElements) {
 				commiters.add(element.getAttributeValue("author"));
-//				System.out.println(element.getAttributeValue("author"));
 			}
 		}
 
@@ -318,12 +296,7 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
 
 	public List<String> getFavouriteUserPlans() throws RemoteApiSessionExpiredException {
         List<String> builds = new ArrayList<String>();
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + LATEST_USER_BUILDS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-        }
+        String buildResultUrl = baseUrl + LATEST_USER_BUILDS_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken);
 
         try {
             Document doc = retrieveGetResponse(buildResultUrl);
@@ -351,17 +324,15 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public BuildDetails getBuildResultDetails(String buildKey, String buildNumber) throws RemoteApiException {
-        String buildResultUrl;
+		String buildResultUrl;
 
-        try {
-            buildResultUrl = baseUrl + GET_BUILD_DETAILS_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
-                    + "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
-                    + "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: " + e.getMessage());
-        }
 
-        try {
+		buildResultUrl = baseUrl + GET_BUILD_DETAILS_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken)
+				+ "&buildKey=" + UrlUtil.encodeUrl(buildKey)
+				+ "&buildNumber=" + UrlUtil.encodeUrl(buildNumber);
+
+
+		try {
             BuildDetailsInfo build = new BuildDetailsInfo();
             Document doc = retrieveGetResponse(buildResultUrl);
             String exception = getExceptionMessages(doc);
@@ -460,17 +431,15 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public void addLabelToBuild(String buildKey, String buildNumber, String buildLabel) throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + ADD_LABEL_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
-                    + "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
-                    + "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8")
-                    + "&label=" + URLEncoder.encode(buildLabel, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+		String buildResultUrl;
 
-        try {
+		buildResultUrl = baseUrl + ADD_LABEL_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken)
+				+ "&buildKey=" + UrlUtil.encodeUrl(buildKey)
+				+ "&buildNumber=" + UrlUtil.encodeUrl(buildNumber)
+				+ "&label=" + UrlUtil.encodeUrl(buildLabel);
+
+
+		try {
             Document doc = retrieveGetResponse(buildResultUrl);
             String exception = getExceptionMessages(doc);
             if (null != exception) {
@@ -484,17 +453,15 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + ADD_COMMENT_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
-                    + "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8")
-                    + "&buildNumber=" + URLEncoder.encode(buildNumber, "UTF-8")
-                    + "&content=" + URLEncoder.encode(buildComment, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+		String buildResultUrl;
 
-        try {
+		buildResultUrl = baseUrl + ADD_COMMENT_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken)
+				+ "&buildKey=" + UrlUtil.encodeUrl(buildKey)
+				+ "&buildNumber=" + UrlUtil.encodeUrl(buildNumber)
+				+ "&content=" + UrlUtil.encodeUrl(buildComment);
+
+
+		try {
             Document doc = retrieveGetResponse(buildResultUrl);
             String exception = getExceptionMessages(doc);
             if (null != exception) {
@@ -508,15 +475,13 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public void executeBuild(String buildKey) throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + EXECUTE_BUILD_ACTION + "?auth=" + URLEncoder.encode(authToken, "UTF-8")
-                    + "&buildKey=" + URLEncoder.encode(buildKey, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+		String buildResultUrl;
 
-        try {
+		buildResultUrl = baseUrl + EXECUTE_BUILD_ACTION + "?auth=" + UrlUtil.encodeUrl(authToken)
+				+ "&buildKey=" + UrlUtil.encodeUrl(buildKey);
+
+
+		try {
             Document doc = retrieveGetResponse(buildResultUrl);
             String exception = getExceptionMessages(doc);
             if (null != exception) {
@@ -610,18 +575,15 @@ public class BambooSessionImpl extends AbstractHttpSession implements BambooSess
     }
 
     public byte[] getBuildLogs(String buildKey, String buildNumber) throws RemoteApiException {
-        String buildResultUrl;
-        try {
-            buildResultUrl = baseUrl + "/download/"
-                    + URLEncoder.encode(buildKey, "UTF-8")
-                    + "/build_logs/" + URLEncoder.encode(buildKey, "UTF-8")
-                    + "-" + URLEncoder.encode(buildNumber, "UTF-8")
-                    + ".log";
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("URLEncoding problem: ", e);
-        }
+		String buildResultUrl;
 
-        try {
+		buildResultUrl = baseUrl + "/download/"
+				+ UrlUtil.encodeUrl(buildKey)
+				+ "/build_logs/" + UrlUtil.encodeUrl(buildKey)
+				+ "-" + UrlUtil.encodeUrl(buildNumber)
+				+ ".log";
+
+		try {
             return retrieveGetResponseAsBytes(buildResultUrl);
         } catch (JDOMException e) {
             throw new RemoteApiException("Server returned malformed response", e);
