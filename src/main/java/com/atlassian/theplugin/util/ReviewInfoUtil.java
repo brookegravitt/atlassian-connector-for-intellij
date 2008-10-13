@@ -19,7 +19,7 @@ package com.atlassian.theplugin.util;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 
 public final class ReviewInfoUtil {
@@ -27,7 +27,7 @@ public final class ReviewInfoUtil {
 	private ReviewInfoUtil() {
 	}
 
-	public static int getNumOfCompletedReviewers(ReviewDataImpl review) {
+	public static int getNumOfCompletedReviewers(ReviewAdapter review) {
 		int numCompleted = 0;
 
 		try {

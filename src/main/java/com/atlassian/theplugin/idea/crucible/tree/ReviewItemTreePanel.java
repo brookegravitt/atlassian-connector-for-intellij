@@ -73,14 +73,14 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
-	private ReviewDataImpl crucibleReview = null;
+	private ReviewAdapter crucibleReview = null;
 	private Project project;
 
-	public synchronized ReviewDataImpl getCrucibleReview() {
+	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
 	}
 
-	public synchronized void setCrucibleReview(ReviewDataImpl crucibleReview) {
+	public synchronized void setCrucibleReview(ReviewAdapter crucibleReview) {
 		this.crucibleReview = crucibleReview;
 	}
 
@@ -165,7 +165,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 	}
 
-	public void startListeningForCredentialChanges(final Project aProject, final ReviewDataImpl aCrucibleReview) {
+	public void startListeningForCredentialChanges(final Project aProject, final ReviewAdapter aCrucibleReview) {
 		setCrucibleReview(aCrucibleReview);
 		this.project = aProject;
 		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
@@ -185,7 +185,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void focusOnFile(final ReviewDataImpl review, final CrucibleFileInfo file) {
+		public void focusOnFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					AtlassianTreeNode node = reviewFilesAndCommentsTree.getModel().locateNode(
@@ -196,10 +196,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		private class SearchGeneralCommentAlgorithm extends NodeSearchAlgorithm {
-			private final ReviewDataImpl review;
+			private final ReviewAdapter review;
 			private final GeneralComment comment;
 
-			public SearchGeneralCommentAlgorithm(final ReviewDataImpl review, final GeneralComment comment) {
+			public SearchGeneralCommentAlgorithm(final ReviewAdapter review, final GeneralComment comment) {
 				this.review = review;
 				this.comment = comment;
 			}
@@ -218,10 +218,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		private final class SearchFileAlgorithm extends NodeSearchAlgorithm {
-			private final ReviewDataImpl review;
+			private final ReviewAdapter review;
 			private final CrucibleFileInfo file;
 
-			private SearchFileAlgorithm(ReviewDataImpl review, CrucibleFileInfo file) {
+			private SearchFileAlgorithm(ReviewAdapter review, CrucibleFileInfo file) {
 				this.review = review;
 				this.file = file;
 			}
@@ -253,11 +253,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		private class SearchVersionedCommentAlgorithm extends NodeSearchAlgorithm {
-			private final ReviewDataImpl review;
+			private final ReviewAdapter review;
 			private final CrucibleFileInfo file;
 			private final VersionedComment parentComment;
 
-			public SearchVersionedCommentAlgorithm(final ReviewDataImpl review, final CrucibleFileInfo file,
+			public SearchVersionedCommentAlgorithm(final ReviewAdapter review, final CrucibleFileInfo file,
 					final VersionedComment parentComment) {
 				this.review = review;
 				this.file = file;
@@ -326,7 +326,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		private void addReplyNodes(
-				final ReviewDataImpl review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
+				final ReviewAdapter review, final AtlassianTreeNode parentNode, final GeneralComment comment) {
 			for (GeneralComment reply : comment.getReplies()) {
 				GeneralCommentTreeNode childNode = new GeneralCommentTreeNode(review, reply, null);
 				addNewNode(parentNode, childNode);
@@ -335,7 +335,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		private void addReplyNodes(
-				final ReviewDataImpl review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
+				final ReviewAdapter review, final CrucibleFileInfo file, final AtlassianTreeNode parentNode,
 				final VersionedComment comment) {
 			for (VersionedComment reply : comment.getReplies()) {
 				VersionedCommentTreeNode childNode = new VersionedCommentTreeNode(review, file, reply,
@@ -346,19 +346,19 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 		}
 
-		private void updateRootNode(ReviewDataImpl review) {
+		private void updateRootNode(ReviewAdapter review) {
 			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode)
 					reviewFilesAndCommentsTree.getModel().locateNode(new SearchChangeSetTitleAlgorithm());
 			node.setReview(review);
 		}
 
-		private void updateGeneralCommentsNode(ReviewDataImpl review) {
+		private void updateGeneralCommentsNode(ReviewAdapter review) {
 			CrucibleGeneralCommentsNode gc = (CrucibleGeneralCommentsNode)
 					reviewFilesAndCommentsTree.getModel().locateNode(new SearchGeneralSectionAlgorithm());
 			gc.setReview(review);
 		}
 
-		private void updateFileNode(ReviewDataImpl review, CrucibleFileInfo file) {
+		private void updateFileNode(ReviewAdapter review, CrucibleFileInfo file) {
 			if (file == null) {
 				return;
 			}
@@ -369,7 +369,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			}
 		}
 
-		public void createdOrEditedGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+		public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 			setCrucibleReview(review);
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -404,7 +404,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void createdOrEditedGeneralCommentReply(final ReviewDataImpl review, final GeneralComment parentComment,
+		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
 				final GeneralComment comment) {
 			setCrucibleReview(review);
 			EventQueue.invokeLater(new Runnable() {
@@ -427,7 +427,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void createdOrEditedVersionedComment(final ReviewDataImpl review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
 			setCrucibleReview(review);
 			EventQueue.invokeLater(new Runnable() {
@@ -471,7 +471,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void createdOrEditedVersionedCommentReply(final ReviewDataImpl review, final CrucibleReviewItemInfo info,
+		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final CrucibleReviewItemInfo info,
 				final VersionedComment parentComment, final VersionedComment comment) {
 			setCrucibleReview(review);
 			final CrucibleFileInfo file = review.getFileByReviewInfo(info);
@@ -536,7 +536,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 //		}
 
 		@Override
-		public void removedComment(final ReviewDataImpl review, final Comment comment) {
+		public void removedComment(final ReviewAdapter review, final Comment comment) {
 			setCrucibleReview(review);
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -561,8 +561,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 					});
 
 					if (comment instanceof VersionedComment) {
-						for (CrucibleFileInfo file :
-								CrucibleFileInfoManager.getInstance().getFiles(review.getInnerReviewObject())) {
+						for (CrucibleFileInfo file
+								: CrucibleFileInfoManager.getInstance().getFiles(review.getInnerReviewObject())) {
 							updateFileNode(review, file);
 						}
 					}
@@ -576,7 +576,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void publishedGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+		public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 			setCrucibleReview(review);
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -589,7 +589,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void publishedVersionedComment(final ReviewDataImpl review, final CrucibleReviewItemInfo info,
+		public void publishedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo info,
 				final VersionedComment comment) {
 			setCrucibleReview(review);
 			final CrucibleFileInfo file = review.getFileByReviewInfo(info);
@@ -607,7 +607,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void focusOnReview(final ReviewDataImpl review) {
+		public void focusOnReview(final ReviewAdapter review) {
 			setCrucibleReview(review);
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -629,7 +629,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 		@Override
-		public void showReview(final ReviewDataImpl reviewItem) {
+		public void showReview(final ReviewAdapter reviewItem) {
 
 			setCrucibleReview(reviewItem);
 
@@ -639,7 +639,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
 						reviewItem.getServer(), reviewItem.getPermId());
 
-//				ReviewDataImpl extendedReview = new ReviewDataImpl(reviewItem, reviewItem.getServer());
+//				ReviewAdapter extendedReview = new ReviewAdapter(reviewItem, reviewItem.getServer());
 //
 //				extendedReview.setGeneralComments(
 //						CrucibleServerFacadeImpl.getInstance().getGeneralComments(
@@ -670,7 +670,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 
 
-		private String createGeneralInfoText(final ReviewDataImpl reviewItem) {
+		private String createGeneralInfoText(final ReviewAdapter reviewItem) {
 			final StringBuilder buffer = new StringBuilder();
 			buffer.append("<html>");
 			buffer.append("<body>");

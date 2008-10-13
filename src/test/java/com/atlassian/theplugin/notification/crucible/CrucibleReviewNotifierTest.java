@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.intellij.openapi.components.BaseComponent;
@@ -256,7 +256,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		};
 	}
 
-	private List<ReviewDataImpl> prepareReviewData(State state) throws ValueNotYetInitialized {
+	private List<ReviewAdapter> prepareReviewData(State state) throws ValueNotYetInitialized {
 		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 
 		PermIdBean reviewId1 = new PermIdBean("CR-1");
@@ -270,7 +270,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		PermIdBean newVCommentId1 = new PermIdBean("CMT:22");
 
 
-		List<ReviewDataImpl> reviews = new ArrayList<ReviewDataImpl>();
+		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
 
 		Reviewer reviewer1 = prepareReviewer("bob", "Bob", false);
 		Reviewer reviewer2 = prepareReviewer("alice", "Alice", false);
@@ -307,15 +307,15 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		files2.add(file2);
 		mgr.setFiles(review2, files2);
 
-		reviews.add(new ReviewDataImpl(review1, null));
-		reviews.add(new ReviewDataImpl(review2, null));
+		reviews.add(new ReviewAdapter(review1, null));
+		reviews.add(new ReviewAdapter(review2, null));
 
 		return reviews;
 	}
 
 	public void testNewReviews() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> emptyReviews = new ArrayList<ReviewDataImpl>();
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> emptyReviews = new ArrayList<ReviewAdapter>();
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
@@ -335,8 +335,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testResetStateReviews() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> emptyReviews = new ArrayList<ReviewDataImpl>();
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> emptyReviews = new ArrayList<ReviewAdapter>();
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
@@ -365,7 +365,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testStatusChange() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 		ReviewNotificationBean bean = new ReviewNotificationBean();
@@ -385,7 +385,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testReviewerStatus() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
@@ -424,7 +424,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testNewItem() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
@@ -501,7 +501,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testNewGeneralComment() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
@@ -573,7 +573,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void xtestNewVersionedComment() throws ValueNotYetInitialized {
-		List<ReviewDataImpl> reviews = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
 		ReviewNotificationBean bean = new ReviewNotificationBean();
 
 		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();

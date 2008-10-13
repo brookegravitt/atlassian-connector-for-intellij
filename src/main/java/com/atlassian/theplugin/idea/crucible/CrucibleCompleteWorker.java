@@ -20,11 +20,11 @@ import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleCompleteWorker {
-    private ReviewDataImpl reviewInfo;
+    private ReviewAdapter reviewInfo;
     private boolean complete;
 	private Project project;
 
-	public CrucibleCompleteWorker(final Project project, ReviewDataImpl reviewInfo, boolean complete) {
+	public CrucibleCompleteWorker(final Project project, ReviewAdapter reviewInfo, boolean complete) {
         this.reviewInfo = reviewInfo;
         this.complete = complete;
 		this.project = project;

@@ -24,7 +24,7 @@ import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToUpdate;
@@ -80,7 +80,7 @@ public class EditAction extends AbstractCommentAction {
 		}
 	}
 
-	private void editGeneralComment(final Project project, final ReviewDataImpl review, final GeneralComment comment) {
+	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment) {
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
@@ -93,7 +93,7 @@ public class EditAction extends AbstractCommentAction {
 		}
 	}
 
-	private void editVersionedComment(Project project, ReviewDataImpl review, CrucibleFileInfo file, VersionedComment comment) {
+	private void editVersionedComment(Project project, ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment) {
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();

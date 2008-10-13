@@ -26,9 +26,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class CrucibleJoinReviewWorker implements Runnable {
-	private ReviewDataImpl reviewInfo;
+	private ReviewAdapter reviewInfo;
 
-	public CrucibleJoinReviewWorker(ReviewDataImpl reviewInfo) {
+	public CrucibleJoinReviewWorker(ReviewAdapter reviewInfo) {
 		this.reviewInfo = reviewInfo;
 	}
 

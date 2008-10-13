@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 public abstract class CommentTreeNode extends FileNode {
 	private boolean editable = false;
-	protected ReviewDataImpl review;
+	protected ReviewAdapter review;
 
 	protected CommentTreeNode(AtlassianClickAction action) {
 		super("comment", action);
@@ -36,7 +36,7 @@ public abstract class CommentTreeNode extends FileNode {
 		return editable;
 	}
 
-	public ReviewDataImpl getReview() {
+	public ReviewAdapter getReview() {
 		return review;
 	}
 

@@ -28,7 +28,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
@@ -87,7 +87,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel;
 	}
 
-	public void showCrucibleReviewWindow(final ReviewDataImpl crucibleReview) {
+	public void showCrucibleReviewWindow(final ReviewAdapter crucibleReview) {
 
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 
@@ -181,7 +181,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			eventBroker = IdeaHelper.getReviewActionEventBroker(this.project);
 		}
 
-		public void commentsDownloaded(ReviewDataImpl review) {
+		public void commentsDownloaded(ReviewAdapter review) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					progressAnimation.stopProgressAnimation();
@@ -190,7 +190,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void focusOnLineCommentEvent(final ReviewDataImpl review, final CrucibleFileInfo file,
+		public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
 				final VersionedComment comment, final boolean openIfClosed) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -216,7 +216,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void showFile(final ReviewDataImpl review, final CrucibleFileInfo file) {
+		public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 			ApplicationManager.getApplication().runReadAction(new Runnable() {
 				public void run() {
 					CrucibleHelper.showVirtualFileWithComments(project, review, file);
@@ -231,7 +231,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddLineComment(final ReviewDataImpl review, final CrucibleFileInfo file, final Editor editor,
+		public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file, final Editor editor,
 				final int start, final int end) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -254,7 +254,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToPublishGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+		public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 			try {
 				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
 				// @todo - dirty hack - probably remote api should return new comment info
@@ -270,7 +270,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToPublishVersionedComment(final ReviewDataImpl review, final CrucibleFileInfo file,
+		public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 				final VersionedComment comment) {
 			try {
 				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
@@ -288,7 +288,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 
 		@Override
-		public void aboutToAddGeneralComment(final ReviewDataImpl review, final GeneralComment newComment) {
+		public void aboutToAddGeneralComment(final ReviewAdapter review, final GeneralComment newComment) {
 			try {
 				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(), newComment);
 				setCommentAuthor(review.getServer(), comment);
@@ -301,7 +301,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddGeneralCommentReply(ReviewDataImpl review, GeneralComment parentComment,
+		public void aboutToAddGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
 				GeneralComment newComment) {
 			try {
 				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
@@ -316,7 +316,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddVersionedComment(ReviewDataImpl review, CrucibleFileInfo file, VersionedComment comment) {
+		public void aboutToAddVersionedComment(ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
 						file.getItemInfo().getId(), comment);
@@ -338,7 +338,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddVersionedCommentReply(ReviewDataImpl review, CrucibleFileInfo file,
+		public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
 				VersionedComment parentComment, VersionedComment comment) {
 
 			try {
@@ -355,7 +355,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToUpdateVersionedComment(final ReviewDataImpl review, final CrucibleFileInfo file,
+		public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 				final VersionedComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
@@ -369,7 +369,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToUpdateGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+		public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
 				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
@@ -382,7 +382,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToRemoveComment(final ReviewDataImpl review, final Comment comment) {
+		public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
 			try {
 				facade.removeComment(review.getServer(), review.getPermId(), comment);
 				eventBroker.trigger(new CommentRemoved(this, review, comment));
