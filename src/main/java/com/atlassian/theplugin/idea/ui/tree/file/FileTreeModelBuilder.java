@@ -20,8 +20,8 @@ import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -72,7 +72,7 @@ public final class FileTreeModelBuilder {
 	}
 
 
-	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final Review review,
+	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final ReviewDataImpl review,
 			List<CrucibleFileInfo> files) {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review,
 				new CrucibleChangeSetClickAction(project, review)));
@@ -91,7 +91,7 @@ public final class FileTreeModelBuilder {
 		return model;
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final Review review,
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final ReviewDataImpl review,
 			final List<CrucibleFileInfo> files) {
 		FileNode root = new CrucibleChangeSetTitleNode(review, new CrucibleChangeSetClickAction(project, review));
 
@@ -116,7 +116,7 @@ public final class FileTreeModelBuilder {
 		return model;
 	}
 
-	private static void addStatementOfObjectives(final Review review, final AtlassianTreeModel model) {
+	private static void addStatementOfObjectives(final ReviewDataImpl review, final AtlassianTreeModel model) {
 		if (review.getDescription() != null && review.getDescription().length() != 0) {
 			model.insertNode(new CrucibleStatementOfObjectivesNode(
 					review.getDescription(), AtlassianClickAction.EMPTY_ACTION), model.getRoot());
@@ -124,7 +124,7 @@ public final class FileTreeModelBuilder {
 	}
 
 	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
-										 Review review, CrucibleFileInfo file, Project project) {
+										 ReviewDataImpl review, CrucibleFileInfo file, Project project) {
 		List<VersionedComment> fileComments = getFileVersionedComments(file);
 		CrucibleVersionedCommentClickAction action = new CrucibleVersionedCommentClickAction(project);
 		for (VersionedComment c : fileComments) {

@@ -22,11 +22,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractCompleteReviewAction extends AnAction {
-    private Review rd;
+    private ReviewDataImpl rd;
 
     protected abstract Action getRequestedAction();
 

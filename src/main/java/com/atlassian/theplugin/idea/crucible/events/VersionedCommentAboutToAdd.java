@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
@@ -29,11 +29,11 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
  * To change this template use File | Settings | File Templates.
  */
 public class VersionedCommentAboutToAdd extends CrucibleEvent {
-	private Review review;
+	private ReviewDataImpl review;
 	private CrucibleFileInfo file;
 	private VersionedCommentBean newComment;
 
-	public VersionedCommentAboutToAdd(CrucibleReviewActionListener caller, Review review,
+	public VersionedCommentAboutToAdd(CrucibleReviewActionListener caller, ReviewDataImpl review,
 			CrucibleFileInfo file, VersionedCommentBean newComment) {
 		super(caller);
 		this.review = review;

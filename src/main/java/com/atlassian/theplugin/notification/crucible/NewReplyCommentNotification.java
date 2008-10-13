@@ -17,13 +17,13 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 
 public class NewReplyCommentNotification extends AbstractReviewNotification {
     private Comment comment;
     private Comment reply;
 
-    public NewReplyCommentNotification(Review review, Comment comment, Comment reply) {
+    public NewReplyCommentNotification(ReviewDataImpl review, Comment comment, Comment reply) {
         super(review);
         this.comment = comment;
         this.reply = reply;

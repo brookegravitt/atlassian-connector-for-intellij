@@ -60,7 +60,7 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
-		TableItemSelectedListener<Review>, ConfigurationCredentialsListener {
+		TableItemSelectedListener<ReviewDataImpl>, ConfigurationCredentialsListener {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
@@ -87,7 +87,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
 
-	private Review selectedItem;
+	private ReviewDataImpl selectedItem;
 
 	private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
 	private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
@@ -314,7 +314,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> reviews, Map<String,
 			ReviewNotificationBean> customFilterReviews) {
 
-		Set<Review> uniqueReviews = new HashSet<Review>();
+		Set<ReviewDataImpl> uniqueReviews = new HashSet<ReviewDataImpl>();
 
 		if (tables.isEmpty()) {
 			switchToCrucible16Filter();
@@ -323,7 +323,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		String errorString = null;
 		for (PredefinedFilter predefinedFilter : reviews.keySet()) {
 			if (reviews.get(predefinedFilter).getException() == null) {
-				List<Review> reviewList = reviews.get(predefinedFilter).getReviews();
+				List<ReviewDataImpl> reviewList = reviews.get(predefinedFilter).getReviews();
 				uniqueReviews.addAll(reviewList);
 				if (reviewList != null) {
 					CollapsibleTable table = tables.get(predefinedFilter);
@@ -344,7 +344,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		for (String filterName : customFilterReviews.keySet()) {
 			if (customFilterReviews.get(filterName).getException() == null) {
-				List<Review> reviewList = customFilterReviews.get(filterName).getReviews();
+				List<ReviewDataImpl> reviewList = customFilterReviews.get(filterName).getReviews();
 				uniqueReviews.addAll(reviewList);
 				if (reviewList != null) {
 					CollapsibleTable table = customTables.get(filterName);
@@ -376,7 +376,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		uniqueReviews.clear();
 	}
 
-	public void itemSelected(AtlassianTableView<Review> table) {
+	public void itemSelected(AtlassianTableView<ReviewDataImpl> table) {
 		if (table.getSelectedObject() != null) {
 			selectedItem = table.getSelectedObject();
 
@@ -427,7 +427,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 		tablePane.setViewportView(component);
 	}
 
-	public Review getSelectedReview() {
+	public ReviewDataImpl getSelectedReview() {
 		if (selectedItem != null) {
 			return this.selectedItem;
 		}
