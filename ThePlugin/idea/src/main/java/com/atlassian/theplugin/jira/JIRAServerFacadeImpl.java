@@ -32,10 +32,9 @@ import java.util.WeakHashMap;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private JIRAServerFacadeImpl() {
-
 	}
 
-	public static JIRAServerFacade getInstance() {
+	public static synchronized JIRAServerFacade getInstance() {
 		if (instance == null) {
 			instance = new JIRAServerFacadeImpl();
 		}
