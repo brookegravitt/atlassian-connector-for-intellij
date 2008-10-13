@@ -21,11 +21,11 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleChangeStateWorker {
-	private Review review;
+	private ReviewDataImpl review;
 	private Action action;
 	private Project project;
 
-	public CrucibleChangeStateWorker(Project project, Review reviewInfo, Action action) {
+	public CrucibleChangeStateWorker(Project project, ReviewDataImpl reviewInfo, Action action) {
 		this.review = reviewInfo;
 		this.action = action;
 		this.project = project;

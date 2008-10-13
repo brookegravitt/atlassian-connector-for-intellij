@@ -46,7 +46,7 @@ public class CommentEditForm extends DialogWrapper {
 	private JPanel comboPanel;
 	private JPanel toolPanel;
 
-	private final Review review;
+	private final ReviewDataImpl review;
 	private final CommentBean comment;
 
 	private boolean saveAsDraft = false;
@@ -55,7 +55,8 @@ public class CommentEditForm extends DialogWrapper {
 
 	private Map<String, JComboBox> combos = new HashMap<String, JComboBox>();
 
-	public CommentEditForm(Project project, final Review review, final CommentBean comment, List<CustomFieldDef> metrics) {
+	public CommentEditForm(Project project, final ReviewDataImpl review, final CommentBean comment,
+			List<CustomFieldDef> metrics) {
 		super(project, false);
 
 		this.review = review;

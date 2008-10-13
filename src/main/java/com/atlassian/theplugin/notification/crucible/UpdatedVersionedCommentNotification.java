@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 
 public class UpdatedVersionedCommentNotification extends AbstractReviewNotification {
 
 	private final VersionedComment comment;
 
-	public UpdatedVersionedCommentNotification(Review review, VersionedComment comment) {
+	public UpdatedVersionedCommentNotification(ReviewDataImpl review, VersionedComment comment) {
 		super(review);
 		this.comment = comment;
 	}
