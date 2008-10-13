@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.action.jira;
 
-import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

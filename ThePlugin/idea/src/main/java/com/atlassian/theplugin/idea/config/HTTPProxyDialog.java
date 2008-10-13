@@ -16,16 +16,16 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.util.net.HTTPProxySettingsPanel;
 import com.intellij.openapi.ui.Messages;
-import com.jgoodies.forms.layout.FormLayout;
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.util.net.HTTPProxySettingsPanel;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class HTTPProxyDialog extends JDialog {
     private JPanel contentPane;

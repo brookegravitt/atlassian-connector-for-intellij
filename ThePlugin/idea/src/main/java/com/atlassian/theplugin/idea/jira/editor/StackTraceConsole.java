@@ -17,17 +17,17 @@
 package com.atlassian.theplugin.idea.jira.editor;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.filters.TextConsoleBuilder;
-import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
-import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.execution.ui.ConsoleViewContentType;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.project.Project;
-import com.intellij.ui.content.Content;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
+import com.intellij.ui.content.Content;
 
 import java.util.HashMap;
 

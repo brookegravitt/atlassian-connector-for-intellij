@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.jira.table;
 
-import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
 
 import javax.swing.*;
 import java.awt.*;

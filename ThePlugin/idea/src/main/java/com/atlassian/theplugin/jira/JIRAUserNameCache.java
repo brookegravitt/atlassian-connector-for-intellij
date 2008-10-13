@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAUserBean;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class JIRAUserNameCache {
 

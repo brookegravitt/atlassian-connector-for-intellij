@@ -19,10 +19,10 @@ package com.atlassian.theplugin.idea.config.serverconfig.util;
 
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 
-import java.util.Collection;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class to provide new server names

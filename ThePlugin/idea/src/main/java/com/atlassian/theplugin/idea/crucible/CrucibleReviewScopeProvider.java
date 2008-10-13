@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.search.scope.packageSet.CustomScopesProvider;
 import com.intellij.psi.search.scope.packageSet.NamedScope;
 import com.intellij.psi.search.scope.packageSet.PackageSet;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 
 import java.util.*;

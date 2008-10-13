@@ -43,11 +43,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 @State(name = "atlassian-ide-plugin",
 		storages = { @Storage(id = "atlassian-ide-plugin-id", file = "$APP_CONFIG$/atlassian-ide-plugin.app.xml") })

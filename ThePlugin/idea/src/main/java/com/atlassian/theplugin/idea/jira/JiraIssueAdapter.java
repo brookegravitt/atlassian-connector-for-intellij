@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAAction;
 
 import javax.management.timer.Timer;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 public final class JiraIssueAdapter {
 	private JIRAIssue issue;

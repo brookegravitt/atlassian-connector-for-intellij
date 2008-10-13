@@ -16,15 +16,16 @@
 
 package com.atlassian.theplugin.jira.api.soap;
 
-import com.atlassian.theplugin.jira.JIRAServer;
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.api.soap.axis.*;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
+import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.intellij.openapi.diagnostic.Logger;
+import org.apache.axis.AxisProperties;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -33,8 +34,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import org.apache.axis.AxisProperties;
 
 public class JIRASessionImpl implements JIRASession {
 

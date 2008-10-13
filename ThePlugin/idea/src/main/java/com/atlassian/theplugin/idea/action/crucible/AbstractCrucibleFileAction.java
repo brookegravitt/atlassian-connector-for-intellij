@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CommentTreePanel;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractCrucibleFileAction extends ReviewTreeAction {
 	@Override

@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.ui.tree;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class AtlassianTreeModel extends DefaultTreeModel {
 

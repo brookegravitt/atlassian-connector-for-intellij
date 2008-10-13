@@ -17,11 +17,7 @@
 package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;

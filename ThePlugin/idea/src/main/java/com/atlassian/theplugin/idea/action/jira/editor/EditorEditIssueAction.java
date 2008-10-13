@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.jira.editor;
 
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.ide.BrowserUtil;
 import com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class EditorEditIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {

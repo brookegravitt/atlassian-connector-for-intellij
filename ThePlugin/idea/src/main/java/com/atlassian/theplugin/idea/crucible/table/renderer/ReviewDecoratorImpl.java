@@ -18,9 +18,8 @@ package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.util.ColorToHtml;
 import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.util.ui.UIUtil;
 
 import java.util.List;

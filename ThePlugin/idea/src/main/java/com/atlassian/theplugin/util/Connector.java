@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 
 public abstract class Connector {
 

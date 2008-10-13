@@ -19,8 +19,8 @@ package com.atlassian.theplugin.jira.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 public interface JIRASession {
 	void login(String userName, String password) throws RemoteApiLoginException;

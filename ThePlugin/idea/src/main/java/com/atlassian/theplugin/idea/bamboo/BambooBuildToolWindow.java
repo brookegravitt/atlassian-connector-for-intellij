@@ -53,12 +53,12 @@ import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.*;
 
 public class BambooBuildToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Build";
