@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -41,10 +41,10 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 	private static final String GENERAL_COMMENTS_SECTION = "General Comments";
 
 	private TreeCellRenderer myRenderer;
-	private ReviewDataImpl review;
+	private ReviewAdapter review;
 
 
-	public GeneralSectionNode(ReviewDataImpl review, AtlassianClickAction action) {
+	public GeneralSectionNode(ReviewAdapter review, AtlassianClickAction action) {
 		super(action);
 		this.review = review;
 		initRenderer();
@@ -72,7 +72,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		return myRenderer;
 	}
 
-	public ReviewDataImpl getReview() {
+	public ReviewAdapter getReview() {
 		return review;
 	}
 

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 
 public class ReviewInfoCellRenderer extends ReviewCellRenderer {
@@ -25,7 +25,7 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 	private static final int MAX_LINE_LENGTH = 50;
 
-	private String buildTolltip(ReviewDataImpl review) {
+	private String buildTolltip(ReviewAdapter review) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
@@ -92,11 +92,11 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 	}
 
 
-	protected String getCellText(ReviewDataImpl review) {
+	protected String getCellText(ReviewAdapter review) {
 		return review.getName();
 	}
 
-	protected String getCellToolTipText(ReviewDataImpl review) {
+	protected String getCellToolTipText(ReviewAdapter review) {
 		return buildTolltip(review);
 	}
 }

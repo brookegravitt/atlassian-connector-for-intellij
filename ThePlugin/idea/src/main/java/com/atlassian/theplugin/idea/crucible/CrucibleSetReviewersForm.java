@@ -64,12 +64,12 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 	private Project project;
 	private CrucibleServerFacade crucibleServerFacade;
-	private ReviewDataImpl reviewData;
+	private ReviewAdapter reviewData;
 	private List<Reviewer> actualReviewers;
 
 
 	public CrucibleSetReviewersForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			ReviewDataImpl reviewData) {
+			ReviewAdapter reviewData) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;

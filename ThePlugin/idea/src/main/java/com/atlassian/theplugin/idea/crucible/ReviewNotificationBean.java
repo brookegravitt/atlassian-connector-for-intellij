@@ -19,17 +19,17 @@ package com.atlassian.theplugin.idea.crucible;
 import java.util.List;
 
 public class ReviewNotificationBean {
-	private List<ReviewDataImpl> reviews;
+	private List<ReviewAdapter> reviews;
 	private Exception exception;
 
 	public ReviewNotificationBean() {
 	}
 
-	public List<ReviewDataImpl> getReviews() {
+	public List<ReviewAdapter> getReviews() {
 		return reviews;
 	}
 
-	public void setReviews(final List<ReviewDataImpl> reviews) {
+	public void setReviews(final List<ReviewAdapter> reviews) {
 		this.reviews = reviews;
 	}
 

@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.AddLineComment;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -51,7 +51,7 @@ public class CommentAction extends AnAction {
 			if (end < start || start <= 0 || end <= 0) {
 				visible = false;
 			} else {
-				ReviewDataImpl review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+				ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 				CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 				if (review == null || reviewItem == null) {
 					visible = false;
@@ -89,7 +89,7 @@ public class CommentAction extends AnAction {
 			++end;
 		}
 
-		ReviewDataImpl review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+		ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
 		AddLineComment addComment = new AddLineComment(CrucibleReviewActionListener.ANONYMOUS,

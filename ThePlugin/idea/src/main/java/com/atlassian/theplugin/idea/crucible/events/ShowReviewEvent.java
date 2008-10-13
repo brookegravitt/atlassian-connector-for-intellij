@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
@@ -27,10 +27,10 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 * To change this template use File | Settings | File Templates.
 */
 public class ShowReviewEvent extends CrucibleEvent {
-	private ReviewDataImpl reviewInfo;
+	private ReviewAdapter reviewInfo;
 
 
-	public ShowReviewEvent(CrucibleReviewActionListener caller, ReviewDataImpl reviewInfo) {
+	public ShowReviewEvent(CrucibleReviewActionListener caller, ReviewAdapter reviewInfo) {
 		super(caller);
 		this.reviewInfo = reviewInfo;		
 	}

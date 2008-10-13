@@ -23,7 +23,7 @@ import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
@@ -81,7 +81,7 @@ public class AddAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
-	private boolean checkIfAuthorized(final ReviewDataImpl review) {
+	private boolean checkIfAuthorized(final ReviewAdapter review) {
 		if (review == null) {
 			return false;
 		}
@@ -96,7 +96,7 @@ public class AddAction extends AbstractCommentAction {
 
 	}
 
-	private ReviewDataImpl getReview(final AtlassianTreeNode node) {
+	private ReviewAdapter getReview(final AtlassianTreeNode node) {
 		if (node instanceof CommentTreeNode) {
 			final CommentTreeNode cNode = (CommentTreeNode) node;
 			return cNode.getReview();
@@ -144,7 +144,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void setCommentAuthor(ReviewDataImpl review, CommentBean comment) {
+	private void setCommentAuthor(ReviewAdapter review, CommentBean comment) {
 		CrucibleServerCfg server = review.getServer();
 		User userName = CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false);
 		if (userName != null) {
@@ -155,7 +155,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addCommentToFile(Project project, ReviewDataImpl review, CrucibleFileInfo file) {
+	private void addCommentToFile(Project project, ReviewAdapter review, CrucibleFileInfo file) {
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -174,7 +174,7 @@ public class AddAction extends AbstractCommentAction {
 
 	}
 
-	private void addReplyToVersionedComment(Project project, ReviewDataImpl review,
+	private void addReplyToVersionedComment(Project project, ReviewAdapter review,
 			CrucibleFileInfo file, VersionedComment comment) {
 		VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
@@ -200,7 +200,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addGeneralComment(Project project, ReviewDataImpl review) {
+	private void addGeneralComment(Project project, ReviewAdapter review) {
 		GeneralCommentBean newComment = new GeneralCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -216,7 +216,7 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addReplyToGeneralComment(Project project, ReviewDataImpl review, GeneralComment comment) {
+	private void addReplyToGeneralComment(Project project, ReviewAdapter review, GeneralComment comment) {
 		GeneralComment parentComment = comment;
 		GeneralCommentBean newComment = new GeneralCommentBean();
 		newComment.setReply(true);

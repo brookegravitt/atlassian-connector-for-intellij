@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -40,11 +40,11 @@ public final class CommentPanelBuilder {
 		// this is utility class
 	}
 
-	public static JPanel createEditPanelOfGeneralComment(ReviewDataImpl review, GeneralComment comment) {
+	public static JPanel createEditPanelOfGeneralComment(ReviewAdapter review, GeneralComment comment) {
 		return createViewPanelOfGeneralComment(review, comment, false); // no editing temporarily
 	}
 
-	public static JPanel createViewPanelOfGeneralComment(final ReviewDataImpl review, final GeneralComment comment,
+	public static JPanel createViewPanelOfGeneralComment(final ReviewAdapter review, final GeneralComment comment,
 														 final boolean isSelected) {
 		return new CommentPanel(review, null, comment) {
 			@Override
@@ -67,12 +67,12 @@ public final class CommentPanelBuilder {
 		};
 	}
 
-	public static JPanel createEditPanelOfVersionedComment(ReviewDataImpl review, CrucibleFileInfo file,
+	public static JPanel createEditPanelOfVersionedComment(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment comment) {
 		return createViewPanelOfVersionedComment(review, file, comment, false);
 	}
 
-	public static JPanel createViewPanelOfVersionedComment(final ReviewDataImpl review, CrucibleFileInfo file,
+	public static JPanel createViewPanelOfVersionedComment(final ReviewAdapter review, CrucibleFileInfo file,
 			final VersionedComment comment, final boolean isSelected) {
 		return new CommentPanel(review, file, comment) {
 			@Override
@@ -103,7 +103,7 @@ public final class CommentPanelBuilder {
 
 	private abstract static class CommentPanel extends JPanel {
 		private Comment comment;
-		private ReviewDataImpl review;
+		private ReviewAdapter review;
 		private CrucibleFileInfo file;
 
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
@@ -117,7 +117,7 @@ public final class CommentPanelBuilder {
 
 		private static final float MINIMUM_FONT_SIZE = 3;
 
-		private CommentPanel(ReviewDataImpl review, CrucibleFileInfo file, Comment comment) {
+		private CommentPanel(ReviewAdapter review, CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 

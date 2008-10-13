@@ -51,7 +51,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));		
 	}
 
-	private ReviewDataImpl getReviewAdapter(final String projectKey, final String key) {
+	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
 		Review review = new Review() {
 
 			public List<Reviewer> getReviewers() {
@@ -176,6 +176,6 @@ public class ReviewKeyComparatorTest extends TestCase {
 			}
 		};
 
-		return new ReviewDataImpl(review, null);
+		return new ReviewAdapter(review, null);
 	}
 }

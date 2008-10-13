@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleJoinReviewWorker;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
@@ -12,7 +12,7 @@ import com.intellij.openapi.application.ModalityState;
 
 
 public class JoinReviewAction extends AnAction {
-	private ReviewDataImpl rd;
+	private ReviewAdapter rd;
 
 	public void actionPerformed(final AnActionEvent event) {
 		new Thread(new Runnable() {

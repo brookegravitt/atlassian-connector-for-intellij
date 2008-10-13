@@ -60,13 +60,13 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private JCheckBox publishDraftsCheckBox;
 	private JPanel publishPanel;
 
-	private ReviewDataImpl review;
+	private ReviewAdapter review;
 	private CrucibleServerFacade crucibleServerFacade;
 	private Action action;
 	private DescriptionPanel descriptionPanel;
 	private Project project;
 
-	protected CrucibleChangeReviewStateForm(Project project, ReviewDataImpl review, Action action) {
+	protected CrucibleChangeReviewStateForm(Project project, ReviewAdapter review, Action action) {
 		super(false);
 		this.review = review;
 		this.action = action;
@@ -144,7 +144,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				if (reviewInfo == null) {
 					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
 				} else {
-					final ReviewDataImpl finalReviewInfo = new ReviewDataImpl(reviewInfo, review.getServer());
+					final ReviewAdapter finalReviewInfo = new ReviewAdapter(reviewInfo, review.getServer());
 					updateReviewInfo(finalReviewInfo);
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
@@ -158,7 +158,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		ProgressManager.getInstance().run(fillTask);
 	}
 
-	public void updateReviewInfo(ReviewDataImpl reviewInfo) {
+	public void updateReviewInfo(ReviewAdapter reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
 		if (Action.CLOSE.equals(action) || !"".equals(reviewInfo.getSummary())) {
 			boolean isEditable = Action.CLOSE.equals(action);
@@ -293,7 +293,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	}
 
 	private class ReviewLabel extends HyperlinkLabel {
-		ReviewLabel(final ReviewDataImpl review) {
+		ReviewLabel(final ReviewAdapter review) {
 			super(review.getPermId().getId());
 			addListener(review.getReviewUrl());
 		}
@@ -308,7 +308,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	}
 
 	private class DetailsPanel extends JPanel {
-		public DetailsPanel(final ReviewDataImpl review) {
+		public DetailsPanel(final ReviewAdapter review) {
 			JPanel body = new JPanel();
 
 			setLayout(new GridBagLayout());
@@ -408,7 +408,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	}
 
 	private class CommentsPanel extends JPanel {
-		public CommentsPanel(final ReviewDataImpl review) {
+		public CommentsPanel(final ReviewAdapter review) {
 			JPanel body = new JPanel();
 
 			setLayout(new GridBagLayout());
@@ -541,7 +541,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private class DescriptionPanel extends JPanel {
 		private final JEditorPane body = new JEditorPane();
 
-		public DescriptionPanel(final ReviewDataImpl review, boolean isEditable) {
+		public DescriptionPanel(final ReviewAdapter review, boolean isEditable) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 

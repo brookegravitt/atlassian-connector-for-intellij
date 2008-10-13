@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -40,10 +40,10 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class CrucibleChangeSetTitleNode extends FileNode {
-	private ReviewDataImpl review;
+	private ReviewAdapter review;
 	private static final TreeCellRenderer MY_RENDERER = new CrucibleChangeSetTitleNodeRenderer();
 
-	public CrucibleChangeSetTitleNode(ReviewDataImpl review, AtlassianClickAction action) {
+	public CrucibleChangeSetTitleNode(ReviewAdapter review, AtlassianClickAction action) {
 		super(review.getName(), action);
 		this.review = review;
 	}
@@ -58,11 +58,11 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 		return MY_RENDERER;
 	}
 
-	public ReviewDataImpl getReview() {
+	public ReviewAdapter getReview() {
 		return review;
 	}
 
-	public void setReview(ReviewDataImpl review) {
+	public void setReview(ReviewAdapter review) {
 		this.review = review;
 	}
 
