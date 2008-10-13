@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.openapi.editor.Editor;
 
 /**
@@ -36,106 +36,106 @@ public class CrucibleReviewActionListener {
 	 *
 	 * @param reviewData
 	 */
-	public void showReview(ReviewDataImpl reviewData) {
+	public void showReview(ReviewAdapter reviewData) {
 	}
 
-	public void focusOnGeneralComments(ReviewDataImpl review) {
+	public void focusOnGeneralComments(ReviewAdapter review) {
 	}
 
-	public void focusOnFileComments(ReviewDataImpl review, CrucibleFileInfo file) {
+	public void focusOnFileComments(ReviewAdapter review, CrucibleFileInfo file) {
 	}
 
-	public void showFile(ReviewDataImpl review, CrucibleFileInfo file) {
+	public void showFile(ReviewAdapter review, CrucibleFileInfo file) {
 	}
 
 	public void showDiff(CrucibleFileInfo file) {
 	}
 
-	public void aboutToAddLineComment(ReviewDataImpl review, CrucibleFileInfo file, Editor editor, int start, int end) {
+	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, Editor editor, int start, int end) {
 	}
 
-	public void aboutToAddVersionedCommentReply(ReviewDataImpl review, CrucibleFileInfo file,
+	public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment parentComment, VersionedComment newComment) {
 	}
 
-	public void createdOrEditedVersionedCommentReply(ReviewDataImpl review, CrucibleReviewItemInfo file,
+	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, CrucibleReviewItemInfo file,
 			VersionedComment parentComment, VersionedComment comment) {
 	}
 
-	public void aboutToAddGeneralCommentReply(ReviewDataImpl review,
+	public void aboutToAddGeneralCommentReply(ReviewAdapter review,
 			GeneralComment parentComment,
 			GeneralComment newComment) {
 	}
 
-	public void createdOrEditedGeneralCommentReply(ReviewDataImpl review, GeneralComment parentComment,
+	public void createdOrEditedGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
 			GeneralComment comment) {
 	}
 
-	public void aboutToAddGeneralComment(ReviewDataImpl review, GeneralComment newComment) {
+	public void aboutToAddGeneralComment(ReviewAdapter review, GeneralComment newComment) {
 	}
 
-	public void createdOrEditedGeneralComment(ReviewDataImpl review, GeneralComment comment) {
+	public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
 	}
 
-	public void aboutToAddVersionedComment(ReviewDataImpl review,
+	public void aboutToAddVersionedComment(ReviewAdapter review,
 			CrucibleFileInfo file,
 			VersionedComment comment) {
 	}
 
-	public void createdOrEditedVersionedComment(ReviewDataImpl review,
+	public void createdOrEditedVersionedComment(ReviewAdapter review,
 			CrucibleReviewItemInfo file,
 			VersionedComment comment) {
 	}
 
-	public void aboutToUpdateVersionedComment(final ReviewDataImpl review, final CrucibleFileInfo file,
+	public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 	}
 
-	public void aboutToUpdateGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+	public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
-	public void updatedVersionedComment(final ReviewDataImpl review,
+	public void updatedVersionedComment(final ReviewAdapter review,
 			final CrucibleReviewItemInfo file,
 			final VersionedComment comment) {
 	}
 
-	public void updatedGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+	public void updatedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
-	public void aboutToRemoveComment(final ReviewDataImpl review, final Comment comment) {
+	public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
 	}
 
-	public void removedComment(final ReviewDataImpl review, final Comment comment) {
+	public void removedComment(final ReviewAdapter review, final Comment comment) {
 	}
 
-	public void focusOnFile(final ReviewDataImpl review, final CrucibleFileInfo file) {
+	public void focusOnFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 	}
 
-	public void focusOnReview(final ReviewDataImpl review) {
+	public void focusOnReview(final ReviewAdapter review) {
 	}
 
-	public void focusOnVersionedCommentEvent(final ReviewDataImpl review, final CrucibleFileInfo file,
+	public void focusOnVersionedCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 	}
 
-	public void focusOnLineCommentEvent(final ReviewDataImpl review, final CrucibleFileInfo file,
+	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment,	final boolean openIfClosed) {
 	}
 
-	public void aboutToPublishGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+	public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
-	public void aboutToPublishVersionedComment(final ReviewDataImpl review, final CrucibleFileInfo file,
+	public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 	}
 
-	public void publishedGeneralComment(final ReviewDataImpl review, final GeneralComment comment) {
+	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
-	public void publishedVersionedComment(final ReviewDataImpl review, final CrucibleReviewItemInfo file,
+	public void publishedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo file,
 			final VersionedComment comment) {
 	}
 
-	public void commentsDownloaded(ReviewDataImpl review) {
+	public void commentsDownloaded(ReviewAdapter review) {
 	}
 }

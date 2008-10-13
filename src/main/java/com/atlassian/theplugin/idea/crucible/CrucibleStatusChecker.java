@@ -114,7 +114,7 @@ private void doRunCrucible() {
 					PredefinedFilter filter = PredefinedFilter.values()[i];
 					if (!reviews.containsKey(filter)) {
 						ReviewNotificationBean bean = new ReviewNotificationBean();
-						List<ReviewDataImpl> list = new ArrayList<ReviewDataImpl>();
+						List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
 						bean.setReviews(list);
 						reviews.put(filter, bean);
 					}
@@ -124,9 +124,9 @@ private void doRunCrucible() {
 								+ server.getUrl() + ", filter type: " + filter);
 
 						List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
-						List<ReviewDataImpl> reviewData = new ArrayList<ReviewDataImpl>(review.size());
+						List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
 						for (Review r : review) {
-							reviewData.add(new ReviewDataImpl(r, server));
+							reviewData.add(new ReviewAdapter(r, server));
 						}
 
 						bean.getReviews().addAll(reviewData);
@@ -153,7 +153,7 @@ private void doRunCrucible() {
 		if (filter != null) {
 
 			if (!customFilterReviews.containsKey(filter.getTitle())) {
-				List<ReviewDataImpl> list = new ArrayList<ReviewDataImpl>();
+				List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
 				ReviewNotificationBean bean = new ReviewNotificationBean();
 				bean.setReviews(list);
 				customFilterReviews.put(filter.getTitle(), bean);
@@ -170,9 +170,9 @@ private void doRunCrucible() {
 									= crucibleServerFacade.getReviewsForCustomFilter(server, filter);
 
 
-							List<ReviewDataImpl> reviewData = new ArrayList<ReviewDataImpl>(customFilter.size());
+							List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(customFilter.size());
 							for (Review r : customFilter) {
-								reviewData.add(new ReviewDataImpl(r, server));
+								reviewData.add(new ReviewAdapter(r, server));
 							}
 
 							bean.getReviews().addAll(reviewData);

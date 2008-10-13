@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.CommentAboutToRemove;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
@@ -66,7 +66,7 @@ public class RemoveAction extends AbstractCommentAction {
 
 	private void removeComment(Project project, AtlassianTreeNode treeNode) {
 		Comment comment = null;
-		ReviewDataImpl review = null;
+		ReviewAdapter review = null;
 
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
@@ -83,7 +83,7 @@ public class RemoveAction extends AbstractCommentAction {
 		removeComment(project, review, comment);
 	}
 
-	private void removeComment(final Project project, final ReviewDataImpl review, final Comment comment) {
+	private void removeComment(final Project project, final ReviewAdapter review, final Comment comment) {
 		int result = Messages.showYesNoDialog(project, "Are you sure you want remove your comment?", "Confirmation required",
 				Icons.TASK_ICON);
 		if (result == DialogWrapper.OK_EXIT_CODE) {

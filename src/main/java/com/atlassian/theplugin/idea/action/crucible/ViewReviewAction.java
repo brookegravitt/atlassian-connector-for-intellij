@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 
@@ -28,6 +28,6 @@ public class ViewReviewAction extends TableSelectedAction {
 
 	@Override
 	protected void itemSelected(final Project project, Object row) {
-		BrowserUtil.launchBrowser(((ReviewDataImpl) row).getReviewUrl());
+		BrowserUtil.launchBrowser(((ReviewAdapter) row).getReviewUrl());
 	}
 }

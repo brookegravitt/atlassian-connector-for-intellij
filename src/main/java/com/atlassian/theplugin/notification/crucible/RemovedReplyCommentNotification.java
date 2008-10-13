@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 public class RemovedReplyCommentNotification extends AbstractReviewNotification {
 	private final Comment reply;
 
-	public RemovedReplyCommentNotification(ReviewDataImpl review, Comment reply) {
+	public RemovedReplyCommentNotification(ReviewAdapter review, Comment reply) {
 		super(review);
 		this.reply = reply;
 	}

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.table.column;
 
 
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -29,9 +29,9 @@ public class ReviewKeyComparator implements Comparator, Serializable {
         if (o == null || o1 == null) {
             return 0;
         }
-        ReviewDataImpl review = (ReviewDataImpl) o;
+        ReviewAdapter review = (ReviewAdapter) o;
         String key = review.getPermId().getId();
-        ReviewDataImpl review1 = (ReviewDataImpl) o1;
+        ReviewAdapter review1 = (ReviewAdapter) o1;
         String key1 = review1.getPermId().getId();
 
         // first, try to compare on projects

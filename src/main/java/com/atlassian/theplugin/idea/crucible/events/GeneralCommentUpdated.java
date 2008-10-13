@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
+import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 /**
@@ -28,10 +28,10 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
  * To change this template use File | Settings | File Templates.
  */
 public class GeneralCommentUpdated extends CrucibleEvent {
-    private ReviewDataImpl review;
+    private ReviewAdapter review;
     private GeneralComment comment;
 
-    public GeneralCommentUpdated(final CrucibleReviewActionListener caller, final ReviewDataImpl review,
+    public GeneralCommentUpdated(final CrucibleReviewActionListener caller, final ReviewAdapter review,
             final GeneralComment comment) {
         super(caller);
         this.review = review;

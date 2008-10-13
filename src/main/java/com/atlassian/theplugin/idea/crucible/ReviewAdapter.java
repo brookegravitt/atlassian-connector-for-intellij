@@ -24,12 +24,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import java.util.Date;
 import java.util.List;
 
-public class ReviewDataImpl {
+public class ReviewAdapter {
     private Review review;
     private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;
 
-    public ReviewDataImpl(Review review, CrucibleServerCfg server) {
+    public ReviewAdapter(Review review, CrucibleServerCfg server) {
         this.review = review;
         this.server = server;
     }
@@ -164,7 +164,7 @@ public class ReviewDataImpl {
             return false;
         }
 
-        ReviewDataImpl that = (ReviewDataImpl) o;
+        ReviewAdapter that = (ReviewAdapter) o;
 
         if (review != null ? !review.equals(that.review) : that.review != null) {
             return false;
