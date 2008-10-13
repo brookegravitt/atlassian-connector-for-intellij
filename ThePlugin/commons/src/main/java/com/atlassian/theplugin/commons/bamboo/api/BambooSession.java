@@ -16,12 +16,12 @@
 
 package com.atlassian.theplugin.commons.bamboo.api;
 
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.remoteapi.ProductSession;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 
 import java.util.List;
 
@@ -31,11 +31,7 @@ import java.util.List;
  * Date: 2008-03-06
  * Time: 11:16:09
  */
-public interface BambooSession {
-	void login(String name, char[] aPassword) throws RemoteApiLoginException;
-
-	void logout();
-
+public interface BambooSession extends ProductSession {
 	int getBamboBuildNumber() throws RemoteApiException;
 
 	List<BambooProject> listProjectNames() throws RemoteApiException;
@@ -52,9 +48,7 @@ public interface BambooSession {
 
 	void addCommentToBuild(String buildKey, String buildNumber, String buildComment) throws RemoteApiException;
 
-	void executeBuild(String buildKey) throws RemoteApiException;
-
-	boolean isLoggedIn();
+	void executeBuild(String buildKey) throws RemoteApiException;	
 
     byte[] getBuildLogs(String buildKey, String buildNumber) throws RemoteApiException;
 }

@@ -16,29 +16,15 @@
 
 package com.atlassian.theplugin.crucible.api.rest;
 
-import com.atlassian.theplugin.bamboo.api.bamboomock.ErrorResponse;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.rest.CrucibleSessionImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.CreateReviewCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetProjectsCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetRepositoriesCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetReviewersCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.GetReviewsCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.LoginCallback;
-import com.atlassian.theplugin.crucible.api.rest.cruciblemock.MalformedResponseCallback;
+import com.atlassian.theplugin.crucible.api.rest.cruciblemock.*;
+import com.atlassian.theplugin.remoteapi.ErrorResponse;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.mortbay.jetty.Server;

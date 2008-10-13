@@ -15,20 +15,25 @@
  */
 package com.atlassian.theplugin.commons.util;
 
-import com.atlassian.theplugin.bamboo.api.bamboomock.Util;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ResourceUtil {
-	public static void copyResource(OutputStream outputStream, String resource) {
-		BufferedInputStream is = new BufferedInputStream(Util.class.getResourceAsStream(resource));
+	public static void copyResource(final OutputStream outputStream, final Class clazz, final String resource) {
+		InputStream inputStream = clazz.getResourceAsStream(resource);
+		if (inputStream == null) {
+			throw new NullPointerException();
+		}
+
+		BufferedInputStream is = new BufferedInputStream(inputStream);
 		int c;
 		try {
 			while ((c = is.read()) != -1) {
 				outputStream.write(c);
 			}
+			outputStream.close();
 		} catch (IOException e) {
 			junit.framework.Assert.fail(e.getMessage());
 		}

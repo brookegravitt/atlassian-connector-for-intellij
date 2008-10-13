@@ -15,14 +15,20 @@
  */
 package com.atlassian.theplugin.commons.fisheye.api.rest;
 
-import junit.framework.TestCase;
+import com.atlassian.theplugin.api.AbstractSessionTest;
+import com.atlassian.theplugin.commons.fisheye.api.rest.mock.FishEyeLoginCallback;
+import com.atlassian.theplugin.commons.fisheye.api.rest.mock.FishEyeLogoutCallback;
+import com.atlassian.theplugin.commons.remoteapi.ProductSession;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import org.ddsteps.mock.httpserver.JettyMockServer;
 
 /**
  * FishEyeRestSession Tester.
  *
  * @author wseliga
  */
-public class FishEyeRestSessionTest extends TestCase {
+public class FishEyeRestSessionTest extends AbstractSessionTest {
 
     @Override
 	public void setUp() throws Exception {
@@ -34,7 +40,19 @@ public class FishEyeRestSessionTest extends TestCase {
         super.tearDown();
     }
 
-    public void xtestAdjustHttpHeader() {
+	protected String getLoginUrl() {
+		return "/api/rest/login";
+	}
+
+	protected ProductSession getProductSession(final String url) throws RemoteApiMalformedUrlException {
+		return new FishEyeRestSession(url);
+	}
+
+	protected JettyMockServer.Callback getLoginCallback(final boolean isFail) {
+		return new FishEyeLoginCallback(USER_NAME, PASSWORD, isFail);
+	}
+
+	public void xtestAdjustHttpHeader() {
         //TODO: wseliga implement it
         fail("unimplemented");
     }
@@ -44,15 +62,6 @@ public class FishEyeRestSessionTest extends TestCase {
         fail("unimplemented");
     }
 
-    public void xtestLogin() {
-        //TODO: wseliga implement it
-        fail("unimplemented");
-    }
-
-    public void xtestLogout() {
-        //TODO: wseliga implement it
-        fail("unimplemented");
-    }
 
     public void xtestGetDocument() {
         //TODO: wseliga implement it
@@ -72,4 +81,34 @@ public class FishEyeRestSessionTest extends TestCase {
     public void testPlaceholder() {
     }
 
+	public void testSuccessLoginURLWithSlash() throws Exception {
+		mockServer.expect(FishEyeRestSession.LOGIN_ACTION, new FishEyeLoginCallback(USER_NAME, PASSWORD));
+		mockServer.expect(FishEyeRestSession.LOGOUT_ACTION, new FishEyeLogoutCallback(FishEyeLoginCallback.AUTH_TOKEN));
+
+		FishEyeRestSession apiHandler = new FishEyeRestSession(mockBaseUrl + "/");
+		apiHandler.login(USER_NAME, PASSWORD.toCharArray());
+		assertTrue(apiHandler.isLoggedIn());
+		apiHandler.logout();
+		assertFalse(apiHandler.isLoggedIn());
+
+		mockServer.verify();
+	}
+
+	public void testNullParamsLogin() throws Exception {
+		try {
+			FishEyeRestSession apiHandler = new FishEyeRestSession(null);
+			apiHandler.login(null, null);
+			fail();
+		} catch (RemoteApiException ex) {
+		}
+	}
+
+	public void testWrongParamsLogin() throws Exception {
+		try {
+			FishEyeRestSession apiHandler = new FishEyeRestSession("");
+			apiHandler.login("", "".toCharArray());
+			fail();
+		} catch (RemoteApiException ex) {
+		}
+	}
 }
