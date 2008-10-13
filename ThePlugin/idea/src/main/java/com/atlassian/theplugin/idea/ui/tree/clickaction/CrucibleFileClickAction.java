@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
@@ -13,10 +13,10 @@ import com.intellij.openapi.project.Project;
 
 public class CrucibleFileClickAction implements AtlassianClickAction {
 	private Project project;
-	private Review review;
+	private ReviewDataImpl review;
 	private CrucibleFileInfo file;
 
-	public CrucibleFileClickAction(Project project, Review review, CrucibleFileInfo file) {
+	public CrucibleFileClickAction(Project project, ReviewDataImpl review, CrucibleFileInfo file) {
 		this.project = project;
 		this.review = review;
 		this.file = file;

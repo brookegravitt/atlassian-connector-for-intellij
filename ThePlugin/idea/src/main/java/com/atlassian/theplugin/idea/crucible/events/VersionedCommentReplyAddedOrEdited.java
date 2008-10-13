@@ -17,17 +17,17 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 public class VersionedCommentReplyAddedOrEdited extends CrucibleEvent {
-	private Review review;
+	private ReviewDataImpl review;
 	private CrucibleReviewItemInfo info;
 	private VersionedComment parentComment;
 	private VersionedComment comment;
 
-	public VersionedCommentReplyAddedOrEdited(CrucibleReviewActionListener caller, Review review,
+	public VersionedCommentReplyAddedOrEdited(CrucibleReviewActionListener caller, ReviewDataImpl review,
 											  CrucibleReviewItemInfo info, VersionedComment parentComment,
 											  VersionedComment comment) {
 		super(caller);

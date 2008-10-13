@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
-	public CrucibleGeneralCommentsNode(Review review, Map<String, FileNode> children) {
+	public CrucibleGeneralCommentsNode(ReviewDataImpl review, Map<String, FileNode> children) {
 		super(review);
 
 		if (children != null) {

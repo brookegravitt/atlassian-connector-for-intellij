@@ -63,15 +63,18 @@ public class PreferencePageServers
 		this.bambooUrlEditor = new StringFieldEditor(PreferenceConstants.BAMBOO_URL, "Server Url:", getFieldEditorParent());
 		addField(bambooUrlEditor);
 		
-		this.bambooUserNameEditor = new StringFieldEditor(PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent());
+		this.bambooUserNameEditor = new StringFieldEditor(
+				PreferenceConstants.BAMBOO_USER_NAME, "User Name:", getFieldEditorParent());
 		addField(bambooUserNameEditor);
 		
-		this.bambooPasswordEditor = new PasswordFieldEditor(PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()); 
+		this.bambooPasswordEditor = new PasswordFieldEditor(
+				PreferenceConstants.BAMBOO_USER_PASSWORD, "Password:", getFieldEditorParent()); 
 		addField(bambooPasswordEditor);
 		
 		addField(new TestConnection(getFieldEditorParent(), this));
 		
-		UseFavouritesFieldEditor useFavourites = new UseFavouritesFieldEditor(PreferenceConstants.BAMBOO_USE_FAVOURITES, "Use favourites:", BooleanFieldEditor.SEPARATE_LABEL, getFieldEditorParent()); 
+		UseFavouritesFieldEditor useFavourites = new UseFavouritesFieldEditor(PreferenceConstants.BAMBOO_USE_FAVOURITES, 
+				"Use favourites:", BooleanFieldEditor.SEPARATE_LABEL, getFieldEditorParent()); 
 		addField(useFavourites);
 		
 		final BambooPlanListFieldEditor planList = 

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 import com.intellij.openapi.editor.Editor;
 
@@ -29,14 +29,14 @@ import com.intellij.openapi.editor.Editor;
  * To change this template use File | Settings | File Templates.
  */
 public class AddLineComment extends CrucibleEvent {
-	private Review review;
+	private ReviewDataImpl review;
 	private CrucibleFileInfo file;
 	private int start;
 	private int end;
 	private Editor editor;
 
 	public AddLineComment(CrucibleReviewActionListener caller,
-                          Review review,
+                          ReviewDataImpl review,
                           CrucibleFileInfo file,
                           Editor editor,
                           int start,

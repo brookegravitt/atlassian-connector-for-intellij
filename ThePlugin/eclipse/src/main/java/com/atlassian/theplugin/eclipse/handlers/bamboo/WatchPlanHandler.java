@@ -12,10 +12,11 @@ import org.eclipse.ui.commands.IElementUpdater;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.menus.UIElement;
 
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.eclipse.ui.bamboo.BambooPlanNode;
 
 
-public class AddPlanToWatch extends AbstractHandler implements IElementUpdater  {
+public class WatchPlanHandler extends AbstractHandler implements IElementUpdater  {
 	
 	private static boolean checked = false;
 
@@ -31,7 +32,10 @@ public class AddPlanToWatch extends AbstractHandler implements IElementUpdater  
 			while (iterator.hasNext()) {
 				Object planNode = iterator.next();
 				if (planNode instanceof BambooPlanNode) {
-					System.out.println(((BambooPlanNode) planNode).getBambooPlan().getPlanKey());
+					BambooPlan bambooPlan = ((BambooPlanNode) planNode).getBambooPlan();
+					
+					// TODO add bambooPlan to watches
+					System.out.println(bambooPlan.getPlanKey());
 				}
 			}
 		}
@@ -44,7 +48,7 @@ public class AddPlanToWatch extends AbstractHandler implements IElementUpdater  
 //		String contextId = (String) parameters.get(TOGGLE_ID);
 //		element.setChecked(ICommandService contextActivations.get(contextId) != null);
 		
-		element.setChecked(checked);
+		//element.setChecked(checked);
 	}
 	
 	

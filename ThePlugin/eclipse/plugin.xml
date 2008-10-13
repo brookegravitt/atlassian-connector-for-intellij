@@ -129,7 +129,7 @@
    <extension
          point="org.eclipse.ui.handlers">
       <handler
-            class="com.atlassian.theplugin.eclipse.tmp.AddPlanToWatch"
+            class="com.atlassian.theplugin.eclipse.handlers.bamboo.WatchPlanHandler"
             commandId="com.atlassian.theplugin.eclipse.ui.bamboo.watchPlan">
       </handler>
    </extension>

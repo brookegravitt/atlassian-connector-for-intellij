@@ -24,7 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import java.util.Date;
 import java.util.List;
 
-public class ReviewDataImpl implements Review {
+public class ReviewDataImpl {
     private Review review;
     private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;

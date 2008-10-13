@@ -72,8 +72,7 @@ public class BambooServersView extends ViewPart {
 		MenuManager menuMgr = new MenuManager("text", "aaa");
 		menuMgr.addMenuListener(new IMenuListener() {
 			public void menuAboutToShow(IMenuManager manager) {
-				MenuManager sub = new MenuManager(Activator.getDefault()
-						.getResource("BambooServers.New"), "addMenu");
+				MenuManager sub = new MenuManager(Activator.getDefault().getResource("BambooServers.New"), "addMenu");
 				sub.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 				sub.add(new Separator("mainGroup"));
 				Action newRepositoryLocation = new Action(Activator
@@ -82,14 +81,12 @@ public class BambooServersView extends ViewPart {
 						new NewBambooServerAction().run(this);
 					}
 				};
-				newRepositoryLocation.setImageDescriptor(ImageDescriptor
-						.createFromImage(PluginIcons.getImageRegistry().get(
-								PluginIcons.ICON_BAMBOO)));
+				newRepositoryLocation.setImageDescriptor(ImageDescriptor.createFromImage(
+						PluginIcons.getImageRegistry().get(PluginIcons.ICON_BAMBOO)));
 				sub.add(newRepositoryLocation);
 				manager.add(sub);
 
-				manager.add(new Separator(
-						IWorkbenchActionConstants.MB_ADDITIONS));
+				manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
 				sub = new MenuManager(Activator.getDefault().getResource(
 						"RepositoriesView.OpenWith"), "openWithMenu");
@@ -140,7 +137,9 @@ public class BambooServersView extends ViewPart {
 				this.bambooTree));
 		this.bambooTree.setLabelProvider(new WorkbenchLabelProvider());
 		this.getSite().setSelectionProvider(this.bambooTree);
-		this.bambooTree.setInput(this.root = new BambooServersRoot());
+		
+		this.root = new BambooServersRoot();
+		this.bambooTree.setInput(root);
 		// this.repositoryTree.setSorter(new ViewSorter())
 
 		this.ddAdapter = new DrillDownAdapter(this.bambooTree);

@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.idea.action.tree.file.TreeAction;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
@@ -42,7 +43,7 @@ public abstract class ReviewTreeAction extends TreeAction {
 	}
 
 	protected static class ReviewActionData {
-		protected final Review review;
+		protected final ReviewDataImpl review;
 		protected final CrucibleFileInfo file;
 
 		ReviewActionData(AtlassianTreeWithToolbar tree) {
@@ -53,7 +54,7 @@ public abstract class ReviewTreeAction extends TreeAction {
 				} else {
 					file = null;
 				}
-				Review rd = null;
+				ReviewDataImpl rd = null;
 				for (TreeNode n : node.getPath()) {
 					if (n instanceof CrucibleChangeSetTitleNode) {
 						rd = ((CrucibleChangeSetTitleNode) n).getReview();

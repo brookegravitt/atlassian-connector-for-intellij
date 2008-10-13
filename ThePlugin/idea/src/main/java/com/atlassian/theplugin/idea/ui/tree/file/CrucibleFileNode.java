@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.idea.crucible.ReviewDataImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.fileTypes.FileType;
@@ -36,13 +36,13 @@ public class CrucibleFileNode extends FileNode {
 
 	private CrucibleFileInfo file;
 	private static final ColoredTreeCellRenderer MY_RENDERER = new CrucibleFileNodeRenderer();
-	private Review review;
+	private ReviewDataImpl review;
 
-	public CrucibleFileNode(final Review review, final CrucibleFileInfo file) {
+	public CrucibleFileNode(final ReviewDataImpl review, final CrucibleFileInfo file) {
 		this(review, file, AtlassianClickAction.EMPTY_ACTION);
 	}
 
-	public CrucibleFileNode(final Review review, final CrucibleFileInfo file,
+	public CrucibleFileNode(final ReviewDataImpl review, final CrucibleFileInfo file,
 			final AtlassianClickAction action) {
 		super(FilenameUtils.getName(file.getFileDescriptor().getUrl()), action);
 		this.review = review;
@@ -62,11 +62,11 @@ public class CrucibleFileNode extends FileNode {
 		return file;
 	}
 
-	public Review getReview() {
+	public ReviewDataImpl getReview() {
 		return review;
 	}
 
-	public void setReview(Review review) {
+	public void setReview(ReviewDataImpl review) {
 		this.review = review;
 		for (CrucibleReviewItemInfo info : review.getReviewItems()) {
 			if (info.getId().equals(file.getItemInfo().getId())) {
