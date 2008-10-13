@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -67,12 +68,13 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		final FishEyeServerFacadeImpl fishEyeServerFacade = FishEyeServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
 		crucibleServerConfigForm = new CrucibleServerConfigForm(project, crucibleServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
-		fisheyeServerConfigFrom = new GenericServerConfigForm(project, new ProductConnector(crucibleServerFacade));
+		fisheyeServerConfigFrom = new GenericServerConfigForm(project, new ProductConnector(fishEyeServerFacade));
 		initLayout();
 
         serverTreePanel.setData(serverCfgs);
