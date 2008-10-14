@@ -157,7 +157,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		createFilterToolBar();
 		createFilterEditToolBar();
 
-		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project);
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this);
 	}
 
 	public ArrayList<JiraFilterEntryBean> serializeQuery() {
@@ -203,8 +203,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 					jiraServer.getServer().getServerId().toString(), filters);
 		}
 
-		hideJIRAIssuesFilter();
-		filterToolbarSetVisible(true);
+//		hideJIRAIssuesFilter();
+//		filterToolbarSetVisible(true);
 	}
 
 	@Override
@@ -218,8 +218,8 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 					.setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
 		}
 
-		hideJIRAIssuesFilter();
-		filterToolbarSetVisible(true);
+//		hideJIRAIssuesFilter();
+//		filterToolbarSetVisible(true);
 	}
 
 	@Override
@@ -229,29 +229,41 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		if (jiraServer != null) {
 			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
 		}
-		filterToolbarSetVisible(false);
-		filterEditToolbarSetVisible(true);
-		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+//		filterToolbarSetVisible(false);
+//		filterEditToolbarSetVisible(true);
+//		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
 	}
 
 	public String getActionPlace() {
 		return JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR + project.getName();
 	}
 
-	public final void hideJIRAIssuesFilter() {
-		setScrollPaneViewport(table);
-		filterEditToolbarSetVisible(false);
-	}
+//	public final void hideJIRAIssuesFilter() {
+////		setScrollPaneViewport(table);
+////		filterEditToolbarSetVisible(false);
+//	}
 
 	public final void showJIRAIssueFilter() {
+
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this);
+
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer != null) {
 			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
 		}
-		filterToolbarSetVisible(false);
-		filterEditToolbarSetVisible(true);
-		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+//		filterToolbarSetVisible(false);
+//		filterEditToolbarSetVisible(true);
+//		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
+
+		jiraIssueFilterPanel.show();
+
+		if (jiraIssueFilterPanel.getExitCode() == 0) {
+			applyAdvancedFilter();
+		} else {
+			cancelAdvancedFilter();
+		}
 	}
+
 
 
 	public void viewIssue() {
@@ -523,7 +535,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		if (server != null) {
 //			serverSelected = false;
 			projectConfiguration.getJiraConfiguration().setSelectedServerId(server.getServerId().toString());
-			hideJIRAIssuesFilter();
+//			hideJIRAIssuesFilter();
 			final JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 			IdeaHelper.setCurrentJIRAServer(jiraServer);
 			Task.Backgroundable task = new SelectServerTask(jiraServer, this);
