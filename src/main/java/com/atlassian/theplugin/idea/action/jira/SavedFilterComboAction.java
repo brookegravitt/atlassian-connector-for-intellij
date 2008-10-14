@@ -31,9 +31,12 @@ import java.util.List;
 
 public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
-	private static final String NO_SAVED_FILTER_TEXT = "Select Saved filter";
+	private static final String SELECT_SAVED_FILTER_TEXT = "Select Saved Filter";
+	private static final String NO_SAVED_FILTER_AVAILABLE_TEXT = "No Saved Filters";
 	private ComboBoxButton button = null;
 	private Project project;
+
+	private boolean haveSavedFilters = true;
 
 	public SavedFilterComboAction(Project project) {
 		this.project = project;
@@ -52,6 +55,9 @@ public class SavedFilterComboAction extends ComboBoxAction {
 			List filters = server.getSavedFilters();
 			if (filters != null) {
 				for (Iterator iterator = filters.iterator(); iterator.hasNext();) {
+					if (!haveSavedFilters) {
+						haveSavedFilters = true;
+					}
 					final JIRASavedFilter filter = (JIRASavedFilter) iterator.next();
 					group.add(new AnAction(filter.getName()) {
 						public void actionPerformed(AnActionEvent event) {
@@ -62,6 +68,12 @@ public class SavedFilterComboAction extends ComboBoxAction {
 					});
 				}
 			}
+			if (filters == null || filters.size() == 0) {
+				haveSavedFilters = false;
+				button.setText(SELECT_SAVED_FILTER_TEXT);
+				IdeaHelper.getJIRAToolWindowPanel(project).removeSavedFilter();
+				IdeaHelper.getJIRAToolWindowPanel(project).refreshIssues();
+			}
 		}
 		return group;
 	}
@@ -70,14 +82,15 @@ public class SavedFilterComboAction extends ComboBoxAction {
 		super.update(event);
 		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {
 			if (!IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilterUsed()) {
-				setComboText(event, NO_SAVED_FILTER_TEXT, false);
+				setComboText(event, SELECT_SAVED_FILTER_TEXT, false);
 			} else {
 				if (IdeaHelper.getJIRAToolWindowPanel(event).getFilters().getSavedFilter() != null) {
 					setComboText(event,
 							IdeaHelper.getJIRAToolWindowPanel(event).
 									getFilters().getSavedFilter().getFilterEntry().get("name"), true);
 				} else {
-					setComboText(event, NO_SAVED_FILTER_TEXT, true);
+					setComboText(event, haveSavedFilters
+							? SELECT_SAVED_FILTER_TEXT : NO_SAVED_FILTER_AVAILABLE_TEXT, true);
 				}
 			}
 		}
