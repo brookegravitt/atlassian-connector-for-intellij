@@ -17,10 +17,16 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.options.Configurable;
@@ -63,8 +69,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 
 	public static void handleServerCfgFactoryException(Project theProject, final Exception e) {
-		Messages.showWarningDialog(theProject, CFG_LOAD_ERROR_MSG + "\n" + e.getMessage()
-				+ "\nEmpty configuration will be used.", CFG_LOAD_ERROR_MSG);
+		DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.",
+				e, CFG_LOAD_ERROR_MSG);
 	}
 
 	public void projectOpened() {
@@ -168,11 +174,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			cfgFactory.save(configuration);
+			final String publicCfgFile = getCfgFilePath();
+			final String privateCfgFile = getPrivateCfgFilePath();
+			writeXmlFile(element, publicCfgFile);
+			writeXmlFile(privateElement, privateCfgFile);
 		}
-		final String publicCfgFile = getCfgFilePath();
-		final String privateCfgFile = getPrivateCfgFilePath();
-		writeXmlFile(element, publicCfgFile);
-		writeXmlFile(privateElement, privateCfgFile);
 	}
 
 
