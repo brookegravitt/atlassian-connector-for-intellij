@@ -33,7 +33,12 @@ import com.intellij.openapi.util.io.StreamUtil;
 import com.intellij.util.io.ZipUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -127,13 +132,6 @@ public class PluginDownloader {
 						+ "Do you want to restart IDEA to activate the plugin?"; 
 				int answer = Messages.showYesNoDialog(
 						message, title, Messages.getQuestionIcon());
-
-//						Messages.showDialog(PluginUpdateNotifierBundle.message("progress.shutdown.dialog.text"),
-//                        PluginUpdateNotifierBundle.message("progress.shutdown.dialog.title"),
-//                        new String[]{PluginUpdateNotifierBundle.message("progress.shutdown.dialog.button.shutdown.text"),
-//                                PluginUpdateNotifierBundle.message("progress.shutdown.dialog.button.cancel.text")},
-//                        0, Messages.getQuestionIcon());
-
 				if (answer == DialogWrapper.OK_EXIT_CODE) {
 					//ApplicationManagerEx.getApplicationEx().exit(true);
 					ApplicationManager.getApplication().exit();
