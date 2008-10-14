@@ -1,38 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright (C) 2008 Atlassian
-    
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    
-       http://www.apache.org/licenses/LICENSE-2.0
-    
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
-
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.jira.JIRAIssueFilterPanel">
-  <grid id="27dc6" binding="rootPanel" layout-manager="FormLayout">
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:max(d;4px):noGrow"/>
-    <rowspec value="top:3dlu:noGrow"/>
-    <rowspec value="center:d:grow"/>
-    <colspec value="fill:max(d;4px):noGrow"/>
+  <grid id="27dc6" binding="rootPanel" layout-manager="GridLayoutManager" row-count="3" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="20" y="20" width="692" height="903"/>
+      <xy x="20" y="20" width="961" height="411"/>
     </constraints>
     <properties>
       <focusCycleRoot value="false"/>
@@ -40,37 +11,77 @@
     </properties>
     <border type="none"/>
     <children>
-      <grid id="4cca4" binding="componentsVersionsPanel" custom-create="true" layout-manager="FormLayout">
-        <rowspec value="center:d:grow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:d:grow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:d:grow"/>
-        <colspec value="fill:72px:noGrow"/>
-        <colspec value="left:4dlu:noGrow"/>
-        <colspec value="fill:d:grow"/>
+      <component id="69cd5" class="javax.swing.JLabel">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="350" height="100"/>
-            <preferred-size width="383" height="254"/>
-          </grid>
-          <forms defaultalign-vert="false"/>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <enabled value="false"/>
-          <minimumSize width="335" height="-1"/>
-          <preferredSize width="335" height="250"/>
+          <text value="Components / Versions"/>
         </properties>
-        <border type="none"/>
+      </component>
+      <grid id="19bd2" layout-manager="GridLayoutManager" row-count="4" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="etched"/>
         <children>
+          <component id="ecabd" class="javax.swing.JLabel" binding="fixForLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="66" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <labelFor value="98e67"/>
+              <text value="Fix For:"/>
+            </properties>
+          </component>
+          <hspacer id="b2ab7">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <vspacer id="bffce">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </vspacer>
+          <component id="1e2cc" class="javax.swing.JLabel" binding="componentsLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="66" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="4"/>
+              <labelFor value="3ba13"/>
+              <nextFocusableComponent value="3ba13"/>
+              <text value="Components:"/>
+            </properties>
+          </component>
+          <component id="a1796" class="javax.swing.JLabel" binding="affectsVersionsLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="66" height="28"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <labelFor value="cceac"/>
+              <text value="&lt;html&gt;Affects&lt;br&gt;  Versions:&lt;/html&gt;"/>
+            </properties>
+          </component>
           <scrollpane id="98e67" binding="fixForScrollPane">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="293" height="80"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -85,12 +96,11 @@
           </scrollpane>
           <scrollpane id="3ba13" binding="componentsScrollPane">
             <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="293" height="80"/>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -107,12 +117,11 @@
           </scrollpane>
           <scrollpane id="cceac" binding="affectVersionScrollPane">
             <constraints>
-              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="293" height="80"/>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -126,124 +135,103 @@
               </component>
             </children>
           </scrollpane>
-          <component id="ecabd" class="javax.swing.JLabel" binding="fixForLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="66" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <labelFor value="98e67"/>
-              <text value="Fix For:"/>
-            </properties>
-          </component>
-          <component id="1e2cc" class="javax.swing.JLabel" binding="componentsLabel">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="66" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="3ba13"/>
-              <nextFocusableComponent value="3ba13"/>
-              <text value="Components:"/>
-            </properties>
-          </component>
-          <component id="a1796" class="javax.swing.JLabel" binding="affectsVersionsLabel">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="66" height="28"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <labelFor value="cceac"/>
-              <text value="&lt;html&gt;Affects&lt;br&gt;  Versions:&lt;/html&gt;"/>
-            </properties>
-          </component>
         </children>
       </grid>
-      <component id="cedc4" class="com.atlassian.theplugin.idea.ui.CollapsiblePanel" binding="issueAttributesCollapsiblePanel" custom-create="true">
+      <component id="cc40a" class="javax.swing.JLabel">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="354" height="-1"/>
-            <preferred-size width="383" height="10"/>
-            <maximum-size width="390" height="-1"/>
-          </grid>
-          <forms/>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-6711040"/>
+          <text value="Issue Attributes"/>
         </properties>
-        <clientProperties>
-          <html.disable class="java.lang.Boolean" value="true"/>
-        </clientProperties>
       </component>
-      <grid id="5e6de" binding="issueAttributesPanel" custom-create="true" layout-manager="FormLayout">
-        <rowspec value="center:max(d;4px):noGrow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:max(d;4px):noGrow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:d:grow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:d:grow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="center:d:grow"/>
-        <colspec value="fill:72px:noGrow"/>
-        <colspec value="left:4dlu:noGrow"/>
-        <colspec value="fill:d:grow"/>
+      <grid id="97a6b" layout-manager="GridLayoutManager" row-count="6" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="2" hsize-policy="2" anchor="9" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="350" height="100"/>
-            <preferred-size width="383" height="318"/>
-          </grid>
-          <forms top="0" left="0" bottom="5" right="0" defaultalign-vert="false"/>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <enabled value="false"/>
-          <minimumSize width="335" height="-1"/>
-          <preferredSize width="335" height="314"/>
-        </properties>
-        <border type="none"/>
+        <properties/>
+        <border type="etched"/>
         <children>
+          <component id="d61f" class="javax.swing.JLabel" binding="reporterLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="73" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="2"/>
+              <labelFor value="a2c60"/>
+              <text value="Reporter:"/>
+            </properties>
+          </component>
+          <hspacer id="f9e3b">
+            <constraints>
+              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </hspacer>
+          <vspacer id="cacb4">
+            <constraints>
+              <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </vspacer>
           <component id="a2c60" class="javax.swing.JComboBox" binding="reporterComboBox">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="281" height="27"/>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="160" height="27"/>
               </grid>
-              <forms/>
             </constraints>
             <properties>
               <lightWeightPopupEnabled value="false"/>
               <maximumRowCount value="5"/>
+            </properties>
+          </component>
+          <component id="6e0d1" class="javax.swing.JLabel" binding="assigneeLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="73" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="2"/>
+              <labelFor value="b94e0"/>
+              <text value="Assignee:"/>
             </properties>
           </component>
           <component id="b94e0" class="javax.swing.JComboBox" binding="assigneeComboBox">
             <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="281" height="27"/>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="160" height="27"/>
               </grid>
-              <forms/>
             </constraints>
             <properties>
               <lightWeightPopupEnabled value="false"/>
               <maximumRowCount value="5"/>
             </properties>
           </component>
+          <component id="fbf0f" class="javax.swing.JLabel" binding="statusLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="73" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="2"/>
+              <labelFor value="d5bed"/>
+              <requestFocusEnabled value="false"/>
+              <text value="Status:"/>
+            </properties>
+          </component>
           <scrollpane id="d5bed" binding="statusScrollPane">
             <constraints>
-              <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="281" height="80"/>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -257,14 +245,26 @@
               </component>
             </children>
           </scrollpane>
+          <component id="f0c13" class="javax.swing.JLabel" binding="resolutionsLabel">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="73" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="2"/>
+              <labelFor value="aa7b9"/>
+              <text value="Resolutions:"/>
+            </properties>
+          </component>
           <scrollpane id="aa7b9" binding="resolutionScrollPane">
             <constraints>
-              <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="281" height="80"/>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -278,14 +278,27 @@
               </component>
             </children>
           </scrollpane>
+          <component id="32379" class="javax.swing.JLabel" binding="prioritiesLabel">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="73" height="14"/>
+              </grid>
+            </constraints>
+            <properties>
+              <font size="11"/>
+              <horizontalAlignment value="2"/>
+              <labelFor value="c8be2"/>
+              <text value="Priorities:"/>
+              <verticalTextPosition value="0"/>
+            </properties>
+          </component>
           <scrollpane id="c8be2" binding="prioritiesScrollPane">
             <constraints>
-              <grid row="8" column="2" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false">
-                <minimum-size width="280" height="80"/>
-                <preferred-size width="281" height="80"/>
+              <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="8" fill="2" indent="0" use-parent-layout="false">
+                <minimum-size width="160" height="80"/>
+                <preferred-size width="160" height="80"/>
                 <maximum-size width="280" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -298,154 +311,34 @@
               </component>
             </children>
           </scrollpane>
-          <component id="d61f" class="javax.swing.JLabel" binding="reporterLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="73" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="a2c60"/>
-              <text value="Reporter:"/>
-            </properties>
-          </component>
-          <component id="6e0d1" class="javax.swing.JLabel" binding="assigneeLabel">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="73" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="b94e0"/>
-              <text value="Assignee:"/>
-            </properties>
-          </component>
-          <component id="fbf0f" class="javax.swing.JLabel" binding="statusLabel">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="73" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="d5bed"/>
-              <requestFocusEnabled value="false"/>
-              <text value="Status:"/>
-            </properties>
-          </component>
-          <component id="f0c13" class="javax.swing.JLabel" binding="resolutionsLabel">
-            <constraints>
-              <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="73" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="aa7b9"/>
-              <text value="Resolutions:"/>
-            </properties>
-          </component>
-          <component id="32379" class="javax.swing.JLabel" binding="prioritiesLabel">
-            <constraints>
-              <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="73" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <horizontalAlignment value="4"/>
-              <labelFor value="c8be2"/>
-              <text value="Priorities:"/>
-              <verticalTextPosition value="0"/>
-            </properties>
-          </component>
         </children>
       </grid>
-      <component id="e3442" class="com.atlassian.theplugin.idea.ui.CollapsiblePanel" binding="componentsVersionsCollapsiblePanel" custom-create="true">
+      <component id="a1ef1" class="javax.swing.JLabel">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false">
-            <minimum-size width="354" height="-1"/>
-            <preferred-size width="383" height="-1"/>
-            <maximum-size width="390" height="-1"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="70" height="14"/>
           </grid>
-          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
-          <background color="-3368704"/>
-          <font/>
+          <font size="11"/>
+          <labelFor value="e11c7"/>
+          <text value="Project:"/>
+          <verticalAlignment value="1"/>
         </properties>
       </component>
-      <grid id="5e492" binding="generalPanel" layout-manager="FormLayout">
-        <rowspec value="fill:d:grow"/>
-        <rowspec value="top:3dlu:noGrow"/>
-        <rowspec value="fill:max(d;4px):noGrow"/>
-        <colspec value="fill:72px:noGrow"/>
-        <colspec value="left:4dlu:noGrow"/>
-        <colspec value="fill:d:grow"/>
+      <grid id="25595" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="383" height="169"/>
-          </grid>
-          <forms top="5" left="0" bottom="0" right="0"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <doubleBuffered value="true"/>
-          <enabled value="false"/>
-          <minimumSize width="335" height="-1"/>
-        </properties>
+        <properties/>
         <border type="none"/>
         <children>
-          <component id="a1ef1" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
-                <preferred-size width="70" height="14"/>
-              </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
-            </constraints>
-            <properties>
-              <font size="11"/>
-              <labelFor value="e11c7"/>
-              <text value="Project:"/>
-              <verticalAlignment value="1"/>
-            </properties>
-          </component>
-          <scrollpane id="2c6ea" binding="issueTypeScrollPane">
-            <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="282" height="80"/>
-              </grid>
-              <forms/>
-            </constraints>
-            <properties>
-              <doubleBuffered value="false"/>
-            </properties>
-            <border type="none"/>
-            <children>
-              <component id="1f5b0" class="javax.swing.JList" binding="issueTypeList">
-                <constraints/>
-                <properties>
-                  <visibleRowCount value="5"/>
-                </properties>
-              </component>
-            </children>
-          </scrollpane>
           <scrollpane id="e11c7" binding="projectScrollPane">
             <constraints>
-              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false">
-                <preferred-size width="282" height="80"/>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="80"/>
               </grid>
-              <forms/>
             </constraints>
             <properties/>
             <border type="none"/>
@@ -461,12 +354,16 @@
               </component>
             </children>
           </scrollpane>
+          <vspacer id="b957a">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+          </vspacer>
           <component id="ba6d8" class="javax.swing.JLabel">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="70" height="14"/>
               </grid>
-              <forms defaultalign-horz="false" defaultalign-vert="false"/>
             </constraints>
             <properties>
               <font size="11"/>
@@ -475,14 +372,47 @@
               <text value="Issue Type:"/>
             </properties>
           </component>
+          <scrollpane id="2c6ea" binding="issueTypeScrollPane">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="1" hsize-policy="1" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                <preferred-size width="200" height="80"/>
+              </grid>
+            </constraints>
+            <properties>
+              <doubleBuffered value="false"/>
+            </properties>
+            <border type="none"/>
+            <children>
+              <component id="1f5b0" class="javax.swing.JList" binding="issueTypeList">
+                <constraints/>
+                <properties>
+                  <visibleRowCount value="5"/>
+                </properties>
+              </component>
+            </children>
+          </scrollpane>
         </children>
       </grid>
-      <vspacer id="75765">
+      <vspacer id="8168c">
         <constraints>
-          <grid row="10" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
-          <forms defaultalign-vert="false"/>
+          <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
+      <vspacer id="e26a1">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <vspacer id="bf5cb">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </vspacer>
+      <hspacer id="2721e">
+        <constraints>
+          <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+      </hspacer>
     </children>
   </grid>
 </form>
