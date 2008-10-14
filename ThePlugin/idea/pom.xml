@@ -24,18 +24,6 @@
 			<version>1.0-m1</version>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>-->
-		<!--<groupId>net.sourceforge.htmlunit</groupId>-->
-		<!--<artifactId>htmlunit</artifactId>-->
-		<!--<version>1.14</version>-->
-		<!--<scope>test</scope>-->
-		<!--<exclusions>-->
-		<!--<exclusion>-->
-		<!--<groupId>net.sourceforge.cssparser</groupId>-->
-		<!--<artifactId>cssparser</artifactId>-->
-		<!--</exclusion>-->
-		<!--</exclusions>-->
-		<!--</dependency>-->
 		<dependency>
 			<groupId>net.sourceforge.cssparser</groupId>
 			<artifactId>cssparser</artifactId>
