@@ -731,7 +731,10 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 				};
 
 				ProgressManager.getInstance().run(getIssues);
+			} else {
+				setStatusMessage("No saved filter selected");
 			}
+
 		} else {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
 				if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
@@ -844,6 +847,16 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			} else {
 				sortOrder = "DESC";
 			}
+		}
+	}
+
+	public void removeSavedFilter() {
+		filters.setSavedFilter(null);
+		startIndex = 0;
+		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
+		if (jiraServer != null) {
+			projectConfiguration.getJiraConfiguration().
+					setFiltersBean(jiraServer.getServer().getServerId().toString(), filters);
 		}
 	}
 
