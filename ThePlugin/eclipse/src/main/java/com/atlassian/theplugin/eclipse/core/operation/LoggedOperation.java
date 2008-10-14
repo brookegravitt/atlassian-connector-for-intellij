@@ -35,7 +35,7 @@ public class LoggedOperation implements IActionOperation {
 		this.op = op;
 	}
 
-	final public IActionOperation run(IProgressMonitor monitor) {
+	public final IActionOperation run(IProgressMonitor monitor) {
 		IStatus status = this.op.run(monitor).getStatus();
 		if (status.getSeverity() != IStatus.OK) {
 			this.handleError(status);
@@ -105,7 +105,7 @@ public class LoggedOperation implements IActionOperation {
         if (statusesWithoutCancel.size() > 0) {
 		    IStatus newStatus = new MultiStatus(errorStatus.getPlugin(), 
 		    		errorStatus.getCode(), 
-		    		(IStatus[])statusesWithoutCancel.toArray(new IStatus[statusesWithoutCancel.size()]),
+		    		(IStatus[]) statusesWithoutCancel.toArray(new IStatus[statusesWithoutCancel.size()]),
 		    		errorStatus.getMessage(),
 		    		errorStatus.getException());
 		    LoggedOperation.logError(newStatus);
