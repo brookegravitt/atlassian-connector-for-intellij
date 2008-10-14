@@ -143,8 +143,8 @@ public class BambooBuildToolWindow {
 		} else {
 			TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
 			TextConsoleBuilder builder = factory.createBuilder(project);
-			builder.addFilter(new UnitTestFilter(project));
 			builder.addFilter(new JavaFileFilter(project));
+			builder.addFilter(new UnitTestFilter(project));
 //			builder.addFilter(new RegexpFilter(project, "$FILE_PATH$"));
 			builder.addFilter(new LoggerFilter());
 			console = builder.getConsole();
@@ -166,12 +166,14 @@ public class BambooBuildToolWindow {
 
 class JavaFileFilter implements Filter {
 
-	private static final TextAttributes HYPERLINK_ATTRIBUTES = EditorColorsManager.getInstance().getGlobalScheme()
+	private final TextAttributes hyperlinkAttributes = EditorColorsManager.getInstance().getGlobalScheme()
 			.getAttributes(CodeInsightColors.HYPERLINK_ATTRIBUTES);
 
 	private final Project project;
-	private static final int ROW_GROUP = 4;
-	private static final int COLUMN_GROUP = 5;
+	static final int ROW_GROUP = 4;
+	static final int COLUMN_GROUP = 6;
+	static final int FILENAME_GROUP = 2;
+	static final int FULLPATH_GROUP = 1;
 
 	public JavaFileFilter(final Project project) {
 		this.project = project;
@@ -181,23 +183,24 @@ class JavaFileFilter implements Filter {
 	// /path/to/file/MyClass.java:[10,20]
 	// /path/to/file/MyClass.java
 	// /path/to/file/MyClass.java:20:30
+	// /path/to/file/MyClass.java:20
 	private static final Pattern JAVA_FILE_PATTERN
-			= Pattern.compile("([/\\\\]?[\\S ]*?" + "([^/\\\\]+\\.java))(:\\[?(\\d+)[\\,:](\\d+)\\]?)?");
+			= Pattern.compile("([/\\\\]?[\\S ]*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
 
 	@Nullable
 	public Result applyFilter(final String line, final int textEndOffset) {
 		if (!line.contains(".java")) {
 			return null; // to make it faster
 		}
-		final Matcher m = JAVA_FILE_PATTERN.matcher(line);
+		final Matcher m = findMatchings(line);
 		while (m.find()) {
 			final String matchedString = m.group();
-			final String filename = m.group(2);
+			final String filename = m.group(FILENAME_GROUP);
 
 //			final String filename = FilenameUtils.getName(matchedString);
 			if (filename != null && filename.length() > 0) {
 //
-				final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, m.group(1));
+				final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, m.group(FULLPATH_GROUP));
 				if (psiFile != null) {
 					VirtualFile virtualFile = psiFile.getVirtualFile();
 					if (virtualFile != null) {
@@ -226,7 +229,7 @@ class JavaFileFilter implements Filter {
 								: matchedString.lastIndexOf(filename);
 						final int highlightStartOffset = textEndOffset - line.length() + m.start() + startMatchingFileIndex;
 						final int highlightEndOffset = textEndOffset - line.length() + m.end();
-						return new Result(highlightStartOffset, highlightEndOffset, info, HYPERLINK_ATTRIBUTES);
+						return new Result(highlightStartOffset, highlightEndOffset, info, hyperlinkAttributes);
 					}
 				}
 
@@ -234,6 +237,10 @@ class JavaFileFilter implements Filter {
 
 		}
 		return null;
+	}
+
+	static Matcher findMatchings(final String line) {
+		return JAVA_FILE_PATTERN.matcher(line);
 	}
 }
 
