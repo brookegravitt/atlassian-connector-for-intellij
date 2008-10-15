@@ -528,6 +528,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 				return this;
 			}
 
+			public void setGeneralComments(final List<GeneralComment> generalComments) {
+				// not implemented
+			}
+
 			public List<CrucibleReviewItemInfo> getReviewItems() {
 				return null;
 			}
@@ -614,6 +618,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 			public Review getInnerReviewObject() {
 				return null;
+			}
+
+			public void setGeneralComments(final List<GeneralComment> generalComments) {
+				// not implemented
 			}
 
 			public List<Reviewer> getReviewers() {

@@ -183,4 +183,8 @@ public class ReviewAdapter {
         result = HASHCODE_MAGIC * result + (server != null ? server.hashCode() : 0);
         return result;
     }
+
+	public void setGeneralComments(final List<GeneralComment> generalComments) {
+		review.setGeneralComments(generalComments);
+	}
 }
