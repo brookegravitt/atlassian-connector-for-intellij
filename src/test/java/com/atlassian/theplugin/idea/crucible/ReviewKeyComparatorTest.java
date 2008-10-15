@@ -94,6 +94,10 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
+			public void setGeneralComments(final List<GeneralComment> generalComments) {
+				// not implemented
+			}
+
 			public User getAuthor() {
 				return null;
 			}

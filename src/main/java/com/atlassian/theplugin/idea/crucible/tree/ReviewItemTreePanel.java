@@ -639,12 +639,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
 						reviewItem.getServer(), reviewItem.getPermId());
 
-//				ReviewAdapter extendedReview = new ReviewAdapter(reviewItem, reviewItem.getServer());
-//
-//				extendedReview.setGeneralComments(
-//						CrucibleServerFacadeImpl.getInstance().getGeneralComments(
-//								reviewItem.getServer(), reviewItem.getPermId()));
+				ReviewAdapter extendedReview = new ReviewAdapter(reviewItem.getInnerReviewObject(), reviewItem.getServer());
 
+				extendedReview.setGeneralComments(
+					CrucibleServerFacadeImpl.getInstance().getGeneralComments(
+							reviewItem.getServer(), reviewItem.getPermId()));
 
 				files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
 				CrucibleFileInfoManager.getInstance().setFiles(reviewItem.getInnerReviewObject(), files);

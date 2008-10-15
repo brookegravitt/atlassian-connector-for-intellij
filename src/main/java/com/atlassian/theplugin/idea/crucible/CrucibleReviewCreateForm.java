@@ -788,6 +788,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			return null;
 		}
 
+		public void setGeneralComments(final List<GeneralComment> generalComments) {
+			// not implemented
+		}
+
 		public List<CrucibleReviewItemInfo> getReviewItems() {
 			return null;
 		}
