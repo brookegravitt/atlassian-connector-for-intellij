@@ -85,4 +85,6 @@ public interface Review {
 	String getReviewUrl();
 
 	Review getInnerReviewObject();
+
+	void setGeneralComments(final List<GeneralComment> generalComments);
 }
