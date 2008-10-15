@@ -41,8 +41,8 @@ import java.util.Map;
 
 public class BambooPlansForm extends JPanel {
 
-	private static final int MIN_TIMEZONE_DIFF = -12;
-	private static final int MAX_TIMEZONE_DIFF = 12;
+	private static final int MIN_TIMEZONE_DIFF = -24;
+	private static final int MAX_TIMEZONE_DIFF = 24;
 
 	private JPanel statusPanel;
 	private JPanel toolbarPanel;
