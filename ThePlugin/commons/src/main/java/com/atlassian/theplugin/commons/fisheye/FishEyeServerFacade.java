@@ -26,6 +26,6 @@ import java.util.List;
  */
 public interface FishEyeServerFacade extends ProductServerFacade {
 	
-	public List<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException;
+	List<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException;
 
 }

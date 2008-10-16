@@ -15,7 +15,7 @@ import java.util.List;
 public class FishEyeServerFacadeImpl implements FishEyeServerFacade {
 	private static FishEyeServerFacadeImpl instance;
 
-	protected FishEyeServerFacadeImpl(){
+	protected FishEyeServerFacadeImpl() {
 	}
 	
 	public void testServerConnection(final String url, final String userName, final String password) throws RemoteApiException {
