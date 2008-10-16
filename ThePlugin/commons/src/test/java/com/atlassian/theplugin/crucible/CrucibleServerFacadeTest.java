@@ -138,7 +138,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
     @SuppressWarnings("unchecked")
     Map<String, CrucibleSession> getSessionsFromFacade() {
-        Field f = null;
+        Field f;
         try {
             f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
             f.setAccessible(true);
@@ -532,6 +532,14 @@ public class CrucibleServerFacadeTest extends TestCase {
 				// not implemented
 			}
 
+			public void removeGeneralComment(final GeneralComment comment) {
+				// not implemented
+			}
+
+			public void removeVersionedComment(final VersionedComment versionedComment) {
+				// not implemented
+			}
+
 			public List<CrucibleReviewItemInfo> getReviewItems() {
 				return null;
 			}
@@ -613,7 +621,7 @@ public class CrucibleServerFacadeTest extends TestCase {
             }
 
             public String getReviewUrl() {
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
 
 			public Review getInnerReviewObject() {
@@ -621,6 +629,14 @@ public class CrucibleServerFacadeTest extends TestCase {
 			}
 
 			public void setGeneralComments(final List<GeneralComment> generalComments) {
+				// not implemented
+			}
+
+			public void removeGeneralComment(final GeneralComment comment) {
+				// not implemented
+			}
+
+			public void removeVersionedComment(final VersionedComment versionedComment) {
 				// not implemented
 			}
 
