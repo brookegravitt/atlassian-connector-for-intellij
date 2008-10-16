@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -18,7 +18,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	}
 
 	@Nullable
-	protected CrucibleServerCfg getFishEyeServerCfg(final AnActionEvent event) {
+	protected FishEyeServerCfg getFishEyeServerCfg(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (project == null) {
 			return null;
@@ -29,7 +29,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return null;
 		}
 
-		final CrucibleServerCfg fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final FishEyeServerCfg fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",
@@ -37,8 +37,32 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return null;
 		}
 		return fishEyeServer;
+	}
+
+	@Nullable
+	protected String getFishEyeRepository(final AnActionEvent event){
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project == null) {
+			return null;
+		}
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		if (projectCfg == null) {
+			return null;
+		}
+
+		final String repository = projectCfg.getDefaultFishEyeRepo();
+		if (repository == null) {
+			Messages.showInfoMessage(project,
+					"Cannot determine default FishEye repository. Make sure you have configured it correctly.",
+					"Configuration problem");
+			return null;
+		}
+		return repository;
 
 	}
+
+
 
 	protected boolean isFishEyeConfigured(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
