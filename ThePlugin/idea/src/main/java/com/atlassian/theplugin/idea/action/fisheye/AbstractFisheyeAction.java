@@ -40,7 +40,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	}
 
 	@Nullable
-	protected String getFishEyeRepository(final AnActionEvent event){
+	protected String getFishEyeRepository(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (project == null) {
 			return null;
