@@ -792,6 +792,14 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			// not implemented
 		}
 
+		public void removeGeneralComment(final GeneralComment comment) {
+			// not implemented
+		}
+
+		public void removeVersionedComment(final VersionedComment versionedComment) {
+			// not implemented
+		}
+
 		public List<CrucibleReviewItemInfo> getReviewItems() {
 			return null;
 		}
@@ -940,15 +948,14 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		reviewersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
-	private boolean isReviewerSelected() {
-		for (int i = 0; i < model.size(); i++) {
-			if (((UserListItem) model.get(i)).isSelected()) {
-				return true;
-			}
-		}
-
-		return false;
-
-	}
+//	private boolean isReviewerSelected() {
+//		for (int i = 0; i < model.size(); i++) {
+//			if (((UserListItem) model.get(i)).isSelected()) {
+//				return true;
+//			}
+//		}
+//
+//		return false;
+//	}
 }
   
