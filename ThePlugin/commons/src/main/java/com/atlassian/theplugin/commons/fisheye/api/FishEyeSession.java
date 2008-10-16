@@ -17,6 +17,10 @@
 package com.atlassian.theplugin.commons.fisheye.api;
 
 import com.atlassian.theplugin.commons.remoteapi.ProductSession;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+
+import java.util.List;
 
 public interface FishEyeSession extends ProductSession {
+	List<String> getRepositories() throws RemoteApiException;
 }

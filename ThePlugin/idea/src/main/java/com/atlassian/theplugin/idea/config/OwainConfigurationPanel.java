@@ -18,14 +18,12 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -49,24 +47,39 @@ public class OwainConfigurationPanel extends JPanel {
 	private JComboBox defaultCrucibleProjectCombo = new JComboBox();
 	private JComboBox defaultFishEyeServerCombo = new JComboBox();
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
+	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
-	private JTextField defaultFishEyeRepoEdit = new JTextField();
+	//private JTextField defaultFishEyeRepoEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
+	private final FishEyeServerFacade fishEyeServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
-	private static final CrucibleServerCfgWrapper NONE = new CrucibleServerCfgWrapper(null);
+	private static final CrucibleServerCfgWrapper NONE_CRUCIBLE = new CrucibleServerCfgWrapper(null);	
+	private static final FishEyeServerCfgWrapper NONE_FISHEYE = new FishEyeServerCfgWrapper(null);
 	private static final CrucibleProjectWrapper NO_PROJECT = new CrucibleProjectWrapper(null);
-	private static final CrucibleProjectWrapper PROJECT_FETCHING = new CrucibleProjectWrapper(null) {
+	private static final String NO_REPOSITORY = "None";
+	private static final String REPOSITORY_FETCHING = "Fetching...";
+	private static final CrucibleProjectWrapper PROJECT_CRUCIBLE_FETCHING = new CrucibleProjectWrapper(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
 		}
 
 	};
+//	private static final FishEyeProjectWrapper PROJECT_FISHEYE_FETCHING = new FishEyeProjectWrapper(null) {
+//		@Override
+//		public String toString() {
+//			return "Fetching...";
+//		}
+//
+//	};
+	
 	private static final CrucibleRepoWrapper REPO_FETCHING = new CrucibleRepoWrapper(null);
 
 	private final CrucibleProjectComboBoxModel crucProjectModel = new CrucibleProjectComboBoxModel();
 	private final CrucibleRepoComboBoxModel crucRepoModel = new CrucibleRepoComboBoxModel();
+	private final FishEyeRepositoryComboBoxModel fishRepositoryModel = new FishEyeRepositoryComboBoxModel();
+
 
 	private class CrucibleServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Collection<CrucibleServerCfgWrapper> data;
@@ -92,7 +105,7 @@ public class OwainConfigurationPanel extends JPanel {
 					return server;
 				}
 			}
-			return NONE;
+			return NONE_CRUCIBLE;
 		}
 
 		public void setSelectedItem(final Object anItem) {
@@ -124,7 +137,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 		public Object getElementAt(final int index) {
 			if (index == 0) {
-				return NONE;
+				return NONE_CRUCIBLE;
 			}
 			int i = 1;
 			for (CrucibleServerCfgWrapper server : getServers()) {
@@ -142,11 +155,12 @@ public class OwainConfigurationPanel extends JPanel {
 
 	}
 
-
 	public OwainConfigurationPanel(final ProjectConfiguration projectConfiguration,
-			final CrucibleServerFacade crucibleServerFacade, final UiTaskExecutor uiTaskExecutor) {
+			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
+			final UiTaskExecutor uiTaskExecutor) {
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
+		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
 		pathToProjectEdit.setToolTipText("Path to root directory in your repo. E.g. trunk/myproject.");
@@ -176,7 +190,7 @@ public class OwainConfigurationPanel extends JPanel {
 		builder.addLabel("Default Server", cc.xy(2, 11));
 		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
 		builder.addLabel("Default Repository", cc.xy(2, 13));
-		builder.add(defaultFishEyeRepoEdit, cc.xy(4, 13));
+		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 13));
 		builder.addLabel("Path to project", cc.xy(2, 15));
 		builder.add(pathToProjectEdit, cc.xy(4, 15));
 		//CHECKSTYLE:MAGIC:ON
@@ -193,23 +207,23 @@ public class OwainConfigurationPanel extends JPanel {
 
 		defaultFishEyeServerCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent e) {
-//				crucRepoModel.refresh();
+				fishRepositoryModel.refresh();
 			}
 		});
 
-		defaultFishEyeRepoEdit.getDocument().addDocumentListener(new DocumentListener() {
-			public void changedUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
-			}
-
-			public void insertUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
-			}
-
-			public void removeUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
-			}
-		});
+//		defaultFishEyeRepoEdit.getDocument().addDocumentListener(new DocumentListener() {
+//			public void changedUpdate(final DocumentEvent e) {
+//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.setgetText());
+//			}
+//
+//			public void insertUpdate(final DocumentEvent e) {
+//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
+//			}
+//
+//			public void removeUpdate(final DocumentEvent e) {
+//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
+//			}
+//		});
 
 		pathToProjectEdit.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(final DocumentEvent e) {
@@ -233,7 +247,8 @@ public class OwainConfigurationPanel extends JPanel {
 		defaultCrucibleProjectCombo.setModel(crucProjectModel);
 
 		defaultCrucibleRepositoryCombo.setModel(crucRepoModel);
-		defaultFishEyeRepoEdit.setText(projectConfiguration.getDefaultFishEyeRepo());
+		defaultFishEyeRepositoryCombo.setModel(fishRepositoryModel);
+		//defaultFishEyeRepoEdit.setText(projectConfiguration.getDefaultFishEyeRepo());
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 	}
 
@@ -304,6 +319,20 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 	}
 
+	private static class FishEyeServerCfgWrapper extends GenericWrapper<FishEyeServerCfg> {
+		public FishEyeServerCfgWrapper(final FishEyeServerCfg fishEyeProject) {
+			super(fishEyeProject);
+		}
+
+		@Override
+		public String toString() {
+			if (wrapped != null) {
+				return wrapped.getName();
+			}
+			return "None";
+		}
+	}
+
 
 	private static class CrucibleProjectWrapper extends GenericWrapper<Project> {
 		public CrucibleProjectWrapper(final Project crucibleProject) {
@@ -319,6 +348,19 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 	}
 
+//	private static class FishEyeProjectWrapper extends GenericWrapper<String> {
+//		public FishEyeProjectWrapper(final String fishEyeProject) {
+//			super(fishEyeProject);
+//		}
+//
+//		@Override
+//		public String toString() {
+//			if (wrapped.length() > 0) {
+//				return wrapped;
+//			}
+//			return "None";
+//		}
+//	}
 
 	private static class CrucibleRepoWrapper extends GenericWrapper<Repository> {
 		public CrucibleRepoWrapper(final Repository repository) {
@@ -334,7 +376,122 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 	}
 
+	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
+		private Map<ServerId, List<String>> data;
+		private static final int INITIAL_CAPACITY = 10;
 
+		private List<String> getRepositories(final FishEyeServerCfg fishEyeServerCfg) {
+			if (data == null){
+				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+			}
+
+			List<String> projects = data.get(fishEyeServerCfg.getServerId());
+			if (projects == null){
+				projects = MiscUtil.buildArrayList("None");
+				data.put(fishEyeServerCfg.getServerId(), projects);
+
+				uiTaskExecutor.execute(new UiTask(){
+
+					private String lastAction;
+					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
+						lastAction = "retrieving available projects from FishEye server";
+
+						final List<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
+						data.put(fishEyeServerCfg.getServerId(), repositories);
+					}
+
+					public void onSuccess() {
+						lastAction = "populating project combobox";
+						refresh();
+					}
+
+					public void onError() {
+						projectConfiguration.setDefaultFishEyeServerId(null);
+						data.remove(fishEyeServerCfg.getServerId());
+						refresh();
+					}
+
+					public String getLastAction() {
+						return lastAction;
+					}
+
+					public Component getComponent() {
+						return OwainConfigurationPanel.this;
+					}
+				});
+			}
+
+			return projects;
+		}
+
+		public int getSize() {
+				final FishEyeServerCfg currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+			if (currentFishEyeServerCfg != null) {
+				return getRepositories(currentFishEyeServerCfg).size() + 1;
+			} else {
+				return 1;
+			}
+		}
+
+		public Object getElementAt(final int index) {
+			if (index == 0) {
+				return NO_REPOSITORY;
+			}
+			int i = 1;
+			for (String repository : getRepositories(getCurrentFishEyeServerCfg())) {
+				if (i == index) {
+					return repository;
+				}
+				i++;
+			}
+			return null;
+		}
+
+		public void setSelectedItem(final Object anItem) {
+			final Object selectedItem = getSelectedItem();
+			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+				if (anItem != null) {
+					String item = (String) anItem;
+
+					if (item.length() != 0) {
+						projectConfiguration.setDefaultFishEyeRepo(item);
+					} else {
+						projectConfiguration.setDefaultFishEyeRepo(null);
+					}
+				} else {
+					projectConfiguration.setDefaultFishEyeRepo(null);
+				}
+				fireContentsChanged(this, -1, -1);
+			}
+		}
+
+		public Object getSelectedItem() {
+			final FishEyeServerCfg currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+			if (currentFishEyeServerCfg == null) {
+				return NO_REPOSITORY;
+			}
+			for (String repository : getRepositories(currentFishEyeServerCfg)) {
+				if (repository.length() == 0) {
+					return REPOSITORY_FETCHING;
+				}
+				if (repository.equals(projectConfiguration.getDefaultFishEyeRepo())) {
+					return repository;
+				}
+			}
+			return NO_REPOSITORY;
+		}
+
+		public void refresh() {
+			fireContentsChanged(this, -1, -1);
+		}
+
+		private FishEyeServerCfg getCurrentFishEyeServerCfg() {
+			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
+				return null;
+			}
+			return (FishEyeServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId());
+		}
+	}
 	private class CrucibleProjectComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<CrucibleProjectWrapper>> data;
 		private static final int INITIAL_CAPACITY = 10;
@@ -346,7 +503,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 			Collection<CrucibleProjectWrapper> projectsWrappers = data.get(crucibleServerCfg.getServerId());
 			if (projectsWrappers == null) {
-				projectsWrappers = MiscUtil.buildArrayList(PROJECT_FETCHING);
+				projectsWrappers = MiscUtil.buildArrayList(PROJECT_CRUCIBLE_FETCHING);
 				data.put(crucibleServerCfg.getServerId(), projectsWrappers);
 
 				uiTaskExecutor.execute(new UiTask() {
@@ -396,7 +553,7 @@ public class OwainConfigurationPanel extends JPanel {
 			}
 			for (CrucibleProjectWrapper project : getProjects(currentCrucibleServerCfg)) {
 				if (project.getWrapped() == null) {
-					return PROJECT_FETCHING;
+					return PROJECT_CRUCIBLE_FETCHING;
 				}
 				if (project.getWrapped().getKey().equals(projectConfiguration.getDefaultCrucibleProject())) {
 					return project;
@@ -460,8 +617,6 @@ public class OwainConfigurationPanel extends JPanel {
 
 	}
 
-
-
 	private class CrucibleRepoComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<CrucibleRepoWrapper>> data;
 		private static final int INITIAL_CAPACITY = 10;
@@ -522,7 +677,7 @@ public class OwainConfigurationPanel extends JPanel {
 			}
 			for (CrucibleRepoWrapper project : getRepositories(currentCrucibleServerCfg)) {
 				if (project.getWrapped() == null) {
-					return PROJECT_FETCHING;
+					return PROJECT_CRUCIBLE_FETCHING;
 				}
 				if (project.getWrapped().getName().equals(projectConfiguration.getDefaultCrucibleRepo())) {
 					return project;
@@ -588,20 +743,19 @@ public class OwainConfigurationPanel extends JPanel {
 
 
 	private class FishEyeServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Collection<CrucibleServerCfgWrapper> data;
+		private Collection<FishEyeServerCfgWrapper> data;
 
 		FishEyeServerComboBoxModel() {
 		}
 
-		private Collection<CrucibleServerCfgWrapper> getServers() {
+		private Collection<FishEyeServerCfgWrapper> getServers() {
 			if (data == null) {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
-					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
-						if (crucibleServerCfg.isFisheyeInstance()) {
-							data.add(new CrucibleServerCfgWrapper(crucibleServerCfg));
-						}
+					if (serverCfg.getServerType() == ServerType.FISHEYE_SERVER && serverCfg.isEnabled()) {
+						FishEyeServerCfg fishEyeServerCfg = (FishEyeServerCfg) serverCfg;
+							data.add(new FishEyeServerCfgWrapper(fishEyeServerCfg));
+
 					}
 				}
 			}
@@ -609,20 +763,20 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
-			for (CrucibleServerCfgWrapper server : getServers()) {
+			for (FishEyeServerCfgWrapper server : getServers()) {
 				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultFishEyeServerId())) {
 					return server;
 				}
 			}
-			return NONE;
+			return NONE_FISHEYE;
 		}
 
 		public void setSelectedItem(final Object anItem) {
 			final Object selectedItem = getSelectedItem();
 			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
 				if (anItem != null) {
-					CrucibleServerCfgWrapper item = (CrucibleServerCfgWrapper) anItem;
-					final CrucibleServerCfg wrapped = item.getWrapped();
+					FishEyeServerCfgWrapper item = (FishEyeServerCfgWrapper) anItem;
+					final FishEyeServerCfg wrapped = item.getWrapped();
 					if (wrapped != null) {
 						projectConfiguration.setDefaultFishEyeServerId(wrapped.getServerId());
 						projectConfiguration.setDefaultFishEyeRepo(null);
@@ -640,10 +794,10 @@ public class OwainConfigurationPanel extends JPanel {
 
 		public Object getElementAt(final int index) {
 			if (index == 0) {
-				return NONE;
+				return NONE_FISHEYE;
 			}
 			int i = 1;
-			for (CrucibleServerCfgWrapper server : getServers()) {
+			for (FishEyeServerCfgWrapper server : getServers()) {
 				if (i == index) {
 					return server;
 				}

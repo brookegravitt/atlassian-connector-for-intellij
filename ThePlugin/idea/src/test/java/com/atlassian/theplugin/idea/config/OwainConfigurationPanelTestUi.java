@@ -16,16 +16,14 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.easymock.EasyMock;
@@ -47,23 +45,32 @@ public class OwainConfigurationPanelTestUi {
 		crucibleServerCfg.setFisheyeInstance(true);
 		final CrucibleServerCfg crucibleServerCfg2 = new CrucibleServerCfg("Cruc Server 2", new ServerId());
 		final CrucibleServerCfg crucibleServerCfg3 = new CrucibleServerCfg("Cruc Server 3", new ServerId());
+		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerId());
+		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerId());
 		final ProjectConfiguration projectConfiguration = new ProjectConfiguration(MiscUtil.buildArrayList(
 				crucibleServerCfg2,
 				new BambooServerCfg("Bamboo Server 1", new ServerId()),
 				crucibleServerCfg,
-				crucibleServerCfg3));
+				crucibleServerCfg3, fishEyeServerCfg0, fishEyeServerCfg1));
 		projectConfiguration.setDefaultCrucibleServerId(crucibleServerCfg2.getServerId());
 		projectConfiguration.setDefaultCrucibleProject("PR-5");
 		projectConfiguration.setDefaultCrucibleRepo("Connector");
 
+		projectConfiguration.setDefaultFishEyeServerId(fishEyeServerCfg1.getServerId());
+		projectConfiguration.setDefaultFishEyeRepo("studio");
+		projectConfiguration.setFishEyeProjectPath("trunk/thePlugin");
+
 		List<Project> projects1 = MiscUtil.buildArrayList(makeProject("id1", "PR-1", "Crucible Project 1"),
 				makeProject("id2", "PR-2", "Crucible Project 2"));
+		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
+
 
 		final List<Project> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg)).andReturn(projects1).anyTimes();
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg2)).andAnswer(new IAnswer<List<Project>>() {
+
 			public List<Project> answer() throws Throwable {
 				Thread.sleep(2000);
 				return projects2;
@@ -82,9 +89,22 @@ public class OwainConfigurationPanelTestUi {
 
 			}
 		}).anyTimes();
+
 		EasyMock.replay(crucibleServerFacade);
 
-		JPanel panel = new OwainConfigurationPanel(projectConfiguration, crucibleServerFacade,
+		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
+		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg0)).andReturn(repos0).anyTimes();
+		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<List<String>>(){
+
+			public List<String> answer() throws Throwable {
+				Thread.sleep(2000);
+				return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
+			}
+		}).anyTimes();
+
+		EasyMock.replay(fishEyeServerFacade);
+		
+		JPanel panel = new OwainConfigurationPanel(projectConfiguration, crucibleServerFacade, fishEyeServerFacade,
 				new DefaultSwingUiTaskExecutor());
 
 		JFrame frame = new JFrame("OwainConfigurationPanel test");

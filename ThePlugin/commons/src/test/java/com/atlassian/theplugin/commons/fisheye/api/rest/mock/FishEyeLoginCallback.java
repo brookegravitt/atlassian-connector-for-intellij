@@ -64,7 +64,8 @@ public class FishEyeLoginCallback implements JettyMockServer.Callback {
 		assertEquals(expectedUsername, username);
 		assertEquals(expectedPassword, password);
 
-		ResourceUtil.copyResource(response.getOutputStream(), FishEyeLoginCallback.class, fail ? "loginFailedResponse.xml" : "loginSuccessResponse.xml");
+		ResourceUtil.copyResource(response.getOutputStream(), FishEyeLoginCallback.class,
+				fail ? "loginFailedResponse.xml" : "loginSuccessResponse.xml");
 		response.getOutputStream().flush();
 
 	}

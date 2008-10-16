@@ -16,10 +16,7 @@
 package com.atlassian.theplugin.commons.fisheye.api.rest;
 
 import com.atlassian.theplugin.commons.fisheye.api.FishEyeSession;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.util.UrlUtil;
@@ -34,11 +31,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FishEyeRestSession extends AbstractHttpSession implements FishEyeSession {
 	static final String LOGIN_ACTION = "/api/rest/login";
 	static final String LOGOUT_ACTION = "/api/rest/logout";
+	static final String LIST_REPOSITORIES_ACTION = "/api/rest/repositories";
 	private String authToken;
 
 	/**
@@ -58,15 +57,14 @@ public class FishEyeRestSession extends AbstractHttpSession implements FishEyeSe
 	protected void preprocessResult(final Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
-	public void login(final String name, final char[] aPassword) throws RemoteApiLoginException {
+	public void login(final String name, char[] aPassword) throws RemoteApiLoginException {
 		String loginUrl;
 		try {
 			if (name == null || aPassword == null) {
 				throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
 			}
-			String pass = String.valueOf(aPassword);
 			loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
-					+ URLEncoder.encode(pass, "UTF-8");
+					+ URLEncoder.encode(String.valueOf(aPassword), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
 		}
@@ -134,4 +132,31 @@ public class FishEyeRestSession extends AbstractHttpSession implements FishEyeSe
 		return authToken != null;  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	public List<String> getRepositories()  throws RemoteApiException {		
+		if (!isLoggedIn()) {
+			throw new IllegalStateException("Calling method without calling login() first");
+		}
+
+		String requestUrl = baseUrl + LIST_REPOSITORIES_ACTION;
+		try {
+			Document doc = retrieveGetResponse(requestUrl);
+
+			XPath xpath = XPath.newInstance("/response/string");
+			@SuppressWarnings("unchecked")
+			List<Element> elements = xpath.selectNodes(doc);
+			List<String> myRepositories = new ArrayList<String>();
+
+			if (elements != null && !elements.isEmpty()) {
+				for (Element element : elements) {
+					myRepositories.add(element.getText());
+				}
+			}
+			return myRepositories;
+		} catch (IOException e) {
+			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
+		}
+	}
+	
 }

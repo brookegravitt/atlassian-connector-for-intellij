@@ -172,7 +172,7 @@ public class ProjectConfiguration {
 		return defaultFishEyeServerId;
 	}
 
-	public CrucibleServerCfg getDefaultFishEyeServer() {
+	public FishEyeServerCfg getDefaultFishEyeServer() {
 		if (defaultFishEyeServerId == null) {
 			return null;
 		}
@@ -181,11 +181,11 @@ public class ProjectConfiguration {
 
 		// no additional check - let IDE handle such error in a standard way (error dialog)
 		// in unlikely event of some fuck-up
-		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
-		if (crucible.isEnabled() == false || !crucible.isFisheyeInstance()) {
+		final FishEyeServerCfg fishEyeServerCfg = (FishEyeServerCfg) serverCfg;
+		if (fishEyeServerCfg.isEnabled() == false) {
 			return null;
 		}
-		return crucible;
+		return fishEyeServerCfg;
 	}
 
 	public void setDefaultFishEyeServerId(final ServerId defaultFishEyeServerId) {
@@ -236,14 +236,11 @@ public class ProjectConfiguration {
 		if (serverCfg == null) {
 			return false;
 		}
-		if (!(serverCfg instanceof CrucibleServerCfg)) {
+		if (!(serverCfg instanceof FishEyeServerCfg)) {
 			return false;
 		}
+		
 
-		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
-		if (crucible.isEnabled() == false || !crucible.isFisheyeInstance()) {
-			return false;
-		}
-		return true;
+		return serverCfg.isEnabled();
 	}
 }
