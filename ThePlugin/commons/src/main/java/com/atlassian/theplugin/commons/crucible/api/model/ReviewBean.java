@@ -64,6 +64,30 @@ public class ReviewBean implements Review {
 		this.generalComments = generalComments;
 	}
 
+	public void removeGeneralComment(final GeneralComment comment) {
+		if (!comment.isReply()) {
+			generalComments.remove(comment);
+		} else {
+			for (GeneralComment generalComment : generalComments) {
+				if (generalComment.getReplies().remove(comment)) {
+					return;
+				}
+			}
+		}
+	}
+
+	public void removeVersionedComment(final VersionedComment comment) {
+		if (!comment.isReply()) {
+			versionedComments.remove(comment);
+		} else {
+			for (VersionedComment versionedComment : versionedComments) {
+				if (versionedComment.getReplies().remove(comment)) {
+					return;
+				}
+			}
+		}
+	}
+
 	public void setTransitions(List<Action> transitions) {
 		this.transitions = transitions;
 	}

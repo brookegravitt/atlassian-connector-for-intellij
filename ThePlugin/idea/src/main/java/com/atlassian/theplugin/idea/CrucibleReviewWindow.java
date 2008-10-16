@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -292,11 +293,14 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			try {
 				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(), newComment);
 				setCommentAuthor(review.getServer(), comment);
+				review.getGeneralComments().add(comment);
 				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				valueNotYetInitialized.printStackTrace(); 
 			}
 		}
 
@@ -307,11 +311,16 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), newComment);
 				setCommentAuthor(review.getServer(), comment);
+				review.getGeneralComments().get(
+					review.getGeneralComments().indexOf(parentComment)).getReplies().add(comment);
 				eventBroker.trigger(new GeneralCommentReplyAddedOrEdited(this, review, parentComment, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
+			}
+			catch (ValueNotYetInitialized valueNotYetInitialized) {
+				valueNotYetInitialized.printStackTrace();
 			}
 		}
 
@@ -329,11 +338,14 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 					file.getItemInfo().setComments(comments);
 				}
 				comments.add(newComment);
+				review.getVersionedComments().add(newComment);
 				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				valueNotYetInitialized.printStackTrace();
 			}
 		}
 
@@ -345,6 +357,10 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
 						parentComment.getPermId(), comment);
 				setCommentAuthor(review.getServer(), newComment);
+
+//				review.getVersionedComments().get(review.getVersionedComments().indexOf(parentComment))
+//						.getReplies().add(newComment);
+
 				eventBroker.trigger(new VersionedCommentReplyAddedOrEdited(
 						this, review, file.getItemInfo(), parentComment, newComment));
 			} catch (RemoteApiException e) {
@@ -352,6 +368,9 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
 			}
+//			catch (ValueNotYetInitialized valueNotYetInitialized) {
+//				valueNotYetInitialized.printStackTrace();
+//			}
 		}
 
 		@Override
@@ -385,6 +404,13 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
 			try {
 				facade.removeComment(review.getServer(), review.getPermId(), comment);
+
+				if (comment instanceof GeneralComment) {
+					review.removeGeneralComment((GeneralComment) comment);
+				} else if (comment instanceof VersionedComment) {
+ 					review.removeVersionedComment((VersionedComment) comment);
+				}
+
 				eventBroker.trigger(new CommentRemoved(this, review, comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);

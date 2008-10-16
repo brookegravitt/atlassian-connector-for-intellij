@@ -87,4 +87,8 @@ public interface Review {
 	Review getInnerReviewObject();
 
 	void setGeneralComments(final List<GeneralComment> generalComments);
+
+	void removeGeneralComment(final GeneralComment comment);
+
+	void removeVersionedComment(final VersionedComment versionedComment);
 }
