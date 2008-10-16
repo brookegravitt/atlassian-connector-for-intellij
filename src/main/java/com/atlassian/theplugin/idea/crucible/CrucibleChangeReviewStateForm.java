@@ -81,41 +81,41 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		switch (action) {
 			case CLOSE:
 				setTitle("Close Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Close Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Close Review");
 				summaryPanel.setBackground(UIUtil.getWindowColor());
 				break;
 			case APPROVE:
 				setTitle("Approve Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Approve Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Approve Review");
 				break;
 			case SUBMIT:
 				setTitle("Submit Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Submit Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Submit Review");
 				break;
 			case ABANDON:
 				setTitle("Abandon Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Abandon Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Abandon Review");
 				break;
 			case SUMMARIZE:
 				setTitle("Summarize Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Summarize Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Summarize Review");
 				break;
 			case REOPEN:
 				setTitle("Reopen Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Reopen Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Reopen Review");
 				break;
 			case RECOVER:
 				setTitle("Recover Abandoned Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Recover Abandoned Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Recover Abandoned Review");
 				break;
 			case COMPLETE:
 				setTitle("Complete Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Complete Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Complete Review");
 				publishPanel.setVisible(true);
 				break;
 			case UNCOMPLETE:
 				setTitle("Uncomplete Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete Review...");
+				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete Review");
 				break;
 		}
 
