@@ -187,4 +187,12 @@ public class ReviewAdapter {
 	public void setGeneralComments(final List<GeneralComment> generalComments) {
 		review.setGeneralComments(generalComments);
 	}
+
+	public void removeGeneralComment(final GeneralComment comment) {
+		review.removeGeneralComment(comment);
+	}
+
+	public void removeVersionedComment(final VersionedComment versionedComment) {
+		review.removeVersionedComment(versionedComment);
+	}
 }

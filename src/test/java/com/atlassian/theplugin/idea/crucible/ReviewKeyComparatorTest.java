@@ -98,6 +98,14 @@ public class ReviewKeyComparatorTest extends TestCase {
 				// not implemented
 			}
 
+			public void removeGeneralComment(final GeneralComment comment) {
+				// not implemented
+			}
+
+			public void removeVersionedComment(final VersionedComment versionedComment) {
+				// not implemented
+			}
+
 			public User getAuthor() {
 				return null;
 			}
