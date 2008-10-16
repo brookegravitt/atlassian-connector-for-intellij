@@ -227,9 +227,9 @@ public class CommentEditForm extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		commentText = new JTextArea();
-		commentText.setLineWrap(false);
+		commentText.setLineWrap(true);
 		commentText.setText("");
-		commentText.setWrapStyleWord(false);
+		commentText.setWrapStyleWord(true);
 		commentPane.setViewportView(commentText);
 		toolPanel = new JPanel();
 		toolPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
