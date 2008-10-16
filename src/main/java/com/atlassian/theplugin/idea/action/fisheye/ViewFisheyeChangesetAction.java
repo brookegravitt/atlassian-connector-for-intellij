@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -26,9 +26,10 @@ public class ViewFisheyeChangesetAction extends AbstractFisheyeAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		String rev = ChangeListUtil.getRevision(event);
-		CrucibleServerCfg cfg = getFishEyeServerCfg(event);
-		if (cfg != null) {
-			String url = cfg.getUrl() + "/changelog/" + cfg.getRepositoryName() + "/?cs=" + rev;
+		FishEyeServerCfg cfg = getFishEyeServerCfg(event);
+		String repository = getFishEyeRepository(event);
+		if (cfg != null && repository != null) {
+			String url = cfg.getUrl() + "/changelog/" + repository + "/?cs=" + rev;
 			BrowserUtil.launchBrowser(url);
 		}
 	}

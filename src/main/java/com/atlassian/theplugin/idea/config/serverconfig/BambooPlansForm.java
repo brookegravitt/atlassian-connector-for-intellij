@@ -70,7 +70,7 @@ public class BambooPlansForm extends JPanel {
 	private final BambooServerConfigForm serverPanel;
 
 	public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
-						   final BambooServerConfigForm bambooServerConfigForm) {
+			final BambooServerConfigForm bambooServerConfigForm) {
 		this.bambooServerFacade = bambooServerFacade;
 		this.bambooServerCfg = bambooServerCfg;
 		this.serverPanel = bambooServerConfigForm;
@@ -372,7 +372,9 @@ public class BambooPlansForm extends JPanel {
 		plansPanel.add(listPanel, gbc);
 		scrollList = new JScrollPane();
 		scrollList.setBackground(new Color(-1));
-		listPanel.add(scrollList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		listPanel.add(scrollList, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		scrollList.setViewportView(list);
 		toolbarPanel = new JPanel();
 		toolbarPanel.setLayout(new GridBagLayout());
@@ -414,7 +416,8 @@ public class BambooPlansForm extends JPanel {
 		scrollPane1.setEnabled(true);
 		scrollPane1.setHorizontalScrollBarPolicy(31);
 		scrollPane1.setVerticalScrollBarPolicy(20);
-		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
 		scrollPane1.setViewportView(statusPane);
@@ -443,7 +446,7 @@ public class BambooPlansForm extends JPanel {
 		gbc.insets = new Insets(0, 12, 0, 12);
 		timezonePanel.add(label1, gbc);
 		final JLabel label2 = new JLabel();
-		label2.setText("Hours");
+		label2.setText("Hours ahead of the the build server");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2;
 		gbc.gridy = 0;
