@@ -247,9 +247,11 @@ public abstract class AbstractHttpSession {
 
                 client.executeMethod(method);
 
-				if (method.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+                final int httpStatus = method.getStatusCode();
+                if (httpStatus == HttpStatus.SC_NO_CONTENT) {
 					return doc;
-				} else if (method.getStatusCode() != HttpStatus.SC_OK) {
+				} else if (httpStatus != HttpStatus.SC_OK
+                        && httpStatus != HttpStatus.SC_CREATED) {
 
 					Document document;
 					SAXBuilder builder = new SAXBuilder();
