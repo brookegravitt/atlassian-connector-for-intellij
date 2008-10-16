@@ -6,7 +6,7 @@
  * You may obtain a copy of the License at
  * 
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ public class BuildStackTraceAction extends AnAction {
 		if (tw != null) {
 			tw.showBuildStackTrace();
 		}
-    }
+	}
 
 	@Override
 	public void update(AnActionEvent event) {
@@ -36,7 +36,14 @@ public class BuildStackTraceAction extends AnAction {
 		boolean enabled = false;
 		if (tw != null) {
 			enabled = tw.canShowFailedTests();
+			if (!enabled) {
+				event.getPresentation().setText("Show Failed Tests. Select failed plan or you are not connected to Bamboo >= 2.x");
+			} else {
+				event.getPresentation().setText("Show Failed Tests");
+			}
 		}
+
 		event.getPresentation().setEnabled(enabled);
+
 	}
 }
