@@ -381,16 +381,16 @@ public class OwainConfigurationPanel extends JPanel {
 		private static final int INITIAL_CAPACITY = 10;
 
 		private List<String> getRepositories(final FishEyeServerCfg fishEyeServerCfg) {
-			if (data == null){
+			if (data == null) {
 				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 			}
 
 			List<String> projects = data.get(fishEyeServerCfg.getServerId());
-			if (projects == null){
+			if (projects == null) {
 				projects = MiscUtil.buildArrayList("None");
 				data.put(fishEyeServerCfg.getServerId(), projects);
 
-				uiTaskExecutor.execute(new UiTask(){
+				uiTaskExecutor.execute(new UiTask() {
 
 					private String lastAction;
 					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
