@@ -143,7 +143,7 @@
               <gridbag top="0" left="12" bottom="0" right="0" weightx="1.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="Hours"/>
+              <text value="Hours ahead of the the build server"/>
             </properties>
           </component>
         </children>
