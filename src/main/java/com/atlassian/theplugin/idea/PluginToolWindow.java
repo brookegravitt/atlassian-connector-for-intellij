@@ -48,7 +48,7 @@ import java.util.Set;
 public class PluginToolWindow extends ContentManagerAdapter {
 
 	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
-	private Set<ToolWindowPanels> bottomPanels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_BOTTOM_TABS);
+//	private Set<ToolWindowPanels> bottomPanels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_BOTTOM_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
@@ -56,7 +56,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	// one space to have better horizontal separation between the header and the tabs
 	public static final String TOOL_WINDOW_NAME = "Atlassian ";
 	private static final int INITIAL_NUMBER_OF_TABS = 3;
-	private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
+	//private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
 	private final CfgManager cfgManager;
@@ -115,9 +115,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		panels.add(toolWindowPanel);
 	}
 
-	public void registerBottomPanel(ToolWindowPanels toolWindowPanel) {
-		bottomPanels.add(toolWindowPanel);
-	}
+//	public void registerBottomPanel(ToolWindowPanels toolWindowPanel) {
+//		bottomPanels.add(toolWindowPanel);
+//	}
 
 
 	public void showHidePanels() {
