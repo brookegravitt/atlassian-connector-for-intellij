@@ -27,17 +27,16 @@ import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FishEyeRestSession extends AbstractHttpSession implements FishEyeSession {
-	static final String LOGIN_ACTION = "/api/rest/login";
-	static final String LOGOUT_ACTION = "/api/rest/logout";
-	static final String LIST_REPOSITORIES_ACTION = "/api/rest/repositories";
+	static final String REST_BASE_URL = "/api/rest/";
+	static final String LOGIN_ACTION = REST_BASE_URL + "login";
+	static final String LOGOUT_ACTION = REST_BASE_URL + "logout";
+	static final String LIST_REPOSITORIES_ACTION = REST_BASE_URL + "repositories";
 	private String authToken;
 
 	/**
@@ -51,23 +50,24 @@ public class FishEyeRestSession extends AbstractHttpSession implements FishEyeSe
 		super(baseUrl);		
 	}
 
+	@Override
 	protected void adjustHttpHeader(final HttpMethod method) {
 	}
 
+	@Override
 	protected void preprocessResult(final Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
+	
 	public void login(final String name, char[] aPassword) throws RemoteApiLoginException {
 		String loginUrl;
-		try {
-			if (name == null || aPassword == null) {
-				throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
-			}
-			loginUrl = baseUrl + LOGIN_ACTION + "?username=" + URLEncoder.encode(name, "UTF-8") + "&password="
-					+ URLEncoder.encode(String.valueOf(aPassword), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException("URLEncoding problem: " + e.getMessage());
+
+		if (name == null || aPassword == null) {
+			throw new RemoteApiLoginException("Corrupted configuration. Username or Password null");
 		}
+		loginUrl = baseUrl + LOGIN_ACTION + "?username=" + UrlUtil.encodeUrl(name) + "&password="
+				+ UrlUtil.encodeUrl(String.valueOf(aPassword));
+
 
 		try {
 			Document doc = retrieveGetResponse(loginUrl);
