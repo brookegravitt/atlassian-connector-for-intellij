@@ -181,11 +181,18 @@ public class ProjectConfiguration {
 
 		// no additional check - let IDE handle such error in a standard way (error dialog)
 		// in unlikely event of some fuck-up
-		final FishEyeServerCfg fishEyeServerCfg = (FishEyeServerCfg) serverCfg;
-		if (fishEyeServerCfg.isEnabled() == false) {
+		if (serverCfg instanceof FishEyeServerCfg) {
+			final FishEyeServerCfg fishEyeServerCfg = (FishEyeServerCfg) serverCfg;
+			if (fishEyeServerCfg.isEnabled() == false) {
+				return null;
+			}
+			return fishEyeServerCfg;
+		} else {
+			//temporary situation we migrate from Crucible as FishEye to pure FishEye servers
+			//this means that default FishEye server in config file is Crucible
 			return null;
+
 		}
-		return fishEyeServerCfg;
 	}
 
 	public void setDefaultFishEyeServerId(final ServerId defaultFishEyeServerId) {
