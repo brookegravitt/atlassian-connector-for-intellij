@@ -18,7 +18,11 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -154,8 +158,8 @@ public class OwainConfigurationPanel extends JPanel {
 		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
-		pathToProjectEdit.setToolTipText(
-				"Path to root directory in your repo. E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
+		pathToProjectEdit.setToolTipText("Path to root directory in your repo. " +
+				"E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
