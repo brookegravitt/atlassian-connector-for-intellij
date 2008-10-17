@@ -52,7 +52,7 @@ public class AtlassianTree extends JTree {
 				int selRow = getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1) {
-					if (selPath != null) {
+					if (selPath != null  && e.getClickCount() > 1) {
 						AtlassianTreeNode selectedNode = (AtlassianTreeNode) selPath.getLastPathComponent();
 						AtlassianClickAction action = selectedNode.getAtlassianClickAction();
 						if (action != null) {
