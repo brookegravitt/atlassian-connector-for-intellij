@@ -130,7 +130,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			setDefaultProjectConfiguration();
 			return;
 		}
-		if (projectConfiguration.getDefaultFishEyeServer() == null){
+		if (projectConfiguration.getDefaultFishEyeServer() == null) {
 			//means that configuration holds Crucible as FishEye server.
 			//in the future this code should be removed
 			//now resolves migration problem from Crucible as FishEye to pure FishEye
