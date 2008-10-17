@@ -84,9 +84,13 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 		}
 		final VcsRevisionNumber rev = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
 
-		final String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(),
-				projectCfg.getFishEyeProjectPath(), relativePath, lineNumber);
-		performUrlAction(url);
+		final String url;
+		if (projectCfg != null) {
+			url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), projectCfg.getFishEyeProjectPath(),
+					relativePath, lineNumber);
+			performUrlAction(url);
+		}
+
 	}
 
 	public interface FisheyeAction {

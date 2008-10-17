@@ -377,15 +377,15 @@ public class OwainConfigurationPanel extends JPanel {
 	}
 
 	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Map<ServerId, List<String>> data;
+		private Map<ServerId, Collection<String>> data;
 		private static final int INITIAL_CAPACITY = 10;
 
-		private List<String> getRepositories(final FishEyeServerCfg fishEyeServerCfg) {
+		private Collection<String> getRepositories(final FishEyeServerCfg fishEyeServerCfg) {
 			if (data == null) {
 				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 			}
 
-			List<String> projects = data.get(fishEyeServerCfg.getServerId());
+			Collection<String> projects = data.get(fishEyeServerCfg.getServerId());
 			if (projects == null) {
 				projects = MiscUtil.buildArrayList("None");
 				data.put(fishEyeServerCfg.getServerId(), projects);
@@ -396,7 +396,7 @@ public class OwainConfigurationPanel extends JPanel {
 					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
 						lastAction = "retrieving available projects from FishEye server";
 
-						final List<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
+						final Collection<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
 						data.put(fishEyeServerCfg.getServerId(), repositories);
 					}
 
