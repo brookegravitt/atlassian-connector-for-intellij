@@ -37,8 +37,9 @@ public class BuildStackTraceAction extends AnAction {
 		if (tw != null) {
 			enabled = tw.canShowFailedTests();
 			if (!enabled) {
-				event.getPresentation()
-						.setText("<html>Show Failed Tests.<br>Failed plan is not selected<br>or you are not connected <br>to Bamboo >= 2.x</html>");
+				event.getPresentation().setText(
+						"<html>Show Failed Tests.<br>Failed plan is not selected<br>"
+					 		+ "or you are not connected <br>to Bamboo >= 2.x</html>");
 			} else {
 				event.getPresentation().setText("Show Failed Tests");
 			}
