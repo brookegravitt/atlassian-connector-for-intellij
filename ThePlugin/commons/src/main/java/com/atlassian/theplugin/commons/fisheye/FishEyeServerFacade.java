@@ -19,13 +19,13 @@ import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * User: pmaruszak
  */
 public interface FishEyeServerFacade extends ProductServerFacade {
 	
-	List<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException;
+	Collection<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException;
 
 }

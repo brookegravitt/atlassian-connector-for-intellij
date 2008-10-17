@@ -7,7 +7,7 @@ import com.atlassian.theplugin.commons.fisheye.api.rest.FishEyeRestSession;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * User: pmaruszak
@@ -42,9 +42,9 @@ public class FishEyeServerFacadeImpl implements FishEyeServerFacade {
 
 	}
 	
-	public List<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException {
+	public Collection<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException {
 		FishEyeSession fishEyeSession = getSession(server.getUrl());
-		List<String> repositories;
+		Collection<String> repositories;
 		
 		fishEyeSession.login(server.getUsername(), server.getPassword().toCharArray());
 		repositories = fishEyeSession.getRepositories();

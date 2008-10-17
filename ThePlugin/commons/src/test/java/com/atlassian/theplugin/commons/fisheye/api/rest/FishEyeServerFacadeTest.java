@@ -16,7 +16,7 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * User: pmaruszak
@@ -30,7 +30,7 @@ public class FishEyeServerFacadeTest extends TestCase {
 	private FishEyeServerFacadeImpl facade;
 
 
-
+	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		  ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
@@ -51,16 +51,6 @@ public class FishEyeServerFacadeTest extends TestCase {
 		EasyMock.reportMatcher(new CharArrayEquals(in));
 		return null;
 	}
-	class ComparableCharA implements Comparable<char[]> {
-
-		char[] value;
-		ComparableCharA(char[] initialValue){
-			this.value = initialValue;
-		}
-		public int compareTo(final char[] chars) {
-			return 0;  
-		}
-	};
 
 	public static char[] charArrayContains(char[] expectedCharArray)
 	{
@@ -83,18 +73,19 @@ public class FishEyeServerFacadeTest extends TestCase {
 		replay(fishEyeSessionMock);
 
 		// test call		
-		List<String> ret = facade.getRepositories(server);
+		Collection<String> ret = facade.getRepositories(server);
 		assertEquals(2, ret.size());
-		for (int i = 0; i < 2; i++) {
-			String id = Integer.toString(i);
-			assertEquals("RepoName" + id, ret.get(i));
-		}
+
+		int i=0;
+		for (String repoName: ret){
+			assertEquals("RepoName" + i++, repoName);
+		}		
 		EasyMock.verify(fishEyeSessionMock);
 	}
 
 
 	private String prepareRepositoryData(final int i) {        
-		return "RepoName" + Integer.toString(i);
+		return "RepoName" + i;
 
 	}
 
