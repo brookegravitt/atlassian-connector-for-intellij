@@ -75,17 +75,20 @@ public class CommentAction extends AnAction {
 		if (ed == null) {
 			return;
 		}
-		Project project = DataKeys.PROJECT.getData(e.getDataContext());
+		final Project project = e.getData(DataKeys.PROJECT);
+		if (project == null) {
+			return;
+		}
 
-		int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart());
+		final int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
 		int selEndOffset = ed.getSelectionModel().getSelectionEnd();
 		int end = ed.getDocument().getLineNumber(selEndOffset);
 		int lastLineOffset = ed.getDocument().getLineStartOffset(end);
 
-		++start;
 		// mind the fact that last line should not necessarily be included in the comment, because
 		// the caret may be at the beginning of the line while selecting
-		if (selEndOffset != lastLineOffset) {
+		// start > end is to handle empty selections (just a caret set) at the very beginning of a line
+		if (selEndOffset != lastLineOffset || start > end) {
 			++end;
 		}
 
