@@ -105,7 +105,7 @@ public final class CrucibleHelper {
 				}
 				CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem);
 				if (displayFile.canNavigateToSource()) {
-					displayFile.navigate(true);
+					displayFile.navigate(false);
 				}
 			}
 		});
@@ -209,7 +209,7 @@ public final class CrucibleHelper {
 							}
 							CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 							// @todo all is it needed here?
-							displayFile.navigate(true);
+							displayFile.navigate(false);
 						}
 					}
 				});
