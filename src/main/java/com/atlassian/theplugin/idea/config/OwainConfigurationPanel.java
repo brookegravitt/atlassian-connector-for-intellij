@@ -18,7 +18,11 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -49,7 +53,6 @@ public class OwainConfigurationPanel extends JPanel {
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
-	//private JTextField defaultFishEyeRepoEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
@@ -66,14 +69,6 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 	};
-//	private static final FishEyeProjectWrapper PROJECT_FISHEYE_FETCHING = new FishEyeProjectWrapper(null) {
-//		@Override
-//		public String toString() {
-//			return "Fetching...";
-//		}
-//
-//	};
-	
 	private static final CrucibleRepoWrapper REPO_FETCHING = new CrucibleRepoWrapper(null);
 
 	private final CrucibleProjectComboBoxModel crucProjectModel = new CrucibleProjectComboBoxModel();
@@ -163,7 +158,7 @@ public class OwainConfigurationPanel extends JPanel {
 		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
-		pathToProjectEdit.setToolTipText("Path to root directory in your repo. E.g. trunk/myproject.");
+		pathToProjectEdit.setToolTipText("Path to root directory in your repo. E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
@@ -191,7 +186,7 @@ public class OwainConfigurationPanel extends JPanel {
 		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
 		builder.addLabel("Default Repository", cc.xy(2, 13));
 		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 13));
-		builder.addLabel("Path to project", cc.xy(2, 15));
+		builder.addLabel("Path to Project", cc.xy(2, 15));
 		builder.add(pathToProjectEdit, cc.xy(4, 15));
 		//CHECKSTYLE:MAGIC:ON
 
@@ -210,20 +205,6 @@ public class OwainConfigurationPanel extends JPanel {
 				fishRepositoryModel.refresh();
 			}
 		});
-
-//		defaultFishEyeRepoEdit.getDocument().addDocumentListener(new DocumentListener() {
-//			public void changedUpdate(final DocumentEvent e) {
-//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.setgetText());
-//			}
-//
-//			public void insertUpdate(final DocumentEvent e) {
-//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
-//			}
-//
-//			public void removeUpdate(final DocumentEvent e) {
-//				projectConfiguration.setDefaultFishEyeRepo(defaultFishEyeRepoEdit.getText());
-//			}
-//		});
 
 		pathToProjectEdit.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(final DocumentEvent e) {
@@ -348,20 +329,6 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 	}
 
-//	private static class FishEyeProjectWrapper extends GenericWrapper<String> {
-//		public FishEyeProjectWrapper(final String fishEyeProject) {
-//			super(fishEyeProject);
-//		}
-//
-//		@Override
-//		public String toString() {
-//			if (wrapped.length() > 0) {
-//				return wrapped;
-//			}
-//			return "None";
-//		}
-//	}
-
 	private static class CrucibleRepoWrapper extends GenericWrapper<Repository> {
 		public CrucibleRepoWrapper(final Repository repository) {
 			super(repository);
@@ -387,7 +354,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 			Collection<String> projects = data.get(fishEyeServerCfg.getServerId());
 			if (projects == null) {
-				projects = MiscUtil.buildArrayList("None");
+				projects = MiscUtil.buildArrayList(REPOSITORY_FETCHING);
 				data.put(fishEyeServerCfg.getServerId(), projects);
 
 				uiTaskExecutor.execute(new UiTask() {
@@ -471,7 +438,7 @@ public class OwainConfigurationPanel extends JPanel {
 				return NO_REPOSITORY;
 			}
 			for (String repository : getRepositories(currentFishEyeServerCfg)) {
-				if (repository.length() == 0) {
+				if (repository.equals(REPOSITORY_FETCHING) == true) {
 					return REPOSITORY_FETCHING;
 				}
 				if (repository.equals(projectConfiguration.getDefaultFishEyeRepo())) {
@@ -744,9 +711,6 @@ public class OwainConfigurationPanel extends JPanel {
 
 	private class FishEyeServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Collection<FishEyeServerCfgWrapper> data;
-
-		FishEyeServerComboBoxModel() {
-		}
 
 		private Collection<FishEyeServerCfgWrapper> getServers() {
 			if (data == null) {
