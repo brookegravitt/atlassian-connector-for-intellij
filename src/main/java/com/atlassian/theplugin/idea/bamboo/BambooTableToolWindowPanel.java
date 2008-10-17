@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectToolWindowTableConfiguration;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.AbstractTableToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.TableColumnProvider;
 import com.atlassian.theplugin.idea.util.memoryvfs.PlainTextMemoryVirtualFile;
@@ -119,9 +120,10 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
     @Override
     protected void handleDoubleClick(Object selectedObject) {
         BambooBuildAdapter build = (BambooBuildAdapter) selectedObject;
-        if (build != null) {
-            BrowserUtil.launchBrowser(build.getBuildResultUrl());
-        }
+        final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(project, BambooBuildToolWindow.class);
+			if (window != null && build != null) {
+				window.open(build.getBuild());
+			}
     }
 
 
