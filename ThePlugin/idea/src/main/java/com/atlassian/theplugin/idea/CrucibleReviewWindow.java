@@ -93,7 +93,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
-		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
+		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);		
 		if (toolWindow == null) {
 			toolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
 			toolWindow.setIcon(PluginToolWindow.ICON_CRUCIBLE);
@@ -318,8 +318,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
-			}
-			catch (ValueNotYetInitialized valueNotYetInitialized) {
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				valueNotYetInitialized.printStackTrace();
 			}
 		}
