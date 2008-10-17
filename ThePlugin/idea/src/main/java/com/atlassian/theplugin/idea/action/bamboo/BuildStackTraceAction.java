@@ -35,14 +35,7 @@ public class BuildStackTraceAction extends AnAction {
 		BambooTableToolWindowPanel tw = IdeaHelper.getBambooToolWindowPanel(event);
 		boolean enabled = false;
 		if (tw != null) {
-			enabled = tw.canShowFailedTests();
-			if (!enabled) {
-				event.getPresentation().setText(
-						"<html>Show Failed Tests.<br>Failed plan is not selected<br>"
-					 		+ "or you are not connected <br>to Bamboo >= 2.x</html>");
-			} else {
-				event.getPresentation().setText("Show Failed Tests");
-			}
+			enabled = tw.canShowFailedTests();			
 		}
 
 		event.getPresentation().setEnabled(enabled);
