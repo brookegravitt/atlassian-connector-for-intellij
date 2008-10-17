@@ -33,6 +33,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collection;
 import java.util.List;
 
 public class OwainConfigurationPanelTestUi {
@@ -94,9 +95,9 @@ public class OwainConfigurationPanelTestUi {
 
 		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
 		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg0)).andReturn(repos0).anyTimes();
-		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<List<String>>(){
+		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<Collection<String>>(){
 
-			public List<String> answer() throws Throwable {
+			public Collection<String> answer() throws Throwable {
 				Thread.sleep(2000);
 				return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
 			}
