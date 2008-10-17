@@ -22,11 +22,7 @@ import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListen
 import com.intellij.openapi.editor.Editor;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 23, 2008
- * Time: 11:48:39 AM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class AddLineComment extends CrucibleEvent {
 	private ReviewAdapter review;
@@ -49,6 +45,7 @@ public class AddLineComment extends CrucibleEvent {
 		this.end = end;
 	}
 
+	@Override
 	protected void notify(CrucibleReviewActionListener listener) {
 		listener.aboutToAddLineComment(review, file, editor, start, end);
 	}
