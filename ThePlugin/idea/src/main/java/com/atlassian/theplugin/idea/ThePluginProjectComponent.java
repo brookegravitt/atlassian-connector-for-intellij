@@ -181,7 +181,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
         if (!created) {
 
-            this.bambooToolWindowPanel = new BambooTableToolWindowPanel(project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
+            this.bambooToolWindowPanel = new BambooTableToolWindowPanel(
+                    project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
 
 			// wseliga: I don't know yet what do to with comment below
 			// todo remove that get instance as it can return null. it is better to get it from app component.
