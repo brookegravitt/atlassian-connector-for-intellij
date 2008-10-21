@@ -33,6 +33,8 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
+import com.atlassian.theplugin.idea.bamboo.BuildChangesToolWindow;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -80,7 +82,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	private final CfgManager cfgManager;
-	private final UIActionScheduler actionScheduler;
+    private final TestResultsToolWindow testResultsToolWindow;
+    private final BuildChangesToolWindow buildChangesToolWindow;
+    private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 
     private CrucibleStatusIcon statusBarCrucibleIcon;
@@ -89,7 +93,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private CrucibleStatusChecker crucibleStatusChecker;
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
-	private final BambooTableToolWindowPanel bambooToolWindowPanel;
+	private BambooTableToolWindowPanel bambooToolWindowPanel;
     private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 
     private final CrucibleServerFacade crucibleServerFacade;
@@ -111,17 +115,19 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
-			BambooTableToolWindowPanel bambooTableToolWindowPanel) {
+            TestResultsToolWindow testResultsToolWindow,
+			BuildChangesToolWindow buildChangesToolWindow) {
 		this.project = project;
 		this.cfgManager = cfgManager;
-		project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
+        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
 
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		this.bambooToolWindowPanel = bambooTableToolWindowPanel;
+        this.testResultsToolWindow = testResultsToolWindow;
+        this.buildChangesToolWindow = buildChangesToolWindow;
 		/*
 
 
@@ -174,6 +180,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
         // clean up object model confusion
 
         if (!created) {
+
+            this.bambooToolWindowPanel = new BambooTableToolWindowPanel(project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
 
 			// wseliga: I don't know yet what do to with comment below
 			// todo remove that get instance as it can return null. it is better to get it from app component.
