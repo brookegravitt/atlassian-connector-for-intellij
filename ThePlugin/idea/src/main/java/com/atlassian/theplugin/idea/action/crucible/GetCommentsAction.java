@@ -23,7 +23,7 @@ import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -42,7 +42,7 @@ public class GetCommentsAction extends TableSelectedAction {
 							CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
 
 			} else {
-				CrucibleReviewWindow.getInstance(project);
+//				CrucibleReviewWindow.getInstance(project);
 				super.actionPerformed(e);
 			}
         }
@@ -54,7 +54,7 @@ public class GetCommentsAction extends TableSelectedAction {
 		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(((ReviewAdapter) row));
 
 		IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-				CrucibleReviewActionListener.ANONYMOUS, (ReviewAdapter) row));
+				CrucibleReviewActionListenerImpl.ANONYMOUS, (ReviewAdapter) row));
 
 	}	
 }

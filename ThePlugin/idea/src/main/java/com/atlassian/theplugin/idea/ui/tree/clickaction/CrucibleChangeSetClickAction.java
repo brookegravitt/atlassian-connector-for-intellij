@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnGeneralComments;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -24,7 +24,7 @@ public class CrucibleChangeSetClickAction implements AtlassianClickAction {
 			case 1:
 			case 2:
 				ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
-				broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListener.ANONYMOUS, review));
+				broker.trigger(new FocusOnGeneralComments(CrucibleReviewActionListenerImpl.ANONYMOUS, review));
 				break;
 			default:
 		}

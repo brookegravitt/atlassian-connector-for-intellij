@@ -18,11 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -164,7 +160,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, 3dlu, fill:p");	  // rows
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, 3dlu, fillReview:p");	  // rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		layout.setRowGroups(new int[][]{{11, 13, 15}});

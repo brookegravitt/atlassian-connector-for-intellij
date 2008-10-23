@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class VersionedCommentBean extends CommentBean implements VersionedComment {
-	private PermId permId;
+//	private PermId permId;
 	private PermId reviewItemId;
 	private int fromStartLine = 0;
 	private int fromEndLine = 0;
@@ -49,13 +49,13 @@ public class VersionedCommentBean extends CommentBean implements VersionedCommen
 		super();
 	}
 
-	public PermId getPermId() {
-		return permId;
-	}
-
-	public void setPermId(PermId permId) {
-		this.permId = permId;
-	}
+//	public PermId getPermId() {
+//		return permId;
+//	}
+//
+//	public void setPermId(PermId permId) {
+//		this.permId = permId;
+//	}
 
 	public PermId getReviewItemId() {
 		return reviewItemId;

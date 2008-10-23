@@ -208,28 +208,44 @@ public final class CrucibleRestXmlHelper {
 		}
 		review.setReviewers(reviewers);
 
-		List<CrucibleReviewItemInfo> reviewItems = new ArrayList<CrucibleReviewItemInfo>();
+//		List<CrucibleReviewItemInfo> reviewItems = new ArrayList<CrucibleReviewItemInfo>();
 
+		// ***** GeneralComments ******
 		List<Element> generalCommentsNode = getChildElements(reviewNode, "generalComments");
 		for (Element generalComment : generalCommentsNode) {
-			List<Element> commentNode = getChildElements(generalComment, "generalCommentData");
+			List<Element> generalCommentsDataNode = getChildElements(generalComment, "generalCommentData");
 			List<GeneralComment> generalComments = new ArrayList<GeneralComment>();
-			for (Element element : commentNode) {
-				generalComments.add(parseGeneralCommentNode(element));
+
+			for (Element generalCommentData : generalCommentsDataNode) {
+				generalComments.add(parseGeneralCommentNode(generalCommentData));
 			}
 			review.setGeneralComments(generalComments);
 		}
 
+		// ***** VerionedComments ******
 		List<Element> versionedComments = getChildElements(reviewNode, "versionedComments");
 		List<VersionedComment> comments = new ArrayList<VersionedComment>();
-		for (Element versionedComment : versionedComments) {
-			List<Element> commentNode = getChildElements(versionedComment, "versionedLineCommentData");
-			for (Element element : commentNode) {
-				comments.add(parseVersionedCommentNode(element, reviewItems));
+		for (Element element : versionedComments) {
+			List<Element> versionedCommentsData = getChildElements(element, "versionedLineCommentData");
+			for (Element versionedElementData : versionedCommentsData) {
+				//ONLY COMMENTS NO FILES
+				comments.add(parseVersionedComment(versionedElementData));
 			}
-			review.setVersionedComments(comments);
 		}
-		review.setReviewItems(reviewItems);
+		
+		// ***** Files ******
+		List<Element> fileNode = getChildElements(reviewNode, "reviewItems");
+		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+			for (Element element : fileNode) {
+				List<Element> fileElements = getChildElements(element, "reviewItem");
+				for (Element file : fileElements) {
+					CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(review, file);
+					files.add(fileInfo);
+				}
+			}
+
+		review.setFilesAndVersionedComments(files, comments);
+	//	review.setReviewItems(reviewItems);
 
 		List<Element> transitionsNode = getChildElements(reviewNode, "transitions");
 		List<Action> transitions = new ArrayList<Action>();
@@ -394,7 +410,8 @@ public final class CrucibleRestXmlHelper {
 		return reviewData;
 	}
 
-	public static CrucibleFileInfo parseReviewItemNode(Review review, Element reviewItemNode) {
+
+	public static CrucibleFileInfo parseReviewItemNode(final Review review, final Element reviewItemNode) {
 		CrucibleFileInfoImpl reviewItem = new CrucibleFileInfoImpl(
 				new VersionedVirtualFile(
 						getChildText(reviewItemNode, "toPath"),
@@ -466,8 +483,28 @@ public final class CrucibleRestXmlHelper {
 		}
 	}
 
+	private static VersionedComment parseVersionedComment(Element reviewElementCommentNode){
+		VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
+		parseVersionedComment(versionedCommentBean, reviewElementCommentNode);
+		return versionedCommentBean;
+	}
 	private static void parseVersionedComment(VersionedCommentBean commentBean, Element reviewCommentNode) {
 		parseComment(commentBean, reviewCommentNode);
+
+		// read following xml
+		// <reviewItemId>
+        // 	<id>CFR-126</id>
+      	// </reviewItemId>
+		List<Element> reviewIds = getChildElements(reviewCommentNode, "reviewItemId");
+		for (Element reviewId : reviewIds) {
+			List<Element> Ids = getChildElements(reviewId, "id");
+			for (Element id : Ids) {
+				commentBean.setReviewItemId(new PermIdBean(id.getText()));
+				break;
+			}
+			break;
+		}
+
 		List<Element> replies = getChildElements(reviewCommentNode, "replies");
 		if (replies != null) {
 			List<VersionedComment> rep = new ArrayList<VersionedComment>();

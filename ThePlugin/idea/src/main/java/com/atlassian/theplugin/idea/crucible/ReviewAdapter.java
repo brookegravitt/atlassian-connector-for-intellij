@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
@@ -194,5 +195,64 @@ public class ReviewAdapter {
 
 	public void removeVersionedComment(final VersionedComment versionedComment) {
 		review.removeVersionedComment(versionedComment);
+	}
+
+
+	public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, final List<VersionedComment> comments) {
+		review.setFilesAndVersionedComments(files, comments);
+		CrucibleFileInfoManager.getInstance().setFiles(review, files);
+	}
+
+	/**
+	 * Copies all data from the parameter into itself
+	 * @param newReview source of Review data
+	 */
+	public void fillReview(final Review newReview) {
+		try {
+			setGeneralComments(review.getGeneralComments());
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// shame
+		}
+
+		try {
+			setFilesAndVersionedComments(review.getFiles(), review.getVersionedComments());
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// shame
+		}
+
+		try {
+			review.setActions(newReview.getActions());
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// shame
+		}
+		review.setAllowReviewerToJoin(newReview.isAllowReviewerToJoin());
+		review.setAuthor(newReview.getAuthor());
+		review.setCloseDate(newReview.getCloseDate());
+		review.setCreateDate(newReview.getCreateDate());
+		review.setCreator(newReview.getCreator());
+		review.setDescription(newReview.getDescription());
+		review.setMetricsVersion(newReview.getMetricsVersion());
+		review.setModerator(newReview.getModerator());
+		review.setName(newReview.getName());
+		review.setParentReview(newReview.getParentReview());
+//		review.setPermId(newReview.getPermId());
+		review.setProjectKey(newReview.getProjectKey());
+		review.setRepoName(newReview.getRepoName());
+		try {
+			review.setReviewers(newReview.getReviewers());
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// shame
+		}
+		// todo remove ReviewItems from ReviewBean
+		review.setReviewItems(newReview.getReviewItems()); //???
+		review.setState(newReview.getState());
+		review.setSummary(newReview.getSummary());
+		try {
+			review.setTransitions(newReview.getTransitions());
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// shame
+		}
+		review.setVirtualFileSystem(newReview.getVirtualFileSystem());
+		
 	}
 }

@@ -80,15 +80,53 @@ public interface Review {
 
     VirtualFileSystem getVirtualFileSystem();
 
-	CrucibleServerCfg getServer();
-
-	String getReviewUrl();
-
-	Review getInnerReviewObject();
-
-	void setGeneralComments(final List<GeneralComment> generalComments);
-
 	void removeGeneralComment(final GeneralComment comment);
 
 	void removeVersionedComment(final VersionedComment versionedComment);
+
+	void setFilesAndVersionedComments(List<CrucibleFileInfo> files, List<VersionedComment> commentList);
+
+	List<CrucibleFileInfo> getFiles();
+
+	void setReviewers(List<Reviewer> reviewers);
+
+	void setGeneralComments(List<GeneralComment> generalComments);
+
+	void setTransitions(List<Action> transitions);
+
+	void setActions(List<Action> actions);
+
+	void setVirtualFileSystem(VirtualFileSystem virtualFileSystem);
+
+	void setAuthor(User value);
+
+	void setCreator(User value);
+
+	void setDescription(String value);
+
+	void setModerator(User value);
+
+	void setName(String value);
+
+	void setParentReview(PermId value);
+
+	void setPermId(PermId value);
+
+	void setProjectKey(String value);
+
+	void setRepoName(String value);
+
+	void setState(State value);
+
+	void setAllowReviewerToJoin(boolean allowReviewerToJoin);
+
+	void setMetricsVersion(int metricsVersion);
+
+	void setCreateDate(Date createDate);
+
+	void setCloseDate(Date closeDate);
+
+	void setSummary(String summary);
+
+	void setReviewItems(List<CrucibleReviewItemInfo> reviewItems);
 }

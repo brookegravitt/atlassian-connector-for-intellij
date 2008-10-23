@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface CrucibleServerFacade extends ProductServerFacade {
-	CrucibleVersionInfo getServerVersion(CrucibleServerCfg server)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	CrucibleVersionInfo getServerVersion(CrucibleServerCfg server)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	Review createReview(CrucibleServerCfg server, Review review)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -35,11 +35,11 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	Review createReviewFromRevision(CrucibleServerCfg server, Review review, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Action> getAvailableActions(CrucibleServerCfg server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	List<Action> getAvailableActions(CrucibleServerCfg server, PermId permId)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Action> getAvailableTransitions(CrucibleServerCfg server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	List<Action> getAvailableTransitions(CrucibleServerCfg server, PermId permId)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	Review addRevisionsToReview(CrucibleServerCfg server, PermId permId, String repository, List<String> revisions)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -47,8 +47,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	Review addPatchToReview(CrucibleServerCfg server, PermId permId, String repository, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	CrucibleFileInfo addItemToReview(CrucibleServerCfg server, Review review, NewReviewItem newItem)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	CrucibleFileInfo addItemToReview(CrucibleServerCfg server, Review review, NewReviewItem newItem)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<Reviewer> getReviewers(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -80,8 +80,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	Review reopenReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	Review rejectReview(CrucibleServerCfg server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	Review rejectReview(CrucibleServerCfg server, PermId permId)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	void completeReview(CrucibleServerCfg server, PermId permId, boolean complete)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -98,8 +98,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	Review getReview(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Review> getAllReviewsForFile(CrucibleServerCfg server, String repoName, String path)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	List<Review> getAllReviewsForFile(CrucibleServerCfg server, String repoName, String path)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	Review createReviewFromPatch(CrucibleServerCfg server, Review review, String patch)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -107,8 +107,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<CrucibleFileInfo> getFiles(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<Comment> getComments(CrucibleServerCfg server, PermId permId)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	List<Comment> getComments(CrucibleServerCfg server, PermId permId)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	List<GeneralComment> getGeneralComments(CrucibleServerCfg server, PermId permId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -119,8 +119,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	List<VersionedComment> getVersionedComments(CrucibleServerCfg server, PermId permId, PermId reviewItemId)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	List<GeneralComment> getReplies(CrucibleServerCfg server, PermId permId, PermId commentId)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	List<GeneralComment> getReplies(CrucibleServerCfg server, PermId permId, PermId commentId)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	GeneralComment addGeneralComment(CrucibleServerCfg server, PermId permId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
@@ -143,8 +143,8 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 	VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
-	void updateReply(CrucibleServerCfg server, PermId id, PermId cId, PermId rId, GeneralComment comment)
-			throws RemoteApiException, ServerPasswordNotProvidedException;
+//	void updateReply(CrucibleServerCfg server, PermId id, PermId cId, PermId rId, GeneralComment comment)
+//			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	void removeComment(CrucibleServerCfg server, PermId id, Comment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException;

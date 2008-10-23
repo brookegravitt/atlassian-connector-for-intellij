@@ -211,7 +211,7 @@ public class BambooGeneralForm extends JComponent {
 		return rootComponent;
 	}
 
-//	public PluginConfiguration getPluginConfiguration() {
+	//	public PluginConfiguration getPluginConfiguration() {
 //		return localPluginConfigurationCopy;
 //	}
 
