@@ -379,12 +379,12 @@ public class ReviewBean implements Review {
 		this.closeDate = closeDate;
 	}
 
-	public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, List<VersionedComment> commentList) {
-		this.files = files;
+	public void setFilesAndVersionedComments(final List<CrucibleFileInfo> aFiles, List<VersionedComment> commentList) {
+		this.files = aFiles;
 		this.versionedComments = commentList;
 
 		for (VersionedComment comment : commentList) {
-			for (CrucibleFileInfo f : files) {
+			for (CrucibleFileInfo f : aFiles) {
 				if (f.getItemInfo().getId().equals(comment.getReviewItemId())) {
 					f.getItemInfo().addComment(comment);
 				}
@@ -439,8 +439,8 @@ public class ReviewBean implements Review {
 	}
 
 	public CrucibleFileInfo getFileByPermId(PermId id) {
-		List<CrucibleFileInfo> files = CrucibleFileInfoManager.getInstance().getFiles(this);
-		for (CrucibleFileInfo f : files) {
+		List<CrucibleFileInfo> lFiles = CrucibleFileInfoManager.getInstance().getFiles(this);
+		for (CrucibleFileInfo f : lFiles) {
 			if (f.getItemInfo().getId().equals(id)) {
 				return f;
 			}
