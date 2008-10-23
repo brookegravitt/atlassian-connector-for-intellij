@@ -462,7 +462,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		for (CrucibleFileInfo fileInfo : CrucibleFileInfoManager.getInstance().getFiles(review)) {
 			fillRepositoryData(fileInfo);
 		}
-		for (CrucibleFileInfo fileInfo : review.getFiles()){
+		for (CrucibleFileInfo fileInfo : review.getFiles()) {
 			fillRepositoryData(fileInfo);
 		}
 		return review;

@@ -483,7 +483,7 @@ public final class CrucibleRestXmlHelper {
 		}
 	}
 
-	private static VersionedComment parseVersionedComment(Element reviewElementCommentNode){
+	private static VersionedComment parseVersionedComment(Element reviewElementCommentNode) {
 		VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
 		parseVersionedComment(versionedCommentBean, reviewElementCommentNode);
 		return versionedCommentBean;
@@ -497,8 +497,8 @@ public final class CrucibleRestXmlHelper {
       	// </reviewItemId>
 		List<Element> reviewIds = getChildElements(reviewCommentNode, "reviewItemId");
 		for (Element reviewId : reviewIds) {
-			List<Element> Ids = getChildElements(reviewId, "id");
-			for (Element id : Ids) {
+			List<Element> ids = getChildElements(reviewId, "id");
+			for (Element id : ids) {
 				commentBean.setReviewItemId(new PermIdBean(id.getText()));
 				break;
 			}
