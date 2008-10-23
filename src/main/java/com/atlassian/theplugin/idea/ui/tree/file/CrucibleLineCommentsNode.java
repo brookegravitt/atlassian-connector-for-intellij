@@ -60,7 +60,7 @@ public class CrucibleLineCommentsNode extends CrucibleContainerNode {
 
 	private List<VersionedComment> getLineVersionedComments() {
 		List<VersionedComment> list = new ArrayList<VersionedComment>();
-		List<VersionedComment> thisFileComments = file.getItemInfo().getComments();
+		List<VersionedComment> thisFileComments = file.getVersionedComments();
 		if (thisFileComments == null) {
 			return null;
 		}

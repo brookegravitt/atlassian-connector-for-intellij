@@ -30,7 +30,7 @@ public class ReviewAdapter {
     private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;
 
-    public ReviewAdapter(Review review, CrucibleServerCfg server) {
+	public ReviewAdapter(Review review, CrucibleServerCfg server) {
         this.review = review;
         this.server = server;
     }
@@ -127,16 +127,8 @@ public class ReviewAdapter {
         return review.getVirtualFileSystem();
     }
 
-	public List<CrucibleReviewItemInfo> getReviewItems() {
-		return review.getReviewItems();
-	}
-
 	public CrucibleFileInfo getFileByPermId(PermId id) {
 		return review.getFileByPermId(id);
-	}
-
-	public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
-		return review.getFileByReviewInfo(info);
 	}
 
 	public CrucibleServerCfg getServer() {
@@ -243,8 +235,6 @@ public class ReviewAdapter {
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {
 			// shame
 		}
-		// todo remove ReviewItems from ReviewBean
-		review.setReviewItems(newReview.getReviewItems()); //???
 		review.setState(newReview.getState());
 		review.setSummary(newReview.getSummary());
 		try {
@@ -254,5 +244,12 @@ public class ReviewAdapter {
 		}
 		review.setVirtualFileSystem(newReview.getVirtualFileSystem());
 		
+	}
+
+	public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+		if (review.getFiles() == null) {
+			throw new ValueNotYetInitialized("Files collection is empty");
+		}
+		return review.getFiles();
 	}
 }
