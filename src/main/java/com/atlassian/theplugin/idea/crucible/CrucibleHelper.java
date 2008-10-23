@@ -125,24 +125,19 @@ public final class CrucibleHelper {
 				, new VcsIdeaHelper.OpenDiffAction() {
 
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-
-				 Document displayDocument = EMPTY_DOCUMENT;
-				 Document referenceDocument = EMPTY_DOCUMENT;
-
+				Document displayDocument = EMPTY_DOCUMENT;
+				Document referenceDocument = EMPTY_DOCUMENT;
 				if (displayFile != null) {
 					displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
 				}
 
-				if (referenceFile != null){
+				if (referenceFile != null) {
 					referenceDocument = new FileContent(project, referenceFile).getDocument();
 				}
-
 				final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
 				final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
 
-				Document doc = new DocumentImpl("");
 				DiffRequest request = new DiffRequest(project) {
-
 					@Override
 					public DiffContent[] getContents() {
 						return (new DiffContent[]{
@@ -150,7 +145,6 @@ public final class CrucibleHelper {
 								referenceDocumentContentFinal,
 						});
 					}
-
 					@Override
 					public String[] getContentTitles() {
 						return (new String[]{
@@ -160,7 +154,6 @@ public final class CrucibleHelper {
 										reviewItem.getFileDescriptor().getRevision())
 						});
 					}
-
 					@Override
 					public String getWindowTitle() {
 						return reviewItem.getFileDescriptor().getAbsoluteUrl();
