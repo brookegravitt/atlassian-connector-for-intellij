@@ -19,12 +19,12 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
@@ -75,7 +75,7 @@ public class AddAction extends AbstractCommentAction {
 			}
 		}
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
@@ -168,7 +168,7 @@ public class AddAction extends AbstractCommentAction {
 			setCommentAuthor(review, newComment);
 			// @todo
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
+					new VersionedCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, file, newComment));
 		}
 
@@ -195,7 +195,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setReviewItemId(review.getPermId());
 			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
+					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, file, parentComment, newComment));
 		}
 	}
@@ -211,7 +211,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
+					new GeneralCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, newComment));
 		}
 	}
@@ -229,7 +229,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			setCommentAuthor(review, newComment);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListener.ANONYMOUS,
+					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, parentComment, newComment));
 		}
 	}

@@ -51,14 +51,11 @@ public class ReviewBean implements Review {
 	private List<VersionedComment> versionedComments;
     private String summary;
 	private final String serverUrl;
+	private List<CrucibleFileInfo> files;
 
 	public void setReviewers(List<Reviewer> reviewers) {
 		this.reviewers = reviewers;
 	}
-
-//	public void setFiles(List<CrucibleFileInfo> files) {
-//		this.files = files;
-//	}
 
 	public void setGeneralComments(List<GeneralComment> generalComments) {
 		this.generalComments = generalComments;
@@ -144,21 +141,6 @@ public class ReviewBean implements Review {
 
     public VirtualFileSystem getVirtualFileSystem() {
 		return virtualFileSystem;
-	}
-
-	// todo implement that as it is inside ReviewDataImpl
-	public CrucibleServerCfg getServer() {
-		return null;
-	}
-
-	// todo implement that as it is inside ReviewDataImpl
-	public String getReviewUrl() {
-		return null;
-	}
-
-	// todo remove that method (it is artefact of merging ReviewData and Review)
-	public Review getInnerReviewObject() {
-		return this;
 	}
 
 	public void setVirtualFileSystem(VirtualFileSystem virtualFileSystem) {
@@ -397,8 +379,17 @@ public class ReviewBean implements Review {
 		this.closeDate = closeDate;
 	}
 
-	public void setVersionedComments(List<VersionedComment> commentList) {
+	public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, List<VersionedComment> commentList) {
+		this.files = files;
 		this.versionedComments = commentList;
+
+		for (VersionedComment comment : commentList) {
+			for (CrucibleFileInfo f : files) {
+				if (f.getItemInfo().getId().equals(comment.getReviewItemId())) {
+					f.getItemInfo().addComment(comment);
+				}
+			}
+		}
 	}
 
 	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
@@ -460,4 +451,9 @@ public class ReviewBean implements Review {
 	public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
 		return getFileByPermId(info.getId());
 	}
+
+	public List<CrucibleFileInfo> getFiles() {
+		return files;
+	}
+
 }

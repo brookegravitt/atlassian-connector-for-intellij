@@ -423,7 +423,7 @@ public class CrucibleServerFacadeTest extends TestCase {
     }
 
     private Review prepareReviewData(final String name, final State state) {
-        return new Review() {
+        return new ReviewImpl() {
             public User getAuthor() {
                 return VALID_LOGIN;
             }
@@ -500,7 +500,7 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
-            public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+            public List<CrucibleFileInfo> getFiles() {
                 return null;
             }
 
@@ -540,6 +540,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 				// not implemented
 			}
 
+			public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, final List<VersionedComment> commentList) {
+
+			}
+
 			public List<CrucibleReviewItemInfo> getReviewItems() {
 				return null;
 			}
@@ -559,7 +563,7 @@ public class CrucibleServerFacadeTest extends TestCase {
     }
 
     private Review prepareReviewData(final User user, final String name, final State state, final PermId permId) {
-        return new Review() {
+        return new ReviewImpl() {
             public User getAuthor() {
                 return user;
             }
@@ -640,6 +644,10 @@ public class CrucibleServerFacadeTest extends TestCase {
 				// not implemented
 			}
 
+			public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, final List<VersionedComment> commentList) {
+
+			}
+
 			public List<Reviewer> getReviewers() {
                 return null;
             }
@@ -652,7 +660,7 @@ public class CrucibleServerFacadeTest extends TestCase {
                 return null;
             }
 
-            public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+            public List<CrucibleFileInfo> getFiles() {
                 return null;
             }
 

@@ -81,7 +81,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 	private static final String ADD_CHANGESET = "/addChangeset";
 	private static final String ADD_PATCH = "/addPatch";
-	private static final String ADD_ITEM = "/addItem";
+//	private static final String ADD_ITEM = "/addItem";
 
 	private String authToken = null;
 
@@ -429,7 +429,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	private void fillRepositoryData(CrucibleFileInfo fileInfo) throws RemoteApiException {
+	public void fillRepositoryData(CrucibleFileInfo fileInfo) throws RemoteApiException {
 		String repoName = fileInfo.getRepositoryName();
 		if (repoName == null) {
 			// oh well, it can be null - fileInfos are mostly empty now
@@ -460,6 +460,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(baseUrl, element);
 
 		for (CrucibleFileInfo fileInfo : CrucibleFileInfoManager.getInstance().getFiles(review)) {
+			fillRepositoryData(fileInfo);
+		}
+		for (CrucibleFileInfo fileInfo : review.getFiles()){
 			fillRepositoryData(fileInfo);
 		}
 		return review;
@@ -769,65 +772,65 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public List<Comment> getComments(PermId id) throws RemoteApiException {
-		if (!isLoggedIn()) {
-			throw new IllegalStateException("Calling method without calling login() first");
-		}
-
-		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS;
-		try {
-			Document doc = retrieveGetResponse(requestUrl);
-
-			XPath xpath = XPath.newInstance("comments/generalCommentData");
-			@SuppressWarnings("unchecked")
-			List<Element> elements = xpath.selectNodes(doc);
-			List<Comment> comments = new ArrayList<Comment>();
-
-			if (elements != null && !elements.isEmpty()) {
-				int i = 1;
-				for (Element element : elements) {
-					GeneralCommentBean comment = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
-					XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++)
-							+ "]/replies/generalCommentData");
-					@SuppressWarnings("unchecked")
-					final List<Element> replies = repliesPath.selectNodes(doc);
-					if (replies != null && !replies.isEmpty()) {
-						for (Element reply : replies) {
-							comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
-						}
-					}
-					comments.add(comment);
-				}
-			}
-
-			xpath = XPath.newInstance("comments/versionedLineCommentData");
-			@SuppressWarnings("unchecked")
-			List<Element> vElements = xpath.selectNodes(doc);
-
-			if (vElements != null && !vElements.isEmpty()) {
-				int i = 1;
-				for (Element element : vElements) {
-					VersionedCommentBean comment = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
-					XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++)
-							+ "]/replies/generalCommentData");
-					@SuppressWarnings("unchecked")
-					final List<Element> replies = repliesPath.selectNodes(doc);
-					if (replies != null && !replies.isEmpty()) {
-						for (Element reply : replies) {
-							comment.addReply(CrucibleRestXmlHelper.parseVersionedCommentNode(reply));
-						}
-					}
-					comments.add(comment);
-				}
-			}
-
-			return comments;
-		} catch (IOException e) {
-			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
-		} catch (JDOMException e) {
-			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
-		}
-	}
+//	public List<Comment> getComments(PermId id) throws RemoteApiException {
+//		if (!isLoggedIn()) {
+//			throw new IllegalStateException("Calling method without calling login() first");
+//		}
+//
+//		String requestUrl = baseUrl + REVIEW_SERVICE + "/" + id.getId() + COMMENTS;
+//		try {
+//			Document doc = retrieveGetResponse(requestUrl);
+//
+//			XPath xpath = XPath.newInstance("comments/generalCommentData");
+//			@SuppressWarnings("unchecked")
+//			List<Element> elements = xpath.selectNodes(doc);
+//			List<Comment> comments = new ArrayList<Comment>();
+//
+//			if (elements != null && !elements.isEmpty()) {
+//				int i = 1;
+//				for (Element element : elements) {
+//					GeneralCommentBean comment = CrucibleRestXmlHelper.parseGeneralCommentNode(element);
+//					XPath repliesPath = XPath.newInstance("comments/generalCommentData[" + (i++)
+//							+ "]/replies/generalCommentData");
+//					@SuppressWarnings("unchecked")
+//					final List<Element> replies = repliesPath.selectNodes(doc);
+//					if (replies != null && !replies.isEmpty()) {
+//						for (Element reply : replies) {
+//							comment.addReply(CrucibleRestXmlHelper.parseGeneralCommentNode(reply));
+//						}
+//					}
+//					comments.add(comment);
+//				}
+//			}
+//
+//			xpath = XPath.newInstance("comments/versionedLineCommentData");
+//			@SuppressWarnings("unchecked")
+//			List<Element> vElements = xpath.selectNodes(doc);
+//
+//			if (vElements != null && !vElements.isEmpty()) {
+//				int i = 1;
+//				for (Element element : vElements) {
+//					VersionedCommentBean comment = CrucibleRestXmlHelper.parseVersionedCommentNode(element);
+//					XPath repliesPath = XPath.newInstance("comments/versionedLineCommentData[" + (i++)
+//							+ "]/replies/generalCommentData");
+//					@SuppressWarnings("unchecked")
+//					final List<Element> replies = repliesPath.selectNodes(doc);
+//					if (replies != null && !replies.isEmpty()) {
+//						for (Element reply : replies) {
+//							comment.addReply(CrucibleRestXmlHelper.parseVersionedCommentNode(reply));
+//						}
+//					}
+//					comments.add(comment);
+//				}
+//			}
+//
+//			return comments;
+//		} catch (IOException e) {
+//			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
+//		} catch (JDOMException e) {
+//			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
+//		}
+//	}
 
 	public GeneralComment addGeneralComment(PermId id, GeneralComment comment) throws RemoteApiException {
 		if (!isLoggedIn()) {

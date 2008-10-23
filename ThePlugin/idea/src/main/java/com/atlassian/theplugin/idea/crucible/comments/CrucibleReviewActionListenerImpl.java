@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.openapi.editor.Editor;
 
@@ -27,7 +28,7 @@ import com.intellij.openapi.editor.Editor;
  * Time: 10:15:18 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleReviewActionListener {
+public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionListener {
 	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
 	public static final CrucibleReviewActionListener ANONYMOUS = null;
 
@@ -106,12 +107,6 @@ public class CrucibleReviewActionListener {
 	}
 
 	public void removedComment(final ReviewAdapter review, final Comment comment) {
-	}
-
-	public void focusOnFile(final ReviewAdapter review, final CrucibleFileInfo file) {
-	}
-
-	public void focusOnReview(final ReviewAdapter review) {
 	}
 
 	public void focusOnVersionedCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,

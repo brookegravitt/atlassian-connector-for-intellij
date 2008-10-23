@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToPublish;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToPublish;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
@@ -44,7 +44,7 @@ public class PublishAction extends AbstractCommentAction {
 		AtlassianTreeNode node = getSelectedNode(e);
 		boolean enabled = node != null && checkIfDraftAndAuthor(node);
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 	}
@@ -62,13 +62,13 @@ public class PublishAction extends AbstractCommentAction {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			GeneralComment comment = node.getComment();
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentAboutToPublish(CrucibleReviewActionListener.ANONYMOUS,
+					new GeneralCommentAboutToPublish(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							node.getReview(), comment));
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			VersionedComment comment = node.getComment();
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentAboutToPublish(CrucibleReviewActionListener.ANONYMOUS,
+					new VersionedCommentAboutToPublish(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							node.getReview(), node.getFile(), comment));
 		}
 	}

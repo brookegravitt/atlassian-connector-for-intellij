@@ -30,15 +30,6 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private CommitType commitType;
 
 	private CrucibleReviewItemInfo info;
-	private int numberOfComments = 0;
-
-	/**
-	 * How many people think the file contains defects
-	 */
-	private int numberOfDefects = 0;
-
-//	private List<VersionedComment> versionedComments;
-//	private PermId permId;
 
 	public CrucibleFileInfoImpl(VersionedVirtualFile fileDescriptor, VersionedVirtualFile oldFileDescriptor,
 								CrucibleReviewItemInfo info) {
@@ -69,37 +60,6 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		this.info = i;
 	}
 
-//	public int getNumberOfComments() throws ValueNotYetInitialized {
-//		int n = getVersionedComments().size();
-//		for (VersionedComment c : getVersionedComments()) {
-//			n += c.getReplies().size();
-//		}
-//		return n;
-//	}
-//
-//	public void setNumberOfComments(int numberOfComments) {
-//		this.numberOfComments = numberOfComments;
-//	}
-//
-//	public int getNumberOfDefects() throws ValueNotYetInitialized {
-//		int counter = 0;
-//		for (VersionedComment comment : getVersionedComments()) {
-//			if (comment.isDefectApproved()) {
-//				counter++;
-//			}
-//		}
-//		return counter;
-//	}
-
-//	public PermId getPermId() {
-//		return permId;
-//	}
-
-
-	public void setNumberOfDefects(int numberOfDefects) {
-		this.numberOfDefects = numberOfDefects;
-	}
-
 	public void setFileDescriptor(VersionedVirtualFile fileDescriptor) {
 		this.fileDescriptor = fileDescriptor;
 	}
@@ -107,10 +67,6 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	public VersionedVirtualFile getFileDescriptor() {
 		return fileDescriptor;
 	}
-
-//	public void setPermId(PermId permId) {
-//		this.permId = permId;
-//	}
 
 	@Override
 	public String toString() {

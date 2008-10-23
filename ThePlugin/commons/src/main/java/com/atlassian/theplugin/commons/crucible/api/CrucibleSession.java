@@ -91,7 +91,7 @@ public interface CrucibleSession {
 
 	List<CrucibleFileInfo> getFiles(PermId id) throws RemoteApiException;
 
-	List<Comment> getComments(PermId id) throws RemoteApiException;
+//	List<Comment> getComments(PermId id) throws RemoteApiException;
 
 	List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException;
 

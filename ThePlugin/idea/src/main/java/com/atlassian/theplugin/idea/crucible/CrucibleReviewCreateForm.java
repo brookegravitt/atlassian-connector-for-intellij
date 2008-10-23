@@ -32,7 +32,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -345,7 +344,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 				null, null, null, 0, false));
 		scrollPane2.setViewportView(reviewersList);
 		final JLabel label8 = new JLabel();
-		label8.setText("Reviewers");
+		label8.setText("Reviewers:");
 		panel1.add(label8, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		allowCheckBox = new JCheckBox();
@@ -667,7 +666,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		return getRootComponent();
 	}
 
-	private class ReviewProvider implements Review {
+	private class ReviewProvider extends ReviewImpl {
 		private final CrucibleServerCfg server;
 
 		public ReviewProvider(CrucibleServerCfg server) {
@@ -730,90 +729,6 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 		public boolean isAllowReviewerToJoin() {
 			return allowCheckBox.isSelected();
-		}
-
-		public int getMetricsVersion() {
-			return 0;
-		}
-
-		public Date getCreateDate() {
-			return null;
-		}
-
-		public Date getCloseDate() {
-			return null;
-		}
-
-		public String getSummary() {
-			return null;
-		}
-
-		public List<Reviewer> getReviewers() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public List<com.atlassian.theplugin.commons.crucible.api.model.Action> getTransitions() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public List<com.atlassian.theplugin.commons.crucible.api.model.Action> getActions() throws ValueNotYetInitialized {
-			return null;
-		}
-
-		public VirtualFileSystem getVirtualFileSystem() {
-			return null;
-		}
-
-		public CrucibleServerCfg getServer() {
-			return null;
-		}
-
-		public String getReviewUrl() {
-			return null;
-		}
-
-		public Review getInnerReviewObject() {
-			return null;
-		}
-
-		public void setGeneralComments(final List<GeneralComment> generalComments) {
-			// not implemented
-		}
-
-		public void removeGeneralComment(final GeneralComment comment) {
-			// not implemented
-		}
-
-		public void removeVersionedComment(final VersionedComment versionedComment) {
-			// not implemented
-		}
-
-		public List<CrucibleReviewItemInfo> getReviewItems() {
-			return null;
-		}
-
-		public CrucibleFileInfo getFileByPermId(PermId id) {
-			return null;
-		}
-
-		public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
-			return null;
-		}
-
-		public String getServerUrl() {
-			return null;
 		}
 	}
 

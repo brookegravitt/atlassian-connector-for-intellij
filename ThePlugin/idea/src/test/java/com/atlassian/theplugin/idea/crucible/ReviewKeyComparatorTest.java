@@ -52,7 +52,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 	}
 
 	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
-		Review review = new Review() {
+		Review review = new ReviewImpl() {
 
 			public List<Reviewer> getReviewers() {
 				return null;
@@ -66,7 +66,7 @@ public class ReviewKeyComparatorTest extends TestCase {
                 return null;
             }
 
-            public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+            public List<CrucibleFileInfo> getFiles() {
 				return null;
 			}
 
@@ -104,6 +104,10 @@ public class ReviewKeyComparatorTest extends TestCase {
 
 			public void removeVersionedComment(final VersionedComment versionedComment) {
 				// not implemented
+			}
+
+			public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, final List<VersionedComment> commentList) {
+
 			}
 
 			public User getAuthor() {
