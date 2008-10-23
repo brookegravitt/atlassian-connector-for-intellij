@@ -13,8 +13,30 @@
       <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/vs" />
     </content>
+    <orderEntry type="module-library">
+      <library name="xstream">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/thoughtworks/xstream/xstream/1.3/xstream-1.3.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/thoughtworks/xstream/xstream/1.3/xstream-1.3-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="commons-collections">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
     <orderEntry type="module-library">
       <library name="axis">
         <CLASSES>
@@ -95,58 +117,6 @@
         <SOURCES>
           <root url="jar:///Users/pmaruszak/.m2/repository/joda-time/joda-time/1.5.2/joda-time-1.5.2-sources.jar!/" />
         </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module" module-name="atlassian-plugin-commons" />
-    <orderEntry type="module-library">
-      <library name="commons-io">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="xstream">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/com/thoughtworks/xstream/xstream/1.3/xstream-1.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/com/thoughtworks/xstream/xstream/1.3/xstream-1.3-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="xpp3_min">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="commons-httpclient">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library name="commons-codec">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -256,17 +226,6 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
-      <library name="commons-collections">
-        <CLASSES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar:///Users/pmaruszak/.m2/repository/commons-collections/commons-collections/3.2/commons-collections-3.2-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
       <library name="commons-lang">
         <CLASSES>
           <root url="jar:///Users/pmaruszak/.m2/repository/commons-lang/commons-lang/2.3/commons-lang-2.3.jar!/" />
@@ -275,6 +234,24 @@
         <SOURCES>
           <root url="jar:///Users/pmaruszak/.m2/repository/commons-lang/commons-lang/2.3/commons-lang-2.3-sources.jar!/" />
         </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-httpclient">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="commons-codec">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">
@@ -298,6 +275,17 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="commons-io">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-io/commons-io/1.3.1/commons-io-1.3.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/commons-io/commons-io/1.3.1/commons-io-1.3.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="wsdl4j">
         <CLASSES>
           <root url="jar:///Users/pmaruszak/.m2/repository/wsdl4j/wsdl4j/1.6.1/wsdl4j-1.6.1.jar!/" />
@@ -305,6 +293,18 @@
         <JAVADOC />
         <SOURCES>
           <root url="jar:///Users/pmaruszak/.m2/repository/wsdl4j/wsdl4j/1.6.1/wsdl4j-1.6.1-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="atlassian-plugin-commons" />
+    <orderEntry type="module-library">
+      <library name="xpp3_min">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/xpp3/xpp3_min/1.1.4c/xpp3_min-1.1.4c-sources.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -323,6 +323,15 @@
       <library name="jgoodies-forms">
         <CLASSES>
           <root url="jar:///Users/pmaruszak/.m2/repository/com/intellij/idea/jgoodies-forms/7.0/jgoodies-forms-7.0-7590.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="idea-junit">
+        <CLASSES>
+          <root url="jar:///Users/pmaruszak/.m2/repository/com/intellij/idea/idea-junit/7.0/idea-junit-7.0-jdk15.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
