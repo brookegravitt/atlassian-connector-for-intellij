@@ -256,7 +256,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			if (node instanceof VersionedCommentTreeNode) {
 				VersionedCommentTreeNode vnode = (VersionedCommentTreeNode) node;
 				if (vnode.getReview().getPermId().equals(review.getPermId())
-						&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())
+						&& vnode.getFile().getPermId().equals(file.getPermId())
 						&& vnode.getComment().getPermId().equals(parentComment.getPermId())) {
 					return true;
 				}
@@ -421,13 +421,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	}
 
-	public void createdOrEditedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo info,
+	public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment comment) {
 		setCrucibleReview(review);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 
-				final CrucibleFileInfo file = review.getFileByReviewInfo(info);
+				final CrucibleFileInfo file = review.getFileByPermId(filePermId);
 
 				AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 						new CrucibleVersionedCommentClickAction(project));
@@ -441,7 +441,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 							if (node instanceof CrucibleFileNode) {
 								CrucibleFileNode vnode = (CrucibleFileNode) node;
 								if (vnode.getReview().getPermId().equals(review.getPermId())
-										&& vnode.getFile().getItemInfo().getId().equals(file.getItemInfo().getId())) {
+										&& vnode.getFile().getPermId().equals(file.getPermId())) {
 									return true;
 								}
 							}
@@ -473,7 +473,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	}
 
-	public void updatedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo file,
+	public void updatedVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
 
 	}
@@ -486,10 +486,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	}
 
-	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final CrucibleReviewItemInfo info,
+	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment parentComment, final VersionedComment comment) {
 		setCrucibleReview(review);
-		final CrucibleFileInfo file = review.getFileByReviewInfo(info);
+		final CrucibleFileInfo file = review.getFileByPermId(filePermId);
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -567,10 +567,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		});
 	}
 
-	public void publishedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo info,
+	public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
 			final VersionedComment comment) {
 		setCrucibleReview(review);
-		final CrucibleFileInfo file = review.getFileByReviewInfo(info);
+		final CrucibleFileInfo file = review.getFileByPermId(permId);
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -759,7 +759,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			public boolean isValid(final AtlassianTreeNode node) {
 				if (node instanceof CrucibleFileNode) {
 					CrucibleFileNode anode = (CrucibleFileNode) node;
-					return anode.getFile().getItemInfo().getNumberOfComments() > 0;
+					return anode.getFile().getNumberOfComments() > 0;
 				}
 				return true;
 			}
