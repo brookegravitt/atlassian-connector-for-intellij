@@ -30,6 +30,7 @@ import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.impl.DocumentImpl;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CrucibleHelper {
+	static final Document EMPTY_DOCUMENT = new DocumentImpl("");
 
 	private CrucibleHelper() {
 	}
@@ -124,16 +126,28 @@ public final class CrucibleHelper {
 
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 
-				final Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
-				final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+				 Document displayDocument = EMPTY_DOCUMENT;
+				 Document referenceDocument = EMPTY_DOCUMENT;
 
+				if (displayFile != null) {
+					displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
+				}
+
+				if (referenceFile != null){
+					referenceDocument = new FileContent(project, referenceFile).getDocument();
+				}
+
+				final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
+				final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
+
+				Document doc = new DocumentImpl("");
 				DiffRequest request = new DiffRequest(project) {
 
 					@Override
 					public DiffContent[] getContents() {
 						return (new DiffContent[]{
-								new DocumentContent(project, referenceDocument),
-								new DocumentContent(project, displayDocument),
+								displayDocumentContentFinal,
+								referenceDocumentContentFinal,
 						});
 					}
 
