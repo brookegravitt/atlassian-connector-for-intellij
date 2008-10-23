@@ -30,7 +30,7 @@ import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
@@ -88,6 +88,22 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel;
 	}
 
+	private CrucibleReviewWindow(Project project) {
+		super(new BorderLayout());
+
+		this.project = project;
+		setBackground(UIUtil.getTreeTextBackground());
+		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
+		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
+		add(reviewItemTreePanel, BorderLayout.CENTER);
+
+		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker(project);
+		eventBroker.registerListener(new MyAgent(project));
+
+
+		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
+	}
+
 	public void showCrucibleReviewWindow(final ReviewAdapter crucibleReview) {
 
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
@@ -117,22 +133,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		progressAnimation.startProgressAnimation();
 
-	}
+//		reviewItemTreePanel.showReview(crucibleReview);
 
-	private CrucibleReviewWindow(Project project) {
-		super(new BorderLayout());
-
-		this.project = project;
-		setBackground(UIUtil.getTreeTextBackground());
-		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
-		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
-		add(reviewItemTreePanel, BorderLayout.CENTER);
-
-		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker(project);
-		eventBroker.registerListener(new MyAgent(project));
-
-
-		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 	}
 
 
@@ -172,7 +174,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel.getAtlassianTreeWithToolbar();
 	}
 
-	private final class MyAgent extends CrucibleReviewActionListener {
+	private final class MyAgent extends CrucibleReviewActionListenerImpl {
 		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
 		private final ReviewActionEventBroker eventBroker;
 		private Project project;
@@ -247,7 +249,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 						setCommentAuthor(review.getServer(), newComment);
 						newComment.setToStartLine(start);
 						newComment.setToEndLine(end);
-						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListener.ANONYMOUS, review,
+						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS, review,
 								file, newComment));
 					}
 				}
@@ -337,7 +339,11 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 					file.getItemInfo().setComments(comments);
 				}
 				comments.add(newComment);
+
 				review.getVersionedComments().add(newComment);
+
+				
+
 				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);

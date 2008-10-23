@@ -31,7 +31,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.crucible.filters.SelectFiltersForm;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
@@ -72,16 +72,14 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private JPanel toolBarPanel;
 	private JPanel dataPanelsHolder;
 	private ToolWindowBambooContent editorPane;
-	private CrucibleReviewActionListener listener = new CrucibleReviewActionListener();
-
-	public CrucibleFiltersBean getFilters() {
-		return filters;
-	}
+	private CrucibleReviewActionListener listener = new CrucibleReviewActionListenerImpl();
 
 	private transient CrucibleFiltersBean filters;
 
 	protected JScrollPane tablePane;
+
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
+
 	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	protected TableColumnProvider tableColumnProvider = new CrucibleTableColumnProviderImpl();
@@ -89,7 +87,12 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private ReviewAdapter selectedItem;
 
 	private Map<PredefinedFilter, CollapsibleTable> tables = new HashMap<PredefinedFilter, CollapsibleTable>();
+
 	private Map<String, CollapsibleTable> customTables = new HashMap<String, CollapsibleTable>();
+
+	public CrucibleFiltersBean getFilters() {
+		return filters;
+	}
 
 	protected String getInitialMessage() {
 

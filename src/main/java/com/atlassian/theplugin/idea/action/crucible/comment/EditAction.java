@@ -20,12 +20,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
@@ -53,7 +53,7 @@ public class EditAction extends AbstractCommentAction {
 		String text = EDIT_TEXT;
 		boolean enabled = node != null && checkIfAuthor(node);
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
@@ -88,7 +88,7 @@ public class EditAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
+					new GeneralCommentAboutToUpdate(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, comment));
 		}
 	}
@@ -101,7 +101,7 @@ public class EditAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentAboutToUpdate(CrucibleReviewActionListener.ANONYMOUS,
+					new VersionedCommentAboutToUpdate(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, file, comment));
 		}
 	}

@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnLineCommentEvent;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -18,7 +18,7 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 
 	public void execute(final AtlassianTreeNode node, final int noOfClicks) {
 		VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
-		CrucibleEvent event = new FocusOnLineCommentEvent(CrucibleReviewActionListener.ANONYMOUS,
+		CrucibleEvent event = new FocusOnLineCommentEvent(CrucibleReviewActionListenerImpl.ANONYMOUS,
 					anode.getReview(), anode.getFile(), anode.getComment(), noOfClicks > 1);
 		IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 	}

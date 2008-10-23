@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.CommentAboutToRemove;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -49,7 +49,7 @@ public class RemoveAction extends AbstractCommentAction {
 		String text = REMOVE_TEXT;
 		boolean enabled = node != null && checkIfAuthor(node);
 		e.getPresentation().setEnabled(enabled);
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
@@ -88,7 +88,7 @@ public class RemoveAction extends AbstractCommentAction {
 				Icons.TASK_ICON);
 		if (result == DialogWrapper.OK_EXIT_CODE) {
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new CommentAboutToRemove(CrucibleReviewActionListener.ANONYMOUS,
+					new CommentAboutToRemove(CrucibleReviewActionListenerImpl.ANONYMOUS,
 							review, comment));
 		}
 	}
