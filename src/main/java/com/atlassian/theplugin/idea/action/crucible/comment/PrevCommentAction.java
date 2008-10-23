@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.idea.CommentTreePanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -46,10 +46,10 @@ public class PrevCommentAction extends AbstractCommentAction {
 	public void update(final AnActionEvent e) {
 		AtlassianTreeNode node = getSelectedNode(e);
 
-		boolean enabled = node != null && node.getPreviousNode() != null && node.getPreviousNode() != CommentTreePanel.ROOT;
+		boolean enabled = node != null && node.getPreviousNode() != null && node.getPreviousNode() != CrucibleConstants.ROOT;
 		e.getPresentation().setEnabled(enabled);
 
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(false);
 		}		
 	}

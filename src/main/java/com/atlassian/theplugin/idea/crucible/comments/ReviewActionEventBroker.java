@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;

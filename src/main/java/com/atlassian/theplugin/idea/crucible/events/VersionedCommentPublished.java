@@ -18,8 +18,8 @@ package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
 
 
 public class VersionedCommentPublished extends CrucibleEvent {

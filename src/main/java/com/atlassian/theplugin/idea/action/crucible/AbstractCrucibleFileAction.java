@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.CommentTreePanel;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -11,7 +11,7 @@ public abstract class AbstractCrucibleFileAction extends ReviewTreeAction {
 		boolean enabled = e.getData(Constants.CRUCIBLE_FILE_NODE_KEY) != null;
 		e.getPresentation().setEnabled(enabled);
 
-		if (e.getPlace().equals(CommentTreePanel.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+		if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
 			e.getPresentation().setVisible(enabled);
 		}
 	}

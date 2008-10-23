@@ -22,7 +22,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListener;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.*;
 import com.intellij.openapi.project.Project;
 
@@ -119,7 +119,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 						notifications.add(new UpdatedReplyCommentNotification(review, newComment, reply));
 					}
 					GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
-							CrucibleReviewActionListener.ANONYMOUS,	review, newComment, reply);
+							CrucibleReviewActionListenerImpl.ANONYMOUS,	review, newComment, reply);
 					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 				}
 			}
@@ -130,7 +130,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					oldComment.getReplies(), newComment.getReplies());
 			for (GeneralComment gc : deletedGen) {
 				notifications.add(new RemovedReplyCommentNotification(review, gc));
-				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, gc);
+				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListenerImpl.ANONYMOUS, review, gc);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
@@ -154,7 +154,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 						notifications.add(new UpdatedReplyCommentNotification(review, newComment, reply));
 					}
 					VersionedCommentReplyAddedOrEdited event = new VersionedCommentReplyAddedOrEdited(
-							CrucibleReviewActionListener.ANONYMOUS,	review, info, newComment, reply);
+							CrucibleReviewActionListenerImpl.ANONYMOUS,	review, info, newComment, reply);
 					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 				}
 			}
@@ -165,7 +165,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					oldComment.getReplies(), newComment.getReplies());
 			for (VersionedComment vc : deletedVcs) {
 				notifications.add(new RemovedReplyCommentNotification(review, vc));
-				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, review, vc);
+				CommentRemoved event = new CommentRemoved(CrucibleReviewActionListenerImpl.ANONYMOUS, review, vc);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 		}
@@ -190,7 +190,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					notifications.add(new UpdatedGeneralCommentNotification(newReview, comment));
 				}
 				GeneralCommentAddedOrEdited event = new GeneralCommentAddedOrEdited(
-						CrucibleReviewActionListener.ANONYMOUS, newReview, comment);
+						CrucibleReviewActionListenerImpl.ANONYMOUS, newReview, comment);
 				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 			}
 			checkGeneralReplies(newReview, existing, comment);
@@ -200,7 +200,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				oldReview.getGeneralComments(), newReview.getGeneralComments());
 		for (GeneralComment gc : deletedGen) {
 			notifications.add(new RemovedGeneralCommentNotification(newReview, gc));
-			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, gc);
+			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListenerImpl.ANONYMOUS, newReview, gc);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 		}
 
@@ -223,7 +223,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					}
 					if (project != null) {
 						VersionedCommentAddedOrEdited event = new VersionedCommentAddedOrEdited(
-								CrucibleReviewActionListener.ANONYMOUS,	newReview, info, comment);
+								CrucibleReviewActionListenerImpl.ANONYMOUS,	newReview, info, comment);
 						IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 					}
 				}
@@ -235,7 +235,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				oldReview.getVersionedComments(), newReview.getVersionedComments());
 		for (VersionedComment vc : deletedVcs) {
 			notifications.add(new RemovedVersionedCommentNotification(newReview, vc));
-			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListener.ANONYMOUS, newReview, vc);
+			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListenerImpl.ANONYMOUS, newReview, vc);
 			IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 		}
 	}
