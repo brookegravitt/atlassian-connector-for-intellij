@@ -16,16 +16,15 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
-import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import junit.framework.TestCase;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 public class ReviewKeyComparatorTest extends TestCase {
 
@@ -175,15 +174,7 @@ public class ReviewKeyComparatorTest extends TestCase {
                 return null; 
             }
 
-			public List<CrucibleReviewItemInfo> getReviewItems() {
-				return null;
-			}
-
 			public CrucibleFileInfo getFileByPermId(PermId id) {
-				return null;
-			}
-
-			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
 				return null;
 			}
 

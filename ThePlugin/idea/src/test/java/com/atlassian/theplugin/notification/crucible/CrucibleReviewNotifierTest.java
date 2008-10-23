@@ -204,7 +204,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	private CrucibleFileInfo prepareReviewItem(final PermId newItem) {
 		return new CrucibleFileInfo() {
 			private ArrayList<VersionedComment>
-					comments = new ArrayList<VersionedComment>();
+					versionedComments = new ArrayList<VersionedComment>();
 
 			public VersionedVirtualFile getOldFileDescriptor() {
 				return null;
@@ -223,7 +223,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 //			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-//				return comments;
+//				return versionedComments;
 //			}
 
 			public String getRepositoryName() {
@@ -246,12 +246,28 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
-			public VersionedVirtualFile getFileDescriptor() {
-				return null;
+			public void addComment(final VersionedComment comment) {
+
 			}
 
-			public CrucibleReviewItemInfo getItemInfo() {
-				return new CrucibleReviewItemInfo(newItem);
+			public List<VersionedComment> getVersionedComments() {
+				return versionedComments;
+			}
+
+			public void setVersionedComments(final List<VersionedComment> versionedComments) {
+
+			}
+
+			public int getNumberOfDefects() {
+				return 0;
+			}
+
+			public int getNumberOfComments() {
+				return 0;
+			}
+
+			public VersionedVirtualFile getFileDescriptor() {
+				return null;
 			}
 		};
 	}
@@ -287,7 +303,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
 		CrucibleFileInfo file1 = prepareReviewItem(newItem);
-		file1.getItemInfo().getComments().add(prepareVersionedComment(newVCommentId, newItem, null));
+		file1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
 		ArrayList<CrucibleFileInfo> files1 = new ArrayList<CrucibleFileInfo>();
 		files1.add(file1);
 		mgr.setFiles(review1, files1);
@@ -302,7 +318,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
-		file2.getItemInfo().getComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
+		file2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
 		ArrayList<CrucibleFileInfo> files2 = new ArrayList<CrucibleFileInfo>();
 		files2.add(file2);
 		mgr.setFiles(review2, files2);
@@ -442,18 +458,21 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return "CRF:2";
 			}
 		};
-		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
+
+		reviews.get(0).getInnerReviewObject().setPermId(newItem);
+
+//		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
 		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0).getInnerReviewObject()).add(new CrucibleFileInfo() {
 
 			public VersionedVirtualFile getOldFileDescriptor() {
 				return null;
 			}
 
-			public int getNumberOfComments() throws ValueNotYetInitialized {
+			public int getNumberOfComments() {
 				return 0;
 			}
 
-			public int getNumberOfDefects() throws ValueNotYetInitialized {
+			public int getNumberOfDefects() {
 				return 0;
 			}
 
@@ -461,8 +480,12 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return newItem;
 			}
 
-			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+			public List<VersionedComment> getVersionedComments() {
 				return new ArrayList<VersionedComment>();
+			}
+
+			public void setVersionedComments(final List<VersionedComment> versionedComments) {
+
 			}
 
 			public String getRepositoryName() {
@@ -485,19 +508,20 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
+			public void addComment(final VersionedComment comment) {
+
+			}
+
 			public VersionedVirtualFile getFileDescriptor() {
 				return null;
 			}
-
-			public CrucibleReviewItemInfo getItemInfo() {
-				return new CrucibleReviewItemInfo(newItem);
-			}
 		});
+
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(1, notifier.getNotifications().size());
-		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewItemNotification);
+		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
 	}
 
 	public void testNewGeneralComment() throws ValueNotYetInitialized {
@@ -600,8 +624,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 		PermIdBean newPermlId = new PermIdBean("CMT:100");
-		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getItemInfo().getComments()
-				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getItemInfo().getId(), null));
+		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
+				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());

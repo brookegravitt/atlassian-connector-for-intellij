@@ -77,17 +77,17 @@ public final class CommentHighlighter {
 		}
 	}
 
-	public static void updateCommentsInEditors(Project project, ReviewAdapter review, CrucibleFileInfo reviewItem) {
+	public static void updateCommentsInEditors(Project project, ReviewAdapter review, CrucibleFileInfo fileInfo) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			if (editor.getUserData(COMMENT_DATA_KEY) != null) {
 				final ReviewAdapter data = editor.getUserData(REVIEW_DATA_KEY);
 				final CrucibleFileInfo file = editor.getUserData(REVIEWITEM_DATA_KEY);
 				if (data != null && file != null) {
 					if (data.getPermId().equals(review.getPermId())
-							&& file.getItemInfo().getId().equals(reviewItem.getItemInfo().getId())) {
-						applyHighlighters(project, editor, reviewItem);
+							&& file.getPermId().equals(fileInfo.getPermId())) {
+						applyHighlighters(project, editor, fileInfo);
 						editor.putUserData(REVIEW_DATA_KEY, review);
-						editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
+						editor.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
 						editor.putUserData(COMMENT_DATA_KEY, true);
 					}
 				}
@@ -95,13 +95,13 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void applyHighlighters(final Project project, final Editor editor, final CrucibleFileInfo reviewItem) {
+	private static void applyHighlighters(final Project project, final Editor editor, final CrucibleFileInfo fileInfo) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
 
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
-		for (VersionedComment comment : reviewItem.getItemInfo().getComments()) {
+		for (VersionedComment comment : fileInfo.getVersionedComments()) {
 			if (comment.getToStartLine() > 0) {
 				int endLine =  comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
 				try {

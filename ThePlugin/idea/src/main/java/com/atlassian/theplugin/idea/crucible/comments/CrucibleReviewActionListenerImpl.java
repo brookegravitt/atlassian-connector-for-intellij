@@ -59,7 +59,7 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 			VersionedComment parentComment, VersionedComment newComment) {
 	}
 
-	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, CrucibleReviewItemInfo file,
+	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment) {
 	}
 
@@ -84,7 +84,7 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	}
 
 	public void createdOrEditedVersionedComment(ReviewAdapter review,
-			CrucibleReviewItemInfo file,
+			PermId file,
 			VersionedComment comment) {
 	}
 
@@ -96,7 +96,7 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	}
 
 	public void updatedVersionedComment(final ReviewAdapter review,
-			final CrucibleReviewItemInfo file,
+			final CrucibleFileInfo file,
 			final VersionedComment comment) {
 	}
 
@@ -127,7 +127,7 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
-	public void publishedVersionedComment(final ReviewAdapter review, final CrucibleReviewItemInfo file,
+	public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment comment) {
 	}
 

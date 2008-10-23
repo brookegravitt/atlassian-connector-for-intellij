@@ -50,7 +50,7 @@ public abstract class FilteredModelProvider<E extends Enum<E>> extends ModelProv
 		public boolean isValid(final AtlassianTreeNode node) {
 			if (node instanceof CrucibleFileNode) {
 				CrucibleFileNode anode = (CrucibleFileNode) node;
-				return anode.getFile().getItemInfo().getNumberOfComments() > 0;
+				return anode.getFile().getNumberOfComments() > 0;
 			}
 
 			return true;

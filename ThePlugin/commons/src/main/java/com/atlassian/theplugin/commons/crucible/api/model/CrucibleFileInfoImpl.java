@@ -18,7 +18,9 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private VersionedVirtualFile fileDescriptor;
@@ -29,14 +31,48 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 	private Date commitDate;
 	private CommitType commitType;
 
-	private CrucibleReviewItemInfo info;
+	private PermId permId;
+
+	private List<VersionedComment> versionedComments;
 
 	public CrucibleFileInfoImpl(VersionedVirtualFile fileDescriptor, VersionedVirtualFile oldFileDescriptor,
-								CrucibleReviewItemInfo info) {
+								PermId permId) {
 		this.fileDescriptor = fileDescriptor;
 		this.oldFileDescriptor = oldFileDescriptor;
-		this.info = info;
-//		versionedComments = new ArrayList<VersionedComment>();
+		this.permId = permId;
+		versionedComments = new ArrayList<VersionedComment>();
+	}
+
+	public List<VersionedComment> getVersionedComments() {
+		return versionedComments;
+	}
+
+	public void setVersionedComments(final List<VersionedComment> versionedComments) {
+		this.versionedComments = versionedComments;
+	}
+
+	public int getNumberOfDefects() {
+		if (versionedComments == null) {
+			return 0;
+		}
+		int counter = 0;
+		for (VersionedComment comment : versionedComments) {
+			if (comment.isDefectApproved()) {
+				++counter;
+			}
+		}
+		return counter;
+	}
+
+	public int getNumberOfComments() {
+		if (versionedComments == null) {
+			return 0;
+		}
+		int n = versionedComments.size();
+		for (VersionedComment c : versionedComments) {
+			n += c.getReplies().size();
+		}
+		return n;
 	}
 
 //	public CrucibleFileInfoImpl(PermId permId) {
@@ -48,16 +84,12 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		return oldFileDescriptor;
 	}
 
+	public PermId getPermId() {
+		return permId;
+	}
+
 	public void setOldFileDescriptor(VersionedVirtualFile oldFileDescriptor) {
 		this.oldFileDescriptor = oldFileDescriptor;
-	}
-
-	public CrucibleReviewItemInfo getItemInfo() {
-		return info;
-	}
-
-	public void setItemInfo(CrucibleReviewItemInfo i) {
-		this.info = i;
 	}
 
 	public void setFileDescriptor(VersionedVirtualFile fileDescriptor) {
@@ -137,7 +169,15 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		return commitType;
 	}
 
+	public void addComment(final VersionedComment comment) {
+		this.versionedComments.add(comment);
+	}
+
 	public void setCommitType(final CommitType commitType) {
 		this.commitType = commitType;
+	}
+
+	public void setFilePermId(final PermIdBean permId) {
+		this.permId = permId;
 	}
 }

@@ -39,7 +39,10 @@ import static org.easymock.EasyMock.replay;
 import org.mortbay.jetty.Server;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class CrucibleServerFacadeTest extends TestCase {
     private static final User VALID_LOGIN = new UserBean("validLogin");
@@ -544,15 +547,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 
 			}
 
-			public List<CrucibleReviewItemInfo> getReviewItems() {
-				return null;
-			}
-
 			public CrucibleFileInfo getFileByPermId(PermId id) {
-				return null;
-			}
-
-			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
 				return null;
 			}
 
@@ -680,15 +675,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 				return null;
 			}
 
-			public List<CrucibleReviewItemInfo> getReviewItems() {
-				return null;
-			}
-
 			public CrucibleFileInfo getFileByPermId(PermId id) {
-				return null;
-			}
-
-			public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
 				return null;
 			}
 

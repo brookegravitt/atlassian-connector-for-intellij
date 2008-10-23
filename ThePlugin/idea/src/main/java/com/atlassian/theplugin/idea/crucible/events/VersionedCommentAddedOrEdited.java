@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.events;
 
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
@@ -25,11 +25,11 @@ import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 public class VersionedCommentAddedOrEdited extends CrucibleEvent {
 	private ReviewAdapter review;
-	private CrucibleReviewItemInfo file;
+	private PermId file;
 	private VersionedComment comment;
 
 	public VersionedCommentAddedOrEdited(CrucibleReviewActionListener caller, ReviewAdapter review,
-			CrucibleReviewItemInfo file,
+			PermId file,
 			VersionedComment newComment) {
 		super(caller);
 		this.review = review;

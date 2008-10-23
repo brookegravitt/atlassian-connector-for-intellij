@@ -67,11 +67,9 @@ public interface Review {
 	
 //    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
-	List<CrucibleReviewItemInfo> getReviewItems();
+//	List<CrucibleReviewItemInfo> getReviewItems();
 
 	CrucibleFileInfo getFileByPermId(PermId id);
-	
-	CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info);
 	
 	List<Action> getTransitions() throws ValueNotYetInitialized;
 
@@ -127,5 +125,5 @@ public interface Review {
 
 	void setSummary(String summary);
 
-	void setReviewItems(List<CrucibleReviewItemInfo> reviewItems);
+//	void setReviewItems(List<CrucibleReviewItemInfo> reviewItems);
 }

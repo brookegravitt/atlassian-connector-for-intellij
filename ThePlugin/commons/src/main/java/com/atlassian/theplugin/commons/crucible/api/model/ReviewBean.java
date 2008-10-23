@@ -20,14 +20,13 @@ import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 public class ReviewBean implements Review {
 	private List<Reviewer> reviewers;
-	private List<CrucibleReviewItemInfo> reviewItems;
+//	private List<CrucibleReviewItemInfo> reviewItems;
 //	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
 	private List<Action> transitions;
@@ -95,7 +94,7 @@ public class ReviewBean implements Review {
     public ReviewBean(String serverUrl) {
 		super();
 		this.serverUrl = serverUrl;
-		reviewItems = new ArrayList<CrucibleReviewItemInfo>();
+//		reviewItems = new ArrayList<CrucibleReviewItemInfo>();
 		this.virtualFileSystem = new VirtualFileSystem();
 	}
 
@@ -384,8 +383,8 @@ public class ReviewBean implements Review {
 
 		for (VersionedComment comment : commentList) {
 			for (CrucibleFileInfo f : aFiles) {
-				if (f.getItemInfo().getId().equals(comment.getReviewItemId())) {
-					f.getItemInfo().addComment(comment);
+				if (f.getPermId().equals(comment.getReviewItemId())) {
+					f.addComment(comment);
 				}
 			}
 		}
@@ -429,26 +428,14 @@ public class ReviewBean implements Review {
         this.summary = summary;
     }
 
-	public List<CrucibleReviewItemInfo> getReviewItems() {
-		return reviewItems;
-	}
-
-	public void setReviewItems(List<CrucibleReviewItemInfo> reviewItems) {
-		this.reviewItems = reviewItems;
-	}
-
 	public CrucibleFileInfo getFileByPermId(PermId id) {
 		List<CrucibleFileInfo> lFiles = CrucibleFileInfoManager.getInstance().getFiles(this);
 		for (CrucibleFileInfo f : lFiles) {
-			if (f.getItemInfo().getId().equals(id)) {
+			if (f.getPermId().equals(id)) {
 				return f;
 			}
 		}
 		return null;
-	}
-
-	public CrucibleFileInfo getFileByReviewInfo(CrucibleReviewItemInfo info) {
-		return getFileByPermId(info.getId());
 	}
 
 	public List<CrucibleFileInfo> getFiles() {

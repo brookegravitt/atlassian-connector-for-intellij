@@ -153,7 +153,7 @@ public final class FileTreeModelBuilder {
 
 	private static List<VersionedComment> getFileVersionedComments(CrucibleFileInfo file) {
 		List<VersionedComment> list = new ArrayList<VersionedComment>();
-		List<VersionedComment> comments = file.getItemInfo().getComments();
+		List<VersionedComment> comments = file.getVersionedComments();
 		if (comments == null) {
 			return null;
 		}
@@ -170,7 +170,7 @@ public final class FileTreeModelBuilder {
 
 	private static List<VersionedComment> getLineVersionedComments(CrucibleFileInfo file) {
 		List<VersionedComment> list = new ArrayList<VersionedComment>();
-		List<VersionedComment> thisFileComments = file.getItemInfo().getComments();
+		List<VersionedComment> thisFileComments = file.getVersionedComments();
 		if (thisFileComments == null) {
 			return null;
 		}

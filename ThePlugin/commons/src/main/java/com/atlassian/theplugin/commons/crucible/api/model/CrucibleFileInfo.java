@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 
 import java.util.Date;
+import java.util.List;
 
 public interface CrucibleFileInfo extends VersionedFileInfo {
 	VersionedVirtualFile getOldFileDescriptor();
@@ -28,9 +29,7 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 //
 //	int getNumberOfDefects() throws ValueNotYetInitialized;
 
-	CrucibleReviewItemInfo getItemInfo();
-
-//	PermId getPermId();
+	PermId getPermId();
 //
 //	List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
 
@@ -43,4 +42,14 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 	Date getCommitDate();
 
 	CommitType getCommitType();
+
+	void addComment(final VersionedComment comment);
+
+	List<VersionedComment> getVersionedComments();
+
+	void setVersionedComments(List<VersionedComment> versionedComments);
+
+	int getNumberOfDefects();
+
+	int getNumberOfComments();
 }

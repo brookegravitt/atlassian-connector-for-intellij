@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.commons.crucible.api.model;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.VirtualFileSystem;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
 import java.util.List;
@@ -97,20 +97,13 @@ public class ReviewImpl implements Review {
 	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
 		return null;
 	}// TODO jgorycki: this is evil and shouldn't be here. I hope to be able to fix this some day :)
+	// jjaroczynski: good luck jgorycki
 
 	public String getServerUrl() {
 		return null;
 	}
 
-	public List<CrucibleReviewItemInfo> getReviewItems() {
-		return null;
-	}
-
 	public CrucibleFileInfo getFileByPermId(final PermId id) {
-		return null;
-	}
-
-	public CrucibleFileInfo getFileByReviewInfo(final CrucibleReviewItemInfo info) {
 		return null;
 	}
 
@@ -222,7 +215,4 @@ public class ReviewImpl implements Review {
 
 	}
 
-	public void setReviewItems(final List<CrucibleReviewItemInfo> reviewItems) {
-
-	}
 }
