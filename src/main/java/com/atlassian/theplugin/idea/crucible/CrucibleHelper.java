@@ -65,7 +65,7 @@ public final class CrucibleHelper {
 		int line = 1;
 
 		java.util.List<VersionedComment> fileComments;
-		fileComments = reviewItem.getItemInfo().getComments();
+		fileComments = reviewItem.getVersionedComments();
 
 		if (fileComments != null && !fileComments.isEmpty()) {
 			line = fileComments.iterator().next().getFromStartLine();
@@ -184,7 +184,7 @@ public final class CrucibleHelper {
 			final ReviewAdapter mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 			if (mr != null && mf != null) {
-				if (review.getPermId().equals(mr.getPermId()) && file.getItemInfo().getId().equals(mf.getItemInfo().getId())) {
+				if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
 					return editor;
 				}
 			}

@@ -281,7 +281,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				if (comment instanceof VersionedCommentBean) {
 					((VersionedCommentBean) comment).setDraft(false);
 				}
-				eventBroker.trigger(new VersionedCommentPublished(this, review, file.getItemInfo(), comment));
+				eventBroker.trigger(new VersionedCommentPublished(this, review, file.getPermId(), comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -329,14 +329,14 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		public void aboutToAddVersionedComment(ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
-						file.getItemInfo().getId(), comment);
+						file.getPermId(), comment);
 				setCommentAuthor(review.getServer(), newComment);
 				List<VersionedComment> comments;
-				comments = file.getItemInfo().getComments();
+				comments = file.getVersionedComments();
 				if (comments == null) {
 					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
-							file.getItemInfo().getId());
-					file.getItemInfo().setComments(comments);
+							file.getPermId());
+					file.setVersionedComments(comments);
 				}
 				comments.add(newComment);
 
@@ -344,7 +344,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 				
 
-				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), newComment));
+				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -367,7 +367,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 //						.getReplies().add(newComment);
 
 				eventBroker.trigger(new VersionedCommentReplyAddedOrEdited(
-						this, review, file.getItemInfo(), parentComment, newComment));
+						this, review, file.getPermId(), parentComment, newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
@@ -383,7 +383,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 				final VersionedComment comment) {
 			try {
 				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getItemInfo(), comment));
+				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), comment));
 //				eventBroker.trigger(new VersionedCommentUpdated(this, review, file.getItemInfo(), comment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);

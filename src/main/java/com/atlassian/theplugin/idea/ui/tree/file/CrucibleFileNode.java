@@ -15,12 +15,12 @@
  */
 package com.atlassian.theplugin.idea.ui.tree.file;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleReviewItemInfo;
 import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vcs.FileStatus;
@@ -68,11 +68,15 @@ public class CrucibleFileNode extends FileNode {
 
 	public void setReview(ReviewAdapter review) {
 		this.review = review;
-		for (CrucibleReviewItemInfo info : review.getReviewItems()) {
-			if (info.getId().equals(file.getItemInfo().getId())) {
-				((CrucibleFileInfoImpl) file).setItemInfo(info);
-				break;
+		try {
+			for (CrucibleFileInfo info : review.getFiles()) {
+				if (info.getPermId().equals(file.getPermId())) {
+					file.setVersionedComments(info.getVersionedComments());
+					break;
+				}
 			}
+		} catch (ValueNotYetInitialized e) {
+			PluginUtil.getLogger().warn(e);
 		}
 	}
 
@@ -113,9 +117,9 @@ public class CrucibleFileNode extends FileNode {
 			txt.append(")");
 			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
 
-			int noOfComments = node.getFile().getItemInfo().getNumberOfComments();
+			int noOfComments = node.getFile().getNumberOfComments();
 			if (noOfComments > 0) {
-				int noOfDefects = node.getFile().getItemInfo().getNumberOfDefects();
+				int noOfDefects = node.getFile().getNumberOfDefects();
 				append(" ",
 						TEXT_ITALIC);
 				append(String.valueOf(noOfComments),

@@ -42,7 +42,7 @@ public interface CrucibleReviewActionListener {
 	void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment parentComment, VersionedComment newComment);
 
-	void createdOrEditedVersionedCommentReply(ReviewAdapter review, CrucibleReviewItemInfo file,
+	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment);
 
 	void aboutToAddGeneralCommentReply(ReviewAdapter review,
@@ -61,7 +61,7 @@ public interface CrucibleReviewActionListener {
 			VersionedComment comment);
 
 	void createdOrEditedVersionedComment(ReviewAdapter review,
-			CrucibleReviewItemInfo file,
+			PermId file,
 			VersionedComment comment);
 
 	void aboutToUpdateVersionedComment(ReviewAdapter review, CrucibleFileInfo file,
@@ -70,7 +70,7 @@ public interface CrucibleReviewActionListener {
 	void aboutToUpdateGeneralComment(ReviewAdapter review, GeneralComment comment);
 
 	void updatedVersionedComment(ReviewAdapter review,
-			CrucibleReviewItemInfo file,
+			CrucibleFileInfo file,
 			VersionedComment comment);
 
 	void updatedGeneralComment(ReviewAdapter review, GeneralComment comment);
@@ -92,7 +92,7 @@ public interface CrucibleReviewActionListener {
 
 	void publishedGeneralComment(ReviewAdapter review, GeneralComment comment);
 
-	void publishedVersionedComment(ReviewAdapter review, CrucibleReviewItemInfo file,
+	void publishedVersionedComment(ReviewAdapter review, PermId filePermId,
 			VersionedComment comment);
 
 	void commentsDownloaded(ReviewAdapter review);
