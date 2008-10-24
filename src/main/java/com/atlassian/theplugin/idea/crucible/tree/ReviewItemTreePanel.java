@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -427,9 +426,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 
-				final CrucibleFileInfo file = review.getFileByPermId(filePermId);
+				final CrucibleFileInfo file;
+				try {
+					file = review.getFileByPermId(filePermId);
 
-				AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
+					AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 						new CrucibleVersionedCommentClickAction(project));
 
 				AtlassianTreeNode changedNode =
@@ -460,6 +461,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				if (editor != null) {
 					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
 				}
+
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					valueNotYetInitialized.printStackTrace();
+				}
+
+
 			}
 		});
 	}
@@ -489,26 +496,30 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment parentComment, final VersionedComment comment) {
 		setCrucibleReview(review);
-		final CrucibleFileInfo file = review.getFileByPermId(filePermId);
+		final CrucibleFileInfo file;
+		try {
+			file = review.getFileByPermId(filePermId);
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
+							new CrucibleVersionedCommentClickAction(project));
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode);
+					if (changedNode == null) {
+						changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment),
+								newCommentNode);
+					}
+					addReplyNodes(review, file, newCommentNode, comment);
 
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
-						new CrucibleVersionedCommentClickAction(project));
-				AtlassianTreeNode changedNode =
-						replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode);
-				if (changedNode == null) {
-					changedNode = addNewNode(new SearchVersionedCommentAlgorithm(review, file, parentComment),
-							newCommentNode);
+					updateFileNode(review, file);
+					updateRootNode(review);
+
+					refreshNode(changedNode);
 				}
-				addReplyNodes(review, file, newCommentNode, comment);
-
-				updateFileNode(review, file);
-				updateRootNode(review);
-
-				refreshNode(changedNode);
-			}
-		});
+			});
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			valueNotYetInitialized.printStackTrace();
+		}
 	}
 
 	public void aboutToAddGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
@@ -541,9 +552,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				});
 
 				if (comment instanceof VersionedComment) {
-					for (CrucibleFileInfo file
-							: CrucibleFileInfoManager.getInstance().getFiles(review.getInnerReviewObject())) {
-						updateFileNode(review, file);
+					try {
+						for (CrucibleFileInfo file : review.getFiles()) {
+							updateFileNode(review, file);
+						}
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						valueNotYetInitialized.printStackTrace();
 					}
 				}
 
@@ -570,9 +584,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
 			final VersionedComment comment) {
 		setCrucibleReview(review);
-		final CrucibleFileInfo file = review.getFileByPermId(permId);
-
-		EventQueue.invokeLater(new Runnable() {
+		final CrucibleFileInfo file;
+		try {
+			file = review.getFileByPermId(permId);
+			EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				VersionedCommentTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
 						new CrucibleVersionedCommentClickAction(project));
@@ -582,6 +597,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			}
 
 		});
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			valueNotYetInitialized.printStackTrace();
+		}
+
+
 	}
 
 	public void commentsDownloaded(final ReviewAdapter review) {

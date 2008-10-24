@@ -18,8 +18,8 @@ package com.atlassian.theplugin.idea.crucible.events;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 public class GeneralCommentReplyAboutToAdd extends CrucibleEvent {
 	private ReviewAdapter review;

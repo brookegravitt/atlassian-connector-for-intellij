@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -119,7 +119,7 @@ public class CrucibleFileNode extends FileNode {
 
 			int noOfComments = node.getFile().getNumberOfComments();
 			if (noOfComments > 0) {
-				int noOfDefects = node.getFile().getNumberOfDefects();
+				int noOfDefects = node.getFile().getNumberOfCommentsDefects();
 				append(" ",
 						TEXT_ITALIC);
 				append(String.valueOf(noOfComments),
