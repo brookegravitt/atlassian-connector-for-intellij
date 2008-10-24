@@ -248,14 +248,14 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this);
 
 		JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-		if (jiraServer != null) {
+		if (jiraServer != null) {	
 			jiraIssueFilterPanel.setJiraServer(jiraServer, advancedQuery);
 		}
+		jiraIssueFilterPanel.show();
 //		filterToolbarSetVisible(false);
 //		filterEditToolbarSetVisible(true);
 //		setScrollPaneViewport(jiraIssueFilterPanel.$$$getRootComponent$$$());
 
-		jiraIssueFilterPanel.show();
 
 		if (jiraIssueFilterPanel.getExitCode() == 0) {
 			applyAdvancedFilter();
