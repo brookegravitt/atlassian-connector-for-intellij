@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 public abstract class AbstractReviewNotification implements CrucibleNotification {
     protected ReviewAdapter review;

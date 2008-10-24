@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+
 import java.util.List;
 
 public class ReviewNotificationBean {

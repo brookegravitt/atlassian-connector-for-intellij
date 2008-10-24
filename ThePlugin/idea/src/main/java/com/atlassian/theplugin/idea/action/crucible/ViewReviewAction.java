@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 

@@ -204,7 +204,9 @@ public final class CrucibleRestXmlHelper {
 		
 		// ***** Files ******
 		List<Element> fileNode = getChildElements(reviewNode, "reviewItems");
-		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+		List<CrucibleFileInfo> files = null;
+		if (fileNode.size() > 0) {
+			files = new ArrayList<CrucibleFileInfo>();
 			for (Element element : fileNode) {
 				List<Element> fileElements = getChildElements(element, "reviewItem");
 				for (Element file : fileElements) {
@@ -212,6 +214,7 @@ public final class CrucibleRestXmlHelper {
 					files.add(fileInfo);
 				}
 			}
+		}
 
 		review.setFilesAndVersionedComments(files, comments);
 	//	review.setReviewItems(reviewItems);
@@ -612,8 +615,7 @@ public final class CrucibleRestXmlHelper {
 		return result;
 	}
 
-	public static VersionedCommentBean parseVersionedCommentNode (
-			Element reviewCommentNode) {
+	public static VersionedCommentBean parseVersionedCommentNode(Element reviewCommentNode) {
 		VersionedCommentBean comment = new VersionedCommentBean();
 		parseVersionedComment(comment, reviewCommentNode);
 

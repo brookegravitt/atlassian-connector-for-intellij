@@ -18,8 +18,8 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 
 public final class ReviewInfoUtil {

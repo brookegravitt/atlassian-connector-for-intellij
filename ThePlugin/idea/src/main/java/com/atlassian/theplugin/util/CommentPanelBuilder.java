@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;

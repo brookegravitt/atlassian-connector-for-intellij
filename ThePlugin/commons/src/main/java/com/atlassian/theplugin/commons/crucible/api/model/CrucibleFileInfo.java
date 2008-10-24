@@ -27,7 +27,7 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 
 //	int getNumberOfComments() throws ValueNotYetInitialized;
 //
-//	int getNumberOfDefects() throws ValueNotYetInitialized;
+//	int getNumberOfCommentsDefects() throws ValueNotYetInitialized;
 
 	PermId getPermId();
 //
@@ -49,7 +49,15 @@ public interface CrucibleFileInfo extends VersionedFileInfo {
 
 	void setVersionedComments(List<VersionedComment> versionedComments);
 
-	int getNumberOfDefects();
-
 	int getNumberOfComments();
+
+	int getNumberOfComments(final String userName);
+
+	int getNumberOfCommentsDefects();
+
+	int getNumberOfCommentsDefects(final String userName);
+
+	int getNumberOfCommentsDrafts();
+
+	int getNumberOfCommentsDrafts(final String userName);
 }

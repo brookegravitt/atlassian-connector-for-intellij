@@ -16,15 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToUpdate;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToUpdate;

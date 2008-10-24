@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;

@@ -51,16 +51,99 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		this.versionedComments = versionedComments;
 	}
 
-	public int getNumberOfDefects() {
+	public int getNumberOfCommentsDefects() {
 		if (versionedComments == null) {
 			return 0;
 		}
 		int counter = 0;
 		for (VersionedComment comment : versionedComments) {
-			if (comment.isDefectApproved()) {
+			if (comment.isDefectRaised()) {
 				++counter;
 			}
+			for (VersionedComment reply : comment.getReplies()) {
+				if (reply.isDefectRaised()) {
+					++counter;
+				}
+			}
 		}
+		return counter;
+	}
+
+	public int getNumberOfCommentsDefects(final String userName) {
+		if (versionedComments == null) {
+			return 0;
+		}
+
+		int counter = 0;
+		for (VersionedComment comment : versionedComments) {
+			if (comment.isDefectRaised() && comment.getAuthor().getUserName().equals(userName)) {
+				++counter;
+			}
+			for (VersionedComment reply : comment.getReplies()) {
+				if (reply.isDefectRaised() && reply.getAuthor().getUserName().equals(userName)) {
+					++counter;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public int getNumberOfCommentsDrafts() {
+		if (versionedComments == null) {
+			return 0;
+		}
+		int counter = 0;
+		for (VersionedComment comment : versionedComments) {
+			if (comment.isDraft()) {
+				++counter;
+			}
+			for (VersionedComment reply : comment.getReplies()) {
+				if (reply.isDraft()) {
+					++counter;
+				}
+			}
+		}
+		return counter;
+	}
+
+	public int getNumberOfCommentsDrafts(final String userName) {
+		if (versionedComments == null) {
+			return 0;
+		}
+
+		int counter = 0;
+		for (VersionedComment comment : versionedComments) {
+			if (comment.isDraft() && comment.getAuthor().getUserName().equals(userName)) {
+				++counter;
+			}
+			for (VersionedComment reply : comment.getReplies()) {
+				if (reply.isDraft() && reply.getAuthor().getUserName().equals(userName)) {
+					++counter;
+				}
+			}
+		}
+
+		return counter;
+	}
+
+	public int getNumberOfComments(final String userName) {
+		if (versionedComments == null) {
+			return 0;
+		}
+
+		int counter = 0;
+		for (VersionedComment comment : versionedComments) {
+			if (comment.getAuthor().getUserName().equals(userName)) {
+				++counter;
+			}
+			for (VersionedComment reply : comment.getReplies()) {
+				if (reply.getAuthor().getUserName().equals(userName)) {
+					++counter;
+				}
+			}
+		}
+
 		return counter;
 	}
 
@@ -177,7 +260,7 @@ public class CrucibleFileInfoImpl implements CrucibleFileInfo {
 		this.commitType = commitType;
 	}
 
-	public void setFilePermId(final PermIdBean permId) {
-		this.permId = permId;
+	public void setFilePermId(final PermIdBean aPermId) {
+		this.permId = aPermId;
 	}
 }

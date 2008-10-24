@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 public class ReviewAuthorCellRenderer extends ReviewCellRenderer {
 	protected String getCellText(ReviewAdapter review) {

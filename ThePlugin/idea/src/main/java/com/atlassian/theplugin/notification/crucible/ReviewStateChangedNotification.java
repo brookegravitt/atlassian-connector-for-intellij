@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 
 public class ReviewStateChangedNotification extends AbstractReviewNotification {
     public ReviewStateChangedNotification(ReviewAdapter review, State oldState) {
