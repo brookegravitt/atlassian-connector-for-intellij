@@ -215,4 +215,56 @@ public class ReviewImpl implements Review {
 
 	}
 
+	public int getNumberOfVersionedComments() {
+		return 0;
+	}
+
+	public int getNumberOfVersionedCommentsDefects() throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralCommentsDefects() throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralComments() throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralCommentsDefects(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfVersionedCommentsDefects(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfVersionedCommentsDrafts() throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralCommentsDrafts() throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfVersionedCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfVersionedComments(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public int getNumberOfGeneralComments(final String userName) throws ValueNotYetInitialized {
+		return 0;
+	}
+
+	public void setFiles(final List<CrucibleFileInfo> files) {
+
+	}
+
 }

@@ -69,7 +69,7 @@ public interface Review {
 
 //	List<CrucibleReviewItemInfo> getReviewItems();
 
-	CrucibleFileInfo getFileByPermId(PermId id);
+	CrucibleFileInfo getFileByPermId(PermId id) throws ValueNotYetInitialized;
 	
 	List<Action> getTransitions() throws ValueNotYetInitialized;
 
@@ -83,7 +83,7 @@ public interface Review {
 
 	void setFilesAndVersionedComments(List<CrucibleFileInfo> files, List<VersionedComment> commentList);
 
-	List<CrucibleFileInfo> getFiles();
+	List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
 	void setReviewers(List<Reviewer> reviewers);
 
@@ -126,4 +126,31 @@ public interface Review {
 	void setSummary(String summary);
 
 //	void setReviewItems(List<CrucibleReviewItemInfo> reviewItems);
+
+	int getNumberOfVersionedComments() throws ValueNotYetInitialized;
+
+	int getNumberOfVersionedCommentsDefects() throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralCommentsDefects() throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralComments() throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralCommentsDefects(final String userName) throws ValueNotYetInitialized;
+
+	int getNumberOfVersionedCommentsDefects(final String userName) throws ValueNotYetInitialized;
+
+	int getNumberOfVersionedCommentsDrafts() throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralCommentsDrafts() throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralCommentsDrafts(final String userName) throws ValueNotYetInitialized;
+
+	int getNumberOfVersionedCommentsDrafts(final String userName) throws ValueNotYetInitialized;
+
+
+	int getNumberOfVersionedComments(final String userName) throws ValueNotYetInitialized;
+
+	int getNumberOfGeneralComments(final String userName) throws ValueNotYetInitialized;
+
+	void setFiles(final List<CrucibleFileInfo> files);
 }

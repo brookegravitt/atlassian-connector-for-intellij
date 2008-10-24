@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.commons.crucible.api.rest;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
@@ -459,11 +459,15 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 	private Review prepareDetailReview(Element element) throws RemoteApiException {
 		ReviewBean review = CrucibleRestXmlHelper.parseDetailedReviewNode(baseUrl, element);
 
-		for (CrucibleFileInfo fileInfo : CrucibleFileInfoManager.getInstance().getFiles(review)) {
-			fillRepositoryData(fileInfo);
-		}
-		for (CrucibleFileInfo fileInfo : review.getFiles()) {
-			fillRepositoryData(fileInfo);
+//		for (CrucibleFileInfo fileInfo : CrucibleFileInfoManager.getInstance().getFiles(review)) {
+//			fillRepositoryData(fileInfo);
+//		}
+		try {
+			for (CrucibleFileInfo fileInfo : review.getFiles()) {
+				fillRepositoryData(fileInfo);
+			}
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			// cannot fill
 		}
 		return review;
 	}
@@ -637,32 +641,32 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		}
 	}
 
-	public CrucibleFileInfo addItemToReview(Review review, NewReviewItem item) throws RemoteApiException {
-		if (!isLoggedIn()) {
-			throw new IllegalStateException("Calling method without calling login() first");
-		}
-
-		Document request = CrucibleRestXmlHelper.prepareAddItemNode(item);
-		try {
-			String url = baseUrl + REVIEW_SERVICE + "/" + review.getPermId().getId() + REVIEW_ITEMS;
-			Document doc = retrievePostResponse(url, request);
-			XPath xpath = XPath.newInstance("/reviewItem");
-			@SuppressWarnings("unchecked")
-			List<Element> elements = xpath.selectNodes(doc);
-
-			if (elements != null && !elements.isEmpty()) {
-				CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(review, elements.iterator().next());
-				fillRepositoryData(fileInfo);
-				CrucibleFileInfoManager.getInstance().getFiles(review).add(fileInfo);
-				return fileInfo;
-			}
-			return null;
-		} catch (IOException e) {
-			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
-		} catch (JDOMException e) {
-			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
-		}
-	}
+//	public CrucibleFileInfo addItemToReview(Review review, NewReviewItem item) throws RemoteApiException {
+//		if (!isLoggedIn()) {
+//			throw new IllegalStateException("Calling method without calling login() first");
+//		}
+//
+//		Document request = CrucibleRestXmlHelper.prepareAddItemNode(item);
+//		try {
+//			String url = baseUrl + REVIEW_SERVICE + "/" + review.getPermId().getId() + REVIEW_ITEMS;
+//			Document doc = retrievePostResponse(url, request);
+//			XPath xpath = XPath.newInstance("/reviewItem");
+//			@SuppressWarnings("unchecked")
+//			List<Element> elements = xpath.selectNodes(doc);
+//
+//			if (elements != null && !elements.isEmpty()) {
+//				CrucibleFileInfo fileInfo = CrucibleRestXmlHelper.parseReviewItemNode(review, elements.iterator().next());
+//				fillRepositoryData(fileInfo);
+//				CrucibleFileInfoManager.getInstance().getFiles(review).add(fileInfo);
+//				return fileInfo;
+//			}
+//			return null;
+//		} catch (IOException e) {
+//			throw new RemoteApiException(baseUrl + ": " + e.getMessage(), e);
+//		} catch (JDOMException e) {
+//			throw new RemoteApiException(baseUrl + ": Server returned malformed response", e);
+//		}
+//	}
 
 	public List<GeneralComment> getGeneralComments(PermId id) throws RemoteApiException {
 		if (!isLoggedIn()) {

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible.table.column;
 
 
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 import java.io.Serializable;
 import java.util.Comparator;

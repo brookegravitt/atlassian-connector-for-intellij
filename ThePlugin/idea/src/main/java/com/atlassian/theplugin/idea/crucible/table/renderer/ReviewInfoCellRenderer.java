@@ -16,8 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.table.renderer;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 
 public class ReviewInfoCellRenderer extends ReviewCellRenderer {
@@ -72,14 +71,14 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 		sb.append("");
 		sb.append("</td></tr>");
 
-		sb.append("<tr><td valign=\"top\"><b>Number of comments:</b></td><td valign=\"top\">");
-		try {
-			sb.append(Integer.toString(review.getGeneralComments().size() + review.getVersionedComments().size()));
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			sb.append("N/A");
-		}
-		sb.append("");
-		sb.append("</td></tr>");
+//		sb.append("<tr><td valign=\"top\"><b>Number of comments:</b></td><td valign=\"top\">");
+//		try {
+//			sb.append(Integer.toString(review.getGeneralComments().size() + review.getNumberOfVersionedComments() ));
+//		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+//			sb.append("N/A");
+//		}
+//		sb.append("");
+//		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
 		sb.append(review.getState().value());

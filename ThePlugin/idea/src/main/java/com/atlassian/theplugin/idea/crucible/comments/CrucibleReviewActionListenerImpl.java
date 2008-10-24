@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible.comments;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.intellij.openapi.editor.Editor;
 
 /**

@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.*;
@@ -172,7 +171,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 	}
 
 
-	private void checkComments(ReviewAdapter oldReview, ReviewAdapter newReview) throws ValueNotYetInitialized {
+	private void checkComments(final ReviewAdapter oldReview, final ReviewAdapter newReview) throws ValueNotYetInitialized {
 		for (GeneralComment comment : newReview.getGeneralComments()) {
 			GeneralComment existing = null;
 			for (GeneralComment oldComment : oldReview.getGeneralComments()) {
@@ -207,10 +206,12 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		for (CrucibleFileInfo fileInfo : newReview.getFiles()) {
 			for (VersionedComment comment : fileInfo.getVersionedComments()) {
 				VersionedComment existing = null;
-				for (VersionedComment oldComment : oldReview.getVersionedComments()) {
-					if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
-						existing = oldComment;
-						break;
+				for (CrucibleFileInfo oldFile : oldReview.getFiles()) {
+					for (VersionedComment oldComment : oldFile.getVersionedComments()) {
+						if (comment.getPermId().getId().equals(oldComment.getPermId().getId())) {
+							existing = oldComment;
+							break;
+						}
 					}
 				}
 				if ((existing == null)
@@ -231,8 +232,17 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			}
 		}
 
+		// todo does not check replies
+		List<VersionedComment> oldVersionedComments = new ArrayList<VersionedComment>();
+		List<VersionedComment> newVersionedComments = new ArrayList<VersionedComment>();
+		for (CrucibleFileInfo oldFile : oldReview.getFiles()) {
+			oldVersionedComments.addAll(oldFile.getVersionedComments());
+		}
+		for (CrucibleFileInfo newFile : newReview.getFiles()) {
+			newVersionedComments.addAll(newFile.getVersionedComments());
+		}
 		List<VersionedComment> deletedVcs = getDeletedComments(
-				oldReview.getVersionedComments(), newReview.getVersionedComments());
+				oldVersionedComments, newVersionedComments);
 		for (VersionedComment vc : deletedVcs) {
 			notifications.add(new RemovedVersionedCommentNotification(newReview, vc));
 			CommentRemoved event = new CommentRemoved(CrucibleReviewActionListenerImpl.ANONYMOUS, newReview, vc);

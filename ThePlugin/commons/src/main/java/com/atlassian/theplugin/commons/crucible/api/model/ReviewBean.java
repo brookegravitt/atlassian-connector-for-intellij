@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 
 import java.util.Date;
@@ -381,10 +380,12 @@ public class ReviewBean implements Review {
 		this.files = aFiles;
 		this.versionedComments = commentList;
 
-		for (VersionedComment comment : commentList) {
-			for (CrucibleFileInfo f : aFiles) {
-				if (f.getPermId().equals(comment.getReviewItemId())) {
-					f.addComment(comment);
+		if (files != null && commentList != null) {
+			for (VersionedComment comment : commentList) {
+				for (CrucibleFileInfo f : aFiles) {
+					if (f.getPermId().equals(comment.getReviewItemId())) {
+						f.addComment(comment);
+					}
 				}
 			}
 		}
@@ -428,9 +429,9 @@ public class ReviewBean implements Review {
         this.summary = summary;
     }
 
-	public CrucibleFileInfo getFileByPermId(PermId id) {
-		List<CrucibleFileInfo> lFiles = CrucibleFileInfoManager.getInstance().getFiles(this);
-		for (CrucibleFileInfo f : lFiles) {
+	public CrucibleFileInfo getFileByPermId(PermId id) throws ValueNotYetInitialized {
+//		List<CrucibleFileInfo> lFiles = CrucibleFileInfoManager.getInstance().getFiles(this);
+		for (CrucibleFileInfo f : getFiles()) {
 			if (f.getPermId().equals(id)) {
 				return f;
 			}
@@ -438,8 +439,148 @@ public class ReviewBean implements Review {
 		return null;
 	}
 
-	public List<CrucibleFileInfo> getFiles() {
+	public List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized {
+		if (files == null) {
+			throw new ValueNotYetInitialized("Files haven't been downloaded yet");
+		}
 		return files;
 	}
 
+	/**
+	 * @return total number of versioned comments including replies (for all files)
+	 */
+	public int getNumberOfVersionedComments() throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfComments();
+		}
+		return num;
+	}
+
+	public int getNumberOfVersionedComments(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfComments(userName);
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralComments(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (GeneralComment comment : getGeneralComments()) {
+			if (comment.getAuthor().getUserName().equals(userName)) {
+				++num;
+			}
+			for (GeneralComment reply : comment.getReplies()) {
+				if (reply.getAuthor().getUserName().equals(userName)) {
+					++num;
+				}
+			}
+		}
+		return num;
+	}
+
+	public void setFiles(final List<CrucibleFileInfo> files) {
+		this.files = files;
+	}
+
+	public int getNumberOfVersionedCommentsDefects() throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfCommentsDefects();
+		}
+		return num;
+	}
+
+	public int getNumberOfVersionedCommentsDefects(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfCommentsDefects(userName);
+		}
+		return num;
+	}
+
+	public int getNumberOfVersionedCommentsDrafts() throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfCommentsDrafts();
+		}
+		return num;
+	}
+
+	public int getNumberOfVersionedCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (CrucibleFileInfo file : getFiles()) {
+			num += file.getNumberOfCommentsDrafts(userName);
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralCommentsDrafts() throws ValueNotYetInitialized {
+		int num = 0;
+		for (GeneralComment comment : getGeneralComments()) {
+			if (comment.isDraft()) {
+				++num;
+			}
+			for (GeneralComment reply : comment.getReplies()) {
+				if (reply.isDraft()) {
+					++num;
+				}
+			}
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralCommentsDrafts(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (GeneralComment comment : getGeneralComments()) {
+			if (comment.isDraft() && comment.getAuthor().getUserName().equals(userName)) {
+				++num;
+			}
+			for (GeneralComment reply : comment.getReplies()) {
+				if (reply.isDraft() && reply.getAuthor().getUserName().equals(userName)) {
+					++num;
+				}
+			}
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralCommentsDefects() throws ValueNotYetInitialized {
+		int num = 0;
+		for (GeneralComment comment : getGeneralComments()) {
+			if (comment.isDefectRaised()) {
+				++num;
+			}
+			for (GeneralComment reply : comment.getReplies()) {
+				if (reply.isDefectRaised()) {
+					++num;
+				}
+			}
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralCommentsDefects(final String userName) throws ValueNotYetInitialized {
+		int num = 0;
+		for (GeneralComment comment : getGeneralComments()) {
+			if (comment.isDefectRaised() && comment.getAuthor().getUserName().equals(userName)) {
+				++num;
+			}
+			for (GeneralComment reply : comment.getReplies()) {
+				if (reply.isDefectRaised() && reply.getAuthor().getUserName().equals(userName)) {
+					++num;
+				}
+			}
+		}
+		return num;
+	}
+
+	public int getNumberOfGeneralComments() throws ValueNotYetInitialized {
+		int num = getGeneralComments().size();
+		for (GeneralComment comment : getGeneralComments()) {
+					num += comment.getReplies().size();
+		}
+		return num;
+	}
 }
