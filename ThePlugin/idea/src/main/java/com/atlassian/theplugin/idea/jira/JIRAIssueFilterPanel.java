@@ -102,6 +102,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		this.reporterComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 		this.assigneeComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 
+		addProjectActionListener();
+	}
+
+	private void addProjectActionListener() {
 		projectList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
 				int size = projectList.getSelectedValues().length;
@@ -331,8 +335,8 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -349,6 +353,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	public JComponent $$$getRootComponent$$$() {
 		return rootPanel;
 	}
+
 
 	private class ClearFilterAction extends AbstractAction {
 		private static final String CLEAR_FILTER = "Clear filter";
@@ -410,14 +415,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			};
 
 			ProgressManager.getInstance().run(refresh);
-
-//			new Thread(new Runnable() {
-//				public void run() {
-//					progressAnimation.startProgressAnimation();
-//					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-//					progressAnimation.stopProgressAnimation();
-//				}
-//			}, "JIRA filter project values retrieve").start();
 		}
 	}
 
@@ -448,11 +445,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 									setProjectDependendListValues();
 								}
 							};
-//					new Thread(new Runnable() {
-//						public void run() {
-//							setProjectDependendListValues();
-//						}
-//					}, "JIRA filter project values retrieve").start();
 
 					ProgressManager.getInstance().run(refresh);
 				}
@@ -476,6 +468,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
 			public void run(final ProgressIndicator indicator) {
+				projectList.addListSelectionListener(null);
 				initialFilterSet = true;
 				//progressAnimation.startProgressAnimation();
 				enableFields(false);
@@ -511,9 +504,11 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				setComboValue(assigneeComboBox, advancedQuery);
 				setComboValue(reporterComboBox, advancedQuery);
 
-//				progressAnimation.stopProgressAnimation();
+				//progressAnimation.stopProgressAnimation();
+				addProjectActionListener();
 				enableFields(true);
 				initialFilterSet = false;
+
 			}
 		};
 
@@ -591,7 +586,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	@Nullable
 	protected JComponent createCenterPanel() {
-		return rootPanel;
+		return this.$$$getRootComponent$$$();
 	}
 
 }
