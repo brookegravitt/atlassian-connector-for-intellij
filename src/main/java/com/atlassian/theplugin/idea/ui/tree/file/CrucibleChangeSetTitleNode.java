@@ -17,9 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.ui.ColoredTreeCellRenderer;
@@ -30,7 +28,6 @@ import com.intellij.util.Icons;
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -78,23 +75,23 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			append(node.getReview().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			try {
-				List<GeneralComment> generalComments = node.getReview().getGeneralComments();
-				List<VersionedComment> versionedComments = node.getReview().getVersionedComments();
+				int noOfDefects = node.getReview().getNumberOfVersionedCommentsDefects()
+						+ node.getReview().getNumberOfGeneralCommentsDefects();
 
-				int noOfDefects = 0;
-				int noOfComments = generalComments.size() + versionedComments.size();
-				for (GeneralComment comment : generalComments) {
-					noOfComments += comment.getReplies().size();
-					if (comment.isDefectRaised()) {
-						++noOfDefects;
-					}
-				}
-				for (VersionedComment vComment : versionedComments) {
-					noOfComments += vComment.getReplies().size();
-					if (vComment.isDefectRaised()) {
-						++noOfDefects;
-					}
-				}
+				int noOfComments = node.getReview().getNumberOfGeneralComments() 
+						+ node.getReview().getNumberOfVersionedComments();
+
+//				for (GeneralComment comment : generalComments) {
+//					noOfComments += comment.getReplies().size();
+//					if (comment.isDefectRaised()) {
+//						++noOfDefects;
+//					}
+//				}
+//				for (VersionedComment vComment : versionedComments) {
+//					if (vComment.isDefectRaised()) {
+//						++noOfDefects;
+//					}
+//				}
 				append(" ",	TEXT_ITALIC);
 				append(String.valueOf(noOfComments), TEXT_ITALIC);
 				append(" comment", TEXT_ITALIC);

@@ -17,11 +17,9 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleFileInfoManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.intellij.openapi.components.BaseComponent;
@@ -210,21 +208,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
-//			public int getNumberOfComments() throws ValueNotYetInitialized {
-//				return 0;
-//			}
-//
-//			public int getNumberOfDefects() throws ValueNotYetInitialized {
-//				return 0;
-//			}
-//
 			public PermId getPermId() {
 				return newItem;
 			}
-
-//			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-//				return versionedComments;
-//			}
 
 			public String getRepositoryName() {
 				return null;  //To change body of implemented methods use File | Settings | File Templates.
@@ -258,11 +244,27 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 			}
 
-			public int getNumberOfDefects() {
+			public int getNumberOfCommentsDefects() {
+				return 0;
+			}
+
+			public int getNumberOfCommentsDefects(final String userName) {
+				return 0;
+			}
+
+			public int getNumberOfCommentsDrafts() {
+				return 0;
+			}
+
+			public int getNumberOfCommentsDrafts(final String userName) {
 				return 0;
 			}
 
 			public int getNumberOfComments() {
+				return 0;
+			}
+
+			public int getNumberOfComments(final String userName) {
 				return 0;
 			}
 
@@ -273,7 +275,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private List<ReviewAdapter> prepareReviewData(State state) throws ValueNotYetInitialized {
-		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
+//		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 
 		PermIdBean reviewId1 = new PermIdBean("CR-1");
 		PermIdBean newItem = new PermIdBean("CRF:11");
@@ -306,7 +308,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		file1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
 		ArrayList<CrucibleFileInfo> files1 = new ArrayList<CrucibleFileInfo>();
 		files1.add(file1);
-		mgr.setFiles(review1, files1);
+
+		review1.setFilesAndVersionedComments(files1, null);
+
+//		mgr.setFiles(review1, files1);
 
 
 		Review review2 = prepareReview();
@@ -321,7 +326,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		file2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
 		ArrayList<CrucibleFileInfo> files2 = new ArrayList<CrucibleFileInfo>();
 		files2.add(file2);
-		mgr.setFiles(review2, files2);
+
+		review2.setFilesAndVersionedComments(files2, null);
+
+//		mgr.setFiles(review2, files2);
 
 		reviews.add(new ReviewAdapter(review1, null));
 		reviews.add(new ReviewAdapter(review2, null));
@@ -449,79 +457,95 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
 		assertEquals(reviews.size(), notifier.getNotifications().size());
-
-		reviews = prepareReviewData(State.REVIEW);
-
-		final PermId newItem = new PermId() {
-
-			public String getId() {
-				return "CRF:2";
-			}
-		};
-
-		reviews.get(0).getInnerReviewObject().setPermId(newItem);
-
-//		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
-		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0).getInnerReviewObject()).add(new CrucibleFileInfo() {
-
-			public VersionedVirtualFile getOldFileDescriptor() {
-				return null;
-			}
-
-			public int getNumberOfComments() {
-				return 0;
-			}
-
-			public int getNumberOfDefects() {
-				return 0;
-			}
-
-			public PermId getPermId() {
-				return newItem;
-			}
-
-			public List<VersionedComment> getVersionedComments() {
-				return new ArrayList<VersionedComment>();
-			}
-
-			public void setVersionedComments(final List<VersionedComment> versionedComments) {
-
-			}
-
-			public String getRepositoryName() {
-				return null;
-			}
-
-			public FileType getFileType() {
-				return null;
-			}
-
-			public String getAuthorName() {
-				return null;
-			}
-
-			public Date getCommitDate() {
-				return null;
-			}
-
-			public CommitType getCommitType() {
-				return null;
-			}
-
-			public void addComment(final VersionedComment comment) {
-
-			}
-
-			public VersionedVirtualFile getFileDescriptor() {
-				return null;
-			}
-		});
-
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(1, notifier.getNotifications().size());
-		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
+//
+//		reviews = prepareReviewData(State.REVIEW);
+//
+//		final PermId newItem = new PermId() {
+//
+//			public String getId() {
+//				return "CRF:2";
+//			}
+//		};
+//
+//		reviews.get(0).getInnerReviewObject().setPermId(newItem);
+//
+////		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
+//		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0).getInnerReviewObject()).add(new CrucibleFileInfo() {
+//
+//			public VersionedVirtualFile getOldFileDescriptor() {
+//				return null;
+//			}
+//
+//			public int getNumberOfComments() {
+//				return 0;
+//			}
+//
+//			public int getNumberOfComments(final String userName) {
+//				return 0;
+//			}
+//
+//			public int getNumberOfCommentsDefects() {
+//				return 0;
+//			}
+//
+//			public int getNumberOfCommentsDefects(final String userName) {
+//				return 0;
+//			}
+//
+//			public int getNumberOfCommentsDrafts() {
+//				return 0;
+//			}
+//
+//			public int getNumberOfCommentsDrafts(final String userName) {
+//				return 0;
+//			}
+//
+//			public PermId getPermId() {
+//				return newItem;
+//			}
+//
+//			public List<VersionedComment> getVersionedComments() {
+//				return new ArrayList<VersionedComment>();
+//			}
+//
+//			public void setVersionedComments(final List<VersionedComment> versionedComments) {
+//
+//			}
+//
+//			public String getRepositoryName() {
+//				return null;
+//			}
+//
+//			public FileType getFileType() {
+//				return null;
+//			}
+//
+//			public String getAuthorName() {
+//				return null;
+//			}
+//
+//			public Date getCommitDate() {
+//				return null;
+//			}
+//
+//			public CommitType getCommitType() {
+//				return null;
+//			}
+//
+//			public void addComment(final VersionedComment comment) {
+//
+//			}
+//
+//			public VersionedVirtualFile getFileDescriptor() {
+//				return null;
+//			}
+//		});
+//
+//		bean.setReviews(reviews);
+//		map.put(PredefinedFilter.ToReview, bean);
+//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+//		assertEquals(1, notifier.getNotifications().size());
+//		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
 	}
 
 	public void testNewGeneralComment() throws ValueNotYetInitialized {
@@ -597,40 +621,40 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void xtestNewVersionedComment() throws ValueNotYetInitialized {
-		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
-
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(reviews.size(), notifier.getNotifications().size());
-
-		reviews = prepareReviewData(State.REVIEW);
-
-		final PermId newCommentId = new PermId() {
-
-			public String getId() {
-				return "CMT:3";
-			}
-		};
-		final PermId newId = new PermId() {
-
-			public String getId() {
-				return "CRF:2";
-			}
-		};
-
-		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
-		PermIdBean newPermlId = new PermIdBean("CMT:100");
-		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
-				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(1, notifier.getNotifications().size());
-		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
+//		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
+//		ReviewNotificationBean bean = new ReviewNotificationBean();
+//
+//		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
+//
+//		bean.setReviews(reviews);
+//		map.put(PredefinedFilter.ToReview, bean);
+//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+//		assertEquals(reviews.size(), notifier.getNotifications().size());
+//
+//		reviews = prepareReviewData(State.REVIEW);
+//
+//		final PermId newCommentId = new PermId() {
+//
+//			public String getId() {
+//				return "CMT:3";
+//			}
+//		};
+//		final PermId newId = new PermId() {
+//
+//			public String getId() {
+//				return "CRF:2";
+//			}
+//		};
+//
+//		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
+//		PermIdBean newPermlId = new PermIdBean("CMT:100");
+//		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
+//				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
+//		bean.setReviews(reviews);
+//		map.put(PredefinedFilter.ToReview, bean);
+//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+//		assertEquals(1, notifier.getNotifications().size());
+//		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
 	}
 
 	@SuppressWarnings("deprecation")

@@ -29,7 +29,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.*;
@@ -337,20 +336,17 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 					comments = facade.getVersionedComments(review.getServer(), review.getPermId(),
 							file.getPermId());
 					file.setVersionedComments(comments);
+				} else {
+					comments.add(newComment);
 				}
-				comments.add(newComment);
 
-				review.getVersionedComments().add(newComment);
-
-				
+//				review.getVersionedComments().add(newComment);
 
 				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), newComment));
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized.printStackTrace();
 			}
 		}
 

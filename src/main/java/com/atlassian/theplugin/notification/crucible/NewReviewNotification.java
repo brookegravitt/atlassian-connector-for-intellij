@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.idea.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 public class NewReviewNotification extends AbstractReviewNotification {
 

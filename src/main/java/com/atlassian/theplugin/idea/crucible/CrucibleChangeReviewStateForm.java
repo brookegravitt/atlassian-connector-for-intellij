@@ -20,7 +20,8 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -126,12 +127,11 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 		Task.Backgroundable fillTask = new Task.Backgroundable(project, "Retrieving Review Data", false) {
 
-			Review reviewInfo = null;
-
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
-					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
+					review.fillReview(crucibleServerFacade.getReview(review.getServer(), review.getPermId()));
+//					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
@@ -141,24 +141,24 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
-				if (reviewInfo == null) {
-					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
-				} else {
-					final ReviewAdapter finalReviewInfo = new ReviewAdapter(reviewInfo, review.getServer());
-					updateReviewInfo(finalReviewInfo);
+//				if (reviewInfo == null) {
+//					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
+//				} else {
+//					final ReviewAdapter finalReviewInfo = new ReviewAdapter(reviewInfo, review.getServer());
+					updateReviewInfo(review);
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							show();
 						}
 					});
-				}
+//				}
 			}
 		};
 
 		ProgressManager.getInstance().run(fillTask);
 	}
 
-	public void updateReviewInfo(ReviewAdapter reviewInfo) {
+	public void updateReviewInfo(final ReviewAdapter reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
 		if (Action.CLOSE.equals(action) || !"".equals(reviewInfo.getSummary())) {
 			boolean isEditable = Action.CLOSE.equals(action);
@@ -427,91 +427,81 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			gbc2.gridy = 0;
 
 			String userName = review.getServer().getUsername();
-			int generalComments = 0;
-			int versionedComments = 0;
-			int myGeneralComments = 0;
-			int myVersionedComments = 0;
-			int myDefects = 0;
-			int myDrafts = 0;
-			int allDefects = 0;
-			int allDrafts = 0;
+
+			String totalComments;
 			try {
-				generalComments = review.getGeneralComments().size();
-				versionedComments = review.getVersionedComments().size();
-				for (GeneralComment generalComment : review.getGeneralComments()) {
-					if (generalComment.getAuthor().getUserName().equals(userName)) {
-						myGeneralComments++;
-						if (generalComment.isDraft()) {
-							myDrafts++;
-							allDrafts++;
-						}
-						if (generalComment.isDefectRaised()) {
-							myDefects++;
-							allDefects++;
-						}
-					} else {
-						if (generalComment.isDraft()) {
-							allDrafts++;
-						}
-						if (generalComment.isDefectRaised()) {
-							allDefects++;
-						}
-					}
-
-				}
-				for (VersionedComment comment : review.getVersionedComments()) {
-					if (comment.getAuthor().getUserName().equals(userName)) {
-						myVersionedComments++;
-						if (comment.isDraft()) {
-							myDrafts++;
-							allDrafts++;
-						}
-						if (comment.isDefectRaised()) {
-							myDefects++;
-							allDefects++;
-						}
-					} else {
-						if (comment.isDraft()) {
-							allDrafts++;
-						}
-						if (comment.isDefectRaised()) {
-							allDefects++;
-						}
-					}
-
-				}
+				totalComments = review.getNumberOfGeneralComments() + review.getNumberOfVersionedComments() + "";
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				LoggerImpl.getInstance().error(valueNotYetInitialized);
+				totalComments = "Value not initialized yet";
 			}
 
 
+			String myAllComments;
+			try {
+				myAllComments = review.getNumberOfGeneralComments(userName)
+						+ review.getNumberOfVersionedComments(userName) + "";
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				myAllComments = "Value not initialized yet";
+			}
+
+
+			String myDrafts;
+			try {
+				myDrafts = review.getNumberOfGeneralCommentsDrafts(userName)
+						+ review.getNumberOfVersionedCommentsDrafts(userName) + "";
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				myDrafts = "Value not initialized yet";
+			}
+
+			String myDefects;
+			try {
+				myDefects = review.getNumberOfGeneralCommentsDefects(userName)
+						+ review.getNumberOfVersionedCommentsDefects(userName) + "";
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				myDefects = "Value not initialized yet";
+			}
+
+			String allDefects;
+			try {
+				allDefects = review.getNumberOfGeneralCommentsDefects() + review.getNumberOfVersionedCommentsDefects() + "";
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				allDefects = "Value not initialized yet";
+			}
+
+			String allDrafts;
+			try {
+				allDrafts = review.getNumberOfVersionedCommentsDrafts() + review.getNumberOfGeneralCommentsDrafts() + "";
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				allDrafts = "Value not initialized yet";
+			}
+
 			body.add(new BoldLabel("My Draft Comments"), gbc1);
-			body.add(new JLabel(Integer.toString(myDrafts), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(myDrafts, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
 			body.add(new BoldLabel("My Defects Comments"), gbc1);
-			body.add(new JLabel(Integer.toString(myDefects), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(myDefects, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
 			body.add(new BoldLabel("My All Comments"), gbc1);
-			body.add(new JLabel(Integer.toString(myGeneralComments + myVersionedComments), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(myAllComments, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
 			body.add(new BoldLabel("Total Comments"), gbc1);
-			body.add(new JLabel(Integer.toString(generalComments + versionedComments), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(totalComments, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
 			body.add(new BoldLabel("Total Draft Comments"), gbc1);
-			body.add(new JLabel(Integer.toString(allDrafts), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(allDrafts, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
 			body.add(new BoldLabel("Total Defects"), gbc1);
-			body.add(new JLabel(Integer.toString(allDefects), SwingConstants.LEFT), gbc2);
+			body.add(new JLabel(allDefects, SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
 
