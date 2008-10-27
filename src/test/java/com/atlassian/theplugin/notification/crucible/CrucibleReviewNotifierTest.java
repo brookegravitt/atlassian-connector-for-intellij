@@ -154,7 +154,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public String getMessage() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return "";
 			}
 
 			public boolean isDraft() {
@@ -178,11 +178,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public User getAuthor() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public Date getCreateDate() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
+				return null;
 			}
 
 			public List<VersionedComment> getReplies() {
