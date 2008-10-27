@@ -425,7 +425,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		setCrucibleReview(review);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-
 				final CrucibleFileInfo file;
 				try {
 					file = review.getFileByPermId(filePermId);
@@ -451,10 +450,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 					}, newCommentNode);
 				}
 				addReplyNodes(review, file, newCommentNode, comment);
-
 				updateFileNode(review, file);
 				updateRootNode(review);
-
 				refreshNode(changedNode);
 
 				Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
@@ -465,8 +462,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
 					valueNotYetInitialized.printStackTrace();
 				}
-
-
 			}
 		});
 	}
