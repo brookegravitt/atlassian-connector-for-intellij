@@ -428,37 +428,35 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 				final CrucibleFileInfo file;
 				try {
 					file = review.getFileByPermId(filePermId);
-
 					AtlassianTreeNode newCommentNode = new VersionedCommentTreeNode(review, file, comment,
-						new CrucibleVersionedCommentClickAction(project));
+							new CrucibleVersionedCommentClickAction(project));
 
-				AtlassianTreeNode changedNode =
-						replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode);
-				if (changedNode == null) {
-					changedNode = addNewNode(new NodeSearchAlgorithm() {
-						@Override
-						public boolean check(AtlassianTreeNode node) {
-							if (node instanceof CrucibleFileNode) {
-								CrucibleFileNode vnode = (CrucibleFileNode) node;
-								if (vnode.getReview().getPermId().equals(review.getPermId())
-										&& vnode.getFile().getPermId().equals(file.getPermId())) {
-									return true;
+					AtlassianTreeNode changedNode =
+							replaceNode(new SearchVersionedCommentAlgorithm(review, file, comment), newCommentNode);
+					if (changedNode == null) {
+						changedNode = addNewNode(new NodeSearchAlgorithm() {
+							@Override
+							public boolean check(AtlassianTreeNode node) {
+								if (node instanceof CrucibleFileNode) {
+									CrucibleFileNode vnode = (CrucibleFileNode) node;
+									if (vnode.getReview().getPermId().equals(review.getPermId())
+											&& vnode.getFile().getPermId().equals(file.getPermId())) {
+										return true;
+									}
 								}
+								return false;
 							}
-							return false;
-						}
-					}, newCommentNode);
-				}
-				addReplyNodes(review, file, newCommentNode, comment);
-				updateFileNode(review, file);
-				updateRootNode(review);
-				refreshNode(changedNode);
+						}, newCommentNode);
+					}
+					addReplyNodes(review, file, newCommentNode, comment);
+					updateFileNode(review, file);
+					updateRootNode(review);
+					refreshNode(changedNode);
 
-				Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
-				if (editor != null) {
-					CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
-				}
-
+					Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+					if (editor != null) {
+						CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+					}
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
 					valueNotYetInitialized.printStackTrace();
 				}
