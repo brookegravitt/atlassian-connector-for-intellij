@@ -226,7 +226,7 @@ public class ReviewAdapter {
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException in case password is missing
 	 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiException in case of communication problem
 	 */
-	synchronized public void removeGeneralComment(final GeneralComment generalComment)
+	public synchronized void removeGeneralComment(final GeneralComment generalComment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 
 		// remove comment from the server

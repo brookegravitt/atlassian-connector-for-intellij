@@ -150,9 +150,9 @@ public class RemoveAction extends AbstractCommentAction {
 
 		if (result == DialogWrapper.OK_EXIT_CODE) {
 			return true;
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 }
