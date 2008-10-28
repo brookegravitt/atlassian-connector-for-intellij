@@ -37,6 +37,9 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.util.Key;
@@ -133,7 +136,21 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		progressAnimation.startProgressAnimation();
 
-//		reviewItemTreePanel.showReview(crucibleReview);
+		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving Crucible Data", false) {
+			public void run(final ProgressIndicator indicator) {
+				reviewItemTreePanel.showReview(crucibleReview);
+			}
+
+			public void onCancel() {
+				progressAnimation.stopProgressAnimation();
+			}
+
+			public void onSuccess() {
+				progressAnimation.stopProgressAnimation();
+			}
+		};
+
+		ProgressManager.getInstance().run(task);
 
 	}
 
@@ -182,14 +199,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		public MyAgent(final Project project) {
 			this.project = project;
 			eventBroker = IdeaHelper.getReviewActionEventBroker(this.project);
-		}
-
-		public void commentsDownloaded(ReviewAdapter review) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					progressAnimation.stopProgressAnimation();
-				}
-			});
 		}
 
 		@Override

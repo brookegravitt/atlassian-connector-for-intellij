@@ -31,8 +31,6 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
@@ -200,15 +198,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	public void updatedVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment) {
-
 	}
 
 	public void updatedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-
-	}
-
-	public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
-
 	}
 
 	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
@@ -229,9 +221,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			final VersionedComment comment) {
 
 		reviewChanged(review);
-	}
-
-	public void commentsDownloaded(final ReviewAdapter review) {
 	}
 
 	public void focusOnVersionedCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
@@ -267,10 +256,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		} catch (ServerPasswordNotProvidedException e) {
 			IdeaHelper.handleMissingPassword(e);
 			return;
-		} finally {
-			// stop progress animation
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new ReviewCommentsDownloadadEvent(CrucibleReviewListenerImpl.ANONYMOUS, reviewItem));
 		}
 //		final List<CrucibleFileInfo> files1 = files;
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
