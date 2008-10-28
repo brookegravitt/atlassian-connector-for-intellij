@@ -387,7 +387,7 @@
 		<action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction"
 				text="View Review in Browser" icon="/general/web.png"/>
 		<action id="ThePlugin.Crucible.GetComments"
-				class="com.atlassian.theplugin.idea.action.crucible.GetCommentsAction" text="Open Review"
+				class="com.atlassian.theplugin.idea.action.crucible.OpenReviewAction" text="Open Review"
 				icon="/icons/inspector/sortByCategory.png"/>
 		<action id="ThePlugin.Crucible.GetGeneralCommentReplies"
 				class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"

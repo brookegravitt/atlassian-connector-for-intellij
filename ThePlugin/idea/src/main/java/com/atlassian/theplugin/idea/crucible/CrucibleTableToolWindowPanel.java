@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -33,8 +32,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.crucible.filters.SelectFiltersForm;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
 import com.atlassian.theplugin.idea.ui.CollapsibleTable;
@@ -74,7 +71,6 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private JPanel toolBarPanel;
 	private JPanel dataPanelsHolder;
 	private ToolWindowBambooContent editorPane;
-	private CrucibleReviewListener listener = new CrucibleReviewListenerImpl();
 
 	private transient CrucibleFiltersBean filters;
 
@@ -206,7 +202,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	private void switchToCrucible16Filter() {
 		for (int i = 0; i < projectCfg.getCrucibleConfiguration().getCrucibleFilters().getPredefinedFilters().length
-					 &&	 i < PredefinedFilter.values().length; ++i) {
+				&& i < PredefinedFilter.values().length; ++i) {
 
 			showPredefinedFilter(
 					PredefinedFilter.values()[i],
@@ -253,8 +249,8 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 								CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(
 										selectedItem);
 
-								IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
-										listener, selectedItem));
+//								IdeaHelper.getReviewActionEventBroker(project).trigger(new ShowReviewEvent(
+//										listener, selectedItem));
 							} else {
 								Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
 										CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
@@ -484,42 +480,42 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	public void showCustomFilter(final String id, boolean visible, CrucibleStatusChecker checker) {
 		CustomFilterBean filter
-						= projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
+				= projectCfg.getCrucibleConfiguration().getCrucibleFilters().getManualFilter();
 
 		if (filter != null) {
 
 			if (visible) {
-					if (!customTables.containsKey(filter.getId())) {
-						CollapsibleTable table = new CollapsibleTable(
-								tableColumnProvider,
-								projectCfg.getCrucibleConfiguration().getTableConfiguration(),
-								filter.getTitle(),
-								null,
-								null,
-								getPlaceName(),
-								getPopupActionGroup());
-						table.expand();
-						table.addItemSelectedListener(this);
-						TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
-								table.getTable());
+				if (!customTables.containsKey(filter.getId())) {
+					CollapsibleTable table = new CollapsibleTable(
+							tableColumnProvider,
+							projectCfg.getCrucibleConfiguration().getTableConfiguration(),
+							filter.getTitle(),
+							null,
+							null,
+							getPlaceName(),
+							getPopupActionGroup());
+					table.expand();
+					table.addItemSelectedListener(this);
+					TableView.restore(projectCfg.getCrucibleConfiguration().getTableConfiguration(),
+							table.getTable());
 
-						dataPanelsHolder.add(table);
-						customTables.put(filter.getId(), table);
+					dataPanelsHolder.add(table);
+					customTables.put(filter.getId(), table);
 
-						refreshReviews(checker);
+					refreshReviews(checker);
 
-					}
-				} else {
-					if (customTables.containsKey(filter.getId())) {
-						dataPanelsHolder.remove(customTables.get(filter.getId()));
-						customTables.remove(filter.getId());
-					}
+				}
+			} else {
+				if (customTables.containsKey(filter.getId())) {
+					dataPanelsHolder.remove(customTables.get(filter.getId()));
+					customTables.remove(filter.getId());
 				}
 			}
-
-			dataPanelsHolder.validate();
-			tablePane.repaint();
 		}
+
+		dataPanelsHolder.validate();
+		tablePane.repaint();
+	}
 
 
 	public void refreshReviews(final CrucibleStatusChecker checker) {
