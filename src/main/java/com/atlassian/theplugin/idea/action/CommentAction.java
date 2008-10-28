@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.AddLineComment;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -95,7 +95,7 @@ public class CommentAction extends AnAction {
 		ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
-		AddLineComment addComment = new AddLineComment(CrucibleReviewActionListenerImpl.ANONYMOUS,
+		AddLineComment addComment = new AddLineComment(CrucibleReviewListenerImpl.ANONYMOUS,
 				review, reviewItem, ed, start, end);
 		IdeaHelper.getReviewActionEventBroker(project).trigger(addComment);
 	}

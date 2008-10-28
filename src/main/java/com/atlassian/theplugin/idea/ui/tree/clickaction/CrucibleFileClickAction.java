@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.ui.tree.clickaction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
 import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
@@ -27,10 +27,10 @@ public class CrucibleFileClickAction implements AtlassianClickAction {
 		switch (noOfClicks) {
 			case 1:
 				broker.trigger(
-						new FocusOnFileComments(CrucibleReviewActionListenerImpl.ANONYMOUS, review, file));
+						new FocusOnFileComments(CrucibleReviewListenerImpl.ANONYMOUS, review, file));
 				break;
 			case 2:
-				broker.trigger(new ShowFileEvent(CrucibleReviewActionListenerImpl.ANONYMOUS, review, file));
+				broker.trigger(new ShowFileEvent(CrucibleReviewListenerImpl.ANONYMOUS, review, file));
 				break;
 			default:
 				break;

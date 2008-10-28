@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 /**
@@ -29,12 +29,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 public class FocusOnGeneralComments extends CrucibleEvent {
 	private ReviewAdapter review;
 
-	public FocusOnGeneralComments(CrucibleReviewActionListener caller, ReviewAdapter review) {
+	public FocusOnGeneralComments(CrucibleReviewListener caller, ReviewAdapter review) {
 		super(caller);
 		this.review = review;
 	}
 
-	protected void notify(CrucibleReviewActionListener listener) {
+	protected void notify(CrucibleReviewListener listener) {
 		listener.focusOnGeneralComments(review);
 	}
 }
