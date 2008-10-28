@@ -208,11 +208,7 @@ public class AddAction extends AbstractCommentAction {
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment Reply", false) {
 
 				public void run(final ProgressIndicator indicator) {
-
-
 					try {
-
-
 						review.addVersionedCommentReply(file, parentComment, newComment);
 					} catch (RemoteApiException e) {
 						IdeaHelper.handleRemoteApiException(project, e);
