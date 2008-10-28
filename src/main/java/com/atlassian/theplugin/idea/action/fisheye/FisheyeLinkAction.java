@@ -71,8 +71,10 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 			return;
 		}
 
-		if (projectCfg.getFishEyeProjectPath() == null) {
-			Messages.showInfoMessage(project, "FishEye project path has not been set.", "Configuration problem");
+
+		String fisheyeProjPath = projectCfg.getFishEyeProjectPath();
+		if (fisheyeProjPath == null) {
+			fisheyeProjPath = "";
 		}
 
 		final int lineNumber = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionStart()) + 1;
@@ -83,13 +85,9 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 			return;
 		}
 		final VcsRevisionNumber rev = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
-
-		final String url;
-		if (projectCfg != null) {
-			url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), projectCfg.getFishEyeProjectPath(),
-					relativePath, lineNumber);
-			performUrlAction(url);
-		}
+		final String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+				relativePath, lineNumber);
+		performUrlAction(url);
 
 	}
 

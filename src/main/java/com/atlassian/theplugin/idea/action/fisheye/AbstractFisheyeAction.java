@@ -80,10 +80,6 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return false;
 		}
 
-		if (projectCfg.getFishEyeProjectPath() == null) {
-			return false;
-		}
-
 		return true;
 	}
 

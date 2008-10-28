@@ -133,6 +133,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 //		this.panel = progressAnimation;
 //	}
 
+	@Override
 	protected Action[] createActions() {
 		return new Action[]{getOKAction(), new ClearFilterAction(), getCancelAction()};
 	}
@@ -335,8 +336,8 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
+		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -405,6 +406,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		} else {
 			Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
+				@Override
 				public void run(final ProgressIndicator indicator) {
 					enableFields(false);
 					issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
@@ -441,6 +443,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				} else {
 					Task.Backgroundable refresh =
 							new Task.Backgroundable(project, "Retrieving JIRA Project Dependent List", false) {
+								@Override
 								public void run(final ProgressIndicator indicator) {
 									setProjectDependendListValues();
 								}
@@ -467,6 +470,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	public void setJiraServer(final JIRAServer jServer, final List<JIRAQueryFragment> advancedQuery) {
 
 		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				projectList.addListSelectionListener(null);
 				initialFilterSet = true;
@@ -584,6 +588,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		return query;
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return this.$$$getRootComponent$$$();

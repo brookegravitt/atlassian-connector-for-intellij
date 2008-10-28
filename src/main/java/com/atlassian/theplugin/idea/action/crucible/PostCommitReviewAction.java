@@ -29,6 +29,9 @@ public class PostCommitReviewAction extends Crucible16RepositoryAction {
 	public void actionPerformed(AnActionEvent event) {
 		final Project project = event.getData(DataKeys.PROJECT);
 		final ChangeList[] changes = event.getData(DataKeys.CHANGE_LISTS);
+		if (project == null || changes == null) {
+			return;
+		}
 
 		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(project,
 				CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager());

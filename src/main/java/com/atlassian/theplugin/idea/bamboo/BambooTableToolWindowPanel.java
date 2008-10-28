@@ -107,6 +107,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		this.buildChangesToolWindow = buildChangesToolWindow;
 		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		assert this.testResultsToolWindow != null;
+//		buildChangesToolWindow = project.getComponent(BuildChangesToolWindow.class);
 		assert this.buildChangesToolWindow != null;
 	}
 

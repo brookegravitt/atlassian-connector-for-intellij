@@ -16,29 +16,20 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.crucible.CrucibleRevisionAddWorker;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
 public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		final CrucibleServerCfg cfg = getCrucibleServerCfg(event);
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
 		final Project project = event.getData(DataKeys.PROJECT);
 
-		new Thread(new Runnable() {
-			public void run() {
-				ApplicationManager.getApplication().invokeAndWait(
-						new CrucibleRevisionAddWorker(project, cfg, CrucibleServerFacadeImpl.getInstance(), changes),
-						ModalityState.defaultModalityState());
-			}
-		}).start();
+		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager()).show();
 	}
 }
