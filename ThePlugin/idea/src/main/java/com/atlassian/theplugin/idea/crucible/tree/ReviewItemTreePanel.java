@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -31,7 +31,7 @@ import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.ReviewCommentsDownloadadEvent;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
@@ -56,7 +56,7 @@ import java.awt.event.MouseEvent;
 import java.util.List;
 
 public final class ReviewItemTreePanel extends JPanel implements DataProvider, ConfigurationCredentialsListener,
-		CrucibleReviewActionListener {
+		CrucibleReviewListener {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
@@ -178,7 +178,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	}
 
 	public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-		modelChanged(review);
+		reviewChanged(review);
 	}
 
 	public void aboutToAddVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
@@ -189,26 +189,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
 			final GeneralComment comment) {
 
-		modelChanged(review);
-	}
-
-	public void aboutToAddGeneralComment(final ReviewAdapter review, final GeneralComment newComment) {
-
+		reviewChanged(review);
 	}
 
 	public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment comment) {
 
-		modelChanged(review);
-	}
-
-	public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
-
-	}
-
-	public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-
+		reviewChanged(review);
 	}
 
 	public void updatedVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
@@ -227,26 +214,21 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment parentComment, final VersionedComment comment) {
 
-		modelChanged(review);
-	}
-
-	public void aboutToAddGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-			final GeneralComment newComment) {
-
+		reviewChanged(review);
 	}
 
 	public void removedComment(final ReviewAdapter review, final Comment comment) {
-		modelChanged(review);
+		reviewChanged(review);
 	}
 
 	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-		modelChanged(review);
+		reviewChanged(review);
 	}
 
 	public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
 			final VersionedComment comment) {
 
-		modelChanged(review);
+		reviewChanged(review);
 	}
 
 	public void commentsDownloaded(final ReviewAdapter review) {
@@ -258,13 +240,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment,
 			final boolean openIfClosed) {
-	}
-
-	public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-	}
-
-	public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
 	}
 
 	public void showReview(ReviewAdapter reviewItem) {
@@ -295,7 +270,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		} finally {
 			// stop progress animation
 			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new ReviewCommentsDownloadadEvent(CrucibleReviewActionListenerImpl.ANONYMOUS, reviewItem));
+					new ReviewCommentsDownloadadEvent(CrucibleReviewListenerImpl.ANONYMOUS, reviewItem));
 		}
 //		final List<CrucibleFileInfo> files1 = files;
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
@@ -317,13 +292,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final int start, final int end) {
 	}
-
-	public void aboutToAddVersionedCommentReply(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment parentComment,
-			final VersionedComment newComment) {
-
-	}
-
 
 	private String createGeneralInfoText(final ReviewAdapter reviewItem) {
 		final StringBuilder buffer = new StringBuilder();
@@ -399,7 +367,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 	}
 
-	private void modelChanged(ReviewAdapter review) {
+	private void reviewChanged(ReviewAdapter review) {
 		EventQueue.invokeLater(new MyRunnable(review));
 	}
 

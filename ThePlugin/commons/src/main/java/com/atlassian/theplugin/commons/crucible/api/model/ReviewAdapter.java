@@ -18,7 +18,7 @@ package com.atlassian.theplugin.commons.crucible.api.model;
 
 import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -33,7 +33,7 @@ public class ReviewAdapter {
     private Review review;
     private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;
-	private Collection<CrucibleReviewActionListener> listeners = new HashSet<CrucibleReviewActionListener>();
+	private Collection<CrucibleReviewListener> listeners = new HashSet<CrucibleReviewListener>();
 
 	public ReviewAdapter(Review review, CrucibleServerCfg server) {
         this.review = review;
@@ -170,11 +170,11 @@ public class ReviewAdapter {
 		review.setGeneralComments(generalComments);
 	}
 
-	public void addReviewListener(CrucibleReviewActionListener listener) {
+	public void addReviewListener(CrucibleReviewListener listener) {
 		listeners.add(listener);
 	}
 
-	public boolean removeReviewListener(CrucibleReviewActionListener listener) {
+	public boolean removeReviewListener(CrucibleReviewListener listener) {
 		return listeners.remove(listener);
 	}
 
@@ -190,7 +190,7 @@ public class ReviewAdapter {
 		review.getGeneralComments().add(newComment);
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedGeneralComment(this, newComment);
 		}
 	}
@@ -212,7 +212,7 @@ public class ReviewAdapter {
 		}
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedGeneralCommentReply(this, parentComment, newReply);
 		}
 
@@ -236,7 +236,7 @@ public class ReviewAdapter {
 		this.review.removeGeneralComment(generalComment);
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.removedComment(this, generalComment);
 		}
 	}
@@ -260,7 +260,7 @@ public class ReviewAdapter {
 		}
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedVersionedComment(this, file.getPermId(), newVersionedComment);
 		}
 	}
@@ -277,7 +277,7 @@ public class ReviewAdapter {
 		parentComment.getReplies().add(newComment);
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedVersionedCommentReply(this, file.getPermId(), parentComment, newComment);
 		}
 	}
@@ -301,7 +301,7 @@ public class ReviewAdapter {
 		review.removeVersionedComment(versionedComment, file);
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.removedComment(this, versionedComment);
 		}
 	}
@@ -310,7 +310,7 @@ public class ReviewAdapter {
 
 		CrucibleServerFacadeImpl.getInstance().updateComment(getServer(), getPermId(), comment);
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedGeneralComment(this, comment);
 		}
 	}
@@ -320,7 +320,7 @@ public class ReviewAdapter {
 		CrucibleServerFacadeImpl.getInstance().updateComment(getServer(), getPermId(), comment);
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.createdOrEditedVersionedComment(this, file.getPermId(), comment);
 		}
 	}
@@ -337,7 +337,7 @@ public class ReviewAdapter {
 //				}
 
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.publishedGeneralComment(this, comment);
 		}
 	}
@@ -350,7 +350,7 @@ public class ReviewAdapter {
 		((VersionedCommentBean) comment).setDraft(false);
 		//}
 		// notify listeners
-		for (CrucibleReviewActionListener listener : listeners) {
+		for (CrucibleReviewListener listener : listeners) {
 			listener.publishedVersionedComment(this, file.getPermId(), comment);
 		}
 	}

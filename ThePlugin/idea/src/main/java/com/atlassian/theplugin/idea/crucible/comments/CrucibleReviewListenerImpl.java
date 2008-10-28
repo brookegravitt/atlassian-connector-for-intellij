@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 /**
@@ -26,9 +26,9 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
  * Time: 10:15:18 PM
  * To change this template use File | Settings | File Templates.
  */
-public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionListener {
-	public static final CrucibleReviewActionListener I_WANT_THIS_MESSAGE_BACK = null;
-	public static final CrucibleReviewActionListener ANONYMOUS = null;
+public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
+	public static final CrucibleReviewListener I_WANT_THIS_MESSAGE_BACK = null;
+	public static final CrucibleReviewListener ANONYMOUS = null;
 
 	/**
 	 * A method ivoked by a background thread when a new review needs to be shown
@@ -53,25 +53,14 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end) {
 	}
 
-	public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment parentComment, VersionedComment newComment) {
-	}
-
 	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment) {
-	}
-
-	public void aboutToAddGeneralCommentReply(ReviewAdapter review,
-			GeneralComment parentComment,
-			GeneralComment newComment) {
 	}
 
 	public void createdOrEditedGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
 			GeneralComment comment) {
 	}
 
-	public void aboutToAddGeneralComment(ReviewAdapter review, GeneralComment newComment) {
-	}
 
 	public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
 	}
@@ -84,13 +73,6 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	public void createdOrEditedVersionedComment(ReviewAdapter review,
 			PermId file,
 			VersionedComment comment) {
-	}
-
-	public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
-	}
-
-	public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 	}
 
 	public void updatedVersionedComment(final ReviewAdapter review,
@@ -110,13 +92,6 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 
 	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
 			final VersionedComment comment,	final boolean openIfClosed) {
-	}
-
-	public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-	}
-
-	public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
 	}
 
 	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
