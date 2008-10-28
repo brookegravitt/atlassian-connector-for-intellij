@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -31,7 +30,8 @@ import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.*;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
+import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAddedOrEdited;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -106,6 +106,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	public void showCrucibleReviewWindow(final ReviewAdapter crucibleReview) {
 
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
+		crucibleReview.addReviewListener(reviewItemTreePanel);
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);		
@@ -233,7 +234,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file, final Editor editor,
+		public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file,
 				final int start, final int end) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -257,71 +258,21 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		@Override
 		public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-			try {
-				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
-				// @todo - dirty hack - probably remote api should return new comment info
-				if (comment instanceof GeneralCommentBean) {
-					((GeneralCommentBean) comment).setDraft(false);
-				}
-				eventBroker.trigger(new GeneralCommentPublished(this, review, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
 		}
 
 		@Override
 		public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 				final VersionedComment comment) {
-			try {
-				facade.publishComment(review.getServer(), review.getPermId(), comment.getPermId());
-				// @todo - dirty hack - probably remote api should return new comment info
-				if (comment instanceof VersionedCommentBean) {
-					((VersionedCommentBean) comment).setDraft(false);
-				}
-				eventBroker.trigger(new VersionedCommentPublished(this, review, file.getPermId(), comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
 		}
 
 
 		@Override
 		public void aboutToAddGeneralComment(final ReviewAdapter review, final GeneralComment newComment) {
-			try {
-				GeneralComment comment = facade.addGeneralComment(review.getServer(), review.getPermId(), newComment);
-				setCommentAuthor(review.getServer(), comment);
-				review.getGeneralComments().add(comment);
-				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized.printStackTrace(); 
-			}
 		}
 
 		@Override
 		public void aboutToAddGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
 				GeneralComment newComment) {
-			try {
-				GeneralComment comment = facade.addGeneralCommentReply(review.getServer(), review.getPermId(),
-						parentComment.getPermId(), newComment);
-				setCommentAuthor(review.getServer(), comment);
-				review.getGeneralComments().get(
-					review.getGeneralComments().indexOf(parentComment)).getReplies().add(comment);
-				eventBroker.trigger(new GeneralCommentReplyAddedOrEdited(this, review, parentComment, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				valueNotYetInitialized.printStackTrace();
-			}
 		}
 
 		@Override
@@ -353,72 +304,17 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		@Override
 		public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
 				VersionedComment parentComment, VersionedComment comment) {
-
-			try {
-				VersionedComment newComment = facade.addVersionedCommentReply(review.getServer(), review.getPermId(),
-						parentComment.getPermId(), comment);
-				setCommentAuthor(review.getServer(), newComment);
-
-//				review.getVersionedComments().get(review.getVersionedComments().indexOf(parentComment))
-//						.getReplies().add(newComment);
-
-				eventBroker.trigger(new VersionedCommentReplyAddedOrEdited(
-						this, review, file.getPermId(), parentComment, newComment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-//			catch (ValueNotYetInitialized valueNotYetInitialized) {
-//				valueNotYetInitialized.printStackTrace();
-//			}
 		}
 
 		@Override
 		public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
 				final VersionedComment comment) {
-			try {
-				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), comment));
-//				eventBroker.trigger(new VersionedCommentUpdated(this, review, file.getItemInfo(), comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
 		}
 
 		@Override
 		public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-			try {
-				facade.updateComment(review.getServer(), review.getPermId(), comment);
-				eventBroker.trigger(new GeneralCommentAddedOrEdited(this, review, comment));
-//				eventBroker.trigger(new GeneralCommentUpdated(this, review, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
 		}
 
-		@Override
-		public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
-			try {
-				facade.removeComment(review.getServer(), review.getPermId(), comment);
-
-				if (comment instanceof GeneralComment) {
-					review.removeGeneralComment((GeneralComment) comment);
-				} else if (comment instanceof VersionedComment) {
- 					review.removeVersionedComment((VersionedComment) comment);
-				}
-
-				eventBroker.trigger(new CommentRemoved(this, review, comment));
-			} catch (RemoteApiException e) {
-				IdeaHelper.handleRemoteApiException(project, e);
-			} catch (ServerPasswordNotProvidedException e) {
-				IdeaHelper.handleMissingPassword(e);
-			}
-		}
 	}
 
 }

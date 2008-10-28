@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +38,6 @@ public class CommentRemoved extends CrucibleEvent {
     }
 
     protected void notify(final CrucibleReviewActionListener listener) {
-        listener.removedComment(review, comment);
+//        listener.removedComment(review, comment);
     }
 }

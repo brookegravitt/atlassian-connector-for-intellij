@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
@@ -175,7 +176,7 @@ public final class IdeaHelper {
 		return project.getUserData(ThePluginProjectComponent.BROKER_KEY);
 	}
 
-    public static void handleRemoteApiException(final Project project, final RemoteApiException e) {
+	public static void handleRemoteApiException(final Project project, final RemoteApiException e) {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				Messages.showErrorDialog(project, "The following error has occurred while using remote service:\n"
@@ -184,9 +185,18 @@ public final class IdeaHelper {
 		});
     }
 
-    /**
+	public static void handleError(final Project project, final ValueNotYetInitialized valueNotYetInitialized) {
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				Messages.showErrorDialog(project, "The following error has occurred:\n"
+						+ valueNotYetInitialized.getMessage(), "Error");
+			}
+		});
+	}
+
+	/**
      * Placeholder for handling missing password. Dummy at the moment
-     * 
+     *
      * @param e exception to handle
      * @return true if called should retry the action which caused this excepction, false if it does not make sense
      *              for example, the user has not provided a new password
