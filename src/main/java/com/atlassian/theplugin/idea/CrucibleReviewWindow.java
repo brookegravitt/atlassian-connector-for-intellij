@@ -28,7 +28,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAddedOrEdited;
@@ -174,7 +174,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		return reviewItemTreePanel.getAtlassianTreeWithToolbar();
 	}
 
-	private final class MyAgent extends CrucibleReviewActionListenerImpl {
+	private final class MyAgent extends CrucibleReviewListenerImpl {
 		private final CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
 		private final ReviewActionEventBroker eventBroker;
 		private Project project;
@@ -249,30 +249,11 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 						setCommentAuthor(review.getServer(), newComment);
 						newComment.setToStartLine(start);
 						newComment.setToEndLine(end);
-						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS, review,
+						eventBroker.trigger(new VersionedCommentAboutToAdd(CrucibleReviewListenerImpl.ANONYMOUS, review,
 								file, newComment));
 					}
 				}
 			});
-		}
-
-		@Override
-		public void aboutToPublishGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-		}
-
-		@Override
-		public void aboutToPublishVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-				final VersionedComment comment) {
-		}
-
-
-		@Override
-		public void aboutToAddGeneralComment(final ReviewAdapter review, final GeneralComment newComment) {
-		}
-
-		@Override
-		public void aboutToAddGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
-				GeneralComment newComment) {
 		}
 
 		@Override
@@ -299,20 +280,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			} catch (ServerPasswordNotProvidedException e) {
 				IdeaHelper.handleMissingPassword(e);
 			}
-		}
-
-		@Override
-		public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
-				VersionedComment parentComment, VersionedComment comment) {
-		}
-
-		@Override
-		public void aboutToUpdateVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-				final VersionedComment comment) {
-		}
-
-		@Override
-		public void aboutToUpdateGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 		}
 
 	}

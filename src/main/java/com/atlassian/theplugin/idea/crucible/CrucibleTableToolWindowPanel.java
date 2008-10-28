@@ -24,7 +24,7 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -33,7 +33,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.bamboo.ToolWindowBambooContent;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
+import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
 import com.atlassian.theplugin.idea.crucible.events.ShowReviewEvent;
 import com.atlassian.theplugin.idea.crucible.filters.SelectFiltersForm;
 import com.atlassian.theplugin.idea.ui.AtlassianTableView;
@@ -74,7 +74,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	private JPanel toolBarPanel;
 	private JPanel dataPanelsHolder;
 	private ToolWindowBambooContent editorPane;
-	private CrucibleReviewActionListener listener = new CrucibleReviewActionListenerImpl();
+	private CrucibleReviewListener listener = new CrucibleReviewListenerImpl();
 
 	private transient CrucibleFiltersBean filters;
 

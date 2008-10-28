@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -34,7 +34,7 @@ public class FocusOnLineCommentEvent extends CrucibleEvent {
 	private VersionedComment comment;
 	private boolean openIfClosed;
 
-	public FocusOnLineCommentEvent(final CrucibleReviewActionListener caller, final ReviewAdapter review,
+	public FocusOnLineCommentEvent(final CrucibleReviewListener caller, final ReviewAdapter review,
 			final CrucibleFileInfo file, final VersionedComment comment, boolean openIfClosed) {
 		super(caller);
 		this.review = review;
@@ -43,7 +43,7 @@ public class FocusOnLineCommentEvent extends CrucibleEvent {
 		this.openIfClosed = openIfClosed;
 	}
 
-	protected void notify(final CrucibleReviewActionListener listener) {
+	protected void notify(final CrucibleReviewListener listener) {
 		listener.focusOnLineCommentEvent(review, file, comment, openIfClosed);
 	}
 }

@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 
 /**
@@ -27,16 +27,16 @@ import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
  * To change this template use File | Settings | File Templates.
  */
 public abstract class CrucibleEvent {
-	protected CrucibleReviewActionListener caller;
+	protected CrucibleReviewListener caller;
 
-	protected CrucibleEvent(CrucibleReviewActionListener caller) {
+	protected CrucibleEvent(CrucibleReviewListener caller) {
 		this.caller = caller;
 	}
 
-	protected abstract void notify(CrucibleReviewActionListener listener);
+	protected abstract void notify(CrucibleReviewListener listener);
 
 	public void run(ReviewActionEventBroker broker) {
-		for (CrucibleReviewActionListener listener : broker.getListeners()) {
+		for (CrucibleReviewListener listener : broker.getListeners()) {
 			if (listener == caller) {
 				continue;
 			}

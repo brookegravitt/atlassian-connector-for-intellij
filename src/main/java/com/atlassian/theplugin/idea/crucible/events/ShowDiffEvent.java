@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 
 /**
@@ -29,13 +29,13 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 public class ShowDiffEvent extends CrucibleEvent {
 	private CrucibleFileInfo file;
 
-	public ShowDiffEvent(final CrucibleReviewActionListener caller, final CrucibleFileInfo file) {
+	public ShowDiffEvent(final CrucibleReviewListener caller, final CrucibleFileInfo file) {
 		super(caller);
 		this.file = file;
 
 	}
 
-	protected void notify(final CrucibleReviewActionListener listener) {
+	protected void notify(final CrucibleReviewListener listener) {
 		listener.showDiff(file);
 	}
 }
