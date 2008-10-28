@@ -123,7 +123,7 @@ public class ReviewImpl implements Review {
 
 	}
 
-	public void removeVersionedComment(final VersionedComment versionedComment) {
+	public void removeVersionedComment(final VersionedComment vComment, final CrucibleFileInfo file) {
 
 	}
 

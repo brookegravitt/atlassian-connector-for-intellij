@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 
 /**
  * Created by IntelliJ IDEA.

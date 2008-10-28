@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
 import com.intellij.openapi.editor.Editor;
 
 /**
@@ -47,6 +47,6 @@ public class AddLineComment extends CrucibleEvent {
 
 	@Override
 	protected void notify(CrucibleReviewActionListener listener) {
-		listener.aboutToAddLineComment(review, file, editor, start, end);
+		listener.aboutToAddLineComment(review, file, start, end);
 	}
 }

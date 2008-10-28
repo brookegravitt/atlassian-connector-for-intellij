@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.crucible;
+package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.intellij.openapi.editor.Editor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,7 +36,7 @@ public interface CrucibleReviewActionListener {
 
 	void showDiff(CrucibleFileInfo file);
 
-	void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, Editor editor, int start, int end);
+	void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end);
 
 	void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment parentComment, VersionedComment newComment);
@@ -74,8 +73,6 @@ public interface CrucibleReviewActionListener {
 			VersionedComment comment);
 
 	void updatedGeneralComment(ReviewAdapter review, GeneralComment comment);
-
-	void aboutToRemoveComment(ReviewAdapter review, Comment comment);
 
 	void removedComment(ReviewAdapter review, Comment comment);
 

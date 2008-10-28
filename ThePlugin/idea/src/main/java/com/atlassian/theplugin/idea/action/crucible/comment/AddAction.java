@@ -19,15 +19,12 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentAboutToAdd;
-import com.atlassian.theplugin.idea.crucible.events.GeneralCommentReplyAboutToAdd;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
-import com.atlassian.theplugin.idea.crucible.events.VersionedCommentReplyAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
@@ -35,6 +32,9 @@ import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 
@@ -154,9 +154,9 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void addCommentToFile(Project project, ReviewAdapter review, CrucibleFileInfo file) {
-		VersionedCommentBean newComment = new VersionedCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
+	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
+		final VersionedCommentBean newComment = new VersionedCommentBean();
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
 		dialog.setModal(true);
@@ -165,17 +165,28 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
 			setCommentAuthor(review, newComment);
-			// @todo
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
-							review, file, newComment));
-		}
 
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment", false) {
+
+				public void run(final ProgressIndicator indicator) {
+
+					try {
+						review.addVersionedComment(file, newComment);
+					} catch (RemoteApiException e) {
+						IdeaHelper.handleRemoteApiException(project, e);
+					} catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(task);
+		}
 	}
 
-	private void addReplyToVersionedComment(Project project, ReviewAdapter review,
-			CrucibleFileInfo file, VersionedComment comment) {
-		VersionedCommentBean newComment = new VersionedCommentBean();
+	private void addReplyToVersionedComment(final Project project, final ReviewAdapter review,
+			final CrucibleFileInfo file, final VersionedComment comment) {
+		final VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
 		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -183,7 +194,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			VersionedComment parentComment = comment;
+			final VersionedComment parentComment = comment;
 			newComment.setFromLineInfo(parentComment.isFromLineInfo());
 			newComment.setFromStartLine(parentComment.getFromStartLine());
 			newComment.setFromEndLine(parentComment.getFromEndLine());
@@ -193,14 +204,30 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
 			setCommentAuthor(review, newComment);
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new VersionedCommentReplyAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
-							review, file, parentComment, newComment));
+
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment Reply", false) {
+
+				public void run(final ProgressIndicator indicator) {
+
+
+					try {
+
+
+						review.addVersionedCommentReply(file, parentComment, newComment);
+					} catch (RemoteApiException e) {
+						IdeaHelper.handleRemoteApiException(project, e);
+					} catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(task);
 		}
 	}
 
-	private void addGeneralComment(Project project, ReviewAdapter review) {
-		GeneralCommentBean newComment = new GeneralCommentBean();
+	private void addGeneralComment(final Project project, final ReviewAdapter review) {
+		final GeneralCommentBean newComment = new GeneralCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
@@ -209,15 +236,28 @@ public class AddAction extends AbstractCommentAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			setCommentAuthor(review, newComment);
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
-							review, newComment));
+
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
+
+				public void run(final ProgressIndicator indicator) {
+					try {
+						review.addGeneralComment(newComment);
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						IdeaHelper.handleError(project, valueNotYetInitialized);
+					} catch (RemoteApiException e) {
+						IdeaHelper.handleRemoteApiException(project, e);
+					} catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					}
+				}
+			};
+			ProgressManager.getInstance().run(task);
 		}
 	}
 
-	private void addReplyToGeneralComment(Project project, ReviewAdapter review, GeneralComment comment) {
-		GeneralComment parentComment = comment;
-		GeneralCommentBean newComment = new GeneralCommentBean();
+	private void addReplyToGeneralComment(final Project project, final ReviewAdapter review,
+			final GeneralComment parentComment) {
+		final GeneralCommentBean newComment = new GeneralCommentBean();
 		newComment.setReply(true);
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
@@ -227,11 +267,24 @@ public class AddAction extends AbstractCommentAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			setCommentAuthor(review, newComment);
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new GeneralCommentReplyAboutToAdd(CrucibleReviewActionListenerImpl.ANONYMOUS,
-							review, parentComment, newComment));
+
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment Reply", false) {
+
+				public void run(final ProgressIndicator indicator) {
+
+					try {
+						review.addGeneralCommentReply(parentComment, newComment);
+					} catch (RemoteApiException e) {
+						IdeaHelper.handleRemoteApiException(project, e);
+					} catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						IdeaHelper.handleError(project, valueNotYetInitialized);
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(task);
 		}
 	}
-
-
 }

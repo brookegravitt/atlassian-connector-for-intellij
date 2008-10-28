@@ -60,7 +60,7 @@ public interface Review {
 
     List<GeneralComment> getGeneralComments() throws ValueNotYetInitialized;
 
-    List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
+//    List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized;
 
 //    List<CrucibleFileInfo> getFiles() throws ValueNotYetInitialized;
 
@@ -76,7 +76,7 @@ public interface Review {
 
 	void removeGeneralComment(final GeneralComment comment);
 
-	void removeVersionedComment(final VersionedComment versionedComment);
+	void removeVersionedComment(final VersionedComment vComment, final CrucibleFileInfo file) throws ValueNotYetInitialized;
 
 	void setFilesAndVersionedComments(List<CrucibleFileInfo> files, List<VersionedComment> commentList);
 

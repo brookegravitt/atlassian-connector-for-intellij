@@ -16,18 +16,24 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewActionListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.CommentAboutToRemove;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -65,31 +71,88 @@ public class RemoveAction extends AbstractCommentAction {
 
 
 	private void removeComment(Project project, AtlassianTreeNode treeNode) {
-		Comment comment = null;
 		ReviewAdapter review = null;
 
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			comment = node.getComment();
+			GeneralComment comment = node.getComment();
 			review = node.getReview();
+
+			if (comment == null || review == null) {
+				Messages.showErrorDialog(project, "Comment or review not found in the tree node", "Error");
+				return;
+			}
+
+			if (userAgreed(project)) {
+				removeGeneralComment(project, review, comment);
+			}
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-			comment = node.getComment();
+			VersionedComment comment = node.getComment();
 			review = node.getReview();
+			CrucibleFileInfo file = node.getFile();
+
+			if (comment == null || review == null) {
+				Messages.showErrorDialog(project, "Comment or review not found in the tree node", "Error");
+				return;
+			}
+
+			if (userAgreed(project)) {
+				removeVersionedComment(project, review, comment, file);
+			}
 		}
-		if (comment == null || review == null) {
-			return;
-		}
-		removeComment(project, review, comment);
 	}
 
-	private void removeComment(final Project project, final ReviewAdapter review, final Comment comment) {
-		int result = Messages.showYesNoDialog(project, "Are you sure you want remove your comment?", "Confirmation required",
-				Icons.TASK_ICON);
+	private void removeVersionedComment(final Project project, final ReviewAdapter review, final VersionedComment comment,
+			final CrucibleFileInfo file) {
+
+//		review.removeVersionedComment(comment);
+
+		Task.Backgroundable task = new Task.Backgroundable(project, "Removing File Comment", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				try {
+					review.removeVersionedComment(comment, file);
+				} catch (RemoteApiException e) {
+					IdeaHelper.handleRemoteApiException(project, e);
+				} catch (ServerPasswordNotProvidedException e) {
+					IdeaHelper.handleMissingPassword(e);
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					Messages.showErrorDialog(project, valueNotYetInitialized.getMessage(), "Error");
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(task);
+	}
+
+	private void removeGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment) {
+
+		Task.Backgroundable task = new Task.Backgroundable(project, "Removing General Comment", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				try {
+					review.removeGeneralComment(comment);
+				} catch (RemoteApiException e) {
+					IdeaHelper.handleRemoteApiException(project, e);
+				} catch (ServerPasswordNotProvidedException e) {
+					IdeaHelper.handleMissingPassword(e);
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(task);
+	}
+
+	private boolean userAgreed(Project project) {
+		int result = Messages.showYesNoDialog(project,
+				"Are you sure you want remove your comment?", "Confirmation required", Icons.TASK_ICON);
+
 		if (result == DialogWrapper.OK_EXIT_CODE) {
-			IdeaHelper.getReviewActionEventBroker(project).trigger(
-					new CommentAboutToRemove(CrucibleReviewActionListenerImpl.ANONYMOUS,
-							review, comment));
+			return true;
+		} else {
+			return false;
 		}
 	}
+
 }
