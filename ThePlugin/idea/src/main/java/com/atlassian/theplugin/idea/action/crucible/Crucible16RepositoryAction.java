@@ -16,26 +16,66 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.idea.action.fisheye.AbstractCrucibleAction;
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.fisheye.ChangeListUtil;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 
-public abstract class Crucible16RepositoryAction extends AbstractCrucibleAction {
+public abstract class Crucible16RepositoryAction extends AnAction {
+//	@Override
+//	public void update2(AnActionEvent event) {
+//
+//		final boolean isCrucibleConfigured = isCrucibleConfigured(event);
+//		event.getPresentation().setVisible(isCrucibleConfigured);
+//
+//		if (isCrucibleConfigured) {
+//			event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
+//		}
+//	}
+
 	@Override
 	public void update(AnActionEvent event) {
-		event.getPresentation().setVisible(false);
-		CrucibleServerCfg crucibleServerCfg = getCrucibleServerCfg(event);
-		if (crucibleServerCfg != null) {
-				if (crucibleServerCfg.getProjectName() != null
-						&& crucibleServerCfg.getRepositoryName() != null) {
-					event.getPresentation().setVisible(true);
-				}
-		}
-		
-		if (event.getPresentation().isVisible()) {
+		final boolean configured = isAnyCrucibleConfigured(event);
+		event.getPresentation().setVisible(configured);
+
+		if (configured) {
 			event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
 		}
 	}
+
+
+	protected boolean isCrucibleConfigured(final AnActionEvent event) {
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project == null) {
+			return false;
+		}
+
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		if (projectCfg == null) {
+			return false;
+		}
+
+		if (projectCfg.getDefaultCrucibleServer() == null /*|| projectCfg.getDefaultCrucibleProject() == null*/) {
+			return false;
+		}
+
+		return true;
+	}
+
+	protected boolean isAnyCrucibleConfigured(final AnActionEvent event) {
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (project == null) {
+			return false;
+		}
+
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		return IdeaHelper.getCfgManager().getAllEnabledCrucibleServers(projectId).size() != 0;
+	}
+
 }

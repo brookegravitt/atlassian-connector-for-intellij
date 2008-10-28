@@ -208,6 +208,7 @@ public final class IdeaHelper {
 		return DataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(jComponent));
 	}
 
+	@Nullable
 	public static <T> T getProjectComponent(final AnActionEvent event, final Class<T> clazz) {
 		final Project project = getCurrentProject(event);
 		if (project == null) {
@@ -216,6 +217,7 @@ public final class IdeaHelper {
 		return getProjectComponent(project, clazz);
 	}
 
+	@Nullable
 	public static <T> T getProjectComponent(final Project project, final Class<T> clazz) {
 		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));
 	}

@@ -19,8 +19,6 @@ import com.atlassian.theplugin.commons.ServerType;
 
 public class CrucibleServerCfg extends ServerCfg {
 	private boolean isFisheyeInstance;
-	private String projectName;
-	private String repositoryName;
 	private static final int HASHCODE_MAGIC = 31;
 
 	public CrucibleServerCfg(final String name, final ServerId serverId) {
@@ -30,8 +28,6 @@ public class CrucibleServerCfg extends ServerCfg {
 	public CrucibleServerCfg(final CrucibleServerCfg other) {
 		super(other);
 		isFisheyeInstance = other.isFisheyeInstance();
-		projectName = other.getProjectName();
-		repositoryName = other.getRepositoryName();
 	}
 
 	@Override
@@ -57,13 +53,6 @@ public class CrucibleServerCfg extends ServerCfg {
 		if (isFisheyeInstance != that.isFisheyeInstance) {
 			return false;
 		}
-		if (projectName != null ? !projectName.equals(that.projectName) : that.projectName != null) {
-			return false;
-		}
-		if (repositoryName != null ? !repositoryName.equals(that.repositoryName) : that.repositoryName != null) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -71,8 +60,6 @@ public class CrucibleServerCfg extends ServerCfg {
 	public int hashCode() {
 		int result = super.hashCode();
 		result = HASHCODE_MAGIC * result + (isFisheyeInstance ? 1 : 0);
-		result = HASHCODE_MAGIC * result + (projectName != null ? projectName.hashCode() : 0);
-		result = HASHCODE_MAGIC * result + (repositoryName != null ? repositoryName.hashCode() : 0);
 		return result;
 	}
 
@@ -96,21 +83,5 @@ public class CrucibleServerCfg extends ServerCfg {
 
 	public void setFisheyeInstance(final boolean fisheyeInstance) {
 		isFisheyeInstance = fisheyeInstance;
-	}
-
-	public String getProjectName() {
-		return projectName;
-	}
-
-	public void setProjectName(final String projectName) {
-		this.projectName = projectName;
-	}
-
-	public String getRepositoryName() {
-		return repositoryName;
-	}
-
-	public void setRepositoryName(final String repositoryName) {
-		this.repositoryName = repositoryName;
 	}
 }
