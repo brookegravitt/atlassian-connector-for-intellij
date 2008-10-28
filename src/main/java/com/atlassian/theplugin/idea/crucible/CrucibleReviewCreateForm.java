@@ -13,33 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Copyright (C) 2008 Atlassian
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -47,6 +34,8 @@ import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.openapi.vcs.FileStatus;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.NotNull;
@@ -187,14 +176,17 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private void refreshUserModel() {
-		User moderatorUser = ((UserComboBoxItem) (moderatorComboBox.getSelectedItem())).getUser();
-		ArrayList<User> disabledUsers = new ArrayList<User>();
-		disabledUsers.add(moderatorUser);
-		cellRenderer.setDisabledUsers(disabledUsers);
-		for (int i = 0; i < model.size(); i++) {
-			UserListItem reviewer = (UserListItem) model.get(i);
-			if (reviewer.getUser().equals(moderatorUser)) {
-				reviewer.setSelected(false);
+		final UserComboBoxItem userComboBoxItem = (UserComboBoxItem) (moderatorComboBox.getSelectedItem());
+		if (userComboBoxItem != null) {
+			User moderatorUser = userComboBoxItem.getUser();
+			final ArrayList<User> disabledUsers = new ArrayList<User>();
+			disabledUsers.add(moderatorUser);
+			cellRenderer.setDisabledUsers(disabledUsers);
+			for (int i = 0; i < model.size(); i++) {
+				UserListItem reviewer = (UserListItem) model.get(i);
+				if (reviewer.getUser().equals(moderatorUser)) {
+					reviewer.setSelected(false);
+				}
 			}
 		}
 		reviewersList.setModel(model);
@@ -539,43 +531,95 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		model.removeAllElements();
 		getOKAction().setEnabled(false);
 
-		new Thread(new Runnable() {
-			public void run() {
-				List<Project> projects = new ArrayList<Project>();
-				List<Repository> repositories = new ArrayList<Repository>();
-				List<User> users = new ArrayList<User>();
+		final CrucibleServerData data = crucibleData.get(server.getServerId());
 
-				try {
-					projects = crucibleServerFacade.getProjects(server);
-					repositories = crucibleServerFacade.getRepositories(server);
-					users = crucibleServerFacade.getUsers(server);
-				} catch (RemoteApiException e) {
-					// nothing can be done here
-				} catch (ServerPasswordNotProvidedException e) {
-					// nothing can be done here
-				}
-				final List<Project> finalProjects = projects;
-				final List<Repository> finalRepositories = repositories;
-				final List<User> finalUsers = users;
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						updateServerRelatedCombos(server, finalProjects, finalRepositories, finalUsers);
+		if (data == null) {
+			new Thread(new Runnable() {
+				public void run() {
+					List<Project> projects = new ArrayList<Project>();
+					List<Repository> repositories = new ArrayList<Repository>();
+					List<User> users = new ArrayList<User>();
+
+					try {
+						projects = crucibleServerFacade.getProjects(server);
+						repositories = crucibleServerFacade.getRepositories(server);
+						users = crucibleServerFacade.getUsers(server);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+							public void run() {
+								DialogWithDetails.showExceptionDialog(project, "Cannot retrieve data from Crucible server",
+										e, "Error");
+							}
+						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
 					}
-				});
-			}
-		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
+					final CrucibleServerData crucibleServerData = new CrucibleServerData(repositories, projects, users);
+					crucibleData.put(server.getServerId(), crucibleServerData);
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							updateServerRelatedCombos(server, crucibleServerData);
+						}
+					});
+				}
+			}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
+		} else {
+			updateServerRelatedCombos(server, data);
+
+		}
 	}
 
-	private void updateServerRelatedCombos(CrucibleServerCfg server, List<Project> projects, List<Repository> repositories,
-			List<User> users) {
+
+	private static class CrucibleServerData {
+		private final List<Project> projects;
+
+		private final List<Repository> repositories;
+
+		private final List<User> users;
+
+		public CrucibleServerData(final List<Repository> repositories, final List<Project> projects, final List<User> users) {
+			this.repositories = repositories;
+			this.projects = projects;
+			this.users = users;
+		}
+
+		public List<Project> getProjects() {
+			return projects;
+		}
+
+		public List<Repository> getRepositories() {
+			return repositories;
+		}
+
+		public List<User> getUsers() {
+			return users;
+		}
+	}
+
+	private Map<ServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
+
+
+	private void updateServerRelatedCombos(final CrucibleServerCfg server, final CrucibleServerData crucibleServerData) {
+
+		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
+		if (selectedItem == null || selectedItem.getServer().equals(server) == false) {
+			return;
+		}
+
+		// we are doing here once more, as it's executed by a separate thread and meantime
+		// the combos could have been populated by another thread 
+		projectsComboBox.removeAllItems();
+		repoComboBox.removeAllItems();
+		authorComboBox.removeAllItems();
+		moderatorComboBox.removeAllItems();
+		model.removeAllElements();
 
 		ProjectConfiguration prjCfg = cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project));
-		if (projects.isEmpty()) {
+		if (crucibleServerData.getProjects().isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");
 			getOKAction().setEnabled(false);
 		} else {
-			for (Project myProject : projects) {
+			projectsComboBox.setEnabled(true);
+			for (Project myProject : crucibleServerData.getProjects()) {
 				projectsComboBox.addItem(new ProjectComboBoxItem(myProject));
 			}
 
@@ -598,8 +642,8 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 
 		}
 		repoComboBox.addItem(""); // repo is not required for instance for patch review
-		if (!repositories.isEmpty()) {
-			for (Repository repo : repositories) {
+		if (!crucibleServerData.getRepositories().isEmpty()) {
+			for (Repository repo : crucibleServerData.getRepositories()) {
 				repoComboBox.addItem(new RepositoryComboBoxItem(repo));
 			}
 
@@ -623,15 +667,15 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 		// if only one repository
 		if (this.mode == ReviewCreationMode.REVISION
-				&& repositories.size() == 1) {
+				&& crucibleServerData.getRepositories().size() == 1) {
 			repoComboBox.setSelectedIndex(repoComboBox.getItemCount() - 1);
 		}
 		authorComboBox.addItem("");
 		moderatorComboBox.addItem("");
-		if (!users.isEmpty()) {
+		if (!crucibleServerData.getUsers().isEmpty()) {
 			int indexToSelect = -1;
 			int index = 0;
-			for (User user : users) {
+			for (User user : crucibleServerData.getUsers()) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
 				if (user.getUserName().equals(server.getUsername())) {
@@ -673,6 +717,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			this.server = server;
 		}
 
+		@Override
 		public User getAuthor() {
 			if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 				return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
@@ -681,16 +726,19 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		}
 
+		@Override
 		public User getCreator() {
 			UserBean user = new UserBean();
 			user.setUserName(server.getUsername());
 			return user;
 		}
 
+		@Override
 		public String getDescription() {
 			return statementArea.getText();
 		}
 
+		@Override
 		public User getModerator() {
 			if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 				return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
@@ -699,22 +747,27 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		}
 
+		@Override
 		public String getName() {
 			return titleText.getText();
 		}
 
+		@Override
 		public PermId getParentReview() {
 			return null;
 		}
 
+		@Override
 		public PermId getPermId() {
 			return null;
 		}
 
+		@Override
 		public String getProjectKey() {
 			return ((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getWrappedProject().getKey();
 		}
 
+		@Override
 		public String getRepoName() {
 			if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
 				return ((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepository().getName();
@@ -723,10 +776,12 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		}
 
+		@Override
 		public State getState() {
 			return null;
 		}
 
+		@Override
 		public boolean isAllowReviewerToJoin() {
 			return allowCheckBox.isSelected();
 		}

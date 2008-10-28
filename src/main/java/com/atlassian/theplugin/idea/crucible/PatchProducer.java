@@ -42,7 +42,7 @@ public class PatchProducer {
         this.changes = changes;
 	}
 
-	String generateUnifiedDiff() {
+	public String generateUnifiedDiff() {
 		StringBuilder sb = new StringBuilder();
 		for (Change fileChange : changes) {
 			ContentRevision beforeRevision = fileChange.getBeforeRevision();

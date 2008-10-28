@@ -17,13 +17,17 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -41,6 +45,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 enum AddMode
 {
@@ -61,40 +66,37 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private CrucibleServerFacade crucibleServerFacade;
 	private ChangeList[] changes;
 	private final Project project;
-	private CrucibleServerCfg cfg;
 	private PermId permId;
 	private String patch;
+	private final CfgManager cfgManager;
 	private AddMode mode;
-	private SvnRepository repo;
+	private String repo;
+	private CrucibleServerCfg server;
 
-	protected CrucibleHelperForm(Project project,
-			CrucibleServerCfg cfg,
-			CrucibleServerFacade crucibleServerFacade,
-			ChangeList[] changes) {
-		this(project, cfg, crucibleServerFacade);
+	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
+			ChangeList[] changes, final CfgManager cfgManager) {
+		this(project, crucibleServerFacade, cfgManager);
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
 		setTitle("Add revision to review... ");
 		getOKAction().putValue(Action.NAME, "Add revision...");
 	}
 
-	protected CrucibleHelperForm(Project project,
-			CrucibleServerCfg cfg,
-			CrucibleServerFacade crucibleServerFacade,
-			String patch) {
-		this(project, cfg, crucibleServerFacade);
+	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
+			String patch, final CfgManager cfgManager) {
+		this(project, crucibleServerFacade, cfgManager);
 		this.patch = patch;
 		this.mode = AddMode.ADDPATCH;
 		setTitle("Add patch");
 		getOKAction().putValue(Action.NAME, "Add patch...");
 	}
 
-	private CrucibleHelperForm(Project project, CrucibleServerCfg cfg,
-			CrucibleServerFacade crucibleServerFacade) {
+	private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
+			final CfgManager cfgManager) {
 		super(false);
-		this.cfg = cfg;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
+		this.cfgManager = cfgManager;
 		$$$setupUI$$$();
 		init();
 
@@ -105,7 +107,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 					if (reviewComboBox.getSelectedItem() instanceof ReviewComboBoxItem) {
 						ReviewComboBoxItem item = (ReviewComboBoxItem) reviewComboBox.getSelectedItem();
 						if (item != null) {
-							final Review review = item.getReview();
+							final ReviewAdapter review = item.getReview();
+							server = review.getServer();
 							permId = review.getPermId();
 							idField.setText(review.getPermId().getId());
 							statusField.setText(review.getState().value());
@@ -113,6 +116,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 							authorField.setText(review.getAuthor().getDisplayName());
 							moderatorField.setText(review.getModerator().getDisplayName());
 							descriptionArea.setText(review.getDescription());
+							repo = review.getRepoName();
 							getOKAction().setEnabled(true);
 						} else {
 							getOKAction().setEnabled(false);
@@ -237,9 +241,9 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	private static final class ReviewComboBoxItem {
-		private final Review review;
+		private final ReviewAdapter review;
 
-		private ReviewComboBoxItem(Review review) {
+		private ReviewComboBoxItem(ReviewAdapter review) {
 			this.review = review;
 		}
 
@@ -248,11 +252,19 @@ public class CrucibleHelperForm extends DialogWrapper {
 			return review.getPermId().getId();
 		}
 
-		public Review getReview() {
+		public ReviewAdapter getReview() {
 			return review;
 		}
 	}
 
+
+	private void addToReviewAdapterList(final List<ReviewAdapter> target, final Collection<Review> source,
+			final CrucibleServerCfg aServer) {
+
+		for (Review review : source) {
+			target.add(new ReviewAdapter(review, aServer));
+		}
+	}
 
 	private void fillReviewCombos() {
 		reviewComboBox.removeAllItems();
@@ -260,23 +272,29 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 		new Thread(new Runnable() {
 			public void run() {
-				List<Review> drafts = new ArrayList<Review>();
-				List<Review> outForReview = new ArrayList<Review>();
+				List<ReviewAdapter> drafts = MiscUtil.buildArrayList();
+				List<ReviewAdapter> outForReview = MiscUtil.buildArrayList();
 
-				try {
-					drafts = crucibleServerFacade.getReviewsForFilter(cfg, PredefinedFilter.Drafts);
-					outForReview = crucibleServerFacade.getReviewsForFilter(cfg, PredefinedFilter.OutForReview);
-					repo = crucibleServerFacade.getRepository(cfg, cfg.getRepositoryName());
+				Collection<CrucibleServerCfg> servers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+				for (CrucibleServerCfg server : servers) {
+					try {
+						addToReviewAdapterList(drafts,
+								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Drafts), server);
+						addToReviewAdapterList(outForReview,
+								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.OutForReview), server);
+					}
+					catch (RemoteApiException e) {
+						// nothing can be done here
+					}
+					catch (ServerPasswordNotProvidedException e) {
+						// nothing can be done here
+					}
 				}
-				catch (RemoteApiException e) {
-					// nothing can be done here
-				}
-				catch (ServerPasswordNotProvidedException e) {
-					// nothing can be done here
-				}
-				final List<Review> reviews = new ArrayList<Review>();
+				final List<ReviewAdapter> reviews = MiscUtil.buildArrayList(drafts.size() + outForReview.size());
 				reviews.addAll(drafts);
 				reviews.addAll(outForReview);
+
+
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						updateReviewCombo(reviews);
@@ -286,10 +304,10 @@ public class CrucibleHelperForm extends DialogWrapper {
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 	}
 
-	private void updateReviewCombo(List<Review> reviews) {
+	private void updateReviewCombo(List<ReviewAdapter> reviews) {
 		reviewComboBox.addItem("");
 		if (!reviews.isEmpty()) {
-			for (Review review : reviews) {
+			for (ReviewAdapter review : reviews) {
 				reviewComboBox.addItem(new ReviewComboBoxItem(review));
 			}
 		}
@@ -306,6 +324,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 
+	@Override
 	protected void doOKAction() {
 		switch (mode) {
 			case ADDREVISION:
@@ -317,31 +336,31 @@ public class CrucibleHelperForm extends DialogWrapper {
 							break;
 						}
 					}
-					crucibleServerFacade.addRevisionsToReview(cfg, permId, repo.getName(), revisions);
+					crucibleServerFacade.addRevisionsToReview(server, permId, repo, revisions);
 					super.doOKAction();
 
 				}
 				catch (RemoteApiException e) {
 					showMessageDialog(e.getMessage(),
-							"Error creating review: " + cfg.getUrl(), Messages.getErrorIcon());
+							"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
 				}
 				catch (ServerPasswordNotProvidedException e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+					IdeaHelper.handleMissingPassword(e);
 				}
 				break;
 
 			case ADDPATCH:
 				try {
-					crucibleServerFacade.addPatchToReview(cfg, permId, repo.getName(), patch);
+					crucibleServerFacade.addPatchToReview(server, permId, repo, patch);
 					super.doOKAction();
 
 				}
 				catch (RemoteApiException e) {
 					showMessageDialog(e.getMessage(),
-							"Error creating review: " + cfg.getUrl(), Messages.getErrorIcon());
+							"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
 				}
 				catch (ServerPasswordNotProvidedException e) {
-					e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+					IdeaHelper.handleMissingPassword(e);
 				}
 				break;
 		}

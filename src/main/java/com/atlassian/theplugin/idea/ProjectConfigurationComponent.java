@@ -33,6 +33,8 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
@@ -45,6 +47,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 
 public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable,
 		ConfigurationListener {
@@ -104,6 +107,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				return;
 			}
 			root = builder.build(path);
+			cleanupDom(root);
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
@@ -138,6 +142,18 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project), projectConfiguration);
 
+	}
+
+	/**
+	 * Ensuring that old attributes do not break our loading
+	 */
+	private void cleanupDom(final Document root) throws JDOMException {
+		@SuppressWarnings("unchecked")
+		List<Element> nodes = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration/servers/crucible");
+		for (Element e : nodes) {
+			e.removeChild("projectName");
+			e.removeChild("repositoryName");
+		}
 	}
 
 	private ProjectConfiguration setDefaultProjectConfiguration() {

@@ -19,9 +19,8 @@ import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.ui.Messages;
-
-import javax.swing.*;
 
 public class IdeaUiTaskExecutor implements UiTaskExecutor {
 	public void execute(final UiTask uiTask) {
@@ -34,23 +33,25 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
 						public void run() {
 							uiTask.onError();
-							Messages.showErrorDialog("Error while " + uiTask.getLastAction(),
-									"Error");
+							if (uiTask.getComponent().isShowing()) {
+								Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
+										"Error");
+							}
 						}
-					});
+					}, ModalityState.stateForComponent(uiTask.getComponent()));
 					return;
 				}
-				SwingUtilities.invokeLater(new Runnable() {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						try {
 							uiTask.onSuccess();
 						} catch (Exception e) {
 							LoggerImpl.getInstance().warn(e);
-							Messages.showErrorDialog("Error while " + uiTask.getLastAction(),
+							Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
 									"Error");
 						}
 					}
-				});
+				}, ModalityState.stateForComponent(uiTask.getComponent()));
 			}
 		});
 	}

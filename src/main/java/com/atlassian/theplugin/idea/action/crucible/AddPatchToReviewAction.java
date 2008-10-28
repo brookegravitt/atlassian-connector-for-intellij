@@ -16,13 +16,12 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchAddWorker;
+import com.atlassian.theplugin.idea.crucible.PatchProducer;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
@@ -30,16 +29,13 @@ public class AddPatchToReviewAction extends Crucible16RepositoryAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		final CrucibleServerCfg cfg = getCrucibleServerCfg(event);
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+		if (changes == null || changes.length == 0) {
+			return;
+		}
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
-
-		new Thread(new Runnable() {
-			public void run() {
-				ApplicationManager.getApplication().invokeAndWait(
-						new CruciblePatchAddWorker(cfg, CrucibleServerFacadeImpl.getInstance(), project, changes),
-						ModalityState.defaultModalityState());
-			}
-		}).start();
+		PatchProducer patchProducer = new PatchProducer(project, changes[0].getChanges());
+		String patch = patchProducer.generateUnifiedDiff();
+		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), patch, IdeaHelper.getCfgManager()).show();
 	}
 }

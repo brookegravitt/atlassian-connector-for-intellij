@@ -83,6 +83,12 @@ public class OwainConfigurationPanelTestUi {
 				throw new RuntimeException("fake RE");
 			}
 		}).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getRepositories(crucibleServerCfg3)).andAnswer(new IAnswer<List<Repository>>() {
+			public List<Repository> answer() throws Throwable {
+				Thread.sleep(1000);
+				return MiscUtil.buildArrayList(makeRepository("R1"), makeRepository("R2"));
+			}
+		}).anyTimes();
 		EasyMock.expect(crucibleServerFacade.getRepositories(crucibleServerCfg2)).andAnswer(new IAnswer<List<Repository>>() {
 			public List<Repository> answer() throws Throwable {
 				Thread.sleep(2000);
@@ -98,7 +104,7 @@ public class OwainConfigurationPanelTestUi {
 		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<Collection<String>>(){
 
 			public Collection<String> answer() throws Throwable {
-				Thread.sleep(2000);
+				Thread.sleep(7000);
 				return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
 			}
 		}).anyTimes();
