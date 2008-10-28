@@ -109,10 +109,6 @@ public class ReviewAdapter {
 //        return review.getFiles();
 //    }
 
-	public String getServerUrl() {
-		return review.getServerUrl();
-	}
-
 	public List<Action> getTransitions() throws ValueNotYetInitialized {
         return review.getTransitions();
     }

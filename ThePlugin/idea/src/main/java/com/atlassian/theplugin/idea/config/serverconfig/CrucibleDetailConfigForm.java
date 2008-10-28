@@ -18,32 +18,19 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 
 public class CrucibleDetailConfigForm {
 
 	private JPanel rootComponent;
 
-	private JComboBox projectsComboBox;
-	private JComboBox repoComboBox;
-	private JButton refreshButton;
-	private JLabel projectLabel;
 	private JCheckBox cbFisheye;
-	private JLabel repositoryLabel;
 	private final transient CrucibleServerFacade crucibleServerFacade;
 
 	public CrucibleServerCfg getCrucibleServerCfg() {
@@ -56,34 +43,11 @@ public class CrucibleDetailConfigForm {
 		this.crucibleServerFacade = crucibleServerFacade;
 
 		$$$setupUI$$$();
-
-		refreshButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(final ActionEvent event) {
-				fillServerRelatedCombos(crucibleServerCfg);
-			}
-		});
 	}
 
 	public void setData(@NotNull final CrucibleServerCfg serverCfg) {
 		crucibleServerCfg = serverCfg;
 		cbFisheye.setSelected(crucibleServerCfg.isFisheyeInstance());
-		projectsComboBox.removeAllItems();
-		repoComboBox.removeAllItems();
-		if (crucibleServerCfg.getProjectName() != null) {
-			projectsComboBox.addItem(new ProjectComboBoxItem(crucibleServerCfg.getProjectName()));
-			projectsComboBox.setSelectedItem(crucibleServerCfg.getProjectName());
-			projectsComboBox.setEnabled(true);
-		} else {
-			projectsComboBox.setEnabled(false);
-		}
-		if (crucibleServerCfg.getRepositoryName() != null) {
-			repoComboBox.addItem(new RepositoryComboBoxItem(crucibleServerCfg.getRepositoryName()));
-			repoComboBox.setSelectedItem(crucibleServerCfg.getRepositoryName());
-			repoComboBox.setEnabled(true);
-		} else {
-			repoComboBox.setEnabled(false);
-		}
 	}
 
 	public void saveData() {
@@ -91,12 +55,6 @@ public class CrucibleDetailConfigForm {
 			return;
 		}
 		crucibleServerCfg.setFisheyeInstance(cbFisheye.isSelected());
-		if (projectsComboBox.getSelectedItem() != null) {
-			crucibleServerCfg.setProjectName(((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getProjectName());
-		}
-		if (repoComboBox.getSelectedItem() != null) {
-			crucibleServerCfg.setRepositoryName(((RepositoryComboBoxItem) repoComboBox.getSelectedItem()).getRepoName());
-		}
 	}
 
 	public JComponent getRootComponent() {
@@ -120,9 +78,10 @@ public class CrucibleDetailConfigForm {
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridBagLayout());
-		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Project Configuration"));
+		rootComponent
+				.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Additional Configuration"));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
+		panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
@@ -131,36 +90,18 @@ public class CrucibleDetailConfigForm {
 		gbc.fill = GridBagConstraints.BOTH;
 		gbc.insets = new Insets(0, 12, 12, 8);
 		rootComponent.add(panel1, gbc);
-		repoComboBox = new JComboBox();
-		panel1.add(repoComboBox, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-		projectsComboBox = new JComboBox();
-		panel1.add(projectsComboBox, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
 		cbFisheye = new JCheckBox();
 		cbFisheye.setText("Crucible server contains Fisheye instance");
-		panel1.add(cbFisheye, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 8, 0), -1, -1));
-		panel1.add(panel2, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		refreshButton = new JButton();
-		refreshButton.setText("Refresh");
-		panel2.add(refreshButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final Spacer spacer1 = new Spacer();
-		panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-		projectLabel = new JLabel();
-		projectLabel.setText("Crucible project associated with the current IDEA project");
-		panel1.add(projectLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		repositoryLabel = new JLabel();
-		repositoryLabel.setHorizontalAlignment(4);
-		repositoryLabel.setHorizontalTextPosition(4);
-		repositoryLabel.setText("Source repository associated with the current IDEA project");
-		panel1.add(repositoryLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1), null, null, 0, false));
-		final JPanel spacer2 = new JPanel();
+		panel1.add(cbFisheye, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
+		final JPanel spacer1 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 1;
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.VERTICAL;
-		rootComponent.add(spacer2, gbc);
+		rootComponent.add(spacer1, gbc);
 	}
 
 	/**
@@ -169,113 +110,4 @@ public class CrucibleDetailConfigForm {
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
 	}
-
-	// CHECKSTYLE:OFF
-
-	// CHECKSTYLE:ON
-
-	// for use by unit test only
-
-	private static final class ProjectComboBoxItem {
-		private String projectName;
-
-		private ProjectComboBoxItem(String projectName) {
-			this.projectName = projectName;
-		}
-
-		@Override
-		public String toString() {
-			return projectName;
-		}
-
-		public String getProjectName() {
-			return projectName;
-		}
-	}
-
-	private static final class RepositoryComboBoxItem {
-		private final String repoName;
-
-		private RepositoryComboBoxItem(final String repoName) {
-			this.repoName = repoName;
-		}
-
-		@Override
-		public String toString() {
-			return repoName;
-		}
-
-		public String getRepoName() {
-			return repoName;
-		}
-	}
-
-	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
-		if (crucibleServerCfg.isComplete()) {
-			projectsComboBox.setEnabled(false);
-			repoComboBox.setEnabled(false);
-
-			new Thread(new Runnable() {
-				public void run() {
-					java.util.List<Project> projects
-							= new ArrayList<Project>();
-					java.util.List<Repository> repositories = new ArrayList<Repository>();
-
-					try {
-						projects = crucibleServerFacade.getProjects(server);
-						repositories = crucibleServerFacade.getRepositories(server);
-					}
-					catch (RemoteApiException e) {
-						// nothing can be done here
-					}
-					catch (ServerPasswordNotProvidedException e) {
-						// nothing can be done here
-					}
-					final java.util.List<Project> finalProjects = projects;
-					final java.util.List<Repository> finalRepositories = repositories;
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							updateServerRelatedCombos(finalProjects, finalRepositories);
-						}
-					});
-				}
-			}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
-		}
-	}
-
-	private void updateServerRelatedCombos(
-			java.util.List<Project> projects,
-			java.util.List<Repository> repositories) {
-
-		if (!projects.isEmpty()) {
-			projectsComboBox.removeAllItems();
-			for (Project project : projects) {
-				projectsComboBox.addItem(new ProjectComboBoxItem(project.getKey()));
-			}
-			for (int i = 0; i < projectsComboBox.getItemCount() - 1; ++i) {
-				ProjectComboBoxItem item = (ProjectComboBoxItem) projectsComboBox.getItemAt(i);
-				if (item.getProjectName().equals(crucibleServerCfg.getProjectName())) {
-					projectsComboBox.setSelectedIndex(i);
-					break;
-				}
-			}
-			projectsComboBox.setEnabled(true);
-		}
-		if (!repositories.isEmpty()) {
-			repoComboBox.removeAllItems();
-			for (Repository repo : repositories) {
-				repoComboBox.addItem(new RepositoryComboBoxItem(repo.getName()));
-			}
-			for (int i = 0; i < repoComboBox.getItemCount() - 1; ++i) {
-				RepositoryComboBoxItem item = (RepositoryComboBoxItem) repoComboBox.getItemAt(i);
-				if (item.getRepoName().equals(crucibleServerCfg.getRepositoryName())) {
-					repoComboBox.setSelectedIndex(i);
-					break;
-				}
-			}
-			repoComboBox.setEnabled(true);
-		}
-	}
-
-
 }

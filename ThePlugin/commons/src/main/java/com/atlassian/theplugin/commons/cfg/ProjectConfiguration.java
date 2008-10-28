@@ -166,6 +166,10 @@ public class ProjectConfiguration {
 
 	public void setDefaultCrucibleServerId(final ServerId defaultCrucibleServerId) {
 		this.defaultCrucibleServerId = defaultCrucibleServerId;
+		if (defaultCrucibleServerId == null) {
+			setDefaultCrucibleProject(null);
+			setDefaultCrucibleRepo(null);
+		}
 	}
 
 	public ServerId getDefaultFishEyeServerId() {
