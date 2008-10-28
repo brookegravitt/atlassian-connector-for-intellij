@@ -18,15 +18,7 @@ package com.atlassian.theplugin.commons.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jun 16, 2008
- * Time: 7:04:48 PM
- * To change this template use File | Settings | File Templates.
- */
 public interface CrucibleReviewListener {
-	void showReview(ReviewAdapter reviewData);
 
 	void focusOnGeneralComments(ReviewAdapter review);
 
@@ -74,5 +66,4 @@ public interface CrucibleReviewListener {
 	void publishedVersionedComment(ReviewAdapter review, PermId filePermId,
 			VersionedComment comment);
 
-	void commentsDownloaded(ReviewAdapter review);
 }
