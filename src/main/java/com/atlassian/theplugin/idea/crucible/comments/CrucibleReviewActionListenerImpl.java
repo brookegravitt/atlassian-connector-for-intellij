@@ -16,9 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewActionListener;
-import com.intellij.openapi.editor.Editor;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,7 +50,7 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	public void showDiff(CrucibleFileInfo file) {
 	}
 
-	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, Editor editor, int start, int end) {
+	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end) {
 	}
 
 	public void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
@@ -100,9 +99,6 @@ public class CrucibleReviewActionListenerImpl implements CrucibleReviewActionLis
 	}
 
 	public void updatedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-	}
-
-	public void aboutToRemoveComment(final ReviewAdapter review, final Comment comment) {
 	}
 
 	public void removedComment(final ReviewAdapter review, final Comment comment) {

@@ -43,4 +43,5 @@ public abstract class CommentTreeNode extends FileNode {
 	public boolean isCompactable() {
 		return false;
 	}
+
 }
