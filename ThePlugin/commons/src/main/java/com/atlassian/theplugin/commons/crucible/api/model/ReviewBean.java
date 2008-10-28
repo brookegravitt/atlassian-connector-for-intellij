@@ -58,23 +58,31 @@ public class ReviewBean implements Review {
 		this.generalComments = generalComments;
 	}
 
-	public void removeGeneralComment(final GeneralComment comment) {
-		if (!comment.isReply()) {
-			generalComments.remove(comment);
+	/**
+	 * Removes comment from the model
+	 * @param generalComment comment to be removed
+	 */
+	public void removeGeneralComment(final GeneralComment generalComment) {
+		if (!generalComment.isReply()) {
+			generalComments.remove(generalComment);
 		} else {
-			for (GeneralComment generalComment : generalComments) {
-				if (generalComment.getReplies().remove(comment)) {
+			for (GeneralComment comment : generalComments) {
+				if (comment.getReplies().remove(generalComment)) {
 					return;
 				}
 			}
 		}
 	}
 
-	public void removeVersionedComment(final VersionedComment comment) {
+	public void removeVersionedComment(final VersionedComment comment, final CrucibleFileInfo file)
+			throws ValueNotYetInitialized {
+
+		CrucibleFileInfo f = getFileByPermId(file.getPermId());
+
 		if (!comment.isReply()) {
-			versionedComments.remove(comment);
+			f.getVersionedComments().remove(comment);
 		} else {
-			for (VersionedComment versionedComment : versionedComments) {
+			for (VersionedComment versionedComment : f.getVersionedComments()) {
 				if (versionedComment.getReplies().remove(comment)) {
 					return;
 				}
@@ -378,7 +386,7 @@ public class ReviewBean implements Review {
 
 	public void setFilesAndVersionedComments(final List<CrucibleFileInfo> aFiles, List<VersionedComment> commentList) {
 		this.files = aFiles;
-		this.versionedComments = commentList;
+//		this.versionedComments = commentList;
 
 		if (files != null && commentList != null) {
 			for (VersionedComment comment : commentList) {
@@ -391,12 +399,12 @@ public class ReviewBean implements Review {
 		}
 	}
 
-	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-		if (versionedComments == null) {
-			throw new ValueNotYetInitialized("Object trasferred only partially");
-		}
-		return versionedComments;
-	}
+//	public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+//		if (versionedComments == null) {
+//			throw new ValueNotYetInitialized("Object trasferred only partially");
+//		}
+//		return versionedComments;
+//	}
 
     public boolean equals(Object o) {
         if (this == o) {

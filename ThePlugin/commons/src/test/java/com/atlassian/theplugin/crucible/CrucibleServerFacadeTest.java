@@ -539,7 +539,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 				// not implemented
 			}
 
-			public void removeVersionedComment(final VersionedComment versionedComment) {
+			public void removeVersionedComment(final VersionedComment vComment, final CrucibleFileInfo file) {
 				// not implemented
 			}
 
@@ -635,7 +635,7 @@ public class CrucibleServerFacadeTest extends TestCase {
 				// not implemented
 			}
 
-			public void removeVersionedComment(final VersionedComment versionedComment) {
+			public void removeVersionedComment(final VersionedComment vComment, final CrucibleFileInfo file) {
 				// not implemented
 			}
 
