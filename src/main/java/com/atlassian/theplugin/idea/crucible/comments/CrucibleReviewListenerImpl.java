@@ -19,24 +19,9 @@ package com.atlassian.theplugin.idea.crucible.comments;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jun 16, 2008
- * Time: 10:15:18 PM
- * To change this template use File | Settings | File Templates.
- */
 public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 	public static final CrucibleReviewListener I_WANT_THIS_MESSAGE_BACK = null;
 	public static final CrucibleReviewListener ANONYMOUS = null;
-
-	/**
-	 * A method ivoked by a background thread when a new review needs to be shown
-	 *
-	 * @param reviewData
-	 */
-	public void showReview(ReviewAdapter reviewData) {
-	}
 
 	public void focusOnGeneralComments(ReviewAdapter review) {
 	}
@@ -101,6 +86,4 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 			final VersionedComment comment) {
 	}
 
-	public void commentsDownloaded(ReviewAdapter review) {
-	}
 }
