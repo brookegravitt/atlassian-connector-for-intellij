@@ -19,9 +19,11 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -72,27 +74,31 @@ public final class FileTreeModelBuilder {
 	}
 
 
-	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review,
-			List<CrucibleFileInfo> files) {
+	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review
+	) {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review,
 				new CrucibleChangeSetClickAction(project, review)));
 		addStatementOfObjectives(review, model);
 		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
-		for (final CrucibleFileInfo file : files) {
-			//according to filter show only "proper files"
-			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-					new CrucibleFileClickAction(project, review, file));
+		try {
+			for (final CrucibleFileInfo file : review.getFiles()) {
+				//according to filter show only "proper files"
+				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
+						new CrucibleFileClickAction(project, review, file));
 
-			fillFileComments(childNode, model, review, file, project);
-			model.insertNode(childNode, filesNode);
+				fillFileComments(childNode, model, review, file, project);
+				model.insertNode(childNode, filesNode);
+			}
+		} catch (ValueNotYetInitialized e) {
+			IdeaHelper.handleError(project, e);
 		}
 		return model;
 	}
 
-	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review,
-			final List<CrucibleFileInfo> files) {
+	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review
+	) {
 		FileNode root = new CrucibleChangeSetTitleNode(review, new CrucibleChangeSetClickAction(project, review));
 
 		FileTreeModel model = new FileTreeModel(root);
@@ -102,15 +108,19 @@ public final class FileTreeModelBuilder {
 		FileNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
 
-		for (final CrucibleFileInfo file : files) {
-			//according to filter show only "proper files"
-			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-					new CrucibleFileClickAction(project, review, file));
+		try {
+			for (final CrucibleFileInfo file : review.getFiles()) {
+				//according to filter show only "proper files"
+				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
+						new CrucibleFileClickAction(project, review, file));
 
-			FileNode node = model.createPlace(filesNode, file);
+				FileNode node = model.createPlace(filesNode, file);
 
-			fillFileComments(childNode, model, review, file, project);
-			node.addChild(childNode);
+				fillFileComments(childNode, model, review, file, project);
+				node.addChild(childNode);
+			}
+		} catch (ValueNotYetInitialized e) {
+			IdeaHelper.handleError(project, e);
 		}
 		model.compactModel(filesNode);
 		return model;
