@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -134,6 +135,10 @@ public final class VcsIdeaHelper {
 			return null;
 		}
 		VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
+		if (vcsRevisionNumber == null) {
+			LoggerImpl.getInstance().warn("Cannot parse revision number [" + revision + "]");
+			return null;
+		}
 		final VirtualFile remoteFile = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber);
 		if (remoteFile != null) {
 			putFileInfoCache(remoteFile, virtualFile, revision);
@@ -181,8 +186,8 @@ public final class VcsIdeaHelper {
 
 
 	@Nullable
-	private static VirtualFile getVcsVirtualFileImpl2(@NotNull VirtualFile virtualFile, AbstractVcs vcs,
-			VcsRevisionNumber vcsRevisionNumber) throws VcsException {
+	private static VirtualFile getVcsVirtualFileImpl2(@NotNull VirtualFile virtualFile, @NotNull AbstractVcs vcs,
+			@NotNull VcsRevisionNumber vcsRevisionNumber) throws VcsException {
 
 		DiffProvider diffProvider = vcs.getDiffProvider();
 		if (diffProvider == null) {
