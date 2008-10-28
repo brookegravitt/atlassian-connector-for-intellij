@@ -256,7 +256,7 @@ public class ReviewAdapter {
 					file.getPermId());
 			file.setVersionedComments(comments);
 		} else {
-			comments.add(newComment);
+			comments.add(newVersionedComment);
 		}
 
 		// notify listeners
@@ -267,11 +267,14 @@ public class ReviewAdapter {
 
 	public void addVersionedCommentReply(final CrucibleFileInfo file, final VersionedComment parentComment,
 			final VersionedCommentBean nComment) throws RemoteApiException, ServerPasswordNotProvidedException {
+
 		VersionedComment newComment = CrucibleServerFacadeImpl.getInstance().addVersionedCommentReply(
 				getServer(), getPermId(), parentComment.getPermId(), nComment);
 
 		((CommentBean) newComment).setAuthor(
 				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
+
+		parentComment.getReplies().add(newComment);
 
 		// notify listeners
 		for (CrucibleReviewActionListener listener : listeners) {
