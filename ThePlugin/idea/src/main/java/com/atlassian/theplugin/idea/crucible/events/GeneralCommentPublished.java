@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
@@ -25,14 +25,14 @@ public class GeneralCommentPublished extends CrucibleEvent {
 	private ReviewAdapter review;
 	private GeneralComment comment;
 
-	public GeneralCommentPublished(final CrucibleReviewActionListener caller, final ReviewAdapter review,
+	public GeneralCommentPublished(final CrucibleReviewListener caller, final ReviewAdapter review,
 			final GeneralComment comment) {
 		super(caller);
 		this.review = review;
 		this.comment = comment;
 	}
 
-	protected void notify(final CrucibleReviewActionListener listener) {
+	protected void notify(final CrucibleReviewListener listener) {
 		listener.publishedGeneralComment(review, comment);
 	}
 }

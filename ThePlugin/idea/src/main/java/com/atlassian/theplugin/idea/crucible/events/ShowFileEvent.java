@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
@@ -31,13 +31,13 @@ public class ShowFileEvent extends CrucibleEvent {
 	private ReviewAdapter review;
 	private CrucibleFileInfo file;
 
-	public ShowFileEvent(CrucibleReviewActionListener caller, ReviewAdapter review, CrucibleFileInfo file) {
+	public ShowFileEvent(CrucibleReviewListener caller, ReviewAdapter review, CrucibleFileInfo file) {
 		super(caller);
 		this.review = review;
 		this.file = file;
 	}
 
-	protected void notify(CrucibleReviewActionListener listener) {
+	protected void notify(CrucibleReviewListener listener) {
 		listener.showFile(review, file);
 	}
 }

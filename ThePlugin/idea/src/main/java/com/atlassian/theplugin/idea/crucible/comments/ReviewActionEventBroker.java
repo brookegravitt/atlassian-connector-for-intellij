@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.comments;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.idea.crucible.events.CrucibleEvent;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -36,8 +36,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * To change this template use File | Settings | File Templates.
  */
 public final class ReviewActionEventBroker {
-	private Set<CrucibleReviewActionListener> listeners =
-			new HashSet<CrucibleReviewActionListener>();
+	private Set<CrucibleReviewListener> listeners =
+			new HashSet<CrucibleReviewListener>();
 	private Queue<CrucibleEvent> events = new LinkedBlockingQueue<CrucibleEvent>();
 	public static final Logger LOGGER = PluginUtil.getLogger();
 	private Project project;
@@ -61,13 +61,13 @@ public final class ReviewActionEventBroker {
 		).start();
 	}
 
-	public void registerListener(CrucibleReviewActionListener listener) {
+	public void registerListener(CrucibleReviewListener listener) {
 		synchronized (listeners) {
 			listeners.add(listener);
 		}
 	}
 
-	public void unregisterListener(CrucibleReviewActionListener listener) {
+	public void unregisterListener(CrucibleReviewListener listener) {
 		synchronized (listeners) {
 			listeners.remove(listener);
 		}
@@ -77,9 +77,9 @@ public final class ReviewActionEventBroker {
 		events.add(event);
 	}
 
-	public Iterable<? extends CrucibleReviewActionListener> getListeners() {
+	public Iterable<? extends CrucibleReviewListener> getListeners() {
 		synchronized (listeners) {
-			return Collections.unmodifiableSet(new HashSet<CrucibleReviewActionListener>(listeners));
+			return Collections.unmodifiableSet(new HashSet<CrucibleReviewListener>(listeners));
 		}
 	}
 }

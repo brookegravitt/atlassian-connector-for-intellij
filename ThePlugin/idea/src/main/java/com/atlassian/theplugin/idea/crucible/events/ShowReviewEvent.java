@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 /**
@@ -30,12 +30,12 @@ public class ShowReviewEvent extends CrucibleEvent {
 	private ReviewAdapter reviewInfo;
 
 
-	public ShowReviewEvent(CrucibleReviewActionListener caller, ReviewAdapter reviewInfo) {
+	public ShowReviewEvent(CrucibleReviewListener caller, ReviewAdapter reviewInfo) {
 		super(caller);
 		this.reviewInfo = reviewInfo;		
 	}
 
-	protected void notify(CrucibleReviewActionListener listener) {
+	protected void notify(CrucibleReviewListener listener) {
 		listener.showReview(reviewInfo);
 	}
 }

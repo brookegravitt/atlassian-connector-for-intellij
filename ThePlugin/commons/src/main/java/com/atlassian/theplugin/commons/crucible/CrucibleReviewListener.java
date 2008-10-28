@@ -25,7 +25,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
  * Time: 7:04:48 PM
  * To change this template use File | Settings | File Templates.
  */
-public interface CrucibleReviewActionListener {
+public interface CrucibleReviewListener {
 	void showReview(ReviewAdapter reviewData);
 
 	void focusOnGeneralComments(ReviewAdapter review);
@@ -38,20 +38,12 @@ public interface CrucibleReviewActionListener {
 
 	void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end);
 
-	void aboutToAddVersionedCommentReply(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment parentComment, VersionedComment newComment);
-
 	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment);
-
-	void aboutToAddGeneralCommentReply(ReviewAdapter review,
-			GeneralComment parentComment,
-			GeneralComment newComment);
 
 	void createdOrEditedGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
 			GeneralComment comment);
 
-	void aboutToAddGeneralComment(ReviewAdapter review, GeneralComment newComment);
 
 	void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment);
 
@@ -62,11 +54,6 @@ public interface CrucibleReviewActionListener {
 	void createdOrEditedVersionedComment(ReviewAdapter review,
 			PermId file,
 			VersionedComment comment);
-
-	void aboutToUpdateVersionedComment(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment comment);
-
-	void aboutToUpdateGeneralComment(ReviewAdapter review, GeneralComment comment);
 
 	void updatedVersionedComment(ReviewAdapter review,
 			CrucibleFileInfo file,
@@ -81,11 +68,6 @@ public interface CrucibleReviewActionListener {
 
 	void focusOnLineCommentEvent(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment comment, boolean openIfClosed);
-
-	void aboutToPublishGeneralComment(ReviewAdapter review, GeneralComment comment);
-
-	void aboutToPublishVersionedComment(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment comment);
 
 	void publishedGeneralComment(ReviewAdapter review, GeneralComment comment);
 

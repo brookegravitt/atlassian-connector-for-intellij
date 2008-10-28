@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible.events;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewActionListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
@@ -31,13 +31,13 @@ public class CommentRemoved extends CrucibleEvent {
     private ReviewAdapter review;
     private Comment comment;
 
-    public CommentRemoved(final CrucibleReviewActionListener caller, final ReviewAdapter review, final Comment comment) {
+    public CommentRemoved(final CrucibleReviewListener caller, final ReviewAdapter review, final Comment comment) {
         super(caller);
         this.review = review;
         this.comment = comment;
     }
 
-    protected void notify(final CrucibleReviewActionListener listener) {
+    protected void notify(final CrucibleReviewListener listener) {
 //        listener.removedComment(review, comment);
     }
 }
