@@ -15,10 +15,14 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -54,7 +58,7 @@ public class OwainConfigurationPanel extends JPanel {
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private static final CrucibleServerCfgWrapper NONE_CRUCIBLE = new CrucibleServerCfgWrapper(null);	
-	private static final FishEyeServerCfgWrapper NONE_FISHEYE = new FishEyeServerCfgWrapper(null);
+	private static final FishEyeServerWrapper NONE_FISHEYE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper NO_PROJECT = new CrucibleProjectWrapper(null);
 	private static final GenericWrapper<String> NO_FISHEYE_REPOSITORY = new GenericWrapper<String>(null);
 	private static final GenericWrapper<String> FISHEYE_REPO_FETCHING = new GenericWrapper<String>(null) {
@@ -231,8 +235,8 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 	}
 
-	private static class FishEyeServerCfgWrapper extends GenericWrapper<FishEyeServerCfg> {
-		public FishEyeServerCfgWrapper(final FishEyeServerCfg fishEyeProject) {
+	private static class FishEyeServerWrapper extends GenericWrapper<FishEyeServer> {
+		public FishEyeServerWrapper(final FishEyeServer fishEyeProject) {
 			super(fishEyeProject);
 		}
 
@@ -343,7 +347,7 @@ public class OwainConfigurationPanel extends JPanel {
 		private Map<ServerId, Collection<GenericWrapper<String>>> data;
 		private static final int INITIAL_CAPACITY = 10;
 
-		private Collection<GenericWrapper<String>> getRepositories(final FishEyeServerCfg fishEyeServerCfg) {
+		private Collection<GenericWrapper<String>> getRepositories(final FishEyeServer fishEyeServerCfg) {
 			if (data == null) {
 				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 			}
@@ -393,7 +397,7 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		public int getSize() {
-			final FishEyeServerCfg currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
 			if (currentFishEyeServerCfg != null) {
 				return getRepositories(currentFishEyeServerCfg).size();
 			} else {
@@ -403,7 +407,7 @@ public class OwainConfigurationPanel extends JPanel {
 
 		public Object getElementAt(final int index) {
 			int i = 0;
-			final FishEyeServerCfg cfg = getCurrentFishEyeServerCfg();
+			final FishEyeServer cfg = getCurrentFishEyeServerCfg();
 			if (cfg == null) {
 				return NO_FISHEYE_REPOSITORY;
 			}
@@ -431,7 +435,7 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
-			final FishEyeServerCfg currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
 			if (currentFishEyeServerCfg == null || projectConfiguration.getDefaultFishEyeRepo() == null) {
 				return NO_FISHEYE_REPOSITORY;
 			}
@@ -451,11 +455,11 @@ public class OwainConfigurationPanel extends JPanel {
 			fireContentsChanged(this, -1, -1);
 		}
 
-		private FishEyeServerCfg getCurrentFishEyeServerCfg() {
+		private FishEyeServer getCurrentFishEyeServerCfg() {
 			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
 				return null;
 			}
-			return (FishEyeServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId());
+			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
 		}
 	}
 	private class CrucibleProjectComboBoxModel extends AbstractListModel implements ComboBoxModel {
@@ -709,16 +713,15 @@ public class OwainConfigurationPanel extends JPanel {
 
 
 	private class FishEyeServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Collection<FishEyeServerCfgWrapper> data;
+		private Collection<FishEyeServerWrapper> data;
 
-		private Collection<FishEyeServerCfgWrapper> getServers() {
+		private Collection<FishEyeServerWrapper> getServers() {
 			if (data == null) {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
-					if (serverCfg.getServerType() == ServerType.FISHEYE_SERVER && serverCfg.isEnabled()) {
-						FishEyeServerCfg fishEyeServerCfg = (FishEyeServerCfg) serverCfg;
-							data.add(new FishEyeServerCfgWrapper(fishEyeServerCfg));
-
+					final FishEyeServer fishEye = serverCfg.asFishEyeServer();
+					if (fishEye != null && fishEye.isEnabled()) {
+						data.add(new FishEyeServerWrapper(fishEye));
 					}
 				}
 			}
@@ -726,7 +729,7 @@ public class OwainConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
-			for (FishEyeServerCfgWrapper server : getServers()) {
+			for (FishEyeServerWrapper server : getServers()) {
 				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultFishEyeServerId())) {
 					return server;
 				}
@@ -738,8 +741,8 @@ public class OwainConfigurationPanel extends JPanel {
 			final Object selectedItem = getSelectedItem();
 			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
 				if (anItem != null) {
-					FishEyeServerCfgWrapper item = (FishEyeServerCfgWrapper) anItem;
-					final FishEyeServerCfg wrapped = item.getWrapped();
+					FishEyeServerWrapper item = (FishEyeServerWrapper) anItem;
+					final FishEyeServer wrapped = item.getWrapped();
 					if (wrapped != null) {
 						projectConfiguration.setDefaultFishEyeServerId(wrapped.getServerId());
 						projectConfiguration.setDefaultFishEyeRepo(null);
@@ -760,7 +763,7 @@ public class OwainConfigurationPanel extends JPanel {
 				return NONE_FISHEYE;
 			}
 			int i = 1;
-			for (FishEyeServerCfgWrapper server : getServers()) {
+			for (FishEyeServerWrapper server : getServers()) {
 				if (i == index) {
 					return server;
 				}

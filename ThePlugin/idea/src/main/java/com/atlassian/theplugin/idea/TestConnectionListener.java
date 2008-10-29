@@ -29,6 +29,7 @@ import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showDialog;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import org.apache.log4j.Category;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -42,8 +43,8 @@ import java.awt.event.ActionListener;
 public class TestConnectionListener implements ActionListener {
 
 	private final Project project;
-	private Connector connectionTester = null;
-	private LoginDataProvided loginDataProvided = null;
+	private Connector connectionTester;
+	private LoginDataProvided loginDataProvided;
 
 	/**
 	 * @param project IDEA project
@@ -67,13 +68,13 @@ public class TestConnectionListener implements ActionListener {
 
 	private static class TestConnectionTask extends Task.Modal {
 
-		private ConnectionWrapper testConnector = null;
+		private ConnectionWrapper testConnector;
 		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 		private final Category log = Category.getInstance(TestConnectionTask.class);
 		private LoginDataProvided loginDataProvided;
 
 		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled,
-								  Connector tester, LoginDataProvided loginDataProvided) {
+								  @NotNull Connector tester, LoginDataProvided loginDataProvided) {
 			super(currentProject, title, canBeCanceled);
 			this.loginDataProvided = loginDataProvided;
 			testConnector = new ConnectionWrapper(tester, loginDataProvided, "test thread");
@@ -133,6 +134,7 @@ public class TestConnectionListener implements ActionListener {
 						public void run() {
 							showMessageDialog(getProject(), "Connected successfully", "Connection OK",
 									Messages.getInformationIcon());
+							 loginDataProvided.onSuccess();
 						}
 					});
 					break;

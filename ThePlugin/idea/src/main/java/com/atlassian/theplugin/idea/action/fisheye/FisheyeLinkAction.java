@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -20,7 +20,7 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 
 	protected abstract void performUrlAction(final String url);
 
-	private String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final FishEyeServerCfg fishEyeServer,
+	private String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final FishEyeServer fishEyeServer,
 			@NotNull final String repo, @NotNull final String projectPath, @NotNull final String fileRelativePath,
 			final int lineNumber) {
 
@@ -63,7 +63,7 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 			return;
 		}
 
-		final FishEyeServerCfg fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",

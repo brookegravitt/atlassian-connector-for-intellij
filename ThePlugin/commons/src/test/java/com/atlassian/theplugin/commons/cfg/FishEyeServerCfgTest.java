@@ -19,10 +19,11 @@ import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
 
 public class FishEyeServerCfgTest extends TestCase {
-	public final FishEyeServerCfg fish1 = new FishEyeServerCfg(true, "FServer1", new ServerId());
-	public final FishEyeServerCfg fish2 = new FishEyeServerCfg(true, "FServer2", new ServerId());
+	private final FishEyeServerCfg fish1 = new FishEyeServerCfg(true, "FServer1", new ServerId());
+	private final FishEyeServerCfg fish2 = new FishEyeServerCfg(true, "FServer2", new ServerId());
 
 	public void testEquals() {
+		//noinspection ObjectEqualsNull
 		assertFalse(fish1.equals(null));
 		TestUtil.assertNotEquals(fish1, fish2);
 		fish2.setName(fish1.getName());

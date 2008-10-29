@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.commons.fisheye;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.fisheye.api.FishEyeSession;
 import com.atlassian.theplugin.commons.fisheye.api.rest.FishEyeRestSession;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -42,7 +42,7 @@ public class FishEyeServerFacadeImpl implements FishEyeServerFacade {
 
 	}
 	
-	public Collection<String> getRepositories(final FishEyeServerCfg server) throws RemoteApiException {
+	public Collection<String> getRepositories(final FishEyeServer server) throws RemoteApiException {
 		FishEyeSession fishEyeSession = getSession(server.getUrl());
 		Collection<String> repositories;
 		

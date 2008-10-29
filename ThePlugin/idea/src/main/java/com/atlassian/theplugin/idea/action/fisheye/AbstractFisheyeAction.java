@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -18,7 +18,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	}
 
 	@Nullable
-	protected FishEyeServerCfg getFishEyeServerCfg(final AnActionEvent event) {
+	protected FishEyeServer getFishEyeServerCfg(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (project == null) {
 			return null;
@@ -29,7 +29,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return null;
 		}
 
-		final FishEyeServerCfg fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",

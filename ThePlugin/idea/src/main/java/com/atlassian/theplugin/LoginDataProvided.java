@@ -21,4 +21,5 @@ public interface LoginDataProvided {
 	String getUserName();
 	String getPassword();
 	void setConnectionResult(ConnectionWrapper.ConnectionState result);
+	void onSuccess();
 }
