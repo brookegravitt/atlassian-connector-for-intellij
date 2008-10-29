@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.LoginDataProvided;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CrucibleConnector implements Connector {
 	private CrucibleServerFacade facade;
