@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.bamboo.changes;
 
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.Nullable;
+import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -76,7 +78,7 @@ public abstract class AbstractBambooFileActions extends AnAction {
 
 	protected PsiFile guessPsiFile(Project project, BambooFileNode bfn) {
 		String pathname = bfn.getBambooFileInfo().getFileDescriptor().getUrl();
-		PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(bfn.getName());
+        PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(bfn.getName(), project);
 		return CodeNavigationUtil.guessMatchingFile(pathname, psifiles, project.getBaseDir());
 	}
 

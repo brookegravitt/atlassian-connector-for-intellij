@@ -423,6 +423,10 @@
 							<name>picocontainer</name>
 							<exclude>true</exclude>
 						</library>
+						<library>
+							<name>idea-junit</name>
+							<exclude>true</exclude>
+						</library>						
 					</libraries>
 				</configuration>
 			</plugin>

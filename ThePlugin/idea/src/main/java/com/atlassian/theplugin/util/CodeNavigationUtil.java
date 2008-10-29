@@ -21,6 +21,7 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,8 +60,7 @@ public final class CodeNavigationUtil {
 	 */
 	@Nullable
 	public static PsiFile guessCorrespondingPsiFile(final Project project, final String filepath) {
-		final PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(
-				FilenameUtils.getName(filepath));
+        final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(FilenameUtils.getName(filepath), project);
 		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
 	}
 
