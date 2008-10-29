@@ -16,12 +16,11 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.Nullable;
 
