@@ -1,12 +1,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.intellij.execution.*;
-//import com.intellij.execution.impl.RunDialog;
-//import com.intellij.execution.runners.ProgramRunner;
-//import com.intellij.execution.runners.ExecutionEnvironment;
-//import com.intellij.execution.executors.DefaultDebugExecutor;
-//import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.execution.configurations.RunProfile;
 import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -23,6 +19,7 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
 public final class IdeaVersionFacade {
 
@@ -142,29 +139,42 @@ public final class IdeaVersionFacade {
 
     public void runTests(RunnerAndConfigurationSettings settings, AnActionEvent ev, boolean debug) {
 	    try {
-//			if (isIdea8) {
-//                Executor executor;
-//                if (debug) {
-//                    executor = ExecutorRegistry.getInstance().getExecutorById(DefaultDebugExecutor.EXECUTOR_ID);
-//                } else {
-//                    executor = ExecutorRegistry.getInstance().getExecutorById(DefaultRunExecutor.EXECUTOR_ID);
-//                }
-//
-//                final RunDialog dialog = new RunDialog(IdeaHelper.getCurrentProject(ev), executor);
-//                dialog.show();
-//                if (!dialog.isOK()) return;
-//
-//                ProgramRunner runner = RunnerRegistry.getInstance().getRunner(executor.getId(), settings.getConfiguration());
-//                if (runner != null) {
-//                    try {
-//                        runner.execute(executor, new ExecutionEnvironment(runner, settings, ev.getDataContext()));
-//                    } catch (ExecutionException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//			}
+			if (isIdea8) {
+                Class executorClass = Class.forName("com.intellij.execution.Executor");
+                Class defaultDebugExecutorClass = Class.forName("com.intellij.execution.executors.DefaultDebugExecutor");
+                Class defaultRunExecutorClass = Class.forName("com.intellij.execution.executors.DefaultRunExecutor");
+                Class executorRegistryClass = Class.forName("com.intellij.execution.ExecutorRegistry");
+                Method getInstance = executorRegistryClass.getMethod("getInstance");
+                Object executorRegistryInstance = getInstance.invoke(null);
+                Method getExecutorById = executorRegistryClass.getMethod("getExecutorById", String.class);
+                Class selectedExecutorClass = debug ? defaultDebugExecutorClass : defaultRunExecutorClass;
+                Field executorIdField = selectedExecutorClass.getField("EXECUTOR_ID");
+                String executorId = (String) executorIdField.get(null);
+                Object executor = getExecutorById.invoke(executorRegistryInstance, executorId);
 
-			if (!isIdea8) {
+                Class runnerClass = Class.forName("com.intellij.execution.runners.ProgramRunner");
+                Class runnerRegistryClass = Class.forName("com.intellij.execution.RunnerRegistry");
+                getInstance = runnerRegistryClass.getMethod("getInstance");
+                Object runnerRegistryInstance = getInstance.invoke(null);
+                Method getId = executorClass.getMethod("getId");
+                String id = (String) getId.invoke(executor);
+                Method getRunner = runnerRegistryClass.getMethod("getRunner", String.class, RunProfile.class);
+                Object runner = getRunner.invoke(runnerRegistryInstance, id, settings.getConfiguration());
+                if (runner != null) {
+                    try {
+                        Class executionEnvironmentClass = Class.forName(
+                                "com.intellij.execution.runners.ExecutionEnvironment");
+                        Constructor c = executionEnvironmentClass.getConstructor(
+                                runnerClass, RunnerAndConfigurationSettings.class, DataContext.class);
+                        Object executionEnvironment = c.newInstance(runner, settings, ev.getDataContext());
+                        Method execute = runnerClass.getMethod("execute", executorClass, executionEnvironmentClass);
+                        execute.invoke(runner, executor, executionEnvironment);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } else {
 				Class javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
 	            Class executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
 				Class runStrategyClass = Class.forName("com.intellij.execution.runners.RunStrategy");
@@ -196,6 +206,8 @@ public final class IdeaVersionFacade {
 		    e.printStackTrace();
 	    } catch (InvocationTargetException e) {
 		    e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
     }
 
