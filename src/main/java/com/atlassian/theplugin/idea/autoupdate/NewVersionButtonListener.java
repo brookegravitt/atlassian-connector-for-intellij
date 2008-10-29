@@ -58,11 +58,10 @@ public class NewVersionButtonListener implements ActionListener {
         ProgressManager.getInstance().run(new UpdateModalTask(generalConfigForm.getRootComponent()));
     }
 
-    private class UpdateServerConnection extends Connector {
+    private class UpdateServerConnection implements Connector {
 		protected UpdateServerConnection() {
 		}
 
-		@Override
 		public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
             NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
                 public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
@@ -70,7 +69,10 @@ public class NewVersionButtonListener implements ActionListener {
                 }
             }, false, updateConfig);
         }
-    }
+
+		public void onSuccess() {
+		}
+	}
 
     private class UpdateModalTask extends Task.Modal {
 		private Component parentWindow;

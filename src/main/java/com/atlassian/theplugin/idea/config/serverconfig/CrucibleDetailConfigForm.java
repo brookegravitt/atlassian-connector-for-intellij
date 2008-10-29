@@ -45,6 +45,10 @@ public class CrucibleDetailConfigForm {
 		$$$setupUI$$$();
 	}
 
+	public void setIsFishEyeInstance(boolean isFishEyeInstance) {
+		cbFisheye.setSelected(isFishEyeInstance);
+	}
+
 	public void setData(@NotNull final CrucibleServerCfg serverCfg) {
 		crucibleServerCfg = serverCfg;
 		cbFisheye.setSelected(crucibleServerCfg.isFisheyeInstance());
@@ -66,6 +70,10 @@ public class CrucibleDetailConfigForm {
 	}
 
 	private void createUIComponents() {
+	}
+
+	public boolean isFishEyeInstance() {
+		return cbFisheye.isSelected();
 	}
 
 	/**
