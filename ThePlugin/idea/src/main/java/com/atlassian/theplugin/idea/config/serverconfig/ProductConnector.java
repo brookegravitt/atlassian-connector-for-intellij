@@ -28,7 +28,6 @@ public class ProductConnector implements Connector {
 		this.facade = facade;
 	}
 
-	@Override
 	public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 		//validate();
 		try {
