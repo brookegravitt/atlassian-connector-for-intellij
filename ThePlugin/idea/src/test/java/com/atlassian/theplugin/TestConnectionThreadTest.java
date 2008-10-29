@@ -31,7 +31,6 @@ public class TestConnectionThreadTest extends TestCase {
 	public void setUp() throws Exception {
 
 		emptyConnectionTester = new Connector() {
-			@Override
 			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 			}
 
@@ -40,7 +39,6 @@ public class TestConnectionThreadTest extends TestCase {
 		};
 
 		failedConnectionTester = new Connector() {
-			@Override
 			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 				throw new ThePluginException(ERROR_MESSAGE);
 			}
