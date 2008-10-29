@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.codeInsight.hint.EditorFragmentComponent;
-import com.intellij.codeInsight.hint.HintManager;
 import com.intellij.ide.highlighter.HighlighterFactory;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.diff.*;
@@ -29,7 +29,6 @@ import com.intellij.ui.HintListener;
 import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SideBorder2;
 import com.intellij.util.ui.UIUtil;
-import com.atlassian.theplugin.idea.IdeaVersionFacade;
 
 import javax.swing.*;
 import java.awt.*;
