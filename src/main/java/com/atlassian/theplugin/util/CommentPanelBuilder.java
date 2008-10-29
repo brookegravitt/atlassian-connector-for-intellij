@@ -45,7 +45,7 @@ public final class CommentPanelBuilder {
 
 	public static JPanel createViewPanelOfGeneralComment(final ReviewAdapter review, final GeneralComment comment,
 														 final boolean isSelected) {
-		return new CommentPanel(review, null, comment) {
+		return new CommentPanel(null, comment) {
 			@Override
 			public Color getHeaderBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
@@ -73,10 +73,9 @@ public final class CommentPanelBuilder {
 
 	public static JPanel createViewPanelOfVersionedComment(final ReviewAdapter review, CrucibleFileInfo file,
 			final VersionedComment comment, final boolean isSelected) {
-		return new CommentPanel(review, file, comment) {
+		return new CommentPanel(file, comment) {
 			@Override
 			public Color getHeaderBackground() {
-				boolean isLineComment = comment.isFromLineInfo() || comment.isToLineInfo();
 				Color c;
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
 					c = MINE_HEADER_COLOR;
@@ -102,7 +101,6 @@ public final class CommentPanelBuilder {
 
 	private abstract static class CommentPanel extends JPanel {
 		private Comment comment;
-		private ReviewAdapter review;
 		private CrucibleFileInfo file;
 
 		private static final CellConstraints AUTHOR_POS = new CellConstraints(2, 2);
@@ -114,13 +112,11 @@ public final class CommentPanelBuilder {
 		private static final CellConstraints TOOLBAR_POS = new CellConstraints(14, 2);
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
-		private static final float MINIMUM_FONT_SIZE = 3;
 
-		private CommentPanel(ReviewAdapter review, CrucibleFileInfo file, Comment comment) {
+		private CommentPanel(CrucibleFileInfo file, Comment comment) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 
-			this.review = review;
 			this.file = file;
 			this.comment = comment;
 
