@@ -33,21 +33,12 @@ import java.util.Set;
 public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
 	private static CrucibleServerFacadeImpl instance;
-	private CrucibleUserCache userCache;
-
-	private CrucibleServerFacadeImpl(CrucibleUserCache userCache) {
-		this.userCache = userCache;
-	}
 
 	public static synchronized CrucibleServerFacade getInstance() {
 		if (instance == null) {
-			instance = new CrucibleServerFacadeImpl(CrucibleUserCacheImpl.getInstance());
+			instance = new CrucibleServerFacadeImpl();
 		}
 		return instance;
-	}
-
-	public void setUserCache(CrucibleUserCache newCache) {
-		userCache = newCache;
 	}
 
 	public ServerType getServerType() {
@@ -72,7 +63,7 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUsername(), server.getPassword());
-			userCache.getUser(server, server.getUsername(), true);
+//			userCache.getUser(server, server.getUsername(), true);
 		}
 		return session;
 	}

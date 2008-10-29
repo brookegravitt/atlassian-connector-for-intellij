@@ -26,6 +26,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -188,6 +189,7 @@ public final class IdeaHelper {
 	public static void handleError(final Project project, final ValueNotYetInitialized valueNotYetInitialized) {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
+				PluginUtil.getLogger().warn(valueNotYetInitialized);
 				Messages.showErrorDialog(project, "The following error has occurred:\n"
 						+ valueNotYetInitialized.getMessage(), "Error");
 			}

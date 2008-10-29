@@ -60,13 +60,6 @@ public class CrucibleServerFacadeTest extends TestCase {
         crucibleSessionMock = createMock(CrucibleSession.class);
 
         facade = CrucibleServerFacadeImpl.getInstance();
-		((CrucibleServerFacadeImpl) facade).setUserCache(new CrucibleUserCache() {
-			public User getUser(CrucibleServerCfg server, String userId, boolean fetchIfNotExist) {
-				return null;
-			}
-			public void addUser(CrucibleServerCfg server, User user) {
-			}
-		});
 
         try {
             Field f = CrucibleServerFacadeImpl.class.getDeclaredField("sessions");
