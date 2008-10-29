@@ -72,7 +72,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(jiraServerFacade));
-		crucibleServerConfigForm = new CrucibleServerConfigForm(project, crucibleServerFacade);
+		crucibleServerConfigForm = new CrucibleServerConfigForm(project, crucibleServerFacade, fishEyeServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, bambooServerFacade);
 		fisheyeServerConfigFrom = new GenericServerConfigForm(project, new ProductConnector(fishEyeServerFacade));
 		initLayout();
@@ -192,6 +192,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		for (ServerType serverType : ServerType.values()) {
 			saveData(serverType);
 		}
+
 	}
 
 

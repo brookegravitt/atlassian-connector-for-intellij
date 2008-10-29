@@ -21,6 +21,36 @@ public class CrucibleServerCfg extends ServerCfg {
 	private boolean isFisheyeInstance;
 	private static final int HASHCODE_MAGIC = 31;
 
+	private final FishEyeServer fishEyeView = new FishEyeServer() {
+		public ServerId getServerId() {
+			return CrucibleServerCfg.this.getServerId();
+		}
+
+		public String getPassword() {
+			return CrucibleServerCfg.this.getPassword();
+		}
+
+		public String getName() {
+			return CrucibleServerCfg.this.getName();
+		}
+
+		public String getUsername() {
+			return CrucibleServerCfg.this.getUsername();
+		}
+
+		public String getUrl() {
+			return CrucibleServerCfg.this.getUrl();
+		}
+
+		public void setPassword(final String password) {
+			CrucibleServerCfg.this.setPassword(password);
+		}
+
+		public boolean isEnabled() {
+			return CrucibleServerCfg.this.isEnabled();
+		}
+	};
+
 	public CrucibleServerCfg(final String name, final ServerId serverId) {
         super(true, name, serverId);
 	}
@@ -83,5 +113,14 @@ public class CrucibleServerCfg extends ServerCfg {
 
 	public void setFisheyeInstance(final boolean fisheyeInstance) {
 		isFisheyeInstance = fisheyeInstance;
+	}
+
+	@Override
+	public FishEyeServer asFishEyeServer() {
+		if (isFisheyeInstance) {
+			return fishEyeView;
+		} else {
+			return null;
+		}
 	}
 }

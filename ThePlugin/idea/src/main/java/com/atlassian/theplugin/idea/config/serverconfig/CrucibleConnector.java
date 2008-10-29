@@ -15,30 +15,45 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.util.Connector;
+import com.atlassian.theplugin.LoginDataProvided;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ProductConnector implements Connector {
-	private final ProductServerFacade facade;
+public class CrucibleConnector implements Connector {
+	private CrucibleServerFacade facade;
+	private FishEyeServerFacade fishEyeServerFacade;
+	private boolean isFisheye;
 
-	public ProductConnector(final ProductServerFacade facade) {
+	public CrucibleConnector(@NotNull final CrucibleServerFacade facade,
+			@NotNull final FishEyeServerFacade fishEyeServerFacade) {
 		this.facade = facade;
+		this.fishEyeServerFacade = fishEyeServerFacade;
 	}
 
-	@Override
 	public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-		//validate();
+		isFisheye = false;
 		try {
 			facade.testServerConnection(loginDataProvided.getServerUrl(), loginDataProvided.getUserName(),
 					loginDataProvided.getPassword());
+			try {
+				fishEyeServerFacade.testServerConnection(loginDataProvided.getServerUrl(), loginDataProvided.getUserName(),
+						loginDataProvided.getPassword());
+				isFisheye = true;
+			} catch (RemoteApiException e) {
+				// it's apparently not a FishEye instance
+			}
+
 		} catch (RemoteApiException e) {
 			throw new ThePluginException(e.getMessage(), e);
 		}
 	}
 
-	public void onSuccess() {
+	public boolean isFisheye() {
+		return isFisheye;
 	}
 }

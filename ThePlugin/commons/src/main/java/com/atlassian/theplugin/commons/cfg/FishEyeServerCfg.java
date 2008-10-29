@@ -17,7 +17,7 @@ package com.atlassian.theplugin.commons.cfg;
 
 import com.atlassian.theplugin.commons.ServerType;
 
-public class FishEyeServerCfg extends ServerCfg {
+public class FishEyeServerCfg extends ServerCfg implements FishEyeServer {
 	public FishEyeServerCfg(final boolean enabled, final String name, final ServerId serverId) {
 		super(enabled, name, serverId);
 	}
@@ -38,5 +38,10 @@ public class FishEyeServerCfg extends ServerCfg {
 	@Override
 	public FishEyeServerCfg getClone() {
 		return new FishEyeServerCfg(this);
+	}
+
+	@Override
+	public FishEyeServer asFishEyeServer() {
+		return this;
 	}
 }

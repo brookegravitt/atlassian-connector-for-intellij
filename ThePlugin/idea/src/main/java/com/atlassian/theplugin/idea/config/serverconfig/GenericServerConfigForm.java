@@ -154,6 +154,9 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		return String.valueOf(password.getPassword());
 	}
 
+	public void onSuccess() {
+	}
+
 	public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
 		if (result == ConnectionWrapper.ConnectionState.SUCCEEDED) {
 			SwingUtilities.invokeLater(new Runnable() {

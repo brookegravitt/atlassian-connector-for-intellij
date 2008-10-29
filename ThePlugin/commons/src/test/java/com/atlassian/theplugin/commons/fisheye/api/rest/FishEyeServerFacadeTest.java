@@ -2,6 +2,7 @@ package com.atlassian.theplugin.commons.fisheye.api.rest;
 
 import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -39,6 +40,7 @@ public class FishEyeServerFacadeTest extends TestCase {
 
         facade = new FishEyeServerFacadeImpl(){
 
+			@Override
 			public FishEyeSession getSession(final String url) throws RemoteApiMalformedUrlException {
 				return fishEyeSessionMock;
 			}
@@ -59,7 +61,7 @@ public class FishEyeServerFacadeTest extends TestCase {
 	}
 
 	public void testGetRepositories() throws ServerPasswordNotProvidedException, RemoteApiException {
-		FishEyeServerCfg server = prepareServerBean();
+		FishEyeServer server = prepareServerBean();
 
 		facade.getSession(URL);
 		//fishEyeSessionMock.login(server.getUsername(), PASSWORD.toCharArray());
@@ -89,7 +91,7 @@ public class FishEyeServerFacadeTest extends TestCase {
 
 	}
 
-	 private FishEyeServerCfg prepareServerBean() {
+	 private FishEyeServer prepareServerBean() {
         FishEyeServerCfg server = new FishEyeServerCfg("myname", new ServerId());
         server.setUrl(URL);
         server.setUsername(USER_NAME);

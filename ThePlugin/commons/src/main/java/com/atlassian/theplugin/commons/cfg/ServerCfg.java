@@ -17,7 +17,7 @@ package com.atlassian.theplugin.commons.cfg;
 
 import com.atlassian.theplugin.commons.ServerType;
 
-public abstract class ServerCfg {
+public abstract class ServerCfg implements Server {
 	private static final int HASHCODE_MAGIC = 31;
 
 	public ServerCfg(final boolean enabled, final String name, final ServerId serverId) {
@@ -208,4 +208,9 @@ public abstract class ServerCfg {
 			setEnabled(true); // new servers (for which there was no private info yet) are enabled by default
 		}
 	}
+
+	public FishEyeServer asFishEyeServer() {
+		return null;
+	}
+
 }
