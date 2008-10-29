@@ -18,15 +18,15 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.*;
 import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.junit.JUnitConfiguration;
-import com.intellij.execution.runners.JavaProgramRunner;
-import com.intellij.execution.runners.RunStrategy;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -41,9 +41,7 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiMethod;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.content.Content;
 import com.intellij.util.ui.UIUtil;
 
@@ -67,7 +65,7 @@ public final class TestResultsToolWindow {
 		
         void setPassedTestsVisible(boolean visible);
 		boolean isPassedTestsVisible();
-		boolean createTestConfiguration(JUnitConfiguration configuration);
+		boolean createTestConfiguration(RunConfiguration configuration);
 	}
 
 	private static final String TOOL_WINDOW_TITLE = "Bamboo Failed Tests";
@@ -119,29 +117,16 @@ public final class TestResultsToolWindow {
 		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
 		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
 		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
-		JUnitConfiguration conf = (JUnitConfiguration) settings.getConfiguration();
 
 		TestTree tree = getTestTree(ev.getPlace());
 		if (tree == null) {
 			return;
 		}
-		if (!tree.createTestConfiguration(conf)) {
+		if (!tree.createTestConfiguration(settings.getConfiguration())) {
 			return;
 		}
 
-		JavaProgramRunner runner;
-		if (debug) {
-			runner = ExecutionRegistry.getInstance().getDebuggerRunner();
-		} else {
-			runner = ExecutionRegistry.getInstance().getDefaultRunner();
-		}
-
-		RunStrategy strategy = RunStrategy.getInstance();
-		try {
-			strategy.execute(settings, runner, ev.getDataContext());
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
+        IdeaVersionFacade.getInstance().runTests(settings, ev, debug);
 	}
 
 	public boolean canRunFailedTests(AnActionEvent ev) {
@@ -165,7 +150,7 @@ public final class TestResultsToolWindow {
 
         public abstract void navigate();
 
-		public abstract boolean createTestConfiguration(JUnitConfiguration configuration);
+		public abstract boolean createTestConfiguration(RunConfiguration configuration);
     }
 
     private class TestDetailsPanel extends JPanel implements TestTree {
@@ -232,7 +217,7 @@ public final class TestResultsToolWindow {
 				// no-op for packages
 			}
 
-			public boolean createTestConfiguration(JUnitConfiguration configuration) {
+			public boolean createTestConfiguration(RunConfiguration configuration) {
 				// bummer, JUnit does not support testing the whole package
 				return false;
 			}
@@ -248,22 +233,19 @@ public final class TestResultsToolWindow {
 
 			@Override
 			public void navigate() {
-				PsiClass cls = PsiManager.getInstance(project).findClass(className,
-						GlobalSearchScope.allScope(project));
+                PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 				if (cls != null) {
 					cls.navigate(true);
 				}
 			}
 
-			public boolean createTestConfiguration(JUnitConfiguration configuration) {
-				PsiManager mgr = PsiManager.getInstance(project);
-
-				PsiClass cls = mgr.findClass(className, GlobalSearchScope.allScope(project));
+			public boolean createTestConfiguration(RunConfiguration configuration) {
+                PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 				if (cls == null) {
 					return false;
 				}
 				if (configuration != null) {
-					configuration.beClassConfiguration(cls);
+					IdeaVersionFacade.getInstance().setTestClass(configuration, cls);
 				}
 				return true;
 			}
@@ -278,8 +260,7 @@ public final class TestResultsToolWindow {
 			}
 
 			private PsiMethod getMethod() {
-				PsiClass cls = PsiManager.getInstance(project).findClass(details.getTestClassName(),
-						GlobalSearchScope.allScope(project));
+                PsiClass cls = IdeaVersionFacade.getInstance().findClass(details.getTestClassName(), project);
 				if (cls == null) {
 					return null;
 				}
@@ -299,12 +280,13 @@ public final class TestResultsToolWindow {
 				}
 			}
 
-			public boolean createTestConfiguration(JUnitConfiguration configuration) {
+			public boolean createTestConfiguration(RunConfiguration configuration) {
 				PsiMethod m = getMethod();
 
 				if (m != null) {
 					if (configuration != null) {
-						configuration.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
+						IdeaVersionFacade.getInstance().setTestMethod(configuration,
+								PsiLocation.fromPsiElement(project, m));
 					}
 					return true;
 				}
@@ -560,7 +542,7 @@ public final class TestResultsToolWindow {
 			return passedTestsVisible;
 		}
 
-	    public boolean createTestConfiguration(JUnitConfiguration configuration) {
+	    public boolean createTestConfiguration(RunConfiguration configuration) {
 		    TreePath p = tree.getSelectionPath();
 		    return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
 	    }

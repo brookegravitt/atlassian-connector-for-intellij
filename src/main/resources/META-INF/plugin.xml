@@ -51,11 +51,12 @@
 	<!--jgorycki: I hope 7126 is the first build of 7.0. This is at least what the checkstyle plugin uses-->
 	<!-- jjaroczynski: official build of 7.0 was 7361.  -->
 	<!--jgorycki: officil build of 7.0.4 is 7941. -->
-	<idea-version since-build="7361" until-build="7999" />
+	<idea-version since-build="7361" />
 
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.0.0-beta-6: Bug fixes. Support for IDEA 8. Opening fisheye links in IDEA</li>
 			<li>2.0.0-beta-5: Bug fixes. Fisheye server support. Build information inside the IDE. Re-run failed tests from the build in IDE. Create changelist, assign to myself and start progress in one click</li>
 			<li>2.0.0-beta-4: Bug fixes. Started redesign of the UI</li>
 			<li>2.0.0-beta-3: Bug fixes</li>
