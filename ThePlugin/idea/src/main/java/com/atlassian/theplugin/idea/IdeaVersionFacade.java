@@ -26,11 +26,12 @@ import java.lang.reflect.Method;
 
 public final class IdeaVersionFacade {
 
+	private static final int IDEA_8_0 = 8000;
     private boolean isIdea8;
     private IdeaVersionFacade() {
         String ver = ApplicationInfo.getInstance().getBuildNumber();
         int v = Integer.parseInt(ver);
-        isIdea8 = v > 8000;
+        isIdea8 = v > IDEA_8_0;
     }
 
     private static IdeaVersionFacade instance;
@@ -47,16 +48,16 @@ public final class IdeaVersionFacade {
 	    try {
 			if (isIdea8) {
 				Class javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
-				Method getInstanceMethod = javaPsiFacadeClass.getMethod("getInstance", Project.class);
-				Object instance = getInstanceMethod.invoke(null, project);
+				Method getInstance = javaPsiFacadeClass.getMethod("getInstance", Project.class);
+				Object inst = getInstance.invoke(null, project);
 				Method findClass = javaPsiFacadeClass.getMethod("findClass", String.class, GlobalSearchScope.class);
-				cls = (PsiClass) findClass.invoke(instance, name, GlobalSearchScope.allScope(project));
+				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
 			}  else {
 				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
-				Method getInstanceMethod = psiManagerClass.getMethod("getInstance", Project.class);
-				Object instance = getInstanceMethod.invoke(null, project);
+				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
+				Object inst = getInstance.invoke(null, project);
 				Method findClass = psiManagerClass.getMethod("findClass", String.class, GlobalSearchScope.class);
-				cls = (PsiClass) findClass.invoke(instance, name, GlobalSearchScope.allScope(project));
+				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
 			}
 	    } catch (ClassNotFoundException e) {
 		    e.printStackTrace();
@@ -83,11 +84,11 @@ public final class IdeaVersionFacade {
 				psiFiles = (PsiFile[]) getFilesByName.invoke(null, project, filePath, scope);
 			} else {
 				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
-				Method getInstanceMethod = psiManagerClass.getMethod("getInstance", Project.class);
-				Object instance = getInstanceMethod.invoke(null, project);
+				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
+				Object inst = getInstance.invoke(null, project);
 				Method getShortNamesCache = psiManagerClass.getMethod("getShortNamesCache");
 				Class psiShortNamesCacheClass = Class.forName("com.intellij.psi.search.PsiShortNamesCache");
-				Object cacheInstance = getShortNamesCache.invoke(instance);
+				Object cacheInstance = getShortNamesCache.invoke(inst);
 				Method getFilesByName = psiShortNamesCacheClass.getMethod("getFilesByName", String.class);
 				psiFiles = (PsiFile[]) getFilesByName.invoke(cacheInstance, filePath);
 			}
@@ -105,12 +106,14 @@ public final class IdeaVersionFacade {
 
     public void showEditorHints(LightweightHint lightweightHint, Editor anEditor, Point point) {
 	    try {
-			if (isIdea8) {
-				// TODO: do it after 8.0 final. Right now the code in Diana EAP is unstable and a moving target
-			} else {
+//			if (isIdea8) {
+//				// TODO: do it after 8.0 final. Right now the code in Diana EAP is unstable and a moving target
+//			}
+
+			if (!isIdea8) {
 				Class hintManagerClass = Class.forName("com.intellij.codeInsight.hint.HintManager");
-				Method getInstanceMethod = hintManagerClass.getMethod("getInstance");
-				Object instance = getInstanceMethod.invoke(null);
+				Method getInstance = hintManagerClass.getMethod("getInstance");
+				Object inst = getInstance.invoke(null);
 				Method showEditorHint = hintManagerClass.getMethod("showEditorHint",
 						LightweightHint.class, Editor.class, Point.class, int.class, int.class, boolean.class);
 				Field hideByAnyKey = hintManagerClass.getField("HIDE_BY_ANY_KEY");
@@ -122,7 +125,7 @@ public final class IdeaVersionFacade {
 				int hboh = (Integer) hideByOtherHint.get(null);
 				int hbs = (Integer) hideByScrolling.get(null);
 
-				showEditorHint.invoke(instance, lightweightHint, anEditor, point, hbak | hbtc | hboh | hbs, -1, false);
+				showEditorHint.invoke(inst, lightweightHint, anEditor, point, hbak | hbtc | hboh | hbs, -1, false);
 			}
 	    } catch (ClassNotFoundException e) {
 		    e.printStackTrace();
@@ -139,7 +142,7 @@ public final class IdeaVersionFacade {
 
     public void runTests(RunnerAndConfigurationSettings settings, AnActionEvent ev, boolean debug) {
 	    try {
-			if (isIdea8) {
+//			if (isIdea8) {
 //                Executor executor;
 //                if (debug) {
 //                    executor = ExecutorRegistry.getInstance().getExecutorById(DefaultDebugExecutor.EXECUTOR_ID);
@@ -159,7 +162,9 @@ public final class IdeaVersionFacade {
 //                        e.printStackTrace();
 //                    }
 //                }
-			} else {
+//			}
+
+			if (!isIdea8) {
 				Class javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
 	            Class executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
 				Class runStrategyClass = Class.forName("com.intellij.execution.runners.RunStrategy");
