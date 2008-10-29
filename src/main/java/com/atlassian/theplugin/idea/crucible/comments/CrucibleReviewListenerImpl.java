@@ -29,12 +29,6 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 	public void focusOnFileComments(ReviewAdapter review, CrucibleFileInfo file) {
 	}
 
-	public void showFile(ReviewAdapter review, CrucibleFileInfo file) {
-	}
-
-	public void showDiff(CrucibleFileInfo file) {
-	}
-
 	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end) {
 	}
 
