@@ -545,12 +545,14 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 						repositories = crucibleServerFacade.getRepositories(server);
 						users = crucibleServerFacade.getUsers(server);
 					} catch (final Exception e) {
-						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
-							public void run() {
-								DialogWithDetails.showExceptionDialog(project, "Cannot retrieve data from Crucible server",
-										e, "Error");
-							}
-						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
+						if (CrucibleReviewCreateForm.this.getRootComponent().isShowing()) {
+							ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+								public void run() {
+									DialogWithDetails.showExceptionDialog(project, "Cannot retrieve data from Crucible server",
+											e, "Error");
+								}
+							}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
+						}
 					}
 					final CrucibleServerData crucibleServerData = new CrucibleServerData(repositories, projects, users);
 					crucibleData.put(server.getServerId(), crucibleServerData);
