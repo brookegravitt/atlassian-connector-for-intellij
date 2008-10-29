@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.ClassMatcher;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.execution.filters.Filter;
 import com.intellij.execution.filters.OpenFileHyperlinkInfo;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -271,8 +272,7 @@ class UnitTestFilter implements Filter {
 	}
 
 	private Result handleMatch(final String line, final int textEndOffset, final ClassMatcher.MatchInfo match) {
-		final PsiManager manager = PsiManager.getInstance(project);
-		PsiClass aClass = manager.findClass(match.getMatch(), GlobalSearchScope.allScope(project));
+		PsiClass aClass = IdeaVersionFacade.getInstance().findClass(match.getMatch(), project);
 		if (aClass == null) {
 			return null;
 		}

@@ -29,6 +29,7 @@ import com.intellij.ui.HintListener;
 import com.intellij.ui.LightweightHint;
 import com.intellij.ui.SideBorder2;
 import com.intellij.util.ui.UIUtil;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 
 import javax.swing.*;
 import java.awt.*;
@@ -126,8 +127,11 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		showActiveHint(range, anEditor, point);
 	}
 
+    public boolean canDoAction(MouseEvent event) {
+        return true;
+    }
 
-	public Range getNextRange(Range aRange) {
+    public Range getNextRange(Range aRange) {
 		int j = ranges.indexOf(aRange);
 		if (j == ranges.size() - 1) {
 			return null;
@@ -432,9 +436,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			}
 		});
 
-		HintManager.getInstance()
-				.showEditorHint(lightweightHint, anEditor, point, HintManager.HIDE_BY_ANY_KEY | HintManager.HIDE_BY_TEXT_CHANGE
-						| HintManager.HIDE_BY_OTHER_HINT | HintManager.HIDE_BY_SCROLLING,
-						-1, false);
+        IdeaVersionFacade.getInstance().showEditorHints(lightweightHint, anEditor, point);
+
 	}
 }
