@@ -16,9 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.ShowFileEvent;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.intellij.openapi.project.Project;
 
@@ -26,10 +24,10 @@ public class ShowFileAction extends AbstractCrucibleFileAction {
 
 	@Override
 	protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
-		ReviewActionData actionData = new ReviewActionData(tree);
+		final ReviewActionData actionData = new ReviewActionData(tree);
 		if (actionData.review != null && actionData.file != null) {
-			IdeaHelper.getReviewActionEventBroker(project)
-					.trigger(new ShowFileEvent(CrucibleReviewListenerImpl.ANONYMOUS, actionData.review, actionData.file));
+
+			CrucibleHelper.showVirtualFileWithComments(project, actionData.review, actionData.file);
 		}
 	}
 
