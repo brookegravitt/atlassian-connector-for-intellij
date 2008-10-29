@@ -24,10 +24,6 @@ public interface CrucibleReviewListener {
 
 	void focusOnFileComments(ReviewAdapter review, CrucibleFileInfo file);
 
-	void showFile(ReviewAdapter review, CrucibleFileInfo file);
-
-	void showDiff(CrucibleFileInfo file);
-
 	void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end);
 
 	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,

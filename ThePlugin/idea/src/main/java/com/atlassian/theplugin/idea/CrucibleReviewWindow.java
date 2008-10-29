@@ -218,24 +218,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			});
 		}
 
-		@Override
-		public void showDiff(final CrucibleFileInfo file) {
-			ApplicationManager.getApplication().runReadAction(new Runnable() {
-				public void run() {
-					CrucibleHelper.showRevisionDiff(project, file);
-				}
-			});
-		}
-
-		@Override
-		public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
-			ApplicationManager.getApplication().runReadAction(new Runnable() {
-				public void run() {
-					CrucibleHelper.showVirtualFileWithComments(project, review, file);
-				}
-			});
-		}
-
 		private void setCommentAuthor(CrucibleServerCfg server, Comment comment) {
 			CommentBean bean = (CommentBean) comment;
 			bean.setAuthor(CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false));
