@@ -32,11 +32,13 @@ import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import org.jetbrains.annotations.Nullable;
+import org.apache.commons.io.FilenameUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +61,7 @@ public final class FileTreeModelBuilder {
 
 	@Nullable
 	private static PsiFile guessCorrespondingPsiFile(final Project project, BambooFileInfo file) {
-		final PsiFile[] psifiles = PsiManager.getInstance(project).getShortNamesCache().getFilesByName(
-				file.getFileDescriptor().getName());
+        final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(file.getFileDescriptor().getName(), project);
 		return CodeNavigationUtil.guessMatchingFile(file.getFileDescriptor().getUrl(), psifiles, project.getBaseDir());
 	}
 
