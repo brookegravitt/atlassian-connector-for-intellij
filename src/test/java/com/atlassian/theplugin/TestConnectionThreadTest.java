@@ -34,12 +34,17 @@ public class TestConnectionThreadTest extends TestCase {
 			@Override
 			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 			}
+
+			public void onSuccess() {
+			}
 		};
 
 		failedConnectionTester = new Connector() {
 			@Override
 			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
 				throw new ThePluginException(ERROR_MESSAGE);
+			}
+			public void onSuccess() {
 			}
 		};
 	}
@@ -64,6 +69,9 @@ public class TestConnectionThreadTest extends TestCase {
 		}
 
 		public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
+		}
+
+		public void onSuccess() {
 		}
 	}
 

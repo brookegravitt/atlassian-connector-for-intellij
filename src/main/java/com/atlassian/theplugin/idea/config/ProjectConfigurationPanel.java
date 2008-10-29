@@ -80,8 +80,8 @@ public class ProjectConfigurationPanel extends JPanel {
 		}
 		serverConfigPanel.saveData();
 		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
-			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 			projectConfiguration.setDefaultFishEyeServerId(null);
+			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 		}
 	}
 
