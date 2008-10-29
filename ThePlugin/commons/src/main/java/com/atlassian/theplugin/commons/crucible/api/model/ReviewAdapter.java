@@ -184,8 +184,8 @@ public class ReviewAdapter {
 		GeneralComment newComment = CrucibleServerFacadeImpl.getInstance().
 				addGeneralComment(getServer(), review.getPermId(), comment);
 
-		((CommentBean) newComment).setAuthor(
-				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
+//		((CommentBean) newComment).setAuthor(
+//				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
 
 		review.getGeneralComments().add(newComment);
 
@@ -200,9 +200,6 @@ public class ReviewAdapter {
 
 		GeneralComment newReply = CrucibleServerFacadeImpl.getInstance().addGeneralCommentReply(
 				getServer(), getPermId(), parentComment.getPermId(), replyComment);
-
-		((CommentBean) newReply).setAuthor(
-				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
 
 		for (GeneralComment comment : review.getGeneralComments()) {
 			if (comment.equals(parentComment)) {
@@ -246,8 +243,8 @@ public class ReviewAdapter {
 
 		VersionedComment newVersionedComment = CrucibleServerFacadeImpl.getInstance()
 				.addVersionedComment(getServer(), getPermId(), file.getPermId(), newComment);
-		((CommentBean) newVersionedComment).setAuthor(
-				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
+//		((CommentBean) newVersionedComment).setAuthor(
+//				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
 		List<VersionedComment> comments;
 		comments = file.getVersionedComments();
 
@@ -271,8 +268,8 @@ public class ReviewAdapter {
 		VersionedComment newComment = CrucibleServerFacadeImpl.getInstance().addVersionedCommentReply(
 				getServer(), getPermId(), parentComment.getPermId(), nComment);
 
-		((CommentBean) newComment).setAuthor(
-				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
+//		((CommentBean) newComment).setAuthor(
+//				CrucibleUserCacheImpl.getInstance().getUser(getServer(), getServer().getUsername(), false));
 
 		parentComment.getReplies().add(newComment);
 

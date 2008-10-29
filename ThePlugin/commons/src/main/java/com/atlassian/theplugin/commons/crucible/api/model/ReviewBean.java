@@ -25,8 +25,6 @@ import java.util.List;
 
 public class ReviewBean implements Review {
 	private List<Reviewer> reviewers;
-//	private List<CrucibleReviewItemInfo> reviewItems;
-//	private List<CrucibleFileInfo> files;
 	private List<GeneralComment> generalComments;
 	private List<Action> transitions;
 	private List<Action> actions;
@@ -45,7 +43,6 @@ public class ReviewBean implements Review {
     private int metricsVersion;
 	private Date createDate;
 	private Date closeDate;
-	private List<VersionedComment> versionedComments;
     private String summary;
 	private final String serverUrl;
 	private List<CrucibleFileInfo> files;

@@ -42,7 +42,10 @@ public class UserBean implements User {
     }
 
     public String getDisplayName() {
-        return displayName;
+		if (displayName == null) {
+			return userName;
+		}
+		return displayName;
     }
 
     public void setDisplayName(String displayName) {

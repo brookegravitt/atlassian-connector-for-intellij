@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -143,16 +142,6 @@ public class AddAction extends AbstractCommentAction {
 		}
 	}
 
-	private void setCommentAuthor(ReviewAdapter review, CommentBean comment) {
-		CrucibleServerCfg server = review.getServer();
-		User userName = CrucibleUserCacheImpl.getInstance().getUser(server, server.getUsername(), false);
-		if (userName != null) {
-			comment.setAuthor(userName);
-		} else {
-			// well, this is a fail, but we have to recover somehow
-			comment.setAuthor(new UserBean(review.getServer().getUsername()));
-		}
-	}
 
 	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
@@ -164,7 +153,7 @@ public class AddAction extends AbstractCommentAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			setCommentAuthor(review, newComment);
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment", false) {
 
@@ -203,7 +192,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setToEndLine(parentComment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			setCommentAuthor(review, newComment);
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment Reply", false) {
 
@@ -231,7 +220,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			setCommentAuthor(review, newComment);
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
 
@@ -262,7 +251,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			setCommentAuthor(review, newComment);
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment Reply", false) {
 
