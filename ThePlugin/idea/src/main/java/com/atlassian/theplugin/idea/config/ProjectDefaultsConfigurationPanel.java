@@ -69,18 +69,90 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 	};
 
-	private static final CrucibleProjectWrapper PROJECT_CRUCIBLE_FETCHING = new CrucibleProjectWrapper(null) {
+	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_FETCHING = new CrucibleProjectWrapper(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
 		}
 
 	};
-	private static final CrucibleRepoWrapper CRUCIBLE_REPO_FETCHING = new CrucibleRepoWrapper(null);
+	private static final CrucibleRepoWrapper CRUCIBLE_REPO_FETCHING = new CrucibleRepoWrapper(null) {
+		@Override
+		public String toString() {
+			return "Fetching...";
+		}
+	};
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
 
-	private final CrucibleProjectComboBoxModel crucProjectModel = new CrucibleProjectComboBoxModel();
-	private final CrucibleRepoComboBoxModel crucRepoModel = new CrucibleRepoComboBoxModel();
+	private final MyModel<CrucibleProjectWrapper, Project> crucProjectModel
+			= new MyModel<CrucibleProjectWrapper, Project>(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE) {
+
+		@Override
+		protected CrucibleProjectWrapper toT(final Project element) {
+			return new CrucibleProjectWrapper(element);
+		}
+
+		@Override
+		protected List<Project> getR(final CrucibleServerCfg serverCfg)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return crucibleServerFacade.getProjects(serverCfg);
+		}
+
+		@Override
+		protected boolean isEqual(final CrucibleProjectWrapper element) {
+			return element.getWrapped().getKey().equals(projectConfiguration.getDefaultCrucibleProject());
+		}
+
+		@Override
+		protected void setOption(final CrucibleProjectWrapper newSelection) {
+			if (newSelection == null) {
+				projectConfiguration.setDefaultCrucibleProject(null);
+				return;
+			}
+			final Project wrapped = newSelection.getWrapped();
+			if (wrapped != null) {
+				projectConfiguration.setDefaultCrucibleProject(wrapped.getKey());
+			} else {
+				projectConfiguration.setDefaultCrucibleProject(null);
+			}
+
+		}
+	};
+
+	private final MyModel<CrucibleRepoWrapper, Repository> crucRepoModel
+			= new MyModel<CrucibleRepoWrapper, Repository>(CRUCIBLE_REPO_FETCHING, CRUCIBLE_REPO_NONE) {
+
+		@Override
+		protected CrucibleRepoWrapper toT(final Repository element) {
+			return new CrucibleRepoWrapper(element);
+		}
+
+		@Override
+		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
+			return crucibleServerFacade.getRepositories(serverCfg);
+		}
+
+		@Override
+		protected boolean isEqual(final CrucibleRepoWrapper element) {
+			return element.getWrapped().getName().equals(projectConfiguration.getDefaultCrucibleRepo());
+		}
+
+		@Override
+		protected void setOption(final CrucibleRepoWrapper newSelection) {
+			if (newSelection == null) {
+				projectConfiguration.setDefaultCrucibleRepo(null);
+				return;
+			}
+			final Repository wrapped = newSelection.getWrapped();
+			if (wrapped != null) {
+				projectConfiguration.setDefaultCrucibleRepo(wrapped.getName());
+			} else {
+				projectConfiguration.setDefaultCrucibleRepo(null);
+			}
+		}
+	};
+
+
 	private final FishEyeRepositoryComboBoxModel fishRepositoryModel = new FishEyeRepositoryComboBoxModel();
 
 
@@ -164,7 +236,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		defaultCrucibleRepositoryCombo.setModel(crucRepoModel);
 		defaultFishEyeRepositoryCombo.setModel(fishRepositoryModel);
-		//defaultFishEyeRepoEdit.setText(projectConfiguration.getDefaultFishEyeRepo());
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 	}
 
@@ -342,279 +413,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	}
 
-
-	private class CrucibleProjectComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Map<ServerId, Collection<CrucibleProjectWrapper>> data;
-		private static final int INITIAL_CAPACITY = 10;
-
-		private Collection<CrucibleProjectWrapper> getProjects(final CrucibleServerCfg crucibleServerCfg) {
-			if (data == null) {
-				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
-			}
-
-			Collection<CrucibleProjectWrapper> projectsWrappers = data.get(crucibleServerCfg.getServerId());
-			if (projectsWrappers == null) {
-				projectsWrappers = MiscUtil.buildArrayList(PROJECT_CRUCIBLE_FETCHING);
-				data.put(crucibleServerCfg.getServerId(), projectsWrappers);
-
-				uiTaskExecutor.execute(new UiTask() {
-
-					private String lastAction;
-					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
-						lastAction = "retrieving available projects from Crucible server";
-						final Collection<CrucibleProjectWrapper> projectsWrappers = MiscUtil.buildArrayList();
-						final List<Project> projects = crucibleServerFacade.getProjects(crucibleServerCfg);
-						projectsWrappers.add(CRUCIBLE_PROJECT_NONE);
-						for (Project project : projects) {
-							final CrucibleProjectWrapper projectWrapper = new CrucibleProjectWrapper(project);
-							projectsWrappers.add(projectWrapper);
-						}
-
-						data.put(crucibleServerCfg.getServerId(), projectsWrappers);
-					}
-
-					public void onSuccess() {
-//						defaultCrucibleProjectCombo.setEnabled(true);
-						lastAction = "populating project combobox";
-						refresh();
-					}
-
-					public void onError() {
-						projectConfiguration.setDefaultCrucibleServerId(null);
-						data.remove(crucibleServerCfg.getServerId());
-						refresh();
-					}
-
-					public Component getComponent() {
-						return ProjectDefaultsConfigurationPanel.this;
-					}
-
-					public String getLastAction() {
-						return lastAction;
-					}
-				});
-			}
-
-			return projectsWrappers;
-		}
-
-		public CrucibleProjectWrapper getSelectedItem() {
-			final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-			if (currentCrucibleServerCfg == null) {
-				return CRUCIBLE_PROJECT_NONE;
-			}
-			for (CrucibleProjectWrapper project : getProjects(currentCrucibleServerCfg)) {
-				if (project == PROJECT_CRUCIBLE_FETCHING) {
-					return PROJECT_CRUCIBLE_FETCHING;
-				}
-				if (project.getWrapped() != null
-						&& project.getWrapped().getKey().equals(projectConfiguration.getDefaultCrucibleProject())) {
-					return project;
-				}
-			}
-			return CRUCIBLE_PROJECT_NONE;
-		}
-
-		private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-			if (projectConfiguration.getDefaultCrucibleServerId() == null) {
-				return null;
-			}
-			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
-		}
-
-		public void setSelectedItem(final Object anItem) {
-			final Object selectedItem = getSelectedItem();
-			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
-				if (anItem != null) {
-					CrucibleProjectWrapper item = (CrucibleProjectWrapper) anItem;
-					final Project wrapped = item.getWrapped();
-					if (wrapped != null) {
-						projectConfiguration.setDefaultCrucibleProject(wrapped.getKey());
-					} else {
-						projectConfiguration.setDefaultCrucibleProject(null);
-					}
-				} else {
-					projectConfiguration.setDefaultCrucibleProject(null);
-				}
-				fireContentsChanged(this, -1, -1);
-			}
-		}
-
-		public void refresh() {
-			fireContentsChanged(this, -1, -1);
-		}
-
-		public CrucibleProjectWrapper getElementAt(final int index) {
-			final CrucibleServerCfg cfg = getCurrentCrucibleServerCfg();
-			if (cfg == null) {
-				return CRUCIBLE_PROJECT_NONE;
-			}
-			int i = 0;
-			for (CrucibleProjectWrapper projectWrapper : getProjects(getCurrentCrucibleServerCfg())) {
-				if (i == index) {
-					return projectWrapper;
-				}
-				i++;
-			}
-			return null;
-		}
-
-		public int getSize() {
-			final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-			if (currentCrucibleServerCfg != null) {
-				return getProjects(currentCrucibleServerCfg).size();
-			} else {
-				return 1;
-			}
-
-		}
-
-	}
-
-	private class CrucibleRepoComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Map<ServerId, Collection<CrucibleRepoWrapper>> data;
-		private static final int INITIAL_CAPACITY = 10;
-
-		private Collection<CrucibleRepoWrapper> getRepositories(final CrucibleServerCfg crucibleServerCfg) {
-			if (data == null) {
-				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
-			}
-
-			Collection<CrucibleRepoWrapper> repoWrappers = data.get(crucibleServerCfg.getServerId());
-			if (repoWrappers == null) {
-				repoWrappers = MiscUtil.buildArrayList(CRUCIBLE_REPO_FETCHING);
-				data.put(crucibleServerCfg.getServerId(), repoWrappers);
-
-				uiTaskExecutor.execute(new UiTask() {
-
-					private String lastAction;
-					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
-						lastAction = "retrieving available repositories from Crucible server " + crucibleServerCfg.getName();
-						final Collection<CrucibleRepoWrapper> repoWrappers = MiscUtil.buildArrayList();
-						repoWrappers.add(CRUCIBLE_REPO_NONE);
-						final List<Repository> projects = crucibleServerFacade.getRepositories(crucibleServerCfg);
-						for (Repository project : projects) {
-							final CrucibleRepoWrapper projectWrapper = new CrucibleRepoWrapper(project);
-							repoWrappers.add(projectWrapper);
-						}
-
-						data.put(crucibleServerCfg.getServerId(), repoWrappers);
-					}
-
-					public void onSuccess() {
-						lastAction = "populating repository combobox";
-						refresh();
-					}
-
-					public void onError() {
-						data.remove(crucibleServerCfg.getServerId());
-						projectConfiguration.setDefaultCrucibleServerId(null);
-						refresh();
-					}
-
-					public Component getComponent() {
-						return ProjectDefaultsConfigurationPanel.this;
-					}
-
-					public String getLastAction() {
-						return lastAction;
-					}
-				});
-			}
-
-			return repoWrappers;
-		}
-
-		public CrucibleRepoWrapper getSelectedItem() {
-			final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-			if (currentCrucibleServerCfg == null) {
-				return CRUCIBLE_REPO_NONE;
-			}
-			for (CrucibleRepoWrapper repoWrapper : getRepositories(currentCrucibleServerCfg)) {
-				if (repoWrapper == CRUCIBLE_REPO_FETCHING) {
-					return CRUCIBLE_REPO_FETCHING;
-				}
-				if (repoWrapper.getWrapped() != null
-						&& repoWrapper.getWrapped().getName().equals(projectConfiguration.getDefaultCrucibleRepo())) {
-					return repoWrapper;
-				}
-
-			}
-			return CRUCIBLE_REPO_NONE;
-		}
-
-		private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-			if (projectConfiguration.getDefaultCrucibleServerId() == null) {
-				return null;
-			}
-			return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
-		}
-
-		public void setSelectedItem(final Object anItem) {
-			final Object selectedItem = getSelectedItem();
-			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
-				if (anItem != null) {
-					CrucibleRepoWrapper item = (CrucibleRepoWrapper) anItem;
-					final Repository wrapped = item.getWrapped();
-					if (wrapped != null) {
-						projectConfiguration.setDefaultCrucibleRepo(wrapped.getName());
-					} else {
-						projectConfiguration.setDefaultCrucibleRepo(null);
-					}
-				} else {
-					projectConfiguration.setDefaultCrucibleRepo(null);
-				}
-				fireContentsChanged(this, -1, -1);
-			}
-		}
-
-		public void refresh() {
-			fireContentsChanged(this, -1, -1);
-		}
-
-//		final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
-//		if (currentFishEyeServerCfg == null || projectConfiguration.getDefaultFishEyeRepo() == null) {
-//			return FISHEYE_REPO_NONE;
-//		}
-//		for (GenericWrapper<String> repository : getRepositories(currentFishEyeServerCfg)) {
-//			if (repository == FISHEYE_REPO_FETCHING) {
-//				return FISHEYE_REPO_FETCHING;
-//			}
-//			if (repository.getWrapped() != null
-//					&& repository.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo())) {
-//				return repository;
-//			}
-//		}
-//		return FISHEYE_REPO_NONE;
-//
-
-
-		public CrucibleRepoWrapper getElementAt(final int index) {
-			int i = 0;
-			final CrucibleServerCfg cfg = getCurrentCrucibleServerCfg();
-			if (cfg == null) {
-				return CRUCIBLE_REPO_NONE;
-			}
-			for (CrucibleRepoWrapper repository : getRepositories(cfg)) {
-				if (i == index) {
-					return repository;
-				}
-				i++;
-			}
-			return null;
-		}
-
-		public int getSize() {
-			final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-			if (currentCrucibleServerCfg != null) {
-				return getRepositories(currentCrucibleServerCfg).size();
-			} else {
-				return 1;
-			}
-
-		}
-
-	}
 
 	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<GenericWrapper<String>>> data;
@@ -802,5 +600,149 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 	}
+
+
+
+abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel implements ComboBoxModel {
+	private Map<ServerId, Collection<T>> data;
+	private static final int INITIAL_CAPACITY = 10;
+	private final T fetching;
+	private final T none;
+	private final String msgType = "repositories";
+
+	public MyModel(final T fetching, final T none) {
+		this.fetching = fetching;
+		this.none = none;
+	}
+
+	protected abstract T toT(R element);
+	protected abstract List<R> getR(CrucibleServerCfg serverCfg) throws Exception;
+	protected abstract boolean isEqual(T element);
+
+//	repoWrapper.getWrapped().getName().equals(projectConfiguration.getDefaultCrucibleRepo())
+
+
+	private Collection<T> getElements(final CrucibleServerCfg crucibleServerCfg) {
+		if (data == null) {
+			data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+		}
+
+		Collection<T> wrappers = data.get(crucibleServerCfg.getServerId());
+		if (wrappers == null) {
+			wrappers = MiscUtil.<T>buildArrayList(fetching);
+			data.put(crucibleServerCfg.getServerId(), wrappers);
+
+			uiTaskExecutor.execute(new UiTask() {
+
+				private String lastAction;
+				public void run() throws Exception {
+					lastAction = "retrieving available " + msgType + " from Crucible server " + crucibleServerCfg.getName();
+					final Collection<T> elements = MiscUtil.buildArrayList();
+					elements.add(none);
+					final List<R> remoteElems = getR(crucibleServerCfg);// crucibleServerFacade.getElements(crucibleServerCfg);
+					for (R remoteElem : remoteElems) {
+						final T wrapper = toT(remoteElem);
+						elements.add(wrapper);
+					}
+
+					data.put(crucibleServerCfg.getServerId(), elements);
+				}
+
+				public void onSuccess() {
+					lastAction = "populating repository combobox";
+					refresh();
+				}
+
+				public void onError() {
+					data.remove(crucibleServerCfg.getServerId());
+					projectConfiguration.setDefaultCrucibleServerId(null);
+					refresh();
+				}
+
+				public Component getComponent() {
+					return ProjectDefaultsConfigurationPanel.this;
+				}
+
+				public String getLastAction() {
+					return lastAction;
+				}
+			});
+		}
+
+		return wrappers;
+	}
+
+	public T getSelectedItem() {
+		final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
+		if (currentCrucibleServerCfg == null) {
+			return none;
+		}
+		for (T element : getElements(currentCrucibleServerCfg)) {
+			if (element == fetching) {
+				return fetching;
+			}
+			if (element.getWrapped() != null
+					&& isEqual(element)) {
+				return element;
+			}
+
+		}
+		return none;
+	}
+
+	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
+		if (projectConfiguration.getDefaultCrucibleServerId() == null) {
+			return null;
+		}
+		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
+	}
+
+	public void setSelectedItem(final Object anItem) {
+		final Object selectedItem = getSelectedItem();
+		if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+			if (anItem != null) {
+				final T item = (T) anItem;
+				setOption(item);
+			} else {
+				setOption(null);
+			}
+			fireContentsChanged(this, -1, -1);
+		}
+	}
+
+	protected abstract void setOption(final T newSelection);
+
+	public void refresh() {
+		fireContentsChanged(this, -1, -1);
+	}
+
+
+
+	public T getElementAt(final int index) {
+		int i = 0;
+		final CrucibleServerCfg cfg = getCurrentCrucibleServerCfg();
+		if (cfg == null) {
+			return none;
+		}
+		for (T element : getElements(cfg)) {
+			if (i == index) {
+				return element;
+			}
+			i++;
+		}
+		return null;
+	}
+
+	public int getSize() {
+		final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
+		if (currentCrucibleServerCfg != null) {
+			return getElements(currentCrucibleServerCfg).size();
+		} else {
+			return 1;
+		}
+
+	}
+
+}
 
 }
