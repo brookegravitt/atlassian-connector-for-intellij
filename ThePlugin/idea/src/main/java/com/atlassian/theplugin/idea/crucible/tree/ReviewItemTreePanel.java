@@ -87,7 +87,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
 		initLayout();
-		IdeaHelper.getReviewActionEventBroker(project).registerListener(this);
 		this.filter = filter;
 	}
 
@@ -185,10 +184,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		reviewChanged(review);
 	}
 
-	public void aboutToAddVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
-
-	}
 
 	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
 			final GeneralComment comment) {
@@ -220,10 +215,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			final VersionedComment comment) {
 
 		reviewChanged(review);
-	}
-
-	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment,
-			final boolean openIfClosed) {
 	}
 
 	public void showReview(ReviewAdapter reviewItem) {
@@ -269,21 +260,11 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		}
 	}
 
-	public void focusOnGeneralComments(final ReviewAdapter review) {
-	}
-
-	public void focusOnFileComments(final ReviewAdapter review, final CrucibleFileInfo file) {
-	}
-
 	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 	}
 
 
 	public void showDiff(final CrucibleFileInfo file) {
-	}
-
-	public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final int start, final int end) {
 	}
 
 	private String createGeneralInfoText(final ReviewAdapter reviewItem) {

@@ -20,12 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 
 public interface CrucibleReviewListener {
 
-	void focusOnGeneralComments(ReviewAdapter review);
-
-	void focusOnFileComments(ReviewAdapter review, CrucibleFileInfo file);
-
-	void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end);
-
 	void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment);
 
@@ -35,18 +29,11 @@ public interface CrucibleReviewListener {
 
 	void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment);
 
-	void aboutToAddVersionedComment(ReviewAdapter review,
-			CrucibleFileInfo file,
-			VersionedComment comment);
-
 	void createdOrEditedVersionedComment(ReviewAdapter review,
 			PermId file,
 			VersionedComment comment);
 
 	void removedComment(ReviewAdapter review, Comment comment);
-
-	void focusOnLineCommentEvent(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment comment, boolean openIfClosed);
 
 	void publishedGeneralComment(ReviewAdapter review, GeneralComment comment);
 
