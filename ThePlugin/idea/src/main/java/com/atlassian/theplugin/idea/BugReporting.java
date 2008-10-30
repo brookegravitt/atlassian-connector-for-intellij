@@ -68,22 +68,22 @@ public final class BugReporting {
 	private static final String TICKET_TYPE_BUG = "1";
 	private static final String TICKET_TYPE_STORY = "5";
 	private static String storyUrl;
-	private static String versionName;
+	private static final String VERSION_NAME;
     private static String versionCodeForJira;
 
     static {
-		versionName = PluginUtil.getInstance().getVersion();
+		VERSION_NAME = PluginUtil.getInstance().getVersion();
 		// versions seen here are formatted:
 		// "x.y.z-SNAPSHOT, SVN:ijk" or "x.y.z, SVN:ijk"
 		// let's check for both possibilities
-		int i = versionName.indexOf("-SNAPSHOT");
+		int i = VERSION_NAME.indexOf("-SNAPSHOT");
 		if (i == -1) {
-			i = versionName.indexOf(',');
+			i = VERSION_NAME.indexOf(',');
 		}
 
 		String versionForJira;
 		if (i != -1) {
-			versionForJira = versionName.substring(0, i);
+			versionForJira = VERSION_NAME.substring(0, i);
 		} else {
 			// this is going to suck and Jira is unlikely to find such a version, but
 			// if we are here, this means that the version string is screwed up somehow
@@ -110,7 +110,8 @@ public final class BugReporting {
                         + ", Java vendor=" + System.getProperty("java.vendor")
                         + ", OS name=" + System.getProperty("os.name")
                         + ", OS architecture=" + System.getProperty("os.arch")
-                        + ", IDEA build number=" + (ideaBuildNumber != null ? ideaBuildNumber : "unknown");
+                        + ", IDEA build number=" + (ideaBuildNumber != null ? ideaBuildNumber : "unknown")
+						+ ", Plugin version=" + VERSION_NAME;
         final String environment = UrlUtil.encodeUrl(rawEnvironment);
 
         final String bugUrl = BASE
@@ -127,7 +128,7 @@ public final class BugReporting {
 	}
 
 	public static String getVersionString() {
-		return versionName;
+		return VERSION_NAME;
 	}
 
     public static String getBugWithDescriptionUrl(String ideaBuildNumber, String description) {
