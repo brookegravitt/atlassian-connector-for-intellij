@@ -43,16 +43,7 @@ public interface CrucibleReviewListener {
 			PermId file,
 			VersionedComment comment);
 
-	void updatedVersionedComment(ReviewAdapter review,
-			CrucibleFileInfo file,
-			VersionedComment comment);
-
-	void updatedGeneralComment(ReviewAdapter review, GeneralComment comment);
-
 	void removedComment(ReviewAdapter review, Comment comment);
-
-	void focusOnVersionedCommentEvent(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment comment);
 
 	void focusOnLineCommentEvent(ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment comment, boolean openIfClosed);

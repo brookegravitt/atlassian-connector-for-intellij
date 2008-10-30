@@ -202,13 +202,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		reviewChanged(review);
 	}
 
-	public void updatedVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
-	}
-
-	public void updatedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-	}
-
 	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
 			final VersionedComment parentComment, final VersionedComment comment) {
 
@@ -227,10 +220,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			final VersionedComment comment) {
 
 		reviewChanged(review);
-	}
-
-	public void focusOnVersionedCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
 	}
 
 	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment,
