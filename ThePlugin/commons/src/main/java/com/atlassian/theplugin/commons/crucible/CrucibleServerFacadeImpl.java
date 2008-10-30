@@ -32,13 +32,23 @@ import java.util.Set;
 
 public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	private Map<String, CrucibleSession> sessions = new HashMap<String, CrucibleSession>();
+
 	private static CrucibleServerFacadeImpl instance;
+	private CrucibleUserCache userCache;
+
+	private CrucibleServerFacadeImpl(CrucibleUserCache userCache) {
+		this.userCache = userCache;
+	}
 
 	public static synchronized CrucibleServerFacade getInstance() {
 		if (instance == null) {
-			instance = new CrucibleServerFacadeImpl();
+			instance = new CrucibleServerFacadeImpl(CrucibleUserCacheImpl.getInstance());
 		}
 		return instance;
+	}
+
+	public void setUserCache(CrucibleUserCache newCache) {
+		userCache = newCache;
 	}
 
 	public ServerType getServerType() {
@@ -63,9 +73,18 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 		}
 		if (!session.isLoggedIn()) {
 			session.login(server.getUsername(), server.getPassword());
-//			userCache.getUser(server, server.getUsername(), true);
 		}
 		return session;
+	}
+
+	private <T extends CommentBean> void fixUserName(CrucibleServerCfg server, T comment) {
+		User u = comment.getAuthor();
+		if (u.getDisplayName() == null || u.getDisplayName().length() == 0) {
+			User newU = userCache.getUser(server, u.getUserName(), true);
+			if (newU != null) {
+				comment.setAuthor(newU);
+			}
+		}
 	}
 
 	/**
@@ -298,13 +317,17 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public GeneralComment addGeneralComment(CrucibleServerCfg server, PermId permId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
-		return session.addGeneralComment(permId, comment);
+		GeneralCommentBean newComment = (GeneralCommentBean) session.addGeneralComment(permId, comment);
+		fixUserName(server, newComment);
+		return newComment;
 	}
 
 	public VersionedComment addVersionedComment(CrucibleServerCfg server, PermId permId, PermId riId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
-		return session.addVersionedComment(permId, riId, comment);
+		VersionedCommentBean newComment = (VersionedCommentBean) session.addVersionedComment(permId, riId, comment);
+		fixUserName(server, newComment);
+		return newComment;
 	}
 
 	public void updateComment(CrucibleServerCfg server, PermId id, Comment comment)
@@ -328,13 +351,17 @@ public final class CrucibleServerFacadeImpl implements CrucibleServerFacade {
 	public GeneralComment addGeneralCommentReply(CrucibleServerCfg server, PermId id, PermId cId, GeneralComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
-		return session.addGeneralCommentReply(id, cId, comment);
+		GeneralCommentBean newReply = (GeneralCommentBean) session.addGeneralCommentReply(id, cId, comment);
+		fixUserName(server, newReply);
+		return newReply;
 	}
 
 	public VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId, VersionedComment comment)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		CrucibleSession session = getSession(server);
-		return session.addVersionedCommentReply(id, cId, comment);
+		VersionedCommentBean newReply = (VersionedCommentBean) session.addVersionedCommentReply(id, cId, comment);
+		fixUserName(server, newReply);
+		return newReply;
 	}
 
 //	public void updateReply(CrucibleServerCfg server, PermId id, PermId cId, PermId rId, GeneralComment comment)
