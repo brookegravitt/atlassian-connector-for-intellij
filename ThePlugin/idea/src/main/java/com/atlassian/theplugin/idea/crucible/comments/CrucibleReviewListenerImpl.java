@@ -80,4 +80,8 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 			final VersionedComment comment) {
 	}
 
+	public void reviewUpdated(final ReviewAdapter newReview) {
+
+	}
+
 }

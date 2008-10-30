@@ -19,13 +19,8 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import static com.atlassian.theplugin.commons.util.MiscUtil.buildConcurrentHashMap;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class CfgManagerImpl implements CfgManager {
 	private final Map<ProjectId, ProjectConfiguration> projectConfigurations = buildConcurrentHashMap(INITIAL_CAPACITY);
@@ -153,7 +148,7 @@ public class CfgManagerImpl implements CfgManager {
 
 		Collection<ConfigurationCredentialsListener> tmp = credentialListeners.get(projectId);
 		if (tmp == null) {
-			tmp = MiscUtil.buildHashSet();
+			tmp = new CopyOnWriteArraySet<ConfigurationCredentialsListener>(); //MiscUtil.buildHashSet();
 			credentialListeners.put(projectId, tmp);
 		}
 		tmp.add(listener);
