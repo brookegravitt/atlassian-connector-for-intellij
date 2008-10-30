@@ -34,7 +34,7 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
-	private final OwainConfigurationPanel defaultsConfigurationPanel;
+	private final ProjectDefaultsConfigurationPanel defaultsConfigurationPanel;
 
 	private ProjectConfiguration projectConfiguration;
 
@@ -48,7 +48,7 @@ public class ProjectConfigurationPanel extends JPanel {
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
-		defaultsConfigurationPanel = new OwainConfigurationPanel(projectConfiguration, crucibleServerFacade,
+		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, uiTaskExecutor);
 		initLayout();
 	}
