@@ -23,15 +23,6 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 	public static final CrucibleReviewListener I_WANT_THIS_MESSAGE_BACK = null;
 	public static final CrucibleReviewListener ANONYMOUS = null;
 
-	public void focusOnGeneralComments(ReviewAdapter review) {
-	}
-
-	public void focusOnFileComments(ReviewAdapter review, CrucibleFileInfo file) {
-	}
-
-	public void aboutToAddLineComment(ReviewAdapter review, CrucibleFileInfo file, int start, int end) {
-	}
-
 	public void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
 			VersionedComment parentComment, VersionedComment comment) {
 	}
@@ -43,19 +34,12 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 	public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
 	}
 
-	public void aboutToAddVersionedComment(ReviewAdapter review,
-			CrucibleFileInfo file, VersionedComment comment) {
-	}
 
 	public void createdOrEditedVersionedComment(ReviewAdapter review,
 			PermId file, VersionedComment comment) {
 	}
 
 	public void removedComment(final ReviewAdapter review, final Comment comment) {
-	}
-
-	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment,	final boolean openIfClosed) {
 	}
 
 	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {

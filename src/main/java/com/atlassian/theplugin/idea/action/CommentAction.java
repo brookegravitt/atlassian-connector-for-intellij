@@ -17,18 +17,25 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
-import com.atlassian.theplugin.idea.crucible.events.AddLineComment;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+
+import java.awt.*;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA.
@@ -92,11 +99,52 @@ public class CommentAction extends AnAction {
 			++end;
 		}
 
-		ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-		CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+		final ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+		final CrucibleFileInfo file = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
-		AddLineComment addComment = new AddLineComment(CrucibleReviewListenerImpl.ANONYMOUS,
-				review, reviewItem, ed, start, end);
-		IdeaHelper.getReviewActionEventBroker(project).trigger(addComment);
+
+		final VersionedCommentBean newComment = new VersionedCommentBean();
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
+				CrucibleHelper.getMetricsForReview(project, review));
+		dialog.pack();
+		dialog.setModal(true);
+		dialog.show();
+		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+			newComment.setCreateDate(new Date());
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setToStartLine(start);
+			newComment.setToEndLine(end);
+
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
+				public void run(final ProgressIndicator indicator) {
+					try {
+						review.addVersionedComment(file, newComment);
+					} catch (RemoteApiException e1) {
+						IdeaHelper.handleRemoteApiException(project, e1);
+					} catch (ServerPasswordNotProvidedException e1) {
+						IdeaHelper.handleMissingPassword(e1);
+					}
+
+//			eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), newComment));
+
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+							if (editor != null) {
+								CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+							}
+						}
+					});
+
+				}
+			};
+
+			ProgressManager.getInstance().run(task);
+		}
+
+
+//		AddLineComment addComment = new AddLineComment(CrucibleReviewListenerImpl.ANONYMOUS,
+//				review, file, ed, start, end);
+//		IdeaHelper.getReviewActionEventBroker(project).trigger(addComment);
 	}
 }

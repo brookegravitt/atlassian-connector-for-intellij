@@ -2,11 +2,7 @@ package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
-import com.atlassian.theplugin.idea.crucible.events.FocusOnFileComments;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.project.Project;
@@ -23,12 +19,7 @@ public class CrucibleFileClickAction implements AtlassianClickAction {
 	}
 
 	public void execute(AtlassianTreeNode node, int noOfClicks) {
-		ReviewActionEventBroker broker = IdeaHelper.getReviewActionEventBroker(project);
 		switch (noOfClicks) {
-			case 1:
-				broker.trigger(
-						new FocusOnFileComments(CrucibleReviewListenerImpl.ANONYMOUS, review, file));
-				break;
 			case 2:
 				CrucibleHelper.showVirtualFileWithComments(project, review, file);
 				break;
