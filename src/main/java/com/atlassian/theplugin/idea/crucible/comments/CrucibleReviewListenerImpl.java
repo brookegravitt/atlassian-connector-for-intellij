@@ -40,33 +40,18 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 			GeneralComment comment) {
 	}
 
-
 	public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
 	}
 
 	public void aboutToAddVersionedComment(ReviewAdapter review,
-			CrucibleFileInfo file,
-			VersionedComment comment) {
+			CrucibleFileInfo file, VersionedComment comment) {
 	}
 
 	public void createdOrEditedVersionedComment(ReviewAdapter review,
-			PermId file,
-			VersionedComment comment) {
-	}
-
-	public void updatedVersionedComment(final ReviewAdapter review,
-			final CrucibleFileInfo file,
-			final VersionedComment comment) {
-	}
-
-	public void updatedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+			PermId file, VersionedComment comment) {
 	}
 
 	public void removedComment(final ReviewAdapter review, final Comment comment) {
-	}
-
-	public void focusOnVersionedCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
 	}
 
 	public void focusOnLineCommentEvent(final ReviewAdapter review, final CrucibleFileInfo file,
@@ -81,7 +66,6 @@ public class CrucibleReviewListenerImpl implements CrucibleReviewListener {
 	}
 
 	public void reviewUpdated(final ReviewAdapter newReview) {
-
 	}
 
 }
