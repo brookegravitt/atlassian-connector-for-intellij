@@ -35,7 +35,6 @@ import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
@@ -51,7 +50,6 @@ import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.peer.PeerFactory;
@@ -105,7 +103,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 	private PluginToolWindow toolWindow;
 
-	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
+//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
@@ -115,7 +113,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			BuildChangesToolWindow buildChangesToolWindow) {
 		this.project = project;
 		this.cfgManager = cfgManager;
-        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
+//        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
 
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;

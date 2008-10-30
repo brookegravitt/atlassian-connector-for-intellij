@@ -28,7 +28,6 @@ import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleChangeSetClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
@@ -76,7 +75,11 @@ public final class FileTreeModelBuilder {
 	public static AtlassianTreeModel buildFlatModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review
 	) {
 		AtlassianTreeModel model = new FileTreeModel(new CrucibleChangeSetTitleNode(review,
-				new CrucibleChangeSetClickAction(project, review)));
+				new AtlassianClickAction() {
+					public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+						// todo add some action
+					}
+				}));
 		addStatementOfObjectives(review, model);
 		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
@@ -98,7 +101,11 @@ public final class FileTreeModelBuilder {
 
 	public static AtlassianTreeModel buildTreeModelFromCrucibleChangeSet(final Project project, final ReviewAdapter review
 	) {
-		FileNode root = new CrucibleChangeSetTitleNode(review, new CrucibleChangeSetClickAction(project, review));
+		FileNode root = new CrucibleChangeSetTitleNode(review, new AtlassianClickAction() {
+			public void execute(final AtlassianTreeNode node, final int noOfClicks) {
+				//todo add some action
+			}
+		});
 
 		FileTreeModel model = new FileTreeModel(root);
 
