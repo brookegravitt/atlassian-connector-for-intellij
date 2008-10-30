@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -171,10 +170,6 @@ public final class IdeaHelper {
             return null;
         }
         return (CrucibleTableToolWindowPanel) content.getComponent();
-	}
-
-	public static ReviewActionEventBroker getReviewActionEventBroker(Project project) {
-		return project.getUserData(ThePluginProjectComponent.BROKER_KEY);
 	}
 
 	public static void handleRemoteApiException(final Project project, final RemoteApiException e) {

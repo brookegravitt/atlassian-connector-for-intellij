@@ -19,9 +19,7 @@ package com.atlassian.theplugin.notification.crucible;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import com.atlassian.theplugin.idea.crucible.comments.ReviewActionEventBroker;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -47,7 +45,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		final Project project = new DummysProject();
-		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker(project));
+//		project.putUserData(ThePluginProjectComponent.BROKER_KEY, new ReviewActionEventBroker(project));
 		notifier = new CrucibleReviewNotifier(project);
 	}
 
