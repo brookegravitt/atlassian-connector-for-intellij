@@ -66,7 +66,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
 
 
-		final List<Project> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"));
+		final List<Project> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"),
+				makeProject("id7", "LPR-5", "Crucible The Last Project"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg)).andReturn(projects1).anyTimes();
