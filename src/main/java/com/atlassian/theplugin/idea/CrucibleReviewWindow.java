@@ -256,7 +256,8 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file, VersionedComment comment) {
+		public void aboutToAddVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file,
+				final VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
 						file.getPermId(), comment);
