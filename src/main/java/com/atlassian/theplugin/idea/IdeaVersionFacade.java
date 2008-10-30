@@ -14,8 +14,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.commons.util.Logger;
 
 import java.awt.*;
 import java.lang.reflect.Field;
@@ -27,9 +25,7 @@ public final class IdeaVersionFacade {
 
 	private static final int IDEA_8_0 = 8000;
     private boolean isIdea8;
-	private final Logger logger = LoggerImpl.getInstance();
-
-	private IdeaVersionFacade() {
+    private IdeaVersionFacade() {
         String ver = ApplicationInfo.getInstance().getBuildNumber();
         int v = Integer.parseInt(ver);
         isIdea8 = v > IDEA_8_0;
@@ -48,26 +44,26 @@ public final class IdeaVersionFacade {
         PsiClass cls = null;
 	    try {
 			if (isIdea8) {
-				Class<?> javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
+				Class javaPsiFacadeClass = Class.forName("com.intellij.psi.JavaPsiFacade");
 				Method getInstance = javaPsiFacadeClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
 				Method findClass = javaPsiFacadeClass.getMethod("findClass", String.class, GlobalSearchScope.class);
 				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
 			}  else {
-				Class<?> psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
+				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
 				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
 				Method findClass = psiManagerClass.getMethod("findClass", String.class, GlobalSearchScope.class);
 				cls = (PsiClass) findClass.invoke(inst, name, GlobalSearchScope.allScope(project));
 			}
 	    } catch (ClassNotFoundException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (NoSuchMethodException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (IllegalAccessException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (InvocationTargetException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    }
         return cls;
     }
@@ -76,88 +72,91 @@ public final class IdeaVersionFacade {
         PsiFile[] psiFiles = null;
 	    try {
 			if (isIdea8) {
-				Class<?> filenameIndexClass = Class.forName("com.intellij.psi.search.FilenameIndex");
+				Class filenameIndexClass = Class.forName("com.intellij.psi.search.FilenameIndex");
 				Method getFilesByName = filenameIndexClass.getMethod("getFilesByName", Project.class,
 						String.class, GlobalSearchScope.class);
-				Class<?> projectScopeClass = Class.forName("com.intellij.psi.search.ProjectScope");
+				Class projectScopeClass = Class.forName("com.intellij.psi.search.ProjectScope");
 				Method getProjectScope = projectScopeClass.getMethod("getProjectScope", Project.class);
 				GlobalSearchScope scope = (GlobalSearchScope) getProjectScope.invoke(null, project);
 				psiFiles = (PsiFile[]) getFilesByName.invoke(null, project, filePath, scope);
 			} else {
-				Class<?> psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
+				Class psiManagerClass = Class.forName("com.intellij.psi.PsiManager");
 				Method getInstance = psiManagerClass.getMethod("getInstance", Project.class);
 				Object inst = getInstance.invoke(null, project);
 				Method getShortNamesCache = psiManagerClass.getMethod("getShortNamesCache");
-				Class<?> psiShortNamesCacheClass = Class.forName("com.intellij.psi.search.PsiShortNamesCache");
+				Class psiShortNamesCacheClass = Class.forName("com.intellij.psi.search.PsiShortNamesCache");
 				Object cacheInstance = getShortNamesCache.invoke(inst);
 				Method getFilesByName = psiShortNamesCacheClass.getMethod("getFilesByName", String.class);
 				psiFiles = (PsiFile[]) getFilesByName.invoke(cacheInstance, filePath);
 			}
 	    } catch (ClassNotFoundException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (NoSuchMethodException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (IllegalAccessException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (InvocationTargetException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    }
         return psiFiles;
     }
 
     public void showEditorHints(LightweightHint lightweightHint, Editor anEditor, Point point) {
 	    try {
-//			if (isIdea8) {
-//				// TODO: do it after 8.0 final. Right now the code in Diana EAP is unstable and a moving target
-//			}
+            Class hintManagerClass = Class.forName("com.intellij.codeInsight.hint.HintManager");
+            Method getInstance = hintManagerClass.getMethod("getInstance");
+            Object inst = getInstance.invoke(null);
+            Class mgrClass;
+            if (isIdea8) {
+                Class hintManagerImplClass = Class.forName("com.intellij.codeInsight.hint.HintManagerImpl");
+                mgrClass = hintManagerImplClass;
+                inst = hintManagerImplClass.cast(inst);
+            } else {
+                mgrClass = hintManagerClass;
+            }
 
-			if (!isIdea8) {
-				Class<?> hintManagerClass = Class.forName("com.intellij.codeInsight.hint.HintManager");
-				Method getInstance = hintManagerClass.getMethod("getInstance");
-				Object inst = getInstance.invoke(null);
-				Method showEditorHint = hintManagerClass.getMethod("showEditorHint",
-						LightweightHint.class, Editor.class, Point.class, int.class, int.class, boolean.class);
-				Field hideByAnyKey = hintManagerClass.getField("HIDE_BY_ANY_KEY");
-				Field hideByTextChange = hintManagerClass.getField("HIDE_BY_TEXT_CHANGE");
-				Field hideByOtherHint = hintManagerClass.getField("HIDE_BY_OTHER_HINT");
-				Field hideByScrolling = hintManagerClass.getField("HIDE_BY_SCROLLING");
-				int hbak = (Integer) hideByAnyKey.get(null);
-				int hbtc = (Integer) hideByTextChange.get(null);
-				int hboh = (Integer) hideByOtherHint.get(null);
-				int hbs = (Integer) hideByScrolling.get(null);
+            Method showEditorHint = mgrClass.getMethod("showEditorHint",
+                    LightweightHint.class, Editor.class, Point.class, int.class, int.class, boolean.class);
+            Field hideByAnyKey = mgrClass.getField("HIDE_BY_ANY_KEY");
+            Field hideByTextChange = mgrClass.getField("HIDE_BY_TEXT_CHANGE");
+            Field hideByOtherHint = mgrClass.getField("HIDE_BY_OTHER_HINT");
+            Field hideByScrolling = mgrClass.getField("HIDE_BY_SCROLLING");
+            int hbak = (Integer) hideByAnyKey.get(null);
+            int hbtc = (Integer) hideByTextChange.get(null);
+            int hboh = (Integer) hideByOtherHint.get(null);
+            int hbs = (Integer) hideByScrolling.get(null);
 
-				showEditorHint.invoke(inst, lightweightHint, anEditor, point, hbak | hbtc | hboh | hbs, -1, false);
-			}
+            showEditorHint.invoke(inst, lightweightHint, anEditor, point, hbak | hbtc | hboh | hbs, -1, false);
 	    } catch (ClassNotFoundException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (NoSuchMethodException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (IllegalAccessException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (InvocationTargetException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (NoSuchFieldException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    }
     }
 
     public void runTests(RunnerAndConfigurationSettings settings, AnActionEvent ev, boolean debug) {
 	    try {
 			if (isIdea8) {
-                Class<?> executorClass = Class.forName("com.intellij.execution.Executor");
-                Class<?> defaultDebugExecutorClass = Class.forName("com.intellij.execution.executors.DefaultDebugExecutor");
-                Class<?> defaultRunExecutorClass = Class.forName("com.intellij.execution.executors.DefaultRunExecutor");
-                Class<?> executorRegistryClass = Class.forName("com.intellij.execution.ExecutorRegistry");
+                Class executorClass = Class.forName("com.intellij.execution.Executor");
+                Class defaultDebugExecutorClass = Class.forName("com.intellij.execution.executors.DefaultDebugExecutor");
+                Class defaultRunExecutorClass = Class.forName("com.intellij.execution.executors.DefaultRunExecutor");
+                Class executorRegistryClass = Class.forName("com.intellij.execution.ExecutorRegistry");
                 Method getInstance = executorRegistryClass.getMethod("getInstance");
                 Object executorRegistryInstance = getInstance.invoke(null);
                 Method getExecutorById = executorRegistryClass.getMethod("getExecutorById", String.class);
-                Class<?> selectedExecutorClass = debug ? defaultDebugExecutorClass : defaultRunExecutorClass;
+                Class selectedExecutorClass = debug ? defaultDebugExecutorClass : defaultRunExecutorClass;
                 Field executorIdField = selectedExecutorClass.getField("EXECUTOR_ID");
                 String executorId = (String) executorIdField.get(null);
                 Object executor = getExecutorById.invoke(executorRegistryInstance, executorId);
 
-                Class<?> runnerClass = Class.forName("com.intellij.execution.runners.ProgramRunner");
-                Class<?> runnerRegistryClass = Class.forName("com.intellij.execution.RunnerRegistry");
+                Class runnerClass = Class.forName("com.intellij.execution.runners.ProgramRunner");
+                Class runnerRegistryClass = Class.forName("com.intellij.execution.RunnerRegistry");
                 getInstance = runnerRegistryClass.getMethod("getInstance");
                 Object runnerRegistryInstance = getInstance.invoke(null);
                 Method getId = executorClass.getMethod("getId");
@@ -166,22 +165,22 @@ public final class IdeaVersionFacade {
                 Object runner = getRunner.invoke(runnerRegistryInstance, id, settings.getConfiguration());
                 if (runner != null) {
                     try {
-                        Class<?> executionEnvironmentClass = Class.forName(
+                        Class executionEnvironmentClass = Class.forName(
                                 "com.intellij.execution.runners.ExecutionEnvironment");
-                        Constructor<?> c = executionEnvironmentClass.getConstructor(
+                        Constructor c = executionEnvironmentClass.getConstructor(
                                 runnerClass, RunnerAndConfigurationSettings.class, DataContext.class);
                         Object executionEnvironment = c.newInstance(runner, settings, ev.getDataContext());
                         Method execute = runnerClass.getMethod("execute", executorClass, executionEnvironmentClass);
                         execute.invoke(runner, executor, executionEnvironment);
                     } catch (Exception e) {
-						logger.error(e);
+                        e.printStackTrace();
                     }
                 }
 
             } else {
-				Class<?> javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
-	            Class<?> executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
-				Class<?> runStrategyClass = Class.forName("com.intellij.execution.runners.RunStrategy");
+				Class javaProgramRunnerClass = Class.forName("com.intellij.execution.runners.JavaProgramRunner");
+	            Class executionRegistryClass = Class.forName("com.intellij.execution.ExecutionRegistry");
+				Class runStrategyClass = Class.forName("com.intellij.execution.runners.RunStrategy");
 
 				Method getInstance = executionRegistryClass.getMethod("getInstance");
 				Object registryInstance = getInstance.invoke(null);
@@ -199,19 +198,19 @@ public final class IdeaVersionFacade {
 				try {
 					execute.invoke(strategyInstance, settings, runner, ev.getDataContext());
 				} catch (Exception e) {
-					logger.error(e);
+					e.printStackTrace();
 				}
 			}
 	    } catch (ClassNotFoundException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (NoSuchMethodException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (IllegalAccessException e) {
-			logger.error(e);
+		    e.printStackTrace();
 	    } catch (InvocationTargetException e) {
-			logger.error(e);
+		    e.printStackTrace();
         } catch (NoSuchFieldException e) {
-			logger.error(e);
+            e.printStackTrace();
         }
     }
 

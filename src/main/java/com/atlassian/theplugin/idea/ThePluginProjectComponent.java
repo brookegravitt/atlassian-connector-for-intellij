@@ -153,9 +153,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
     public void initComponent() {
         LoggerImpl.getInstance().info("Init ThePlugin project component.");
-        ChangeListManager.getInstance(project).registerCommitExecutor(
-                new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
-
     }
 
     public void disposeComponent() {
@@ -176,6 +173,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
         // clean up object model confusion
 
         if (!created) {
+
+            ChangeListManager.getInstance(project).registerCommitExecutor(
+                    new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
 
             this.bambooToolWindowPanel = new BambooTableToolWindowPanel(
                     project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
