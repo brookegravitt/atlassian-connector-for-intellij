@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
+import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.comments.CrucibleReviewListenerImpl;
@@ -255,7 +256,7 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		}
 
 		@Override
-		public void aboutToAddVersionedComment(ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment) {
+		public void aboutToAddVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file, VersionedComment comment) {
 			try {
 				VersionedComment newComment = facade.addVersionedComment(review.getServer(), review.getPermId(),
 						file.getPermId(), comment);
@@ -273,6 +274,16 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 //				review.getVersionedComments().add(newComment);
 
 				eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), newComment));
+
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+						if (editor != null) {
+							CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+						}
+					}
+				});
+
 			} catch (RemoteApiException e) {
 				IdeaHelper.handleRemoteApiException(project, e);
 			} catch (ServerPasswordNotProvidedException e) {
