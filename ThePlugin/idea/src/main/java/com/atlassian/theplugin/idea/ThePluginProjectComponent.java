@@ -269,6 +269,10 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
         }
     }
 
+	public CrucibleReviewNotifier getCrucibleReviewNotifier() {
+		return crucibleReviewNotifier;
+	}
+
 	public void registerCrucibleNotifier() {
 		if (crucibleReviewNotifier == null) {
 			crucibleReviewNotifier = new CrucibleReviewNotifier(project);

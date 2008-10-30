@@ -34,6 +34,7 @@ import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAboutToAdd;
 import com.atlassian.theplugin.idea.crucible.events.VersionedCommentAddedOrEdited;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Editor;
@@ -110,6 +111,13 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 		crucibleReview.addReviewListener(reviewItemTreePanel);
+
+		CrucibleReviewNotifier notifier =
+				IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCrucibleReviewNotifier();
+
+		if (notifier != null) {
+			notifier.registerReviewListener(reviewItemTreePanel);
+		}
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);		

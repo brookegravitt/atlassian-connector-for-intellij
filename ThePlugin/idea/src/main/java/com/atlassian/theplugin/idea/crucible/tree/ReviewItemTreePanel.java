@@ -58,18 +58,24 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
+
 	private static final int WIDTH = 150;
+
 	private static final int HEIGHT = 250;
 
 	public static final Logger LOGGER = PluginUtil.getLogger();
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
+
 	private JLabel statusLabel;
+
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
-	private ReviewAdapter crucibleReview = null;
+
 	private Project project;
+
+	private ReviewAdapter crucibleReview = null;
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -237,8 +243,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 		List<CrucibleFileInfo> files;
 		try {
-			reviewItem.fillReview(
-					CrucibleServerFacadeImpl.getInstance().getReview(reviewItem.getServer(), reviewItem.getPermId()));
+//			reviewItem.fillReview(
+//					CrucibleServerFacadeImpl.getInstance().getReview(reviewItem.getServer(), reviewItem.getPermId()));
 
 			List<VersionedComment> comments;
 			comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
@@ -261,6 +267,19 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
 	}
 
+
+	private void reviewChanged(ReviewAdapter review) {
+		this.crucibleReview = review;
+		EventQueue.invokeLater(new MyRunnable(review));
+	}
+
+	public void reviewUpdated(final ReviewAdapter newReview) {
+		if (newReview.equals(crucibleReview)) {
+			this.crucibleReview.fillReview(newReview);
+			showReview(crucibleReview);
+		}
+	}
+
 	public void focusOnGeneralComments(final ReviewAdapter review) {
 	}
 
@@ -270,9 +289,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 	}
 
+
 	public void showDiff(final CrucibleFileInfo file) {
 	}
-
 
 	public void aboutToAddLineComment(final ReviewAdapter review, final CrucibleFileInfo file,
 			final int start, final int end) {
@@ -319,6 +338,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	}
 
 	private class MyRunnable implements Runnable {
+
 		private final ReviewAdapter review;
 
 		public MyRunnable(final ReviewAdapter review) {
@@ -350,10 +370,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			reviewFilesAndCommentsTree.expandAll();
 			reviewFilesAndCommentsTree.requestFocus();
 		}
-	}
 
-	private void reviewChanged(ReviewAdapter review) {
-		EventQueue.invokeLater(new MyRunnable(review));
 	}
 
 

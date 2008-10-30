@@ -33,6 +33,11 @@ public class ReviewAdapter {
     private Review review;
     private CrucibleServerCfg server;
     private static final int HASHCODE_MAGIC = 31;
+
+	public Collection<CrucibleReviewListener> getListeners() {
+		return listeners;
+	}
+
 	private Collection<CrucibleReviewListener> listeners = new HashSet<CrucibleReviewListener>();
 
 	public ReviewAdapter(Review review, CrucibleServerCfg server) {
@@ -357,6 +362,10 @@ public class ReviewAdapter {
 //		CrucibleFileInfoManager.getInstance().setFiles(review, files);
 	}
 
+	public void fillReview(final ReviewAdapter newReview) {
+		fillReview(newReview.review);
+	}
+
 	/**
 	 * Copies all data from the parameter into itself
 	 * @param newReview source of Review data
@@ -427,10 +436,10 @@ public class ReviewAdapter {
 		return review.getNumberOfVersionedComments();
 	}
 
+
 	public int getNumberOfVersionedComments(final String userName) throws ValueNotYetInitialized {
 		return review.getNumberOfVersionedComments(userName);
 	}
-
 
 	public int getNumberOfVersionedCommentsDefects() throws ValueNotYetInitialized {
 		return review.getNumberOfVersionedCommentsDefects();
@@ -467,6 +476,7 @@ public class ReviewAdapter {
 	public int getNumberOfGeneralCommentsDrafts() throws ValueNotYetInitialized {
 		return review.getNumberOfGeneralCommentsDrafts();
 	}
+
 
 	public int getNumberOfVersionedCommentsDrafts(final String userName) throws ValueNotYetInitialized {
 		return review.getNumberOfVersionedCommentsDrafts(userName);

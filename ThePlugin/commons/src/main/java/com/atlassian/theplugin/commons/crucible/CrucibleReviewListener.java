@@ -62,4 +62,5 @@ public interface CrucibleReviewListener {
 	void publishedVersionedComment(ReviewAdapter review, PermId filePermId,
 			VersionedComment comment);
 
+	void reviewUpdated(final ReviewAdapter newReview);
 }
