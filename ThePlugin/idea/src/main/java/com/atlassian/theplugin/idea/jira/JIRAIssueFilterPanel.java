@@ -339,8 +339,8 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -480,7 +480,12 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		//progressAnimation.startProgressAnimation();
 		enableFields(false);
 		jiraServer = jServer;
+
 		projectList.setListData(jiraServer.getProjects().toArray());
+		setListValues(projectList, advancedQuery);
+		if (projectList.getSelectedValues()[0] != null) {
+			jiraServer.setCurrentProject((JIRAProjectBean) projectList.getSelectedValues()[0]);
+		}
 		issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
 		statusList.setListData(jiraServer.getStatuses().toArray());
 		prioritiesList.setListData(jiraServer.getPriorieties().toArray());
@@ -500,7 +505,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
 
 
-		setListValues(projectList, advancedQuery);
 		setListValues(statusList, advancedQuery);
 		setListValues(prioritiesList, advancedQuery);
 		setListValues(resolutionsList, advancedQuery);
@@ -512,9 +516,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		setComboValue(reporterComboBox, advancedQuery);
 
 		//progressAnimation.stopProgressAnimation();
+
 		addProjectActionListener();
 		enableFields(true);
-		initialFilterSet = false;
+		//initialFilterSet = false;
 
 //			}
 //		};
