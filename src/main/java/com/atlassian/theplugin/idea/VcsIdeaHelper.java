@@ -528,11 +528,18 @@ public final class VcsIdeaHelper {
 
 
 	@Nullable
-	public static VcsRevisionNumber getVcsRevisionNumber(final Project project, final VirtualFile virtualFile) {
+	public static VcsRevisionNumber getVcsRevisionNumber(@NotNull final Project project,
+			@NotNull final VirtualFile virtualFile) {
 		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 		if (vcs == null) {
 			return null;
 		}
+		VcsContextFactory vcsContextFactory = PeerFactory.getInstance().getVcsContextFactory();
+		final FilePath filePath = vcsContextFactory.createFilePathOn(virtualFile);
+		if (filePath == null || !vcs.fileIsUnderVcs(filePath)) {
+			return null;
+		}
+
 		DiffProvider diffProvider = vcs.getDiffProvider();
 		if (diffProvider == null) {
 			return null;

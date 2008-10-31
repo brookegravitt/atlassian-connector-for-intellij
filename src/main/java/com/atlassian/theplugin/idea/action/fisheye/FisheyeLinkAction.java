@@ -85,6 +85,11 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 			return;
 		}
 		final VcsRevisionNumber rev = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
+		if (rev == null) {
+			Messages.showErrorDialog(project, "File " + virtualFile.getName() + " is not under version control!",
+					"Error");
+			return;
+		}
 		final String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
 		performUrlAction(url);
