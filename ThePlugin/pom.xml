@@ -26,7 +26,7 @@
     </parent>
     <groupId>com.atlassian.theplugin</groupId>
     <artifactId>atlassian-plugin-pom</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0-beta-6</version>
     <packaging>pom</packaging>
     <inceptionYear>2008</inceptionYear>
     <name>Atlassian IntelliJ Connector POM</name>
@@ -36,9 +36,9 @@
         <url>http://atlassian.com/</url>
     </organization>
     <scm>
-        <connection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</connection>
-        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</developerConnection>
-        <url>https://studio.atlassian.com/svn/PL/trunk/ThePlugin/</url>
+        <connection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-2.0.0-beta-6</connection>
+        <developerConnection>scm:svn:https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-2.0.0-beta-6</developerConnection>
+        <url>https://studio.atlassian.com/svn/PL/tags/atlassian-plugin-pom-2.0.0-beta-6</url>
     </scm>
     <issueManagement>
         <system>Jira</system>
