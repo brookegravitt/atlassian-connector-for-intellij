@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -84,8 +85,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
 
-	private final MyModel<CrucibleProjectWrapper, Project> crucProjectModel
-			= new MyModel<CrucibleProjectWrapper, Project>(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE) {
+	private final MyModel<CrucibleProjectWrapper, Project, CrucibleServerCfg> crucProjectModel
+			= new MyModel<CrucibleProjectWrapper, Project, CrucibleServerCfg>(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE,
+			"projects", "Crucible") {
 
 		@Override
 		protected CrucibleProjectWrapper toT(final Project element) {
@@ -117,10 +119,24 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 
 		}
+
+		@Override
+		protected CrucibleServerCfg getCurrentServer() {
+			return getCurrentCrucibleServerCfg();
+		}
 	};
 
-	private final MyModel<CrucibleRepoWrapper, Repository> crucRepoModel
-			= new MyModel<CrucibleRepoWrapper, Repository>(CRUCIBLE_REPO_FETCHING, CRUCIBLE_REPO_NONE) {
+	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
+		if (projectConfiguration.getDefaultCrucibleServerId() == null) {
+			return null;
+		}
+		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
+	}
+
+
+	private final MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg> crucRepoModel
+			= new MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg>(CRUCIBLE_REPO_FETCHING, CRUCIBLE_REPO_NONE,
+			"repositories", "Crucible") {
 
 		@Override
 		protected CrucibleRepoWrapper toT(final Repository element) {
@@ -150,10 +166,173 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				projectConfiguration.setDefaultCrucibleRepo(null);
 			}
 		}
+
+		@Override
+		protected CrucibleServerCfg getCurrentServer() {
+			return getCurrentCrucibleServerCfg();
+		}
+
 	};
 
 
-	private final FishEyeRepositoryComboBoxModel fishRepositoryModel = new FishEyeRepositoryComboBoxModel();
+	private final MyModel<GenericWrapper<String>, String, FishEyeServer> fishRepositoryModel
+			= new MyModel<GenericWrapper<String>, String, FishEyeServer>(FISHEYE_REPO_FETCHING, FISHEYE_REPO_NONE,
+			"repositories", "FishEye") {
+
+
+		@Override
+		protected GenericWrapper<String> toT(final String element) {
+			return new GenericWrapper<String>(element);
+		}
+
+		@Override
+		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
+			return fishEyeServerFacade.getRepositories(serverCfg);
+		}
+
+		@Override
+		protected boolean isEqual(final GenericWrapper<String> element) {
+			return element.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo());
+		}
+
+		@Override
+		protected FishEyeServer getCurrentServer() {
+			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
+				return null;
+			}
+			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
+		}
+
+		@Override
+		protected void setOption(final GenericWrapper<String> newSelection) {
+			if (newSelection != null) {
+				projectConfiguration.setDefaultFishEyeRepo(newSelection.getWrapped());
+			} else {
+				projectConfiguration.setDefaultFishEyeRepo(null);
+			}
+		}
+	};
+
+
+//	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
+//		private Map<ServerId, Collection<GenericWrapper<String>>> data;
+//		private static final int INITIAL_CAPACITY = 10;
+//
+//		private Collection<GenericWrapper<String>> getRepositories(final FishEyeServer fishEyeServerCfg) {
+//			if (data == null) {
+//				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+//			}
+//
+//			Collection<GenericWrapper<String>> repos = data.get(fishEyeServerCfg.getServerId());
+//			if (repos == null) {
+//				repos = MiscUtil.buildArrayList(FISHEYE_REPO_FETCHING);
+//				data.put(fishEyeServerCfg.getServerId(), repos);
+//
+//				uiTaskExecutor.execute(new UiTask() {
+//
+//					private String lastAction;
+//					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
+//						lastAction = "retrieving available repositories from FishEye server";
+//
+//						final Collection<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
+//						final Collection<GenericWrapper<String>> repoWrappers = MiscUtil.buildArrayList();
+//						repoWrappers.add(FISHEYE_REPO_NONE);
+//						for (String repository : repositories) {
+//							repoWrappers.add(new GenericWrapper<String>(repository));
+//						}
+//						data.put(fishEyeServerCfg.getServerId(), repoWrappers);
+//					}
+//
+//					public void onSuccess() {
+//						lastAction = "populating project combobox";
+//						refresh();
+//					}
+//
+//					public void onError() {
+//						projectConfiguration.setDefaultFishEyeServerId(null);
+//						data.remove(fishEyeServerCfg.getServerId());
+//						refresh();
+//					}
+//
+//					public String getLastAction() {
+//						return lastAction;
+//					}
+//
+//					public Component getComponent() {
+//						return ProjectDefaultsConfigurationPanel.this;
+//					}
+//				});
+//			}
+//
+//			return repos;
+//		}
+//
+//		public int getSize() {
+//			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+//			if (currentFishEyeServerCfg != null) {
+//				return getRepositories(currentFishEyeServerCfg).size();
+//			} else {
+//				return 1;
+//			}
+//		}
+//
+//		public Object getElementAt(final int index) {
+//			int i = 0;
+//			final FishEyeServer cfg = getCurrentFishEyeServerCfg();
+//			if (cfg == null) {
+//				return FISHEYE_REPO_NONE;
+//			}
+//			for (GenericWrapper<String> repository : getRepositories(cfg)) {
+//				if (i == index) {
+//					return repository;
+//				}
+//				i++;
+//			}
+//			return null;
+//		}
+//
+//		public void setSelectedItem(final Object anItem) {
+//			final Object selectedItem = getSelectedItem();
+//			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+//				if (anItem != null) {
+//					@SuppressWarnings("unchecked")
+//					final GenericWrapper<String> item = (GenericWrapper<String>) anItem;
+//					projectConfiguration.setDefaultFishEyeRepo(item.getWrapped());
+//				} else {
+//					projectConfiguration.setDefaultFishEyeRepo(null);
+//				}
+//				fireContentsChanged(this, -1, -1);
+//			}
+//		}
+//
+//		public Object getSelectedItem() {
+//			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
+//			if (currentFishEyeServerCfg == null || projectConfiguration.getDefaultFishEyeRepo() == null) {
+//				return FISHEYE_REPO_NONE;
+//			}
+//			for (GenericWrapper<String> repository : getRepositories(currentFishEyeServerCfg)) {
+//				if (repository == FISHEYE_REPO_FETCHING) {
+//					return FISHEYE_REPO_FETCHING;
+//				}
+//				if (repository.getWrapped() != null
+//						&& repository.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo())) {
+//					return repository;
+//				}
+//			}
+//			return FISHEYE_REPO_NONE;
+//		}
+//
+//		public void refresh() {
+//			fireContentsChanged(this, -1, -1);
+//		}
+//
+//		private FishEyeServer getCurrentFishEyeServerCfg() {
+//			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
+//				return null;
+//			}
+//			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
+//		}
+//	}
 
 
 	public ProjectDefaultsConfigurationPanel(final ProjectConfiguration projectConfiguration,
@@ -414,127 +593,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	}
 
 
-	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
-		private Map<ServerId, Collection<GenericWrapper<String>>> data;
-		private static final int INITIAL_CAPACITY = 10;
-
-		private Collection<GenericWrapper<String>> getRepositories(final FishEyeServer fishEyeServerCfg) {
-			if (data == null) {
-				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
-			}
-
-			Collection<GenericWrapper<String>> repos = data.get(fishEyeServerCfg.getServerId());
-			if (repos == null) {
-				repos = MiscUtil.<GenericWrapper<String>>buildArrayList(FISHEYE_REPO_FETCHING);
-				data.put(fishEyeServerCfg.getServerId(), repos);
-
-				uiTaskExecutor.execute(new UiTask() {
-
-					private String lastAction;
-					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
-						lastAction = "retrieving available repositories from FishEye server";
-
-						final Collection<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
-						final Collection<GenericWrapper<String>> repoWrappers = MiscUtil.buildArrayList();
-						repoWrappers.add(FISHEYE_REPO_NONE);
-						for (String repository : repositories) {
-							repoWrappers.add(new GenericWrapper<String>(repository));
-						}
-						data.put(fishEyeServerCfg.getServerId(), repoWrappers);
-					}
-
-					public void onSuccess() {
-						lastAction = "populating project combobox";
-						refresh();
-					}
-
-					public void onError() {
-						projectConfiguration.setDefaultFishEyeServerId(null);
-						data.remove(fishEyeServerCfg.getServerId());
-						refresh();
-					}
-
-					public String getLastAction() {
-						return lastAction;
-					}
-
-					public Component getComponent() {
-						return ProjectDefaultsConfigurationPanel.this;
-					}
-				});
-			}
-
-			return repos;
-		}
-
-		public int getSize() {
-			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
-			if (currentFishEyeServerCfg != null) {
-				return getRepositories(currentFishEyeServerCfg).size();
-			} else {
-				return 1;
-			}
-		}
-
-		public Object getElementAt(final int index) {
-			int i = 0;
-			final FishEyeServer cfg = getCurrentFishEyeServerCfg();
-			if (cfg == null) {
-				return FISHEYE_REPO_NONE;
-			}
-			for (GenericWrapper<String> repository : getRepositories(cfg)) {
-				if (i == index) {
-					return repository;
-				}
-				i++;
-			}
-			return null;
-		}
-
-		public void setSelectedItem(final Object anItem) {
-			final Object selectedItem = getSelectedItem();
-			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
-				if (anItem != null) {
-					@SuppressWarnings("unchecked")
-					final GenericWrapper<String> item = (GenericWrapper<String>) anItem;
-					projectConfiguration.setDefaultFishEyeRepo(item.getWrapped());
-				} else {
-					projectConfiguration.setDefaultFishEyeRepo(null);
-				}
-				fireContentsChanged(this, -1, -1);
-			}
-		}
-
-		public Object getSelectedItem() {
-			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
-			if (currentFishEyeServerCfg == null || projectConfiguration.getDefaultFishEyeRepo() == null) {
-				return FISHEYE_REPO_NONE;
-			}
-			for (GenericWrapper<String> repository : getRepositories(currentFishEyeServerCfg)) {
-				if (repository == FISHEYE_REPO_FETCHING) {
-					return FISHEYE_REPO_FETCHING;
-				}
-				if (repository.getWrapped() != null
-						&& repository.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo())) {
-					return repository;
-				}
-			}
-			return FISHEYE_REPO_NONE;
-		}
-
-		public void refresh() {
-			fireContentsChanged(this, -1, -1);
-		}
-
-		private FishEyeServer getCurrentFishEyeServerCfg() {
-			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
-				return null;
-			}
-			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
-		}
-	}
-
-
 	private class FishEyeServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Collection<FishEyeServerWrapper> data;
 
@@ -603,59 +661,61 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 
-abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel implements ComboBoxModel {
+abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server> extends AbstractListModel implements ComboBoxModel {
 	private Map<ServerId, Collection<T>> data;
 	private static final int INITIAL_CAPACITY = 10;
 	private final T fetching;
 	private final T none;
-	private final String msgType = "repositories";
+	private final String elementsType;
+	private final String serverType;
 
-	public MyModel(final T fetching, final T none) {
+	public MyModel(final T fetching, final T none, final String elementsType, final String serverType) {
 		this.fetching = fetching;
 		this.none = none;
+		this.elementsType = elementsType;
+		this.serverType = serverType;
 	}
 
 	protected abstract T toT(R element);
-	protected abstract List<R> getR(CrucibleServerCfg serverCfg) throws Exception;
+	protected abstract Collection<R> getR(S serverCfg) throws Exception;
 	protected abstract boolean isEqual(T element);
+	protected abstract void setOption(final T newSelection);
 
-//	repoWrapper.getWrapped().getName().equals(projectConfiguration.getDefaultCrucibleRepo())
-
-
-	private Collection<T> getElements(final CrucibleServerCfg crucibleServerCfg) {
+	private Collection<T> getElements(final S server) {
 		if (data == null) {
 			data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
 		}
 
-		Collection<T> wrappers = data.get(crucibleServerCfg.getServerId());
+		Collection<T> wrappers = data.get(server.getServerId());
 		if (wrappers == null) {
 			wrappers = MiscUtil.<T>buildArrayList(fetching);
-			data.put(crucibleServerCfg.getServerId(), wrappers);
+			data.put(server.getServerId(), wrappers);
 
 			uiTaskExecutor.execute(new UiTask() {
 
 				private String lastAction;
 				public void run() throws Exception {
-					lastAction = "retrieving available " + msgType + " from Crucible server " + crucibleServerCfg.getName();
+					lastAction = "retrieving available " + elementsType + " from " + serverType + " server " + server.getName();
 					final Collection<T> elements = MiscUtil.buildArrayList();
 					elements.add(none);
-					final List<R> remoteElems = getR(crucibleServerCfg);// crucibleServerFacade.getElements(crucibleServerCfg);
+					final Collection<R> remoteElems = getR(server);
 					for (R remoteElem : remoteElems) {
 						final T wrapper = toT(remoteElem);
 						elements.add(wrapper);
 					}
 
-					data.put(crucibleServerCfg.getServerId(), elements);
+					data.put(server.getServerId(), elements);
 				}
 
 				public void onSuccess() {
-					lastAction = "populating repository combobox";
+					lastAction = "populating " + elementsType + " combobox";
 					refresh();
 				}
 
 				public void onError() {
-					data.remove(crucibleServerCfg.getServerId());
-					projectConfiguration.setDefaultCrucibleServerId(null);
+					final Collection<T> elements = MiscUtil.buildArrayList(none);
+					data.put(server.getServerId(), elements);
+					setOption(null);
 					refresh();
 				}
 
@@ -673,11 +733,11 @@ abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel
 	}
 
 	public T getSelectedItem() {
-		final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-		if (currentCrucibleServerCfg == null) {
+		final S currentServer = getCurrentServer();
+		if (currentServer == null) {
 			return none;
 		}
-		for (T element : getElements(currentCrucibleServerCfg)) {
+		for (T element : getElements(currentServer)) {
 			if (element == fetching) {
 				return fetching;
 			}
@@ -690,17 +750,14 @@ abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel
 		return none;
 	}
 
-	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-		if (projectConfiguration.getDefaultCrucibleServerId() == null) {
-			return null;
-		}
-		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
-	}
+	protected abstract S getCurrentServer();
+
 
 	public void setSelectedItem(final Object anItem) {
 		final Object selectedItem = getSelectedItem();
 		if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
 			if (anItem != null) {
+				@SuppressWarnings("unchecked")
 				final T item = (T) anItem;
 				setOption(item);
 			} else {
@@ -710,7 +767,6 @@ abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel
 		}
 	}
 
-	protected abstract void setOption(final T newSelection);
 
 	public void refresh() {
 		fireContentsChanged(this, -1, -1);
@@ -720,7 +776,7 @@ abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel
 
 	public T getElementAt(final int index) {
 		int i = 0;
-		final CrucibleServerCfg cfg = getCurrentCrucibleServerCfg();
+		final S cfg = getCurrentServer();
 		if (cfg == null) {
 			return none;
 		}
@@ -734,9 +790,9 @@ abstract class MyModel<T extends GenericWrapper<?>, R> extends AbstractListModel
 	}
 
 	public int getSize() {
-		final CrucibleServerCfg currentCrucibleServerCfg = getCurrentCrucibleServerCfg();
-		if (currentCrucibleServerCfg != null) {
-			return getElements(currentCrucibleServerCfg).size();
+		final S currentServer = getCurrentServer();
+		if (currentServer != null) {
+			return getElements(currentServer).size();
 		} else {
 			return 1;
 		}
