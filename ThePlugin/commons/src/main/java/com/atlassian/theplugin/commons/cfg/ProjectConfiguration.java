@@ -249,4 +249,18 @@ public class ProjectConfiguration {
 		FishEyeServer fishEye = serverCfg.asFishEyeServer();
 		return fishEye != null && fishEye.isEnabled();
 	}
+
+	public boolean isDefaultCrucibleServerValid() {
+		if (defaultCrucibleServerId == null) {
+			return true;
+		}
+
+		ServerCfg serverCfg = getServerCfg(defaultCrucibleServerId);
+
+		// no additional check - let IDE handle such error in a standard way (error dialog)
+		// in unlikely event of some fuck-up
+		final CrucibleServerCfg crucible = (CrucibleServerCfg) serverCfg;
+		return crucible != null && crucible.isEnabled();
+	}
+
 }
