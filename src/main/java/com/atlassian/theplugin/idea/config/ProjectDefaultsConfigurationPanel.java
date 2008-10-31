@@ -66,7 +66,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		public String toString() {
 			return "Fetching...";
-
 		}
 	};
 
@@ -132,7 +131,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
 	}
-
 
 	private final MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg> crucRepoModel
 			= new MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg>(CRUCIBLE_REPO_FETCHING, CRUCIBLE_REPO_NONE,
@@ -212,127 +210,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 		}
 	};
-
-
-//	private class FishEyeRepositoryComboBoxModel extends AbstractListModel implements ComboBoxModel {
-//		private Map<ServerId, Collection<GenericWrapper<String>>> data;
-//		private static final int INITIAL_CAPACITY = 10;
-//
-//		private Collection<GenericWrapper<String>> getRepositories(final FishEyeServer fishEyeServerCfg) {
-//			if (data == null) {
-//				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
-//			}
-//
-//			Collection<GenericWrapper<String>> repos = data.get(fishEyeServerCfg.getServerId());
-//			if (repos == null) {
-//				repos = MiscUtil.buildArrayList(FISHEYE_REPO_FETCHING);
-//				data.put(fishEyeServerCfg.getServerId(), repos);
-//
-//				uiTaskExecutor.execute(new UiTask() {
-//
-//					private String lastAction;
-//					public void run() throws RemoteApiException, ServerPasswordNotProvidedException {
-//						lastAction = "retrieving available repositories from FishEye server";
-//
-//						final Collection<String> repositories = fishEyeServerFacade.getRepositories(fishEyeServerCfg);
-//						final Collection<GenericWrapper<String>> repoWrappers = MiscUtil.buildArrayList();
-//						repoWrappers.add(FISHEYE_REPO_NONE);
-//						for (String repository : repositories) {
-//							repoWrappers.add(new GenericWrapper<String>(repository));
-//						}
-//						data.put(fishEyeServerCfg.getServerId(), repoWrappers);
-//					}
-//
-//					public void onSuccess() {
-//						lastAction = "populating project combobox";
-//						refresh();
-//					}
-//
-//					public void onError() {
-//						projectConfiguration.setDefaultFishEyeServerId(null);
-//						data.remove(fishEyeServerCfg.getServerId());
-//						refresh();
-//					}
-//
-//					public String getLastAction() {
-//						return lastAction;
-//					}
-//
-//					public Component getComponent() {
-//						return ProjectDefaultsConfigurationPanel.this;
-//					}
-//				});
-//			}
-//
-//			return repos;
-//		}
-//
-//		public int getSize() {
-//			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
-//			if (currentFishEyeServerCfg != null) {
-//				return getRepositories(currentFishEyeServerCfg).size();
-//			} else {
-//				return 1;
-//			}
-//		}
-//
-//		public Object getElementAt(final int index) {
-//			int i = 0;
-//			final FishEyeServer cfg = getCurrentFishEyeServerCfg();
-//			if (cfg == null) {
-//				return FISHEYE_REPO_NONE;
-//			}
-//			for (GenericWrapper<String> repository : getRepositories(cfg)) {
-//				if (i == index) {
-//					return repository;
-//				}
-//				i++;
-//			}
-//			return null;
-//		}
-//
-//		public void setSelectedItem(final Object anItem) {
-//			final Object selectedItem = getSelectedItem();
-//			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
-//				if (anItem != null) {
-//					@SuppressWarnings("unchecked")
-//					final GenericWrapper<String> item = (GenericWrapper<String>) anItem;
-//					projectConfiguration.setDefaultFishEyeRepo(item.getWrapped());
-//				} else {
-//					projectConfiguration.setDefaultFishEyeRepo(null);
-//				}
-//				fireContentsChanged(this, -1, -1);
-//			}
-//		}
-//
-//		public Object getSelectedItem() {
-//			final FishEyeServer currentFishEyeServerCfg = getCurrentFishEyeServerCfg();
-//			if (currentFishEyeServerCfg == null || projectConfiguration.getDefaultFishEyeRepo() == null) {
-//				return FISHEYE_REPO_NONE;
-//			}
-//			for (GenericWrapper<String> repository : getRepositories(currentFishEyeServerCfg)) {
-//				if (repository == FISHEYE_REPO_FETCHING) {
-//					return FISHEYE_REPO_FETCHING;
-//				}
-//				if (repository.getWrapped() != null
-//						&& repository.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo())) {
-//					return repository;
-//				}
-//			}
-//			return FISHEYE_REPO_NONE;
-//		}
-//
-//		public void refresh() {
-//			fireContentsChanged(this, -1, -1);
-//		}
-//
-//		private FishEyeServer getCurrentFishEyeServerCfg() {
-//			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
-//				return null;
-//			}
-//			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
-//		}
-//	}
 
 
 	public ProjectDefaultsConfigurationPanel(final ProjectConfiguration projectConfiguration,
@@ -661,144 +538,139 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 
-abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server> extends AbstractListModel implements ComboBoxModel {
-	private Map<ServerId, Collection<T>> data;
-	private static final int INITIAL_CAPACITY = 10;
-	private final T fetching;
-	private final T none;
-	private final String elementsType;
-	private final String serverType;
+	abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server> extends AbstractListModel implements ComboBoxModel {
+		private Map<ServerId, Collection<T>> data;
+		private static final int INITIAL_CAPACITY = 10;
+		private final T fetching;
+		private final T none;
+		private final String elementsType;
+		private final String serverType;
 
-	public MyModel(final T fetching, final T none, final String elementsType, final String serverType) {
-		this.fetching = fetching;
-		this.none = none;
-		this.elementsType = elementsType;
-		this.serverType = serverType;
-	}
-
-	protected abstract T toT(R element);
-	protected abstract Collection<R> getR(S serverCfg) throws Exception;
-	protected abstract boolean isEqual(T element);
-	protected abstract void setOption(final T newSelection);
-
-	private Collection<T> getElements(final S server) {
-		if (data == null) {
-			data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+		public MyModel(final T fetching, final T none, final String elementsType, final String serverType) {
+			this.fetching = fetching;
+			this.none = none;
+			this.elementsType = elementsType;
+			this.serverType = serverType;
 		}
 
-		Collection<T> wrappers = data.get(server.getServerId());
-		if (wrappers == null) {
-			wrappers = MiscUtil.<T>buildArrayList(fetching);
-			data.put(server.getServerId(), wrappers);
+		protected abstract T toT(R element);
+		protected abstract Collection<R> getR(S serverCfg) throws Exception;
+		protected abstract boolean isEqual(T element);
+		protected abstract void setOption(final T newSelection);
 
-			uiTaskExecutor.execute(new UiTask() {
+		private Collection<T> getElements(final S server) {
+			if (data == null) {
+				data = MiscUtil.buildConcurrentHashMap(INITIAL_CAPACITY);
+			}
 
-				private String lastAction;
-				public void run() throws Exception {
-					lastAction = "retrieving available " + elementsType + " from " + serverType + " server " + server.getName();
-					final Collection<T> elements = MiscUtil.buildArrayList();
-					elements.add(none);
-					final Collection<R> remoteElems = getR(server);
-					for (R remoteElem : remoteElems) {
-						final T wrapper = toT(remoteElem);
-						elements.add(wrapper);
+			Collection<T> wrappers = data.get(server.getServerId());
+			if (wrappers == null) {
+				wrappers = MiscUtil.<T>buildArrayList(fetching);
+				data.put(server.getServerId(), wrappers);
+
+				uiTaskExecutor.execute(new UiTask() {
+
+					private String lastAction;
+					public void run() throws Exception {
+						lastAction = "retrieving available " + elementsType + " from " + serverType + " server " + server.getName();
+						final Collection<T> elements = MiscUtil.buildArrayList();
+						elements.add(none);
+						final Collection<R> remoteElems = getR(server);
+						for (R remoteElem : remoteElems) {
+							final T wrapper = toT(remoteElem);
+							elements.add(wrapper);
+						}
+
+						data.put(server.getServerId(), elements);
 					}
 
-					data.put(server.getServerId(), elements);
-				}
+					public void onSuccess() {
+						lastAction = "populating " + elementsType + " combobox";
+						refresh();
+					}
 
-				public void onSuccess() {
-					lastAction = "populating " + elementsType + " combobox";
-					refresh();
-				}
+					public void onError() {
+						final Collection<T> elements = MiscUtil.buildArrayList(none);
+						data.put(server.getServerId(), elements);
+						setOption(null);
+						refresh();
+					}
 
-				public void onError() {
-					final Collection<T> elements = MiscUtil.buildArrayList(none);
-					data.put(server.getServerId(), elements);
-					setOption(null);
-					refresh();
-				}
+					public Component getComponent() {
+						return ProjectDefaultsConfigurationPanel.this;
+					}
 
-				public Component getComponent() {
-					return ProjectDefaultsConfigurationPanel.this;
-				}
+					public String getLastAction() {
+						return lastAction;
+					}
+				});
+			}
 
-				public String getLastAction() {
-					return lastAction;
-				}
-			});
+			return wrappers;
 		}
 
-		return wrappers;
-	}
+		public T getSelectedItem() {
+			final S currentServer = getCurrentServer();
+			if (currentServer == null) {
+				return none;
+			}
+			for (T element : getElements(currentServer)) {
+				if (element == fetching) {
+					return fetching;
+				}
+				if (element.getWrapped() != null
+						&& isEqual(element)) {
+					return element;
+				}
 
-	public T getSelectedItem() {
-		final S currentServer = getCurrentServer();
-		if (currentServer == null) {
+			}
 			return none;
 		}
-		for (T element : getElements(currentServer)) {
-			if (element == fetching) {
-				return fetching;
-			}
-			if (element.getWrapped() != null
-					&& isEqual(element)) {
-				return element;
-			}
 
+		protected abstract S getCurrentServer();
+
+
+		public void setSelectedItem(final Object anItem) {
+			final Object selectedItem = getSelectedItem();
+			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+				if (anItem != null) {
+					@SuppressWarnings("unchecked")
+					final T item = (T) anItem;
+					setOption(item);
+				} else {
+					setOption(null);
+				}
+				fireContentsChanged(this, -1, -1);
+			}
 		}
-		return none;
-	}
 
-	protected abstract S getCurrentServer();
-
-
-	public void setSelectedItem(final Object anItem) {
-		final Object selectedItem = getSelectedItem();
-		if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
-			if (anItem != null) {
-				@SuppressWarnings("unchecked")
-				final T item = (T) anItem;
-				setOption(item);
-			} else {
-				setOption(null);
-			}
+		public void refresh() {
 			fireContentsChanged(this, -1, -1);
 		}
-	}
 
-
-	public void refresh() {
-		fireContentsChanged(this, -1, -1);
-	}
-
-
-
-	public T getElementAt(final int index) {
-		int i = 0;
-		final S cfg = getCurrentServer();
-		if (cfg == null) {
-			return none;
-		}
-		for (T element : getElements(cfg)) {
-			if (i == index) {
-				return element;
+		public T getElementAt(final int index) {
+			int i = 0;
+			final S cfg = getCurrentServer();
+			if (cfg == null) {
+				return none;
 			}
-			i++;
-		}
-		return null;
-	}
-
-	public int getSize() {
-		final S currentServer = getCurrentServer();
-		if (currentServer != null) {
-			return getElements(currentServer).size();
-		} else {
-			return 1;
+			for (T element : getElements(cfg)) {
+				if (i == index) {
+					return element;
+				}
+				i++;
+			}
+			return null;
 		}
 
+		public int getSize() {
+			final S currentServer = getCurrentServer();
+			if (currentServer != null) {
+				return getElements(currentServer).size();
+			} else {
+				return 1;
+			}
+
+		}
 	}
-
-}
-
 }
