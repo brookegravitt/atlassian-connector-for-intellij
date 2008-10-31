@@ -83,6 +83,12 @@ public class ProjectConfigurationPanel extends JPanel {
 			projectConfiguration.setDefaultFishEyeServerId(null);
 			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 		}
+		if (!projectConfiguration.isDefaultCrucibleServerValid()) {
+			projectConfiguration.setDefaultCrucibleServerId(null);
+			Messages.showInfoMessage(this, "Default Crucible server settings have been cleared.", "Information");
+		}
+
+
 	}
 
 
