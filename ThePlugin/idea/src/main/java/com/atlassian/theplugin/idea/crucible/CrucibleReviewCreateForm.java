@@ -652,7 +652,7 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 			// setting default repo if such is defined
 
 			if (prjCfg != null) {
-				final String defaultRepo = prjCfg.getDefaultCrucibleProject();
+				final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
 				if (defaultRepo != null) {
 					for (int i = 0; i < repoComboBox.getItemCount(); ++i) {
 						if (repoComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {
