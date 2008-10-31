@@ -176,8 +176,9 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private void refreshUserModel() {
-		final UserComboBoxItem userComboBoxItem = (UserComboBoxItem) (moderatorComboBox.getSelectedItem());
-		if (userComboBoxItem != null) {
+		final Object selectedItem = moderatorComboBox.getSelectedItem();
+		if (selectedItem instanceof UserComboBoxItem) {
+			final UserComboBoxItem userComboBoxItem = (UserComboBoxItem) selectedItem;
 			User moderatorUser = userComboBoxItem.getUser();
 			final ArrayList<User> disabledUsers = new ArrayList<User>();
 			disabledUsers.add(moderatorUser);
@@ -188,10 +189,10 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 					reviewer.setSelected(false);
 				}
 			}
+			reviewersList.setModel(model);
+			reviewersList.revalidate();
+			reviewersList.repaint();
 		}
-		reviewersList.setModel(model);
-		reviewersList.revalidate();
-		reviewersList.repaint();
 		getOKAction().setEnabled(isValidForm());
 	}
 
