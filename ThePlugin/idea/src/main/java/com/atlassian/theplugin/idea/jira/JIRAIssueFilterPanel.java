@@ -102,28 +102,31 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		this.reporterComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 		this.assigneeComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 
-		addProjectActionListener();
+		//addProjectActionListener();
 	}
 
 	private void addProjectActionListener() {
 		projectList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent event) {
-				int size = projectList.getSelectedValues().length;
-				switch (size) {
-					case 0:
-						jiraServer.setCurrentProject(null);
-						refreshProjectDependentLists();
-						break;
-					case 1:
-						JIRAProjectBean project = (JIRAProjectBean) projectList.getSelectedValues()[0];
-						jiraServer.setCurrentProject(project);
-						refreshProjectDependentLists();
-						break;
-					default:
-						jiraServer.setCurrentProject(null);
-						clearProjectDependentLists();
-						refreshGlobalIssueTypeList();
-						break;
+				if (!event.getValueIsAdjusting()) {
+					int size = projectList.getSelectedValues().length;
+					switch (size) {
+						case 0:
+							jiraServer.setCurrentProject(null);
+							refreshProjectDependentLists();
+							break;
+						case 1:
+							JIRAProjectBean project = (JIRAProjectBean) projectList.getSelectedValues()[0];
+							jiraServer.setCurrentProject(project);
+							refreshProjectDependentLists();
+							break;
+						default:
+							jiraServer.setCurrentProject(null);
+							clearProjectDependentLists();
+							refreshGlobalIssueTypeList();
+							break;
+					}
+
 				}
 			}
 		});
@@ -469,54 +472,54 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	public void setJiraServer(final JIRAServer jServer, final List<JIRAQueryFragment> advancedQuery) {
 
-		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
-			@Override
-			public void run(final ProgressIndicator indicator) {
-				projectList.addListSelectionListener(null);
-				initialFilterSet = true;
-				//progressAnimation.startProgressAnimation();
-				enableFields(false);
-				jiraServer = jServer;
-				projectList.setListData(jiraServer.getProjects().toArray());
-				issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
-				statusList.setListData(jiraServer.getStatuses().toArray());
-				prioritiesList.setListData(jiraServer.getPriorieties().toArray());
-				resolutionsList.setListData(jiraServer.getResolutions().toArray());
-				fixForList.setListData(jiraServer.getFixForVersions().toArray());
-				componentsList.setListData(jiraServer.getComponents().toArray());
-				affectsVersionsList.setListData(jiraServer.getVersions().toArray());
+//		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
+//			@Override
+//			public void run(final ProgressIndicator indicator) {
+		projectList.addListSelectionListener(null);
+		initialFilterSet = true;
+		//progressAnimation.startProgressAnimation();
+		enableFields(false);
+		jiraServer = jServer;
+		projectList.setListData(jiraServer.getProjects().toArray());
+		issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
+		statusList.setListData(jiraServer.getStatuses().toArray());
+		prioritiesList.setListData(jiraServer.getPriorieties().toArray());
+		resolutionsList.setListData(jiraServer.getResolutions().toArray());
+		fixForList.setListData(jiraServer.getFixForVersions().toArray());
+		componentsList.setListData(jiraServer.getComponents().toArray());
+		affectsVersionsList.setListData(jiraServer.getVersions().toArray());
 
-				reporterComboBox.removeAllItems();
-				reporterComboBox.addItem(new JIRAReporterBean(JIRAServer.ANY_ID, "Any User", null));
+		reporterComboBox.removeAllItems();
+		reporterComboBox.addItem(new JIRAReporterBean(JIRAServer.ANY_ID, "Any User", null));
 //reporterComboBox.addItem(new JIRAReporterBean((long) -1, "No reporter", "issue_no_reporter"));
-				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
+		reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
 
-				assigneeComboBox.removeAllItems();
-				assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServer.ANY_ID, "Any User", ""));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
+		assigneeComboBox.removeAllItems();
+		assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServer.ANY_ID, "Any User", ""));
+		assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
+		assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServer.getServer().getUsername()));
 
 
-				setListValues(projectList, advancedQuery);
-				setListValues(statusList, advancedQuery);
-				setListValues(prioritiesList, advancedQuery);
-				setListValues(resolutionsList, advancedQuery);
-				setListValues(issueTypeList, advancedQuery);
-				setListValues(componentsList, advancedQuery);
-				setListValues(fixForList, advancedQuery);
-				setListValues(affectsVersionsList, advancedQuery);
-				setComboValue(assigneeComboBox, advancedQuery);
-				setComboValue(reporterComboBox, advancedQuery);
+		setListValues(projectList, advancedQuery);
+		setListValues(statusList, advancedQuery);
+		setListValues(prioritiesList, advancedQuery);
+		setListValues(resolutionsList, advancedQuery);
+		setListValues(issueTypeList, advancedQuery);
+		setListValues(componentsList, advancedQuery);
+		setListValues(fixForList, advancedQuery);
+		setListValues(affectsVersionsList, advancedQuery);
+		setComboValue(assigneeComboBox, advancedQuery);
+		setComboValue(reporterComboBox, advancedQuery);
 
-				//progressAnimation.stopProgressAnimation();
-				addProjectActionListener();
-				enableFields(true);
-				initialFilterSet = false;
+		//progressAnimation.stopProgressAnimation();
+		addProjectActionListener();
+		enableFields(true);
+		initialFilterSet = false;
 
-			}
-		};
-
-		ProgressManager.getInstance().run(setServer);
+//			}
+//		};
+//
+//		ProgressManager.getInstance().run(setServer);
 
 	}
 
