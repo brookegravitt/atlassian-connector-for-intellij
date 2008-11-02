@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <parent>
+        <groupId>com.atlassian.jira.plugins</groupId>
+        <artifactId>jira-plugin-base</artifactId>
+        <version>12</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.spartez.mazio</groupId>
+    <artifactId>mazio-jira</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <name><!-- TODO: Add a name for your plugin --></name>
+    <packaging>atlassian-plugin</packaging>
+
+    <properties>
+        <atlassian.plugin.key>com.spartez.mazio.mazio-jira</atlassian.plugin.key>
+
+        <!-- JIRA version -->
+        <atlassian.product.version>3.13</atlassian.product.version>
+        <!-- JIRA functional test library version -->
+        <atlassian.product.test-lib.version>3.13</atlassian.product.test-lib.version>
+        <!-- JIRA data version -->
+        <atlassian.product.data.version>3.13</atlassian.product.data.version>
+    </properties>
+
+    <!-- TODO: Add project description -->
+    <!--
+    <description></description>
+	<url></url>
+    -->
+
+    <!-- TODO: Complete developer details -->
+    <!--
+	<developers>
+		<developer>
+			<name>John Smith</name>
+			<organization>Example Company</organization>
+		</developer>
+	</developers>
+	-->
+
+    <!-- TODO: Complete source control details -->
+    <!--
+    <scm>
+		<connection></connection>
+		<developerConnection></developerConnection>
+		<url></url>
+	</scm>
+	-->
+
+    <!--You can define Ant tasks to be executed before and/or after integration tests --><!--
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>pre-integration-test-user-ant-tasks</id>
+                        <configuration>
+                            <tasks>
+                                <echo message="Ant task before integration tests."/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>post-integration-test-user-ant-tasks</id>
+                        <configuration>
+                            <tasks>
+                                <echo message="Ant task _after_ integration tests."/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>-->
+
+</project>
