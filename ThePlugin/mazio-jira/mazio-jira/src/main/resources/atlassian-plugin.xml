@@ -1,0 +1,29 @@
+<atlassian-plugin key="com.spartez.mazio.maziojira" name="Screenshots by Mazio">
+    <plugin-info>
+        <description>Adds a link to the issue operations to grab a screenshot using Mazio</description>
+        <version>0.1</version>
+        <application-version min="3.4" max="4.0" />
+        <vendor name="SPARTEZ" url="http://spartez.com"/>
+    </plugin-info>
+
+    <issue-operation key="mazio-jira" name="Mazio JIRA" class="com.spartez.mazio.MazioJira" state='enabled'>
+        <resource type="velocity" name="view">
+            <!--&lt;img src="$req.contextPath/images/icons/bullet_creme.gif" height=8 width=8 border=0 align=absmiddle&gt;-->
+            &lt;b&gt;&lt;a href="mazio:jira:${user}@${serverUrl}:${issueKey}"&gt;Attach Mazio&lt;/a&gt;&lt;/b&gt; to this issue
+	        (&lt;a target="_blank" href="../plugins/servlet/maziojirahelp"&gt;?&lt;/a&gt;)
+        </resource>
+        <!-- the relative order of operations -->
+        <order>10</order>
+    </issue-operation>
+
+	<servlet name='Mazio JIRA Help' key='mazioJiraHelp'
+	    class='com.spartez.mazio.help.HelpServlet'>
+	    <description>Displays help for the Mazio-JIRA plugin.</description>
+	    <url-pattern>/maziojirahelp</url-pattern>
+	    <init-param>
+	        <param-name>defaultName</param-name>
+	        <param-value>Australia</param-value>
+	    </init-param>
+	</servlet>
+
+</atlassian-plugin>
