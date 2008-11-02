@@ -137,57 +137,7 @@ public final class CrucibleHelper {
 				, reviewItem.getCommitType()
 				, 1
 				, 1
-				, new VcsIdeaHelper.OpenDiffAction() {
-
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-				Document displayDocument = EMPTY_DOCUMENT;
-				Document referenceDocument = EMPTY_DOCUMENT;
-				DiffContent displayFileContent = null;
-				if (displayFile != null) {
-					displayFileContent = createDiffContent(project, displayFile.getFile());
-					displayDocument = displayFileContent.getDocument();
-				}
-
-				DiffContent referenceFileContent = null;
-				if (referenceFile != null) {
-					referenceFileContent = createDiffContent(project, referenceFile);
-					referenceDocument = referenceFileContent.getDocument();
-				}
-
-				if ((displayFileContent != null && displayFileContent.isBinary())
-						|| (referenceFileContent != null && referenceFileContent.isBinary())) {
-					Messages.showInfoMessage(project, "Files are binary. Diff not available.", "Information");
-					return;
-				}
-
-				final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
-				final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
-
-				DiffRequest request = new DiffRequest(project) {
-					@Override
-					public DiffContent[] getContents() {
-						return (new DiffContent[]{
-								displayDocumentContentFinal,
-								referenceDocumentContentFinal,
-						});
-					}
-					@Override
-					public String[] getContentTitles() {
-						return (new String[]{
-								VcsBundle.message("diff.content.title.repository.version",
-										reviewItem.getOldFileDescriptor().getRevision()),
-								VcsBundle.message("diff.content.title.repository.version",
-										reviewItem.getFileDescriptor().getRevision())
-						});
-					}
-					@Override
-					public String getWindowTitle() {
-						return reviewItem.getFileDescriptor().getAbsoluteUrl();
-					}
-				};
-				DiffManager.getInstance().getDiffTool().show(request);
-			}
-		});
+				, new MyOpenDiffAction(project, reviewItem));
 	}
 
 	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project,
@@ -249,5 +199,64 @@ public final class CrucibleHelper {
 			}
 		});
 
+	}
+
+	private static class MyOpenDiffAction implements VcsIdeaHelper.OpenDiffAction {
+		private final Project project;
+		private final CrucibleFileInfo reviewItem;
+
+		public MyOpenDiffAction(final Project project, final CrucibleFileInfo reviewItem) {
+			this.project = project;
+			this.reviewItem = reviewItem;
+		}
+
+		public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+			Document displayDocument = EMPTY_DOCUMENT;
+			Document referenceDocument = EMPTY_DOCUMENT;
+			DiffContent displayFileContent = null;
+			if (displayFile != null) {
+				displayFileContent = createDiffContent(project, displayFile.getFile());
+				displayDocument = displayFileContent.getDocument();
+			}
+
+			DiffContent referenceFileContent = null;
+			if (referenceFile != null) {
+				referenceFileContent = createDiffContent(project, referenceFile);
+				referenceDocument = referenceFileContent.getDocument();
+			}
+
+			if ((displayFileContent != null && displayFileContent.isBinary())
+					|| (referenceFileContent != null && referenceFileContent.isBinary())) {
+				Messages.showInfoMessage(project, "Files are binary. Diff not available.", "Information");
+				return;
+			}
+
+			final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
+			final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
+
+			DiffRequest request = new DiffRequest(project) {
+				@Override
+				public DiffContent[] getContents() {
+					return (new DiffContent[]{
+							displayDocumentContentFinal,
+							referenceDocumentContentFinal,
+					});
+				}
+				@Override
+				public String[] getContentTitles() {
+					return (new String[]{
+							VcsBundle.message("diff.content.title.repository.version",
+									reviewItem.getOldFileDescriptor().getRevision()),
+							VcsBundle.message("diff.content.title.repository.version",
+									reviewItem.getFileDescriptor().getRevision())
+					});
+				}
+				@Override
+				public String getWindowTitle() {
+					return reviewItem.getFileDescriptor().getAbsoluteUrl();
+				}
+			};
+			DiffManager.getInstance().getDiffTool().show(request);
+		}
 	}
 }

@@ -538,7 +538,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 
-	abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server> extends AbstractListModel implements ComboBoxModel {
+	abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server>
+			extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<T>> data;
 		private static final int INITIAL_CAPACITY = 10;
 		private final T fetching;
@@ -572,7 +573,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 					private String lastAction;
 					public void run() throws Exception {
-						lastAction = "retrieving available " + elementsType + " from " + serverType + " server " + server.getName();
+						lastAction = "retrieving available " + elementsType + " from " + serverType
+								+ " server " + server.getName();
 						final Collection<T> elements = MiscUtil.buildArrayList();
 						elements.add(none);
 						final Collection<R> remoteElems = getR(server);
