@@ -33,10 +33,13 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.IOException;
 
 public final class CrucibleHelper {
 	static final Document EMPTY_DOCUMENT = new DocumentImpl("");
@@ -110,6 +113,21 @@ public final class CrucibleHelper {
 		});
 	}
 
+	@NotNull
+	private static DiffContent createDiffContent(@NotNull final Project project, @NotNull final VirtualFile virtualFile) {
+		if (!FileTypeManager.getInstance().getFileTypeByFile(virtualFile).isBinary()) {
+			return new FileContent(project, virtualFile);
+		} else {
+			try {
+				return new BinaryContent(virtualFile.contentsToByteArray(), null,
+						FileTypeManager.getInstance().getFileTypeByFile(virtualFile));
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+	}
+
 	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
 
 		VcsIdeaHelper.openFileWithDiffs(project
@@ -124,13 +142,24 @@ public final class CrucibleHelper {
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 				Document displayDocument = EMPTY_DOCUMENT;
 				Document referenceDocument = EMPTY_DOCUMENT;
+				DiffContent displayFileContent = null;
 				if (displayFile != null) {
-					displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
+					displayFileContent = createDiffContent(project, displayFile.getFile());
+					displayDocument = displayFileContent.getDocument();
 				}
 
+				DiffContent referenceFileContent = null;
 				if (referenceFile != null) {
-					referenceDocument = new FileContent(project, referenceFile).getDocument();
+					referenceFileContent = createDiffContent(project, referenceFile);
+					referenceDocument = referenceFileContent.getDocument();
 				}
+
+				if ((displayFileContent != null && displayFileContent.isBinary())
+						|| (referenceFileContent != null && referenceFileContent.isBinary())) {
+					Messages.showInfoMessage(project, "Files are binary. Diff not available.", "Information");
+					return;
+				}
+
 				final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
 				final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
 
