@@ -22,6 +22,7 @@ import com.intellij.openapi.project.Project;
 
 public class DiffRevisionsAction extends AbstractCrucibleFileAction {
 
+	@Override
 	protected void executeTreeAction(final Project project, final AtlassianTreeWithToolbar tree) {
 		final ReviewActionData actionData = new ReviewActionData(tree);
 		if (actionData.review != null && actionData.file != null) {
