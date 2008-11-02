@@ -2,23 +2,35 @@
   <project-configuration>
     <servers>
       <bamboo>
-        <server-id>1c8ee2f7-f0a5-4ce9-a48b-dbeb7f86c86d</server-id>
-        <name>Hosted</name>
+        <server-id>7dea32ca-7ea9-4220-9dbe-7db95349be1c</server-id>
+        <name>hosted</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
-        <use-favourites>true</use-favourites>
+        <use-favourites>false</use-favourites>
         <bamboo2>true</bamboo2>
-        <plans />
+        <plans>
+          <plan key="TP-CSCOM" />
+          <plan key="TP-CSIDEA" />
+          <plan key="TP-CLO" />
+          <plan key="TP-STYLE" />
+          <plan key="TP-DPL" />
+          <plan key="TP-FAIL" />
+          <plan key="TP-TEST" />
+        </plans>
       </bamboo>
+      <crucible>
+        <server-id>3ca98432-0a34-4d7a-a5b9-6660cd09533e</server-id>
+        <name>lech</name>
+        <url>http://lech/crucible-1.6</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
       <jira>
-        <server-id>53c3cbff-e50f-475f-a6e2-703b22168724</server-id>
-        <name>studio</name>
+        <server-id>bf582e72-378c-4f8a-bba5-28e2450f2399</server-id>
+        <name>StAC</name>
         <url>https://studio.atlassian.com</url>
       </jira>
-      <crucible>
-        <server-id>598df7f1-7dcf-40de-847f-e65b8fd7d671</server-id>
-        <name>Crucible.lech</name>
-        <url>http://lech.atlassian.pl:8055/crucible-1.6</url>
-      </crucible>
     </servers>
+    <default-crucible-server>3ca98432-0a34-4d7a-a5b9-6660cd09533e</default-crucible-server>
+    <default-crucible-project>CR</default-crucible-project>
+    <default-crucible-repo>studio</default-crucible-repo>
   </project-configuration>
 </atlassian-ide-plugin>
