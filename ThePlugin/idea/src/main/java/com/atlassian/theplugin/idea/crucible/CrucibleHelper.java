@@ -238,8 +238,8 @@ public final class CrucibleHelper {
 				@Override
 				public DiffContent[] getContents() {
 					return (new DiffContent[]{
-							displayDocumentContentFinal,
 							referenceDocumentContentFinal,
+							displayDocumentContentFinal
 					});
 				}
 				@Override
