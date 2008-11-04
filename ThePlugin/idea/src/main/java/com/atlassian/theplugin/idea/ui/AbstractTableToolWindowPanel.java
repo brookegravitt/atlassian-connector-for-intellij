@@ -39,13 +39,8 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
     protected ListTableModel<T> listTableModel;
 	protected AtlassianTableView<T> table;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-//	protected ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
     protected ProjectConfigurationBean projectConfiguration;
 	protected Project project;
-
-//	public ProgressAnimationProvider getProgressAnimation() {
-//		return progressAnimation;
-//	}
 
 	public AbstractTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(new BorderLayout());
@@ -80,7 +75,6 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 		tablePane.setWheelScrollingEnabled(true);
 		add(tablePane, BorderLayout.CENTER);
 
-//		progressAnimation.configure(this, tablePane, BorderLayout.CENTER);
 	}
 
 	protected void addCustomSubmenus(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
@@ -134,15 +128,6 @@ public abstract class AbstractTableToolWindowPanel<T> extends JPanel {
 	public void transientSetFilterEditToolbar(ActionToolbar newFilterEditToolbar) {
 		this.filterEditToolbar = newFilterEditToolbar;
 	}
-
-	/*protected   void createFilterEditToolBar(String place, String toolbarName) {
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup filterEditToolBar = (ActionGroup) actionManager.getAction(toolbarName);
-        filterEditToolbar = actionManager.createActionToolbar(place,
-                filterEditToolBar, true);
-        toolBarPanel.add(filterEditToolbar.getComponent(), BorderLayout.SOUTH);
-        filterEditToolbarSetVisible(false);
-    }*/
 
 	public abstract void applyAdvancedFilter();
 	public abstract void cancelAdvancedFilter();
