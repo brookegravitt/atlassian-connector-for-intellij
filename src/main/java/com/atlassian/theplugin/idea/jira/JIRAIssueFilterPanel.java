@@ -483,7 +483,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 		projectList.setListData(jiraServer.getProjects().toArray());
 		setListValues(projectList, advancedQuery);
-		if (projectList.getSelectedValues()[0] != null) {
+		if ((projectList.getSelectedValues().length > 0) && projectList.getSelectedValues()[0] != null) {
 			jiraServer.setCurrentProject((JIRAProjectBean) projectList.getSelectedValues()[0]);
 		}
 		issueTypeList.setListData(jiraServer.getIssueTypes().toArray());
