@@ -36,6 +36,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
@@ -99,7 +100,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private final PluginConfiguration pluginConfiguration;
 
     private JIRAToolWindowPanel jiraToolWindowPanel;
-    private JIRAServer currentJiraServer;
+	private IssuesToolWindowPanel issuesToolWindowPanel;
+	private JIRAServer currentJiraServer;
 
 	private PluginToolWindow toolWindow;
 
@@ -194,6 +196,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
 					projectConfigurationBean, crucibleStatusChecker);
 			this.jiraToolWindowPanel = JIRAToolWindowPanel.getInstance(project, projectConfigurationBean, cfgManager);
+			this.issuesToolWindowPanel = IssuesToolWindowPanel.getInstance(project, projectConfigurationBean, cfgManager);
 
 			// create tool window on the right
             toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager);
@@ -214,6 +217,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			TableView.restore(projectConfigurationBean.getJiraConfiguration().getTableConfiguration(),
                     jiraToolWindowPanel.getTable());
+
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
+			//@todo add configuration restore here
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
             // add tool window bamboo content listener to bamboo checker thread
@@ -319,11 +325,22 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
     }
 
 
-    public Content createJiraContent() {
+	public Content createJiraContent() {
         PeerFactory peerFactory = PeerFactory.getInstance();
 
         Content content = peerFactory.getContentFactory().createContent(
                 jiraToolWindowPanel, PluginToolWindow.ToolWindowPanels.JIRA.toString(), false);
+        content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
+        content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+
+        return content;
+    }
+
+	public Content createIssuesContent() {
+        PeerFactory peerFactory = PeerFactory.getInstance();
+
+        Content content = peerFactory.getContentFactory().createContent(
+				issuesToolWindowPanel, PluginToolWindow.ToolWindowPanels.ISSUES.toString(), false);
         content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
         content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
@@ -373,32 +390,31 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		}
 	}
 
-    public ProjectConfigurationBean getState() {
+
+	public ProjectConfigurationBean getState() {
         return projectConfigurationBean;
     }
-
-
 
 	public void loadState(ProjectConfigurationBean state) {
         projectConfigurationBean.copyConfiguration(state);
 	}
 
-    public ProjectConfigurationBean getProjectConfigurationBean() {
+	public ProjectConfigurationBean getProjectConfigurationBean() {
         return projectConfigurationBean;
     }
 
-    public JIRAServer getCurrentJiraServer() {
+	public JIRAServer getCurrentJiraServer() {
         return currentJiraServer;
     }
 
-    public void setCurrentJiraServer(JIRAServer currentJiraServer) {
+	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
         this.currentJiraServer = currentJiraServer;
     }
 
-    public CrucibleStatusChecker getCrucibleStatusChecker() {
+
+	public CrucibleStatusChecker getCrucibleStatusChecker() {
         return crucibleStatusChecker;
     }
-
 
 	public BambooStatusChecker getBambooStatusChecker() {
         return bambooStatusChecker;
