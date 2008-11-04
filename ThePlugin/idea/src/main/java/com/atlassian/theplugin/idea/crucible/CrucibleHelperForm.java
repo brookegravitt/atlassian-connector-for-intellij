@@ -19,10 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -40,6 +37,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,7 +68,6 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private String patch;
 	private final CfgManager cfgManager;
 	private AddMode mode;
-	private String repo;
 	private CrucibleServerCfg server;
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
@@ -115,8 +112,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 							titleField.setText(review.getName());
 							authorField.setText(review.getAuthor().getDisplayName());
 							moderatorField.setText(review.getModerator().getDisplayName());
-							descriptionArea.setText(review.getDescription());
-							repo = review.getRepoName();
+							descriptionArea.setText(review.getDescription());							
 							getOKAction().setEnabled(true);
 						} else {
 							getOKAction().setEnabled(false);
@@ -326,43 +322,55 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
-		switch (mode) {
-			case ADDREVISION:
-				try {
-					List<String> revisions = new ArrayList<String>();
-					for (ChangeList change : changes) {
-						for (Change change1 : change.getChanges()) {
-							revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
-							break;
+
+		try {
+			//get repository Name because no repository in details
+			List<CrucibleFileInfo> files = crucibleServerFacade.getFiles(server, permId);
+			String repoName = files.get(0).getRepositoryName();
+
+			switch (mode) {
+				case ADDREVISION:
+					try {
+						List<String> revisions = new ArrayList<String>();
+						for (ChangeList change : changes) {
+							for (Change change1 : change.getChanges()) {
+								revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
+								break;
+							}
 						}
+
+						crucibleServerFacade.addRevisionsToReview(server, permId, repoName, revisions);
+						super.doOKAction();
+
 					}
-					crucibleServerFacade.addRevisionsToReview(server, permId, repo, revisions);
-					super.doOKAction();
+					catch (RemoteApiException e) {
+						showMessageDialog(e.getMessage(),
+								"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
+					}
+					catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					}
+					break;
 
-				}
-				catch (RemoteApiException e) {
-					showMessageDialog(e.getMessage(),
-							"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-				}
-				catch (ServerPasswordNotProvidedException e) {
-					IdeaHelper.handleMissingPassword(e);
-				}
-				break;
+				case ADDPATCH:
+					try {
+						crucibleServerFacade.addPatchToReview(server, permId, repoName, patch);
+						super.doOKAction();
 
-			case ADDPATCH:
-				try {
-					crucibleServerFacade.addPatchToReview(server, permId, repo, patch);
-					super.doOKAction();
-
-				}
-				catch (RemoteApiException e) {
-					showMessageDialog(e.getMessage(),
-							"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-				}
-				catch (ServerPasswordNotProvidedException e) {
-					IdeaHelper.handleMissingPassword(e);
-				}
-				break;
+					}
+					catch (RemoteApiException e) {
+						showMessageDialog(e.getMessage(),
+								"Error creating review: " + server.getUrl(), Messages.getErrorIcon());
+					}
+					catch (ServerPasswordNotProvidedException e) {
+						IdeaHelper.handleMissingPassword(e);
+					}
+					break;
+			}
+		} catch (RemoteApiException e) {
+			IdeaHelper.handleRemoteApiException(project, e);
+		} catch (ServerPasswordNotProvidedException e) {
+			IdeaHelper.handleMissingPassword(e);
 		}
 	}
 
