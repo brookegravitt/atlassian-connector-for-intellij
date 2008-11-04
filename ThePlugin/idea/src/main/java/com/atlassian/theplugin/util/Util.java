@@ -32,7 +32,8 @@ public final class Util {
 				return ServerType.CRUCIBLE_SERVER;
 			case JIRA:
 				return ServerType.JIRA_SERVER;
-				
+			case ISSUES:
+				return ServerType.JIRA_SERVER;				
 			default:
 				throw new ThePluginException("Unrecognized tool window type");
 		}

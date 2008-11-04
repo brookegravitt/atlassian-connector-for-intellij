@@ -558,6 +558,34 @@
 		</group>
 
 
+		<!-- [START] Issues window related actions -->
+
+		<action id="ThePlugin.JiraServers.Refresh"
+				class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction" text="Refresh"
+				icon="/actions/sync.png"/>
+		<group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettings"/>
+			<reference id="ThePlugin.HelpJIRA"/>
+			<reference id="ThePlugin.JiraServers.Refresh"/>
+			<separator/>
+
+		</group>
+		<!-- [END] Issues window related actions -->
+
+
+		<action id="ThePlugin.JiraIssues.ExpandIssues"
+				class="com.atlassian.theplugin.idea.action.issues.ExpandIssuesAction" text="Expand All Issues"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.JiraIssues.CollapseIssues"
+				class="com.atlassian.theplugin.idea.action.issues.CollapseCommentsAction"
+				text="Collapse All Issues" icon="/actions/collapseall.png"/>
+
+		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">			
+			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
+			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
+			<separator/>
+
+		</group>
 		<!-- JIRA tool window panel related actions -->
 		<action id="ThePlugin.JIRA.ShowHideJIRATab"
 				class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira Tab"
