@@ -48,15 +48,13 @@ import java.util.Set;
 public class PluginToolWindow extends ContentManagerAdapter {
 
 	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
-//	private Set<ToolWindowPanels> bottomPanels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_BOTTOM_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
 	public static final String TOOL_WINDOW_NAME = "Atlassian ";
-	private static final int INITIAL_NUMBER_OF_TABS = 3;
-	//private static final int INITIAL_NUMBER_OF_BOTTOM_TABS = 1;
+	private static final int INITIAL_NUMBER_OF_TABS = 4;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
 	private final CfgManager cfgManager;
@@ -92,7 +90,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
 		this.cfgManager = cfgManager;
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
-				TOOL_WINDOW_NAME, true, ToolWindowAnchor.RIGHT);
+				TOOL_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
 		this.project = project;
 
 	}
@@ -161,7 +159,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								break;
 							case JIRA:
 								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
-								break;							
+								break;
+							case ISSUES:
+								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
+								break;
 							default:
 								break;
 						}
@@ -212,7 +213,11 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
 						contentManager.addContent(content);
 						break;
-                    default:
+					case ISSUES:
+						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
+						contentManager.addContent(content);
+						break;
+					default:
 						break;
 				}
 			}
@@ -234,6 +239,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			focusPanel(project, ToolWindowPanels.CRUCIBLE);
 		} else if (tabName.equals(ToolWindowPanels.JIRA.toString())) {
 			focusPanel(project, ToolWindowPanels.JIRA);
+		} else if (tabName.equals(ToolWindowPanels.ISSUES.toString())) {
+			focusPanel(project, ToolWindowPanels.ISSUES);
 		}
 	}
 
@@ -302,6 +309,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								break;
 							case JIRA:
 								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
+								break;
+							case ISSUES:
+								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
 								break;
 							default:
 								break;
@@ -376,11 +386,12 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-        BAMBOO("Bamboo"),
-		CRUCIBLE("Crucible"),
-		JIRA("JIRA");
+        BAMBOO("Builds"),
+		CRUCIBLE("Reviews"),
+		JIRA("JIRA"),
+		ISSUES("Issues");
 
-        private final String title;
+		private final String title;
 
         ToolWindowPanels(String title) {
             this.title = title;
