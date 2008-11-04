@@ -21,7 +21,7 @@ import java.awt.event.ComponentEvent;
 /**
  * User: pmaruszak
  */
-public class IssuesToolWindowPanel extends JPanel {
+public final class IssuesToolWindowPanel extends JPanel {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
@@ -86,8 +86,8 @@ public class IssuesToolWindowPanel extends JPanel {
 				new FormLayout("left:1dlu:grow, right:1dlu:grow, left:4dlu:grow, right:pref:grow", "pref:grow"));
 		toolBarPanel.add(new JLabel("nothing"), cc.xy(1, 1));
 		toolBarPanel.add(new JLabel("Group by"), cc.xy(2, 1));
-		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(3, 1));
-		toolBarPanel.add(new JLabel("Search"), cc.xy(4, 1));
+		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(2+1, 1));
+		toolBarPanel.add(new JLabel("Search"), cc.xy(2+2, 1));
 
 		return toolBarPanel;
 	}
@@ -120,7 +120,7 @@ public class IssuesToolWindowPanel extends JPanel {
 		return null;
 	}
 
-	public synchronized static IssuesToolWindowPanel getInstance(final Project project,
+	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
 			final ProjectConfigurationBean projectConfigurationBean,
 			final CfgManager cfgManager) {
 			IssuesToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
