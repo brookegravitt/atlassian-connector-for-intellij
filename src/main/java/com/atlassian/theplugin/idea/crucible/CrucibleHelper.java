@@ -81,6 +81,11 @@ public final class CrucibleHelper {
 				, new VcsIdeaHelper.OpenDiffAction() {
 
 			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+				if (referenceFile == null) {
+					Messages.showErrorDialog(project, "Cannot fetch " + reviewItem.getOldFileDescriptor().getAbsoluteUrl()
+							+ ".\nAnnotated file cannot be displayed.", "Error");
+					return;
+				}
 				FileEditorManager fem = FileEditorManager.getInstance(project);
 				Editor editor = fem.openTextEditor(displayFile, true);
 				if (editor == null) {
