@@ -49,7 +49,7 @@ public class JIRAFilterListModel {
 		return new ArrayList<JiraServerCfg>(serversFilters.keySet());
 	}
 
-	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer){
+	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getSavedFilters();
 		}

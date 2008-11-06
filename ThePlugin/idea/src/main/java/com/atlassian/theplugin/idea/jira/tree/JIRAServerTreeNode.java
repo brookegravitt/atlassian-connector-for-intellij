@@ -10,12 +10,11 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class JIRAServerTreeNode extends DefaultMutableTreeNode {	
 	private JiraServerCfg jiraServer;
 
-	JIRAServerTreeNode(JiraServerCfg jiraServer){
+	JIRAServerTreeNode(JiraServerCfg jiraServer) {
 		this.jiraServer = jiraServer;
 	}
 
-
-	public String getNodeName(){
+	public String getNodeName() {
 		return jiraServer.getName();
 	}
 
