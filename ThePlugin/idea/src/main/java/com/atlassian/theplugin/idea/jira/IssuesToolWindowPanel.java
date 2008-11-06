@@ -112,7 +112,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		jiraIssueListModelBuilder.setModel(jiraIssueListModel);
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setListModel(jiraFilterListModel);
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectId(CfgUtil.getProjectId(project));
-		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectConfigurationBean(projectConfigurationBean);
+		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class)
+				.setProjectConfigurationBean(projectConfigurationBean);
 
 		jiraIssueListModel.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel model) {
@@ -123,7 +124,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						for (JIRAProject p : server.getProjects()) {
 							projectMap.put(p.getKey(), p.getName());
 						}
-						issueTreeBuilder.setProjectNamesMapping(projectMap);
+						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(issueTree);
 						expandAll();
 					}

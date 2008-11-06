@@ -18,9 +18,6 @@ public class JIRAIssueTreeBuilder {
 
 	private Map<String, String> projectKeysToNames;
 
-	public void setProjectKeysToNames(final Map<String, String> projectKeysToNames) {
-		this.projectKeysToNames = projectKeysToNames;
-	}
 
 	public JIRAIssueTreeBuilder(JIRAIssueGroupBy groupBy, JIRAIssueListModel model) {
 		this.groupBy = groupBy;
@@ -31,8 +28,8 @@ public class JIRAIssueTreeBuilder {
 		this.groupBy = groupBy;
 	}
 
-	public void setProjectNamesMapping(Map<String, String> projectKeysToNames) {
-		setProjectKeysToNames(projectKeysToNames);	
+	public void setProjectKeysToNames(Map<String, String> projectKeysToNames) {
+		this.projectKeysToNames = projectKeysToNames;
 	}
 
 	public void rebuild(JTree tree) {
