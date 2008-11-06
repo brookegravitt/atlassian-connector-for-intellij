@@ -112,7 +112,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		jiraIssueListModelBuilder.setModel(jiraIssueListModel);
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setListModel(jiraFilterListModel);
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectId(CfgUtil.getProjectId(project));
-		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setConfiguration(projectConfigurationBean);
+		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectConfigurationBean(projectConfigurationBean);
 
 		jiraIssueListModel.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel model) {
@@ -266,23 +266,18 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void refreshModels() {
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving JIRA information", false) {
-
 			public void run(final ProgressIndicator indicator) {
 				jiraServerCache.clear();
-
 				for (JiraServerCfg server : IdeaHelper.getCfgManager()
 						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-
 					//@todo
 //					if (!jiraServer.checkServer()) {
 //						//setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-//
 //						EventQueue.invokeLater(
 //								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), this));
-//						return;
-//					}
+//						return;}
 					//@todo remove  saved filters download or merge with existing in listModel
 					String serverStr = "[" + server.getName() + "] ";
 					setMessage(serverStr + "Retrieving saved filters...");
