@@ -36,11 +36,11 @@ public class JIRAServerFiltersBuilder {
 		this.projectId = projectId;
 	}
 
-	public void setModel(@NotNull final JIRAFilterListModel listModel){
+	public void setModel(@NotNull final JIRAFilterListModel listModel) {
 		this.listModel = listModel;
 	}
 
-	public void setConfiguration(@NotNull ProjectConfigurationBean projectConfigurationBean){
+	public void setConfiguration(@NotNull ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 	}
 
@@ -89,7 +89,7 @@ public class JIRAServerFiltersBuilder {
 	}
 
 	public class JIRAServerFiltersBuilderException extends Exception {
-		Map<JiraServerCfg, JIRAException> exceptions = new HashMap<JiraServerCfg, JIRAException>();
+		private Map<JiraServerCfg, JIRAException> exceptions = new HashMap<JiraServerCfg, JIRAException>();
 
 		public void addException(JiraServerCfg server, JIRAException e) {
 			exceptions.put(server, e);
@@ -100,7 +100,7 @@ public class JIRAServerFiltersBuilder {
 		}
 	}
 
-	private static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query){
+	private static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query) {
 		List<JIRAQueryFragment> fragments = new ArrayList<JIRAQueryFragment>();
 
 		for (JiraFilterEntryBean filterMapBean : query) {

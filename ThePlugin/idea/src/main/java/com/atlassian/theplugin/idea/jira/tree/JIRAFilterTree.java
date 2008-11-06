@@ -17,14 +17,14 @@ import java.awt.*;
 public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener {
 	private static final ServerTreeRenderer MY_RENDERER = new ServerTreeRenderer();
 
-	JIRAFilterListModel listModel;
+	private JIRAFilterListModel listModel;
 	private DefaultTreeModel treeModel;
 
 	public void modelChanged(final JIRAFilterListModel listModel) {
-		createServerNodes((DefaultMutableTreeNode)treeModel.getRoot());
+		createServerNodes((DefaultMutableTreeNode) treeModel.getRoot());
 	}
 
-	public JIRAFilterTree(JIRAFilterListModel listModel){
+	public JIRAFilterTree(JIRAFilterListModel listModel) {
 		final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Root");
 
 		treeModel = new DefaultTreeModel(rootNode);
@@ -33,9 +33,9 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		setRootVisible(false);
 		expandRow(0);
 		this.listModel = listModel;
-		if (listModel != null){
+		if (listModel != null) {
 			listModel.addModelListener(this);
-			createServerNodes((DefaultMutableTreeNode)treeModel.getRoot());
+			createServerNodes((DefaultMutableTreeNode) treeModel.getRoot());
 			
 		}
 
@@ -43,13 +43,13 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		setCellRenderer(MY_RENDERER);
 	}
 
-	private void createServerNodes(DefaultMutableTreeNode rootNode){
+	private void createServerNodes(DefaultMutableTreeNode rootNode) {
 
 		if (listModel == null) {
 			return;
 		}
 
-		for (JiraServerCfg server: listModel.getJIRAServers()){
+		for (JiraServerCfg server : listModel.getJIRAServers()) {
 			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(server);
 			rootNode.add(serverNode);
 		}
