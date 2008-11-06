@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * User: pmaruszak
  */
-public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
+public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener, MessageStatusDisplay {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
@@ -120,7 +120,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).refreshSavedFiltersAll();
 		} catch (JIRAServerFiltersBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			setStatusMessage(e.getMessage(), true);
 		}
 	}
 
@@ -205,22 +205,23 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 //								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), this));
 //						return;
 //					}
-					//setStatusMessage("Retrieving saved filters...");
+					String serverStr = "[" + server.getName() + "] ";
+					setMessage(serverStr + "Retrieving saved filters...");
 					jiraServer.getSavedFilters();
 
-					//setStatusMessage("Retrieving projects...");
+					setMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
 
-					//setStatusMessage("Retrieving issue types...");
+					setMessage(serverStr + "Retrieving issue types...");
 					jiraServer.getIssueTypes();
 
-					//("Retrieving statuses...");
+					setMessage(serverStr + "Retrieving statuses...");
 					jiraServer.getStatuses();
 
-					//setStatusMessage("Retrieving resolutions...");
+					setMessage(serverStr + "Retrieving resolutions...");
 					jiraServer.getResolutions();
 
-					//("Retrieving priorities...");
+					setMessage(serverStr + "Retrieving priorities...");
 					jiraServer.getPriorieties();
 
 					jiraServerCache.put(server, jiraServer);
@@ -262,6 +263,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		
 		//get all stored manual filters for JIRA server
 		for(JiraServerCfg server: IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)){
+			setMessage("[" + server.getName() +"] Getting saved filters...");
 			JiraFiltersBean bean = projectConfigurationBean.getJiraConfiguration()
 					.getJiraFilters(server.getServerId().toString());
 			
@@ -276,5 +278,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	
+
+	public void setMessage(final String message) {
+		messagePane.setMessage(message);
+	}
+
+	public void setStatusMessage(final String msg, final boolean isError) {
+		messagePane.setStatusMessage(msg, isError);
+	}
 }
