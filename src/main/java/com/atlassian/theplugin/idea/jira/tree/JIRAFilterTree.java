@@ -36,7 +36,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		setModel(treeModel);
 		setRootVisible(false);
 		expandRow(0);
-		setListModel(listModel);
 		if (listModel != null) {
 			listModel.addModelListener(this);
 			createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
