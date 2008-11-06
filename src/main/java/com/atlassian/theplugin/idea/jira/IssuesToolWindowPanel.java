@@ -55,6 +55,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 
 	private JIRAIssueGroupBy groupBy;
+	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 
 	public MessageScrollPane getMessagePane() {
 		return messagePane;
@@ -176,7 +177,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			public void run(final ProgressIndicator indicator) {
 				try {
 					jiraIssueListModelBuilder.reset();
-					jiraIssueListModelBuilder.addIssuesToModel(25);
+					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
@@ -256,7 +257,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createJiraServersTree(JIRAFilterListModel listModel) {
-		return null;// new JIRAFilterTree(listModel);
+		return null; // new JIRAFilterTree(listModel);
 	}
 
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
@@ -269,7 +270,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			public void run(final ProgressIndicator indicator) {
 				jiraServerCache.clear();
 
-				for(JiraServerCfg server: IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))){
+				for (JiraServerCfg server : IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 

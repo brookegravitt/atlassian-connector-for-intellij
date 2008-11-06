@@ -14,12 +14,12 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JIRAFilterListModel {
-	Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
-	List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
+	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
+	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 
-	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters){
+	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters) {
 
-		if (serversFilters.containsKey(jiraServer)){
+		if (serversFilters.containsKey(jiraServer)) {
 
 			serversFilters.get(jiraServer).setSavedFilters(filters);
 
@@ -31,9 +31,9 @@ public class JIRAFilterListModel {
 		}
 	}
 
-	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final List<JIRAQueryFragment> filter){
+	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final List<JIRAQueryFragment> filter) {
 
-		if (serversFilters.containsKey(jiraServer)){
+		if (serversFilters.containsKey(jiraServer)) {
 
 			serversFilters.get(jiraServer).setManualFilter(filter);
 
@@ -45,19 +45,19 @@ public class JIRAFilterListModel {
 		}
 	}
 
-	public List<JiraServerCfg> getJIRAServers(){
+	public List<JiraServerCfg> getJIRAServers() {
 		return new ArrayList<JiraServerCfg>(serversFilters.keySet());
 	}
 
 	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer){
-		if (serversFilters.containsKey(jiraServer)){
+		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getSavedFilters();
 		}
 		return null;
 	}
 
-	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer){
-		if (serversFilters.containsKey(jiraServer)){
+	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer) {
+		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getManualFilter();
 		}
 
@@ -72,13 +72,13 @@ public class JIRAFilterListModel {
 			listener.modelChanged(this);
 	}}
 
-	public void addModelListener(JIRAFilterListModelListener listener){
+	public void addModelListener(JIRAFilterListModelListener listener) {
 
 		listeners.add(listener);
 
 
 	}
-	public void removeModelListener(JIRAIssueListModelListener listener){
+	public void removeModelListener(JIRAIssueListModelListener listener) {
 		listeners.remove(listener);
 	}
 
