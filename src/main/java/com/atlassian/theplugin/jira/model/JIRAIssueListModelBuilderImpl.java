@@ -79,7 +79,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void updateIssue(final JIRAIssue issue) throws JIRAException {
 		//@todo implement
-		assert(false);
+		//assert(false);
 	}
 
 	public void reset() {
