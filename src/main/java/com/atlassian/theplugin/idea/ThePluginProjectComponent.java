@@ -268,6 +268,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			configurationListener = new ConfigurationListenerImpl();
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+	        cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), issuesToolWindowPanel);
 
 			created = true;
         }
@@ -382,6 +383,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), issuesToolWindowPanel);
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);

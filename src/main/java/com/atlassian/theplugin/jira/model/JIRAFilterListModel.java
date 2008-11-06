@@ -60,13 +60,11 @@ public class JIRAFilterListModel {
 		return null;
 	}
 	public void notifyListeners(){
-		if (!listeners.isEmpty()){
-			while(listeners.iterator().hasNext()){
-				listeners.iterator().next().notify();
-			}
+		for (JIRAFiltersListModelListener l : listeners) {
+			l.modelChanged(this);
 		}
-
 	}
+	
 	public void addModelListener(JIRAFiltersListModelListener listener){
 		listeners.add(listener);
 

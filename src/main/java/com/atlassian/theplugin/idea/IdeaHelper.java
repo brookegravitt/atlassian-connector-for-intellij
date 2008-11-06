@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.DataManager;
@@ -128,6 +129,20 @@ public final class IdeaHelper {
             return null;
         }
         return (JIRAToolWindowPanel) content.getComponent();
+
+	}
+
+	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
+		Project p = getCurrentProject(event);
+		if (p == null) {
+			return null;
+		}
+		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.ISSUES.toString());
+        if (content == null) {
+            return null;
+        }
+        return (IssuesToolWindowPanel) content.getComponent();
 
 	}
 
