@@ -10,22 +10,27 @@ import java.awt.*;
 /**
  * User: pmaruszak
  */
-public class MessageScrollPane extends JScrollPane {
+public class MessageScrollPane extends JScrollPane implements MessageStatusDisplay {
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 
 	JEditorPane pane = new JEditorPane();
-	//List<MessageScrollPaneListener> listeners = new ArrayList<MessageScrollPaneListener>();
+	//List<MessageStatusDisplay> listeners = new ArrayList<MessageStatusDisplay>();
 
 	public MessageScrollPane(String initialText) {
-		JScrollPane scrollPane = new JScrollPane(pane,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setWheelScrollingEnabled(true);
+		super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		setWheelScrollingEnabled(true);
+		pane.setEditorKit(new ClasspathHTMLEditorKit());
 		pane.setEditable(false);
         pane.setContentType("text/html");
         pane.addHyperlinkListener(new GenericHyperlinkListener());
 		pane.setMinimumSize(ED_PANE_MINE_SIZE);
-		pane.setEditorKit(new ClasspathHTMLEditorKit());
-		pane.setText(wrapBody(initialText));
+
+		add(pane);
+		setViewportView(pane);
+		
+		
+		setMessage(initialText);
 	}
 
 	private String wrapBody(String s) {
@@ -35,6 +40,7 @@ public class MessageScrollPane extends JScrollPane {
 
 	public void setMessage(String message) {
 		pane.setText(wrapBody(message));
+		pane.setBackground(Color.WHITE);
 	}
 
 	public void setStatusMessage(String msg, boolean isError) {
