@@ -11,6 +11,7 @@ import java.util.List;
 public interface JIRAIssueListModelBuilder {
 	void setModel(JIRAIssueListModel model);
 	void setServer(JiraServerCfg server);
+	JiraServerCfg getServer();
 	void setSavedFilter(JIRASavedFilter filter);
 	void setCustomFilter(List<JIRAQueryFragment> query);
 	void addIssuesToModel(int size) throws JIRAException;
