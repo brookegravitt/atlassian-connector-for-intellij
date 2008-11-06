@@ -1,15 +1,15 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
 	private JiraServerCfg server;
@@ -21,19 +21,20 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	private static final String SORT_ORDER = "DESC";
 
 	private int startFrom;
+	private JIRAIssueListModel model;
 
-	private JIRAIssueListModelBuilderImpl() {
+	public JIRAIssueListModelBuilderImpl() {
 		facade = JIRAServerFacadeImpl.getInstance();
 		startFrom = 0;
-	}
-
-	public static JIRAIssueListModelBuilder createInstance() {
-		return new JIRAIssueListModelBuilderImpl();
 	}
 
 	// for testing
 	public void setFacade(JIRAServerFacade newFacade) {
 		facade = newFacade;
+	}
+
+	public void setModel(final JIRAIssueListModel model) {
+		this.model = model;
 	}
 
 	public void setServer(JiraServerCfg server) {
@@ -52,8 +53,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		startFrom = 0;
 	}
 
-	public void addIssuesToModel(JIRAIssueListModel model, int size) throws JIRAException {
-		if (server == null || !(customFilter != null || savedFilter != null)) {
+	public void addIssuesToModel(int size) throws JIRAException {
+		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			return;
 		}
 
@@ -72,7 +73,12 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		model.notifyListeners();
 	}
 
-	public void reset(JIRAIssueListModel model) {
+	public void updateIssue(final JIRAIssue issue) throws JIRAException {
+		//@todo implement
+		assert(false);
+	}
+
+	public void reset() {
 		int size = model.getIssues().size();
 		if (size > 0) {
 			model.clear();

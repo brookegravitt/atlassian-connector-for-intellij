@@ -74,6 +74,7 @@ public abstract class Crucible16RepositoryAction extends AnAction {
 			return false;
 		}
 
+
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		return IdeaHelper.getCfgManager().getAllEnabledCrucibleServers(projectId).size() != 0;
 	}
