@@ -2,12 +2,15 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 
 /**
  * User: pmaruszak
  */
 public class ExpandIssuesAction extends AnAction {
 	public void actionPerformed(final AnActionEvent e) {
-		//@todo To change body of implemented methods use File | Settings | File Templates.
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		panel.expandAll();
 	}
 }
