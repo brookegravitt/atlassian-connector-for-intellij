@@ -24,8 +24,11 @@ import java.util.Map;
  */
 public class JIRAServerFiltersBuilder {
 	private JIRAFilterListModel listModel;
+
 	private ProjectConfigurationBean projectConfigurationBean;
+
 	private ProjectId projectId;
+
 
 	private final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
@@ -36,11 +39,11 @@ public class JIRAServerFiltersBuilder {
 		this.projectId = projectId;
 	}
 
-	public void setModel(@NotNull final JIRAFilterListModel listModel) {
+	public void setListModel(@NotNull final JIRAFilterListModel listModel) {
 		this.listModel = listModel;
 	}
 
-	public void setConfiguration(@NotNull ProjectConfigurationBean projectConfigurationBean) {
+	public void setConfigurationBean(@NotNull ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 	}
 
