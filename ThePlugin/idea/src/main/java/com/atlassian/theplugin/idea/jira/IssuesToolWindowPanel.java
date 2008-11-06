@@ -48,7 +48,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private final Splitter splitPane = new Splitter(true);
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
 	private JIRAFilterListModel jiraFilterListModel;
-	private JEditorPane messagePane;
+
+	public MessageScrollPane getMessagePane() {
+		return messagePane;
+	}
+
+	private MessageScrollPane messagePane;
 	private JIRAIssueListModel jiraIssueListModel;
 
 	private final Map<JiraServerCfg, JIRAServer> jiraServerCache = new HashMap<JiraServerCfg, JIRAServer>();
@@ -61,7 +66,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.cfgManager = cfgManager;
 		setLayout(new BorderLayout());
-		this.messagePane = new JEditorPane();
+		this.messagePane = new MessageScrollPane("Issues panel");
+		add(messagePane, BorderLayout.SOUTH);
 
 
 		splitPane.setShowDividerControls(true);
@@ -269,4 +275,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	public void projectUnregistered() {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
+
+	
 }
