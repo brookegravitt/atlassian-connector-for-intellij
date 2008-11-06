@@ -90,7 +90,7 @@
               <component id="f988c" class="javax.swing.JList" binding="componentsList">
                 <constraints/>
                 <properties>
-                  <model/>
+                  <listModel/>
                   <visible value="true"/>
                   <visibleRowCount value="5"/>
                 </properties>
@@ -107,7 +107,7 @@
               <component id="4a9d8" class="javax.swing.JList" binding="affectsVersionsList">
                 <constraints/>
                 <properties>
-                  <model/>
+                  <listModel/>
                   <visibleRowCount value="5"/>
                 </properties>
               </component>
@@ -203,7 +203,7 @@
               <component id="8514e" class="javax.swing.JList" binding="statusList">
                 <constraints/>
                 <properties>
-                  <model/>
+                  <listModel/>
                   <visibleRowCount value="5"/>
                 </properties>
               </component>
@@ -232,7 +232,7 @@
               <component id="c276b" class="javax.swing.JList" binding="resolutionsList">
                 <constraints/>
                 <properties>
-                  <model/>
+                  <listModel/>
                   <visibleRowCount value="5"/>
                 </properties>
               </component>
@@ -291,7 +291,7 @@
                 <properties>
                   <inheritsPopupMenu value="false"/>
                   <layoutOrientation value="0"/>
-                  <model/>
+                  <listModel/>
                   <visibleRowCount value="5"/>
                 </properties>
               </component>

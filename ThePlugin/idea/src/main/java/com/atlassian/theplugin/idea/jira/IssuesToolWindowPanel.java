@@ -1,27 +1,43 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Key;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
+import com.atlassian.theplugin.configuration.JiraFiltersBean;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.jgoodies.forms.layout.FormLayout;
+import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.model.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.util.Key;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: pmaruszak
  */
-public final class IssuesToolWindowPanel extends JPanel {
+public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
@@ -31,6 +47,11 @@ public final class IssuesToolWindowPanel extends JPanel {
 	private JPanel issuesPanel = new JPanel(new BorderLayout());
 	private final Splitter splitPane = new Splitter(true);
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
+	private JIRAFilterListModel jiraFilterListModel;
+	private JEditorPane messagePane;
+	private JIRAIssueListModel jiraIssueListModel;
+
+	private final Map<JiraServerCfg, JIRAServer> jiraServerCache = new HashMap<JiraServerCfg, JIRAServer>();
 
 	private IssuesToolWindowPanel(
 			final Project project, final PluginConfigurationBean pluginConfiguration,
@@ -40,13 +61,15 @@ public final class IssuesToolWindowPanel extends JPanel {
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.cfgManager = cfgManager;
 		setLayout(new BorderLayout());
+		this.messagePane = new JEditorPane();
 
 
 		splitPane.setShowDividerControls(true);
 		splitPane.setFirstComponent(createServersContent());
         splitPane.setSecondComponent(createIssuesContent());
         splitPane.setHonorComponentsMinimumSize(true);
-        addComponentListener(new ComponentAdapter() {
+
+		addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 final Dimension dimension = e.getComponent().getSize();
@@ -59,6 +82,40 @@ public final class IssuesToolWindowPanel extends JPanel {
         });
 
 		add(splitPane, BorderLayout.CENTER);
+
+
+		this.jiraFilterListModel = new JIRAFilterListModel();
+		this.jiraIssueListModel = JIRAIssueListModelImpl.createInstance();
+		IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class).setModel(jiraIssueListModel);
+		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setModel(jiraFilterListModel);
+		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectId(CfgUtil.getProjectId(project));
+
+		IdeaHelper.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project), this);
+
+		refreshModels();
+	}
+
+	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
+			final ProjectConfigurationBean projectConfigurationBean,
+			final CfgManager cfgManager) {
+		IssuesToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+
+		if (window == null) {
+			window = new IssuesToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
+					projectConfigurationBean, cfgManager);
+			project.putUserData(WINDOW_PROJECT_KEY, window);
+		}
+		return window;
+	}
+
+	private void refreshFilterModel() {
+
+		try {
+			IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).refreshSavedFiltersAll();
+		} catch (JIRAServerFiltersBuilder.JIRAServerFiltersBuilderException e) {
+			//@todo show in message editPane
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
 	}
 
 	private JComponent createIssuesContent() {
@@ -94,7 +151,7 @@ public final class IssuesToolWindowPanel extends JPanel {
 
 	private JComponent createServersContent() {
 		serversPanel = new JPanel(new BorderLayout());
-		
+
 		JScrollPane scrollPane = new JScrollPane(createJiraServersTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -120,16 +177,96 @@ public final class IssuesToolWindowPanel extends JPanel {
 		return null;
 	}
 
-	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
-			final ProjectConfigurationBean projectConfigurationBean,
-			final CfgManager cfgManager) {
-			IssuesToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
+	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+		refreshModels();
+	}
 
-		if (window == null) {
-			window = new IssuesToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
-					projectConfigurationBean, cfgManager);
-			project.putUserData(WINDOW_PROJECT_KEY, window);
+	private void refreshModels() {
+		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving JIRA information", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				jiraServerCache.clear();
+
+				for(JiraServerCfg server: IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))){
+					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
+
+					//@todo
+//					if (!jiraServer.checkServer()) {
+//						//setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
+//
+//						EventQueue.invokeLater(
+//								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), this));
+//						return;
+//					}
+					//setStatusMessage("Retrieving saved filters...");
+					jiraServer.getSavedFilters();
+
+					//setStatusMessage("Retrieving projects...");
+					jiraServer.getProjects();
+
+					//setStatusMessage("Retrieving issue types...");
+					jiraServer.getIssueTypes();
+
+					//("Retrieving statuses...");
+					jiraServer.getStatuses();
+
+					//setStatusMessage("Retrieving resolutions...");
+					jiraServer.getResolutions();
+
+					//("Retrieving priorities...");
+					jiraServer.getPriorieties();
+
+					jiraServerCache.put(server, jiraServer);
+				}
+
+				refreshFilterModel();
+
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run() {
+						refreshModelsFinished();
+					}
+				});
+			}
+		};
+
+		ProgressManager.getInstance().run(task);
+
+
+	}
+	private static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query){
+		List<JIRAQueryFragment> fragments = new ArrayList<JIRAQueryFragment>();
+
+		for (JiraFilterEntryBean filterMapBean : query) {
+			Map<String, String> filter = filterMapBean.getFilterEntry();
+			String className = filter.get("filterTypeClass");
+			try {
+				Class<?> c = Class.forName(className);
+				fragments.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
+			} catch (Exception e) {
+				LoggerImpl.getInstance().error(e);
+			}
 		}
-		return window;
+		return fragments;
+	}
+
+	private void refreshModelsFinished() {
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		
+		//get all stored manual filters for JIRA server
+		for(JiraServerCfg server: IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)){
+			JiraFiltersBean bean = projectConfigurationBean.getJiraConfiguration()
+					.getJiraFilters(server.getServerId().toString());
+			
+			if (bean != null){
+				jiraFilterListModel.setManualFilter(server, getFragments(bean.getManualFilter()));
+			}
+		}
+		jiraFilterListModel.notifyListeners();
+	}
+
+	public void projectUnregistered() {
+		//To change body of implemented methods use File | Settings | File Templates.
 	}
 }
