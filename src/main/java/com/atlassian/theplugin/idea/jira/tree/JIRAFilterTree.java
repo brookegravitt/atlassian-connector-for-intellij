@@ -24,8 +24,8 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		this.listModel = listModel;
 	}
 
-	public void modelChanged(final JIRAFilterListModel listModel) {
-		createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
+	public void modelChanged() {
+		createServerNodes((DefaultMutableTreeNode) treeModel.getRoot());
 	}
 
 	public JIRAFilterTree(JIRAFilterListModel listModel) {
@@ -38,7 +38,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		expandRow(0);
 		if (listModel != null) {
 			listModel.addModelListener(this);
-			createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
+			createServerNodes((DefaultMutableTreeNode) treeModel.getRoot());
 			
 		}
 
@@ -46,9 +46,8 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		setCellRenderer(MY_RENDERER);
 	}
 
-	private void createServerNodes(JIRAFilterListModel listModel, DefaultMutableTreeNode rootNode) {
-		this.listModel = listModel;
-		
+	private void createServerNodes(DefaultMutableTreeNode rootNode) {
+
 		if (listModel == null) {
 			return;
 		}

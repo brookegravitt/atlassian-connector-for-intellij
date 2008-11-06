@@ -69,7 +69,7 @@ public class JIRAFilterListModel {
 
 		for (JIRAFilterListModelListener listener : listeners) {
 
-			listener.modelChanged(this);
+			listener.modelChanged();
 	}}
 
 	public void addModelListener(JIRAFilterListModelListener listener) {
