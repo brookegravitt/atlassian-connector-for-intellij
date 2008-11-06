@@ -132,7 +132,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		});
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-			public void modelChanged(JIRAFilterListModel model) {
+			public void modelChanged() {
 
 				//
 				// todo: temporary
