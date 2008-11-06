@@ -2,6 +2,10 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
+import com.atlassian.theplugin.configuration.JiraFiltersBean;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -20,7 +24,7 @@ import java.util.Map;
  */
 public class JIRAServerFiltersBuilder {
 	private JIRAFilterListModel listModel;
-
+	private ProjectConfigurationBean projectConfigurationBean;
 	private ProjectId projectId;
 
 	private final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -36,12 +40,17 @@ public class JIRAServerFiltersBuilder {
 		this.listModel = listModel;
 	}
 
+	public void setConfiguration(@NotNull ProjectConfigurationBean projectConfigurationBean){
+		this.projectConfigurationBean = projectConfigurationBean;
+	}
 
-	public void refreshSavedFiltersAll() throws JIRAServerFiltersBuilderException {
+
+	public void refreshFiltersAll() throws JIRAServerFiltersBuilderException {
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 		for (JiraServerCfg jiraServer : IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)) {
 			try {
 				refreshServerSavedFilter(jiraServer);
+				refreshManualFilter(jiraServer);
 			} catch (JIRAException exc) {
 				e.addException(jiraServer, exc);
 			}
@@ -67,6 +76,18 @@ public class JIRAServerFiltersBuilder {
 
 	}
 
+	private void refreshManualFilter(final JiraServerCfg jiraServer) {
+
+		if (projectConfigurationBean != null && projectConfigurationBean.getJiraConfiguration() != null) {
+			JiraFiltersBean bean = projectConfigurationBean.getJiraConfiguration()
+					.getJiraFilters(jiraServer.getServerId().toString());
+
+			if (bean != null) {
+				listModel.setManualFilter(jiraServer, getFragments(bean.getManualFilter()));
+			}
+		}
+	}
+
 	public class JIRAServerFiltersBuilderException extends Exception {
 		Map<JiraServerCfg, JIRAException> exceptions = new HashMap<JiraServerCfg, JIRAException>();
 
@@ -77,5 +98,21 @@ public class JIRAServerFiltersBuilder {
 		public Map<JiraServerCfg, JIRAException> getExceptions() {
 			return exceptions;
 		}
+	}
+
+	private static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query){
+		List<JIRAQueryFragment> fragments = new ArrayList<JIRAQueryFragment>();
+
+		for (JiraFilterEntryBean filterMapBean : query) {
+			Map<String, String> filter = filterMapBean.getFilterEntry();
+			String className = filter.get("filterTypeClass");
+			try {
+				Class<?> c = Class.forName(className);
+				fragments.add((JIRAQueryFragment) c.getConstructor(Map.class).newInstance(filter));
+			} catch (Exception e) {
+				LoggerImpl.getInstance().error(e);
+			}
+		}
+		return fragments;
 	}
 }

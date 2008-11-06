@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class JIRAFilterListModel {
 	Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
-	List<JIRAFiltersListModelListener> listeners = new ArrayList<JIRAFiltersListModelListener>();
+	List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 
 	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters){
 
@@ -45,27 +45,35 @@ public class JIRAFilterListModel {
 		}
 	}
 
-	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer) {
+	public List<JiraServerCfg> getJIRAServers(){
+		return new ArrayList<JiraServerCfg>(serversFilters.keySet());
+	}
+
+	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer){
 		if (serversFilters.containsKey(jiraServer)){
 			return serversFilters.get(jiraServer).getSavedFilters();
 		}
 		return null;
 	}
 
-	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer) {
+	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer){
 		if (serversFilters.containsKey(jiraServer)){
 			return serversFilters.get(jiraServer).getManualFilter();
 		}
 
 		return null;
 	}
-	public void notifyListeners(){
-		for (JIRAFiltersListModelListener l : listeners) {
-			l.modelChanged(this);
-		}
-	}
-	
-	public void addModelListener(JIRAFiltersListModelListener listener){
+
+
+	public void notifyListeners() {
+
+		for (JIRAFilterListModelListener listener : listeners) {
+
+			listener.modelChanged(this);
+	}}
+
+	public void addModelListener(JIRAFilterListModelListener listener){
+
 		listeners.add(listener);
 
 
