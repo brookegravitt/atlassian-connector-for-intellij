@@ -28,9 +28,9 @@ public class AtlassianTreeModel extends DefaultTreeModel {
         super(root);
 	}
 
-	public AtlassianTreeNode locateNode(NodeSearchAlgorithm alg) {
-		return AtlassianTreeModel.locateNode(getRoot(), alg);
-	}
+//	public AtlassianTreeNode locateNode(NodeSearchAlgorithm alg) {
+//		return AtlassianTreeModel.locateNode(getRoot(), alg);
+//	}
 
 	public AtlassianTreeModel getFilteredModel(Filter filter) {
 		AtlassianTreeNode root = getRoot();
@@ -58,37 +58,37 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 
 	}
 
-	public void removeNode(AtlassianTreeNode node, AtlassianTreeNode parent) {
-//		int[] idx = {parent.getIndex(node)};
-		List<AtlassianTreeNode> children = createChildrenList(parent);
-		removeAndSignal(parent, children);
-//		parent.removeAllChildren();
-		children.remove(node);
-		fillAndSignal(parent, children);
-
-		
-
-//		nodesWereRemoved(parent, idx, new Object[] { node });
-	}
-
-	public void replaceNode(AtlassianTreeNode node, AtlassianTreeNode replaceWith) {
-
-		AtlassianTreeNode parent = (AtlassianTreeNode) node.getParent();
-
-		int[] idxOld = {parent.getIndex(node)};
-
-		List<AtlassianTreeNode> children = createChildrenList(parent);
-		removeAndSignal(parent, children);
-//		parent.removeAllChildren();
-		children.remove(node);
-		children.add(replaceWith);
-		fillAndSignal(parent, children);
-
-//		int[] idxNew = {parent.getIndex(replaceWith)};
+//	public void removeNode(AtlassianTreeNode node, AtlassianTreeNode parent) {
+////		int[] idx = {parent.getIndex(node)};
+//		List<AtlassianTreeNode> children = createChildrenList(parent);
+//		removeAndSignal(parent, children);
+////		parent.removeAllChildren();
+//		children.remove(node);
+//		fillAndSignal(parent, children);
 //
-//		nodesWereRemoved(parent, idxOld, new Object[] { node });
-//		nodesWereInserted(parent, idxNew);
-	}
+//
+//
+////		nodesWereRemoved(parent, idx, new Object[] { node });
+//	}
+
+//	public void replaceNode(AtlassianTreeNode node, AtlassianTreeNode replaceWith) {
+//
+//		AtlassianTreeNode parent = (AtlassianTreeNode) node.getParent();
+//
+//		int[] idxOld = {parent.getIndex(node)};
+//
+//		List<AtlassianTreeNode> children = createChildrenList(parent);
+//		removeAndSignal(parent, children);
+////		parent.removeAllChildren();
+//		children.remove(node);
+//		children.add(replaceWith);
+//		fillAndSignal(parent, children);
+//
+////		int[] idxNew = {parent.getIndex(replaceWith)};
+////
+////		nodesWereRemoved(parent, idxOld, new Object[] { node });
+////		nodesWereInserted(parent, idxNew);
+//	}
 
 	private List<AtlassianTreeNode> createChildrenList(AtlassianTreeNode parent) {
 		List<AtlassianTreeNode> children = new ArrayList<AtlassianTreeNode>();
@@ -122,19 +122,19 @@ public class AtlassianTreeModel extends DefaultTreeModel {
 
 		nodesWereInserted(parent, indexes);
 	}
-
-	private static AtlassianTreeNode locateNode(AtlassianTreeNode startingNode, NodeSearchAlgorithm alg) {
-		if (alg.check(startingNode)) {
-			return startingNode;
-		}
-		for (int i = 0; i < startingNode.getChildCount(); i++) {
-			AtlassianTreeNode result = locateNode(startingNode.getChildAt(i), alg);
-			if (result != null) {
-				return result;
-			}
-		}
-		return null;
-	}
+//
+//	private static AtlassianTreeNode locateNode(AtlassianTreeNode startingNode, NodeSearchAlgorithm alg) {
+//		if (alg.check(startingNode)) {
+//			return startingNode;
+//		}
+//		for (int i = 0; i < startingNode.getChildCount(); i++) {
+//			AtlassianTreeNode result = locateNode(startingNode.getChildAt(i), alg);
+//			if (result != null) {
+//				return result;
+//			}
+//		}
+//		return null;
+//	}
 
 
 }
