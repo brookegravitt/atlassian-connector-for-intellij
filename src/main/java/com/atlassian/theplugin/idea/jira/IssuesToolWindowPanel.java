@@ -270,7 +270,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			public void run(final ProgressIndicator indicator) {
 				jiraServerCache.clear();
 
-				for (JiraServerCfg server : IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+				for (JiraServerCfg server : IdeaHelper.getCfgManager()
+						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 
@@ -286,30 +287,20 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					String serverStr = "[" + server.getName() + "] ";
 					setMessage(serverStr + "Retrieving saved filters...");
 					jiraServer.getSavedFilters();
-
 					setMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
-
 					setMessage(serverStr + "Retrieving issue types...");
 					jiraServer.getIssueTypes();
-
 					setMessage(serverStr + "Retrieving statuses...");
 					jiraServer.getStatuses();
-
 					setMessage(serverStr + "Retrieving resolutions...");
 					jiraServer.getResolutions();
-
 					setMessage(serverStr + "Retrieving priorities...");
 					jiraServer.getPriorieties();
-
 					setMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
-
 					jiraServerCache.put(server, jiraServer);
 				}
-
-				//refreshFilterModel();
-
 				SwingUtilities.invokeLater(new Runnable() {
 
 					public void run() {
@@ -318,9 +309,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					}
 				});
 			}
-
 		};
-
 		ProgressManager.getInstance().run(task);
 	}
 
