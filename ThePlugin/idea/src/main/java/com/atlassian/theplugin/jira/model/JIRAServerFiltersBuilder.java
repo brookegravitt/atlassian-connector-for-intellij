@@ -43,7 +43,7 @@ public class JIRAServerFiltersBuilder {
 		this.listModel = listModel;
 	}
 
-	public void setConfigurationBean(@NotNull ProjectConfigurationBean projectConfigurationBean) {
+	public void setProjectConfigurationBean(@NotNull ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 	}
 
