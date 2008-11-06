@@ -19,5 +19,5 @@ package com.atlassian.theplugin.jira.model;
  * User: pmaruszak
  */
 public interface JIRAFilterListModelListener {
-	void modelChanged(JIRAFilterListModel listModel);
+	void modelChanged();
 }
