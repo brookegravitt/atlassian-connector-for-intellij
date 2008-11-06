@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -63,7 +64,15 @@ public class JIRARssClient extends AbstractHttpSession {
 
         StringBuffer url = new StringBuffer(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
 
-        for (JIRAQueryFragment fragment : fragments) {
+
+	    List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
+	    for (JIRAQueryFragment jiraQueryFragment : fragments) {
+		    if (jiraQueryFragment.getId() != JIRAServer.ANY_ID) {
+			    fragmentsWithoutAnys.add(jiraQueryFragment);
+		    }
+	    }
+
+        for (JIRAQueryFragment fragment : fragmentsWithoutAnys) {
             if (fragment.getQueryStringFragment() != null) {
                 url.append("&").append(fragment.getQueryStringFragment());
             }

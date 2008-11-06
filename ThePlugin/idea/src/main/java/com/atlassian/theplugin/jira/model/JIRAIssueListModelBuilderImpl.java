@@ -3,6 +3,7 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
@@ -39,6 +40,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void setServer(JiraServerCfg server) {
 		this.server = server;
+	}
+
+	public JiraServerCfg getServer() {
+		return server;
 	}
 
 	public void setSavedFilter(JIRASavedFilter filter) {
