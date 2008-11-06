@@ -110,7 +110,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		add(splitPane, BorderLayout.CENTER);
 
 		jiraIssueListModelBuilder.setModel(jiraIssueListModel);
-		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setModel(jiraFilterListModel);
+		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setListModel(jiraFilterListModel);
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setProjectId(CfgUtil.getProjectId(project));
 		IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).setConfiguration(projectConfigurationBean);
 
