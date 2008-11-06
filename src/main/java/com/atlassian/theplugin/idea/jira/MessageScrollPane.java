@@ -13,7 +13,7 @@ import java.awt.*;
 public class MessageScrollPane extends JScrollPane implements MessageStatusDisplay {
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 
-	JEditorPane pane = new JEditorPane();
+	private JEditorPane pane = new JEditorPane();
 	//List<MessageStatusDisplay> listeners = new ArrayList<MessageStatusDisplay>();
 
 	public MessageScrollPane(String initialText) {
