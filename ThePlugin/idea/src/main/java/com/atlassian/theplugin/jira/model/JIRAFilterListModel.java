@@ -42,17 +42,17 @@ public class JIRAFilterListModel {
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
 			serverFilters.setManualFilter(filter);
 			serversFilters.put(jiraServer, serverFilters);
-		};
+		}
 	}
 
-	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer){
+	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer) {
 		if (serversFilters.containsKey(jiraServer)){
 			return serversFilters.get(jiraServer).getSavedFilters();
 		}
 		return null;
 	}
 
-	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer){
+	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer) {
 		if (serversFilters.containsKey(jiraServer)){
 			return serversFilters.get(jiraServer).getManualFilter();
 		}
