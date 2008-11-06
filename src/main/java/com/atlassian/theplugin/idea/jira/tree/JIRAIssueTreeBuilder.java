@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 import java.util.Map;
 
 public class JIRAIssueTreeBuilder {
@@ -15,7 +15,12 @@ public class JIRAIssueTreeBuilder {
 	private JIRAIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private DefaultTreeModel treeModel;
+
 	private Map<String, String> projectKeysToNames;
+
+	public void setProjectKeysToNames(final Map<String, String> projectKeysToNames) {
+		this.projectKeysToNames = projectKeysToNames;
+	}
 
 	public JIRAIssueTreeBuilder(JIRAIssueGroupBy groupBy, JIRAIssueListModel model) {
 		this.groupBy = groupBy;
@@ -27,7 +32,7 @@ public class JIRAIssueTreeBuilder {
 	}
 
 	public void setProjectNamesMapping(Map<String, String> projectKeysToNames) {
-		this.projectKeysToNames = projectKeysToNames;	
+		setProjectKeysToNames(projectKeysToNames);	
 	}
 
 	public void rebuild(JTree tree) {
