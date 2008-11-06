@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.jira;
-
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+package com.atlassian.theplugin.jira.model;
 
 /**
  * User: pmaruszak
  */
-public interface MessageScrollPaneListener {
-	void updateStatus(BuildStatus generalBuildStatus, BambooPopupInfo info);
+public interface JIRAFilterListModelListener {
+	void modelChanged(JIRAFilterListModel listModel);
 }
