@@ -15,7 +15,7 @@ public class JIRATreeNode extends JIRAAbstractTreeNode {
 		this.issue = issue;
 	}
 
-	private class SelectableLabel extends JLabel {
+	private final class SelectableLabel extends JLabel {
 		private SelectableLabel(boolean selected, String text) {
 			this(selected, text, null, SwingConstants.LEADING);
 		}
