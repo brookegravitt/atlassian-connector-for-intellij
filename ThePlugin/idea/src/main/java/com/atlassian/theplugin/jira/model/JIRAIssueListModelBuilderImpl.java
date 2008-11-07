@@ -59,6 +59,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void addIssuesToModel(int size, boolean reload) throws JIRAException {
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
+			model.notifyListeners();
 			return;
 		}
 

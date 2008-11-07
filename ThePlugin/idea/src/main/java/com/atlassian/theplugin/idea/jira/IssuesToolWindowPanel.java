@@ -8,12 +8,15 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -22,20 +25,20 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -124,18 +127,22 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(issueTree, issuesPanel);
-						expandAll();
+						expandAllIssueTreeNodes();
 						messagePane.setStatus("Loaded " + jiraIssueListModel.getIssues().size() + " issues");
 					}
 				});
 			}
 		});
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-			public void modelChanged() {
+			public void modelChanged(JIRAFilterListModel listModel) {
+			}
 
-				//
-				// todo: temporary
-				//
+			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
+				// todo
+			}
+
+			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
 			}
 		});
@@ -171,13 +178,17 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 	}
 
-	public void refreshIssues() {
-		Collection<JiraServerCfg> servers =
-				IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project));
-		JiraServerCfg server = servers.iterator().next();
+	public void setIssuesFilterParams(JiraServerCfg server, List<JIRAQueryFragment> manualFilter) {
 		jiraIssueListModelBuilder.setServer(server);
-		jiraIssueListModelBuilder.setCustomFilter(jiraFilterListModel.getManualFilter(server));
+		jiraIssueListModelBuilder.setCustomFilter(manualFilter);
+	}
 
+	public void setIssuesFilterParams(JiraServerCfg server, JIRASavedFilter savedFilter) {
+		jiraIssueListModelBuilder.setServer(server);
+		jiraIssueListModelBuilder.setSavedFilter(savedFilter);
+	}
+
+	public void refreshIssues() {
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving issues", false) {
 			public void run(final ProgressIndicator indicator) {
 				try {
@@ -210,13 +221,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return issueTree;
 	}
 
-	public void expandAll() {
+	public void expandAllIssueTreeNodes() {
 		for (int i = 0; i < issueTree.getRowCount(); i++) {
 			issueTree.expandRow(i);
 		}
 	}
 
-	public void collapseAll() {
+	public void collapseAllIssueTreeNodes() {
 		for (int i = 0; i < issueTree.getRowCount(); i++) {
 			issueTree.collapseRow(i);
 		}
@@ -262,7 +273,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createJiraServersTree(JIRAFilterListModel listModel) {
-		return null; // new JIRAFilterTree(listModel);
+		return new JIRAFilterTree(listModel);
 	}
 
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
@@ -299,13 +310,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraServer.getPriorieties();
 					setMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
+					setMessage("");
 					jiraServerCache.put(server, jiraServer);
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 
 					public void run() {
 						refreshFilterModel();
-						jiraFilterListModel.notifyListeners();
+						jiraFilterListModel.fireModelChanged();
 					}
 				});
 			}
@@ -335,6 +347,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		this.groupBy = groupBy;
 		issueTreeBuilder.setGroupBy(groupBy);
 		issueTreeBuilder.rebuild(issueTree, issuesPanel);
-		expandAll();
+		expandAllIssueTreeNodes();
 	}
 }
