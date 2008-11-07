@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 
@@ -8,20 +10,25 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.TreeCellRenderer;
 import java.util.Map;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class JIRAIssueTreeBuilder {
 
 	private JIRAIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private DefaultTreeModel treeModel;
+	private static final TreeCellRenderer TREE_RENDERER = new JIRAIssueTreeRenderer();
+	private JTree lastTree;
 
 	private Map<String, String> projectKeysToNames;
-
 
 	public JIRAIssueTreeBuilder(JIRAIssueGroupBy groupBy, JIRAIssueListModel model) {
 		this.groupBy = groupBy;
 		this.issueModel = model;
+		lastTree = null;
 	}
 
 	public void setGroupBy(JIRAIssueGroupBy groupBy) {
@@ -32,45 +39,85 @@ public class JIRAIssueTreeBuilder {
 		this.projectKeysToNames = projectKeysToNames;
 	}
 
-	public void rebuild(JTree tree) {
+	public void rebuild(JTree tree, JPanel treeParent) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		reCreateTree(tree, root);
+		reCreateTree(tree, treeParent, root);
 		for (JIRAIssue issue : issueModel.getIssues()) {
 			getPlace(issue, root).add(new JIRAIssueTreeNode(issue));
 		}
 		treeModel.nodeStructureChanged(root);
 	}
 
-	private void reCreateTree(JTree tree, DefaultMutableTreeNode root) {
+	private void reCreateTree(JTree tree, JPanel treeParent, DefaultMutableTreeNode root) {
 		tree.removeAll();
 		treeModel = new DefaultTreeModel(root);
 		tree.setModel(treeModel);
-		tree.setShowsRootHandles(true);
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setRootVisible(false);
+		registerUI(tree);
+		if (this.lastTree != tree) {
+			this.lastTree = tree;
+			tree.setShowsRootHandles(true);
+			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			initializeUI(tree, treeParent);
+			tree.setRootVisible(false);
+		}
 	}
+
+	//
+	// voodoo magic below - makes the lastTree node as wide as the whole panel. Somehow. Like I said - it is magic.
+	//
+
+	public void initializeUI(final JTree tree, final JPanel treeParent) {
+		registerUI(tree);
+		treeParent.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if (tree.isVisible()) {
+					registerUI(tree);
+				}
+			}
+		});
+	}
+
+	private void registerUI(JTree tree) {
+		tree.setUI(new MyTreeUI());
+	}
+
+	private class MyTreeUI extends BasicWideNodeTreeUI {
+		@Override
+		protected TreeCellRenderer createDefaultCellRenderer() {
+			return TREE_RENDERER;
+		}
+	}
+
+	//
+	// end of voodoo magic
+	//
 
 	private DefaultMutableTreeNode getPlace(JIRAIssue issue, DefaultMutableTreeNode root) {
 		String name;
+		String iconUrl = null;
 		switch (groupBy) {
 			case PRIORITY:
 				name = issue.getPriority();
+				iconUrl = issue.getPriorityIconUrl();
 				break;
 			case PROJECT:
 				name = getProjectName(issue.getProjectKey());
 				break;
 			case STATUS:
 				name = issue.getStatus();
+				iconUrl = issue.getStatusTypeUrl();
 				break;
 			case TYPE:
 				name = issue.getType();
+				iconUrl = issue.getTypeIconUrl();
 				break;
 			default:
 				return root;
 		}
 		DefaultMutableTreeNode n = findGroupNode(root, name);
 		if (n == null) {
-			n = new DefaultMutableTreeNode(name);
+			n = new JIRAIssueGroupTreeNode(name, CachedIconLoader.getIcon(iconUrl));
 			root.add(n);
 		}
 		return n;
@@ -86,7 +133,7 @@ public class JIRAIssueTreeBuilder {
 
 	private DefaultMutableTreeNode findGroupNode(DefaultMutableTreeNode root, String name) {
 		for (int i = 0; i < treeModel.getChildCount(root); ++i) {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) treeModel.getChild(root, i);
+			JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) treeModel.getChild(root, i);
 			if (node.toString().equals(name)) {
 				return node;
 			}
