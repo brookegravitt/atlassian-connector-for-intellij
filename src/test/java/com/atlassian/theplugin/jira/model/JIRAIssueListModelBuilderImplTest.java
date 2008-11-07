@@ -46,7 +46,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 	    try {
-		    builder.addIssuesToModel(2);
+		    builder.addIssuesToModel(2, true);
 		    assertEquals(0, model.getIssues().size());
 		    builder.setServer(new JiraServerCfg("test", new ServerId()));
 		    assertEquals(0, model.getIssues().size());
@@ -63,9 +63,9 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setServer(new JiraServerCfg("test", new ServerId()));
 		builder.setSavedFilter(new JIRASavedFilterBean("test", 0));
 		try {
-			builder.addIssuesToModel(25);
-			builder.addIssuesToModel(25);
-			builder.addIssuesToModel(25);
+			builder.addIssuesToModel(25, true);
+			builder.addIssuesToModel(25, false);
+			builder.addIssuesToModel(25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -83,8 +83,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		query.add(new JIRAProjectBean());
 		builder.setCustomFilter(query);
 		try {
-			builder.addIssuesToModel(25);
-			builder.addIssuesToModel(25);
+			builder.addIssuesToModel(25, true);
+			builder.addIssuesToModel(25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -111,7 +111,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			}
 		});
 		try {
-			builder.addIssuesToModel(25);
+			builder.addIssuesToModel(25, true);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -127,9 +127,9 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setServer(new JiraServerCfg("test", new ServerId()));
 		builder.setSavedFilter(new JIRASavedFilterBean("test", 0));
 		try {
-			builder.addIssuesToModel(25);
-			builder.addIssuesToModel(25);
-			builder.addIssuesToModel(25);
+			builder.addIssuesToModel(25, true);
+			builder.addIssuesToModel(25, false);
+			builder.addIssuesToModel(25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}

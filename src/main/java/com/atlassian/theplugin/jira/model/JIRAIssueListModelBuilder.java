@@ -14,7 +14,7 @@ public interface JIRAIssueListModelBuilder {
 	JiraServerCfg getServer();
 	void setSavedFilter(JIRASavedFilter filter);
 	void setCustomFilter(List<JIRAQueryFragment> query);
-	void addIssuesToModel(int size) throws JIRAException;
+	void addIssuesToModel(int size, boolean reload) throws JIRAException;
 	void updateIssue(JIRAIssue issue) throws JIRAException;
 	void reset();
 }
