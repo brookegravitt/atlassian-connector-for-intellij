@@ -235,7 +235,11 @@ public class JIRAIssueBean implements JIRAIssue {
         return typeUrl;
     }
 
-    public String getDescription() {
+	public void setTypeIconUrl(String typeUrl) {
+		this.typeUrl = typeUrl;
+	}
+
+	public String getDescription() {
         return description;
     }
 

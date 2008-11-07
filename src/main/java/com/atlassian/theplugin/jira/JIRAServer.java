@@ -105,6 +105,32 @@ public class JIRAServer {
         return projects;
     }
 
+	public JIRAIssueBean fixupIssue(JIRAIssue issueWithKey, JIRAIssue issueWithInfo) {
+		JIRAIssueBean newIssue = new JIRAIssueBean(issueWithInfo);
+		newIssue.setKey(issueWithKey.getKey());
+		for (JIRAConstant type : getIssueTypes()) {
+			if (type.getId() == Long.valueOf(newIssue.getTypeConstant().getId())) {
+				newIssue.setType(type);
+				newIssue.setTypeIconUrl(type.getIconUrl().toString());
+				break;
+			}
+		}
+//		for (JIRAConstant status : getStatuses()) {
+//			if (status.getId() == Long.valueOf(issue.getStatusConstant().getId())) {
+//				newIssue.setStatus(status);
+//				break;
+//			}
+//		}
+//		for (JIRAConstant type : getIssueTypes()) {
+//			if (type.getId() == Long.valueOf(issue.getTypeConstant().getId())) {
+//				newIssue.setType(type);
+//				newIssue.setTypeIconUrl(type.getIconUrl().toString());
+//				break;
+//			}
+//		}
+		return newIssue;
+	}
+
     public List<JIRAConstant> getStatuses() {
         if (statuses == null) {
             try {
