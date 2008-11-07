@@ -52,11 +52,13 @@ public class JIRAServerFiltersBuilder {
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 		for (JiraServerCfg jiraServer : IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)) {
 			try {
-				refreshManualFilter(jiraServer);
 				refreshServerSavedFilter(jiraServer);
+
 			} catch (JIRAException exc) {
 				e.addException(jiraServer, exc);
 			}
+
+			refreshManualFilter(jiraServer);
 		}
 		if (!e.getExceptions().isEmpty()) {
 			throw e;

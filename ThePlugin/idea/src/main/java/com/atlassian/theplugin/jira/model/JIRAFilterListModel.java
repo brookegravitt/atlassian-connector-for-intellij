@@ -16,6 +16,16 @@ import java.util.Map;
 public class JIRAFilterListModel {
 	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
+	private JiraServerCfg jiraSelectedServer;
+	private JIRASavedFilter jiraSelectedSavedFilter;
+
+	public void selectSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+		if (serversFilters.containsKey(jiraServer) && getSavedFilters(jiraServer).contains(savedFilter)) {
+			this.jiraSelectedServer = jiraServer;
+			this.jiraSelectedSavedFilter = savedFilter;
+			fireSavedFilterSelected();
+		}
+	}
 
 	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters) {
 
@@ -64,12 +74,17 @@ public class JIRAFilterListModel {
 		return null;
 	}
 
+	public void fireSavedFilterSelected(){
+		for (JIRAFilterListModelListener listener : listeners){
+			listener.selectedSavedFilter(jiraSelectedServer, jiraSelectedSavedFilter);
+		}
+	}
 
-	public void notifyListeners() {
+	public void fireModelChanged() {
 
 		for (JIRAFilterListModelListener listener : listeners) {
 
-			listener.modelChanged();
+			listener.modelChanged(this);
 	}}
 
 	public void addModelListener(JIRAFilterListModelListener listener) {
