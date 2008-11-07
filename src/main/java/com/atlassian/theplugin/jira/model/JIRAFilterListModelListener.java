@@ -15,9 +15,17 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+
+import java.util.List;
+
 /**
  * User: pmaruszak
  */
 public interface JIRAFilterListModelListener {
-	void modelChanged();
+	void modelChanged(JIRAFilterListModel listModel);
+	void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter);
+	void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter);
 }

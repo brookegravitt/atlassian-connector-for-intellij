@@ -1,19 +1,19 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
-import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.TreeCellRenderer;
-import java.util.Map;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Map;
 
 public class JIRAIssueTreeBuilder {
 
@@ -43,7 +43,7 @@ public class JIRAIssueTreeBuilder {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		reCreateTree(tree, treeParent, root);
 		for (JIRAIssue issue : issueModel.getIssues()) {
-			getPlace(issue, root).add(new JIRAIssueTreeNode(issue));
+			getPlace(issue, root).add(new JIRATreeNode(issue));
 		}
 		treeModel.nodeStructureChanged(root);
 	}
@@ -117,7 +117,7 @@ public class JIRAIssueTreeBuilder {
 		}
 		DefaultMutableTreeNode n = findGroupNode(root, name);
 		if (n == null) {
-			n = new JIRAIssueGroupTreeNode(name, CachedIconLoader.getIcon(iconUrl));
+			n = new JIRAGroupTreeNode(name, CachedIconLoader.getIcon(iconUrl));
 			root.add(n);
 		}
 		return n;
@@ -133,7 +133,7 @@ public class JIRAIssueTreeBuilder {
 
 	private DefaultMutableTreeNode findGroupNode(DefaultMutableTreeNode root, String name) {
 		for (int i = 0; i < treeModel.getChildCount(root); ++i) {
-			JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) treeModel.getChild(root, i);
+			JIRAGroupTreeNode node = (JIRAGroupTreeNode) treeModel.getChild(root, i);
 			if (node.toString().equals(name)) {
 				return node;
 			}
