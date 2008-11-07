@@ -206,6 +206,8 @@ public class JIRASessionImpl implements JIRASession {
 			}
 			issueBean.setComponents(c);
 
+			issueBean.setProjectKey(rIssue.getProject());
+			issueBean.setSummary(rIssue.getSummary());
 			return issueBean;
 
 		} catch (RemoteException e) {
