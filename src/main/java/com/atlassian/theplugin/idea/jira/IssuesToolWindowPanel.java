@@ -23,11 +23,14 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Key;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -78,11 +81,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		add(messagePane, BorderLayout.SOUTH);
 
 
-		//filter mode have to be created before createServerContent method
-		
-		this.jiraFilterListModel = new JIRAFilterListModel();
-		this.jiraIssueListModel = JIRAIssueListModelImpl.createInstance();
-
 		groupBy = JIRAIssueGroupBy.TYPE;
 
 		jiraFilterListModel = new JIRAFilterListModel();
@@ -125,8 +123,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							projectMap.put(p.getKey(), p.getName());
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
-						issueTreeBuilder.rebuild(issueTree);
+						issueTreeBuilder.rebuild(issueTree, issuesPanel);
 						expandAll();
+						messagePane.setStatus("Loaded " + jiraIssueListModel.getIssues().size() + " issues");
 					}
 				});
 			}
@@ -141,6 +140,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		});
 
+		messagePane.addMoreListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				Messages.showErrorDialog("This feature is not implemented yet, see bug PL-804", "Not Implemented");
+			}
+		});
 		refreshModels();
 	}
 
@@ -163,7 +167,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			IdeaHelper.getProjectComponent(project, JIRAServerFiltersBuilder.class).refreshFiltersAll();
 		} catch (JIRAServerFiltersBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
-			setStatusMessage("Some Jira servers do not returnerd saved filters with error", true);
+			setMessage("Some Jira servers did not return saved filters", true);
 		}
 	}
 
@@ -177,10 +181,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving issues", false) {
 			public void run(final ProgressIndicator indicator) {
 				try {
-					jiraIssueListModelBuilder.reset();
-					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE);
+					messagePane.setStatus("Loading issues...");
+					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, true);
 				} catch (JIRAException e) {
-					setStatusMessage(e.getMessage(), true);
+					setMessage(e.getMessage(), true);
 				}
 			}
 		};
@@ -192,7 +196,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		issuesPanel = new JPanel(new BorderLayout());
 
 		JScrollPane scrollPane = new JScrollPane(createIssuesTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setWheelScrollingEnabled(true);
 
 		issuesPanel.add(scrollPane, BorderLayout.CENTER);
@@ -202,7 +206,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private JTree createIssuesTree() {
 		issueTree = new JTree();
-		issueTreeBuilder.rebuild(issueTree);
+		issueTreeBuilder.rebuild(issueTree, issuesPanel);
 		return issueTree;
 	}
 
@@ -319,8 +323,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		messagePane.setMessage(message);
 	}
 
-	public void setStatusMessage(final String msg, final boolean isError) {
-		messagePane.setStatusMessage(msg, isError);
+	public void setMessage(final String msg, final boolean isError) {
+		messagePane.setMessage(msg, isError);
 	}
 
 	public JIRAIssueGroupBy getGroupBy() {
@@ -330,7 +334,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	public void setGroupBy(JIRAIssueGroupBy groupBy) {
 		this.groupBy = groupBy;
 		issueTreeBuilder.setGroupBy(groupBy);
-		issueTreeBuilder.rebuild(issueTree);
+		issueTreeBuilder.rebuild(issueTree, issuesPanel);
 		expandAll();
 	}
 }

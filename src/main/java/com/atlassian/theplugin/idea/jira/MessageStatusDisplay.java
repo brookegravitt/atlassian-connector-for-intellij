@@ -20,6 +20,6 @@ package com.atlassian.theplugin.idea.jira;
  */
 public interface MessageStatusDisplay {
 	void setMessage(String message);
-	void setStatusMessage(String msg, boolean isError);
-	
+	void setMessage(String msg, boolean isError);
+	void setStatus(String message);
 }

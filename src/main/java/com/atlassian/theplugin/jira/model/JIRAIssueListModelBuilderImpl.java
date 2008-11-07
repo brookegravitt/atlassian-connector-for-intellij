@@ -57,11 +57,16 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		startFrom = 0;
 	}
 
-	public void addIssuesToModel(int size) throws JIRAException {
+	public void addIssuesToModel(int size, boolean reload) throws JIRAException {
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			return;
 		}
 
+		if (reload) {
+			startFrom = 0;
+			model.clear();
+		}
+		
 		List<JIRAIssue> l = null;
 		if (customFilter != null) {
 			l = facade.getIssues(server, customFilter, SORT_BY, SORT_ORDER, startFrom, size);

@@ -52,8 +52,8 @@ public class JIRAServerFiltersBuilder {
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 		for (JiraServerCfg jiraServer : IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)) {
 			try {
-				refreshServerSavedFilter(jiraServer);
 				refreshManualFilter(jiraServer);
+				refreshServerSavedFilter(jiraServer);
 			} catch (JIRAException exc) {
 				e.addException(jiraServer, exc);
 			}
