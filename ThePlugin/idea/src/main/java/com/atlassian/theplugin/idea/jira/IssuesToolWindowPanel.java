@@ -13,10 +13,7 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -62,6 +59,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
+	private JIRAServer currentJIRAServer;
 
 	public MessageScrollPane getMessagePane() {
 		return messagePane;
@@ -138,10 +136,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
+				currentJIRAServer = jiraServerCache.get(jiraServer);
 				// todo
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+				currentJIRAServer = jiraServerCache.get(jiraServer);
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
 			}
@@ -310,7 +310,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraServer.getPriorieties();
 					setMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
-					setMessage("");
+					setMessage(serverStr + "Metadata query finished");
 					jiraServerCache.put(server, jiraServer);
 				}
 				SwingUtilities.invokeLater(new Runnable() {
@@ -348,5 +348,67 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		issueTreeBuilder.setGroupBy(groupBy);
 		issueTreeBuilder.rebuild(issueTree, issuesPanel);
 		expandAllIssueTreeNodes();
+	}
+
+	public JIRAServer getCurrentJIRAServer() {
+		return currentJIRAServer;
+	}
+
+	public boolean canCreateIssue() {
+		return currentJIRAServer != null;
+	}
+
+	public void createIssue() {
+		if (currentJIRAServer != null) {
+			final IssueCreate issueCreate = new IssueCreate(currentJIRAServer);
+			final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+
+			issueCreate.initData();
+			issueCreate.show();
+			if (issueCreate.isOK()) {
+
+				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
+					public void run(final ProgressIndicator indicator) {
+						setMessage("Creating new issue...");
+						String message;
+						boolean isError = false;
+						try {
+							JIRAIssue issueToCreate = issueCreate.getJIRAIssue();
+							JIRAIssue createdIssue = jiraServerFacade.createIssue(currentJIRAServer.getServer(),
+									issueToCreate);
+
+							JIRAIssueBean newIssue = (JIRAIssueBean) jiraServerFacade.getIssueDetails(
+									currentJIRAServer.getServer(), createdIssue);
+							newIssue = currentJIRAServer.fixupIssue(newIssue, issueToCreate);
+
+							message =
+									"New issue created: <a href="
+											+ newIssue.getIssueUrl()
+											+ ">"
+											+ newIssue.getKey()
+											+ "</a>";
+
+							jiraIssueListModel.addIssue(newIssue);
+
+							jiraIssueListModel.notifyListeners();
+						} catch (JIRAException e) {
+							message = "Failed to create new issue: " + e.getMessage();
+							isError = true;
+						}
+
+						final String msg = message;
+						final boolean error = isError;
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								setMessage(msg, error);
+							}
+						});
+					}
+				};
+
+				ProgressManager.getInstance().run(createTask);
+			}
+		}
+
 	}
 }

@@ -74,8 +74,8 @@ public class JIRAFilterListModel {
 		return null;
 	}
 
-	public void fireSavedFilterSelected(){
-		for (JIRAFilterListModelListener listener : listeners){
+	public void fireSavedFilterSelected() {
+		for (JIRAFilterListModelListener listener : listeners) {
 			listener.selectedSavedFilter(jiraSelectedServer, jiraSelectedSavedFilter);
 		}
 	}
