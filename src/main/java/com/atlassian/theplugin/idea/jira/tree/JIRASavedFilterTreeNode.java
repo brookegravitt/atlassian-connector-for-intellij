@@ -18,7 +18,7 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 	private JIRAFilterListModel listModel;
 
 
-	public JIRASavedFilterTreeNode(final JIRAFilterListModel listModel, final JIRASavedFilter savedFilter){
+	public JIRASavedFilterTreeNode(final JIRAFilterListModel listModel, final JIRASavedFilter savedFilter) {
 		this.listModel = listModel;
 		this.savedFilter = savedFilter;
 	}
@@ -27,7 +27,8 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 		return savedFilter.getName();
 	}
 
-	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
+	public JComponent getRenderer(final JComponent c, final boolean selected,
+	                              final boolean expanded, final boolean hasFocus) {
 		SimpleColoredComponent component = new SimpleColoredComponent();
 		component.append(savedFilter.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
@@ -40,7 +41,7 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 
 	public void onSelect() {
 		
-		listModel.selectSavedFilter(((JIRAServerTreeNode)getParent()).getJiraServer(), savedFilter);
+		listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
 	}
 
 

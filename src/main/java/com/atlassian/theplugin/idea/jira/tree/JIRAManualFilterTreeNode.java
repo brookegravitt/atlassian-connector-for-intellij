@@ -14,7 +14,7 @@ public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {
 	private static final Icon JIRA_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
 	private String name;
 
-	public JIRAManualFilterTreeNode(final String name){
+	public JIRAManualFilterTreeNode(final String name) {
 		this.name = name;
 	}
 
@@ -22,7 +22,8 @@ public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {
 		return name;
 	}
 
-	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
+	public JComponent getRenderer(final JComponent c, final boolean selected,
+	                              final boolean expanded, final boolean hasFocus) {
 		SimpleColoredComponent component = new SimpleColoredComponent();
 		component.append(name, SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
