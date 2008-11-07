@@ -288,7 +288,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-					//@todo
 //					if (!jiraServer.checkServer()) {
 //						//setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
 //						EventQueue.invokeLater(
@@ -314,7 +313,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraServerCache.put(server, jiraServer);
 				}
 				SwingUtilities.invokeLater(new Runnable() {
-
 					public void run() {
 						refreshFilterModel();
 						jiraFilterListModel.fireModelChanged();

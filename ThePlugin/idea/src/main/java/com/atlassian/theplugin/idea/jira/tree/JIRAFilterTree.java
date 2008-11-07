@@ -37,10 +37,10 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setCellRenderer(MY_RENDERER);
 		expandAll();
-		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener(){
+		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 
 			public void valueChanged(final TreeSelectionEvent event) {
-				((JIRAAbstractTreeNode)getSelectionModel().getSelectionPath().getLastPathComponent()).onSelect();
+				((JIRAAbstractTreeNode) getSelectionModel().getSelectionPath().getLastPathComponent()).onSelect();
 			}
 		});
 	}
@@ -75,7 +75,8 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
+	public void selectedManualFilter(final JiraServerCfg jiraServer,
+	                                 final java.util.List<JIRAQueryFragment> manualFilter) {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
@@ -93,8 +94,9 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 
-	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel listModel){
-		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)){
+	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node,
+	                               JIRAFilterListModel listModel) {
+		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
 			node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
 		}
 		//@todo refactor to separate class
