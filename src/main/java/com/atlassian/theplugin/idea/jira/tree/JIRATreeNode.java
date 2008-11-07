@@ -9,6 +9,7 @@ import java.awt.*;
 
 public class JIRATreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssue issue;
+	private static final int GAP = 6;
 
 	public JIRATreeNode(JIRAIssue issue) {
 		this.issue = issue;
@@ -36,7 +37,7 @@ public class JIRATreeNode extends JIRAAbstractTreeNode {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0.0;
-		gbc.insets = new Insets(0, 0, 0, 6);
+		gbc.insets = new Insets(0, 0, 0, GAP);
 		gbc.fill = GridBagConstraints.NONE;
 		JLabel icon = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.LEADING);
 		icon.setOpaque(true);
@@ -63,7 +64,7 @@ public class JIRATreeNode extends JIRAAbstractTreeNode {
 
 		gbc.gridx++;
 		gbc.weightx = 0.0;
-		gbc.insets = new Insets(0, 0, 0, 6);
+		gbc.insets = new Insets(0, 0, 0, GAP);
 		JLabel prio = new SelectableLabel(selected, "",
 				CachedIconLoader.getIcon(issue.getPriorityIconUrl()), SwingConstants.LEADING);
 		p.add(prio, gbc);
