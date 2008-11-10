@@ -243,7 +243,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		CellConstraints cc = new CellConstraints();
 
 		final JPanel toolBarPanel = new JPanel(
-				new FormLayout("left:1dlu:grow, right:1dlu:grow, left:4dlu:grow, right:pref:grow", "pref:grow"));
+				new FormLayout("left:1dlu:grow, right:1dlu:grow, left:pref:grow, right:pref:grow", "pref:grow"));
 		toolBarPanel.add(new JLabel("Group By "), cc.xy(2, 1));
 		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(2 + 1, 1));
 //		toolBarPanel.add(new JLabel("Search"), cc.xy(2 + 2, 1));
