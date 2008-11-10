@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -15,9 +16,10 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -25,15 +27,16 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +63,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 	private JIRAServer currentJIRAServer;
+	private JScrollPane issueTreescrollPane;
 
 	public MessageScrollPane getMessagePane() {
 		return messagePane;
@@ -124,7 +128,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							projectMap.put(p.getKey(), p.getName());
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
-						issueTreeBuilder.rebuild(issueTree, issuesPanel);
+						issueTreeBuilder.rebuild(issueTree, issueTreescrollPane.getViewport());
 						expandAllIssueTreeNodes();
 						messagePane.setStatus("Loaded " + jiraIssueListModel.getIssues().size() + " issues");
 					}
@@ -137,11 +141,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
 				currentJIRAServer = jiraServerCache.get(jiraServer);
+				IdeaHelper.setCurrentJIRAServer(currentJIRAServer);
 				// todo
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 				currentJIRAServer = jiraServerCache.get(jiraServer);
+				IdeaHelper.setCurrentJIRAServer(currentJIRAServer);
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
 			}
@@ -152,7 +158,98 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				Messages.showErrorDialog("This feature is not implemented yet, see bug PL-804", "Not Implemented");
 			}
 		});
+
+		addIssuesTreeListeners();
+
 		refreshModels();
+	}
+
+	private void addIssuesTreeListeners() {
+		issueTree.addKeyListener(new KeyAdapter() {
+			public void keyReleased(KeyEvent e) {
+				JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
+					launchOpenIsueAction();
+				}
+			}
+		});
+
+		issueTree.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+				if (e.getButton() == MouseEvent.BUTTON1	&& e.getClickCount() == 2 && issue != null) {
+					launchOpenIsueAction();
+				} else if (e.getButton() == MouseEvent.BUTTON3	&& e.getClickCount() == 1) {
+					int selRow = issueTree.getRowForLocation(e.getX(), e.getY());
+					TreePath selPath = issueTree.getPathForLocation(e.getX(), e.getY());
+					if (selRow != -1 && selPath != null) {
+						issueTree.setSelectionPath(selPath);
+						if (jiraIssueListModel.getSelectedIssue() != null) {
+							launchContextMenu(e);
+						}
+					}
+				}
+			}
+		});
+	}
+
+	private void launchContextMenu(MouseEvent e) {
+		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+
+		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+				.getInstance().getAction("ThePlugin.JiraIssues.IssuePopupMenu");
+		actionGroup.addAll(configActionGroup);
+
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+
+		final JPopupMenu jPopupMenu = popup.getComponent();
+		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	private void launchOpenIsueAction() {
+		AnAction action = ActionManager.getInstance().getAction("ThePlugin.JiraIssues.OpenIssue");
+		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
+				ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
+				ActionManager.getInstance(), 0));
+	}
+
+	public void openIssue(AnActionEvent event) {
+		JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		if (issue != null) {
+			FileEditorManager manager =
+					FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
+			VirtualFile[] files = manager.getOpenFiles();
+			VirtualFile vf = null;
+			for (VirtualFile f : files) {
+				if (f instanceof JiraIssueVirtualFile) {
+					JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) f;
+					if (jivf.getIssue().getKey().equals(issue.getKey())) {
+						vf = f;
+						break;
+					}
+				}
+			}
+
+			if (vf == null) {
+				vf = new JiraIssueVirtualFile(issue);
+			}
+			// either opens a new editor, or focuses the already open one
+			manager.openFile(vf, true);
+		}
+	}
+
+	public void viewIssueInBrowser(AnActionEvent event) {
+		JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		if (issue != null) {
+			BrowserUtil.launchBrowser(issue.getIssueUrl());
+		}
+	}
+
+	public void editIssueInBrowser(AnActionEvent event) {
+		JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		if (issue != null) {
+			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
+		}
 	}
 
 	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
@@ -206,11 +303,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JComponent createIssuesContent() {
 		issuesPanel = new JPanel(new BorderLayout());
 
-		JScrollPane scrollPane = new JScrollPane(createIssuesTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		issueTreescrollPane = new JScrollPane(createIssuesTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setWheelScrollingEnabled(true);
+		issueTreescrollPane.setWheelScrollingEnabled(true);
 
-		issuesPanel.add(scrollPane, BorderLayout.CENTER);
+		issuesPanel.add(issueTreescrollPane, BorderLayout.CENTER);
 		issuesPanel.add(createIssuesToolbar(), BorderLayout.NORTH);
 		return issuesPanel;
 	}
