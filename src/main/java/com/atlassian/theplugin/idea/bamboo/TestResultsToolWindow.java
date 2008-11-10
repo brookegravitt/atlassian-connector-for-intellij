@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.PsiLocation;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.configurations.ConfigurationFactory;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -63,9 +64,11 @@ public final class TestResultsToolWindow {
 
 	public interface TestTree extends Expandable {
 		boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
-		
-        void setPassedTestsVisible(boolean visible);
+
+		void setPassedTestsVisible(boolean visible);
+
 		boolean isPassedTestsVisible();
+
 		boolean createTestConfiguration(RunConfiguration configuration);
 	}
 
@@ -85,7 +88,7 @@ public final class TestResultsToolWindow {
 	}
 
 	public void showTestResults(String buildKey, String buildNumber,
-                                List<TestDetails> failedTests, List<TestDetails> succeededTests) {
+			List<TestDetails> failedTests, List<TestDetails> succeededTests) {
 		TestDetailsPanel detailsPanel;
 		String contentKey = buildKey + "-" + buildNumber;
 
@@ -127,7 +130,7 @@ public final class TestResultsToolWindow {
 			return;
 		}
 
-        IdeaVersionFacade.getInstance().runTests(settings, ev, debug);
+		IdeaVersionFacade.getInstance().runTests(settings, ev, debug);
 	}
 
 	public boolean canRunFailedTests(AnActionEvent ev) {
@@ -139,52 +142,54 @@ public final class TestResultsToolWindow {
 	}
 
 	private abstract class AbstractTreeNode extends DefaultMutableTreeNode {
-        public AbstractTreeNode(String s) {
-            super(s);
-        }
+		public AbstractTreeNode(String s) {
+			super(s);
+		}
 
-        public abstract void selected();
-        public abstract boolean isFailed();
-        public String getTestStats() {
-            return "";
-        }
+		public abstract void selected();
 
-        public abstract void navigate();
+		public abstract boolean isFailed();
+
+		public String getTestStats() {
+			return "";
+		}
+
+		public abstract void navigate();
 
 		public abstract boolean createTestConfiguration(RunConfiguration configuration);
-    }
+	}
 
-    private class TestDetailsPanel extends JPanel implements TestTree {
+	private class TestDetailsPanel extends JPanel implements TestTree {
 		private static final float SPLIT_RATIO = 0.3f;
 
 		private JTree tree;
-        private JScrollPane scroll;
+		private JScrollPane scroll;
 
-        private List<TestDetails> succeededTests;
-        private List<TestDetails> failedTests;
+		private List<TestDetails> succeededTests;
+		private List<TestDetails> failedTests;
 
-        private ConsoleView console;
+		private ConsoleView console;
 		private boolean passedTestsVisible;
 
 		private abstract class NonLeafNode extends AbstractTreeNode {
 			protected int totalTests;
 			protected int failedTests;
 
-            public NonLeafNode(String s, int totalTests, int failedTests) {
+			public NonLeafNode(String s, int totalTests, int failedTests) {
 				super(s);
 				this.totalTests = totalTests;
 				this.failedTests = failedTests;
-            }
+			}
 
 			@Override
 			public void selected() {
 				print("");
 			}
 
-            @Override
+			@Override
 			public boolean isFailed() {
-                return failedTests > 0;
-            }
+				return failedTests > 0;
+			}
 
 			@Override
 			public String getTestStats() {
@@ -234,19 +239,20 @@ public final class TestResultsToolWindow {
 
 			@Override
 			public void navigate() {
-                PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
+				PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 				if (cls != null) {
 					cls.navigate(true);
 				}
 			}
 
 			public boolean createTestConfiguration(RunConfiguration configuration) {
-                PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
+				PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 				if (cls == null) {
 					return false;
 				}
 				if (configuration != null) {
-					IdeaVersionFacade.getInstance().setTestClass(configuration, cls);
+					JUnitConfiguration conf = (JUnitConfiguration) configuration;
+					conf.beClassConfiguration(cls);
 				}
 				return true;
 			}
@@ -261,7 +267,7 @@ public final class TestResultsToolWindow {
 			}
 
 			private PsiMethod getMethod() {
-                PsiClass cls = IdeaVersionFacade.getInstance().findClass(details.getTestClassName(), project);
+				PsiClass cls = IdeaVersionFacade.getInstance().findClass(details.getTestClassName(), project);
 				if (cls == null) {
 					return null;
 				}
@@ -286,8 +292,8 @@ public final class TestResultsToolWindow {
 
 				if (m != null) {
 					if (configuration != null) {
-						IdeaVersionFacade.getInstance().setTestMethod(configuration,
-								PsiLocation.fromPsiElement(project, m));
+						JUnitConfiguration conf = (JUnitConfiguration) configuration;
+						conf.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
 					}
 					return true;
 				}
@@ -305,33 +311,33 @@ public final class TestResultsToolWindow {
 				print(details.getErrors());
 			}
 
-            @Override
+			@Override
 			public boolean isFailed() {
-                return true;
-            }
+				return true;
+			}
 		}
 
-        private class TestSuccessInfoNode extends TestNode {
-            public TestSuccessInfoNode(TestDetails details) {
-                super(details);
-            }
+		private class TestSuccessInfoNode extends TestNode {
+			public TestSuccessInfoNode(TestDetails details) {
+				super(details);
+			}
 
-            @Override
+			@Override
 			public void selected() {
-                print("Test successful");
-            }
+				print("Test successful");
+			}
 
-            @Override
+			@Override
 			public boolean isFailed() {
-                return false;
-            }
+				return false;
+			}
 		}
 
 		private JTree createTestTree() {
 			NonLeafNode root = new PackageNode("All Tests",
 					failedTests.size() + succeededTests.size(), failedTests.size());
 
-            Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
+			Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
 			for (TestDetails d : succeededTests) {
 				String fqcn = d.getTestClassName();
 				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
@@ -341,20 +347,20 @@ public final class TestResultsToolWindow {
 				} else {
 					n.addTest();
 				}
-            }
-            for (TestDetails d : failedTests) {
-                String fqcn = d.getTestClassName();
-                String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+			}
+			for (TestDetails d : failedTests) {
+				String fqcn = d.getTestClassName();
+				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
 				NonLeafNode n = packages.get(pkg);
 				if (n == null) {
-	                packages.put(pkg, new PackageNode(pkg, 1, 1));
+					packages.put(pkg, new PackageNode(pkg, 1, 1));
 				} else {
 					n.addTest();
 					n.addFailedTest();
 				}
 			}
 
-            for (Map.Entry<String, NonLeafNode> p : packages.entrySet()) {
+			for (Map.Entry<String, NonLeafNode> p : packages.entrySet()) {
 				NonLeafNode n = p.getValue();
 				if (n.isFailed() || passedTestsVisible) {
 					root.add(n);
@@ -371,8 +377,8 @@ public final class TestResultsToolWindow {
 					n.addTest();
 				}
 			}
-            for (TestDetails d : failedTests) {
-                String fqcn = d.getTestClassName();
+			for (TestDetails d : failedTests) {
+				String fqcn = d.getTestClassName();
 				NonLeafNode n = classes.get(fqcn);
 				if (n == null) {
 					classes.put(fqcn, new ClassNode(fqcn, 1, 1));
@@ -382,29 +388,30 @@ public final class TestResultsToolWindow {
 				}
 			}
 
-            for (Map.Entry<String, NonLeafNode> c : classes.entrySet()) {
+			for (Map.Entry<String, NonLeafNode> c : classes.entrySet()) {
 				String fqcn = c.getKey();
 				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
-				NonLeafNode n = c.getValue(); packages.get(pkg);
+				NonLeafNode n = c.getValue();
+				packages.get(pkg);
 				if (n.isFailed() || passedTestsVisible) {
 					packages.get(pkg).add(n);
 				}
 			}
 
-            if (passedTestsVisible) {
-                for (TestDetails d : succeededTests) {
-                    String fqcn = d.getTestClassName();
-                    AbstractTreeNode node = classes.get(fqcn);
-                    node.add(new TestSuccessInfoNode(d));
-                }
-            }
-            for (TestDetails d : failedTests) {
-                String fqcn = d.getTestClassName();
-                AbstractTreeNode node = classes.get(fqcn);
-                node.add(new TestErrorInfoNode(d));
-            }
+			if (passedTestsVisible) {
+				for (TestDetails d : succeededTests) {
+					String fqcn = d.getTestClassName();
+					AbstractTreeNode node = classes.get(fqcn);
+					node.add(new TestSuccessInfoNode(d));
+				}
+			}
+			for (TestDetails d : failedTests) {
+				String fqcn = d.getTestClassName();
+				AbstractTreeNode node = classes.get(fqcn);
+				node.add(new TestErrorInfoNode(d));
+			}
 
-            DefaultTreeModel tm = new DefaultTreeModel(root);
+			DefaultTreeModel tm = new DefaultTreeModel(root);
 			JTree testTree = new JTree(tm);
 			testTree.setRootVisible(true);
 			testTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -427,17 +434,17 @@ public final class TestResultsToolWindow {
 			});
 
 			DefaultTreeCellRenderer renderer = new MyDefaultTreeCellRenderer();
-            testTree.setCellRenderer(renderer);
+			testTree.setCellRenderer(renderer);
 
 			return testTree;
 		}
 
 		public TestDetailsPanel(String name, final List<TestDetails> failedTests,
-                                final List<TestDetails> succeededTests) {
-            this.failedTests = failedTests;
-            this.succeededTests = succeededTests;
+				final List<TestDetails> succeededTests) {
+			this.failedTests = failedTests;
+			this.succeededTests = succeededTests;
 
-            if (failedTests.size() > 0) {
+			if (failedTests.size() > 0) {
 
 				Splitter split = new Splitter(false, SPLIT_RATIO);
 				split.setShowDividerControls(true);
@@ -464,7 +471,7 @@ public final class TestResultsToolWindow {
 				gbc1.weightx = 1.0;
 				gbc1.weighty = 0.0;
 				gbc1.fill = GridBagConstraints.HORIZONTAL;
-				
+
 				treePanel.add(comp, gbc1);
 
 				passedTestsVisible = PASSED_TESTS_VISIBLE_DEFAULT;
@@ -477,7 +484,7 @@ public final class TestResultsToolWindow {
 				gbc1.weighty = 1.0;
 				gbc1.fill = GridBagConstraints.BOTH;
 
-                treePanel.add(scroll, gbc1);
+				treePanel.add(scroll, gbc1);
 
 				split.setFirstComponent(treePanel);
 
@@ -494,7 +501,7 @@ public final class TestResultsToolWindow {
 				Dimension d = label.getPreferredSize();
 				d.height = toolbar.getMaxButtonHeight();
 				label.setMinimumSize(d);
-				label.setPreferredSize(d); 
+				label.setPreferredSize(d);
 				consolePanel.add(label, gbc1);
 
 				TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
@@ -508,7 +515,7 @@ public final class TestResultsToolWindow {
 				consolePanel.add(console.getComponent(), gbc1);
 
 				split.setSecondComponent(consolePanel);
-				
+
 				add(split, gbc);
 			} else {
 				add(new JLabel("No failed failedTests in build " + name));
@@ -532,60 +539,60 @@ public final class TestResultsToolWindow {
 			}
 		}
 
-        public void setPassedTestsVisible(boolean visible) {
+		public void setPassedTestsVisible(boolean visible) {
 			passedTestsVisible = visible;
 			tree = createTestTree();
 			expand();
 			scroll.setViewportView(tree);
-        }
+		}
 
 		public boolean isPassedTestsVisible() {
 			return passedTestsVisible;
 		}
 
-	    public boolean createTestConfiguration(RunConfiguration configuration) {
-		    TreePath p = tree.getSelectionPath();
-		    return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
-	    }
-    }
+		public boolean createTestConfiguration(RunConfiguration configuration) {
+			TreePath p = tree.getSelectionPath();
+			return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
+		}
+	}
 
-    private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
-        @Override
-            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-                boolean expanded, boolean leaf, int row, boolean hasFocus) {
+	private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
+				boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
-            Component c = super.getTreeCellRendererComponent(
-                    tree, value, selected, expanded, leaf, row, hasFocus);
+			Component c = super.getTreeCellRendererComponent(
+					tree, value, selected, expanded, leaf, row, hasFocus);
 
-            // this sort of is not right, as it assumes that getTreeCellRendererComponent() of the
-            // DefaultTreeCellRenderer will always return _this_ (JLabel). If the implementation changes
-            // someday, we are screwed :)
-            try {
-                AbstractTreeNode node = (AbstractTreeNode) value;
-                if (node.isFailed()) {
-                    setIcon(TEST_FAILED_ICON);
-                } else {
-                    setIcon(TEST_PASSED_ICON);
-                }
-                Color statsColor = selected
-                        ? UIUtil.getTreeSelectionForeground() : UIUtil.getInactiveTextColor();
-                StringBuilder txt = new StringBuilder();
-                txt.append("<html><body>");
-                txt.append(getText());
-                txt.append(" <font color=");
-                txt.append(ColorToHtml.getHtmlFromColor(statsColor));
-                txt.append("><i>");
-                txt.append(node.getTestStats());
-                txt.append("</i></font>");
-                txt.append("</body></html>");
-                setText(txt.toString());
-            } catch (ClassCastException e) {
-                // should not happen, making compiler happy
-                setIcon(null);
-            }
+			// this sort of is not right, as it assumes that getTreeCellRendererComponent() of the
+			// DefaultTreeCellRenderer will always return _this_ (JLabel). If the implementation changes
+			// someday, we are screwed :)
+			try {
+				AbstractTreeNode node = (AbstractTreeNode) value;
+				if (node.isFailed()) {
+					setIcon(TEST_FAILED_ICON);
+				} else {
+					setIcon(TEST_PASSED_ICON);
+				}
+				Color statsColor = selected
+						? UIUtil.getTreeSelectionForeground() : UIUtil.getInactiveTextColor();
+				StringBuilder txt = new StringBuilder();
+				txt.append("<html><body>");
+				txt.append(getText());
+				txt.append(" <font color=");
+				txt.append(ColorToHtml.getHtmlFromColor(statsColor));
+				txt.append("><i>");
+				txt.append(node.getTestStats());
+				txt.append("</i></font>");
+				txt.append("</body></html>");
+				setText(txt.toString());
+			} catch (ClassCastException e) {
+				// should not happen, making compiler happy
+				setIcon(null);
+			}
 
-            return c;
-        }
-    }
+			return c;
+		}
+	}
 
 }

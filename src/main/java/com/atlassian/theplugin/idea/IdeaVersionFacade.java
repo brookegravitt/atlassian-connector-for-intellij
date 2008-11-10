@@ -213,14 +213,4 @@ public final class IdeaVersionFacade {
             e.printStackTrace();
         }
     }
-
-	public void setTestMethod(RunConfiguration configuration, Location<PsiMethod> location) {
-		JUnitConfiguration conf = (JUnitConfiguration) configuration;
-		conf.beMethodConfiguration(location);
-	}
-
-	public void setTestClass(RunConfiguration configuration, PsiClass cls) {
-		JUnitConfiguration conf = (JUnitConfiguration) configuration;
-		conf.beClassConfiguration(cls);
-	}
 }
