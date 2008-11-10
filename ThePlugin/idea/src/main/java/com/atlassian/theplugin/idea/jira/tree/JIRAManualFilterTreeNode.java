@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.SimpleColoredComponent;
-import com.intellij.ui.SimpleTextAttributes;
-import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 
@@ -24,14 +21,9 @@ public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(final JComponent c, final boolean selected,
 	                              final boolean expanded, final boolean hasFocus) {
-		SimpleColoredComponent component = new SimpleColoredComponent();
-		component.append(name, SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
-		component.setIcon(JIRA_FILTER_ICON);
-		component.setOpaque(true);
-		component.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-		component.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
-		return component;
+		JLabel label = new JLabel(name, JIRA_FILTER_ICON, SwingUtilities.HORIZONTAL);		
+		return label;
 	}
 
 	public void onSelect() {
