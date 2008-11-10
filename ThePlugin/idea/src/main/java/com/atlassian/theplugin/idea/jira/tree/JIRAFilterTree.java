@@ -5,6 +5,7 @@ import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAManualFilter;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -94,8 +95,10 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
 			node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
 		}
-		//@todo refactor to separate class
-		node.add(new JIRAManualFilterTreeNode("Undefined manual filter"));
+		
+		JIRAManualFilter manualFilter = listModel.getManualFilter(jiraServer);
+
+		node.add(new JIRAManualFilterTreeNode(listModel, manualFilter));
 
 	}
 

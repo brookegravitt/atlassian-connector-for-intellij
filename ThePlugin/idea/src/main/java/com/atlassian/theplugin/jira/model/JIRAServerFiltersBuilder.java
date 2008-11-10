@@ -88,7 +88,9 @@ public class JIRAServerFiltersBuilder {
 					.getJiraFilters(jiraServer.getServerId().toString());
 
 			if (bean != null) {
-				listModel.setManualFilter(jiraServer, getFragments(bean.getManualFilter()));
+
+				listModel.setManualFilter(jiraServer,
+						new JIRAManualFilter("unnamed manual", getFragments(bean.getManualFilter())));
 			}
 		}
 	}
