@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,17 +18,14 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
-import com.atlassian.theplugin.idea.config.HTTPProxyDialog;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.intellij.util.net.HTTPProxySettingsDialog;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
-import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -73,17 +70,8 @@ public class GeneralConfigForm {
 		});
 		httpProxyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				HTTPProxyDialog proxyDialog = new HTTPProxyDialog();
-
-				proxyDialog.pack();
-				int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), proxyDialog.getRootPanel(),
-						PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
-
-				if (answer == JOptionPane.OK_OPTION) {
-					proxyDialog.getHttpProxyPanel().apply();
-
-				}
-
+				HTTPProxySettingsDialog proxyDialog = new HTTPProxySettingsDialog();
+				proxyDialog.show();
 			}
 		});
 
