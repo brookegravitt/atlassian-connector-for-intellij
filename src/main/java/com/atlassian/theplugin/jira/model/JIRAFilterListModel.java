@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,11 +17,20 @@ public class JIRAFilterListModel {
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 	private JiraServerCfg jiraSelectedServer;
 	private JIRASavedFilter jiraSelectedSavedFilter;
+	private JIRAManualFilter jiraSelectedManualFilter;
 
 	public void selectSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 		if (serversFilters.containsKey(jiraServer) && getSavedFilters(jiraServer).contains(savedFilter)) {
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedSavedFilter = savedFilter;
+			fireSavedFilterSelected();
+		}
+	}
+
+	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter) {
+		if (serversFilters.containsKey(jiraServer) && getManualFilter(jiraServer).equals(manualFilter)) {
+			this.jiraSelectedServer = jiraServer;
+			this.jiraSelectedManualFilter = manualFilter;
 			fireSavedFilterSelected();
 		}
 	}
@@ -41,7 +49,7 @@ public class JIRAFilterListModel {
 		}
 	}
 
-	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final List<JIRAQueryFragment> filter) {
+	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final JIRAManualFilter filter) {
 
 		if (serversFilters.containsKey(jiraServer)) {
 
@@ -66,7 +74,7 @@ public class JIRAFilterListModel {
 		return null;
 	}
 
-	public List<JIRAQueryFragment> getManualFilter(final JiraServerCfg jiraServer) {
+	public JIRAManualFilter getManualFilter(final JiraServerCfg jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getManualFilter();
 		}
@@ -77,6 +85,12 @@ public class JIRAFilterListModel {
 	public void fireSavedFilterSelected() {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.selectedSavedFilter(jiraSelectedServer, jiraSelectedSavedFilter);
+		}
+	}
+
+	public void fireManualFilterSelected() {
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.selectedManualFilter(jiraSelectedServer, jiraSelectedManualFilter.getQueryFragment());
 		}
 	}
 
