@@ -49,9 +49,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 			});
 
 			createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
-
-
-
 		}
 		treeModel.nodeStructureChanged(rootNode);
 	}
@@ -93,8 +90,8 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		}
 	}
 
-	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel listModel){
-		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)){
+	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel listModel) {
+		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
 			node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
 		}
 		//@todo refactor to separate class
