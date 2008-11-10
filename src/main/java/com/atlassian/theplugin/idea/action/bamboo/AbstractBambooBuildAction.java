@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindow;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class OpenBuildAction extends AbstractBambooBuildAction {
-
-
+public abstract class AbstractBambooBuildAction extends AnAction {
 	@Override
-	public void actionPerformed(AnActionEvent event) {
-		final BambooBuild build = event.getData(Constants.BAMBOO_BUILD_KEY);
+	public void update(final AnActionEvent event) {
+		final BambooBuild build
+				= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
+		boolean enabled = false;
 		if (build != null) {
-			final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(event, BambooBuildToolWindow.class);
-			if (window != null) {
-				window.open(build);
+			if (build.getBuildKey() != null
+					&& build.getBuildNumber() != null) {
+				enabled = true;
 			}
 		}
+		event.getPresentation().setEnabled(enabled);
 	}
 }

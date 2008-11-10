@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,23 +18,14 @@ package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class BuildChangesAction extends AnAction {
+public class BuildChangesAction extends AbstractBamboo2BuildAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		final BambooTableToolWindowPanel bambooTableToolWindowPanel = IdeaHelper.getBambooToolWindowPanel(event);
 		if (bambooTableToolWindowPanel != null) {
 			bambooTableToolWindowPanel.showChanges();
 		}
-    }
-
-	@Override
-	public void update(AnActionEvent event) {
-		if (IdeaHelper.getBambooToolWindowPanel(event) != null) {
-			event.getPresentation().setEnabled(IdeaHelper.getBambooToolWindowPanel(event).canShowChanges());
-		}
-		super.update(event);
 	}
 }
