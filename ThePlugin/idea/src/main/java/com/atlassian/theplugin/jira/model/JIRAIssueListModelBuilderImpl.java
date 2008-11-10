@@ -57,7 +57,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		startFrom = 0;
 	}
 
-	public void addIssuesToModel(int size, boolean reload) throws JIRAException {
+	public synchronized void addIssuesToModel(int size, boolean reload) throws JIRAException {
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			model.notifyListeners();
 			return;
@@ -88,7 +88,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		//assert(false);
 	}
 
-	public void reset() {
+	public synchronized void reset() {
 		int size = model.getIssues().size();
 		if (size > 0) {
 			model.clear();
