@@ -118,14 +118,17 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	@Override
 	protected void handleDoubleClick(Object selectedObject) {
-		BambooBuildAdapter build = (BambooBuildAdapter) selectedObject;
-		final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(project, BambooBuildToolWindow.class);
-		if (window != null
-				&& build != null
-				&& build.getBuild() != null
-				&& build.getBuild().getBuildKey() != null
-				&& build.getBuild().getBuildNumber() != null) {
-			window.open(build.getBuild());
+		BambooBuildAdapter bambooBuildAdapter = (BambooBuildAdapter) selectedObject;
+		if (bambooBuildAdapter != null) {
+			BambooBuild build = bambooBuildAdapter.getBuild();
+			if (build != null) {
+				final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(project, BambooBuildToolWindow.class);
+				if (window != null
+						&& build.getBuildKey() != null
+						&& build.getBuildNumber() != null) {
+					window.open(build);
+				}
+			}
 		}
 	}
 

@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -28,12 +26,8 @@ public class RunBuildAction extends AbstractBambooBuildAction {
 
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (event.getPresentation().isEnabled()) {
-			final BambooBuild build
-					= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
-			if (!build.getEnabled()) {
-				event.getPresentation().setEnabled(false);
-			}
+		if (build != null && !build.getEnabled()) {
+			event.getPresentation().setEnabled(false);
 		}
 	}
 }

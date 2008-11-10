@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindow;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -26,7 +25,7 @@ public class OpenBuildAction extends AbstractBambooBuildAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		final BambooBuild build = event.getData(Constants.BAMBOO_BUILD_KEY);
+		final BambooBuild build = getBuild(event);
 		if (build != null) {
 			final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(event, BambooBuildToolWindow.class);
 			if (window != null) {
