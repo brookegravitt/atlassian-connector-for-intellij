@@ -35,6 +35,11 @@ public final class CodeNavigationUtil {
 	 */
 	@Nullable
 	public static PsiFile guessMatchingFile(String pathname, PsiFile[] psifiles, VirtualFile baseDir) {
+		// PL-822 fix
+		// for making it work if pathname comes from different OS than the file itself
+		// e.g. Bamboo works on Windows, send pathname and the user has a project opened in IDEA on Linux
+		pathname = pathname.replace('\\', '/');
+
 		String bestMatchPath = null;
 		PsiFile bestMatch = null;
 		for (PsiFile psiFile : psifiles) {
