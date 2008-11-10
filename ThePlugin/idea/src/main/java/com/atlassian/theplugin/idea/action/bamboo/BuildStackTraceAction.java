@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,12 +32,8 @@ public class BuildStackTraceAction extends AbstractBamboo2BuildAction {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-		if (event.getPresentation().isEnabled()) {
-			final BambooBuild build
-					= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
-			if (build.getTestsFailed() == 0) {
-				event.getPresentation().setEnabled(false);
-			}
+		if (build != null && build.getTestsFailed() == 0) {
+			event.getPresentation().setEnabled(false);
 		}
 	}
 }
