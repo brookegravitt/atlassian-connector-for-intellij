@@ -8,10 +8,10 @@ import java.util.List;
  * User: pmaruszak
  */
 public final class JIRAManualFilter {
-	List<JIRAQueryFragment> queryFragment;
-	String name;
+	private List<JIRAQueryFragment> queryFragment;
+	private String name;
 
-	JIRAManualFilter(final String name, List<JIRAQueryFragment> queryFragment){
+	JIRAManualFilter(final String name, List<JIRAQueryFragment> queryFragment) {
 		this.name = name;
 		this.queryFragment = queryFragment;
 	}

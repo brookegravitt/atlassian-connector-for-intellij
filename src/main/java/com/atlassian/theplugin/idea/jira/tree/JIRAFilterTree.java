@@ -20,35 +20,27 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 	private static final ServerTreeRenderer MY_RENDERER = new ServerTreeRenderer();
 	private DefaultTreeModel treeModel;
+	private FilterTreeSelectionListener treeSelectionListener = new FilterTreeSelectionListener();
 
 	public JIRAFilterTree(final JIRAFilterListModel listModel) {
 		listModel.addModelListener(this);
+		
+		setShowsRootHandles(true);
+		setRootVisible(false);
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		getSelectionModel().addTreeSelectionListener(treeSelectionListener);
+		setCellRenderer(MY_RENDERER);
+
 		reCreateTree(listModel);
 	}
 
 	private void reCreateTree(final JIRAFilterListModel listModel) {
-		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();		
 		treeModel = new DefaultTreeModel(rootNode);
 
 		setModel(treeModel);
 
-		setShowsRootHandles(true);
-		setRootVisible(false);
 		if (listModel != null) {
-
-			getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			setCellRenderer(MY_RENDERER);
-			getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-
-				public void valueChanged(final TreeSelectionEvent event) {
-					final TreePath selectionPath = getSelectionModel().getSelectionPath();
-
-					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-						((JIRAAbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-					}
-				}
-			});
-
 			createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
 		}
 		treeModel.nodeStructureChanged(rootNode);
@@ -111,6 +103,20 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 				return node.getRenderer(null, selected, expanded, hasFocus);
 			} else {
 				return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+			}
+		}
+	}
+
+	class FilterTreeSelectionListener implements TreeSelectionListener {
+
+		public void valueChanged(final TreeSelectionEvent event) {
+			final TreePath selectionPath = getSelectionModel().getSelectionPath();
+
+			if (selectionPath != null
+					&& selectionPath.getLastPathComponent() != null
+					&& selectionPath.getLastPathComponent() instanceof JIRAAbstractTreeNode) {
+
+				((JIRAAbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
 			}
 		}
 	}
