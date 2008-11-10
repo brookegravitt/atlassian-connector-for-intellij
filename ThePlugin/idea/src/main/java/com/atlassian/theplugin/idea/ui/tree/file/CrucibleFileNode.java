@@ -26,6 +26,7 @@ import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vcs.FileStatus;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.Icons;
 import org.apache.commons.io.FilenameUtils;
 
 import javax.swing.*;
@@ -86,6 +87,7 @@ public class CrucibleFileNode extends FileNode {
 		private static final SimpleTextAttributes RED_ITALIC =
 				new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, Color.red);
 
+		@Override
 		public void customizeCellRenderer(JTree tree, Object value, boolean selected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {
 			CrucibleFileNode node = (CrucibleFileNode) value;
@@ -143,9 +145,13 @@ public class CrucibleFileNode extends FileNode {
 				}
 			}
 
-			FileTypeManager mgr = FileTypeManager.getInstance();
-			FileType type = mgr.getFileTypeByFileName(node.getName());
-			setIcon(type.getIcon());
+			if (node.getFile().getFileType() == com.atlassian.theplugin.commons.crucible.api.model.FileType.Directory) {
+				setIcon(Icons.DIRECTORY_OPEN_ICON);
+			} else {
+				FileTypeManager mgr = FileTypeManager.getInstance();
+				FileType type = mgr.getFileTypeByFileName(node.getName());
+				setIcon(type.getIcon());
+			}
 			switch (node.getFile().getCommitType()) {
 				case Added:
 					setForeground(FileStatus.COLOR_ADDED);
@@ -166,10 +172,12 @@ public class CrucibleFileNode extends FileNode {
 		}
 	}
 
+	@Override
 	public AtlassianTreeNode getClone() {
 		return new CrucibleFileNode(this);
 	}
 
+	@Override
 	public boolean isCompactable() {
 		return false;
 	}

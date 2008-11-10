@@ -21,11 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.IOException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 14, 2008
- * Time: 11:50:08 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class VersionedVirtualFile {
 	private String revision;
@@ -40,9 +36,6 @@ public class VersionedVirtualFile {
         this.fileSystem = fileSystem;
 	}
 
-	public boolean isDirectory() {
-		return false;  
-	}
 
 	public byte[] contentsToByteArray() throws IOException {
 		return new byte[0];
