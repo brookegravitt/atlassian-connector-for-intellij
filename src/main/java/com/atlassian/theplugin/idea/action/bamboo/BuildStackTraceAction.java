@@ -1,10 +1,10 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -16,12 +16,13 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class BuildStackTraceAction extends AnAction {
+public class BuildStackTraceAction extends AbstractBamboo2BuildAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		BambooTableToolWindowPanel tw = IdeaHelper.getBambooToolWindowPanel(event);
@@ -32,13 +33,13 @@ public class BuildStackTraceAction extends AnAction {
 
 	@Override
 	public void update(AnActionEvent event) {
-		BambooTableToolWindowPanel tw = IdeaHelper.getBambooToolWindowPanel(event);
-		boolean enabled = false;
-		if (tw != null) {
-			enabled = tw.canShowFailedTests();			
+		super.update(event);
+		if (event.getPresentation().isEnabled()) {
+			final BambooBuild build
+					= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
+			if (build.getTestsFailed() == 0) {
+				event.getPresentation().setEnabled(false);
+			}
 		}
-
-		event.getPresentation().setEnabled(enabled);
-
 	}
 }
