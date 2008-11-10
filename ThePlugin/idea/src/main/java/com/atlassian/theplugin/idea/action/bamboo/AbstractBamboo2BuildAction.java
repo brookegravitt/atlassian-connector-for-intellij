@@ -16,26 +16,14 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.idea.Constants;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public abstract class AbstractBamboo2BuildAction extends AnAction {
+public abstract class AbstractBamboo2BuildAction extends AbstractBambooBuildAction {
 	@Override
 	public void update(final AnActionEvent event) {
-		final BambooBuild build
-				= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
-		boolean enabled = false;
-		if (build != null) {
-			if (build.getBuildKey() != null
-					&& build.getBuildNumber() != null) {
-				if (build.getServer() != null
-						&& build.getServer().isBamboo2()) {
-					enabled = true;
-				}
-			}
+		super.update(event);
+		if (build != null && !build.getServer().isBamboo2()) {
+			event.getPresentation().setEnabled(false);
 		}
-		event.getPresentation().setEnabled(enabled);
 	}
 }
