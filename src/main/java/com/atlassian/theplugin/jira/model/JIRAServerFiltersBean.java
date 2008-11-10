@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
 import java.util.ArrayList;
@@ -10,14 +9,14 @@ import java.util.List;
  * User: pmaruszak
  */
 public class JIRAServerFiltersBean {
-	private List<JIRAQueryFragment> manualFilter = new ArrayList<JIRAQueryFragment>();
+	private JIRAManualFilter manualFilter;
 	private List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>();
 
-	public List<JIRAQueryFragment> getManualFilter() {
+	public JIRAManualFilter getManualFilter() {
 		return manualFilter;
 	}
 
-	public void setManualFilter(final List<JIRAQueryFragment> manualFilter) {
+	public void setManualFilter(final JIRAManualFilter manualFilter) {
 		this.manualFilter = manualFilter;
 	}
 

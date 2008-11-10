@@ -31,8 +31,9 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 	}
 
 	public void onSelect() {
-		
-		listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
+		if (listModel != null && savedFilter != null) {
+			listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
+		}
 	}
 
 
