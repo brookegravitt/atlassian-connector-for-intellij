@@ -166,6 +166,8 @@ public final class VcsIdeaHelper {
 	}
 
 
+	// not used method causing incompatibility 7.0 -> 8.0
+	/*
 	private static boolean isFileDirty(final Project project, final VirtualFile virtualFile) {
 		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 		if (vcs == null) {
@@ -183,6 +185,7 @@ public final class VcsIdeaHelper {
 		}
 		return false;
 	}
+	*/
 
 
 	@Nullable
