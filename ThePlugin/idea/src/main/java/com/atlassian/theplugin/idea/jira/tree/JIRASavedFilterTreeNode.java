@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 
@@ -26,7 +27,10 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 	public JComponent getRenderer(final JComponent c, final boolean selected,
 	                              final boolean expanded, final boolean hasFocus) {
 		JLabel label = new JLabel(savedFilter.getName(), JIRA_FILTER_ICON, SwingUtilities.HORIZONTAL);
-		
+		label.setOpaque(true);
+		label.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+		label.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+
 		return label;
 	}
 
