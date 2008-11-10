@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -134,8 +134,7 @@ public final class VcsIdeaHelper {
 		}
 		VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
 		if (vcsRevisionNumber == null) {
-			LoggerImpl.getInstance().warn("Cannot parse revision number [" + revision + "]");
-			return null;
+			throw new VcsException("Cannot parse revision number [" + revision + "]");
 		}
 		final VirtualFile remoteFile = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber);
 		if (remoteFile != null) {
@@ -366,10 +365,10 @@ public final class VcsIdeaHelper {
 		 * Open file view based on two file revisions
 		 * Will be always invoked in UI thread
 		 *
-		 * @param displayFile
-		 * @param referenceDocument
+		 * @param displayFile descriptor of the main file to display
+		 * @param referenceFile reference file (e.g. "from file" in diff)
 		 */
-		void run(OpenFileDescriptor displayFile, VirtualFile referenceDocument, CommitType commitType);
+		void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType);
 	}
 
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {
@@ -446,8 +445,8 @@ public final class VcsIdeaHelper {
 		@Override
 		public void onSuccess() {
 			if (exception != null) {
-				Messages.showErrorDialog(project, "The following error has occured while fetching "
-						+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
+				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
+						+ niceFileMessage + ":\n" + exception.getMessage(), exception, "Error fetching file");
 				return;
 			}
 			if (displayDescriptor != null) {
@@ -509,8 +508,8 @@ public final class VcsIdeaHelper {
 		@Override
 		public void onSuccess() {
 			if (exception != null) {
-				Messages.showErrorDialog(project, "The following error has occured while fetching "
-						+ niceFileMessage + ":\n" + exception.getMessage(), "Error fetching file");
+				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
+						+ niceFileMessage + ":\n" + exception.getMessage(), exception, "Error fetching file");
 				return;
 			}
 			if (ofd != null) {
