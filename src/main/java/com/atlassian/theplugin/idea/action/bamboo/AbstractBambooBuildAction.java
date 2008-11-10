@@ -22,10 +22,11 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractBambooBuildAction extends AnAction {
+	protected BambooBuild build;
+
 	@Override
 	public void update(final AnActionEvent event) {
-		final BambooBuild build
-				= (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
+		build = getBuild(event);
 		boolean enabled = false;
 		if (build != null) {
 			if (build.getBuildKey() != null
@@ -34,5 +35,9 @@ public abstract class AbstractBambooBuildAction extends AnAction {
 			}
 		}
 		event.getPresentation().setEnabled(enabled);
+	}
+
+	protected BambooBuild getBuild(final AnActionEvent event) {
+		return (BambooBuild) event.getDataContext().getData(Constants.BAMBOO_BUILD_KEY.getName());
 	}
 }
