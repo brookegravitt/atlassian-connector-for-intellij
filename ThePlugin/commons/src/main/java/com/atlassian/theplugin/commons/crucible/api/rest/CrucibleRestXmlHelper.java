@@ -39,11 +39,11 @@ public final class CrucibleRestXmlHelper {
 	///CLOVER:ON
 
 	public static String getChildText(Element node, String childName) {
-		try {
-			return node.getChild(childName).getText();
-		} catch (Exception e) {
-			return "";
+		final Element child = node.getChild(childName);
+		if (child != null) {
+			return child.getText();
 		}
+		return "";
 	}
 
 
@@ -422,7 +422,7 @@ public final class CrucibleRestXmlHelper {
 		reviewItem.setRepositoryName(getChildText(reviewItemNode, "repositoryName"));
 		reviewItem.setAuthorName(getChildText(reviewItemNode, "authorName"));
 		reviewItem.setCommitDate(parseDateTime(getChildText(reviewItemNode, "commitDate")));
-		String fileType = getChildText(reviewItemNode, "fileType");
+		final String fileType = getChildText(reviewItemNode, "fileType");
 		if (fileType != null && !"".equals(fileType)) {
 			try {
 				reviewItem.setFileType(FileType.valueOf(fileType));
