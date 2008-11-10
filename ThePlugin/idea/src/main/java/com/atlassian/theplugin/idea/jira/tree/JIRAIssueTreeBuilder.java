@@ -7,10 +7,9 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.tree.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Map;
@@ -39,16 +38,16 @@ public class JIRAIssueTreeBuilder {
 		this.projectKeysToNames = projectKeysToNames;
 	}
 
-	public void rebuild(JTree tree, JPanel treeParent) {
+	public synchronized void rebuild(JTree tree, JComponent treeParent) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		reCreateTree(tree, treeParent, root);
 		for (JIRAIssue issue : issueModel.getIssues()) {
-			getPlace(issue, root).add(new JIRATreeNode(issue));
+			getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
 		}
 		treeModel.nodeStructureChanged(root);
 	}
 
-	private void reCreateTree(JTree tree, JPanel treeParent, DefaultMutableTreeNode root) {
+	private void reCreateTree(final JTree tree, JComponent treeParent, DefaultMutableTreeNode root) {
 		tree.removeAll();
 		treeModel = new DefaultTreeModel(root);
 		tree.setModel(treeModel);
@@ -57,6 +56,14 @@ public class JIRAIssueTreeBuilder {
 			this.lastTree = tree;
 			tree.setShowsRootHandles(true);
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+			tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+				public void valueChanged(TreeSelectionEvent e) {
+					final TreePath selectionPath = tree.getSelectionModel().getSelectionPath();
+					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+						((JIRAAbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+					}
+				}
+			});
 			initializeUI(tree, treeParent);
 			tree.setRootVisible(false);
 		}
@@ -66,7 +73,7 @@ public class JIRAIssueTreeBuilder {
 	// voodoo magic below - makes the lastTree node as wide as the whole panel. Somehow. Like I said - it is magic.
 	//
 
-	public void initializeUI(final JTree tree, final JPanel treeParent) {
+	public void initializeUI(final JTree tree, final JComponent treeParent) {
 		registerUI(tree);
 		treeParent.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -117,7 +124,7 @@ public class JIRAIssueTreeBuilder {
 		}
 		DefaultMutableTreeNode n = findGroupNode(root, name);
 		if (n == null) {
-			n = new JIRAGroupTreeNode(name, CachedIconLoader.getIcon(iconUrl));
+			n = new JIRAIssueGroupTreeNode(issueModel, name, CachedIconLoader.getIcon(iconUrl));
 			root.add(n);
 		}
 		return n;
@@ -133,7 +140,7 @@ public class JIRAIssueTreeBuilder {
 
 	private DefaultMutableTreeNode findGroupNode(DefaultMutableTreeNode root, String name) {
 		for (int i = 0; i < treeModel.getChildCount(root); ++i) {
-			JIRAGroupTreeNode node = (JIRAGroupTreeNode) treeModel.getChild(root, i);
+			JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) treeModel.getChild(root, i);
 			if (node.toString().equals(name)) {
 				return node;
 			}

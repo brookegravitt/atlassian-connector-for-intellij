@@ -12,4 +12,7 @@ public interface JIRAIssueListModel {
 	void notifyListeners();
 	void addModelListener(JIRAIssueListModelListener listener);
 	void removeModelListener(JIRAIssueListModelListener listener);
+
+	void setSeletedIssue(JIRAIssue issue);
+	JIRAIssue getSelectedIssue();
 }

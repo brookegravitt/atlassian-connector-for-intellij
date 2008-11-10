@@ -590,6 +590,16 @@
 			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
 		</action>
 
+		<action id="ThePlugin.JiraIssues.OpenIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.OpenIssueAction"
+				text="View in IDE"/>
+		<action id="ThePlugin.JiraIssues.ViewIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.ViewIssueAction"
+				text="View in Browser"/>
+		<action id="ThePlugin.JiraIssues.EditIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
+				text="Edit in Browser"/>
+
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
 			<reference id="ThePlugin.JiraIssues.GroupByCombo"/>
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
@@ -599,8 +609,32 @@
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<separator/>
-
 		</group>
+
+		<!--<group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to clipboard" popup="true">-->
+			<!--<reference id="ThePlugin.JiraIssues.CopyIssueKey"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.CopyIssueUrl"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.CopyIssueSummary"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.CopyIssueKeySummary"/>-->
+		<!--</group>-->
+
+		<group id="ThePlugin.JiraIssues.IssuePopupMenu" popup="true">
+			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<reference id="ThePlugin.JiraIssues.EditIssue"/>
+			<separator/>
+			<!--<reference id="ThePlugin.JiraIssues.AddComment"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.LogWork"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.CreateChangeList"/>-->
+			<separator/>
+			<!--<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>-->
+			<!--<reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>-->
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>-->
+			<separator/>
+		</group>
+
 		<!-- JIRA tool window panel related actions -->
 		<action id="ThePlugin.JIRA.ShowHideJIRATab"
 				class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira Tab"
