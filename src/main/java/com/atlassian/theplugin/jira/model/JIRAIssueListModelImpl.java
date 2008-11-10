@@ -9,6 +9,8 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 
 	private List<JIRAIssue> issues;
 	private List<JIRAIssueListModelListener> listeners;
+	private JIRAIssue selectedIssue;
+
 	private JIRAIssueListModelImpl() {
 		issues = new ArrayList<JIRAIssue>();
 		listeners = new ArrayList<JIRAIssueListModelListener>();
@@ -50,5 +52,17 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 		if (listeners.contains(listener)) {
 			listeners.remove(listener);
 		}
+	}
+
+	public void setSeletedIssue(JIRAIssue issue) {
+		if (issue != null && issues.contains(issue)) {
+			selectedIssue = issue;
+		} else {
+			selectedIssue = null;
+		}
+	}
+
+	public JIRAIssue getSelectedIssue() {
+		return selectedIssue;
 	}
 }

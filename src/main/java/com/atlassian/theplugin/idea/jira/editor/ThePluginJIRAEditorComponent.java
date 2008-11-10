@@ -726,6 +726,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		private static final int PREFERRED_HEIGHT_FIRST = 200;
 		private static final int PREFERRED_HEIGHT_SECOND = 400;
 
+	    private static final String[] NONE = { "None" };
+
 		private JIRAFileEditor() {
 			mainPanel = new JPanel();
 			mainPanel.setBackground(Color.RED);
@@ -806,6 +808,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		private String[] getStringArray(List<JIRAConstant> l) {
+			if (l == null) {
+				return NONE;
+			}
 			List<String> sl = new ArrayList<String>(l.size());
 			for (JIRAConstant c : l) {
 				 sl.add(c.getName());

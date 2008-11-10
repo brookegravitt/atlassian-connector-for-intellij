@@ -31,7 +31,7 @@ public class JIRAFilterListModel {
 		if (serversFilters.containsKey(jiraServer) && getManualFilter(jiraServer).equals(manualFilter)) {
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedManualFilter = manualFilter;
-			fireSavedFilterSelected();
+			fireManualFilterSelected();
 		}
 	}
 
