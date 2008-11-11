@@ -66,4 +66,6 @@ public interface CfgManager extends BambooCfgManager {
 
 	boolean removeConfigurationCredentialsListener(ProjectId projectId,
 			ConfigurationCredentialsListener listener);
+
+	boolean hasProject(ProjectId projectId);
 }

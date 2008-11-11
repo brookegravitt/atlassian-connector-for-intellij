@@ -62,17 +62,13 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(PROJECT_ID_1), jira1, bamboo1, bamboo3, jira2);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(PROJECT_ID_2), jira2, bamboo3, crucible1);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(PROJECT_ID_3), jira2, bamboo3);
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.getAllServers(null);
 			}
 		});
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.getAllServers(new ProjectId());
-			}
-		});
 
+		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(new ProjectId()), bamboo3, jira2);
 	}
 
 	private void populateServerCfgs() {
@@ -129,7 +125,7 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		final CfgManager cfgManager2 = createCfgManager();
 		cfgManager2.updateProjectConfiguration(PROJECT_ID_1, new ProjectConfiguration());
 		TestUtil.assertHasOnlyElements(cfgManager2.getAllEnabledServers(PROJECT_ID_1));
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.getAllEnabledServers(null);
 
@@ -333,16 +329,12 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 	public void testGetAllEnabledBambooServers() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_1), bamboo1, bamboo3);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_2), bamboo3);
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.getAllEnabledBambooServers(null);
 			}
 		});
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.getAllEnabledBambooServers(new ProjectId());
-			}
-		});
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(new ProjectId()), bamboo3);
 	}
 
 	public void testGetAllEnabledCrucibleServers() {
@@ -355,16 +347,12 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		crucible2.setEnabled(false);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_2), crucible1);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(PROJECT_ID_1));
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.getAllEnabledCrucibleServers(null);
 			}
 		});
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.getAllEnabledCrucibleServers(new ProjectId());
-			}
-		});
+		assertEquals(0, cfgManager.getAllEnabledCrucibleServers(new ProjectId()).size());
 	}
 
 	public void testGetAllEnabledJiraServers() {
@@ -377,16 +365,12 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_2));
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledJiraServers(PROJECT_ID_1));
 
-		TestUtil.assertThrows(NullPointerException.class, new IAction() {
+		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() {
 				cfgManager.getAllEnabledJiraServers(null);
 			}
 		});
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.getAllEnabledJiraServers(new ProjectId());
-			}
-		});
+		assertEquals(0, cfgManager.getAllEnabledJiraServers(new ProjectId()).size());
 	}
 
 
@@ -395,12 +379,8 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		assertNull(cfgManager.removeProject(new ProjectId()));
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_1), bamboo1, bamboo3);
 		assertNotNull(cfgManager.removeProject(PROJECT_ID_1));
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.getAllEnabledBambooServers(PROJECT_ID_1);
-			}
-		});
-		// PROJECT_ID_2 is intact 
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_1), bamboo3);
+		// PROJECT_ID_2 is intact
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(PROJECT_ID_2), bamboo3);
 	}
 
