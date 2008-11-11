@@ -50,9 +50,6 @@ public class CfgManagerImpl implements CfgManager {
 	}
 
 	public Collection<ServerCfg> getAllServers(final ProjectId projectId) {
-		if (hasProject(projectId) == false) {
-			throw new IllegalArgumentException("Project with id [" + projectId.toString() + "] is not registered.");
-		}
         Collection<ServerCfg> tmp = new ArrayList<ServerCfg>(getProjectSpecificServers(projectId));
         tmp.addAll(globalServers);
         return tmp;
@@ -254,7 +251,7 @@ public class CfgManagerImpl implements CfgManager {
 		}
 	}
 
-	private boolean hasProject(ProjectId projectId) {
+	public boolean hasProject(ProjectId projectId) {
 		return projectConfigurations.containsKey(projectId);
 	}
 
