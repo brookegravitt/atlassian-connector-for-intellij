@@ -177,8 +177,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			filters.setReadStored(true);
 		}
 
-		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
-				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 
 	}
 
