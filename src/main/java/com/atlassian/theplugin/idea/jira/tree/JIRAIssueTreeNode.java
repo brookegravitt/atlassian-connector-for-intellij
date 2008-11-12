@@ -12,6 +12,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 	private static final int GAP = 6;
+    private static final int ICON_WIDTH = 16;
+    private static final int RIGHT_PADDING = 24;
 
 	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
 		this.model = model;
@@ -26,7 +28,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		private SelectableLabel(boolean selected, String text, Icon icon, int alignment) {
 			super(text, icon, SwingConstants.LEADING);
 			setHorizontalTextPosition(alignment);
-            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), 16));
+            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_WIDTH));
             setOpaque(true);
 			setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 			setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
@@ -79,9 +81,9 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
         gbc.insets = new Insets(0, 0, 0, 0); 
-        padding.setPreferredSize(new Dimension(24, 1));
-        padding.setMinimumSize(new Dimension(24, 1));
-        padding.setMaximumSize(new Dimension(24, 1));
+        padding.setPreferredSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
         padding.setOpaque(false);
         p.add(padding, gbc);
 
