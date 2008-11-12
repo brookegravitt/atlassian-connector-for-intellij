@@ -2,7 +2,6 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import java.util.List;
 import java.util.Collection;
 
 public interface JIRAIssueListModel {
