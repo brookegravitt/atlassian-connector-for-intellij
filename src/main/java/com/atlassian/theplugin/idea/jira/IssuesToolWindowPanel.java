@@ -398,9 +398,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraIssueFilterPanel.show();
 
 					if (jiraIssueFilterPanel.getExitCode() == 0) {
-							//JIRAManualFilter manualFilter =
-						jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment()
-								.addAll(jiraIssueFilterPanel.getFilter());
+							JIRAManualFilter manualFilter =	jiraFilterListModel.getJiraSelectedManualFilter();
+						    jiraFilterListModel.clearManualFilter(jiraServer);
+							manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
+						    jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
 
 //								updateIssues(IdeaHelper.getCurrentJIRAServer(project));
 //								filters.setManualFilter(serializeQuery());
