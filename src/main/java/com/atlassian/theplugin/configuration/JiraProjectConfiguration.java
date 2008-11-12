@@ -90,8 +90,8 @@ public class JiraProjectConfiguration {
 	}
 
 	@Transient
-	public void setFiltersBean(String serverId, JiraFiltersBean filters) {
-		query.put(serverId, filters);
+	public void setFiltersBean(String serverId, JiraFiltersBean newFilters) {
+		query.put(serverId, newFilters);
 	}
 
 	@Transient
