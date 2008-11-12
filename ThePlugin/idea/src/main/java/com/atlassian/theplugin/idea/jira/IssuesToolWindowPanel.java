@@ -693,10 +693,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 								.setManualFilterForName(
 										JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
 										serializeFilter(jiraIssueFilterPanel.getFilter()));
-					} else {
-						//cancel
 					}
-
+					// no empty else statement (checkstyle)
 				}
 
 			}
