@@ -3,8 +3,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
-import com.atlassian.theplugin.configuration.JiraFiltersBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -49,56 +49,84 @@ public class JIRAFilterListBuilder {
 	}
 
 	public void rebuildModel() throws JIRAServerFiltersBuilderException {
+		final String filterId = projectConfigurationBean.getJiraConfiguration().getView().getViewFilterId();
+		final String filterServerId = projectConfigurationBean.getJiraConfiguration().getView().getViewServerId();
+
 		listModel.clearAllServerFilters();
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 		for (JiraServerCfg jiraServer : IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)) {
 			try {
-				addServerSavedFilter(jiraServer);
-
+				if (jiraServer.getServerId().toString().equals(filterServerId)) {
+					addServerSavedFilter(jiraServer, filterId);
+				} else {
+					addServerSavedFilter(jiraServer, "-1");
+				}
 			} catch (JIRAException exc) {
 				e.addException(jiraServer, exc);
 			}
 
-			addManualFilter(jiraServer);
+			if (jiraServer.getServerId().toString().equals(filterServerId)) {
+				addManualFilter(jiraServer, filterId);
+			} else {
+				addManualFilter(jiraServer, "");
+			}
 		}
+
 		if (!e.getExceptions().isEmpty()) {
 			throw e;
 		}
 	}
 
-	public void addServerSavedFilter(final JiraServerCfg jiraServer) throws JIRAException {
+	public void addServerSavedFilter(final JiraServerCfg jiraServer, final String filterId) throws JIRAException {
 		List<JIRAQueryFragment> filters = null;
+
+		JIRASavedFilter selection = null;
+		long selectionId = -1;
+		try {
+			selectionId = Long.parseLong(filterId);
+		} catch (Exception ex) {
+		}
 
 		filters = jiraServerFacade.getSavedFilters(jiraServer);
 		List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
 
 		for (JIRAQueryFragment query : filters) {
-
 			savedFilters.add((JIRASavedFilter) query);
+			if (query.getId() == selectionId) {
+				selection = (JIRASavedFilter) query;
+			}
 		}
 
 		listModel.setSavedFilters(jiraServer, savedFilters);
 
-
+		if (selection != null) {
+			listModel.selectSavedFilter(jiraServer, selection);
+		}
 	}
 
-	private void addManualFilter(final JiraServerCfg jiraServer) {
+	private void addManualFilter(final JiraServerCfg jiraServer, final String filterId) {
 
 		if (projectConfigurationBean != null && projectConfigurationBean.getJiraConfiguration() != null) {
-			JiraFiltersBean bean = projectConfigurationBean.getJiraConfiguration()
-					.getJiraFilters(jiraServer.getServerId().toString());
+
+			List<JiraFilterEntryBean> filter = projectConfigurationBean.getJiraConfiguration()
+					.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
+					.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 
 			List<JIRAQueryFragment> query;
-			if (bean != null) {
+			if (filter != null) {
 
-				query = getFragments(bean.getManualFilter());
+				query = getFragments(filter);
 			} else {
 				//nothing found in configuration == create empty, clear filter
 
 				query = new ArrayList<JIRAQueryFragment>();
 			}
-			
-			listModel.setManualFilter(jiraServer, new JIRAManualFilter("Custom Filter", query));
+
+			final JIRAManualFilter jiraManualFilter = new JIRAManualFilter("Custom Filter", query);
+			listModel.setManualFilter(jiraServer, jiraManualFilter);
+			if (JiraFilterConfigurationBean.MANUAL_FILTER_LABEL.equals(filterId)) {
+				listModel.selectManualFilter(jiraServer, jiraManualFilter);
+			}
 		}
 	}
 
