@@ -6,7 +6,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
@@ -61,7 +60,7 @@ public class RunIssueActionAction extends AnAction {
 		}
 		public void run() {
 			try {
-				window.setMessage(
+				window.setStatusMessage(
 						"Retrieving fields for action \""
 								+ action.getName()
 								+ "\" in issue "
@@ -77,7 +76,7 @@ public class RunIssueActionAction extends AnAction {
 				if (server != null) {
 					List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, action);
 					if (fields.isEmpty()) {
-						window.setMessage(
+						window.setStatusMessage(
 								"Running action \""
 										+ action.getName()
 										+ "\" on issue "
@@ -92,7 +91,7 @@ public class RunIssueActionAction extends AnAction {
 						JIRAIssueListModelBuilder issueListModelBuilder =
 								IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
 						JiraIssueAdapter.get(issue).clearCachedActions();
-						window.setMessage(
+						window.setStatusMessage(
 								"Action \""
 										+ action.getName()
 										+ "\" on issue "
@@ -103,7 +102,7 @@ public class RunIssueActionAction extends AnAction {
 							issueListModelBuilder.updateIssue(issue);
 						}
 					} else {
-						window.setMessage(
+						window.setStatusMessage(
 								"Action \""
 										+ action.getName()
 										+ "\" on issue "
@@ -113,7 +112,7 @@ public class RunIssueActionAction extends AnAction {
 					}
 				}
 			} catch (JIRAException e) {
-				window.setMessage(
+				window.setStatusMessage(
 						"Unable to run action "
 								+ action.getName()
 								+ " on issue "

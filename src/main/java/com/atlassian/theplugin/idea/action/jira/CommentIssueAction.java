@@ -20,6 +20,11 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+//
+// this action is ONLY used by the Ctrl-m keyboard shortcut. It is to be removed
+//
+
+@Deprecated
 public class CommentIssueAction extends AnAction {
 
 
