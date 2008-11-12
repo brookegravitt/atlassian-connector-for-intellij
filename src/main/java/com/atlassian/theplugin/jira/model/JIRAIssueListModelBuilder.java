@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface JIRAIssueListModelBuilder {
 	void setModel(JIRAIssueListModel model);
+	JIRAIssueListModel getModel();
 	void setServer(JiraServerCfg server);
 	JiraServerCfg getServer();
 	void setSavedFilter(JIRASavedFilter filter);

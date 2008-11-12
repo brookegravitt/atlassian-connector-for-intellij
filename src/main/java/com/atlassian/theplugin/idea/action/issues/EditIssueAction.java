@@ -9,7 +9,7 @@ public class EditIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null) {
-			panel.editIssueInBrowser(e);
+			panel.editIssueInBrowser();
 		}
 	}
 }

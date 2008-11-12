@@ -21,6 +21,7 @@ import com.atlassian.theplugin.jira.JIRAServer;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public class CreateIssueAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
 		IdeaHelper.getJIRAToolWindowPanel(e).createIssue();
