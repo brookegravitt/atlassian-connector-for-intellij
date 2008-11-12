@@ -60,23 +60,18 @@ public class JIRAFilterListModel {
 		}
 	}
 
-	public void clearManualFilter(final JiraServerCfg jiraServer){
+	public void clearManualFilter(final JiraServerCfg jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
-
 			serversFilters.get(jiraServer).getManualFilter().getQueryFragment().clear();
-
-		};
+		}
 		
 	}
 
 	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final JIRAManualFilter filter) {
 
 		if (serversFilters.containsKey(jiraServer)) {
-
 			serversFilters.get(jiraServer).setManualFilter(filter);
-
 		} else {
-
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
 			serverFilters.setManualFilter(filter);
 			serversFilters.put(jiraServer, serverFilters);
