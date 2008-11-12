@@ -21,6 +21,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.IconLoader;
 
+@Deprecated
 public class JIRAPreviousPageAcion extends AnAction {
 	private static final String DEFAULT_ICON = "/actions/back.png";
 

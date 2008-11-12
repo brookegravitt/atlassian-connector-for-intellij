@@ -26,6 +26,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -424,14 +425,14 @@ public class WorkLogCreate extends DialogWrapper {
 		return result;
 	}
 
-	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JiraIssueAdapter adapter, Project project) {
+	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JIRAIssue issue, Project project) {
 		super(false);
 
 		this.facade = jiraFacade;
 
 		$$$setupUI$$$();
 		init();
-		setTitle("Add Worklog for " + adapter.getKey());
+		setTitle("Add Worklog for " + issue.getKey());
 		setOKActionEnabled(false);
 		getOKAction().putValue(Action.NAME, "Add Worklog");
 
@@ -441,7 +442,7 @@ public class WorkLogCreate extends DialogWrapper {
 		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
 
 		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
-				IdeaHelper.getCurrentJIRAServer(project), adapter.getIssue());
+				IdeaHelper.getCurrentJIRAServer(project), issue);
 		if (startProgressTimestamp != null) {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}
@@ -482,10 +483,10 @@ public class WorkLogCreate extends DialogWrapper {
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAAction> actions = facade.getAvailableActions(server, adapter.getIssue());
+					List<JIRAAction> actions = facade.getAvailableActions(server, issue);
 					for (JIRAAction a : actions) {
 						if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-							List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), a);
+							List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, a);
 							if (fields.isEmpty()) {
 								stopProgress.setEnabled(true);
 								stopProgressLabel.setEnabled(true);

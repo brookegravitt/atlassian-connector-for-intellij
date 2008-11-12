@@ -618,6 +618,15 @@
 		<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
 				text="Assign to Myself and Start Working" />
+		<action id="ThePlugin.JiraIssues.AddComment"
+		        class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
+				text="Add Comment"/>
+		<action id="ThePlugin.JiraIssues.LogWork"
+		        class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
+				text="Log Work"/>
+		<action id="ThePlugin.JiraIssues.CreateChangeList"
+				class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction" 
+				text="Create Change List"/>
 
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
@@ -643,9 +652,9 @@
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>
-			<!--<reference id="ThePlugin.JiraIssues.AddComment"/>-->
-			<!--<reference id="ThePlugin.JiraIssues.LogWork"/>-->
-			<!--<reference id="ThePlugin.JiraIssues.CreateChangeList"/>-->
+			<reference id="ThePlugin.JiraIssues.AddComment"/>
+			<reference id="ThePlugin.JiraIssues.LogWork"/>
+			<reference id="ThePlugin.JiraIssues.CreateChangeList"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
