@@ -6,6 +6,8 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -44,10 +46,8 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Calendar;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
@@ -102,8 +102,15 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		this.messagePane = new MessageScrollPane("Issues panel");
 		add(messagePane, BorderLayout.SOUTH);
 
+		if (projectConfigurationBean != null
+				&& projectConfigurationBean.getJiraConfiguration() != null
+				&& projectConfigurationBean.getJiraConfiguration().getView() != null
+				&& projectConfigurationBean.getJiraConfiguration().getView().getGroupBy() != null) {
+			groupBy = projectConfigurationBean.getJiraConfiguration().getView().getGroupBy();
+		} else {
+			groupBy = JIRAIssueGroupBy.TYPE;
+		}
 
-		groupBy = JIRAIssueGroupBy.TYPE;
 
 		jiraFilterListModel = new JIRAFilterListModel();
 		jiraIssueListModel = JIRAIssueListModelImpl.createInstance();
@@ -112,20 +119,20 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		splitPane.setShowDividerControls(false);
 		splitPane.setFirstComponent(createFilterContent());
-        splitPane.setSecondComponent(createIssuesContent());
-        splitPane.setHonorComponentsMinimumSize(true);
+		splitPane.setSecondComponent(createIssuesContent());
+		splitPane.setHonorComponentsMinimumSize(true);
 
 		addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                final Dimension dimension = e.getComponent().getSize();
-                final boolean doVertical = dimension.getWidth() < dimension.getHeight();
-                if (doVertical != splitPane.getOrientation()) {
-                    splitPane.setOrientation(doVertical);
-                }
+			@Override
+			public void componentResized(ComponentEvent e) {
+				final Dimension dimension = e.getComponent().getSize();
+				final boolean doVertical = dimension.getWidth() < dimension.getHeight();
+				if (doVertical != splitPane.getOrientation()) {
+					splitPane.setOrientation(doVertical);
+				}
 
-            }
-        });
+			}
+		});
 
 		add(splitPane, BorderLayout.CENTER);
 
@@ -168,6 +175,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				showManualFilterPanel(true);
 				setIssuesFilterParams(jiraServer, manualFilter);
 				refreshIssues();
+
+				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+				projectConfigurationBean.getJiraConfiguration().getView()
+						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
@@ -176,6 +188,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
+
+				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+				projectConfigurationBean.getJiraConfiguration().getView().setViewFilterId(Long.toString(savedFilter.getId()));
 			}
 		});
 
@@ -203,9 +218,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		issueTree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
-				if (e.getButton() == MouseEvent.BUTTON1	&& e.getClickCount() == 2 && issue != null) {
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
 					launchOpenIsueAction();
-				} else if (e.getButton() == MouseEvent.BUTTON3	&& e.getClickCount() == 1) {
+				} else if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 					int selRow = issueTree.getRowForLocation(e.getX(), e.getY());
 					TreePath selPath = issueTree.getPathForLocation(e.getX(), e.getY());
 					if (selRow != -1 && selPath != null) {
@@ -625,7 +640,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		manualFiltereditScrollPane = new JScrollPane(createManualFilterEditPanel(),
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);		
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		filterListScrollPane.setWheelScrollingEnabled(true);
 		splitFilterPane = new Splitter(false, 1.0f);
@@ -644,10 +659,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		CellConstraints cc = new CellConstraints();
 
-		manualFilterPanel.add(new JLabel("Custom Filter ") , cc.xy(1, 1));
+		manualFilterPanel.add(new JLabel("Custom Filter "), cc.xy(1, 1));
 
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		manualFilterPanel.add(hyperlinkLabel , cc.xy(2, 1));
+		manualFilterPanel.add(hyperlinkLabel, cc.xy(2, 1));
 
 		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -664,11 +679,22 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraIssueFilterPanel.show();
 
 					if (jiraIssueFilterPanel.getExitCode() == 0) {
-						JIRAManualFilter manualFilter =	jiraFilterListModel.getJiraSelectedManualFilter();
+						JIRAManualFilter manualFilter = jiraFilterListModel.getJiraSelectedManualFilter();
 						jiraFilterListModel.clearManualFilter(jiraServer);
 						manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
-						jiraFilterListModel.selectManualFilter(jiraServer,  manualFilter);
-							showManualFilterPanel(true);
+						jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
+						jiraFilterListModel.selectManualFilter(jiraServer, manualFilter);
+						showManualFilterPanel(true);
+
+						// store filter in project workspace
+						projectConfigurationBean.getJiraConfiguration()
+								.getJiraFilterConfiguaration(
+										jiraFilterListModel.getJiraSelectedServer().getServerId().toString())
+								.setManualFilterForName(
+										JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
+										serializeFilter(jiraIssueFilterPanel.getFilter()));
+					} else {
+						//cancel
 					}
 
 				}
@@ -680,13 +706,21 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	}
 
+	public List<JiraFilterEntryBean> serializeFilter(List<JIRAQueryFragment> filter) {
+		List<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
+		for (JIRAQueryFragment jiraQueryFragment : filter) {
+			query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
+		}
+		return query;
+	}
+
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
 
 		if (visible) {
 			CellConstraints cc = new CellConstraints();
 			JLabel label = new JLabel(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-			manualFilterPanel.add(label , cc.xy(1, 2));
+			manualFilterPanel.add(label, cc.xy(1, 2));
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
@@ -697,11 +731,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 
-
 	private JComponent createServersToolbar() {
 		ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup toolbar = (ActionGroup) actionManager.getAction(SERVERS_TOOL_BAR);
-        ActionToolbar actionToolbar = actionManager.createActionToolbar("ThePlugin.Issues.ServersToolBar.Place", toolbar, true);
+		ActionGroup toolbar = (ActionGroup) actionManager.getAction(SERVERS_TOOL_BAR);
+		ActionToolbar actionToolbar = actionManager.createActionToolbar("ThePlugin.Issues.ServersToolBar.Place", toolbar, true);
 
 		return actionToolbar.getComponent();
 	}
@@ -777,6 +810,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		issueTreeBuilder.setGroupBy(groupBy);
 		issueTreeBuilder.rebuild(issueTree, issuesPanel);
 		expandAllIssueTreeNodes();
+
+		// store in project workspace
+		projectConfigurationBean.getJiraConfiguration().getView().setGroupBy(groupBy);
 	}
 
 	public void createIssue() {
