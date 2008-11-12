@@ -37,6 +37,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -158,7 +159,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							projectMap.put(p.getKey(), p.getName());
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
-						issueTreeBuilder.rebuild(issueTree, issueTreescrollPane.getViewport());
+						issueTreeBuilder.rebuild(issueTree, issueTreescrollPane);
 						expandAllIssueTreeNodes();
 						messagePane.setStatus("Loaded " + jiraIssueListModel.getIssues().size() + " issues");
 					}
@@ -624,7 +625,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				new FormLayout("left:1dlu:grow, right:1dlu:grow, left:pref:grow, right:pref:grow", "pref:grow"));
 		toolBarPanel.add(new JLabel("Group By "), cc.xy(2, 1));
 		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(2 + 1, 1));
-//		toolBarPanel.add(new JLabel("Search"), cc.xy(2 + 2, 1));
+		toolBarPanel.add(new SearchTextField(), cc.xy(2 + 2, 1));
 
 		return toolBarPanel;
 	}
