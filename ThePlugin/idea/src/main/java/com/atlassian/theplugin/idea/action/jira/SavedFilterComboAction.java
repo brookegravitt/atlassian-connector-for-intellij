@@ -29,6 +29,7 @@ import javax.swing.*;
 import java.util.Iterator;
 import java.util.List;
 
+@Deprecated
 public class SavedFilterComboAction extends ComboBoxAction {
 	public static final String QF_NAME = "SavedFilter";
 	private static final String SELECT_SAVED_FILTER_TEXT = "Select Saved Filter";

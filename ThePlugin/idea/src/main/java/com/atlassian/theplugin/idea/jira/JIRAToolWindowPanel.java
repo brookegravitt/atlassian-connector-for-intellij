@@ -986,7 +986,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 			return;
 		}
 		final JIRAIssue issue = adapter.getIssue();
-		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, adapter, project);
+		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, issue, project);
 		workLogCreate.show();
 		if (workLogCreate.isOK()) {
 

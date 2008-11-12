@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public class CancelFilterChangeAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		if (IdeaHelper.getJIRAToolWindowPanel(event) != null) {

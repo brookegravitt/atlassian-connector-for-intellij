@@ -19,6 +19,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
@@ -46,17 +47,22 @@ import java.awt.event.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 
 public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
-	private static final float SPLIT_RATIO = 0.3f;
+	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
+	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
+	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
+
+
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
 	private ProjectConfigurationBean projectConfigurationBean;
 	private CfgManager cfgManager;
 	private JPanel serversPanel = new JPanel(new BorderLayout());
 	private JPanel issuesPanel = new JPanel(new BorderLayout());
-	private final Splitter splitPane = new Splitter(true, SPLIT_RATIO);
+	private final Splitter splitPane = new Splitter(true, ISSUES_PANEL_SPLIT_RATIO);
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
 	private JIRAFilterListModel jiraFilterListModel;
 	private JIRAIssueTreeBuilder issueTreeBuilder;
@@ -69,6 +75,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JPanel manualFilterPanel;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
 	private JScrollPane manualFiltereditScrollPane;
+	private JIRAServerFacade jiraServerFacade;
 
 	private JScrollPane issueTreescrollPane;
 
@@ -88,6 +95,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.cfgManager = cfgManager;
+
+		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+
 		setLayout(new BorderLayout());
 		this.messagePane = new MessageScrollPane("Issues panel");
 		add(messagePane, BorderLayout.SOUTH);
@@ -153,12 +163,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
+				// this has to be removed as soon as we remove the old tool window
 				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				showManualFilterPanel(true);
+				setIssuesFilterParams(jiraServer, manualFilter);
+				refreshIssues();
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 				showManualFilterPanel(false);
+				// this has to be removed as soon as we remove the old tool window
 				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
@@ -231,8 +245,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		};
 		actionGroup.add(submenu);
 
-		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-
 		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 		if (actions != null) {
@@ -266,7 +278,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							});
 						}
 					} catch (JIRAException e) {
-						setMessage("Query for issue " + issue.getKey() + " actions failed: " + e.getMessage(), true);
+						setStatusMessage("Query for issue " + issue.getKey() + " actions failed: " + e.getMessage(), true);
 					} catch (NullPointerException e) {
 						// somebody unselected issue in the table, so let's just skip
 					}
@@ -358,17 +370,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		Task.Backgroundable assign = new Task.Backgroundable(project, "Assigning Issue", false) {
 
 			public void run(final ProgressIndicator indicator) {
-				setMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
 
 					JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
 					if (jiraServer != null) {
-						JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
-						setMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
 					}
 				} catch (JIRAException e) {
-					setMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
+					setStatusMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
 				}
 			}
 		};
@@ -376,14 +387,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		ProgressManager.getInstance().run(assign);
 	}
 
-	public void createChangeListAction(Project projectArg) {
-		JiraIssueAdapter adapter = JiraIssueAdapter.get(jiraIssueListModel.getSelectedIssue());
-		if (adapter == null) {
-			return;
-		}
-		final JIRAIssue issue = adapter.getIssue();
+	public void createChangeListAction() {
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
 		String changeListName = issue.getKey() + " - " + issue.getSummary();
-		final ChangeListManager changeListManager = ChangeListManager.getInstance(projectArg);
+		final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
 
 		LocalChangeList changeList = changeListManager.findChangeList(changeListName);
 		if (changeList == null) {
@@ -404,26 +411,90 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 	}
 
+	public void addCommentToIssue() {
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		final IssueComment issueComment = new IssueComment(issue.getKey());
+		issueComment.show();
+		if (issueComment.isOK()) {
+			Task.Backgroundable comment = new Task.Backgroundable(project, "Commenting Issue", false) {
+				public void run(final ProgressIndicator indicator) {
+					setStatusMessage("Commenting issue " + issue.getKey() + "...");
+					try {
+						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+						if (jiraServer != null) {
+							jiraServerFacade.addComment(jiraServer, issue, issueComment.getComment());
+							setStatusMessage("Commented issue " + issue.getKey());
+						}
+					} catch (JIRAException e) {
+						setStatusMessage("Issue not commented: " + e.getMessage(), true);
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(comment);
+		}
+	}
+
+	public void logWorkForIssue() {
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, issue, project);
+		workLogCreate.show();
+		if (workLogCreate.isOK()) {
+
+			Task.Backgroundable logWork = new Task.Backgroundable(project, "Logging Work", false) {
+				public void run(final ProgressIndicator indicator) {
+					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+					try {
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(workLogCreate.getStartDate());
+						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+
+						if (jiraServer != null) {
+							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
+									? workLogCreate.getRemainingEstimateString() : null;
+							jiraServerFacade.logWork(jiraServer, issue, workLogCreate.getTimeSpentString(),
+									cal, workLogCreate.getComment(),
+									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
+							if (workLogCreate.isStopProgressSelected()) {
+								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+								jiraServerFacade.progressWorkflowAction(jiraServer, issue,
+										workLogCreate.getStopProgressAction());
+								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
+								jiraIssueListModelBuilder.updateIssue(issue);
+							} else {
+								setStatusMessage("Logged work for issue " + issue.getKey());
+							}
+						}
+					} catch (JIRAException e) {
+						setStatusMessage("Work not logged: " + e.getMessage(), true);
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(logWork);
+		}
+	}
+
 	public void startWorkingOnIssue() {
-		createChangeListAction(project);
+		createChangeListAction();
 		final JiraServerCfg server = jiraIssueListModelBuilder.getServer();
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
 
 			public void run(final ProgressIndicator indicator) {
-				JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 				JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
-				setMessage("Assigning issue " + issue.getKey() + " to myself...");
+				setStatusMessage("Assigning issue " + issue.getKey() + " to myself...");
 				try {
 					jiraServerFacade.setAssignee(server, issue, server.getUsername());
 					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
 					boolean found = false;
 					for (JIRAAction a : actions) {
 						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							setMessage("Starting progress on " + issue.getKey() + "...");
+							setStatusMessage("Starting progress on " + issue.getKey() + "...");
 							jiraServerFacade.progressWorkflowAction(server, issue, a);
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-							setMessage("Started progress on " + issue.getKey());
+							setStatusMessage("Started progress on " + issue.getKey());
 							found = true;
 							JIRAIssueListModelBuilder issueListModelBuilder =
 									IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
@@ -434,12 +505,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						}
 					}
 					if (!found) {
-						setMessage("Progress on "
+						setStatusMessage("Progress on "
 								+ issue.getKey()
 								+ "  not started - no such workflow action available");
 					}
 				} catch (JIRAException e) {
-					setMessage("Error starting progress on issue: " + e.getMessage(), true);
+					setStatusMessage("Error starting progress on issue: " + e.getMessage(), true);
 				} catch (NullPointerException e) {
 					// eeeem - now what?
 				}
@@ -471,7 +542,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
-			setMessage("Some Jira servers did not return saved filters", true);
+			setStatusMessage("Some Jira servers did not return saved filters", true);
 		}
 	}
 
@@ -492,7 +563,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					messagePane.setStatus("Loading issues...");
 					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, true);
 				} catch (JIRAException e) {
-					setMessage(e.getMessage(), true);
+					setStatusMessage(e.getMessage(), true);
 				}
 			}
 		};
@@ -609,31 +680,25 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 //											jiraServer.getServer().getServerId().toString(), filters);
 //								}
 
-					} else {
-						//cancel
 					}
-
-
 				}
-
 			}
 		});
 		manualFilterPanel.add(hl, BorderLayout.CENTER);
 		return manualFilterPanel;
 
 	}
+
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
 		if (visible) {
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
-			splitFilterPane.setProportion(0.5f);
+			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 		} else {
 			splitFilterPane.setSecondComponent(null);
-			splitFilterPane.setProportion(0.9f);
+			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 		}
 	}
-
-
 
 	private JComponent createServersToolbar() {
 		ActionManager actionManager = ActionManager.getInstance();
@@ -657,30 +722,29 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				jiraServerCache.clear();
 				for (JiraServerCfg server : IdeaHelper.getCfgManager()
 						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-					final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-//					if (!jiraServer.checkServer()) {
-//						//setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-//						EventQueue.invokeLater(
-//								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), this));
-//						return;}
+					if (!jiraServer.checkServer()) {
+						setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
+						EventQueue.invokeLater(
+								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), null));
+						continue;}
 					//@todo remove  saved filters download or merge with existing in listModel
 					String serverStr = "[" + server.getName() + "] ";
-					setMessage(serverStr + "Retrieving saved filters...");
+					setStatusMessage(serverStr + "Retrieving saved filters...");
 					jiraServer.getSavedFilters();
-					setMessage(serverStr + "Retrieving projects...");
+					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
-					setMessage(serverStr + "Retrieving issue types...");
+					setStatusMessage(serverStr + "Retrieving issue types...");
 					jiraServer.getIssueTypes();
-					setMessage(serverStr + "Retrieving statuses...");
+					setStatusMessage(serverStr + "Retrieving statuses...");
 					jiraServer.getStatuses();
-					setMessage(serverStr + "Retrieving resolutions...");
+					setStatusMessage(serverStr + "Retrieving resolutions...");
 					jiraServer.getResolutions();
-					setMessage(serverStr + "Retrieving priorities...");
+					setStatusMessage(serverStr + "Retrieving priorities...");
 					jiraServer.getPriorieties();
-					setMessage(serverStr + "Retrieving projects...");
+					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
-					setMessage(serverStr + "Metadata query finished");
+					setStatusMessage(serverStr + "Metadata query finished");
 					jiraServerCache.put(server, jiraServer);
 				}
 				SwingUtilities.invokeLater(new Runnable() {
@@ -694,17 +758,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		ProgressManager.getInstance().run(task);
 	}
 
-
-
-
 	public void projectUnregistered() {
 	}
 
-	public void setMessage(final String message) {
+	public void setStatusMessage(final String message) {
 		messagePane.setMessage(message);
 	}
 
-	public void setMessage(final String msg, final boolean isError) {
+	public void setStatusMessage(final String msg, final boolean isError) {
 		messagePane.setMessage(msg, isError);
 	}
 
@@ -729,7 +790,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		if (server != null) {
 			final IssueCreate issueCreate = new IssueCreate(jiraServerCache.get(server));
-			final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
 			issueCreate.initData();
 			issueCreate.show();
@@ -737,7 +797,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
 					public void run(final ProgressIndicator indicator) {
-						setMessage("Creating new issue...");
+						setStatusMessage("Creating new issue...");
 						String message;
 						boolean isError = false;
 						try {
@@ -769,7 +829,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						final boolean error = isError;
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								setMessage(msg, error);
+								setStatusMessage(msg, error);
 							}
 						});
 					}

@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 /**
  * Simple action to show the settings for the plugin.
  */
+@Deprecated
 public class JIRARefreshIssuesAction extends AnAction {
 
 	public void actionPerformed(AnActionEvent event) {

@@ -30,6 +30,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.Collection;
 
+@Deprecated
 public class SelectJIRAAction extends ComboBoxAction {
 
 	@NotNull

@@ -24,6 +24,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 
+@Deprecated
 public class CreateChangeListAction extends AnAction {
 
     public void actionPerformed(AnActionEvent anActionEvent) {
