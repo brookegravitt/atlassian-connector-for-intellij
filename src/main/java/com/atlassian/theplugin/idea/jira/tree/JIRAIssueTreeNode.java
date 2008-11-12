@@ -26,7 +26,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		private SelectableLabel(boolean selected, String text, Icon icon, int alignment) {
 			super(text, icon, SwingConstants.LEADING);
 			setHorizontalTextPosition(alignment);
-			setOpaque(true);
+            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), 16));
+            setOpaque(true);
 			setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 			setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
 		}
@@ -65,14 +66,26 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 				CachedIconLoader.getIcon(issue.getStatusTypeUrl()), SwingConstants.LEADING);
 		p.add(state, gbc);
 
-		gbc.gridx++;
-		gbc.weightx = 0.0;
-		gbc.insets = new Insets(0, 0, 0, GAP);
-		JLabel prio = new SelectableLabel(selected, "",
-				CachedIconLoader.getIcon(issue.getPriorityIconUrl()), SwingConstants.LEADING);
-		p.add(prio, gbc);
+        Icon prioIcon = CachedIconLoader.getIcon(issue.getPriorityIconUrl());
+        if (prioIcon != null) {
+            gbc.gridx++;
+            gbc.weightx = 0.0;
+            gbc.insets = new Insets(0, 0, 0, GAP);
+            JLabel prio = new SelectableLabel(selected, "", prioIcon, SwingConstants.LEADING);
+            p.add(prio, gbc);
+        }
+        JPanel padding = new JPanel();
+        gbc.gridx++;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(0, 0, 0, 0); 
+        padding.setPreferredSize(new Dimension(24, 1));
+        padding.setMinimumSize(new Dimension(24, 1));
+        padding.setMaximumSize(new Dimension(24, 1));
+        padding.setOpaque(false);
+        p.add(padding, gbc);
 
-		return p;
+        return p;
 	}
 
 	public void onSelect() {
