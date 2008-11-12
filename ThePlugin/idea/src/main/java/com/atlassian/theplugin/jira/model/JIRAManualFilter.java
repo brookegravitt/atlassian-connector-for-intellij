@@ -32,9 +32,9 @@ public final class JIRAManualFilter {
 		this.queryFragment = queryFragment;
 
 	}
-	public String toHTML(){
+	public String toHTML() {
 		String html = "<html><br>";
-		for (JIRAQueryFragment fragment : queryFragment){
+		for (JIRAQueryFragment fragment : queryFragment) {
 			html += fragment.getName() + "<br>";
 
 			//html += "&nbsp;" + fragment.getMap().get("key") + "<br>";
