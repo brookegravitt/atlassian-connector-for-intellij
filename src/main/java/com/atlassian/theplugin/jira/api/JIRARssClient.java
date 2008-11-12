@@ -82,7 +82,7 @@ public class JIRARssClient extends AbstractHttpSession {
 		url.append("&sorter/order=" + sortOrder);
 		url.append("&pager/start=" + start);
 		url.append("&tempMax=" + max);
-        url.append(appendAuthentication());
+        url.append(appendAuthentication(false));
 
 		try {
             Document doc = retrieveGetResponse(url.toString());
@@ -105,7 +105,7 @@ public class JIRARssClient extends AbstractHttpSession {
     public List<JIRAIssue> getAssignedIssues(String assignee) throws JIRAException {
         String url = baseUrl + "/sr/jira.issueviews:searchrequest-xml"
                 + "/temp/SearchRequest.xml?resolution=-1&assignee=" + encodeUrl(assignee)
-                + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication();
+                + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication(false);
 
         try {
             Document doc = retrieveGetResponse(url);
@@ -146,7 +146,7 @@ public class JIRARssClient extends AbstractHttpSession {
 		url.append("&pager/start=" + start);
 		url.append("&tempMax=" + max);
 			
-		url.append(appendAuthentication());
+		url.append(appendAuthentication(false));
 
 		try {
 			Document doc = retrieveGetResponse(url.toString());
@@ -166,6 +166,30 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	}
 
+	public JIRAIssue getIssue(String issueKey) throws JIRAException {
+
+		StringBuffer url = new StringBuffer(baseUrl + "/si/jira.issueviews:issue-xml/");
+		url.append(issueKey).append('/').append(issueKey).append(".xml");
+
+		url.append(appendAuthentication(true));
+
+		try {
+			Document doc = retrieveGetResponse(url.toString());
+			Element root = doc.getRootElement();
+			Element channel = root.getChild("channel");
+			if (channel != null && !channel.getChildren("item").isEmpty()) {
+				return makeIssues(channel.getChildren("item")).get(0);
+			}
+			return null;
+		} catch (IOException e) {
+			throw new JIRAException(e.getMessage(), e);
+		} catch (JDOMException e) {
+			throw new JIRAException(e.getMessage(), e);
+		} catch (RemoteApiSessionExpiredException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+	}
+
 	private List<JIRAIssue> makeIssues(List issueElements) {
         List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
         for (Iterator iterator = issueElements.iterator(); iterator.hasNext();) {
@@ -174,9 +198,9 @@ public class JIRARssClient extends AbstractHttpSession {
         return result;
     }
 
-    private String appendAuthentication() {
+    private String appendAuthentication(boolean firstItem) {
         if (userName != null) {
-            return "&os_username=" + encodeUrl(userName)
+            return (firstItem ? "?" : "&") + "os_username=" + encodeUrl(userName)
                     + "&os_password=" + encodeUrl(password);
         }
         return "";

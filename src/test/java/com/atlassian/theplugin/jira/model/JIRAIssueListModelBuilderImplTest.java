@@ -228,6 +228,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
+		public JIRAIssue getIssueUpdate(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+			return null;
+		}
+
 		public void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
 		                    boolean updateEstimate, String newEstimate) throws JIRAException {
 		}

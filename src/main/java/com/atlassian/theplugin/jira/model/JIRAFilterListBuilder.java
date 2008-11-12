@@ -92,7 +92,8 @@ public class JIRAFilterListBuilder {
 			if (bean != null) {
 
 				query = getFragments(bean.getManualFilter());
-			} else {//nothing found in configuration == create empty, clear filter
+			} else {
+				//nothing found in configuration == create empty, clear filter
 
 				query = new ArrayList<JIRAQueryFragment>();
 			}

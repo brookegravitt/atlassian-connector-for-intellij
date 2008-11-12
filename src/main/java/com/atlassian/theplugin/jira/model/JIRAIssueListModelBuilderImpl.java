@@ -63,7 +63,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public synchronized void addIssuesToModel(int size, boolean reload) throws JIRAException {
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
-			model.notifyListeners();
+			if (model != null) {
+				model.clear();
+				model.notifyListeners();
+			}
 			return;
 		}
 
@@ -83,13 +86,17 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			l = facade.getSavedFilterIssues(server, query, SORT_BY, SORT_ORDER, startFrom, size);
 			model.addIssues(l);
 		}
-		startFrom += l.size();
+		startFrom += l != null ? l.size() : 0;
 		model.notifyListeners();
 	}
 
-	public void updateIssue(final JIRAIssue issue) throws JIRAException {
-		//@todo implement
-		//assert(false);
+	public synchronized void updateIssue(final JIRAIssue issue) throws JIRAException {
+		if (model == null || server == null) {
+			return;
+		}
+		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
+		model.setIssue(updatedIssue);
+		model.notifyListeners();
 	}
 
 	public synchronized void reset() {

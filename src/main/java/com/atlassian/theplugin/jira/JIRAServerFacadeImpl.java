@@ -128,6 +128,16 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
+	public JIRAIssue getIssueUpdate(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+		JIRARssClient rss;
+		try {
+			rss = getRssSession(server);
+		} catch (RemoteApiException e) {
+			throw new JIRAException(e.getMessage(), e);
+		}
+		return rss.getIssue(issue.getKey());
+	}
+
 	public List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
@@ -181,7 +191,8 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
     public JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
-			return soap.createIssue(issue);
+			JIRAIssue i = soap.createIssue(issue);
+			return getIssueUpdate(server, i);
 		} catch (RemoteApiException e) {
 			soapSessions.remove(getSoapSessionKey(server));
 			throw new JIRAException(e.getMessage(), e);

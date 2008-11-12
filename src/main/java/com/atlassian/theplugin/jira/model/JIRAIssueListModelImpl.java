@@ -2,17 +2,16 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 
-	private List<JIRAIssue> issues;
+	private Map<String, JIRAIssue> issues;
 	private List<JIRAIssueListModelListener> listeners;
 	private JIRAIssue selectedIssue;
 
 	private JIRAIssueListModelImpl() {
-		issues = new ArrayList<JIRAIssue>();
+		issues = new HashMap<String, JIRAIssue>();
 		listeners = new ArrayList<JIRAIssueListModelListener>();
 	}
 
@@ -25,17 +24,24 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 	}
 
 	public void addIssue(JIRAIssue issue) {
-		issues.add(issue);
+		issues.put(issue.getKey(), issue);
 	}
 
-	public void addIssues(List<JIRAIssue> list) {
+	public void addIssues(Collection<JIRAIssue> list) {
 		for (JIRAIssue i : list) {
 			addIssue(i);
 		}
 	}
 
-	public List<JIRAIssue> getIssues() {
-		return issues;
+	public void setIssue(JIRAIssue issue) {
+		issues.put(issue.getKey(), issue);
+		if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
+			selectedIssue  = issue;
+		}
+	}
+
+	public Collection<JIRAIssue> getIssues() {
+		return issues.values();
 	}
 
 	public void notifyListeners() {
@@ -55,7 +61,7 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {
-		if (issue != null && issues.contains(issue)) {
+		if (issue != null && issues.containsValue(issue)) {
 			selectedIssue = issue;
 		} else {
 			selectedIssue = null;
