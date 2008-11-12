@@ -7,7 +7,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 
 public class CreateIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {

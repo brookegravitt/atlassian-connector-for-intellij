@@ -28,6 +28,7 @@ import com.intellij.openapi.util.IconLoader;
  * Time: 12:12:40 PM
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class JIRANextPageAction extends AnAction {
 	private static final String DEFAULT_ICON = "/actions/forward.png";
 

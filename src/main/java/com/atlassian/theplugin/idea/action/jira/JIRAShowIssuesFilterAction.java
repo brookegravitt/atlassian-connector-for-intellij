@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.IconLoader;
 
+@Deprecated
 public class JIRAShowIssuesFilterAction extends AnAction {
 	private static final String DEFAULT_ICON = "/ant/filter.png";
 

@@ -67,7 +67,10 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 				server.setPassword(password);
 				server.setPasswordStored(shouldPasswordBeStored);
 				server.setUsername(dialog.getUserName());
-				jiraPanel.selectServer(server);
+				if (jiraPanel != null) {
+					// todo - fix this. 
+					jiraPanel.selectServer(server);
+				}
 			} else {
 				wasCanceled = true;
 			}
