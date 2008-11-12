@@ -29,8 +29,8 @@ import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.editor.StackTraceConsole;
 import com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
-import com.atlassian.theplugin.jira.model.JIRAServerFiltersBuilder;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -70,7 +70,7 @@ public final class PicoUtil {
 			StackTraceConsole.class,
 			BambooBuildToolWindow.class,
 			JIRAIssueListModelBuilderImpl.class,
-			JIRAServerFiltersBuilder.class
+			JIRAFilterListBuilder.class
 	};
 
 

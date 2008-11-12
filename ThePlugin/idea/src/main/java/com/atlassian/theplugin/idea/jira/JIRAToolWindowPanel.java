@@ -157,7 +157,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 		createFilterToolBar();
 		createFilterEditToolBar();
 
-		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this);
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this, null, null);
 	}
 
 	public ArrayList<JiraFilterEntryBean> serializeQuery() {
@@ -246,7 +246,7 @@ public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueA
 	public final void showJIRAIssueFilter() {
 
 
-		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this);
+		jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, this, null, null);
 
 		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 

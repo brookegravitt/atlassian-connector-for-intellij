@@ -15,9 +15,20 @@ import java.util.Map;
 public class JIRAFilterListModel {
 	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
+
 	private JiraServerCfg jiraSelectedServer;
+
 	private JIRASavedFilter jiraSelectedSavedFilter;
+
 	private JIRAManualFilter jiraSelectedManualFilter;
+
+	public JiraServerCfg getJiraSelectedServer() {
+		return jiraSelectedServer;
+	}
+
+	public JIRAManualFilter getJiraSelectedManualFilter() {
+		return jiraSelectedManualFilter;
+	}
 
 	public void selectSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 		if (serversFilters.containsKey(jiraServer) && getSavedFilters(jiraServer).contains(savedFilter)) {
@@ -28,7 +39,7 @@ public class JIRAFilterListModel {
 	}
 
 	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter) {
-		if (serversFilters.containsKey(jiraServer) && getManualFilter(jiraServer).equals(manualFilter)) {
+		if (serversFilters.containsKey(jiraServer)) {
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedManualFilter = manualFilter;
 			fireManualFilterSelected();
@@ -47,6 +58,15 @@ public class JIRAFilterListModel {
 			serverFilters.setSavedFilters(filters);
 			serversFilters.put(jiraServer, serverFilters);
 		}
+	}
+
+	public void clearManualFilter(final JiraServerCfg jiraServer){
+		if (serversFilters.containsKey(jiraServer)) {
+
+			serversFilters.get(jiraServer).getManualFilter().getQueryFragment().clear();
+
+		};
+		
 	}
 
 	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final JIRAManualFilter filter) {
@@ -111,4 +131,7 @@ public class JIRAFilterListModel {
 		listeners.remove(listener);
 	}
 
+	public void clearAllServerFilters() {
+		serversFilters.clear();
+	}
 }
