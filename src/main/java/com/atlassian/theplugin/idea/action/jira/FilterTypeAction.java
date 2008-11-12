@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+@Deprecated
 public class FilterTypeAction extends ToggleAction implements CustomComponentAction {
 	private static final String MY_CHECKBOX_DIRTY_HACK = "my-checkbox-dirty-hack";
 
