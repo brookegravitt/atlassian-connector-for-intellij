@@ -377,6 +377,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+						jiraIssueListModelBuilder.updateIssue(issue);
 					}
 				} catch (JIRAException e) {
 					setStatusMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
@@ -496,11 +497,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 							setStatusMessage("Started progress on " + issue.getKey());
 							found = true;
-							JIRAIssueListModelBuilder issueListModelBuilder =
-									IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-							if (issueListModelBuilder != null) {
-								issueListModelBuilder.updateIssue(issue);
-							}
+							jiraIssueListModelBuilder.updateIssue(issue);
 							break;
 						}
 					}
@@ -664,22 +661,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					jiraIssueFilterPanel.show();
 
 					if (jiraIssueFilterPanel.getExitCode() == 0) {
-							JIRAManualFilter manualFilter =	jiraFilterListModel.getJiraSelectedManualFilter();
-						    jiraFilterListModel.clearManualFilter(jiraServer);
-							manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
-						    jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
-
-//								updateIssues(IdeaHelper.getCurrentJIRAServer(project));
-//								filters.setManualFilter(serializeQuery());
-//								filters.setSavedFilterUsed(false);
-//								JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-//
-//								if (jiraServer != null) {
-//									projectConfiguration.
-//											getJiraConfiguration().setFiltersBean(
-//											jiraServer.getServer().getServerId().toString(), filters);
-//								}
-
+						JIRAManualFilter manualFilter =	jiraFilterListModel.getJiraSelectedManualFilter();
+						jiraFilterListModel.clearManualFilter(jiraServer);
+						manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
+						jiraFilterListModel.selectManualFilter(jiraServer,  manualFilter);
 					}
 				}
 			}
@@ -727,7 +712,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
 						EventQueue.invokeLater(
 								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), null));
-						continue;}
+						continue;
+					}
 					//@todo remove  saved filters download or merge with existing in listModel
 					String serverStr = "[" + server.getName() + "] ";
 					setStatusMessage(serverStr + "Retrieving saved filters...");
@@ -802,23 +788,15 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						boolean isError = false;
 						try {
 							JIRAIssue issueToCreate = issueCreate.getJIRAIssue();
-							JIRAIssue createdIssue = jiraServerFacade.createIssue(server,
-									issueToCreate);
+							JIRAIssue createdIssue = jiraServerFacade.createIssue(server, issueToCreate);
 
-							// todo - this is evil, fix it
-							JIRAIssueBean newIssue = (JIRAIssueBean) jiraServerFacade.getIssueDetails(
-									server, createdIssue);
-							newIssue = jiraServerCache.get(server).fixupIssue(newIssue, issueToCreate);
+							message = "New issue created: <a href="
+									+ createdIssue.getIssueUrl()
+									+ ">"
+									+ createdIssue.getKey()
+									+ "</a>";
 
-							message =
-									"New issue created: <a href="
-											+ newIssue.getIssueUrl()
-											+ ">"
-											+ newIssue.getKey()
-											+ "</a>";
-
-							jiraIssueListModel.addIssue(newIssue);
-
+							jiraIssueListModelBuilder.updateIssue(createdIssue);
 							jiraIssueListModel.notifyListeners();
 						} catch (JIRAException e) {
 							message = "Failed to create new issue: " + e.getMessage();
@@ -826,12 +804,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						}
 
 						final String msg = message;
-						final boolean error = isError;
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								setStatusMessage(msg, error);
-							}
-						});
+						setStatusMessage(msg, isError);
 					}
 				};
 
