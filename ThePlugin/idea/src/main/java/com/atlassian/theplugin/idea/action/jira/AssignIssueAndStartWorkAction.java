@@ -4,6 +4,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public class AssignIssueAndStartWorkAction extends AnAction {
 	public AssignIssueAndStartWorkAction() {
 		super("Assign to Me and Start Working");

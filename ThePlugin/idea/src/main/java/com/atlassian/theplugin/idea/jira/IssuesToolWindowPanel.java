@@ -8,12 +8,15 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.intellij.ide.BrowserUtil;
@@ -28,6 +31,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.ui.HyperlinkLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -42,9 +47,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * User: pmaruszak
- */
 public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private static final float SPLIT_RATIO = 0.3f;
@@ -60,13 +62,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAIssueTreeBuilder issueTreeBuilder;
 	private JTree issueTree;
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
+	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private Splitter splitFilterPane;
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
-	private JIRAServer currentJIRAServer;
 	private JPanel manualFilterPanel;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
-	JScrollPane manualFiltereditScrollPane;
+	private JScrollPane manualFiltereditScrollPane;
+
 	private JScrollPane issueTreescrollPane;
 
 	public MessageScrollPane getMessagePane() {
@@ -117,16 +120,22 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		add(splitPane, BorderLayout.CENTER);
 
 		jiraIssueListModelBuilder.setModel(jiraIssueListModel);
-		IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class).setListModel(jiraFilterListModel);
-		IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class).setProjectId(CfgUtil.getProjectId(project));
-		IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class)
-				.setProjectConfigurationBean(projectConfigurationBean);
-
+		jiraFilterListModelBuilder = IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class);
+		if (jiraFilterListModelBuilder != null) {
+			jiraFilterListModelBuilder.setListModel(jiraFilterListModel);
+			jiraFilterListModelBuilder.setProjectId(CfgUtil.getProjectId(project));
+			jiraFilterListModelBuilder.setProjectConfigurationBean(projectConfigurationBean);
+		}
 		jiraIssueListModel.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel model) {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						JIRAServer server = jiraServerCache.get(jiraIssueListModelBuilder.getServer());
+						JiraIssueAdapter.clearCache();
+						JiraServerCfg srvcfg = jiraIssueListModelBuilder.getServer();
+						if (srvcfg == null) {
+							return;
+						}
+						JIRAServer server = jiraServerCache.get(srvcfg);
 						Map<String, String> projectMap = new HashMap<String, String>();
 						for (JIRAProject p : server.getProjects()) {
 							projectMap.put(p.getKey(), p.getName());
@@ -144,15 +153,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
-				currentJIRAServer = jiraServerCache.get(jiraServer);
-				IdeaHelper.setCurrentJIRAServer(currentJIRAServer);
+				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				showManualFilterPanel(true);
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 				showManualFilterPanel(false);
-				currentJIRAServer = jiraServerCache.get(jiraServer);
-				IdeaHelper.setCurrentJIRAServer(currentJIRAServer);
+				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
 			}
@@ -206,9 +213,67 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		actionGroup.addAll(configActionGroup);
 
 		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Context menu", actionGroup);
+		addIssueActionsSubmenu(actionGroup, popup);
 
 		final JPopupMenu jPopupMenu = popup.getComponent();
 		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	private void addIssueActionsSubmenu(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
+		final DefaultActionGroup submenu = new DefaultActionGroup("Querying for Actions... ", true) {
+			public void update(AnActionEvent event) {
+				super.update(event);
+
+				if (getChildrenCount() > 0) {
+					event.getPresentation().setText("Available Workflow Actions");
+				}
+			}
+		};
+		actionGroup.add(submenu);
+
+		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+		if (actions != null) {
+			for (JIRAAction a : actions) {
+				submenu.add(new RunIssueActionAction(this, jiraServerFacade, issue, a));
+			}
+		} else {
+			Thread t = new Thread() {
+				public void run() {
+					try {
+						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+
+						if (jiraServer != null) {
+							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
+
+							JiraIssueAdapter.get(issue).setCachedActions(actions);
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									JPopupMenu pMenu = popup.getComponent();
+									if (pMenu.isVisible()) {
+										for (JIRAAction a : actions) {
+											submenu.add(new RunIssueActionAction(IssuesToolWindowPanel.this,
+													jiraServerFacade, issue, a));
+										}
+
+										// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
+										pMenu.setVisible(false);
+										pMenu.setVisible(true);
+									}
+								}
+							});
+						}
+					} catch (JIRAException e) {
+						setMessage("Query for issue " + issue.getKey() + " actions failed: " + e.getMessage(), true);
+					} catch (NullPointerException e) {
+						// somebody unselected issue in the table, so let's just skip
+					}
+				}
+			};
+			t.start();
+		}
 	}
 
 	private void launchOpenIsueAction() {
@@ -243,19 +308,147 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 	}
 
-	public void viewIssueInBrowser(AnActionEvent event) {
+	public void viewIssueInBrowser() {
 		JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
 		if (issue != null) {
 			BrowserUtil.launchBrowser(issue.getIssueUrl());
 		}
 	}
 
-	public void editIssueInBrowser(AnActionEvent event) {
+	public void editIssueInBrowser() {
 		JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
 		if (issue != null) {
 			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
 		}
 	}
+
+	public void assignIssueToMyself() {
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		if (issue == null) {
+			return;
+		}
+		try {
+			JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+			if (jiraServer != null) {
+				assignIssue(issue, jiraServer.getUsername());
+			}
+		} catch (NullPointerException ex) {
+			// whatever, means action was called when no issue was selected. Let's just swallow it
+		}
+	}
+
+	public void assignIssueToSomebody() {
+		final JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+		if (issue == null) {
+			return;
+		}
+		final GetUserNameDialog getUserNameDialog = new GetUserNameDialog(issue.getKey());
+		getUserNameDialog.show();
+		if (getUserNameDialog.isOK()) {
+			try {
+				assignIssue(issue, getUserNameDialog.getName());
+			} catch (NullPointerException ex) {
+				// whatever, means action was called when no issue was selected. Let's just swallow it
+			}
+		}
+	}
+
+	private void assignIssue(final JIRAIssue issue, final String assignee) {
+
+		Task.Backgroundable assign = new Task.Backgroundable(project, "Assigning Issue", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				setMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+				try {
+
+					JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+					if (jiraServer != null) {
+						JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
+						setMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+					}
+				} catch (JIRAException e) {
+					setMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(assign);
+	}
+
+	public void createChangeListAction(Project projectArg) {
+		JiraIssueAdapter adapter = JiraIssueAdapter.get(jiraIssueListModel.getSelectedIssue());
+		if (adapter == null) {
+			return;
+		}
+		final JIRAIssue issue = adapter.getIssue();
+		String changeListName = issue.getKey() + " - " + issue.getSummary();
+		final ChangeListManager changeListManager = ChangeListManager.getInstance(projectArg);
+
+		LocalChangeList changeList = changeListManager.findChangeList(changeListName);
+		if (changeList == null) {
+			ChangesetCreate c = new ChangesetCreate(issue.getKey());
+			c.setChangesetName(changeListName);
+			c.setChangestComment(changeListName + "\n");
+			c.setActive(true);
+			c.show();
+			if (c.isOK()) {
+				changeListName = c.getChangesetName();
+				changeList = changeListManager.addChangeList(changeListName, c.getChangesetComment());
+				if (c.isActive()) {
+					changeListManager.setDefaultChangeList(changeList);
+				}
+			}
+		} else {
+			changeListManager.setDefaultChangeList(changeList);
+		}
+	}
+
+	public void startWorkingOnIssue() {
+		createChangeListAction(project);
+		final JiraServerCfg server = jiraIssueListModelBuilder.getServer();
+
+		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
+
+			public void run(final ProgressIndicator indicator) {
+				JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+				JIRAIssue issue = jiraIssueListModel.getSelectedIssue();
+				setMessage("Assigning issue " + issue.getKey() + " to myself...");
+				try {
+					jiraServerFacade.setAssignee(server, issue, server.getUsername());
+					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
+					boolean found = false;
+					for (JIRAAction a : actions) {
+						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+							setMessage("Starting progress on " + issue.getKey() + "...");
+							jiraServerFacade.progressWorkflowAction(server, issue, a);
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+							setMessage("Started progress on " + issue.getKey());
+							found = true;
+							JIRAIssueListModelBuilder issueListModelBuilder =
+									IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+							if (issueListModelBuilder != null) {
+								issueListModelBuilder.updateIssue(issue);
+							}
+							break;
+						}
+					}
+					if (!found) {
+						setMessage("Progress on "
+								+ issue.getKey()
+								+ "  not started - no such workflow action available");
+					}
+				} catch (JIRAException e) {
+					setMessage("Error starting progress on issue: " + e.getMessage(), true);
+				} catch (NullPointerException e) {
+					// eeeem - now what?
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(startWorkOnIssue);
+	}
+
 
 	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
 			final ProjectConfigurationBean projectConfigurationBean,
@@ -273,7 +466,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private void refreshFilterModel() {
 
 		try {
-			IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class).rebuildModel();
+			if (jiraFilterListModelBuilder != null) {
+				jiraFilterListModelBuilder.rebuildModel();
+			}
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
 			setMessage("Some Jira servers did not return saved filters", true);
@@ -374,7 +569,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		serversPanel.add(createServersToolbar(), BorderLayout.NORTH);
 
 		//create manual filter panel
-		splitFilterPane.setFirstComponent(serversPanel);		
+		splitFilterPane.setFirstComponent(serversPanel);
 
 		return splitFilterPane;
 	}
@@ -412,7 +607,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 //									projectConfiguration.
 //											getJiraConfiguration().setFiltersBean(
 //											jiraServer.getServer().getServerId().toString(), filters);
-//								}						
+//								}
 
 					} else {
 						//cancel
@@ -427,14 +622,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return manualFilterPanel;
 
 	}
-	private void showManualFilterPanel(boolean visible){
+	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
-
-		if (visible){
-
+		if (visible) {
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(0.5f);
-
 		} else {
 			splitFilterPane.setSecondComponent(null);
 			splitFilterPane.setProportion(0.9f);
@@ -527,17 +719,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		expandAllIssueTreeNodes();
 	}
 
-	public JIRAServer getCurrentJIRAServer() {
-		return currentJIRAServer;
-	}
-
-	public boolean canCreateIssue() {
-		return currentJIRAServer != null;
-	}
-
 	public void createIssue() {
-		if (currentJIRAServer != null) {
-			final IssueCreate issueCreate = new IssueCreate(currentJIRAServer);
+		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+		if (builder == null) {
+			return;
+		}
+
+		final JiraServerCfg server = builder.getServer();
+
+		if (server != null) {
+			final IssueCreate issueCreate = new IssueCreate(jiraServerCache.get(server));
 			final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
 			issueCreate.initData();
@@ -551,12 +742,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						boolean isError = false;
 						try {
 							JIRAIssue issueToCreate = issueCreate.getJIRAIssue();
-							JIRAIssue createdIssue = jiraServerFacade.createIssue(currentJIRAServer.getServer(),
+							JIRAIssue createdIssue = jiraServerFacade.createIssue(server,
 									issueToCreate);
 
+							// todo - this is evil, fix it
 							JIRAIssueBean newIssue = (JIRAIssueBean) jiraServerFacade.getIssueDetails(
-									currentJIRAServer.getServer(), createdIssue);
-							newIssue = currentJIRAServer.fixupIssue(newIssue, issueToCreate);
+									server, createdIssue);
+							newIssue = jiraServerCache.get(server).fixupIssue(newIssue, issueToCreate);
 
 							message =
 									"New issue created: <a href="
