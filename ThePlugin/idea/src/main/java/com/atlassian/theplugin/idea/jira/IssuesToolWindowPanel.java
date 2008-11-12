@@ -7,16 +7,16 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
+import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
@@ -31,9 +31,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.HyperlinkLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -44,10 +44,10 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Calendar;
 
 public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
@@ -534,9 +534,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private void refreshFilterModel() {
 
 		try {
-			if (jiraFilterListModelBuilder != null) {
-				jiraFilterListModelBuilder.rebuildModel();
-			}
+			IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class).rebuildModel();
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
 			setStatusMessage("Some Jira servers did not return saved filters", true);
@@ -627,8 +625,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		manualFiltereditScrollPane = new JScrollPane(createManualFilterEditPanel(),
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);		
 
 		filterListScrollPane.setWheelScrollingEnabled(true);
 		splitFilterPane = new Splitter(false, 1.0f);
@@ -643,10 +640,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createManualFilterEditPanel() {
-		manualFilterPanel = new JPanel(new BorderLayout());
-		manualFilterPanel.add(new JLabel("Manual filter: "), BorderLayout.CENTER);
-		HyperlinkLabel hl = new HyperlinkLabel("edit filter");
-		hl.addHyperlinkListener(new HyperlinkListener() {
+		manualFilterPanel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow, pref:grow"));
+
+		CellConstraints cc = new CellConstraints();
+
+		manualFilterPanel.add(new JLabel("Custom Filter "), cc.xy(1,1));
+
+		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
+		manualFilterPanel.add(hyperlinkLabel, cc.xy(2,1));
+
+		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
 				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
@@ -665,25 +668,38 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						jiraFilterListModel.clearManualFilter(jiraServer);
 						manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
 						jiraFilterListModel.selectManualFilter(jiraServer,  manualFilter);
+							showManualFilterPanel(true);
+					} else {
+						//cancel
 					}
+
+
 				}
+
 			}
 		});
-		manualFilterPanel.add(hl, BorderLayout.CENTER);
+
 		return manualFilterPanel;
 
 	}
 
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
+
 		if (visible) {
+			CellConstraints cc = new CellConstraints();
+			JLabel label = new JLabel(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
+			manualFilterPanel.add(label, cc.xy(1,2));
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
+
 		} else {
 			splitFilterPane.setSecondComponent(null);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 		}
 	}
+
+
 
 	private JComponent createServersToolbar() {
 		ActionManager actionManager = ActionManager.getInstance();
