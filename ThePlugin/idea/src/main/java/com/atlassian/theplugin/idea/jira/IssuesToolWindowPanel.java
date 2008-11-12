@@ -644,10 +644,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		CellConstraints cc = new CellConstraints();
 
-		manualFilterPanel.add(new JLabel("Custom Filter ") , cc.xy(1 ,1));
+		manualFilterPanel.add(new JLabel("Custom Filter ") , cc.xy(1, 1));
 
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		manualFilterPanel.add(hyperlinkLabel , cc.xy(2 ,1));
+		manualFilterPanel.add(hyperlinkLabel , cc.xy(2, 1));
 
 		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -686,7 +686,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		if (visible) {
 			CellConstraints cc = new CellConstraints();
 			JLabel label = new JLabel(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-			manualFilterPanel.add(label , cc.xy(1 ,2));
+			manualFilterPanel.add(label , cc.xy(1, 2));
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
