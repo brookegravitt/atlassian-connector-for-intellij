@@ -23,10 +23,14 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import javax.management.timer.Timer;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public final class JiraIssueAdapter {
 	private JIRAIssue issue;
 	private boolean useIconDescription;
+
+	private static Map<JIRAIssue, JiraIssueAdapter> issueAdapterMap = new HashMap<JIRAIssue, JiraIssueAdapter>();
 
 	private List<JIRAAction> issueActionCache;
 	private long issueActionCacheTimestamp = 0;
@@ -159,5 +163,17 @@ public final class JiraIssueAdapter {
 
 	public synchronized void clearCachedActions() {
 		issueActionCache = null;
+	}
+
+	public static JiraIssueAdapter get(JIRAIssue issue) {
+		JiraIssueAdapter a = issueAdapterMap.get(issue);
+		if (a == null) {
+			a = new JiraIssueAdapter(issue, true);
+			issueAdapterMap.put(issue, a);
+		}
+		return a;
+	}
+	public static void clearCache() {
+		issueAdapterMap.clear();
 	}
 }

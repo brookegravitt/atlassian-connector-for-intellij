@@ -37,6 +37,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		this.model = model;
 	}
 
+	public JIRAIssueListModel getModel() {
+		return model;
+	}
+
 	public void setServer(JiraServerCfg server) {
 		this.server = server;
 	}

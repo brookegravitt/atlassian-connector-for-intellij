@@ -30,7 +30,7 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 
 	public void addIssues(List<JIRAIssue> list) {
 		for (JIRAIssue i : list) {
-			issues.add(i);
+			addIssue(i);
 		}
 	}
 

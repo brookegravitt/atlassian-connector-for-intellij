@@ -1,9 +1,8 @@
-package com.atlassian.theplugin.idea.action.jira;
+package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-@Deprecated
-public class CopyIssueSummaryAction extends AbstractClipboardAction {
+public class CopyIssueSummaryAction extends AbstractIssueClipboardAction {
 	protected String getCliboardText(final JIRAIssue issue) {
 		return issue.getSummary();
 	}

@@ -27,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 
+@Deprecated
 public class QuickSearchAction extends AnAction {
     @Override
 	public void actionPerformed(AnActionEvent e) {
