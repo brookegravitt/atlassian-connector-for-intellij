@@ -85,6 +85,7 @@ public class JIRAFilterListBuilder {
 		try {
 			selectionId = Long.parseLong(filterId);
 		} catch (Exception ex) {
+			// invalid filter id wil not be set
 		}
 
 		filters = jiraServerFacade.getSavedFilters(jiraServer);
