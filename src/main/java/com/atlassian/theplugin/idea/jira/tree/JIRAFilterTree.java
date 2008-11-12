@@ -6,6 +6,7 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
 import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -22,7 +23,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	private DefaultTreeModel treeModel;
 	private FilterTreeSelectionListener treeSelectionListener = new FilterTreeSelectionListener();
 
-	public JIRAFilterTree(final JIRAFilterListModel listModel) {
+	public JIRAFilterTree(@NotNull final JIRAFilterListModel listModel) {
 		listModel.addModelListener(this);
 		
 		setShowsRootHandles(true);
@@ -84,13 +85,15 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel listModel) {
-		for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
-			node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
-		}
-		
-		JIRAManualFilter manualFilter = listModel.getManualFilter(jiraServer);
+		if (listModel != null) {
+			for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
+				node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
+			}
 
-		node.add(new JIRAManualFilterTreeNode(listModel, manualFilter));
+			JIRAManualFilter manualFilter = listModel.getManualFilter(jiraServer);
+
+			node.add(new JIRAManualFilterTreeNode(listModel, manualFilter));
+		}
 
 	}
 

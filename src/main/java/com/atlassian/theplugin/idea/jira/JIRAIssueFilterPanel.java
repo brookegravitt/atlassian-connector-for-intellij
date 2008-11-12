@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.JIRAServer;
@@ -23,6 +24,7 @@ import com.atlassian.theplugin.jira.api.JIRAAssigneeBean;
 import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRAReporterBean;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -76,12 +78,17 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private Project project;
 	private JIRAToolWindowPanel jiraToolWindowPanel;
 
-	public JIRAIssueFilterPanel(final Project project, final JIRAToolWindowPanel jiraToolWindowPanel) {
+	private final JIRAFilterListModel filterListModel;
+	private JiraServerCfg jiraServerCfg;
+
+	public JIRAIssueFilterPanel(final Project project, final JIRAToolWindowPanel jiraToolWindowPanel,
+			final JIRAFilterListModel filterListModel, final JiraServerCfg jiraServerCfg) {
 
 		super(project, false);
 
 		this.jiraToolWindowPanel = jiraToolWindowPanel;
-
+		this.filterListModel = filterListModel;
+		this.jiraServerCfg = jiraServerCfg;
 		$$$setupUI$$$();
 		setModal(true);
 		setTitle("Configure Custom JIRA Filter");
@@ -367,7 +374,15 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		}
 
 		public void actionPerformed(ActionEvent event) {
-			jiraToolWindowPanel.clearAdvancedFilter();
+			if (jiraToolWindowPanel != null) {
+				jiraToolWindowPanel.clearAdvancedFilter();
+			}
+
+			if (filterListModel != null){
+				filterListModel.clearManualFilter(jiraServerCfg);
+			}
+
+
 		}
 	}
 
