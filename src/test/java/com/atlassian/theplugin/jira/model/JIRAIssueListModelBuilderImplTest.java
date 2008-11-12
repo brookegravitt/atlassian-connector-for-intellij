@@ -140,10 +140,15 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	private class JIRATestServerFacade implements JIRAServerFacade {
 
+		private int idx = 0;
+		private JIRAIssueBean proto = new JIRAIssueBean();
+
 		private List<JIRAIssue> createIssueList(int size) {
 			List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 			for (int i = 0; i < size; ++i) {
-				JIRAIssueBean issue = new JIRAIssueBean();
+				proto.setKey("A-" + Long.valueOf(idx).toString());
+				++idx;
+				JIRAIssueBean issue = new JIRAIssueBean(proto);
 				list.add(issue);
 			}
 			return list;

@@ -41,10 +41,15 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	public void testAddMany() {
 		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
-		list.add(new JIRAIssueBean());
-		list.add(new JIRAIssueBean());
-		list.add(new JIRAIssueBean());
-		list.add(new JIRAIssueBean());
+		JIRAIssueBean proto = new JIRAIssueBean();
+		proto.setKey("A-1");
+		list.add(new JIRAIssueBean(proto));
+		proto.setKey("A-2");
+		list.add(new JIRAIssueBean(proto));
+		proto.setKey("A-3");
+		list.add(new JIRAIssueBean(proto));
+		proto.setKey("A-4");
+		list.add(new JIRAIssueBean(proto));
 		model.addIssues(list);
 		assertEquals(list.size(), model.getIssues().size());
 	}
