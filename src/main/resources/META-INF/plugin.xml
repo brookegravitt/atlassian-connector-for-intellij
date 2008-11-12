@@ -581,7 +581,7 @@
 				text="Collapse All Issues" icon="/actions/collapseall.png"/>
  		<action id="ThePlugin.JiraIssues.CreateIssue"
 		        class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
-				text="Create" icon="/general/add.png">
+				text="Create JIRA Issue" icon="/general/add.png">
 			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.JiraIssues.QuickSearch"
@@ -663,7 +663,7 @@
 		</action>
 
 		<action id="ThePlugin.JIRA.CreateIssue" class="com.atlassian.theplugin.idea.action.jira.CreateIssueAction"
-				text="Create" icon="/general/add.png">
+				text="Create JIRA Issue" icon="/general/add.png">
 			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
 		</action>
 
