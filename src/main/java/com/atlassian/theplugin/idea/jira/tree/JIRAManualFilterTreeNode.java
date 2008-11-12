@@ -39,8 +39,9 @@ public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {
 	}
 
 	public void onSelect() {
-		if (listModel != null && manualFilter != null) {
+		if (listModel != null) {
 			listModel.selectManualFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), manualFilter);
+
 		}
 	}
 }
