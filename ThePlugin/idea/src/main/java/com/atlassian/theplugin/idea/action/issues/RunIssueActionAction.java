@@ -1,32 +1,19 @@
-/**
- * Copyright (C) 2008 Atlassian
- * 
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *    http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-package com.atlassian.theplugin.idea.action.jira;
+package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,39 +21,34 @@ import com.intellij.openapi.project.Project;
 
 import java.util.List;
 
-@Deprecated
-public class RunJIRAActionAction extends AnAction {
-
-	private JiraIssueAdapter adapter;
+public class RunIssueActionAction extends AnAction {
+	private final JIRAIssue issue;
 	private JIRAAction action;
 	private JIRAServerFacade facade;
-	private JIRAToolWindowPanel window;
+	private IssuesToolWindowPanel window;
 
-	public RunJIRAActionAction(JIRAToolWindowPanel toolWindow,
-							   JIRAServerFacade facade, JiraIssueAdapter issueAdapter, JIRAAction jiraAction) {
+	public RunIssueActionAction(IssuesToolWindowPanel toolWindow, JIRAServerFacade facade,
+	                            JIRAIssue issue, JIRAAction jiraAction) {
 		super(jiraAction.getName());
-		adapter = issueAdapter;
+		this.issue = issue;
 		action = jiraAction;
 		window = toolWindow;
 		this.facade = facade;
 	}
 
-	@Override
 	public void actionPerformed(AnActionEvent event) {
 		runIssueActionOrLaunchBrowser(IdeaHelper.getCurrentProject(event));
 	}
 
 	public void runIssueActionOrLaunchBrowser(Project project) {
-//		new Thread(new IssueActionOrLaunchBrowserRunnable(project)).start();\
-
 		new IssueActionOrLaunchBrowserRunnable(project).run();
 	}
 
 	public void launchBrowser() {
-		adapter.clearCachedActions();
-		BrowserUtil.launchBrowser(adapter.getServerUrl()
+		JiraIssueAdapter.get(issue).clearCachedActions();
+		BrowserUtil.launchBrowser(issue.getServerUrl()
 			+ "/secure/WorkflowUIDispatcher.jspa?id="
-			+ adapter.getId()
+			+ issue.getId()
 			+ "&"
 			+ action.getQueryStringFragment());
 	}
@@ -79,46 +61,63 @@ public class RunJIRAActionAction extends AnAction {
 		}
 		public void run() {
 			try {
-				window.setStatusMessage(
+				window.setMessage(
 						"Retrieving fields for action \""
 								+ action.getName()
 								+ "\" in issue "
-								+ adapter.getKey()
+								+ issue.getKey()
 								+ "...");
-				JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
-				if (jiraServer != null) {
-					JiraServerCfg server = jiraServer.getServer();
-					List<JIRAActionField> fields = facade.getFieldsForAction(server, adapter.getIssue(), action);
+				JIRAIssueListModelBuilder builder =
+						IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+				if (builder == null) {
+					return;
+				}
+
+				JiraServerCfg server = builder.getServer();
+				if (server != null) {
+					List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, action);
 					if (fields.isEmpty()) {
-						window.setStatusMessage(
+						window.setMessage(
 								"Running action \""
 										+ action.getName()
 										+ "\" on issue "
-										+ adapter.getKey()
+										+ issue.getKey()
 										+ "...");
-						facade.progressWorkflowAction(server, adapter.getIssue(), action);
+						facade.progressWorkflowAction(server, issue, action);
 						if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, adapter.getIssue());
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 						} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-							JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(jiraServer, adapter.getIssue());
+							JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
 						}
-						window.refreshIssuesPage();
-					} else {
-						window.setStatusMessage(
+						JIRAIssueListModelBuilder issueListModelBuilder =
+								IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+						JiraIssueAdapter.get(issue).clearCachedActions();
+						window.setMessage(
 								"Action \""
 										+ action.getName()
 										+ "\" on issue "
-										+ adapter.getKey()
+										+ issue.getKey()
+										+ " run succesfully");
+
+						if (issueListModelBuilder != null) {
+							issueListModelBuilder.updateIssue(issue);
+						}
+					} else {
+						window.setMessage(
+								"Action \""
+										+ action.getName()
+										+ "\" on issue "
+										+ issue
 										+ " is interactive, launching browser");
 						launchBrowser();
 					}
 				}
 			} catch (JIRAException e) {
-				window.setStatusMessage(
+				window.setMessage(
 						"Unable to run action "
 								+ action.getName()
 								+ " on issue "
-								+ adapter.getKey()
+								+ issue.getKey()
 								+ ": "
 								+ e.getMessage(),
 						true);

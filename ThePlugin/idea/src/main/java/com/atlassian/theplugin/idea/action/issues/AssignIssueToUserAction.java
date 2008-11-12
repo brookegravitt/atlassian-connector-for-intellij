@@ -5,11 +5,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 
-public class ViewIssueAction extends AnAction {
-	public void actionPerformed(AnActionEvent e) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+public class AssignIssueToUserAction extends AnAction {
+	public void actionPerformed(AnActionEvent anActionEvent) {
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(anActionEvent);
 		if (panel != null) {
-			panel.viewIssueInBrowser();
+			panel.assignIssueToSomebody();
 		}
 	}
 }

@@ -122,6 +122,9 @@ public class JIRAIssueTreeBuilder {
 			default:
 				return root;
 		}
+		if (name == null) {
+			name = "None";
+		}
 		DefaultMutableTreeNode n = findGroupNode(root, name);
 		if (n == null) {
 			n = new JIRAIssueGroupTreeNode(issueModel, name, CachedIconLoader.getIcon(iconUrl));

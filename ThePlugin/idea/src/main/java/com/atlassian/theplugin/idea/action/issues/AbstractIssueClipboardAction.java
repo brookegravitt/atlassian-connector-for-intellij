@@ -1,17 +1,16 @@
-package com.atlassian.theplugin.idea.action.jira;
+package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 
 import java.awt.datatransfer.StringSelection;
 
-@Deprecated
-public abstract class AbstractClipboardAction extends AnAction {
-	
+public abstract class AbstractIssueClipboardAction extends AnAction {
 	public void actionPerformed(final AnActionEvent event) {
 		JIRAIssue issue = getJIRAIssue(event);
 		if (issue != null) {
@@ -30,12 +29,14 @@ public abstract class AbstractClipboardAction extends AnAction {
 	}
 
 	private JIRAIssue getJIRAIssue(final AnActionEvent event) {
-		JIRAToolWindowPanel toolWindow = IdeaHelper.getJIRAToolWindowPanel(event);
-		if (toolWindow != null) {
-			return toolWindow.getSelectedIssue();
+		JIRAIssueListModelBuilder builder =
+				IdeaHelper.getProjectComponent(IdeaHelper.getCurrentProject(event), JIRAIssueListModelBuilderImpl.class);
+		if (builder == null || builder.getModel() == null) {
+			return null;
 		}
-		return null;
+		return builder.getModel().getSelectedIssue();
 	}
 
 	protected abstract String getCliboardText(JIRAIssue issue);
+
 }

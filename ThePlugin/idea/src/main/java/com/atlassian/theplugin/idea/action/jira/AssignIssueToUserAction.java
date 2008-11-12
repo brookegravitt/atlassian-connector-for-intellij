@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public class AssignIssueToUserAction extends AnAction {
     public void actionPerformed(AnActionEvent anActionEvent) {
         IdeaHelper.getJIRAToolWindowPanel(anActionEvent).assignIssueToSomebody();

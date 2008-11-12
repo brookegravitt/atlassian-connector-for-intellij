@@ -61,6 +61,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class JIRAToolWindowPanel extends AbstractTableToolWindowPanel<JiraIssueAdapter> {
 	private static final int PAGE_SIZE = 50;
 	public static final String JIRA_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.jira.toolwindow";

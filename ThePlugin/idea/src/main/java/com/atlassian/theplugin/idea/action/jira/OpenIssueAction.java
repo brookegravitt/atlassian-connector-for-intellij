@@ -25,6 +25,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.vfs.VirtualFile;
 
+@Deprecated
 public class OpenIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
 		JIRAIssue issue = IdeaHelper.getJIRAToolWindowPanel(event).getCurrentIssue();
