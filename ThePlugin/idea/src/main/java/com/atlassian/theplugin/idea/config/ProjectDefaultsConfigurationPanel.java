@@ -15,15 +15,10 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Project;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -50,8 +45,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final int ALL_COLUMNS = 5;
 	private JComboBox defaultCrucibleServerCombo = new JComboBox();
 	private JComboBox defaultCrucibleProjectCombo = new JComboBox();
-	private JComboBox defaultFishEyeServerCombo = new JComboBox();
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
+	private JComboBox defaultFishEyeServerCombo = new JComboBox();
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
