@@ -19,8 +19,12 @@ package com.atlassian.theplugin.jira.api;
 import java.util.HashMap;
 
 public interface JIRAQueryFragment {
-   
-    String getQueryStringFragment();
+
+
+
+
+
+	String getQueryStringFragment();
 
 	long getId();
 
