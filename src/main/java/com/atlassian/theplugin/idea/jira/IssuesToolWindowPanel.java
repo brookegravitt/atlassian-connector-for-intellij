@@ -713,10 +713,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createManualFilterEditPanel() {
-		manualFilterPanel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow, pref:grow"));
+		manualFilterPanel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref, pref"));
 
 		CellConstraints cc = new CellConstraints();
-
 		manualFilterPanel.add(new JLabel("Custom Filter "), cc.xy(1, 1));
 
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
@@ -778,6 +777,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		if (visible) {
 			CellConstraints cc = new CellConstraints();
 			JLabel label = new JLabel(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
+
 			manualFilterPanel.add(label, cc.xy(1, 2));
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
