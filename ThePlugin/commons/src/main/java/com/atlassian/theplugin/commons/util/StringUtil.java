@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.commons.util;
 
-import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
+import org.apache.commons.codec.binary.Base64;
 
-import java.io.UnsupportedEncodingException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 public final class StringUtil {
 	private static final int BUFFER_SIZE = 4096;
@@ -30,8 +30,8 @@ public final class StringUtil {
 
 	public static synchronized String decode(String str2decode) {
 		try {
-
-			byte[] passwordBytes = Base64.decode(str2decode);
+			Base64 base64 = new Base64();
+			byte[] passwordBytes = base64.decode(str2decode.getBytes("UTF-8"));
 			if (passwordBytes == null) {
 				throw new IllegalArgumentException("Cannot decode string due to not supported "
 						+ "characters or becuase it is not encoded");
@@ -44,12 +44,13 @@ public final class StringUtil {
 			throw new RuntimeException("UTF-8 is not supported", e);
 			///CLOVER:ON
 		}
-
 	}
 
 	public static synchronized String encode(String str2encode) {
 		try {
-			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
+			Base64 base64 = new Base64();
+			byte[] bytes = base64.encode(str2encode.getBytes("UTF-8"));
+			return bytes.toString();
 		} catch (UnsupportedEncodingException e) {
 			///CLOVER:OFF
 			// cannot happen

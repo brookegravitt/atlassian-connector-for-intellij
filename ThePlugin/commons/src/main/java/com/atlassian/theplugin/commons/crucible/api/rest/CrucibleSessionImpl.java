@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.CrucibleSession;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.*;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
-import com.atlassian.theplugin.commons.thirdparty.base64.Base64;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
@@ -1385,7 +1385,9 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 
 	private synchronized String encode(String str2encode) {
 		try {
-			return Base64.encodeBytes(str2encode.getBytes("UTF-8"));
+			Base64 base64 = new Base64();
+			byte[] bytes = base64.encode(str2encode.getBytes("UTF-8"));
+			return bytes.toString();
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("UTF-8 is not supported", e);
 		}
