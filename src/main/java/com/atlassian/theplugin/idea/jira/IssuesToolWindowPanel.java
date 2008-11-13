@@ -730,7 +730,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 
 				if (jiraServer != null) {
-					synchronized(this) {
+					synchronized (this) {
 						if (jiraServerCache.containsKey(jiraServer)) {
 							jiraIssueFilterPanel.setJiraServer(jiraServerCache.get(jiraServer),
 									jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
@@ -816,11 +816,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
 					if (!jiraServer.checkServer()) {
 						setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-						EventQueue.invokeLater(
-								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
+						EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
 						continue;
-					}
-					//@todo remove  saved filters download or merge with existing in listModel
+					}//@todo remove  saved filters download or merge with existing in listModel
 					String serverStr = "[" + server.getName() + "] ";
 					setStatusMessage(serverStr + "Retrieving saved filters...");
 					jiraServer.getSavedFilters();
@@ -837,9 +835,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
 					setStatusMessage(serverStr + "Metadata query finished");
-					synchronized (IssuesToolWindowPanel.this) {
-						jiraServerCache.put(server, jiraServer);
-					}
+					synchronized (IssuesToolWindowPanel.this) {	jiraServerCache.put(server, jiraServer);}
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -888,7 +884,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		if (server != null) {
 
 			JIRAServer jiraServer;
-			synchronized(this) {
+			synchronized (this) {
 				jiraServer = jiraServerCache.get(server);
 			}
 			if (jiraServer == null) {
