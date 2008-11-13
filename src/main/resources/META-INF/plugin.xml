@@ -561,8 +561,24 @@
 
         <!-- [START] Issues window related actions -->
 
+	    <action id="ThePlugin.JiraIssues.RefreshServers"
+			    class="com.atlassian.theplugin.idea.action.issues.RefreshServersAction"
+			    text="Refresh Servers"
+			    icon="/actions/sync.png"/>
+	    <action id="ThePlugin.JiraIssues.ExpandServers"
+			    class="com.atlassian.theplugin.idea.action.issues.ExpandServersAction"
+			    text="Expand All Servers"
+			    icon="/actions/expandall.png"/>
+	    <action id="ThePlugin.JiraIssues.CollapseServers"
+			    class="com.atlassian.theplugin.idea.action.issues.CollapseServersAction"
+			    text="Collapse All Servers"
+			    icon="/actions/collapseall.png"/>
+
 		<group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettings"/>
+			<reference id="ThePlugin.JiraIssues.RefreshServers"/>
+			<reference id="ThePlugin.JiraIssues.ExpandServers"/>
+			<reference id="ThePlugin.JiraIssues.CollapseServers"/>
 			<separator/>
 
         </group>

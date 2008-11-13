@@ -81,6 +81,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private SearchTextField searchField = new SearchTextField();
 
 	private JScrollPane issueTreescrollPane;
+	private JIRAFilterTree serversTree;
 
 	public MessageScrollPane getMessagePane() {
 		return messagePane;
@@ -162,7 +163,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						if (srvcfg == null) {
 							return;
 						}
-						JIRAServer server = jiraServerCache.get(srvcfg);
+						JIRAServer server = null;
+						synchronized (IssuesToolWindowPanel.this) {
+							server = jiraServerCache.get(srvcfg);
+						}
+						if (server == null) {
+							return;
+						}
 						Map<String, String> projectMap = new HashMap<String, String>();
 						for (JIRAProject p : server.getProjects()) {
 							projectMap.put(p.getKey(), p.getName());
@@ -656,6 +663,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 	}
 
+	public void expandAllFilterTreeNodes() {
+		serversTree.expandAll();
+	}
+
+	public void collapseAllFilterTreeNodes() {
+		serversTree.collapseAll();
+	}
+
 	private JComponent createIssuesToolbar() {
 		ActionManager actionManager = ActionManager.getInstance();
 		ActionGroup toolbar = (ActionGroup) actionManager.getAction("ThePlugin.JiraIssues.IssuesToolBar");
@@ -675,12 +690,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createFilterContent() {
-
-
 		serversPanel = new JPanel(new BorderLayout());
 
-		JScrollPane filterListScrollPane = new JScrollPane(createJiraServersTree(jiraFilterListModel),
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		serversTree = createJiraServersTree(jiraFilterListModel);
+		JScrollPane filterListScrollPane = new JScrollPane(serversTree,	JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		manualFiltereditScrollPane = new JScrollPane(createManualFilterEditPanel(),
@@ -717,9 +730,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 
 				if (jiraServer != null) {
-					if (jiraServerCache.containsKey(jiraServer)) {
-						jiraIssueFilterPanel.setJiraServer(jiraServerCache.get(jiraServer),
-								jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
+					synchronized(this) {
+						if (jiraServerCache.containsKey(jiraServer)) {
+							jiraIssueFilterPanel.setJiraServer(jiraServerCache.get(jiraServer),
+									jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
+						}
 					}
 					jiraIssueFilterPanel.show();
 
@@ -782,7 +797,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return actionToolbar.getComponent();
 	}
 
-	private JComponent createJiraServersTree(JIRAFilterListModel listModel) {
+	private JIRAFilterTree createJiraServersTree(JIRAFilterListModel listModel) {
 		return new JIRAFilterTree(listModel);
 	}
 
@@ -790,10 +805,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		refreshModels();
 	}
 
-	private void refreshModels() {
+	public void refreshModels() {
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving JIRA information", false) {
 			public void run(final ProgressIndicator indicator) {
-				jiraServerCache.clear();
+				synchronized (IssuesToolWindowPanel.this) {
+					jiraServerCache.clear();
+				}
 				for (JiraServerCfg server : IdeaHelper.getCfgManager()
 						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
@@ -820,7 +837,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
 					setStatusMessage(serverStr + "Metadata query finished");
-					jiraServerCache.put(server, jiraServer);
+					synchronized (IssuesToolWindowPanel.this) {
+						jiraServerCache.put(server, jiraServer);
+					}
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
@@ -867,7 +886,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		final JiraServerCfg server = builder.getServer();
 
 		if (server != null) {
-			final IssueCreate issueCreate = new IssueCreate(jiraServerCache.get(server));
+
+			JIRAServer jiraServer;
+			synchronized(this) {
+				jiraServer = jiraServerCache.get(server);
+			}
+			if (jiraServer == null) {
+				return;
+			}
+
+			final IssueCreate issueCreate = new IssueCreate(jiraServer);
 
 			issueCreate.initData();
 			issueCreate.show();
