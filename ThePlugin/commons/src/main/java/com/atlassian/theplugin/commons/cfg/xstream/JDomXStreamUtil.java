@@ -16,16 +16,7 @@
 package com.atlassian.theplugin.commons.cfg.xstream;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.PrivateBambooServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -66,10 +57,10 @@ public final class JDomXStreamUtil {
 		
 		xStream.alias("project-configuration", ProjectConfiguration.class);
 		xStream.aliasField("default-crucible-server", ProjectConfiguration.class, "defaultCrucibleServerId");
-		xStream.aliasField("default-fisheye-server", ProjectConfiguration.class, "defaultFishEyeServerId");
-		xStream.aliasField("default-fisheye-repo", ProjectConfiguration.class, "defaultFishEyeRepo");
 		xStream.aliasField("default-crucible-project", ProjectConfiguration.class, "defaultCrucibleProject");
 		xStream.aliasField("default-crucible-repo", ProjectConfiguration.class, "defaultCrucibleRepo");
+		xStream.aliasField("default-fisheye-server", ProjectConfiguration.class, "defaultFishEyeServerId");
+		xStream.aliasField("default-fisheye-repo", ProjectConfiguration.class, "defaultFishEyeRepo");
 		xStream.aliasField("fisheye-project-path", ProjectConfiguration.class, "fishEyeProjectPath");
 
 		xStream.alias("private-server-cfg", PrivateServerCfgInfo.class);

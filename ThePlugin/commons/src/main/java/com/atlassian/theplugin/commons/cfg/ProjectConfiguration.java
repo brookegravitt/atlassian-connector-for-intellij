@@ -24,11 +24,11 @@ public class ProjectConfiguration {
 	private Collection<ServerCfg> servers;
 
 	private ServerId defaultCrucibleServerId;
-	private ServerId defaultFishEyeServerId;
 	private String defaultCrucibleProject;
 	private String defaultCrucibleRepo;
-	private String fishEyeProjectPath;
+	private ServerId defaultFishEyeServerId;
 	private String defaultFishEyeRepo;
+	private String fishEyeProjectPath;
 	private static final int HASHCODE_MAGIC = 31;
 
 

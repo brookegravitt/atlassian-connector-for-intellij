@@ -21,35 +21,45 @@ public class CrucibleServerCfg extends ServerCfg {
 	private boolean isFisheyeInstance;
 	private static final int HASHCODE_MAGIC = 31;
 
-	private final FishEyeServer fishEyeView = new FishEyeServer() {
-		public ServerId getServerId() {
-			return CrucibleServerCfg.this.getServerId();
-		}
+	// below line does not work as that object is created magically
+	// so initialization was moved to the private getter
+//	private FishEyeServer fishEyeView = new FishEyeServer() {...
+	private FishEyeServer fishEyeView;
 
-		public String getPassword() {
-			return CrucibleServerCfg.this.getPassword();
-		}
+	private FishEyeServer getFishEyeView() {
+		if (fishEyeView == null) {
+			fishEyeView = new FishEyeServer() {
+				public ServerId getServerId() {
+					return CrucibleServerCfg.this.getServerId();
+				}
 
-		public String getName() {
-			return CrucibleServerCfg.this.getName();
-		}
+				public String getPassword() {
+					return CrucibleServerCfg.this.getPassword();
+				}
 
-		public String getUsername() {
-			return CrucibleServerCfg.this.getUsername();
-		}
+				public String getName() {
+					return CrucibleServerCfg.this.getName();
+				}
 
-		public String getUrl() {
-			return CrucibleServerCfg.this.getUrl();
-		}
+				public String getUsername() {
+					return CrucibleServerCfg.this.getUsername();
+				}
 
-		public void setPassword(final String password) {
-			CrucibleServerCfg.this.setPassword(password);
-		}
+				public String getUrl() {
+					return CrucibleServerCfg.this.getUrl();
+				}
 
-		public boolean isEnabled() {
-			return CrucibleServerCfg.this.isEnabled();
+				public void setPassword(final String password) {
+					CrucibleServerCfg.this.setPassword(password);
+				}
+
+				public boolean isEnabled() {
+					return CrucibleServerCfg.this.isEnabled();
+				}
+			};
 		}
-	};
+		return fishEyeView;
+	}
 
 	public CrucibleServerCfg(final String name, final ServerId serverId) {
         super(true, name, serverId);
@@ -118,7 +128,7 @@ public class CrucibleServerCfg extends ServerCfg {
 	@Override
 	public FishEyeServer asFishEyeServer() {
 		if (isFisheyeInstance) {
-			return fishEyeView;
+			return getFishEyeView();
 		} else {
 			return null;
 		}
