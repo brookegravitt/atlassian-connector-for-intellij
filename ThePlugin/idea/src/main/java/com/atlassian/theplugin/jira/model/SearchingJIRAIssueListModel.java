@@ -76,7 +76,11 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssu
 	}
 
 	public JIRAIssue getSelectedIssue() {
-		return parent.getSelectedIssue();
+		JIRAIssue i = parent.getSelectedIssue();
+		if (getIssues().contains(i)) {
+			return i;
+		}
+		return null;
 	}
 
 	public void setIssue(JIRAIssue issue) {
