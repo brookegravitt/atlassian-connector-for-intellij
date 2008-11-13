@@ -99,13 +99,17 @@ public class JIRAFilterListModel {
 
 	public void fireSavedFilterSelected() {
 		for (JIRAFilterListModelListener listener : listeners) {
-			listener.selectedSavedFilter(jiraSelectedServer, jiraSelectedSavedFilter);
+			if (jiraSelectedSavedFilter != null && jiraSelectedServer != null) {
+				listener.selectedSavedFilter(jiraSelectedServer, jiraSelectedSavedFilter);
+			}
 		}
 	}
 
 	public void fireManualFilterSelected() {
 		for (JIRAFilterListModelListener listener : listeners) {
-			listener.selectedManualFilter(jiraSelectedServer, jiraSelectedManualFilter.getQueryFragment());
+			if (jiraSelectedManualFilter != null && jiraSelectedServer != null) {
+				listener.selectedManualFilter(jiraSelectedServer, jiraSelectedManualFilter.getQueryFragment());
+			}
 		}
 	}
 
