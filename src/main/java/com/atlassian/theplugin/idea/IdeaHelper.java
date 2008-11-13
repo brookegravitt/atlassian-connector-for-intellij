@@ -25,7 +25,6 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -36,8 +35,6 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -156,19 +153,6 @@ public final class IdeaHelper {
 	 */
 	public static boolean handleMissingPassword(ServerPasswordNotProvidedException e) {
 		return false;
-	}
-
-	/**
-	 * Returns current project for given jComponent (the only known way to find out current project
-	 * project in ComboBoxAction)
-	 *
-	 * @param jComponent component as passed to
-	 *                   {@link com.intellij.openapi.actionSystem.ex.ComboBoxAction#createPopupActionGroup(javax.swing.JComponent)}
-	 * @return current project or null
-	 */
-	@Nullable
-	public static Project getCurrentProject(JComponent jComponent) {
-		return DataKeys.PROJECT.getData(DataManager.getInstance().getDataContext(jComponent));
 	}
 
 	@Nullable
