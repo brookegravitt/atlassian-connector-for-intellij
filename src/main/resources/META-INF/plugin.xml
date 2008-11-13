@@ -561,86 +561,98 @@
 
         <!-- [START] Issues window related actions -->
 
-        <group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
-            <reference id="ThePlugin.ShowSettings"/>
-            <reference id="ThePlugin.HelpJIRA"/>
-            <separator/>
+		<group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
+			<reference id="ThePlugin.ShowSettings"/>
+			<separator/>
 
         </group>
         <!-- [END] Issues window related actions -->
 
-        <action id="ThePlugin.JiraIssues.GroupByCombo" class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
-                text="Group By"/>
-        <action id="ThePlugin.JiraIssues.Refresh"
-                class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction" text="Refresh"
-                icon="/actions/sync.png"/>
-        <action id="ThePlugin.JiraIssues.ExpandIssues"
-                class="com.atlassian.theplugin.idea.action.issues.ExpandIssuesAction" text="Expand All Issues"
-                icon="/actions/expandall.png"/>
-        <action id="ThePlugin.JiraIssues.CollapseIssues"
-                class="com.atlassian.theplugin.idea.action.issues.CollapseIssuesAction"
-                text="Collapse All Issues" icon="/actions/collapseall.png"/>
-        <action id="ThePlugin.JiraIssues.CreateIssue"
-                class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
-                text="Create JIRA Issue" icon="/general/add.png">
-            <keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
-        </action>
-        <action id="ThePlugin.JiraIssues.QuickSearch"
-                class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
-                text="Search JIRA" icon="/actions/find.png">
-            <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
-        </action>
+		<action id="ThePlugin.JiraIssues.GroupByCombo"
+		        class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.JiraIssues.Refresh"
+				class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction"
+				text="Refresh"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.ExpandIssues"
+				class="com.atlassian.theplugin.idea.action.issues.ExpandIssuesAction"
+				text="Expand All Issues"
+				icon="/actions/expandall.png"/>
+		<action id="ThePlugin.JiraIssues.CollapseIssues"
+				class="com.atlassian.theplugin.idea.action.issues.CollapseIssuesAction"
+				text="Collapse All Issues"
+				icon="/actions/collapseall.png"/>
+ 		<action id="ThePlugin.JiraIssues.CreateIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
+				text="Create JIRA Issue"
+				icon="/general/add.png">
+			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
+		</action>
+		<action id="ThePlugin.JiraIssues.QuickSearch"
+		        class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
+				text="Search JIRA"
+				icon="/actions/find.png">
+			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
+		</action>
 
-        <action id="ThePlugin.JiraIssues.CopyIssueKey" class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeyAction"
-                text="Key"/>
-        <action id="ThePlugin.JiraIssues.CopyIssueUrl" class="com.atlassian.theplugin.idea.action.issues.CopyIssueUrlAction"
-                text="Url"/>
-        <action id="ThePlugin.JiraIssues.CopyIssueSummary"
-                class="com.atlassian.theplugin.idea.action.issues.CopyIssueSummaryAction"
-                text="Key and summary"/>
-        <action id="ThePlugin.JiraIssues.CopyIssueKeySummary"
-                class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeySummaryAction"
-                text="Key and summary"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueKey"
+		        class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeyAction"
+				text="Key"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueUrl"
+		        class="com.atlassian.theplugin.idea.action.issues.CopyIssueUrlAction"
+				text="Url"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueSummary"
+		        class="com.atlassian.theplugin.idea.action.issues.CopyIssueSummaryAction"
+				text="Key and summary"/>
+		<action id="ThePlugin.JiraIssues.CopyIssueKeySummary"
+		        class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeySummaryAction"
+				text="Key and summary"/>
 
-        <action id="ThePlugin.JiraIssues.OpenIssue"
-                class="com.atlassian.theplugin.idea.action.issues.OpenIssueAction"
-                text="View in IDE"/>
-        <action id="ThePlugin.JiraIssues.ViewIssue"
-                class="com.atlassian.theplugin.idea.action.issues.ViewIssueAction"
-                text="View in Browser"/>
-        <action id="ThePlugin.JiraIssues.EditIssue"
-                class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
-                text="Edit in Browser"/>
-        <action id="ThePlugin.JiraIssues.AssignIssueToMyself"
-                class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
-                text="Assign to Myself"/>
-        <action id="ThePlugin.JiraIssues.AssignIssueToUser"
-                class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
-                text="Assign to User"/>
-        <action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
-                class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
-                text="Assign to Myself and Start Working"/>
-        <action id="ThePlugin.JiraIssues.AddComment"
-                class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
-                text="Add Comment"/>
-        <action id="ThePlugin.JiraIssues.LogWork"
-                class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
-                text="Log Work"/>
-        <action id="ThePlugin.JiraIssues.CreateChangeList"
-                class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction"
-                text="Create Change List"/>
+		<action id="ThePlugin.JiraIssues.OpenIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.OpenIssueAction"
+				text="View in IDE"
+				icon="/actions/editSource.png" />
+		<action id="ThePlugin.JiraIssues.ViewIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.ViewIssueAction"
+				text="View in Browser"
+				icon="/general/web.png" />
+		<action id="ThePlugin.JiraIssues.EditIssue"
+		        class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
+				text="Edit in Browser"/>
+		<action id="ThePlugin.JiraIssues.AssignIssueToMyself"
+				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
+				text="Assign to Myself"/>
+		<action id="ThePlugin.JiraIssues.AssignIssueToUser"
+				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
+				text="Assign to User"/>
+		<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
+				class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
+				text="Assign to Myself and Start Working" />
+		<action id="ThePlugin.JiraIssues.AddComment"
+		        class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
+				text="Add Comment"/>
+		<action id="ThePlugin.JiraIssues.LogWork"
+		        class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
+				text="Log Work"/>
+		<action id="ThePlugin.JiraIssues.CreateChangeList"
+				class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction"
+				text="Create Change List"/>
 
 
-        <group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
-            <reference id="ThePlugin.JiraIssues.GroupByCombo"/>
-            <reference id="ThePlugin.JiraIssues.Refresh"/>
-            <reference id="ThePlugin.JiraIssues.ExpandIssues"/>
-            <reference id="ThePlugin.JiraIssues.CollapseIssues"/>
-            <separator/>
-            <reference id="ThePlugin.JiraIssues.CreateIssue"/>
-            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
-            <separator/>
-        </group>
+		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
+			<reference id="ThePlugin.JiraIssues.GroupByCombo"/>
+			<reference id="ThePlugin.JiraIssues.Refresh"/>
+			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
+			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
+			<separator/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<reference id="ThePlugin.HelpJIRA"/>
+			<separator/>
+		</group>
 
         <group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to clipboard" popup="true">
             <reference id="ThePlugin.JiraIssues.CopyIssueKey"/>
