@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
-import com.atlassian.theplugin.idea.config.serverconfig.JiraGeneralForm;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +34,7 @@ public final class ConfigPanel extends JPanel {
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final BambooGeneralForm bambooConfigPanel;
 	private final CrucibleGeneralForm crucibleConfigPanel;
-	private final JiraGeneralForm jiraConfigPanel;
+	//	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
 
 	private final transient PluginConfiguration globalConfigurationBean;
@@ -44,7 +43,7 @@ public final class ConfigPanel extends JPanel {
 	public ConfigPanel(PluginConfiguration globalConfigurationBean, /*ProjectId projectId, */CfgManager cfgManager) {
 		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
-		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
+//		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
 		this.generalConfigPanel = GeneralConfigPanel.getInstance(globalConfigurationBean);
 		this.globalConfigurationBean = globalConfigurationBean;
 		initLayout();
@@ -64,7 +63,7 @@ public final class ConfigPanel extends JPanel {
 		contentPanel.add(crucibleConfigPanel.getTitle(), crucibleConfigPanel);
 
 		// add Jira option tab
-		contentPanel.add(jiraConfigPanel.getTitle(), jiraConfigPanel);
+//		contentPanel.add(jiraConfigPanel.getTitle(), jiraConfigPanel);
 
 		// add general tab
 		contentPanel.add(generalConfigPanel.getTitle(), generalConfigPanel);
@@ -74,12 +73,11 @@ public final class ConfigPanel extends JPanel {
 	}
 
 
-
 	public boolean isModified() {
 		return !this.localPluginConfigurationCopy.equals(globalConfigurationBean)
 				|| bambooConfigPanel.isModified()
 				|| crucibleConfigPanel.isModified()
-				|| jiraConfigPanel.isModified()
+//				|| jiraConfigPanel.isModified()
 				|| generalConfigPanel.isModified();
 	}
 
@@ -87,7 +85,7 @@ public final class ConfigPanel extends JPanel {
 		if (isModified()) {
 			generalConfigPanel.saveData();
 			bambooConfigPanel.saveData();
-			jiraConfigPanel.saveData();
+//			jiraConfigPanel.saveData();
 			crucibleConfigPanel.saveData();
 		}
 	}
@@ -96,7 +94,7 @@ public final class ConfigPanel extends JPanel {
 		this.localPluginConfigurationCopy = new PluginConfigurationBean(globalConfigurationBean);
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(localPluginConfigurationCopy);
-		jiraConfigPanel.setData(localPluginConfigurationCopy);
+//		jiraConfigPanel.setData(localPluginConfigurationCopy);
 		crucibleConfigPanel.setData(localPluginConfigurationCopy);
 	}
 }

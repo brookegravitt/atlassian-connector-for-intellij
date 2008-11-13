@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,6 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildChangesToolWindow;
 import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.editor.StackTraceConsole;
 import com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
@@ -65,7 +64,6 @@ public final class PicoUtil {
 			TestResultsToolWindow.class,
 			BuildChangesToolWindow.class,
 			CrucibleTableToolWindowPanel.class,
-			JIRAToolWindowPanel.class,
 			ProjectConfigurationBean.class,
 			StackTraceConsole.class,
 			BambooBuildToolWindow.class,

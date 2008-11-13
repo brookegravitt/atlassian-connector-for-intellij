@@ -41,10 +41,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
@@ -180,8 +180,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
-				// this has to be removed as soon as we remove the old tool window
-				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				showManualFilterPanel(true);
 				setIssuesFilterParams(jiraServer, manualFilter);
 				refreshIssues();
@@ -194,8 +192,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 				showManualFilterPanel(false);
-				// this has to be removed as soon as we remove the old tool window
-				IdeaHelper.setCurrentJIRAServer(jiraServerCache.get(jiraServer));
 				setIssuesFilterParams(jiraServer, savedFilter);
 				refreshIssues();
 
@@ -493,7 +489,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	public void logWorkForIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
-		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServerFacade, issue, project);
+		final JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, project);
 		workLogCreate.show();
 		if (workLogCreate.isOK()) {
 
@@ -503,7 +500,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					try {
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(workLogCreate.getStartDate());
-						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+
 
 						if (jiraServer != null) {
 							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
@@ -716,7 +713,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
 				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
-				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, null, jiraFilterListModel, jiraServer);
+				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraFilterListModel, jiraServer);
 
 
 				if (jiraServer != null) {
@@ -803,7 +800,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					if (!jiraServer.checkServer()) {
 						setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
 						EventQueue.invokeLater(
-								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer(), null));
+								new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
 						continue;
 					}
 					//@todo remove  saved filters download or merge with existing in listModel

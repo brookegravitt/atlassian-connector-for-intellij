@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.HelpUrl;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
@@ -404,7 +402,7 @@ public class WorkLogCreate extends DialogWrapper {
 		if (timediff <= 0) {
 			return result;
 		}
-		
+
 		long hours = timediff / MILLIS_IN_HOUR;
 
 		// if somebody works without a break for more than 5 hours, then they are mutants and I don't serve mutants :)
@@ -425,7 +423,8 @@ public class WorkLogCreate extends DialogWrapper {
 		return result;
 	}
 
-	public WorkLogCreate(final JIRAServerFacade jiraFacade, final JIRAIssue issue, Project project) {
+	public WorkLogCreate(final JiraServerCfg jiraServer, final JIRAServerFacade jiraFacade, final JIRAIssue issue,
+			Project project) {
 		super(false);
 
 		this.facade = jiraFacade;
@@ -442,7 +441,7 @@ public class WorkLogCreate extends DialogWrapper {
 		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
 
 		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
-				IdeaHelper.getCurrentJIRAServer(project), issue);
+				jiraServer, issue);
 		if (startProgressTimestamp != null) {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}
@@ -473,20 +472,18 @@ public class WorkLogCreate extends DialogWrapper {
 			}
 		});
 
-		final JIRAServer jiraServer = IdeaHelper.getCurrentJIRAServer(project);
 		if (jiraServer == null) {
 			Messages.showErrorDialog(project, "There is no selected JIRA Server", "Error");
 			return;
 		}
-		final JiraServerCfg server = jiraServer.getServer();
 
 		new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAAction> actions = facade.getAvailableActions(server, issue);
+					List<JIRAAction> actions = facade.getAvailableActions(jiraServer, issue);
 					for (JIRAAction a : actions) {
 						if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-							List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, a);
+							List<JIRAActionField> fields = facade.getFieldsForAction(jiraServer, issue, a);
 							if (fields.isEmpty()) {
 								stopProgress.setEnabled(true);
 								stopProgressLabel.setEnabled(true);

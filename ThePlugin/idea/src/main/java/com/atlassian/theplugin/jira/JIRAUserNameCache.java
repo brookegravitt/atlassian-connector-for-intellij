@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAUserBean;
 
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public final class JIRAUserNameCache {
 
-	private Map<JIRAServer, Map<String, JIRAUserBean>> serverMap = new HashMap<JIRAServer, Map<String, JIRAUserBean>>();
+	private Map<JiraServerCfg, Map<String, JIRAUserBean>> serverMap = new HashMap<JiraServerCfg, Map<String, JIRAUserBean>>();
 	private JIRAServerFacade facade;
 
 	private JIRAUserNameCache() {
@@ -21,7 +22,7 @@ public final class JIRAUserNameCache {
 		return instance;
 	}
 
-	public JIRAUserBean getUser(JIRAServer server, String userId) throws JIRAException {
+	public JIRAUserBean getUser(JiraServerCfg server, String userId) throws JIRAException {
 		Map<String, JIRAUserBean> userMap = serverMap.get(server);
 		if (userMap == null) {
 			userMap = new HashMap<String, JIRAUserBean>();
@@ -29,7 +30,7 @@ public final class JIRAUserNameCache {
 		}
 		JIRAUserBean user = userMap.get(userId);
 		if (user == null) {
-			user = facade.getUser(server.getServer(), userId);
+			user = facade.getUser(server, userId);
 			userMap.put(userId, user);
 		}
 		return user;
