@@ -12,7 +12,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 	private static final int GAP = 6;
-    private static final int ICON_WIDTH = 16;
+    private static final int ICON_HEIGHT = 16;
     private static final int RIGHT_PADDING = 24;
 
 	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
@@ -28,7 +28,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		private SelectableLabel(boolean selected, String text, Icon icon, int alignment) {
 			super(text, icon, SwingConstants.LEADING);
 			setHorizontalTextPosition(alignment);
-            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_WIDTH));
+            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_HEIGHT));
             setOpaque(true);
 			setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 			setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
@@ -72,7 +72,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         if (prioIcon != null) {
             gbc.gridx++;
             gbc.weightx = 0.0;
-            gbc.insets = new Insets(0, 0, 0, GAP);
+	        gbc.insets = new Insets(0, 0, 0, 0);
             JLabel prio = new SelectableLabel(selected, "", prioIcon, SwingConstants.LEADING);
             p.add(prio, gbc);
         }
@@ -80,11 +80,12 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         gbc.gridx++;
         gbc.weightx = 0.0;
         gbc.fill = GridBagConstraints.NONE;
-        gbc.insets = new Insets(0, 0, 0, 0); 
-        padding.setPreferredSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
         padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
         padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
-        padding.setOpaque(false);
+		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+        padding.setOpaque(true);
         p.add(padding, gbc);
 
         return p;
