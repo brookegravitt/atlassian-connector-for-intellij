@@ -73,7 +73,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		projectKey = issue.getProjectKey();
 		statusConstant = issue.getStatusConstant();
 		typeConstant = issue.getTypeConstant();
-		priorityConstant = issue.getTypeConstant();
+		priorityConstant = issue.getPriorityConstant();
 		assignee = issue.getAssignee();
 		assigneeId = issue.getAssigneeId();
 		reporter = issue.getReporter();
