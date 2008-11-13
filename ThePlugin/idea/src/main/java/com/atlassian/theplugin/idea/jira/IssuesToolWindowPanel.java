@@ -835,7 +835,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
 					setStatusMessage(serverStr + "Metadata query finished");
-					synchronized (IssuesToolWindowPanel.this) {	jiraServerCache.put(server, jiraServer);}
+					synchronized (IssuesToolWindowPanel.this) {	jiraServerCache.put(server, jiraServer); }
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
