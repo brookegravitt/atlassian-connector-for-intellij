@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,17 @@
 
 package com.atlassian.theplugin.idea.jira.editor;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.IssueComment;
 import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
 import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.codeHighlighting.BackgroundEditorHighlighter;
 import com.intellij.ide.BrowserUtil;
@@ -70,7 +71,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	//CHECKSTYLE\:MAGIC\:OFF
 	private static final Color HEADER_BACKGROUND_COLOR = new Color(153, 153, 153);
 	//CHECKSTYLE\:MAGIC\:ON
-	
+
 	@NonNls
 	@NotNull
 	public String getComponentName() {
@@ -85,13 +86,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 	public boolean accept(@NotNull Project project, @NotNull VirtualFile virtualFile) {
 		boolean shouldIAccept = true;
-        // todo: probably not too pretty and there IS a possibility
-        // that some other custom editor will intercept our JIRA "file"
-        // - as it now has no extension. Is there a better way to do this?
-        if (!(virtualFile instanceof JiraIssueVirtualFile)) {
-            shouldIAccept = false;
-        }
-        return shouldIAccept;
+		// todo: probably not too pretty and there IS a possibility
+		// that some other custom editor will intercept our JIRA "file"
+		// - as it now has no extension. Is there a better way to do this?
+		if (!(virtualFile instanceof JiraIssueVirtualFile)) {
+			shouldIAccept = false;
+		}
+		return shouldIAccept;
 	}
 
 	@NotNull
@@ -161,8 +162,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 	private static class CommentsPanel extends JPanel {
 
 		private ScrollablePanel comments = new ScrollablePanel();
-        private JScrollPane scroll = new JScrollPane();
-        private List<CommentPanel> commentList = new ArrayList<CommentPanel>();
+		private JScrollPane scroll = new JScrollPane();
+		private List<CommentPanel> commentList = new ArrayList<CommentPanel>();
 
 		private Border border = BorderFactory.createTitledBorder("Comments");
 
@@ -170,143 +171,145 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			setBorder(border);
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
+			gbc.gridx = 0;
+			gbc.gridy = 0;
 			gbc.fill = GridBagConstraints.NONE;
 
-            gbc.gridy = 1;
-            gbc.gridwidth = 2;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.gridy = 1;
+			gbc.gridwidth = 2;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
 
 			ActionManager manager = ActionManager.getInstance();
 			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JIRA.CommentsToolBar");
 			ActionToolbar toolbar = manager.createActionToolbar(issue.getKey(), group, true);
 
-            JComponent comp = toolbar.getComponent();
-            add(comp, gbc);
+			JComponent comp = toolbar.getComponent();
+			add(comp, gbc);
 
 			gbc.gridx = 0;
-            gbc.gridy = 2;
-            gbc.gridwidth = 2;
-            gbc.insets = new Insets(0, 0, 0, 0);
+			gbc.gridy = 2;
+			gbc.gridwidth = 2;
+			gbc.insets = new Insets(0, 0, 0, 0);
 			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
-            comments.setLayout(new VerticalFlowLayout());
+			comments.setLayout(new VerticalFlowLayout());
 			scroll.setViewportView(comments);
 			scroll.getViewport().setOpaque(false);
 			scroll.setOpaque(false);
 			scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 			scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 			scroll.setBorder(BorderFactory.createEmptyBorder());
-            add(scroll, gbc);
-        }
-
-        public void setTitle(String title) {
-			border = BorderFactory.createTitledBorder(title);
-			setBorder(border);
-        }
-
-        public void addComment(final Project project, JIRAIssue issue, JIRAComment c, JIRAServer server) {
-            CommentPanel p = new CommentPanel(project, issue, c, server);
-            comments.add(p);
-            commentList.add(p);
+			add(scroll, gbc);
 		}
 
-        public void clearComments() {
-            commentList.clear();
-            comments.removeAll();
-        }
+		public void setTitle(String title) {
+			border = BorderFactory.createTitledBorder(title);
+			setBorder(border);
+		}
 
-        public void setAllVisible(boolean visible) {
-            for (CommentPanel c : commentList) {
-                c.getShowHideButton().setState(visible);
-            }
-        }
+		public void addComment(final Project project, JIRAIssue issue, JIRAComment c, JiraServerCfg server) {
+			CommentPanel p = new CommentPanel(project, issue, c, server);
+			comments.add(p);
+			commentList.add(p);
+		}
 
-       public void scrollToFirst() {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    scroll.getVerticalScrollBar().setValue(0);
-                }
-            });
-        }
-    }
+		public void clearComments() {
+			commentList.clear();
+			comments.removeAll();
+		}
 
-     private abstract static class AbstractShowHideButton extends JLabel {
+		public void setAllVisible(boolean visible) {
+			for (CommentPanel c : commentList) {
+				c.getShowHideButton().setState(visible);
+			}
+		}
 
-        private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
-        private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
-        private boolean shown = true;
+		public void scrollToFirst() {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					scroll.getVerticalScrollBar().setValue(0);
+				}
+			});
+		}
+	}
 
-        public AbstractShowHideButton() {
-            setHorizontalAlignment(0);
-            setIcon(down);
-            setToolTipText(getTooltip());
-            addMouseListener(new MouseAdapter() {
-                @Override
+	private abstract static class AbstractShowHideButton extends JLabel {
+
+		private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
+		private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
+		private boolean shown = true;
+
+		public AbstractShowHideButton() {
+			setHorizontalAlignment(0);
+			setIcon(down);
+			setToolTipText(getTooltip());
+			addMouseListener(new MouseAdapter() {
+				@Override
 				public void mouseClicked(MouseEvent e) {
-                    click();
-                }
-            });
-        }
+					click();
+				}
+			});
+		}
 
-        public void setState(boolean visible) {
-            shown = visible;
-            setIcon(shown ?  down : right);
-            setComponentVisible(shown);
-        }
-        public void click() {
-            shown = !shown;
-            setState(shown);
-        }
+		public void setState(boolean visible) {
+			shown = visible;
+			setIcon(shown ? down : right);
+			setComponentVisible(shown);
+		}
 
-        protected abstract void setComponentVisible(boolean visible);
-        protected abstract String getTooltip();
-    }
+		public void click() {
+			shown = !shown;
+			setState(shown);
+		}
 
-    private static class ShowHideButton extends AbstractShowHideButton {
-        private JComponent body;
-        private JComponent container;
+		protected abstract void setComponentVisible(boolean visible);
 
-        public ShowHideButton(JComponent body, JComponent container) {
-            this.body = body;
-            this.container = container;
-        }
+		protected abstract String getTooltip();
+	}
 
-        @Override
+	private static class ShowHideButton extends AbstractShowHideButton {
+		private JComponent body;
+		private JComponent container;
+
+		public ShowHideButton(JComponent body, JComponent container) {
+			this.body = body;
+			this.container = container;
+		}
+
+		@Override
 		protected void setComponentVisible(boolean visible) {
-            body.setVisible(visible);
-            container.validate();
-            container.getParent().validate();
-        }
+			body.setVisible(visible);
+			container.validate();
+			container.getParent().validate();
+		}
 
-        @Override
+		@Override
 		protected String getTooltip() {
-            return "Collapse/Expand";
-        }
-    }
+			return "Collapse/Expand";
+		}
+	}
 
-    private static class UserLabel extends HyperlinkLabel {
+	private static class UserLabel extends HyperlinkLabel {
 		UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
 			super(userName, color, HEADER_BACKGROUND_COLOR, color);
 			addListener(serverUrl, userNameId);
 		}
 
 		UserLabel(final String serverUrl, final String userName, final String userNameId) {
-            super(userName);
+			super(userName);
 			addListener(serverUrl, userNameId);
 		}
 
 		private void addListener(final String serverUrl, final String userNameId) {
 			addHyperlinkListener(new HyperlinkListener() {
-                    public void hyperlinkUpdate(HyperlinkEvent e) {
-                        BrowserUtil.launchBrowser(
-                                serverUrl
-                                + "/secure/ViewProfile.jspa?name="
-                                + userNameId);
-                    }
-            });
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					BrowserUtil.launchBrowser(
+							serverUrl
+									+ "/secure/ViewProfile.jspa?name="
+									+ userNameId);
+				}
+			});
 		}
 	}
 
@@ -326,39 +329,40 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			setForeground(UIUtil.getTableSelectionForeground());
 		}
 	}
-	
+
 	private static class CommentPanel extends JPanel {
 
 		private ShowHideButton btnShowHide;
-        private static final int GRID_WIDTH = 6;
+		private static final int GRID_WIDTH = 6;
 
-		public CommentPanel(final Project project, final JIRAIssue issue, final JIRAComment comment, final JIRAServer server) {
+		public CommentPanel(final Project project, final JIRAIssue issue, final JIRAComment comment,
+				final JiraServerCfg server) {
 			setOpaque(true);
 			setBackground(HEADER_BACKGROUND_COLOR);
-			
+
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc;
-            int gridx = 1;
+			int gridx = 1;
 
-            JEditorPane commentBody = new JEditorPane();
-            btnShowHide = new ShowHideButton(commentBody, this);
-            gbc = new GridBagConstraints();
+			JEditorPane commentBody = new JEditorPane();
+			btnShowHide = new ShowHideButton(commentBody, this);
+			gbc = new GridBagConstraints();
 			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			add(btnShowHide, gbc);
 
-            gbc = new GridBagConstraints();
+			gbc = new GridBagConstraints();
 			gbc.gridx = gridx++;
 			gbc.gridy = 0;
 			gbc.anchor = GridBagConstraints.WEST;
 			gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
-			UserLabel ul = new UserLabel(server.getServer().getUrl(), comment.getAuthorFullName(),
+			UserLabel ul = new UserLabel(server.getUrl(), comment.getAuthorFullName(),
 					comment.getAuthor(), UIUtil.getTableSelectionForeground());
 			add(ul, gbc);
 
 			final JLabel hyphen = new WhiteLabel();
-            hyphen.setText("-");
+			hyphen.setText("-");
 			gbc = new GridBagConstraints();
 			gbc.gridx = gridx++;
 			gbc.gridy = 0;
@@ -378,7 +382,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			if (StackTraceDetector.containsStackTrace(comment.getBody())) {
 				HyperlinkLabel analyze = new HyperlinkLabel("Analyse Stack Trace", UIUtil.getTableSelectionForeground(),
-					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
+						HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
 				analyze.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						StackTraceConsole stackTraceConsole = IdeaHelper.getProjectComponent(project, StackTraceConsole.class);
@@ -407,17 +411,17 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.gridwidth = GRID_WIDTH;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
-            gbc.insets = new Insets(0, 0, 0, 0);
-            gbc.fill = GridBagConstraints.BOTH;
+			gbc.insets = new Insets(0, 0, 0, 0);
+			gbc.fill = GridBagConstraints.BOTH;
 			add(commentBody, gbc);
 		}
 
-        public AbstractShowHideButton getShowHideButton() {
-            return btnShowHide;
-        }
-    }
+		public AbstractShowHideButton getShowHideButton() {
+			return btnShowHide;
+		}
+	}
 
-    private static class DescriptionPanel extends JPanel {
+	private static class DescriptionPanel extends JPanel {
 		public DescriptionPanel(final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -430,10 +434,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
 
-			JEditorPane	body = new JEditorPane();
+			JEditorPane body = new JEditorPane();
 			JScrollPane sp = new JScrollPane(body,
-						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			sp.setBorder(BorderFactory.createEmptyBorder());
 			sp.setOpaque(false);
 			body.setEditable(false);
@@ -446,8 +450,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			});
 
 			body.setOpaque(false);
-            body.setBorder(BorderFactory.createEmptyBorder());
-            body.setContentType("text/html");
+			body.setBorder(BorderFactory.createEmptyBorder());
+			body.setContentType("text/html");
 			body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			body.setText("<html><head></head><body>" + issue.getDescription() + "</body></html>");
 			sp.getViewport().setOpaque(false);
@@ -489,29 +493,29 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
-            body.add(new BoldLabel("Type"), gbc1);
-            body.add(new JLabel(issue.getType(), CachedIconLoader.getIcon(issue.getTypeIconUrl()),
-                    SwingConstants.LEFT), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
+			body.add(new BoldLabel("Type"), gbc1);
+			body.add(new JLabel(issue.getType(), CachedIconLoader.getIcon(issue.getTypeIconUrl()),
+					SwingConstants.LEFT), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
 			body.add(new BoldLabel("Status"), gbc1);
 			body.add(new JLabel(issue.getStatus(), CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
-                    SwingConstants.LEFT), gbc2);
+					SwingConstants.LEFT), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-            body.add(new BoldLabel("Priority"), gbc1);
-            body.add(new JLabel(issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
-                    SwingConstants.LEFT), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
+			body.add(new BoldLabel("Priority"), gbc1);
+			body.add(new JLabel(issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
+					SwingConstants.LEFT), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
 			body.add(new BoldLabel("Assignee"), gbc1);
-            body.add(new UserLabel(issue.getServerUrl(), issue.getAssignee(), issue.getAssigneeId()), gbc2);
+			body.add(new UserLabel(issue.getServerUrl(), issue.getAssignee(), issue.getAssigneeId()), gbc2);
 			gbc1.gridy++;
 			gbc2.gridy++;
-            body.add(new BoldLabel("Reporter"), gbc1);
-            body.add(new UserLabel(issue.getServerUrl(), issue.getReporter(), issue.getReporterId()), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
+			body.add(new BoldLabel("Reporter"), gbc1);
+			body.add(new UserLabel(issue.getServerUrl(), issue.getReporter(), issue.getReporterId()), gbc2);
+			gbc1.gridy++;
+			gbc2.gridy++;
 			body.add(new BoldLabel("Resolution"), gbc1);
 			body.add(new JLabel(issue.getResolution()), gbc2);
 			gbc1.gridx = 2;
@@ -528,9 +532,9 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 				t = "Invalid";
 			}
 			body.add(new JLabel(t), gbc2);
-            gbc1.gridy++;
-            gbc2.gridy++;
-            body.add(new BoldLabel("Updated"), gbc1);
+			gbc1.gridy++;
+			gbc2.gridy++;
+			body.add(new BoldLabel("Updated"), gbc1);
 			try {
 				t = ds.format(df.parse(issue.getUpdated()));
 			} catch (ParseException e) {
@@ -633,28 +637,28 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 		private static final int THICKNESS = 6;
 
-        public SummaryPanel(final Project project, final JIRAIssue issue) {
+		public SummaryPanel(final Project project, final JIRAIssue issue) {
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			
+
 			ActionManager manager = ActionManager.getInstance();
 			ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JIRA.EditorToolBar");
 			ActionToolbar toolbar = manager.createActionToolbar(issue.getKey(), group, true);
 
-            JComponent comp = toolbar.getComponent();
-            add(comp, gbc);
+			JComponent comp = toolbar.getComponent();
+			add(comp, gbc);
 
-            gbc.gridy = 1;
-            gbc.gridx = 0;
-            gbc.anchor = GridBagConstraints.LINE_START;
-            gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridy = 1;
+			gbc.gridx = 0;
+			gbc.anchor = GridBagConstraints.LINE_START;
+			gbc.fill = GridBagConstraints.BOTH;
 			gbc.weightx = 1.0;
 			JEditorPane summary = new JEditorPane();
-            summary.setContentType("text/html");
+			summary.setContentType("text/html");
 			summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 			Color bg = HEADER_BACKGROUND_COLOR;
 			Color fg = UIUtil.getTableSelectionForeground();
@@ -664,7 +668,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 					+ "><font size=\"+1\"><a href=\"" + issue.getIssueUrl() + "\">"
 					+ issue.getKey() + "</a> " + issue.getSummary() + "</font></body></html>";
 			summary.setText(txt);
-            summary.setEditable(false);
+			summary.setEditable(false);
 			summary.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -674,10 +678,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			});
 
 			summary.setFont(summary.getFont().deriveFont(Font.BOLD));
-            summary.setBackground(bg);
-            summary.setOpaque(true);
+			summary.setBackground(bg);
+			summary.setOpaque(true);
 			JPanel p = new JPanel();
-			p.setBackground(bg); 
+			p.setBackground(bg);
 			p.setLayout(new GridBagLayout());
 			p.setBorder(BorderFactory.createLineBorder(bg, THICKNESS));
 			GridBagConstraints gbcp = new GridBagConstraints();
@@ -690,7 +694,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			if (StackTraceDetector.containsStackTrace(Html2text.translate(issue.getDescription()))) {
 				HyperlinkLabel analyze = new HyperlinkLabel("Analyse Stack Trace", UIUtil.getTableSelectionForeground(),
-					HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
+						HEADER_BACKGROUND_COLOR, UIUtil.getTableSelectionForeground());
 				gbcp.weightx = 0.0;
 				gbcp.weighty = 0.0;
 				gbcp.gridx = 1;
@@ -705,28 +709,28 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 				analyze.setBackground(bg);
 				p.add(analyze, gbcp);
 			}
-			
+
 
 			add(p, gbc);
-        }
+		}
 	}
 
-    public static class JIRAFileEditor implements FileEditor {
+	public static class JIRAFileEditor implements FileEditor {
 
 		private final JIRAServerFacade facade;
-		private final JIRAServer server;
+		private final JiraServerCfg server;
 
 		private JPanel mainPanel;
 		private final Project project;
 		private JIRAIssue issue;
-        private CommentsPanel commentsPanel;
+		private CommentsPanel commentsPanel;
 		private SummaryPanel summaryPanel;
 		private DetailsPanel detailsPanel;
 		private boolean hasStackTrace;
 		private static final int PREFERRED_HEIGHT_FIRST = 200;
 		private static final int PREFERRED_HEIGHT_SECOND = 400;
 
-	    private static final String[] NONE = { "None" };
+		private static final String[] NONE = {"None"};
 
 		private JIRAFileEditor() {
 			mainPanel = new JPanel();
@@ -742,8 +746,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			this.project = project;
 			this.issue = issue;
 			facade = JIRAServerFacadeImpl.getInstance();
-			server = IdeaHelper.getCurrentJIRAServer(project);
-            editorMap.put(issue.getKey(), this);
+			server = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class).getServer();
+			editorMap.put(issue.getKey(), this);
 
 			hasStackTrace = StackTraceDetector.containsStackTrace(Html2text.translate(issue.getDescription()));
 
@@ -752,8 +756,8 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 		private void setupUI() {
 			mainPanel = new JPanel();
-            mainPanel.setLayout(new GridBagLayout());
-            final GridBagConstraints gbc = new GridBagConstraints();
+			mainPanel.setLayout(new GridBagLayout());
+			final GridBagConstraints gbc = new GridBagConstraints();
 
 			gbc.gridx = 0;
 			gbc.gridy = 0;
@@ -777,11 +781,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 			final DescriptionPanel descriptionPanel = new DescriptionPanel(issue);
 			split.setFirstComponent(descriptionPanel);
-			
+
 			detailsPanel = new DetailsPanel(issue);
 			split.setInnerComponent(detailsPanel);
 
-            commentsPanel = new CommentsPanel(issue);
+			commentsPanel = new CommentsPanel(issue);
 			split.setLastComponent(commentsPanel);
 
 
@@ -813,37 +817,37 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			}
 			List<String> sl = new ArrayList<String>(l.size());
 			for (JIRAConstant c : l) {
-				 sl.add(c.getName());
+				sl.add(c.getName());
 			}
 			return sl.toArray(new String[l.size()]);
 		}
 
 		public void addComment() {
-            final IssueComment issueComment = new IssueComment(issue.getKey());
-            issueComment.show();
-            if (issueComment.isOK()) {
+			final IssueComment issueComment = new IssueComment(issue.getKey());
+			issueComment.show();
+			if (issueComment.isOK()) {
 				Runnable runnable = new Runnable() {
 					public void run() {
-                        try {
+						try {
 							if (server != null) {
-								facade.addComment(server.getServer(), issue, issueComment.getComment());
+								facade.addComment(server, issue, issueComment.getComment());
 								refreshComments();
 							}
 						} catch (JIRAException e) {
-                            final String msg = e.getMessage();
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    Messages.showMessageDialog(
-                                            "Failed to add comment to issue " + issue.getKey() + ": " + msg,
-                                            "Error", Messages.getErrorIcon());
-                                }
-                            });
-                        }
-                    }
-                };
-                new Thread(runnable, "atlassian-idea-plugin comment issue from editor").start();
-            }
-        }
+							final String msg = e.getMessage();
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									Messages.showMessageDialog(
+											"Failed to add comment to issue " + issue.getKey() + ": " + msg,
+											"Error", Messages.getErrorIcon());
+								}
+							});
+						}
+					}
+				};
+				new Thread(runnable, "atlassian-idea-plugin comment issue from editor").start();
+			}
+		}
 
 		public synchronized void getMoreIssueDetails() {
 			if ((issue.getAffectsVersions() == null)
@@ -857,13 +861,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 
 						try {
 							if (server != null) {
-								final JIRAIssue issueDetails = facade.getIssueDetails(server.getServer(), issue);
+								final JIRAIssue issueDetails = facade.getIssueDetails(server, issue);
 								issue.setAffectsVersions(issueDetails.getAffectsVersions());
 								issue.setFixVersions(issueDetails.getFixVersions());
 								issue.setComponents(issueDetails.getComponents());
 							}
 						} catch (JIRAException e) {
-							errorString = new String[] { "Unable to retrieve" };
+							errorString = new String[]{"Unable to retrieve"};
 						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
@@ -892,13 +896,13 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void refreshComments() {
-            commentsPanel.clearComments();
-            commentsPanel.setTitle("Fetching comments...");
-            final Runnable runnable = new Runnable() {
-                public void run() {
-                    try {
+			commentsPanel.clearComments();
+			commentsPanel.setTitle("Fetching comments...");
+			final Runnable runnable = new Runnable() {
+				public void run() {
+					try {
 						if (server != null) {
-							final List<JIRAComment> comments = facade.getComments(server.getServer(), issue);
+							final List<JIRAComment> comments = facade.getComments(server, issue);
 
 							for (JIRAComment c : comments) {
 								JIRAUserBean u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
@@ -922,12 +926,12 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 							});
 						}
 					} catch (JIRAException e) {
-                        commentsPanel.setTitle("Unable to retrieve comments");
-                    }
-                }
-            };
-            new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
-        }
+						commentsPanel.setTitle("Unable to retrieve comments");
+					}
+				}
+			};
+			new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
+		}
 
 		public JIRAIssue getIssue() {
 			return issue;
@@ -943,10 +947,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void setCommentsExpanded(boolean expanded) {
-            commentsPanel.setAllVisible(expanded);
-        }
-        
-        @NotNull
+			commentsPanel.setAllVisible(expanded);
+		}
+
+		@NotNull
 		public JComponent getComponent() {
 			return mainPanel;
 		}
@@ -971,7 +975,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public boolean isModified() {
-			return false;  
+			return false;
 		}
 
 		public boolean isValid() {
@@ -1013,16 +1017,16 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void dispose() {
-            editorMap.remove(issue.getKey());
-        }
+			editorMap.remove(issue.getKey());
+		}
 	}
 
-    private static HashMap<String, JIRAFileEditor> editorMap = new HashMap<String, JIRAFileEditor>();
+	private static HashMap<String, JIRAFileEditor> editorMap = new HashMap<String, JIRAFileEditor>();
 
-    public static JIRAFileEditor getEditorByKey(String key) {
-        if (editorMap.containsKey(key)) {
-            return editorMap.get(key);
-        }
-        return null;
-    }
+	public static JIRAFileEditor getEditorByKey(String key) {
+		if (editorMap.containsKey(key)) {
+			return editorMap.get(key);
+		}
+		return null;
+	}
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ package com.atlassian.theplugin.remoteapi;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.PasswordDialog;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.Messages;
 
@@ -36,12 +35,10 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 
 	private final JiraServerCfg server;
 	private final ProductServerFacade serverFacade;
-	private JIRAToolWindowPanel jiraPanel;
 
-	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, JiraServerCfg server, JIRAToolWindowPanel jiraPanel) {
+	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, JiraServerCfg server) {
 		this.serverFacade = serverFacade;
-		this.server = server;                                             
-		this.jiraPanel = jiraPanel;
+		this.server = server;
 	}
 
 	public void run() {
@@ -67,10 +64,6 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 				server.setPassword(password);
 				server.setPasswordStored(shouldPasswordBeStored);
 				server.setUsername(dialog.getUserName());
-				if (jiraPanel != null) {
-					// todo - fix this. 
-					jiraPanel.selectServer(server);
-				}
 			} else {
 				wasCanceled = true;
 			}
