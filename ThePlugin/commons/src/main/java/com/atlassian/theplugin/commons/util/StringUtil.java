@@ -32,7 +32,7 @@ public final class StringUtil {
 		try {
 			Base64 base64 = new Base64();
 			byte[] passwordBytes = base64.decode(str2decode.getBytes("UTF-8"));
-			if (passwordBytes == null) {
+			if (passwordBytes == null || passwordBytes.length == 0) {
 				throw new IllegalArgumentException("Cannot decode string due to not supported "
 						+ "characters or becuase it is not encoded");
 			}
@@ -50,7 +50,7 @@ public final class StringUtil {
 		try {
 			Base64 base64 = new Base64();
 			byte[] bytes = base64.encode(str2encode.getBytes("UTF-8"));
-			return bytes.toString();
+			return new String(bytes);
 		} catch (UnsupportedEncodingException e) {
 			///CLOVER:OFF
 			// cannot happen

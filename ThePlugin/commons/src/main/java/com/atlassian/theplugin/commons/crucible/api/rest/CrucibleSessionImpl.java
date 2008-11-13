@@ -1387,7 +1387,7 @@ public class CrucibleSessionImpl extends AbstractHttpSession implements Crucible
 		try {
 			Base64 base64 = new Base64();
 			byte[] bytes = base64.encode(str2encode.getBytes("UTF-8"));
-			return bytes.toString();
+			return new String(bytes);
 		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException("UTF-8 is not supported", e);
 		}
