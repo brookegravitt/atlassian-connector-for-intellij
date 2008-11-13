@@ -30,7 +30,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -197,7 +196,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		messagePane.addMoreListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
-				Messages.showErrorDialog("This feature is not implemented yet, see bug PL-804", "Not Implemented");
+				getNextIssues();
 			}
 		});
 
@@ -568,11 +567,19 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	public void refreshIssues() {
+		getIssues(true);
+	}
+
+	public void getNextIssues() {
+		getIssues(false);
+	}
+
+	private void getIssues(final boolean reload) {
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving issues", false) {
 			public void run(final ProgressIndicator indicator) {
 				try {
 					messagePane.setStatus("Loading issues...");
-					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, true);
+					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
