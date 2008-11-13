@@ -904,4 +904,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 
 	}
+
+	public boolean haveSelectedIssue() {
+		return issueTree.getSelectionModel().getSelectionCount() > 0;
+	}
 }
