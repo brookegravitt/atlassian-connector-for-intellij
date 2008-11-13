@@ -23,9 +23,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.JIRAToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -59,40 +57,11 @@ public final class IdeaHelper {
 		return getCurrentProject(e.getDataContext());
 	}
 
-	@Nullable
-	public static JIRAServer getCurrentJIRAServer(DataContext dataContext) {
-		if (dataContext == null) {
-			return null;
-		}
-		Project project = getCurrentProject(dataContext);
-
-		if (project == null) {
-			return null;
-		}
-		return project.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
-	}
-
-	@Nullable
-	public static JIRAServer getCurrentJIRAServer(Project project) {		
-		if (project == null) {
-			return null;
-		}
-		return project.getComponent(ThePluginProjectComponent.class).getCurrentJiraServer();
-	}
-
-	public static void setCurrentJIRAServer(JIRAServer jiraServer) {
-		Project p = getCurrentProject(DataManager.getInstance().getDataContext());
-		if (p == null) {
-			return;
-		}
-		p.getComponent(ThePluginProjectComponent.class).setCurrentJiraServer(jiraServer);
-	}
-
 	public static com.intellij.openapi.wm.ToolWindow getToolWindow(Project p) {
 		return ToolWindowManager.getInstance(p).getToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 	}
 
-    public static ThePluginApplicationComponent getAppComponent() {
+	public static ThePluginApplicationComponent getAppComponent() {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
 
@@ -104,33 +73,6 @@ public final class IdeaHelper {
 	public static PluginConfigurationBean getPluginConfiguration() {
 		return getAppComponent().getState();
 	}
-  
-	public static JIRAToolWindowPanel getJIRAToolWindowPanel(Project p) {
-		if (p == null) {
-			return null;
-		}
-
-		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
-        if (content == null) {
-            return null;
-        }
-        return (JIRAToolWindowPanel) content.getComponent();
-	}
-
-	public static JIRAToolWindowPanel getJIRAToolWindowPanel(AnActionEvent event) {
-		Project p = getCurrentProject(event);
-		if (p == null) {
-			return null;
-		}
-		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.JIRA.toString());
-        if (content == null) {
-            return null;
-        }
-        return (JIRAToolWindowPanel) content.getComponent();
-
-	}
 
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event);
@@ -139,10 +81,10 @@ public final class IdeaHelper {
 		}
 		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.ISSUES.toString());
-        if (content == null) {
-            return null;
-        }
-        return (IssuesToolWindowPanel) content.getComponent();
+		if (content == null) {
+			return null;
+		}
+		return (IssuesToolWindowPanel) content.getComponent();
 
 	}
 
@@ -155,10 +97,10 @@ public final class IdeaHelper {
 
 		ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BAMBOO.toString());
-        if (content == null) {
-            return null;
-        }
-        return (BambooTableToolWindowPanel) content.getComponent();
+		if (content == null) {
+			return null;
+		}
+		return (BambooTableToolWindowPanel) content.getComponent();
 	}
 
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
@@ -171,7 +113,6 @@ public final class IdeaHelper {
 		}
 	}
 
-	
 
 	public static CrucibleTableToolWindowPanel getCrucibleToolWindowPanel(AnActionEvent e) {
 		Project p = getCurrentProject(e.getDataContext());
@@ -181,10 +122,10 @@ public final class IdeaHelper {
 
 		ToolWindow tw = getToolWindow(p);
 		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString());
-        if (content == null)  {
-            return null;
-        }
-        return (CrucibleTableToolWindowPanel) content.getComponent();
+		if (content == null) {
+			return null;
+		}
+		return (CrucibleTableToolWindowPanel) content.getComponent();
 	}
 
 	public static void handleRemoteApiException(final Project project, final RemoteApiException e) {
@@ -194,7 +135,7 @@ public final class IdeaHelper {
 						+ e.getMessage(), "Error while using remote service");
 			}
 		});
-    }
+	}
 
 	public static void handleError(final Project project, final ValueNotYetInitialized valueNotYetInitialized) {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -207,22 +148,22 @@ public final class IdeaHelper {
 	}
 
 	/**
-     * Placeholder for handling missing password. Dummy at the moment
-     *
-     * @param e exception to handle
-     * @return true if called should retry the action which caused this excepction, false if it does not make sense
-     *              for example, the user has not provided a new password
-     */
-    public static boolean handleMissingPassword(ServerPasswordNotProvidedException e) {
-        return false;
-    }
+	 * Placeholder for handling missing password. Dummy at the moment
+	 *
+	 * @param e exception to handle
+	 * @return true if called should retry the action which caused this excepction, false if it does not make sense
+	 *         for example, the user has not provided a new password
+	 */
+	public static boolean handleMissingPassword(ServerPasswordNotProvidedException e) {
+		return false;
+	}
 
 	/**
 	 * Returns current project for given jComponent (the only known way to find out current project
 	 * project in ComboBoxAction)
-	 * @param jComponent component as passed to
-	 *      {@link com.intellij.openapi.actionSystem.ex.ComboBoxAction#createPopupActionGroup(javax.swing.JComponent)}
 	 *
+	 * @param jComponent component as passed to
+	 *                   {@link com.intellij.openapi.actionSystem.ex.ComboBoxAction#createPopupActionGroup(javax.swing.JComponent)}
 	 * @return current project or null
 	 */
 	@Nullable

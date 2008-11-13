@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -71,7 +71,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				});
 			} else {
 
- 				tw.show(new Runnable() {
+				tw.show(new Runnable() {
 					public void run() {
 						//To change body of implemented methods use File | Settings | File Templates.
 					}
@@ -81,10 +81,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		}
 
 	}
+
 	/**
-	 *
 	 * @param toolWindowManager ToolWindowManager object
-	 * @param project reference to the project
+	 * @param project		   reference to the project
 	 * @param cfgManager
 	 */
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
@@ -94,7 +94,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.project = project;
 
 	}
-
 
 
 	/**
@@ -107,6 +106,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 	/**
 	 * Register type of panel. Register panel can be then shown/hidden using {@link #showHidePanels}
+	 *
 	 * @param toolWindowPanel ToolWindowPanels enum value
 	 */
 	public void registerPanel(ToolWindowPanels toolWindowPanel) {
@@ -137,7 +137,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			}
 		}
 
-		 //bottomIdeaToolWindow
+		//bottomIdeaToolWindow
 		for (ToolWindowPanels entry : panels) {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
@@ -157,9 +157,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 								break;
-							case JIRA:
-								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
-								break;
 							case ISSUES:
 								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
 								break;
@@ -169,7 +166,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 						ideaToolWindow.getContentManager().addContent(content);
 					}
-				// servers are not defined
+					// servers are not defined
 				} else {
 					// tab is visible
 					Content content = ideaToolWindow.getContentManager().findContent(entry.toString());
@@ -189,14 +186,15 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is created
+	 *
 	 * @param project
 	 * @param component
 	 */
-    public static void focusPanel(Project project, ToolWindowPanels component) {
-        ToolWindow tw = IdeaHelper.getToolWindow(project);
-        if (tw != null) {
-            ContentManager contentManager = tw.getContentManager();
-            tw.activate(null);
+	public static void focusPanel(Project project, ToolWindowPanels component) {
+		ToolWindow tw = IdeaHelper.getToolWindow(project);
+		if (tw != null) {
+			ContentManager contentManager = tw.getContentManager();
+			tw.activate(null);
 			Content content = contentManager.findContent(component.toString());
 
 			if (content == null) {
@@ -209,10 +207,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 						contentManager.addContent(content);
 						break;
-					case JIRA:
-						content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
-						contentManager.addContent(content);
-						break;
 					case ISSUES:
 						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
 						contentManager.addContent(content);
@@ -223,12 +217,13 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			}
 
 			contentManager.setSelectedContent(content);
-        }
-    }
+		}
+	}
 
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is created
+	 *
 	 * @param project
 	 * @param tabName
 	 */
@@ -237,8 +232,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			focusPanel(project, ToolWindowPanels.BAMBOO);
 		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE.toString())) {
 			focusPanel(project, ToolWindowPanels.CRUCIBLE);
-		} else if (tabName.equals(ToolWindowPanels.JIRA.toString())) {
-			focusPanel(project, ToolWindowPanels.JIRA);
 		} else if (tabName.equals(ToolWindowPanels.ISSUES.toString())) {
 			focusPanel(project, ToolWindowPanels.ISSUES);
 		}
@@ -247,24 +240,26 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is created
+	 *
 	 * @param e
 	 * @param component
 	 */
 	public static void focusPanel(AnActionEvent e, ToolWindowPanels component) {
 		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		focusPanel(project, component);
-    }
+	}
 
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is not created and focused
+	 *
 	 * @param project
 	 * @param tabName
 	 */
 	public static void focusPanelIfExists(Project project, String tabName) {
 		ToolWindow tw = IdeaHelper.getToolWindow(project);
 
-        if (tw != null) {
+		if (tw != null) {
 			//tw.activate(null);
 			ContentManager contentManager = tw.getContentManager();
 			Content content = contentManager.findContent(tabName);
@@ -272,7 +267,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			if (content != null) {
 				contentManager.setSelectedContent(content);
 			}
-        }
+		}
 	}
 
 	/**
@@ -280,6 +275,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * If component does not exists it is not created and focused.
 	 * If component is not focused than is focused.
 	 * If component is focused then is closed/hidden
+	 *
 	 * @param event
 	 * @param component
 	 */
@@ -296,7 +292,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				final CfgManager myCfgManager = IdeaHelper.getCfgManager();
 				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
-					Content content =  tw.getContentManager().findContent(component.toString());
+					Content content = tw.getContentManager().findContent(component.toString());
 					if (content == null) {
 
 						// doesn't exists so create and show tab
@@ -306,9 +302,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								break;
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
-								break;
-							case JIRA:
-								content = project.getComponent(ThePluginProjectComponent.class).createJiraContent();
 								break;
 							case ISSUES:
 								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
@@ -327,7 +320,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 							tw.getContentManager().setSelectedContent(content);
 						}
 					}
-				// servers are not defined
+					// servers are not defined
 				} else {
 					// tab is visible
 					Content content = tw.getContentManager().findContent(component.toString());
@@ -345,7 +338,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			} catch (ThePluginException e) {
 				PluginUtil.getLogger().error(e.getMessage(), e);
 			}
-			
+
 			tw.activate(null);
 
 			focusPanelIfExists(project, component.toString());
@@ -355,6 +348,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is not created AND focused
+	 *
 	 * @param e
 	 * @param component
 	 */
@@ -386,20 +380,19 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-        BAMBOO("Builds"),
+		BAMBOO("Builds"),
 		CRUCIBLE("Reviews"),
-		JIRA("JIRA"),
 		ISSUES("Issues");
 
 		private final String title;
 
-        ToolWindowPanels(String title) {
-            this.title = title;
-        }
+		ToolWindowPanels(String title) {
+			this.title = title;
+		}
 
-        @Override
+		@Override
 		public String toString() {
-            return title;
-        }
-    }
+			return title;
+		}
+	}
 }
