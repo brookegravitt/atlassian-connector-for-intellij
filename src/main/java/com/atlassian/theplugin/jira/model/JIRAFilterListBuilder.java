@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -24,16 +25,18 @@ import java.util.Map;
  */
 public class JIRAFilterListBuilder {
 	private JIRAFilterListModel listModel;
-
 	private ProjectConfigurationBean projectConfigurationBean;
-
 	private ProjectId projectId;
+	private final JIRAServerFacade jiraServerFacade;
+	private final CfgManager cfgManager;
 
-
-	private final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-	private ArrayList<JiraFilterEntryBean> manualFilter;
-
+	public JIRAFilterListBuilder(@NotNull final JIRAServerFacade jiraServerFacade, @NotNull final CfgManager cfgManager) {
+		this.jiraServerFacade = jiraServerFacade ;
+		this.cfgManager = cfgManager;
+	}
 	public JIRAFilterListBuilder() {
+		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		cfgManager = IdeaHelper.getCfgManager();
 	}
 
 	public void setProjectId(final ProjectId projectId) {
@@ -54,7 +57,7 @@ public class JIRAFilterListBuilder {
 
 		listModel.clearAllServerFilters();
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-		for (JiraServerCfg jiraServer : IdeaHelper.getCfgManager().getAllEnabledJiraServers(projectId)) {
+		for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
 			try {
 				if (jiraServer.getServerId().toString().equals(filterServerId)) {
 					addServerSavedFilter(jiraServer, filterId);
