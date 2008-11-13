@@ -31,7 +31,7 @@ public class JIRAFilterListBuilder {
 	private final CfgManager cfgManager;
 
 	public JIRAFilterListBuilder(@NotNull final JIRAServerFacade jiraServerFacade, @NotNull final CfgManager cfgManager) {
-		this.jiraServerFacade = jiraServerFacade ;
+		this.jiraServerFacade = jiraServerFacade;
 		this.cfgManager = cfgManager;
 	}
 	public JIRAFilterListBuilder() {
