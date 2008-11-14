@@ -6,7 +6,7 @@
       <xy x="125" y="134" width="736" height="400"/>
     </constraints>
     <properties>
-      <minimumSize width="400" height="100"/>
+      <minimumSize width="400" height="250"/>
     </properties>
     <border type="none"/>
     <children>
@@ -21,8 +21,6 @@
             <constraints/>
             <properties>
               <lineWrap value="true"/>
-              <minimumSize width="439" height="120"/>
-              <preferredSize width="439" height="120"/>
               <wrapStyleWord value="true"/>
             </properties>
           </component>
