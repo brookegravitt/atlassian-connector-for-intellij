@@ -187,10 +187,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		affectsVersionsLabel
 				.setFont(new Font(affectsVersionsLabel.getFont().getName(), affectsVersionsLabel.getFont().getStyle(), 11));
 		affectsVersionsLabel.setText("<html>Affects<br>  Versions:</html>");
-		panel1.add(affectsVersionsLabel,
-				new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
-						GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(66, 28),
-						null, 0, false));
+		panel1.add(affectsVersionsLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null,
+				new Dimension(66, 28), null, 0, false));
 		fixForScrollPane = new JScrollPane();
 		panel1.add(fixForScrollPane, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
@@ -199,19 +198,17 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		fixForList.setVisibleRowCount(5);
 		fixForScrollPane.setViewportView(fixForList);
 		componentsScrollPane = new JScrollPane();
-		panel1.add(componentsScrollPane,
-				new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(componentsScrollPane, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		componentsList = new JList();
 		componentsList.setVisible(true);
 		componentsList.setVisibleRowCount(5);
 		componentsScrollPane.setViewportView(componentsList);
 		affectVersionScrollPane = new JScrollPane();
-		panel1.add(affectVersionScrollPane,
-				new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(affectVersionScrollPane, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		affectsVersionsList = new JList();
 		affectsVersionsList.setVisibleRowCount(5);
 		affectVersionScrollPane.setViewportView(affectsVersionsList);
@@ -235,10 +232,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		reporterComboBox = new JComboBox();
 		reporterComboBox.setLightWeightPopupEnabled(false);
 		reporterComboBox.setMaximumRowCount(5);
-		panel2.add(reporterComboBox,
-				new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(160, 27),
-						null, 0, false));
+		panel2.add(reporterComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+				new Dimension(160, 27), null, 0, false));
 		assigneeLabel = new JLabel();
 		assigneeLabel.setFont(new Font(assigneeLabel.getFont().getName(), assigneeLabel.getFont().getStyle(), 11));
 		assigneeLabel.setHorizontalAlignment(2);
@@ -249,10 +245,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		assigneeComboBox = new JComboBox();
 		assigneeComboBox.setLightWeightPopupEnabled(false);
 		assigneeComboBox.setMaximumRowCount(5);
-		panel2.add(assigneeComboBox,
-				new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(160, 27),
-						null, 0, false));
+		panel2.add(assigneeComboBox, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+				new Dimension(160, 27), null, 0, false));
 		statusLabel = new JLabel();
 		statusLabel.setFont(new Font(statusLabel.getFont().getName(), statusLabel.getFont().getStyle(), 11));
 		statusLabel.setHorizontalAlignment(2);
@@ -272,16 +267,13 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		resolutionsLabel.setFont(new Font(resolutionsLabel.getFont().getName(), resolutionsLabel.getFont().getStyle(), 11));
 		resolutionsLabel.setHorizontalAlignment(2);
 		resolutionsLabel.setText("Resolutions:");
-		panel2.add(resolutionsLabel,
-				new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE,
-						GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(73, 14),
-						null, 0, false));
+		panel2.add(resolutionsLabel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null,
+				new Dimension(73, 14), null, 0, false));
 		resolutionScrollPane = new JScrollPane();
-		panel2.add(resolutionScrollPane,
-				new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
-						false));
+		panel2.add(resolutionScrollPane, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		resolutionsList = new JList();
 		resolutionsList.setVisibleRowCount(5);
 		resolutionScrollPane.setViewportView(resolutionsList);
@@ -294,11 +286,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(73, 14), null, 0,
 				false));
 		prioritiesScrollPane = new JScrollPane();
-		panel2.add(prioritiesScrollPane,
-				new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0,
-						false));
+		panel2.add(prioritiesScrollPane, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		prioritiesList = new JList();
 		prioritiesList.setVisibleRowCount(5);
 		prioritiesScrollPane.setViewportView(prioritiesList);
@@ -327,11 +317,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				false));
 		issueTypeScrollPane = new JScrollPane();
 		issueTypeScrollPane.setDoubleBuffered(false);
-		panel3.add(issueTypeScrollPane,
-				new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null,
-						new Dimension(200, 80), null, 0, false));
+		panel3.add(issueTypeScrollPane, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 80), null,
+				0, false));
 		issueTypeList = new JList();
 		issueTypeList.setVisibleRowCount(5);
 		issueTypeScrollPane.setViewportView(issueTypeList);
@@ -347,8 +336,8 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
