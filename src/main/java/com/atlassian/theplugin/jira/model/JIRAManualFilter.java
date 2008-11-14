@@ -37,7 +37,7 @@ public final class JIRAManualFilter {
 
 	public String toHTML() {
 		String html = "<html><table>";
-		HashMap<String, ArrayList<String>> map = groupBy(queryFragment);
+		HashMap<String, ArrayList<String>> map = groupBy();
 
 
 		for (String groupName : map.keySet()) {
@@ -55,7 +55,7 @@ public final class JIRAManualFilter {
 		return html;
 	}
 
-	private HashMap<String, ArrayList<String>> groupBy(final List<JIRAQueryFragment> queryFragment) {
+	private HashMap<String, ArrayList<String>> groupBy() {
 		HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
 
 		for (JIRAQueryFragment fragment : queryFragment) {
@@ -92,8 +92,8 @@ public final class JIRAManualFilter {
 
 	}
 
-	private void addValueToMap(final HashMap<String, ArrayList<String>> map, final String key, final String value){
-		if (!map.containsKey(key)){
+	private void addValueToMap(final HashMap<String, ArrayList<String>> map, final String key, final String value) {
+		if (!map.containsKey(key)) {
 			map.put(key, new ArrayList<String>());
 		}
 		map.get(key).add(value);
