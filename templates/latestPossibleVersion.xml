@@ -2,42 +2,45 @@
 	<version>
 		<number>${project.version}, SVN:${buildNumber}</number>
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
-        <releaseNotes><![CDATA[<html><body>
-                                <p>With pleasure, Atlassian presents version <b>2.0.0</b> of the Atlassian IDE Plugin for IDEA. This is a beta version, because some of the plugin's new features still need a bit of polish. We are keen for you to install and try this new version, which now offers deep integration with Crucible and Bamboo, as well as the already awesome JIRA integration.</p>
+        <releaseNotes><![CDATA[<html><body><p>With pleasure, Atlassian presents <b>version 2.0 Beta 7</b> of the <b>Atlassian IntelliJ Connector</b>. </p>
 
-                                <p>With the plugin's Crucible support, you can now perform code reviews directly in the source editor and complete the review lifecycle without leaving your IDE. Use the dashboard-like display to view and filter your reviews. Notifications and colour coding indicate the review status and events.</p>
+<p>In this iteration we have focused on the user interface, particularly for the connector's JIRA tab. Take a look at the screenshot below. Your JIRA filters are shown in a tree structure on the left of the tab, with the issues for the selected filter shown on the right.</p>
 
-                                <p>On the Bamboo side, the plugin offers deeper integration now too. View the tests which failed in a build, see the stack traces and click through directly to the code that failed. View the files that changed in the build, open the changed files in the IDEA editor and view the diffs. You can also show the full build log within IDEA.</p>
+<p>Instead of mentioning the Atlassian applications by name (JIRA, Bamboo and Crucible) the connector's tabs now tell you what you are dealing with (issues, builds and reviews). </p>
 
-                                <p>The plugin now offers configuration at project level as well as IDE level. The project settings allow you to share server connections with your team members. In addition, each developer can configure their own workspace-specific settings, such as polling intervals and the behaviour of notification popups.</p>
+<p>This release also brings a number of other improvements and bug fixes.</p>
+<p><ins><em>Screenshot: A new look for the connector's JIRA tab</em></ins>
+<br clear="all" />
+<br clear="all" />
+<img src="http://confluence.atlassian.com/download/attachments/171180132/JIRATabNewUI.png" align="absmiddle" border="1" style=" border-color: gray" />
+<br clear="all" /></p>
+<p>Fixes and new features:</p>
+<ul>
+<li><a href="https://studio.atlassian.com:443/browse/PL-834">Error when pressing &#39;Refresh&#39; in Issues view</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-822">Bamboo build toolwindow does not highlight Java files present in the opened project for Bamboo running on windows</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-811">Showing filter dialog results in error</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-807">Issue list: buttons over issue tree: a) refresh b) show details c) open in browser d) create new e) expand/collapse f) help</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-806">Issue list: buttons over filters: a) configure server b) refresh filters c) expand/collapse all</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-804">Issue list &quot;more&quot; button</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-803">Issue list search</a>
+<li> <a href="https://studio.atlassian.com:443/browse/PL-802">Filter list is a tree + 1 custom filter per server</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-801">Issue list with &quot;group by&quot;, with a tree of issues, each item in the tree has a right-click menu</a>
+<li> <a href="https://studio.atlassian.com:443/browse/PL-762">Nullpointer in Plugin</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-738">Tooltip for issue creation should say &quot;Create JIRA Issue&quot;.</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-809">clicked on filter icon after adding first JIRA server</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-794">PL-794</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-794">Add Revision to review results in HTTP 500</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-793">Exception when filtering JIRA issues</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-769">Crucible review diff windows seems to be swapped</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-840">the current display for creating a new issue in jira does not have a scrollbar for the conntent</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-838">Create doc archives for the old UI before changing docs to the new 2.0 UI</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-821">Fisheye Defaults For IDEA Connector not Persisted</a>
+<li><a href="https://studio.atlassian.com:443/browse/PL-744">Double click bamboo opens in web. Double click JIRA opens in IDE. Needs to be consistent</a>
+<li> <a href="https://studio.atlassian.com:443/browse/PL-683">Add info whether the broken build is mine or not</a>
+</ul>
 
-                                <p>Take a look at the full list of fixes below.</p>
-                                <p><font color="#003366"><b>Highlights of this Release:</b></font></p>
-                                <ul>
-                                            <li>Crucible Highlights in the Atlassian IDE Plugin 2.0.0</li>
-
-                                            <ul>
-                                                        <li>Code Reviews Directly in the Source Editor</li>
-                                                            <li>Full Crucible Review Lifecycle</li>
-                                                                <li>Review Dashboard and Filters</li>
-                                                                    <li>Review Status Notifications</li>
-                                                            </ul>
-                                                                <li>Bamboo Highlights in the Atlassian IDE Plugin 2.0.0</li>
-
-                                                                <ul>
-                                                                            <li>Failed Tests in a Bamboo Build</li>
-                                                                                <li>Changed Files in a Bamboo Build</li>
-                                                                                    <li>Bamboo Build Logs</li>
-                                                                            </ul>
-                                                                                <li>Other Highlights in the Atlassian IDE Plugin 2.0.0</li>
-                                                                                <ul>
-                                                                                            <li>Shared Project Configuration</li>
-
-                                                                                    </ul>
-                                                                                        <li>Complete List of Fixes in this Release</li>
-                                                                                </ul>
                                                                 </body></html>
         ]]></releaseNotes>
-<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+5+Release+Notes</releaseNotesUrl>
+<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+7+Release+Notes</releaseNotesUrl>
 </version>
 </response>
