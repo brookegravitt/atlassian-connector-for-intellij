@@ -74,7 +74,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private Splitter splitFilterPane;
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
-	private JPanel manualFilterPanel;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
 	private JScrollPane manualFiltereditScrollPane;
 	private JIRAServerFacade jiraServerFacade;
@@ -714,13 +713,16 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createManualFilterEditPanel() {
-		manualFilterPanel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref, pref"));
+		JPanel manualFilterPanel = new JPanel(new BorderLayout());
+		JPanel linkPanel = new JPanel(new FlowLayout());
 
-		CellConstraints cc = new CellConstraints();
-		manualFilterPanel.add(new JLabel("Custom Filter "), cc.xy(1, 1));
-
+		//create link label == NORTH
+		linkPanel.add(new JLabel("Custom Filter "));
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		manualFilterPanel.add(hyperlinkLabel, cc.xy(2, 1));
+		linkPanel.add(hyperlinkLabel);
+
+		manualFilterPanel.add(linkPanel, BorderLayout.NORTH);
+		manualFilterPanel.add(manualFilterDetailsLabel, BorderLayout.SOUTH);
 
 		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -729,7 +731,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraFilterListModel, jiraServer);
 
 
-				if (jiraServer != null) {
+				if (jiraServer != null && jiraFilterListModel.getJiraSelectedManualFilter() != null) {
 					synchronized (this) {
 						if (jiraServerCache.containsKey(jiraServer)) {
 							jiraIssueFilterPanel.setJiraServer(jiraServerCache.get(jiraServer),
@@ -774,12 +776,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
-		manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-		
+			
 		if (visible) {
-			CellConstraints cc = new CellConstraints();
-
-			manualFilterPanel.add(manualFilterDetailsLabel, cc.xy(1, 2));
+			manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
