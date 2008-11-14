@@ -9,12 +9,8 @@
 <p>Instead of mentioning the Atlassian applications by name (JIRA, Bamboo and Crucible) the connector's tabs now tell you what you are dealing with (issues, builds and reviews). </p>
 
 <p>This release also brings a number of other improvements and bug fixes.</p>
-<p><ins><em>Screenshot: A new look for the connector's JIRA tab</em></ins>
-<br clear="all" />
-<br clear="all" />
-<img src="http://confluence.atlassian.com/download/attachments/171180132/JIRATabNewUI.png" align="absmiddle" border="1" style=" border-color: gray" />
-<br clear="all" /></p>
-<p>Fixes and new features:</p>
+<p><ins><a href="http://confluence.atlassian.com/download/attachments/171180132/JIRATabNewUI.png">Screenshot:</a> A new look for the connector's JIRA tab</ins>
+<p>Highlights:</p>
 <ul>
 <li><a href="https://studio.atlassian.com:443/browse/PL-834">Error when pressing &#39;Refresh&#39; in Issues view</a>
 <li><a href="https://studio.atlassian.com:443/browse/PL-822">Bamboo build toolwindow does not highlight Java files present in the opened project for Bamboo running on windows</a>
