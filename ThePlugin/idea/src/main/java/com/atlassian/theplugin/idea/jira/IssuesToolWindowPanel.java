@@ -82,6 +82,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private JScrollPane issueTreescrollPane;
 	private JIRAFilterTree serversTree;
+	private JLabel manualFilterDetailsLabel = new JLabel();
 
 	public MessageScrollPane getMessagePane() {
 		return messagePane;
@@ -773,12 +774,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
-
+		manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
+		
 		if (visible) {
 			CellConstraints cc = new CellConstraints();
-			JLabel label = new JLabel(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
 
-			manualFilterPanel.add(label, cc.xy(1, 2));
+			manualFilterPanel.add(manualFilterDetailsLabel, cc.xy(1, 2));
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
