@@ -79,6 +79,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	private final JIRAFilterListModel filterListModel;
 	private JiraServerCfg jiraServerCfg;
+	private FilterActionClear clearFilterAction = new FilterActionClear();
 
 	public JIRAIssueFilterPanel(
 			final Project project,
@@ -110,6 +111,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		this.assigneeComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 
 		//addProjectActionListener();
+
 	}
 
 	private void addProjectActionListener() {
@@ -145,7 +147,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	@Override
 	protected Action[] createActions() {
-		return new Action[]{getOKAction(), new ClearFilterAction(), getCancelAction()};
+		return new Action[]{getOKAction(), clearFilterAction, getCancelAction()};
 	}
 
 	/**
@@ -356,10 +358,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	}
 
 
-	private class ClearFilterAction extends AbstractAction {
+	private class FilterActionClear extends AbstractAction {
 		private static final String CLEAR_FILTER = "Clear filter";
 
-		private ClearFilterAction() {
+		private FilterActionClear() {
 			putValue(Action.NAME, CLEAR_FILTER);
 		}
 
@@ -433,6 +435,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		resolutionsList.setEnabled(enable);
 		statusList.setEnabled(enable);
 		prioritiesList.setEnabled(enable);
+		getOKAction().setEnabled(enable);
+		getCancelAction().setEnabled(enable);
+		this.clearFilterAction.setEnabled(enable);
+
 	}
 
 	private void refreshProjectDependentLists() {
@@ -471,9 +477,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	public void setJiraServer(final JIRAServer jServer, final List<JIRAQueryFragment> advancedQuery) {
 
-//		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
-//			@Override
-//			public void run(final ProgressIndicator indicator) {
+		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
+			@Override
+			public void run(final ProgressIndicator indicator) {
 		projectList.addListSelectionListener(null);
 		initialFilterSet = true;
 		//progressAnimation.startProgressAnimation();
@@ -520,10 +526,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		enableFields(true);
 		//initialFilterSet = false;
 
-//			}
-//		};
-//
-//		ProgressManager.getInstance().run(setServer);
+			}
+		};
+
+		ProgressManager.getInstance().run(setServer);
 
 	}
 
