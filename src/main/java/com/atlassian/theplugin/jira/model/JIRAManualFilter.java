@@ -36,22 +36,22 @@ public final class JIRAManualFilter {
 	}
 
 	public String toHTML() {
-		String html = "<html><br>";
+		String html = "<html><table>";
 		HashMap<String, ArrayList<String>> map = groupBy(queryFragment);
 
 
 		for (String groupName : map.keySet()) {
-			html += groupName;
+			html += "<tr><td>" + groupName + "</td><td>";
 			for (String value : map.get(groupName)) {
-				html += "&nbsp;<i>" + value + "</i>,";
+				html += "<b><i>" + value + "</i></b>, ";
 			}
 			
-			html = html.substring(0, html.length() - 1);
-			html += "<br>";
+			html = html.substring(0, html.length() - 2);
+			html += "</td></tr>";
 
 		}
 
-		html += "</html>";
+		html += "</table></html>";
 		return html;
 	}
 

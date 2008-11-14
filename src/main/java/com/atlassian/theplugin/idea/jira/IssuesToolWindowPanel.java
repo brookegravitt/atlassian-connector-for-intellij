@@ -31,6 +31,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
+import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
@@ -713,16 +714,18 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	private JComponent createManualFilterEditPanel() {
-		JPanel manualFilterPanel = new JPanel(new BorderLayout());
+		JPanel manualFilterPanel = new JPanel(new VerticalFlowLayout());
+
 		JPanel linkPanel = new JPanel(new FlowLayout());
 
 		//create link label == NORTH
 		linkPanel.add(new JLabel("Custom Filter "));
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		linkPanel.add(hyperlinkLabel);
+		linkPanel.add(hyperlinkLabel);		
 
-		manualFilterPanel.add(linkPanel, BorderLayout.NORTH);
-		manualFilterPanel.add(manualFilterDetailsLabel, BorderLayout.SOUTH);
+		manualFilterPanel.add(linkPanel);
+		manualFilterPanel.add(manualFilterDetailsLabel);
+		manualFilterPanel.setAlignmentX(0.0f);
 
 		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
