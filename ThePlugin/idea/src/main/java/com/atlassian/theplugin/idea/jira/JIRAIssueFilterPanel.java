@@ -452,7 +452,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 					Task.Backgroundable refresh =
 							new Task.Backgroundable(project, "Retrieving JIRA Project Dependent List", false) {
 								@Override
-								public void run(final ProgressIndicator indicator) {
+								public void run(final ProgressIndicator indicator) {									
 									setProjectDependendListValues();
 								}
 							};
