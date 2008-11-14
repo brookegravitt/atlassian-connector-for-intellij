@@ -61,8 +61,8 @@
         <downloadDir>download</downloadDir>
         <metadataDir>metadata</metadataDir>
         <bundle.namespace>com.atlassian.theplugin</bundle.namespace>
-        <versionReleaseNotes>Full support for Crucible review...</versionReleaseNotes>
-        <versionReleaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IDE+Plugin+1.6.1+for+IDEA+-+Release+Notes</versionReleaseNotesUrl>
+        <versionReleaseNotes>Ported to IDEA 8.0, JIRA tab renamed to Issue and changed layout, Bug fixes</versionReleaseNotes>
+        <versionReleaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+7+Release+Notes</versionReleaseNotesUrl>
     </properties>
     <dependencies>
         <dependency>
