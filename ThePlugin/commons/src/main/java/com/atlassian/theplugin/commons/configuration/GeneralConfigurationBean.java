@@ -32,8 +32,8 @@ public class GeneralConfigurationBean {
 
 	private boolean autoUpdateEnabled = true;
 	private Version rejectedUpgrade = Version.NULL_VERSION;
-	private boolean checkUnstableVersionsEnabled = false;
-	private Boolean anonymousFeedbackEnabled = null;
+	private boolean checkUnstableVersionsEnabled;
+	private Boolean anonymousFeedbackEnabled;
 	private boolean useIdeaProxySettings = true;
 	private Collection<String> certs = new HashSet<String>();
 	
@@ -159,6 +159,7 @@ public class GeneralConfigurationBean {
 	private static final int THIRTY_ONE = 31;
 	private static final int THIRTY_TWO = 32;
 
+	@Override
 	public int hashCode() {
 		int result;
 		result = (autoUpdateEnabled ? 1 : 0);
