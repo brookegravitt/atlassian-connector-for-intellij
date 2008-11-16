@@ -52,7 +52,6 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 		} catch (KeyStoreException e) {
 			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 		}
-		//To change body of created methods use File | Settings | File Templates.
 	}
 
 	@Override
