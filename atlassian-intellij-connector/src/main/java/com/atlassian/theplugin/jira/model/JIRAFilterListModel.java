@@ -46,6 +46,10 @@ public class JIRAFilterListModel {
 		}
 	}
 
+	public JIRASavedFilter getJiraSelectedSavedFilter() {
+		return jiraSelectedSavedFilter;
+	}
+
 	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters) {
 
 		if (serversFilters.containsKey(jiraServer)) {
