@@ -12,7 +12,9 @@ import javax.swing.*;
  */
 public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 	private static final Icon JIRA_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
+
 	private JIRASavedFilter savedFilter;
+
 	private JIRAFilterListModel listModel;
 
 	public JIRASavedFilterTreeNode(final JIRAFilterListModel listModel, final JIRASavedFilter savedFilter) {
@@ -38,6 +40,10 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 		if (listModel != null && savedFilter != null) {
 			listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
 		}
+	}
+
+	public JIRASavedFilter getSavedFilter() {
+		return savedFilter;
 	}
 
 
