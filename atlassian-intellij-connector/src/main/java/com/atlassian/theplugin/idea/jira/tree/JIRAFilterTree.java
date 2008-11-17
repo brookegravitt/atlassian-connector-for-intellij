@@ -22,8 +22,12 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	private static final ServerTreeRenderer MY_RENDERER = new ServerTreeRenderer();
 	private DefaultTreeModel treeModel;
 	private FilterTreeSelectionListener treeSelectionListener = new FilterTreeSelectionListener();
+	private JIRAFilterListModel listModel;
+	private boolean isAlreadyInitialized = false;
 
 	public JIRAFilterTree(@NotNull final JIRAFilterListModel listModel) {
+		this.listModel = listModel;
+
 		listModel.addModelListener(this);
 		
 		setShowsRootHandles(true);
@@ -33,6 +37,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		setCellRenderer(MY_RENDERER);
 
 		reCreateTree(listModel);
+
 	}
 
 	private void reCreateTree(final JIRAFilterListModel listModel) {
@@ -63,6 +68,60 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		removeAll();
 		reCreateTree(listModel);
 		expandAll();
+		
+		//should only be used once during configuration read
+		if (!isAlreadyInitialized) {
+			setSelectionSavedFilter();
+			setSelectionManualFilter();
+			isAlreadyInitialized = true;
+		}
+	}
+
+	public void setSelectionSavedFilter() {
+		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
+		if (rootNode == null) {
+			return;
+		}
+		for (int i = 0; i < rootNode.getChildCount(); i++) {
+			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
+				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
+				if (node.getJiraServer().equals(listModel.getJiraSelectedServer())) {
+					for (int j = 0; j < node.getChildCount(); j++) {
+						if (node.getChildAt(j) instanceof JIRASavedFilterTreeNode) {
+							JIRASavedFilterTreeNode savedFilterNode = (JIRASavedFilterTreeNode) node.getChildAt(j);
+							if (savedFilterNode.getSavedFilter().equals(listModel.getJiraSelectedSavedFilter())) {
+								setSelectionPath(new TreePath(savedFilterNode.getPath()));
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void setSelectionManualFilter() {
+		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
+		if (rootNode == null) {
+			return;
+		}
+		for (int i = 0; i < rootNode.getChildCount(); i++) {
+			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
+				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
+				if (node.getJiraServer().equals(listModel.getJiraSelectedServer())) {
+					for (int j = 0; j < node.getChildCount(); j++) {
+						if (node.getChildAt(j) instanceof JIRAManualFilterTreeNode) {
+							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);
+							if (manualFilterNode.getManualFilter().equals(listModel.getJiraSelectedManualFilter())) {
+								setSelectionPath(new TreePath(manualFilterNode.getPath()));
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 	public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
@@ -70,6 +129,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
 	}
+
 
 	private void createServerNodes(JIRAFilterListModel listModel, DefaultMutableTreeNode rootNode) {
 
