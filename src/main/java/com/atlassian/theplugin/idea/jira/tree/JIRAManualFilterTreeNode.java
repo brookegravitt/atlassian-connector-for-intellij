@@ -44,4 +44,8 @@ public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {
 
 		}
 	}
+
+	public JIRAManualFilter getManualFilter() {
+		return manualFilter;
+	}
 }

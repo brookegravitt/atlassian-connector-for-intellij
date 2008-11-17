@@ -57,7 +57,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
 	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
-
+		//setSelectionManualFilter();
+		//setSelectionSavedFilter();
 
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
@@ -218,6 +219,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		addSearchBoxListener();
 
 		refreshModels();
+
 	}
 
 	private void addSearchBoxListener() {
