@@ -163,6 +163,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = jiraIssueListModelBuilder.getServer();
 						if (srvcfg == null) {
+							messagePane.setMessage("Server not defined", true);
 							return;
 						}
 						JIRAServer server = null;
@@ -170,6 +171,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							server = jiraServerCache.get(srvcfg);
 						}
 						if (server == null) {
+							messagePane.setMessage("No connection", true);
 							return;
 						}
 						Map<String, String> projectMap = new HashMap<String, String>();
@@ -179,7 +181,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(issueTree, issueTreescrollPane);
 						expandAllIssueTreeNodes();
-						messagePane.setStatus("Loaded " + currentIssueListModel.getIssues().size() + " issues");
+						messagePane.setMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues");
 					}
 				});
 			}
@@ -637,7 +639,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving issues", false) {
 			public void run(final ProgressIndicator indicator) {
 				try {
-					messagePane.setStatus("Loading issues...");
+					messagePane.setMessage("Loading issues...");
 					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
