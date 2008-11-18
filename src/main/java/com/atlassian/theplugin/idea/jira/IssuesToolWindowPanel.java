@@ -752,7 +752,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
 
 		manualFilterPanel.setBorder(border);
-		editButton.addActionListener(new ActionListener(){
+		editButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
 				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
