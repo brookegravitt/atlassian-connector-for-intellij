@@ -8,13 +8,16 @@
         <use-favourites>false</use-favourites>
         <bamboo2>true</bamboo2>
         <plans>
-          <plan key="TP-CSCOM" />
-          <plan key="TP-CSIDEA" />
-          <plan key="TP-CLO" />
-          <plan key="TP-STYLE" />
-          <plan key="TP-DPL" />
-          <plan key="TP-FAIL" />
-          <plan key="TP-TEST" />
+          <plan key="ACC-BT" />
+          <plan key="ACC-CS" />
+          <plan key="ACC-CLO" />
+          <plan key="ACC-DPL" />
+          <plan key="ACC-TST" />
+          <plan key="ACC-PAR" />
+          <plan key="INT-CS" />
+          <plan key="INT-CLO" />
+          <plan key="INT-DPL" />
+          <plan key="INT-TST" />
         </plans>
       </bamboo>
       <crucible>
@@ -28,9 +31,12 @@
         <name>StAC</name>
         <url>https://studio.atlassian.com</url>
       </jira>
+      <jira>
+        <server-id>f4acf3e9-4ad9-4576-82a6-af61d22ae416</server-id>
+        <name>JAC</name>
+        <url>http://jira.atlassian.com</url>
+      </jira>
     </servers>
     <default-crucible-server>3ca98432-0a34-4d7a-a5b9-6660cd09533e</default-crucible-server>
-    <default-crucible-project>CR</default-crucible-project>
-    <default-crucible-repo>studio</default-crucible-repo>
   </project-configuration>
 </atlassian-ide-plugin>
