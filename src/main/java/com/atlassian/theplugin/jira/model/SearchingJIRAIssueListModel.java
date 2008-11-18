@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
-
-import org.jetbrains.annotations.NotNull;
 
 public class SearchingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssueListModelListener {
 	private final JIRAIssueListModel parent;
@@ -26,7 +25,7 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssu
 			return;
 		}
 		this.searchTerm = searchTerm.toLowerCase();
-		notifyListeners();
+		notifyListenersModelChanged();
 	}
 
 	public void clear() {
@@ -55,7 +54,7 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssu
 		return list;
 	}
 
-	public void notifyListeners() {
+	public void notifyListenersModelChanged() {
 		for (JIRAIssueListModelListener l : listeners) {
 			l.modelChanged(this);
 		}
@@ -87,7 +86,17 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssu
 		parent.setIssue(issue);
 	}
 
+	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
+		for (JIRAIssueListModelListener l : listeners) {
+			l.issuesLoaded(this, numberOfLoadedIssues);
+		}
+	}
+
 	public void modelChanged(JIRAIssueListModel model) {
-		notifyListeners();
+		notifyListenersModelChanged();
+	}
+
+	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+		notifyListenersIssuesLoaded(loadedIssues);
 	}
 }

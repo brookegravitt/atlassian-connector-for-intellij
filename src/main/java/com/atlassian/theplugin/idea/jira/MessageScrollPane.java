@@ -22,7 +22,8 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 	public MessageScrollPane(String initialText) {
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new FlowLayout());
-		getMoreIssues = new HyperlinkLabel("Get more issues...");
+		getMoreIssues = new HyperlinkLabel("Get More Issues...");
+		enableGetMoreIssues(false);
 		statusPanel.add(getMoreIssues);
 
 		pane.setMinimumSize(ED_PANE_MINE_SIZE);
@@ -33,9 +34,11 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
+		gbc.ipady = 8;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(pane, gbc);
 
+		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.weightx = 0.0;
 		add(statusPanel, gbc);
@@ -55,11 +58,19 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 		pane.setText(" " + msg);
 	}
 
-	public void addMoreListener(HyperlinkListener listener) {
+	public void addMoreIssuesListener(HyperlinkListener listener) {
 		getMoreIssues.addHyperlinkListener(listener);
 	}
 
 	public void removeMoreListener(HyperlinkListener listener) {
 		getMoreIssues.removeHyperlinkListener(listener);
+	}
+
+	public void enableGetMoreIssues(boolean enable) {
+		if (enable) {
+			getMoreIssues.setVisible(true);
+		} else {
+			getMoreIssues.setVisible(false);
+		}
 	}
 }
