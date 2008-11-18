@@ -47,7 +47,7 @@
             <outputDirectory>${pom.project.artifactId}/lib</outputDirectory>
             <scope>runtime</scope>
             <includes>
-                <include>com.atlassian.theplugin:atlassian-plugin-commons:jar</include>
+                <include>com.atlassian.connector:atlassian-connector-commons:jar</include>
                 <include>commons-httpclient:commons-httpclient:jar</include>
                 <include>commons-logging:commons-logging:jar</include>
                 <include>commons-discovery:commons-discovery:jar</include>
