@@ -480,15 +480,27 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		if (issueComment.isOK()) {
 			Task.Backgroundable comment = new Task.Backgroundable(project, "Commenting Issue", false) {
 				public void run(final ProgressIndicator indicator) {
-					setStatusMessage("Commenting issue " + issue.getKey() + "...");
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							setStatusMessage("Commenting issue " + issue.getKey() + "...");
+						}
+					});
 					try {
 						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
 						if (jiraServer != null) {
 							jiraServerFacade.addComment(jiraServer, issue, issueComment.getComment());
-							setStatusMessage("Commented issue " + issue.getKey());
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									setStatusMessage("Commented issue " + issue.getKey());
+								}
+							});
 						}
-					} catch (JIRAException e) {
-						setStatusMessage("Issue not commented: " + e.getMessage(), true);
+					} catch (final JIRAException e) {
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								setStatusMessage("Issue not commented: " + e.getMessage(), true);
+							}
+						});
 					}
 				}
 			};
@@ -581,8 +593,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 
 	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
-			final ProjectConfigurationBean projectConfigurationBean,
-			final CfgManager cfgManager) {
+																 final ProjectConfigurationBean projectConfigurationBean,
+																 final CfgManager cfgManager) {
 		IssuesToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
 
 		if (window == null) {
@@ -696,7 +708,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		serversPanel = new JPanel(new BorderLayout());
 
 		serversTree = createJiraServersTree(jiraFilterListModel);
-		JScrollPane filterListScrollPane = new JScrollPane(serversTree,	JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		manualFiltereditScrollPane = new JScrollPane(createManualFilterEditPanel(),
@@ -723,7 +735,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		//create link label == NORTH
 		linkPanel.add(new JLabel("Custom Filter "));
 		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		linkPanel.add(hyperlinkLabel);		
+		linkPanel.add(hyperlinkLabel);
 
 		manualFilterPanel.add(linkPanel);
 		manualFilterPanel.add(manualFilterDetailsLabel);
@@ -781,7 +793,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
-			
+
 		if (visible) {
 			manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
 			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
@@ -840,7 +852,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					setStatusMessage(serverStr + "Retrieving projects...");
 					jiraServer.getProjects();
 					setStatusMessage(serverStr + "Metadata query finished");
-					synchronized (IssuesToolWindowPanel.this) {	jiraServerCache.put(server, jiraServer); }
+					synchronized (IssuesToolWindowPanel.this) {
+						jiraServerCache.put(server, jiraServer);
+					}
 				}
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
