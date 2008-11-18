@@ -3,13 +3,29 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.jira.api.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
  * User: pmaruszak
  */
 public final class JIRAManualFilter {
+	private enum QueryElement {
+		PROJECT("Project"), ISSUE_TYPE("Issue Type"), FIX_FOR("Fix For"),
+		COMPONENTS("Components"), AFFECTS_VERSIONS("Affects Versions"), REPORTER("Reporter"),
+		ASSIGNEE("Assignee"), STATUS("Status"), RESOLUTIONS("Resolutions"),
+		PRIORITIES("Priorities"), UNKNOWN("Unknown");
+		private String name;
+
+		QueryElement(final String name){
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+	}
 	private List<JIRAQueryFragment> queryFragment;
 	private String name;
 
@@ -37,53 +53,47 @@ public final class JIRAManualFilter {
 
 	public String toHTML() {
 		String html = "<html><table>";
-		HashMap<String, ArrayList<String>> map = groupBy();
+		TreeMap<QueryElement, ArrayList<String>> map = groupBy();
 
-
-		for (String groupName : map.keySet()) {
-			html += "<tr><td>" + groupName + "</td><td>";
-			for (String value : map.get(groupName)) {
-				html += "<b><i>" + value + "</i></b>, ";
+		for (QueryElement element : map.keySet()) {
+			html += "<tr>&nbsp;<td align='right'>" + element.getName() + ":</td>&nbsp;<td align='left'>";
+			for (String value : map.get(element)) {
+				html += value + ", ";
 			}
-			
 			html = html.substring(0, html.length() - 2);
 			html += "</td></tr>";
-
 		}
 
 		html += "</table></html>";
 		return html;
 	}
 
-	private HashMap<String, ArrayList<String>> groupBy() {
-		HashMap<String, ArrayList<String>> map = new HashMap<String, ArrayList<String>>();
+	private TreeMap<QueryElement, ArrayList<String>> groupBy() {
+		TreeMap<QueryElement, ArrayList<String>> map = new TreeMap<QueryElement, ArrayList<String>>();
 
 		for (JIRAQueryFragment fragment : queryFragment) {
 			if (fragment instanceof JIRAProjectBean) {
-
-				addValueToMap(map, "Project:", fragment.getName());
-
+				addValueToMap(map, QueryElement.PROJECT, fragment.getName());
 			} else if (fragment instanceof JIRAIssueTypeBean) {
-				addValueToMap(map, "Issue Type:", fragment.getName());
-
+				addValueToMap(map, QueryElement.ISSUE_TYPE, fragment.getName());
 			} else if (fragment instanceof JIRAStatusBean) {
-				addValueToMap(map, "Status:", fragment.getName());
+				addValueToMap(map, QueryElement.STATUS, fragment.getName());
 			} else if (fragment instanceof JIRAPriorityBean) {
-				addValueToMap(map, "Priority:", fragment.getName());
+				addValueToMap(map, QueryElement.PRIORITIES, fragment.getName());
 			} else if (fragment instanceof JIRAResolutionBean) {
-				addValueToMap(map, "Resolution:", fragment.getName());
+				addValueToMap(map, QueryElement.RESOLUTIONS, fragment.getName());
 			} else if (fragment instanceof JIRAFixForVersionBean) {
-				addValueToMap(map, "Fix For:", fragment.getName());
+				addValueToMap(map, QueryElement.FIX_FOR, fragment.getName());
 			} else if (fragment instanceof JIRAComponentBean) {
-				addValueToMap(map, "Components:", fragment.getName());
+				addValueToMap(map, QueryElement.COMPONENTS, fragment.getName());
 			} else if (fragment instanceof JIRAVersionBean) {
-				addValueToMap(map, "Versions:", fragment.getName());
+				addValueToMap(map, QueryElement.AFFECTS_VERSIONS, fragment.getName());
 			} else if (fragment instanceof JIRAAssigneeBean) {
-				addValueToMap(map, "Assignee:", fragment.getName());
+				addValueToMap(map, QueryElement.ASSIGNEE, fragment.getName());
 			} else if (fragment instanceof JIRAReporterBean) {
-				addValueToMap(map, "Reporter:", fragment.getName());
+				addValueToMap(map, QueryElement.REPORTER, fragment.getName());
 			} else {
-				addValueToMap(map, "unknown", fragment.getName());
+				addValueToMap(map, QueryElement.UNKNOWN, fragment.getName());
 			}
 
 
@@ -92,7 +102,7 @@ public final class JIRAManualFilter {
 
 	}
 
-	private void addValueToMap(final HashMap<String, ArrayList<String>> map, final String key, final String value) {
+	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key, final String value) {
 		if (!map.containsKey(key)) {
 			map.put(key, new ArrayList<String>());
 		}

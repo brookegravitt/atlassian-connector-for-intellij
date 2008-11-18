@@ -31,17 +31,16 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
@@ -77,7 +76,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
-	private JScrollPane manualFiltereditScrollPane;
+	private JPanel manualFilterEditPanel;
 	private JIRAServerFacade jiraServerFacade;
 	private SearchTextField searchField = new SearchTextField();
 
@@ -721,9 +720,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		manualFiltereditScrollPane = new JScrollPane(createManualFilterEditPanel(),
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		manualFilterEditPanel = createManualFilterEditPanel();
 
 		filterListScrollPane.setWheelScrollingEnabled(true);
 		splitFilterPane = new Splitter(false, 1.0f);
@@ -737,26 +734,29 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return splitFilterPane;
 	}
 
-	private JComponent createManualFilterEditPanel() {
-		JPanel manualFilterPanel = new JPanel(new VerticalFlowLayout());
+	private JPanel createManualFilterEditPanel() {
+		JPanel manualFilterPanel = new JPanel(new BorderLayout());
+		JButton editButton = new JButton("Edit");
 
-		JPanel linkPanel = new JPanel(new FlowLayout());
+		JScrollPane manualFilterDeatilsScrollPane = new JScrollPane(manualFilterDetailsLabel,
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-		//create link label == NORTH
-		linkPanel.add(new JLabel("Custom Filter "));
-		HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("edit");
-		linkPanel.add(hyperlinkLabel);
+		manualFilterDeatilsScrollPane.getViewport().setBackground(manualFilterDetailsLabel.getBackground());
+		manualFilterDeatilsScrollPane.setWheelScrollingEnabled(true);
 
-		manualFilterPanel.add(linkPanel);
-		manualFilterPanel.add(manualFilterDetailsLabel);
-		manualFilterPanel.setAlignmentX(0.0f);
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		buttonPanel.add(editButton);
+		
+		manualFilterPanel.add(buttonPanel, BorderLayout.SOUTH);
+		manualFilterPanel.add(manualFilterDeatilsScrollPane, BorderLayout.CENTER);
+		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
 
-		hyperlinkLabel.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
+		manualFilterPanel.setBorder(border);
+		editButton.addActionListener(new ActionListener(){
 
+			public void actionPerformed(ActionEvent event) {
 				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
 				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraFilterListModel, jiraServer);
-
 
 				if (jiraServer != null && jiraFilterListModel.getJiraSelectedManualFilter() != null) {
 					synchronized (this) {
@@ -789,6 +789,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		});
 
+
 		return manualFilterPanel;
 
 	}
@@ -806,7 +807,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		if (visible) {
 			manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-			splitFilterPane.setSecondComponent(manualFiltereditScrollPane);
+			splitFilterPane.setSecondComponent(manualFilterEditPanel);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
 		} else {
