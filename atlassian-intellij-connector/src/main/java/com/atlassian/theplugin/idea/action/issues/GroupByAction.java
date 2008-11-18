@@ -1,43 +1,38 @@
 package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
+import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class GroupByAction extends ComboBoxAction {
+public class GroupByAction extends AnAction implements CustomComponentAction {
 
-	@NotNull
-	protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
-		final DefaultActionGroup g = new DefaultActionGroup();
-
-		final ComboBoxButton button = (ComboBoxButton) jComponent;
-		for (final JIRAIssueGroupBy groupBy : JIRAIssueGroupBy.values()) {
-			g.add(new AnAction(groupBy.toString()) {
-				public void actionPerformed(AnActionEvent e) {
-					button.setText(e.getPresentation().getText());
-					IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-					if (panel != null) {
-						panel.setGroupBy(groupBy);
-					}
-				}
-			});
-		}
-
-		return g;
+	public void actionPerformed(AnActionEvent e) {
 	}
 
-	public void update(AnActionEvent event) {
-		super.update(event);
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		if (panel != null) {
-			event.getPresentation().setText(panel.getGroupBy().toString());
-		}
+	public JComponent createCustomComponent(Presentation presentation) {
+		final JComboBox combo = new JComboBox(createModel());
+		combo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(
+						IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext()));
+				if (panel != null) {
+					panel.setGroupBy((JIRAIssueGroupBy) combo.getSelectedItem());
+				}
+			}
+		});
+		return combo;
+	}
+
+	private ComboBoxModel createModel() {
+		return new DefaultComboBoxModel(JIRAIssueGroupBy.values());
 	}
 }
