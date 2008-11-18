@@ -40,14 +40,14 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 	}
 
-	private void reCreateTree(final JIRAFilterListModel listModel) {
+	private void reCreateTree(final JIRAFilterListModel aListModel) {
 		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();		
 		treeModel = new DefaultTreeModel(rootNode);
 
 		setModel(treeModel);
 
-		if (listModel != null) {
-			createServerNodes(listModel, (DefaultMutableTreeNode) treeModel.getRoot());
+		if (aListModel != null) {
+			createServerNodes(aListModel, (DefaultMutableTreeNode) treeModel.getRoot());
 		}
 		treeModel.nodeStructureChanged(rootNode);
 	}
@@ -64,9 +64,9 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		}
 	}
 
-	public void modelChanged(JIRAFilterListModel listModel) {
+	public void modelChanged(JIRAFilterListModel aListModel) {
 		removeAll();
-		reCreateTree(listModel);
+		reCreateTree(aListModel);
 		expandAll();
 		
 		//should only be used once during configuration read
@@ -131,33 +131,34 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 
-	private void createServerNodes(JIRAFilterListModel listModel, DefaultMutableTreeNode rootNode) {
+	private void createServerNodes(JIRAFilterListModel aListModel, DefaultMutableTreeNode rootNode) {
 
-		if (listModel == null) {
+		if (aListModel == null) {
 			return;
 		}
 
-		for (JiraServerCfg server : listModel.getJIRAServers()) {
-			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(listModel, server);
-			createFilterNodes(server, serverNode, listModel);
+		for (JiraServerCfg server : aListModel.getJIRAServers()) {
+			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(aListModel, server);
+			createFilterNodes(server, serverNode, aListModel);
 			rootNode.add(serverNode);
 		}
 	}
 
-	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel listModel) {
-		if (listModel != null) {
-			for (JIRASavedFilter savedFilter : listModel.getSavedFilters(jiraServer)) {
-				node.add(new JIRASavedFilterTreeNode(listModel, savedFilter));
+	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
+		if (aListModel != null) {
+			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
+				node.add(new JIRASavedFilterTreeNode(aListModel, savedFilter));
 			}
 
-			JIRAManualFilter manualFilter = listModel.getManualFilter(jiraServer);
+			JIRAManualFilter manualFilter = aListModel.getManualFilter(jiraServer);
 
-			node.add(new JIRAManualFilterTreeNode(listModel, manualFilter));
+			node.add(new JIRAManualFilterTreeNode(aListModel, manualFilter));
 		}
 
 	}
 
 	private static class ServerTreeRenderer extends DefaultTreeCellRenderer {
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
 				boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
