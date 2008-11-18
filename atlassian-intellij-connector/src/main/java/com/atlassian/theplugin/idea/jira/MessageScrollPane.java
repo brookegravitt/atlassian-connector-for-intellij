@@ -18,6 +18,7 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private JLabel pane = new JLabel();
+	private static final int PAD_Y = 8;
 
 	public MessageScrollPane(String initialText) {
 		statusPanel = new JPanel();
@@ -34,7 +35,7 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 1.0;
-		gbc.ipady = 8;
+		gbc.ipady = PAD_Y;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		add(pane, gbc);
 
