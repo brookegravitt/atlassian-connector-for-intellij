@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.intellij.util.Icons;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.intellij.util.Icons;
 
 import javax.swing.*;
 
@@ -27,7 +27,7 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 
 		JLabel l = (JLabel) c;
 		l.setIcon(expanded ? iconOpen : iconClosed);
-		l.setText(name);
+		l.setText(name + " (" + getChildCount() + ")");
 		return l;
 	}
 
