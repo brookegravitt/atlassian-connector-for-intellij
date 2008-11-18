@@ -608,7 +608,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private void refreshFilterModel() {
 
 		try {
-			IdeaHelper.getProjectComponent(project, JIRAFilterListBuilder.class).rebuildModel();
+			jiraFilterListModelBuilder.rebuildModel();
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
 			setStatusMessage("Some Jira servers did not return saved filters", true);
