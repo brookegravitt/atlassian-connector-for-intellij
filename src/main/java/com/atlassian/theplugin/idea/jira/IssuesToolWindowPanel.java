@@ -185,6 +185,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					}
 				});
 			}
+
+			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+				if (loadedIssues >= JIRA_ISSUE_PAGE_SIZE) {
+					messagePane.enableGetMoreIssues(true);
+				} else {
+					messagePane.enableGetMoreIssues(false);
+				}
+			}
 		});
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void modelChanged(JIRAFilterListModel listModel) {
@@ -211,11 +219,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		});
 
-		messagePane.addMoreListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				getNextIssues();
-			}
-		});
+		messagePane.addMoreIssuesListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					getNextIssues();
+				}
+			});
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();

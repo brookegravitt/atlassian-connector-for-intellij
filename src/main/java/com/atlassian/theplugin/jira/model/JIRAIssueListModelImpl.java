@@ -7,7 +7,9 @@ import java.util.*;
 public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 
 	private Map<String, JIRAIssue> issues;
+
 	private List<JIRAIssueListModelListener> listeners;
+
 	private JIRAIssue selectedIssue;
 
 	private JIRAIssueListModelImpl() {
@@ -18,7 +20,7 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 	public static JIRAIssueListModel createInstance() {
 		return new JIRAIssueListModelImpl();
 	}
-	
+
 	public void clear() {
 		issues.clear();
 	}
@@ -44,9 +46,15 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 		return issues.values();
 	}
 
-	public void notifyListeners() {
+	public void notifyListenersModelChanged() {
 		for (JIRAIssueListModelListener listener : listeners) {
 			listener.modelChanged(this);
+		}
+	}
+
+	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
+		for (JIRAIssueListModelListener listener : listeners) {
+			listener.issuesLoaded(this, numberOfLoadedIssues);
 		}
 	}
 

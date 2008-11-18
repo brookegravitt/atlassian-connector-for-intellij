@@ -72,10 +72,14 @@ public class JIRAIssueListModelImplTest extends TestCase {
 					listenerCalled = true;
 				}
 			}
+
+			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+
+			}
 		};
 
 		model.addModelListener(l);
-		model.notifyListeners();
+		model.notifyListenersModelChanged();
 		assertTrue(listenerCalled);
 		listenerCalled = false;
 		model.removeModelListener(l);

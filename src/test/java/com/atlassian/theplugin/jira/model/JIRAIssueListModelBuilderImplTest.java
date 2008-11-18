@@ -109,6 +109,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 					listenerCalled = true;
 				}
 			}
+
+			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+
+			}
 		});
 		try {
 			builder.addIssuesToModel(25, true);
