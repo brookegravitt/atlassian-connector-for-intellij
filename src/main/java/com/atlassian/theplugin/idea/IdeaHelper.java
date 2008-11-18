@@ -76,13 +76,20 @@ public final class IdeaHelper {
 		if (p == null) {
 			return null;
 		}
-		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.ISSUES.toString());
-		if (content == null) {
+		return getIssuesToolWindowPanel(p);
+	}
+
+	public static IssuesToolWindowPanel getIssuesToolWindowPanel(Project p) {
+		if (p == null) {
 			return null;
 		}
-		return (IssuesToolWindowPanel) content.getComponent();
 
+		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.ISSUES.toString());
+        if (content == null) {
+            return null;
+        }
+        return (IssuesToolWindowPanel) content.getComponent();
 	}
 
 
@@ -155,7 +162,6 @@ public final class IdeaHelper {
 		return false;
 	}
 
-	@Nullable
 	public static <T> T getProjectComponent(final AnActionEvent event, final Class<T> clazz) {
 		final Project project = getCurrentProject(event);
 		if (project == null) {

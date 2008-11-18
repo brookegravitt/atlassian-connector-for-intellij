@@ -27,7 +27,7 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 
 		JLabel l = (JLabel) c;
 		l.setIcon(expanded ? iconOpen : iconClosed);
-		l.setText(name + " (" + getChildCount() + ")");
+		l.setText("<html><b>" + name + " (" + getChildCount() + ")</b>");
 		return l;
 	}
 
