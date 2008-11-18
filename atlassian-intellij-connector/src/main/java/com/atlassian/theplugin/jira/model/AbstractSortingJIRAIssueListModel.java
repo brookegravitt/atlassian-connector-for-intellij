@@ -39,9 +39,15 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 		return list;
 	}
 
-	public void notifyListeners() {
+	public void notifyListenersModelChanged() {
 		for (JIRAIssueListModelListener l : listeners) {
 			l.modelChanged(this);
+		}
+	}
+
+	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
+		for (JIRAIssueListModelListener l : listeners) {
+			l.issuesLoaded(this, numberOfLoadedIssues);
 		}
 	}
 
@@ -68,6 +74,12 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 	}
 
 	public void modelChanged(JIRAIssueListModel model) {
-		notifyListeners();
+		notifyListenersModelChanged();
 	}
+
+	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+		notifyListenersIssuesLoaded(loadedIssues);
+	}
+
+
 }
