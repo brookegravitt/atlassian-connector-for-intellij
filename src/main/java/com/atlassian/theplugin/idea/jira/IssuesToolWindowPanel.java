@@ -833,47 +833,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 	public void refreshModels() {
-		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving JIRA information", false) {
-			public void run(final ProgressIndicator indicator) {
-				synchronized (IssuesToolWindowPanel.this) {
-					jiraServerCache.clear();
-				}
-				for (JiraServerCfg server : IdeaHelper.getCfgManager()
-						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-					JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-					if (!jiraServer.checkServer()) {
-						setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-						EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
-						continue;
-					}//@todo remove  saved filters download or merge with existing in listModel
-					String serverStr = "[" + server.getName() + "] ";
-					setStatusMessage(serverStr + "Retrieving saved filters...");
-					jiraServer.getSavedFilters();
-					setStatusMessage(serverStr + "Retrieving projects...");
-					jiraServer.getProjects();
-					setStatusMessage(serverStr + "Retrieving issue types...");
-					jiraServer.getIssueTypes();
-					setStatusMessage(serverStr + "Retrieving statuses...");
-					jiraServer.getStatuses();
-					setStatusMessage(serverStr + "Retrieving resolutions...");
-					jiraServer.getResolutions();
-					setStatusMessage(serverStr + "Retrieving priorities...");
-					jiraServer.getPriorieties();
-					setStatusMessage(serverStr + "Retrieving projects...");
-					jiraServer.getProjects();
-					setStatusMessage(serverStr + "Metadata query finished");
-					synchronized (IssuesToolWindowPanel.this) {
-						jiraServerCache.put(server, jiraServer);
-					}
-				}
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						refreshFilterModel();
-						jiraFilterListModel.fireModelChanged();
-					}
-				});
-			}
-		};
+		Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
 		ProgressManager.getInstance().run(task);
 	}
 
@@ -960,5 +920,51 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	public boolean haveSelectedIssue() {
 		return issueTree.getSelectionModel().getSelectionCount() > 0;
+	}
+
+	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
+		public MetadataFetcherBackgroundableTask() {
+			super(IssuesToolWindowPanel.this.project, "Retrieving JIRA information", false);
+		}
+
+		public void run(final ProgressIndicator indicator) {
+			synchronized (IssuesToolWindowPanel.this) {
+				jiraServerCache.clear();
+			}
+			for (JiraServerCfg server : IdeaHelper.getCfgManager()
+					.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+				JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
+				if (!jiraServer.checkServer()) {
+					setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
+					EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
+					continue;
+				}//@todo remove  saved filters download or merge with existing in listModel
+				final String serverStr = "[" + server.getName() + "] ";
+				setStatusMessage(serverStr + "Retrieving saved filters...");
+				jiraServer.getSavedFilters();
+				setStatusMessage(serverStr + "Retrieving projects...");
+				jiraServer.getProjects();
+				setStatusMessage(serverStr + "Retrieving issue types...");
+				jiraServer.getIssueTypes();
+				setStatusMessage(serverStr + "Retrieving statuses...");
+				jiraServer.getStatuses();
+				setStatusMessage(serverStr + "Retrieving resolutions...");
+				jiraServer.getResolutions();
+				setStatusMessage(serverStr + "Retrieving priorities...");
+				jiraServer.getPriorieties();
+				setStatusMessage(serverStr + "Retrieving projects...");
+				jiraServer.getProjects();
+				setStatusMessage(serverStr + "Metadata query finished");
+				synchronized (IssuesToolWindowPanel.this) {
+					jiraServerCache.put(server, jiraServer);
+				}
+			}
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					refreshFilterModel();
+					jiraFilterListModel.fireModelChanged();
+				}
+			});
+		}
 	}
 }
