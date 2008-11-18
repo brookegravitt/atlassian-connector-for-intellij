@@ -831,7 +831,11 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 						try {
 							if (server != null) {
 								facade.addComment(server, issue, issueComment.getComment());
-								refreshComments();
+								EventQueue.invokeLater(new Runnable() {
+									public void run() {
+										refreshComments();
+									}
+								});
 							}
 						} catch (JIRAException e) {
 							final String msg = e.getMessage();
