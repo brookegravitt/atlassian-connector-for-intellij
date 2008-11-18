@@ -9,7 +9,7 @@ public interface JIRAIssueListModel {
 	void addIssue(JIRAIssue issue);
 	void addIssues(Collection<JIRAIssue> issues);
 	Collection<JIRAIssue> getIssues();
-	void notifyListeners();
+	void notifyListenersModelChanged();
 	void addModelListener(JIRAIssueListModelListener listener);
 	void removeModelListener(JIRAIssueListModelListener listener);
 
@@ -17,4 +17,6 @@ public interface JIRAIssueListModel {
 	JIRAIssue getSelectedIssue();
 
 	void setIssue(JIRAIssue issue);
+
+	void notifyListenersIssuesLoaded(int numberOfLoadedIssues);
 }
