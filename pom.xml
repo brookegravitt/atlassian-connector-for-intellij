@@ -249,7 +249,7 @@
 						</goals>
 						<configuration>
 							<resourceSrc>
-								idea/${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml
+								${project.reporting.outputDirectory}/${metadataDir}/${pom.artifactId}-${pom.version}-metadata.dir/latestPossibleVersion.xml
 							</resourceSrc>
 							<resourceDest>${pom.artifactId}</resourceDest>
 							<serverId>atlassian-documentation</serverId>
@@ -483,5 +483,9 @@
 			<id>atlassian-restricted</id>
 			<url>https://maven.atlassian.com/restricted</url>
 		</repository>
+	        <repository>
+	        	<id>atlassian-public-repository</id>
+	        	<url>https://maven.atlassian.com/public</url>
+	        </repository>
 	</repositories>
 </project>
