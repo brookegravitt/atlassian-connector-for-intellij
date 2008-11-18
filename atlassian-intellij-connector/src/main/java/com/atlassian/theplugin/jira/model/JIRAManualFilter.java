@@ -17,7 +17,7 @@ public final class JIRAManualFilter {
 		PRIORITIES("Priorities"), UNKNOWN("Unknown");
 		private String name;
 
-		QueryElement(final String name){
+		QueryElement(final String name) {
 			this.name = name;
 		}
 
