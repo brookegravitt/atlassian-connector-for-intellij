@@ -4,17 +4,14 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.*;
 
-public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
+public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel {
 
 	private Map<String, JIRAIssue> issues;
-
-	private List<JIRAIssueListModelListener> listeners;
 
 	private JIRAIssue selectedIssue;
 
 	private JIRAIssueListModelImpl() {
 		issues = new HashMap<String, JIRAIssue>();
-		listeners = new ArrayList<JIRAIssueListModelListener>();
 	}
 
 	public static JIRAIssueListModel createInstance() {
@@ -46,26 +43,20 @@ public final class JIRAIssueListModelImpl implements JIRAIssueListModel {
 		return issues.values();
 	}
 
-	public void notifyListenersModelChanged() {
-		for (JIRAIssueListModelListener listener : listeners) {
-			listener.modelChanged(this);
-		}
+	public void fireModelChanged() {
+		modelChanged(this);
 	}
 
-	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
-		for (JIRAIssueListModelListener listener : listeners) {
-			listener.issuesLoaded(this, numberOfLoadedIssues);
-		}
+	public void fireIssuesLoaded(int numberOfLoadedIssues) {
+		issuesLoaded(this, numberOfLoadedIssues);
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {
-		listeners.add(listener);
+		addListener(listener);
 	}
 
 	public void removeModelListener(JIRAIssueListModelListener listener) {
-		if (listeners.contains(listener)) {
-			listeners.remove(listener);
-		}
+		removeListener(listener);
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {
