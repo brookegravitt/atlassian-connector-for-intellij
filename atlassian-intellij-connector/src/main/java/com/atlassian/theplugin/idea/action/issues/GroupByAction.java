@@ -42,7 +42,9 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 		super.update(event);
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel != null) {
-			combo.setSelectedItem(panel.getGroupBy());
+			if (!panel.getGroupBy().equals(combo.getSelectedItem())) {
+				combo.setSelectedItem(panel.getGroupBy());
+			}
 		}
 	}
 }
