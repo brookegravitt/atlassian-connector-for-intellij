@@ -35,6 +35,10 @@ public class JIRAVersionBean extends AbstractJIRAConstantBean {
 		return isReleased;
 	}
 
+	public void setReleased(boolean released)  {
+		isReleased = released;
+	}
+
 	public String getQueryStringFragment() {
 		return "version=" + getId();
 	}

@@ -43,17 +43,4 @@ public final class JIRAIssueProgressTimestampCache {
 			getIssueMap(server).remove(issue);
 		}
 	}
-
-	public Date getTimestamp(JIRAServer server, JIRAIssue issue) {
-		return getTimestamp(server.getServer(), issue);
-	}
-
-	public void setTimestamp(JIRAServer server, JIRAIssue issue) {
-		setTimestamp(server.getServer(), issue);
-	}
-
-	public void removeTimestamp(JIRAServer server, JIRAIssue issue) {
-		removeTimestamp(server.getServer(), issue);
-	}
-
 }
