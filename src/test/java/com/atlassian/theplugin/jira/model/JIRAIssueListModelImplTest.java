@@ -19,6 +19,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +132,33 @@ public class JIRAIssueListModelImplTest extends TestCase {
 
 		// check mock
 		EasyMock.verify(l);
+	}
 
+	public void testListenersWithMockito() {
 
+		final int numberOfIssues = 4;
+
+		// create and apply mock
+		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModelListener listener = Mockito.mock(JIRAIssueListModelListener.class);
+		model.addModelListener(listener);
+
+		// use mock
+		model.fireModelChanged();
+		model.fireIssuesLoaded(numberOfIssues);
+
+		// check mock
+		Mockito.verify(listener).modelChanged(model);
+		Mockito.verify(listener).issuesLoaded(model, numberOfIssues);
+
+		// start again
+		model.removeModelListener(listener);
+
+		// use mock
+		model.fireModelChanged();
+		model.fireIssuesLoaded(numberOfIssues);
+
+		// check mock
+		Mockito.verifyNoMoreInteractions(listener);
 	}
 }
