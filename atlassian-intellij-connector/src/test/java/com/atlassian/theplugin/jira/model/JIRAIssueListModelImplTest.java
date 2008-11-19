@@ -63,6 +63,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	}
 
 	private	boolean listenerCalled = false;
+	private	boolean listenerCalled2 = false;
 
 	public void testListeners() {
 		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
@@ -73,16 +74,25 @@ public class JIRAIssueListModelImplTest extends TestCase {
 				}
 			}
 
-			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-
+			public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
+				if (model == m) {
+					listenerCalled2 = true;
+				}
 			}
 		};
 
 		model.addModelListener(l);
 		model.notifyListenersModelChanged();
 		assertTrue(listenerCalled);
+		model.notifyListenersIssuesLoaded(0);
+		assertTrue(listenerCalled2);
+
 		listenerCalled = false;
+		listenerCalled2 = false;
 		model.removeModelListener(l);
+		model.notifyListenersModelChanged();
 		assertFalse(listenerCalled);
+		model.notifyListenersIssuesLoaded(0);
+		assertFalse(listenerCalled2);
 	}
 }

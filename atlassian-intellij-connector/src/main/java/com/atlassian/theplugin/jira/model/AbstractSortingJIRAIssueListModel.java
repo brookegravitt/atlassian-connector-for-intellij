@@ -4,15 +4,15 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.*;
 
-public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueListModel, JIRAIssueListModelListener {
+public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueListModel /*,JIRAIssueListModelListener */ {
 
 	private final JIRAIssueListModel parent;
-	private List<JIRAIssueListModelListener> listeners;
+//	private List<JIRAIssueListModelListener> listeners;
 
 	public AbstractSortingJIRAIssueListModel(JIRAIssueListModel parent) {
 		this.parent = parent;
-		listeners = new ArrayList<JIRAIssueListModelListener>();
-		parent.addModelListener(this);
+//		listeners = new ArrayList<JIRAIssueListModelListener>();
+//		parent.addModelListener(this);
 	}
 
 	public void clear() {
@@ -40,25 +40,29 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 	}
 
 	public void notifyListenersModelChanged() {
-		for (JIRAIssueListModelListener l : listeners) {
-			l.modelChanged(this);
-		}
+//		for (JIRAIssueListModelListener l : listeners) {
+//			l.modelChanged(this);
+//		}
+		parent.notifyListenersModelChanged();
 	}
 
 	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
-		for (JIRAIssueListModelListener l : listeners) {
-			l.issuesLoaded(this, numberOfLoadedIssues);
-		}
+//		for (JIRAIssueListModelListener l : listeners) {
+//			l.issuesLoaded(this, numberOfLoadedIssues);
+//		}
+		parent.notifyListenersIssuesLoaded(numberOfLoadedIssues);
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {
-		listeners.add(listener);
+//		listeners.add(listener);
+		parent.addModelListener(listener);
 	}
 
 	public void removeModelListener(JIRAIssueListModelListener listener) {
-		if (listeners.contains(listener)) {
-			listeners.remove(listener);
-		}
+//		if (listeners.contains(listener)) {
+//			listeners.remove(listener);
+//		}
+		parent.removeModelListener(listener);
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {
@@ -73,13 +77,13 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 		parent.setIssue(issue);
 	}
 
-	public void modelChanged(JIRAIssueListModel model) {
-		notifyListenersModelChanged();
-	}
-
-	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-		notifyListenersIssuesLoaded(loadedIssues);
-	}
+//	public void modelChanged(JIRAIssueListModel model) {
+//		notifyListenersModelChanged();
+//	}
+//
+//	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+//		notifyListenersIssuesLoaded(loadedIssues);
+//	}
 
 
 }
