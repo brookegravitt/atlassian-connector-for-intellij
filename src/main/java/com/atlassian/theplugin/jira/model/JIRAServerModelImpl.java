@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
