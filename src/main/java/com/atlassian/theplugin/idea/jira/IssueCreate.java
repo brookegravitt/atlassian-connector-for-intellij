@@ -17,12 +17,13 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.intellij.openapi.diagnostic.Logger;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ColoredListCellRenderer;
@@ -38,8 +39,6 @@ import java.awt.event.ActionListener;
 import java.util.List;
 
 public class IssueCreate extends DialogWrapper {
-	private static final Logger LOGGER = Logger.getInstance("IssueCreate");
-
 	private JPanel mainPanel;
 	private JTextArea description;
 	private JComboBox projectComboBox;
@@ -47,15 +46,17 @@ public class IssueCreate extends DialogWrapper {
 	private JTextField summary;
 	private JComboBox priorityComboBox;
 	private JTextField assignee;
-	private final JIRAServer jiraServer;
+	private final JiraServerCfg jiraServer;
+	private final JIRAServerModel model;
 
-	public IssueCreate(JIRAServer jiraServer) {
+	public IssueCreate(JIRAServerModel model, JiraServerCfg server) {
 		super(false);
+		this.model = model;
 		$$$setupUI$$$();
 		init();
 		pack();
 
-		this.jiraServer = jiraServer;
+		this.jiraServer = server;
 		setTitle("Create JIRA Issue");
 
 		projectComboBox.setRenderer(new ColoredListCellRenderer() {
@@ -108,7 +109,7 @@ public class IssueCreate extends DialogWrapper {
 
 		new Thread(new Runnable() {
 			public void run() {
-				final List<JIRAProject> projects = jiraServer.getProjects();
+				final List<JIRAProject> projects = model.getProjects(jiraServer);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						addProjects(projects);
@@ -121,17 +122,13 @@ public class IssueCreate extends DialogWrapper {
 	private void addProjects(List<JIRAProject> projects) {
 		projectComboBox.removeAllItems();
 		for (JIRAProject project : projects) {
-			if (project.getId() != JIRAServer.ANY_ID) {
+			if (project.getId() != JIRAServerCache.ANY_ID) {
 				projectComboBox.addItem(project);
 			}
 		}
 
-		if (jiraServer.getCurrentProject() != null) {
-			projectComboBox.setSelectedItem(jiraServer.getCurrentProject());
-		} else {
-			if (projectComboBox.getModel().getSize() > 0) {
-				projectComboBox.setSelectedIndex(0);
-			}
+		if (projectComboBox.getModel().getSize() > 0) {
+			projectComboBox.setSelectedIndex(0);
 		}
 		projectComboBox.setEnabled(true);
 	}
@@ -141,7 +138,7 @@ public class IssueCreate extends DialogWrapper {
 		getOKAction().setEnabled(false);
 		new Thread(new Runnable() {
 			public void run() {
-				final List<JIRAConstant> priorities = jiraServer.getPriorieties();
+				final List<JIRAConstant> priorities = model.getPriorities(jiraServer);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						addIssuePriorieties(priorities);
@@ -154,7 +151,7 @@ public class IssueCreate extends DialogWrapper {
 	private void addIssuePriorieties(List<JIRAConstant> priorieties) {
 		priorityComboBox.removeAllItems();
 		for (JIRAConstant constant : priorieties) {
-			if (constant.getId() != JIRAServer.ANY_ID) {
+			if (constant.getId() != JIRAServerCache.ANY_ID) {
 				priorityComboBox.addItem(constant);
 			}
 		}
@@ -169,8 +166,7 @@ public class IssueCreate extends DialogWrapper {
 		getOKAction().setEnabled(false);
 		new Thread(new Runnable() {
 			public void run() {
-				jiraServer.setCurrentProject(project);
-				final List<JIRAConstant> issueTypes = jiraServer.getIssueTypes();
+				final List<JIRAConstant> issueTypes = model.getIssueTypes(jiraServer, project);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						addIssueTypes(issueTypes);
@@ -183,7 +179,7 @@ public class IssueCreate extends DialogWrapper {
 	private void addIssueTypes(List<JIRAConstant> issueTypes) {
 		typeComboBox.removeAllItems();
 		for (JIRAConstant constant : issueTypes) {
-			if (constant.getId() != JIRAServer.ANY_ID) {
+			if (constant.getId() != JIRAServerCache.ANY_ID) {
 				typeComboBox.addItem(constant);
 			}
 		}

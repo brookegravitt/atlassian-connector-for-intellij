@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
-import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.intellij.openapi.diagnostic.Logger;
@@ -157,7 +157,7 @@ public class JIRASessionImpl implements JIRASession {
 		remoteIssue.setProject(issue.getProjectKey());
 		remoteIssue.setType(String.valueOf(issue.getTypeConstant().getId()));
 		remoteIssue.setSummary(issue.getSummary());
-		if (issue.getPriorityConstant().getId() != JIRAServer.ANY_ID) {
+		if (issue.getPriorityConstant().getId() != JIRAServerCache.ANY_ID) {
 			remoteIssue.setPriority(String.valueOf(issue.getPriorityConstant().getId()));
 		}
 

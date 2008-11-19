@@ -16,7 +16,6 @@ import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServer;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
@@ -56,8 +55,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
 	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
-		//setSelectionManualFilter();
-		//setSelectionSavedFilter();
 
 	private Project project;
 	private PluginConfigurationBean pluginConfiguration;
@@ -85,12 +82,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JLabel manualFilterDetailsLabel = new JLabel();
 
 	private MessageScrollPane messagePane;
-	private JIRAIssueListModel baseIssueListModel;
-	private JIRAIssueListModel sortingIssueListModel;
 	private JIRAIssueListModel currentIssueListModel;
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
-	private final Map<JiraServerCfg, JIRAServer> jiraServerCache = new HashMap<JiraServerCfg, JIRAServer>();
+	private JIRAServerModel jiraServerModel;
 
 	private IssuesToolWindowPanel(
 			final Project project, final PluginConfigurationBean pluginConfiguration,
@@ -117,13 +112,15 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 
 		jiraFilterListModel = new JIRAFilterListModel();
-		baseIssueListModel = JIRAIssueListModelImpl.createInstance();
-		sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
+		JIRAIssueListModel baseIssueListModel = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
 
 		jiraIssueListModelBuilder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
 		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), currentIssueListModel);
+
+		jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModelImpl.class);
 
 		splitPane.setShowDividerControls(false);
 		splitPane.setFirstComponent(createFilterContent());
@@ -161,16 +158,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 							messagePane.setMessage("Server not defined", true);
 							return;
 						}
-						JIRAServer server = null;
-						synchronized (IssuesToolWindowPanel.this) {
-							server = jiraServerCache.get(srvcfg);
-						}
-						if (server == null) {
-							messagePane.setMessage("No connection", true);
-							return;
-						}
 						Map<String, String> projectMap = new HashMap<String, String>();
-						for (JIRAProject p : server.getProjects()) {
+						for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
 							projectMap.put(p.getKey(), p.getName());
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
@@ -742,7 +731,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		buttonPanel.add(editButton);
-		
+
 		manualFilterPanel.add(buttonPanel, BorderLayout.SOUTH);
 		manualFilterPanel.add(manualFilterDeatilsScrollPane, BorderLayout.CENTER);
 		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
@@ -752,39 +741,33 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 			public void actionPerformed(ActionEvent event) {
 				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
-				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraFilterListModel, jiraServer);
+				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraServerModel,
+						jiraFilterListModel, jiraServer);
 
 				if (jiraServer != null && jiraFilterListModel.getJiraSelectedManualFilter() != null) {
-					synchronized (this) {
-						if (jiraServerCache.containsKey(jiraServer)) {
-							jiraIssueFilterPanel.setJiraServer(jiraServerCache.get(jiraServer),
-									jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
-						}
-					}
-					jiraIssueFilterPanel.show();
+					jiraIssueFilterPanel.setFilter(jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
+				}
+				jiraIssueFilterPanel.show();
 
-					if (jiraIssueFilterPanel.getExitCode() == 0) {
-						JIRAManualFilter manualFilter = jiraFilterListModel.getJiraSelectedManualFilter();
-						jiraFilterListModel.clearManualFilter(jiraServer);
-						manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
-						jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
-						jiraFilterListModel.selectManualFilter(jiraServer, manualFilter);
-						showManualFilterPanel(true);
+				if (jiraIssueFilterPanel.getExitCode() == 0) {
+					JIRAManualFilter manualFilter = jiraFilterListModel.getJiraSelectedManualFilter();
+					jiraFilterListModel.clearManualFilter(jiraServer);
+					manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
+					jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
+					jiraFilterListModel.selectManualFilter(jiraServer, manualFilter);
+					showManualFilterPanel(true);
 
-						// store filter in project workspace
-						projectConfigurationBean.getJiraConfiguration()
-								.getJiraFilterConfiguaration(
-										jiraFilterListModel.getJiraSelectedServer().getServerId().toString())
-								.setManualFilterForName(
-										JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
-										serializeFilter(jiraIssueFilterPanel.getFilter()));
-					}
-					// no empty else statement (checkstyle)
+					// store filter in project workspace
+					projectConfigurationBean.getJiraConfiguration()
+							.getJiraFilterConfiguaration(
+									jiraFilterListModel.getJiraSelectedServer().getServerId().toString())
+							.setManualFilterForName(
+									JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
+									serializeFilter(jiraIssueFilterPanel.getFilter()));
 				}
 
 			}
 		});
-
 
 		return manualFilterPanel;
 
@@ -868,16 +851,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		final JiraServerCfg server = builder.getServer();
 
 		if (server != null) {
-
-			JIRAServer jiraServer;
-			synchronized (this) {
-				jiraServer = jiraServerCache.get(server);
-			}
-			if (jiraServer == null) {
-				return;
-			}
-
-			final IssueCreate issueCreate = new IssueCreate(jiraServer);
+			final IssueCreate issueCreate = new IssueCreate(jiraServerModel, server);
 
 			issueCreate.initData();
 			issueCreate.show();
@@ -925,36 +899,30 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 
 		public void run(final ProgressIndicator indicator) {
-			synchronized (IssuesToolWindowPanel.this) {
-				jiraServerCache.clear();
-			}
+			jiraServerModel.clearAll();
 			for (JiraServerCfg server : IdeaHelper.getCfgManager()
 					.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-				JIRAServer jiraServer = new JIRAServer(server, jiraServerFacade);
-				if (!jiraServer.checkServer()) {
-					setStatusMessage("Unable to connect to server. " + jiraServer.getErrorMessage(), true);
-					EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, jiraServer.getServer()));
+				if (!jiraServerModel.checkServer(server)) {
+					setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+					EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server));
 					continue;
 				}//@todo remove  saved filters download or merge with existing in listModel
 				final String serverStr = "[" + server.getName() + "] ";
 				setStatusMessage(serverStr + "Retrieving saved filters...");
-				jiraServer.getSavedFilters();
+				jiraServerModel.getSavedFilters(server);
 				setStatusMessage(serverStr + "Retrieving projects...");
-				jiraServer.getProjects();
+				jiraServerModel.getProjects(server);
 				setStatusMessage(serverStr + "Retrieving issue types...");
-				jiraServer.getIssueTypes();
+				jiraServerModel.getIssueTypes(server, null);
 				setStatusMessage(serverStr + "Retrieving statuses...");
-				jiraServer.getStatuses();
+				jiraServerModel.getStatuses(server);
 				setStatusMessage(serverStr + "Retrieving resolutions...");
-				jiraServer.getResolutions();
+				jiraServerModel.getResolutions(server);
 				setStatusMessage(serverStr + "Retrieving priorities...");
-				jiraServer.getPriorieties();
+				jiraServerModel.getPriorities(server);
 				setStatusMessage(serverStr + "Retrieving projects...");
-				jiraServer.getProjects();
+				jiraServerModel.getProjects(server);
 				setStatusMessage(serverStr + "Metadata query finished");
-				synchronized (IssuesToolWindowPanel.this) {
-					jiraServerCache.put(server, jiraServer);
-				}
 			}
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
