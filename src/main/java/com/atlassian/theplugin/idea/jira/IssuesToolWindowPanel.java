@@ -84,10 +84,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAFilterTree serversTree;
 	private JLabel manualFilterDetailsLabel = new JLabel();
 
-	public MessageScrollPane getMessagePane() {
-		return messagePane;
-	}
-
 	private MessageScrollPane messagePane;
 	private JIRAIssueListModel baseIssueListModel;
 	private JIRAIssueListModel sortingIssueListModel;
