@@ -134,7 +134,8 @@ public final class VcsIdeaHelper {
 		}
 		VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(revision);
 		if (vcsRevisionNumber == null) {
-			throw new VcsException("Cannot parse revision number [" + revision + "]");
+			throw new VcsException("Cannot parse revision number [" + revision + "] for file ["
+					+ virtualFile.getPath() + "]");
 		}
 		final VirtualFile remoteFile = getVcsVirtualFileImpl2(virtualFile, vcs, vcsRevisionNumber);
 		if (remoteFile != null) {
