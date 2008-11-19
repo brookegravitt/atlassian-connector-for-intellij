@@ -36,7 +36,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.JIRAServer;
+import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -99,7 +99,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
-	private JIRAServer currentJiraServer;
+	private JIRAServerCache currentJiraServerCache;
 
 	private PluginToolWindow toolWindow;
 
@@ -382,15 +382,15 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return projectConfigurationBean;
 	}
 
-	public JIRAServer getCurrentJiraServer() {
-		return currentJiraServer;
-	}
-
-	public void setCurrentJiraServer(JIRAServer currentJiraServer) {
-		this.currentJiraServer = currentJiraServer;
-	}
-
-
+//	public JIRAServerCache getCurrentJiraServer() {
+//		return currentJiraServer;
+//	}
+//
+//	public void setCurrentJiraServer(JIRAServerCache currentJiraServerCache) {
+//		this.currentJiraServer = currentJiraServer;
+//	}
+//
+//
 	public CrucibleStatusChecker getCrucibleStatusChecker() {
 		return crucibleStatusChecker;
 	}

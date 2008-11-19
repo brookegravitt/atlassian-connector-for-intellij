@@ -30,6 +30,7 @@ import com.atlassian.theplugin.idea.jira.editor.StackTraceConsole;
 import com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
+import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import org.picocontainer.MutablePicoContainer;
 
 public final class PicoUtil {
@@ -67,6 +68,7 @@ public final class PicoUtil {
 			ProjectConfigurationBean.class,
 			StackTraceConsole.class,
 			BambooBuildToolWindow.class,
+			JIRAServerModelImpl.class,			
 			JIRAIssueListModelBuilderImpl.class,
 			JIRAFilterListBuilder.class
 	};
