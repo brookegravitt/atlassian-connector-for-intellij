@@ -4,15 +4,12 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.*;
 
-public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueListModel /*,JIRAIssueListModelListener */ {
+public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueListModel {
 
 	private final JIRAIssueListModel parent;
-//	private List<JIRAIssueListModelListener> listeners;
 
 	public AbstractSortingJIRAIssueListModel(JIRAIssueListModel parent) {
 		this.parent = parent;
-//		listeners = new ArrayList<JIRAIssueListModelListener>();
-//		parent.addModelListener(this);
 	}
 
 	public void clear() {
@@ -40,28 +37,18 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 	}
 
 	public void notifyListenersModelChanged() {
-//		for (JIRAIssueListModelListener l : listeners) {
-//			l.modelChanged(this);
-//		}
 		parent.notifyListenersModelChanged();
 	}
 
 	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
-//		for (JIRAIssueListModelListener l : listeners) {
-//			l.issuesLoaded(this, numberOfLoadedIssues);
-//		}
 		parent.notifyListenersIssuesLoaded(numberOfLoadedIssues);
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {
-//		listeners.add(listener);
 		parent.addModelListener(listener);
 	}
 
 	public void removeModelListener(JIRAIssueListModelListener listener) {
-//		if (listeners.contains(listener)) {
-//			listeners.remove(listener);
-//		}
 		parent.removeModelListener(listener);
 	}
 
@@ -76,14 +63,5 @@ public abstract class AbstractSortingJIRAIssueListModel implements JIRAIssueList
 	public void setIssue(JIRAIssue issue) {
 		parent.setIssue(issue);
 	}
-
-//	public void modelChanged(JIRAIssueListModel model) {
-//		notifyListenersModelChanged();
-//	}
-//
-//	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-//		notifyListenersIssuesLoaded(loadedIssues);
-//	}
-
 
 }
