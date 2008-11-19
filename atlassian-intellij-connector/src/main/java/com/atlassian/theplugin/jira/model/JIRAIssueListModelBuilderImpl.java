@@ -65,7 +65,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			if (model != null) {
 				model.clear();
-				model.notifyListenersModelChanged();
+				model.fireModelChanged();
 			}
 			return;
 		}
@@ -87,8 +87,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.addIssues(l);
 		}
 		startFrom += l != null ? l.size() : 0;
-		model.notifyListenersModelChanged();
-		model.notifyListenersIssuesLoaded(l.size());
+		model.fireModelChanged();
+		model.fireIssuesLoaded(l.size());
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue) throws JIRAException {
@@ -97,7 +97,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
 		model.setIssue(updatedIssue);
-		model.notifyListenersModelChanged();
+		model.fireModelChanged();
 	}
 
 	public synchronized void reset() {
@@ -105,7 +105,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		if (size > 0) {
 			model.clear();
 			startFrom = 0;
-			model.notifyListenersModelChanged();
+			model.fireModelChanged();
 		}
 	}
 }

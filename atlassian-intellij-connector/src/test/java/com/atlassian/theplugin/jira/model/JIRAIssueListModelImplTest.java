@@ -83,17 +83,17 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		};
 
 		model.addModelListener(l);
-		model.notifyListenersModelChanged();
+		model.fireModelChanged();
 		assertTrue(listenerCalled);
-		model.notifyListenersIssuesLoaded(0);
+		model.fireIssuesLoaded(0);
 		assertTrue(listenerCalled2);
 
 		listenerCalled = false;
 		listenerCalled2 = false;
 		model.removeModelListener(l);
-		model.notifyListenersModelChanged();
+		model.fireModelChanged();
 		assertFalse(listenerCalled);
-		model.notifyListenersIssuesLoaded(0);
+		model.fireIssuesLoaded(0);
 		assertFalse(listenerCalled2);
 	}
 
@@ -112,8 +112,8 @@ public class JIRAIssueListModelImplTest extends TestCase {
 
 		// use mock
 		EasyMock.replay(l);
-		model.notifyListenersModelChanged();
-		model.notifyListenersIssuesLoaded(numberOfIssues);
+		model.fireModelChanged();
+		model.fireIssuesLoaded(numberOfIssues);
 
 		// check mock
 		EasyMock.verify(l);
@@ -126,8 +126,8 @@ public class JIRAIssueListModelImplTest extends TestCase {
 
 		// use mock
 		EasyMock.replay(l);
-		model.notifyListenersModelChanged();
-		model.notifyListenersIssuesLoaded(numberOfIssues);
+		model.fireModelChanged();
+		model.fireIssuesLoaded(numberOfIssues);
 
 		// check mock
 		EasyMock.verify(l);
