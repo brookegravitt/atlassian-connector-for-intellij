@@ -99,20 +99,39 @@ public class JIRAIssueListModelImplTest extends TestCase {
 
 	public void testListenersWithEasyMock() {
 
-		int numberOfIssues = 4;
+		final int numberOfIssues = 4;
 
+		// create and apply mock
 		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
 		JIRAIssueListModelListener l = EasyMock.createMock(JIRAIssueListModelListener.class);
 		model.addModelListener(l);
 
+		// teach mock
 		l.modelChanged(model);
 		l.issuesLoaded(model, numberOfIssues);
 
+		// use mock
 		EasyMock.replay(l);
-
 		model.notifyListenersModelChanged();
 		model.notifyListenersIssuesLoaded(numberOfIssues);
 
+		// check mock
 		EasyMock.verify(l);
+
+		// start again
+		EasyMock.reset(l);
+		model.removeModelListener(l);
+
+		// teach mock
+
+		// use mock
+		EasyMock.replay(l);
+		model.notifyListenersModelChanged();
+		model.notifyListenersIssuesLoaded(numberOfIssues);
+
+		// check mock
+		EasyMock.verify(l);
+
+
 	}
 }
