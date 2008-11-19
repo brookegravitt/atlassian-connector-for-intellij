@@ -15,9 +15,10 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import junit.framework.TestCase;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAIssueBean;
+import junit.framework.TestCase;
+import org.easymock.EasyMock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,5 +95,24 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		assertFalse(listenerCalled);
 		model.notifyListenersIssuesLoaded(0);
 		assertFalse(listenerCalled2);
+	}
+
+	public void testListenersWithEasyMock() {
+
+		int numberOfIssues = 4;
+
+		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModelListener l = EasyMock.createMock(JIRAIssueListModelListener.class);
+		model.addModelListener(l);
+
+		l.modelChanged(model);
+		l.issuesLoaded(model, numberOfIssues);
+
+		EasyMock.replay(l);
+
+		model.notifyListenersModelChanged();
+		model.notifyListenersIssuesLoaded(numberOfIssues);
+
+		EasyMock.verify(l);
 	}
 }
