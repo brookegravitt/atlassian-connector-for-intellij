@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class SearchingJIRAIssueListModel implements JIRAIssueListModel {
+public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel {
 	private final JIRAIssueListModel parent;
 
 	private String searchTerm;
 
 	public SearchingJIRAIssueListModel(JIRAIssueListModel parent) {
 		this.parent = parent;
+		parent.addModelListener(this);
 		searchTerm = "";
 	}
 
@@ -22,7 +23,7 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel {
 			return;
 		}
 		this.searchTerm = searchTerm.toLowerCase();
-		notifyListenersModelChanged();
+		fireModelChanged();
 	}
 
 	public void clear() {
@@ -51,16 +52,12 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel {
 		return list;
 	}
 
-	public void notifyListenersModelChanged() {
-		parent.notifyListenersModelChanged();
-	}
-
 	public void addModelListener(JIRAIssueListModelListener listener) {
-		parent.addModelListener(listener);
+		addListener(listener);
 	}
 
 	public void removeModelListener(JIRAIssueListModelListener listener) {
-		parent.removeModelListener(listener);
+		removeListener(listener);
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {
@@ -79,8 +76,11 @@ public class SearchingJIRAIssueListModel implements JIRAIssueListModel {
 		parent.setIssue(issue);
 	}
 
-	public void notifyListenersIssuesLoaded(int numberOfLoadedIssues) {
-		parent.notifyListenersIssuesLoaded(numberOfLoadedIssues);
+	public void fireIssuesLoaded(int numberOfLoadedIssues) {
+		issuesLoaded(this, numberOfLoadedIssues);
 	}
 
+	public void fireModelChanged() {
+		modelChanged(this);
+	}
 }

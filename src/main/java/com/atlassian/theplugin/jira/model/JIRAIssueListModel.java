@@ -9,14 +9,14 @@ public interface JIRAIssueListModel {
 	void addIssue(JIRAIssue issue);
 	void addIssues(Collection<JIRAIssue> issues);
 	Collection<JIRAIssue> getIssues();
-	void notifyListenersModelChanged();
-	void addModelListener(JIRAIssueListModelListener listener);
-	void removeModelListener(JIRAIssueListModelListener listener);
 
 	void setSeletedIssue(JIRAIssue issue);
 	JIRAIssue getSelectedIssue();
 
 	void setIssue(JIRAIssue issue);
 
-	void notifyListenersIssuesLoaded(int numberOfLoadedIssues);
+	void fireIssuesLoaded(int numberOfLoadedIssues);
+	void fireModelChanged();
+	void addModelListener(JIRAIssueListModelListener listener);
+	void removeModelListener(JIRAIssueListModelListener listener);
 }
