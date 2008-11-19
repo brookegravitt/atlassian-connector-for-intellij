@@ -15,11 +15,13 @@ import java.awt.event.ActionListener;
 
 public class GroupByAction extends AnAction implements CustomComponentAction {
 
+	private JComboBox combo;
+
 	public void actionPerformed(AnActionEvent e) {
 	}
 
 	public JComponent createCustomComponent(Presentation presentation) {
-		final JComboBox combo = new JComboBox(createModel());
+		combo = new JComboBox(createModel());
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(
@@ -34,5 +36,13 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 
 	private ComboBoxModel createModel() {
 		return new DefaultComboBoxModel(JIRAIssueGroupBy.values());
+	}
+
+	public void update(AnActionEvent event) {
+		super.update(event);
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		if (panel != null) {
+			combo.setSelectedItem(panel.getGroupBy());
+		}
 	}
 }
