@@ -51,7 +51,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter) {
 			}
 
-			public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {
+			public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {
 				setEnabled(!frozen);
 				editButton.setEnabled(!frozen);				
 			}
