@@ -109,7 +109,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
-			TestResultsToolWindow testResultsToolWindow,
+			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 			BuildChangesToolWindow buildChangesToolWindow) {
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -121,6 +121,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
+		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.buildChangesToolWindow = buildChangesToolWindow;
 		/*
 
@@ -193,7 +194,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
 			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
 					projectConfigurationBean, crucibleStatusChecker);
-			this.issuesToolWindowPanel = IssuesToolWindowPanel.getInstance(project, projectConfigurationBean, cfgManager);
+
+			issuesToolWindowPanel.refreshModels();
 
 			// create tool window on the right
 			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager);

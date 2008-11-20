@@ -34,6 +34,7 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -91,8 +92,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private JIRAServerModel jiraServerModel;
 	//private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
 
-	private IssuesToolWindowPanel(@NotNull final Project project, final PluginConfigurationBean pluginConfiguration,
-			@NotNull final ProjectConfigurationBean projectConfigurationBean, final CfgManager cfgManager) {
+	public IssuesToolWindowPanel(@NotNull final Project project, @NotNull final PluginConfigurationBean pluginConfiguration,
+			@NotNull final ProjectConfigurationBean projectConfigurationBean, @NotNull final CfgManager cfgManager) {
 		this.project = project;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
@@ -221,8 +222,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		//freezeSynchronizator = new IssueToolWindowFreezeSynchronizator(jiraFilterListModel, currentIssueListModel,
 		//		jiraServerModel);
 
-		refreshModels();
-
 
 	}
 
@@ -267,19 +266,23 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		});
 
 		issueTree.addMouseListener(new PopupAwareMouseAdapter() {
+
 			@Override
-			protected void onPopup(MouseEvent e) {
-				JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+			public void mouseClicked(final MouseEvent e) {
+				final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
 					openIssue(issue);
-				} else if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
-					int selRow = issueTree.getRowForLocation(e.getX(), e.getY());
-					TreePath selPath = issueTree.getPathForLocation(e.getX(), e.getY());
-					if (selRow != -1 && selPath != null) {
-						issueTree.setSelectionPath(selPath);
-						if (currentIssueListModel.getSelectedIssue() != null) {
-							launchContextMenu(e);
-						}
+				}
+			}
+
+			@Override
+			protected void onPopup(MouseEvent e) {
+				int selRow = issueTree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = issueTree.getPathForLocation(e.getX(), e.getY());
+				if (selRow != -1 && selPath != null) {
+					issueTree.setSelectionPath(selPath);
+					if (currentIssueListModel.getSelectedIssue() != null) {
+						launchContextMenu(e);
 					}
 				}
 			}
@@ -658,19 +661,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	}
 
 
-	public static synchronized IssuesToolWindowPanel getInstance(final Project project,
-																 final ProjectConfigurationBean projectConfigurationBean,
-																 final CfgManager cfgManager) {
-		IssuesToolWindowPanel window = project.getUserData(WINDOW_PROJECT_KEY);
-
-		if (window == null) {
-			window = new IssuesToolWindowPanel(project, IdeaHelper.getPluginConfiguration(),
-					projectConfigurationBean, cfgManager);
-			project.putUserData(WINDOW_PROJECT_KEY, window);
-		}
-		return window;
-	}
-
 	private void refreshFilterModel() {
 
 		try {
@@ -826,9 +816,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		refreshModels();
 	}
 
+	/**
+	 * Must be called from dispatch thread
+	 */
 	public void refreshModels() {
-		Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
-		ProgressManager.getInstance().run(task);
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
+				ProgressManager.getInstance().run(task);
 	}
 
 	public void projectUnregistered() {
