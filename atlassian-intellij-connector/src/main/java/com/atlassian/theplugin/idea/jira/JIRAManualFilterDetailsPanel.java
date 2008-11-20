@@ -40,7 +40,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 		this.jiraServerModel = jiraServerModel;
 		createPanelContent();
 
-		listModel.addModelListener(new JIRAFilterListModelListener(){
+		listModel.addModelListener(new JIRAFilterListModelListener() {
 
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}

@@ -53,6 +53,5 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 				}
 			}
 		}
-		;
 	}
 }
