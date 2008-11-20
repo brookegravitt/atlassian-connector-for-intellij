@@ -55,9 +55,6 @@ public final class PluginTrustManager implements X509TrustManager {
 		TrustManagerFactory factory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 		factory.init((KeyStore) null);
 		TrustManager[] trustmanagers = factory.getTrustManagers();
-		if (trustmanagers.length == 0) {
-			throw new NoSuchAlgorithmException("no trust manager found");
-		}
 
 		//looking for a X509TrustManager instance
 		for (TrustManager trustmanager : trustmanagers) {
@@ -67,6 +64,9 @@ public final class PluginTrustManager implements X509TrustManager {
 			}
 		}
 
+		if (standardTrustManager == null) {
+			throw new NoSuchAlgorithmException("cannot retrieve default trust manager found");
+		}
 	}
 
 	//checkClientTrusted
