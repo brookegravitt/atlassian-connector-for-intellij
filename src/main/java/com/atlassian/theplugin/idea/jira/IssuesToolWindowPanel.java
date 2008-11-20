@@ -15,6 +15,7 @@ import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -22,8 +23,8 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -37,6 +38,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -50,7 +53,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener {
+public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener, DataProvider {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
 	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
@@ -247,19 +250,21 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void addIssuesTreeListeners() {
 		issueTree.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyReleased(KeyEvent e) {
 				JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
-					launchOpenIsueAction();
+					openIssue(issue);
 				}
 			}
 		});
 
 		issueTree.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
-					launchOpenIsueAction();
+					openIssue(issue);
 				} else if (e.getButton() == MouseEvent.BUTTON3 && e.getClickCount() == 1) {
 					int selRow = issueTree.getRowForLocation(e.getX(), e.getY());
 					TreePath selPath = issueTree.getPathForLocation(e.getX(), e.getY());
@@ -290,6 +295,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void addIssueActionsSubmenu(DefaultActionGroup actionGroup, final ActionPopupMenu popup) {
 		final DefaultActionGroup submenu = new DefaultActionGroup("Querying for Actions... ", true) {
+			@Override
 			public void update(AnActionEvent event) {
 				super.update(event);
 
@@ -308,6 +314,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 		} else {
 			Thread t = new Thread() {
+				@Override
 				public void run() {
 					try {
 						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
@@ -343,30 +350,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		}
 	}
 
-	private void launchOpenIsueAction() {
-		AnAction action = ActionManager.getInstance().getAction("ThePlugin.JiraIssues.OpenIssue");
-		action.actionPerformed(new AnActionEvent(null, DataManager.getInstance().getDataContext(this),
-				ActionPlaces.UNKNOWN, action.getTemplatePresentation(),
-				ActionManager.getInstance(), 0));
-	}
 
-	public void openIssue(AnActionEvent event) {
-		JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+	public void openIssue(@Nullable JIRAIssue issue) {
 		if (issue != null) {
-			FileEditorManager manager =
-					FileEditorManager.getInstance(DataKeys.PROJECT.getData(event.getDataContext()));
-			VirtualFile[] files = manager.getOpenFiles();
-			VirtualFile vf = null;
-			for (VirtualFile f : files) {
-				if (f instanceof JiraIssueVirtualFile) {
-					JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) f;
-					if (jivf.getIssue().getKey().equals(issue.getKey())) {
-						vf = f;
-						break;
-					}
-				}
-			}
-
+			FileEditorManager manager = FileEditorManager.getInstance(project);
+			VirtualFile vf = findOpenJiraIssues(issue.getKey(), manager);
 			if (vf == null) {
 				vf = new JiraIssueVirtualFile(issue);
 			}
@@ -374,6 +362,80 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			manager.openFile(vf, true);
 		}
 	}
+
+	private JiraIssueVirtualFile findOpenJiraIssues(@NotNull String issueKey, @NotNull FileEditorManager manager) {
+		VirtualFile[] files = manager.getOpenFiles();
+		JiraIssueVirtualFile vf = null;
+		for (VirtualFile f : files) {
+			if (f instanceof JiraIssueVirtualFile) {
+				JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) f;
+				if (jivf.getIssue().getKey().equals(issueKey)) {
+					vf = jivf;
+					break;
+				}
+			}
+		}
+		return vf;
+	}
+
+
+	public void openIssue(final String issueKey) {
+		final FileEditorManager manager = FileEditorManager.getInstance(project);
+		JiraIssueVirtualFile vf = findOpenJiraIssues(issueKey, manager);
+
+		if (vf != null) {
+			manager.openFile(vf, true);
+		} else {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Fetching JIRA issue " + issueKey, false) {
+				private JIRAIssue issue;
+				private Throwable exception;
+
+				@Override
+				public void onSuccess() {
+					if (project.isDisposed()) {
+						return;
+					}
+					if (exception != null) {
+						final String serverName = jiraIssueListModelBuilder.getServer() != null
+								? jiraIssueListModelBuilder.getServer().getName()
+								: "[UNDEFINED!]";
+						DialogWithDetails.showExceptionDialog(project, "Cannot fetch issue " + issueKey + " from server "
+								+ serverName, exception, "Error");
+						return;
+					}
+					if (issue != null) {
+						final JiraIssueVirtualFile issueVirtualFile = new JiraIssueVirtualFile(issue);
+						manager.openFile(issueVirtualFile, true);
+					}
+				}
+
+				@Override
+				public void run(@NotNull ProgressIndicator progressIndicator) {
+					progressIndicator.setIndeterminate(true);
+					try {
+						final JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
+						if (jiraServer != null) {
+							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+							ApplicationManager.getApplication().invokeLater(new Runnable() {
+								public void run() {
+								}
+							});
+						} else {
+
+						}
+					} catch (JIRAException e) {
+						exception = e;
+					}
+				}
+			};
+			task.queue();
+		}
+
+	}
+
+
+
+
 
 	public void viewIssueInBrowser() {
 		JIRAIssue issue = currentIssueListModel.getSelectedIssue();
@@ -424,6 +486,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		Task.Backgroundable assign = new Task.Backgroundable(project, "Assigning Issue", false) {
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
@@ -473,6 +536,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		issueComment.show();
 		if (issueComment.isOK()) {
 			Task.Backgroundable comment = new Task.Backgroundable(project, "Commenting Issue", false) {
+				@Override
 				public void run(final ProgressIndicator indicator) {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
@@ -511,6 +575,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		if (workLogCreate.isOK()) {
 
 			Task.Backgroundable logWork = new Task.Backgroundable(project, "Logging Work", false) {
+				@Override
 				public void run(final ProgressIndicator indicator) {
 					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
 					try {
@@ -551,6 +616,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(project, "Starting Work on Issue", false) {
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 				setStatusMessage("Assigning issue " + issue.getKey() + " to myself...");
@@ -629,6 +695,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	private void getIssues(final boolean reload) {
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving issues", false) {
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
 					messagePane.setMessage("Loading issues...");
@@ -858,6 +925,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			if (issueCreate.isOK()) {
 
 				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
+					@Override
 					public void run(final ProgressIndicator indicator) {
 						setStatusMessage("Creating new issue...");
 						String message;
@@ -889,15 +957,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	}
 
-	public boolean haveSelectedIssue() {
-		return issueTree.getSelectionModel().getSelectionCount() > 0;
-	}
-
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
 		public MetadataFetcherBackgroundableTask() {
 			super(IssuesToolWindowPanel.this.project, "Retrieving JIRA information", false);
 		}
 
+		@Override
 		public void run(final ProgressIndicator indicator) {
 			jiraServerModel.clearAll();
 			for (JiraServerCfg server : IdeaHelper.getCfgManager()
@@ -932,4 +997,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			});
 		}
 	}
+
+	@Nullable
+	public Object getData(@NotNull final String dataId) {
+		if (dataId.equals(Constants.ISSUE)) {
+			return currentIssueListModel.getSelectedIssue();
+		}
+		return null;
+	}
+
 }
