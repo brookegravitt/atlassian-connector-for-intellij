@@ -52,7 +52,7 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedManualFilterSelected++;
 			}
 
-			public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {
+			public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {
 				//To change body of implemented methods use File | Settings | File Templates.
 			}
 		});
