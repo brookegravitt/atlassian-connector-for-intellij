@@ -68,7 +68,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 
 	public void setModelFrozen(boolean frozen) {
 		this.frozen = frozen;
-		modelFrozen(this, frozen);
+		modelFrozen(this, this.frozen);
 	}
 
 

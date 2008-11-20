@@ -11,7 +11,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public abstract class JIRAAbstractAction extends AnAction {
 	public abstract void onUpdate(AnActionEvent event);
 
-	public void onUpdate(AnActionEvent event, boolean enabled){
+	public void onUpdate(AnActionEvent event, boolean enabled) {
 
 	};
 	public final void update(AnActionEvent event) {
