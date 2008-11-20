@@ -28,5 +28,5 @@ public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
 	void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter);
 	void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter);
-	void modelFrozen(JIRAFilterListModel listModel, boolean frozen);
+	void modelFrozen(boolean frozen);
 }
