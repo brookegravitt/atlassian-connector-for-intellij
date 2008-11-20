@@ -23,7 +23,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 	}
 
 	public void onUpdate(AnActionEvent event, boolean enabled) {
-		if (enabled){
+		if (enabled) {
 			event.getPresentation().setEnabled(event.getData(Constants.ISSUE_KEY) != null);
 		}
 	}
