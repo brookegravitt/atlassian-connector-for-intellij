@@ -32,7 +32,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 			public void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter) {
 			}
 
-			public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {
+			public void modelFrozen(boolean frozen) {
 				if (issueModel != null) {
 					issueModel.setModelFrozen(frozen);
 				}
