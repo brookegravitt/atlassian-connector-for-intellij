@@ -987,7 +987,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				jiraServerModel.getPriorities(server);
 				setStatusMessage(serverStr + "Retrieving projects...");
 				jiraServerModel.getProjects(server);
-				setStatusMessage(serverStr + "Metadata query finished");
+				setStatusMessage(serverStr + "Server data query finished");
 			}
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
