@@ -62,6 +62,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	}
 
 	public synchronized void addIssuesToModel(int size, boolean reload) throws JIRAException {
+		model.setModelFrozen(true);
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			if (model != null) {
 				model.clear();
@@ -87,16 +88,21 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.addIssues(l);
 		}
 		startFrom += l != null ? l.size() : 0;
+		
+		model.setModelFrozen(false);
 		model.fireModelChanged();
 		model.fireIssuesLoaded(l.size());
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue) throws JIRAException {
+		model.setModelFrozen(true);
 		if (model == null || server == null) {
 			return;
 		}
 		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
+		model.setModelFrozen(true);
 		model.setIssue(updatedIssue);
+		model.setModelFrozen(false);
 		model.fireModelChanged();
 	}
 
@@ -107,5 +113,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			startFrom = 0;
 			model.fireModelChanged();
 		}
+	}
+
+	public boolean isModelFrozen() {
+		return model.isModelFrozen();
 	}
 }

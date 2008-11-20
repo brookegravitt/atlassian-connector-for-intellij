@@ -4,13 +4,12 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 
-public class CreateChangeListAction extends AnAction {
+public class CreateChangeListAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(anActionEvent);
@@ -20,21 +19,23 @@ public class CreateChangeListAction extends AnAction {
 		}
 	}
 
-	@Override
-	public void update(AnActionEvent anActionEvent) {
-	    super.update(anActionEvent);
+	public void onUpdate(AnActionEvent event) {
+	}
 
-		final JIRAIssue issue = anActionEvent.getData(Constants.ISSUE_KEY);
-		anActionEvent.getPresentation().setEnabled(issue != null);
+	public void onUpdate(AnActionEvent event, boolean enabled) {
+		if (enabled) {
+		final JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
+		event.getPresentation().setEnabled(issue != null);
 
 	    if (issue != null) {
 	        String changeListName = issue.getKey() + " - " + issue.getSummary();
-			final Project project = anActionEvent.getData(DataKeys.PROJECT);
+			final Project project = event.getData(DataKeys.PROJECT);
 	        if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
-	            anActionEvent.getPresentation().setText("Create ChangeList");
+	            event.getPresentation().setText("Create ChangeList");
 	        } else {
-	            anActionEvent.getPresentation().setText("Activate ChangeList");
+	            event.getPresentation().setText("Activate ChangeList");
 	        }
 	    }
+		}
 	}
 }

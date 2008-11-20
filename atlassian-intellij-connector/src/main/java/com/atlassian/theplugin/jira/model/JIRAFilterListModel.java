@@ -21,6 +21,7 @@ public class JIRAFilterListModel {
 	private JIRASavedFilter jiraSelectedSavedFilter;
 
 	private JIRAManualFilter jiraSelectedManualFilter;
+	private boolean frozen = false;
 
 	public JiraServerCfg getJiraSelectedServer() {
 		return jiraSelectedServer;
@@ -122,7 +123,8 @@ public class JIRAFilterListModel {
 		for (JIRAFilterListModelListener listener : listeners) {
 
 			listener.modelChanged(this);
-	}}
+		}
+	}
 
 	public void addModelListener(JIRAFilterListModelListener listener) {
 
@@ -137,4 +139,18 @@ public class JIRAFilterListModel {
 	public void clearAllServerFilters() {
 		serversFilters.clear();
 	}
+
+	public boolean isModelFrozen() {
+		return this.frozen;
+	}
+
+	public void setModelFrozen(boolean frozen){
+		this.frozen = frozen;
+		
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.modelFrozen(this, frozen);
+		}
+	}
+
+
 }

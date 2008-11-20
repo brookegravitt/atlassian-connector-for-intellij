@@ -4,7 +4,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
@@ -13,7 +12,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class GroupByAction extends AnAction implements CustomComponentAction {
+public class GroupByAction extends JIRAAbstractAction implements CustomComponentAction {
 
 	private JComboBox combo;
 
@@ -30,7 +29,7 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 					panel.setGroupBy((JIRAIssueGroupBy) combo.getSelectedItem());
 				}
 			}
-		});
+		});		
 		return combo;
 	}
 
@@ -38,13 +37,22 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 		return new DefaultComboBoxModel(JIRAIssueGroupBy.values());
 	}
 
-	public void update(AnActionEvent event) {
-		super.update(event);
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		if (panel != null) {
-			if (!panel.getGroupBy().equals(combo.getSelectedItem())) {
-				combo.setSelectedItem(panel.getGroupBy());
+	public void onUpdate(AnActionEvent event) {
+	}
+
+	public void onUpdate(AnActionEvent event, boolean enabled) {
+		if (combo != null) {
+			combo.setEnabled(enabled);
+		}
+		if (enabled && combo != null) {
+
+			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+			if (panel != null) {
+				if (!panel.getGroupBy().equals(combo.getSelectedItem())) {
+					combo.setSelectedItem(panel.getGroupBy());
+				}
 			}
 		}
+		;
 	}
 }

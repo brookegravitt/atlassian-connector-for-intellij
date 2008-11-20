@@ -36,7 +36,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		getSelectionModel().addTreeSelectionListener(treeSelectionListener);
 		setCellRenderer(MY_RENDERER);
 
-		reCreateTree(listModel);
+		reCreateTree(listModel);		
 
 	}
 
@@ -128,6 +128,10 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
+	}
+
+	public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {		
+			this.setEnabled(!frozen);
 	}
 
 
