@@ -130,7 +130,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
 	}
 
-	public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {		
+	public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {
 			this.setEnabled(!frozen);
 	}
 

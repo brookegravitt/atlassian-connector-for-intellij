@@ -11,7 +11,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	private Map<String, JIRAIssue> issues;
 
 	private JIRAIssue selectedIssue;
-	private boolean frozen = false;
+	private boolean modelFrozen = false;
 
 	private JIRAIssueListModelImpl() {
 		issues = new HashMap<String, JIRAIssue>();
@@ -63,16 +63,16 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public boolean isModelFrozen() {
-		return this.frozen;
+		return this.modelFrozen;
 	}
 
 	public void setModelFrozen(boolean frozen) {
-		this.frozen = frozen;
+		this.modelFrozen = frozen;
 		fireModelFrozen();
 	}
 
 	private void fireModelFrozen() {
-		modelFrozen(this, this.frozen);
+		modelFrozen(this, this.modelFrozen);
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {

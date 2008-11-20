@@ -18,7 +18,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	private JIRAServerFacade facade;
 
 	private final Map<JiraServerCfg, JIRAServerCache> serverInfoMap = new HashMap<JiraServerCfg, JIRAServerCache>();
-	private boolean frozen = false;
+	private boolean modelFrozen = false;
 
 	public JIRAServerModelImpl() {
 		facade = JIRAServerFacadeImpl.getInstance();
@@ -140,11 +140,11 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	}
 
 	public boolean isModelFrozen() {
-		return this.frozen;
+		return this.modelFrozen;
 	}
 
 	public void setModelFrozen(boolean frozen) {
-		this.frozen = frozen;
+		this.modelFrozen = frozen;
 	}
 }
 
