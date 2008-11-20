@@ -52,8 +52,8 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedManualFilterSelected++;
 			}
 
-			public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {
-				//To change body of implemented methods use File | Settings | File Templates.
+			public void modelFrozen(boolean frozen) {
+
 			}
 		});
 
@@ -122,8 +122,7 @@ public class JIRAFilterListModelTest extends TestCase {
 				assertTrue(jServer.equals(jiraServer));
 			}
 
-			public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {
-				//To change body of implemented methods use File | Settings | File Templates.
+			public void modelFrozen(boolean frozen) {				
 			}
 		});
 		fillInServerFiltersBean(serverFilter1, 3);

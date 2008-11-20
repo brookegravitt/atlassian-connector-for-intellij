@@ -71,7 +71,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		fireModelFrozen();
 	}
 
-	private void fireModelFrozen(){
+	private void fireModelFrozen() {
 		modelFrozen(this, this.modelFrozen);
 
 	}

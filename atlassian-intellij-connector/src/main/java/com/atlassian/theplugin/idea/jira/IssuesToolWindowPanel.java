@@ -197,7 +197,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 			}
 
-			public void modelFrozen(JIRAFilterListModel listModel, boolean frozen) {				
+			public void modelFrozen(boolean frozen) {				
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
