@@ -31,4 +31,7 @@ public interface JIRAServerModel {
 	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project);
 
 	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project);
+
+	boolean isModelFrozen();
+	void setModelFrozen(boolean frozen);
 }

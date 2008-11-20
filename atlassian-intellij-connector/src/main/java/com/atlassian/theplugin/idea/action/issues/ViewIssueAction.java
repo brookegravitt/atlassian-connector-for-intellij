@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class ViewIssueAction extends AnAction {
+public class ViewIssueAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
@@ -15,9 +14,13 @@ public class ViewIssueAction extends AnAction {
 		}
 	}
 
-	@Override
-	public void update(AnActionEvent e) {
-		super.update(e);
-		e.getPresentation().setEnabled(e.getData(Constants.ISSUE_KEY) != null);
+
+	public void onUpdate(AnActionEvent event) {
+	}
+
+	public void onUpdate(AnActionEvent event, boolean enabled) {
+		if (enabled){
+			event.getPresentation().setEnabled(event.getData(Constants.ISSUE_KEY) != null);
+		}
 	}
 }

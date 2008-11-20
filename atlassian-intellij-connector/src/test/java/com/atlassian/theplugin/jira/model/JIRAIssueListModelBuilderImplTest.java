@@ -113,6 +113,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 
 			}
+
+			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
 		});
 		try {
 			builder.addIssuesToModel(25, true);

@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: jgorycki
@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListener {
 	private List<JIRAIssueListModelListener> listeners = new ArrayList<JIRAIssueListModelListener>();
+	
 
 	protected void addListener(JIRAIssueListModelListener l) {
 		listeners.add(l);
@@ -28,6 +29,13 @@ public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListe
 	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 		for (JIRAIssueListModelListener l : listeners) {
 			l.issuesLoaded(model, loadedIssues);
+		}
+	}
+
+	public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+
+	for (JIRAIssueListModelListener l : listeners) {
+			l.modelFrozen(model, frozen);
 		}
 	}
 }

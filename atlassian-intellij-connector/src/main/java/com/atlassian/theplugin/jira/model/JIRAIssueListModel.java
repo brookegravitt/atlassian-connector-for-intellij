@@ -19,4 +19,7 @@ public interface JIRAIssueListModel {
 	void fireModelChanged();
 	void addModelListener(JIRAIssueListModelListener listener);
 	void removeModelListener(JIRAIssueListModelListener listener);
+
+	boolean isModelFrozen();
+	void setModelFrozen(boolean frozen);
 }

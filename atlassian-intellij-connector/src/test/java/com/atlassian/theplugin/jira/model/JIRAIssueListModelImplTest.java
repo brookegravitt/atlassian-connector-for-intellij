@@ -81,6 +81,10 @@ public class JIRAIssueListModelImplTest extends TestCase {
 					listenerCalled2 = true;
 				}
 			}
+
+			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+				//To change body of implemented methods use File | Settings | File Templates.
+			}
 		};
 
 		model.addModelListener(l);
