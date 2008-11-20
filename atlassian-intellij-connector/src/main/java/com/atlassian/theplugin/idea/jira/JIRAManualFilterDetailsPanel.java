@@ -42,8 +42,8 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 
 		listModel.addModelListener(new JIRAFilterListModelListener() {
 
-			public void modelChanged(JIRAFilterListModel listModel) {
-				JIRAManualFilterDetailsPanel.this.listModel = listModel;
+			public void modelChanged(JIRAFilterListModel aListModel) {
+				JIRAManualFilterDetailsPanel.this.listModel = aListModel;
 			}
 
 			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter) {
