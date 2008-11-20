@@ -15,13 +15,13 @@ public class IssueToolWindowFreezeSynchronizator {
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;
 
-	IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
-										final JIRAServerModel serverModel){
+	private IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
+										final JIRAServerModel serverModel) {
 		this.filterMode = filterModel;
 		this.issueModel = issueModel;
 		this.serverModel = serverModel;
 
-		filterModel.addModelListener(new JIRAFilterListModelListener(){
+		filterModel.addModelListener(new JIRAFilterListModelListener() {
 
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}
@@ -37,13 +37,13 @@ public class IssueToolWindowFreezeSynchronizator {
 					issueModel.setModelFrozen(frozen);
 				}
 
-				if (serverModel != null){
+				if (serverModel != null) {
 					serverModel.setModelFrozen(frozen);
 				}
 			}
 		});
 
-		issueModel.addModelListener(new JIRAIssueListModelListener(){
+		issueModel.addModelListener(new JIRAIssueListModelListener() {
 
 			public void modelChanged(JIRAIssueListModel model) {
 			}
@@ -52,10 +52,10 @@ public class IssueToolWindowFreezeSynchronizator {
 			}
 
 			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
-				if (filterModel != null){
+				if (filterModel != null) {
 					filterModel.setModelFrozen(frozen);
 				}
-				if (serverModel != null){
+				if (serverModel != null) {
 						serverModel.setModelFrozen(frozen);
 				}
 			}
