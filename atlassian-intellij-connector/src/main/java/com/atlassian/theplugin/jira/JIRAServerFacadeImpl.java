@@ -129,13 +129,17 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public JIRAIssue getIssueUpdate(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+		return getIssue(server, issue.getKey());
+	}
+
+	public JIRAIssue getIssue(JiraServerCfg server, String key) throws JIRAException {
 		JIRARssClient rss;
 		try {
 			rss = getRssSession(server);
 		} catch (RemoteApiException e) {
 			throw new JIRAException(e.getMessage(), e);
 		}
-		return rss.getIssue(issue.getKey());
+		return rss.getIssue(key);
 	}
 
 	public List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException {

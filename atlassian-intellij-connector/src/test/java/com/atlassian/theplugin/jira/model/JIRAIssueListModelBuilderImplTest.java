@@ -256,5 +256,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
+		public JIRAIssue getIssue(JiraServerCfg server, String key) throws JIRAException {
+			return null;
+		}
 	}
 }

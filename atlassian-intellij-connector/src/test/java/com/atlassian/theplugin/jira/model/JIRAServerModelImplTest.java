@@ -464,5 +464,9 @@ public class JIRAServerModelImplTest extends TestCase {
 		public ServerType getServerType() {
 			return null;
 		}
+
+		public JIRAIssue getIssue(JiraServerCfg server, String key) throws JIRAException {
+			return null;
+		}
 	}
 }

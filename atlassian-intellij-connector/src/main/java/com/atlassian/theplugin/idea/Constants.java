@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
 
@@ -63,6 +64,9 @@ public final class Constants {
 
 	public static final DataKey<BambooBuild> BAMBOO_BUILD_KEY = DataKey.create("atlassian.connector.bamoo.build");
 
+	public static final String ISSUE = "com.atlassian.connector.issue";
+	public static final DataKey<JIRAIssue> ISSUE_KEY = DataKey.create(ISSUE);
+	
 	private Constants() { }
 
 	public static final int DIALOG_MARGIN = 12;
