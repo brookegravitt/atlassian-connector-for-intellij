@@ -30,6 +30,7 @@ public class JIRAFilterListBuilder {
 	private final JIRAServerFacade jiraServerFacade;
 	private final CfgManager cfgManager;
 
+
 	public JIRAFilterListBuilder(@NotNull final JIRAServerFacade jiraServerFacade, @NotNull final CfgManager cfgManager) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.cfgManager = cfgManager;
@@ -55,6 +56,7 @@ public class JIRAFilterListBuilder {
 		final String filterId = projectConfigurationBean.getJiraConfiguration().getView().getViewFilterId();
 		final String filterServerId = projectConfigurationBean.getJiraConfiguration().getView().getViewServerId();
 
+		listModel.setModelFrozen(true);
 		listModel.clearAllServerFilters();
 		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 		for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
@@ -76,8 +78,10 @@ public class JIRAFilterListBuilder {
 		}
 
 		if (!e.getExceptions().isEmpty()) {
+			listModel.setModelFrozen(false);
 			throw e;
 		}
+		listModel.setModelFrozen(false);
 	}
 
 	public void addServerSavedFilter(final JiraServerCfg jiraServer, final String filterId) throws JIRAException {
@@ -132,6 +136,10 @@ public class JIRAFilterListBuilder {
 				listModel.selectManualFilter(jiraServer, jiraManualFilter);
 			}
 		}
+	}
+
+	public boolean isModelFrozen() {
+		return listModel.isModelFrozen();
 	}
 
 	public class JIRAServerFiltersBuilderException extends Exception {

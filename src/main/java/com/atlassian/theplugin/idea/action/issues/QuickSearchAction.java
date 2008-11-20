@@ -7,13 +7,12 @@ import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 
-public class QuickSearchAction extends AnAction {
+public class QuickSearchAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
         final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
@@ -42,12 +41,7 @@ public class QuickSearchAction extends AnAction {
         }
 	}
 
-	@Override
-	public void update(AnActionEvent e) {
-		super.update(e);
-		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-		boolean enabled = builder != null && builder.getServer() != null;
-		e.getPresentation().setEnabled(enabled);
+	public void onUpdate(AnActionEvent event) {		
+
 	}
 }

@@ -2,13 +2,16 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel {
 
 	private Map<String, JIRAIssue> issues;
 
 	private JIRAIssue selectedIssue;
+	private boolean frozen = false;
 
 	private JIRAIssueListModelImpl() {
 		issues = new HashMap<String, JIRAIssue>();
@@ -57,6 +60,15 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	public void removeModelListener(JIRAIssueListModelListener listener) {
 		removeListener(listener);
+	}
+
+	public boolean isModelFrozen() {
+		return this.frozen;
+	}
+
+	public void setModelFrozen(boolean frozen) {
+		this.frozen = frozen;
+		modelFrozen(this, frozen);
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {

@@ -5,10 +5,11 @@ import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -28,6 +29,25 @@ public class JIRAIssueTreeBuilder {
 		this.groupBy = groupBy;
 		this.issueModel = model;
 		lastTree = null;
+
+		issueModel.addModelListener(new JIRAIssueListModelListener()  {
+
+		public void modelChanged(JIRAIssueListModel model) {
+
+		}
+
+		public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+
+		}
+
+		public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+			if (lastTree != null) {
+				lastTree.setEnabled(!frozen);
+			}
+
+		}
+	});
+
 	}
 
 	public void setGroupBy(JIRAIssueGroupBy groupBy) {

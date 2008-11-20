@@ -11,6 +11,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 	private final JIRAIssueListModel parent;
 
 	private String searchTerm;
+	private boolean frozen = false;
 
 	public SearchingJIRAIssueListModel(JIRAIssueListModel parent) {
 		this.parent = parent;
@@ -19,6 +20,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 	}
 
 	public void setSearchTerm(@NotNull String searchTerm) {
+
 		if (this.searchTerm.equals(searchTerm)) {
 			return;
 		}
@@ -59,6 +61,16 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 	public void removeModelListener(JIRAIssueListModelListener listener) {
 		removeListener(listener);
 	}
+
+	public boolean isModelFrozen() {
+		return frozen;
+	}
+
+	public void setModelFrozen(boolean frozen) {
+		this.frozen = frozen;
+		modelFrozen(this, frozen);
+	}
+
 
 	public void setSeletedIssue(JIRAIssue issue) {
 		parent.setSeletedIssue(issue);

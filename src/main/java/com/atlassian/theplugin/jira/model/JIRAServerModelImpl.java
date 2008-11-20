@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -18,6 +18,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	private JIRAServerFacade facade;
 
 	private final Map<JiraServerCfg, JIRAServerCache> serverInfoMap = new HashMap<JiraServerCfg, JIRAServerCache>();
+	private boolean frozen = false;
 
 	public JIRAServerModelImpl() {
 		facade = JIRAServerFacadeImpl.getInstance();
@@ -136,6 +137,14 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		}
 		JIRAServerCache srv = getServer(cfg);
 		return srv.getComponents(project);
+	}
+
+	public boolean isModelFrozen() {
+		return frozen;
+	}
+
+	public void setModelFrozen(boolean frozen) {
+		this.frozen = frozen;
 	}
 }
 

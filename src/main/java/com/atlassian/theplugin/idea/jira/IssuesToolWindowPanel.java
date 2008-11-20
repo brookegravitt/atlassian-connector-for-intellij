@@ -7,7 +7,6 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
-import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -42,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
@@ -50,8 +48,10 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener, DataProvider {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
@@ -75,20 +75,21 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private Splitter splitFilterPane;
 	private JIRAIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
-	private JIRAIssueFilterPanel jiraIssueFilterPanel;
-	private JPanel manualFilterEditPanel;
+	private JIRAManualFilterDetailsPanel manualFilterEditDetailsPanel;
+
+
 	private JIRAServerFacade jiraServerFacade;
 	private SearchTextField searchField = new SearchTextField();
 
 	private JScrollPane issueTreescrollPane;
 	private JIRAFilterTree serversTree;
-	private JLabel manualFilterDetailsLabel = new JLabel();
 
 	private MessageScrollPane messagePane;
 	private JIRAIssueListModel currentIssueListModel;
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
 	private JIRAServerModel jiraServerModel;
+	//private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
 
 	private IssuesToolWindowPanel(@NotNull final Project project, final PluginConfigurationBean pluginConfiguration,
 			@NotNull final ProjectConfigurationBean projectConfigurationBean, final CfgManager cfgManager) {
@@ -176,9 +177,13 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 					messagePane.enableGetMoreIssues(false);
 				}
 			}
+
+			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+				
+			}
 		});
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-			public void modelChanged(JIRAFilterListModel listModel) {
+			public void modelChanged(JIRAFilterListModel listModel) {				
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
@@ -190,6 +195,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
 				projectConfigurationBean.getJiraConfiguration().getView()
 						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+			}
+
+			public void modelFrozen(JIRAFilterListModel jiraFilterListModel, boolean frozen) {								
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
@@ -210,8 +218,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
+		//freezeSynchronizator = new IssueToolWindowFreezeSynchronizator(jiraFilterListModel, currentIssueListModel,
+		//		jiraServerModel);
 
 		refreshModels();
+
 
 	}
 
@@ -767,7 +778,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		manualFilterEditPanel = createManualFilterEditPanel();
+		manualFilterEditDetailsPanel = new JIRAManualFilterDetailsPanel(jiraFilterListModel, projectConfigurationBean,
+																			project, jiraServerModel);
 
 		filterListScrollPane.setWheelScrollingEnabled(true);
 		splitFilterPane = new Splitter(false, 1.0f);
@@ -781,74 +793,14 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return splitFilterPane;
 	}
 
-	private JPanel createManualFilterEditPanel() {
-		JPanel manualFilterPanel = new JPanel(new BorderLayout());
-		JButton editButton = new JButton("Edit");
-
-		JScrollPane manualFilterDeatilsScrollPane = new JScrollPane(manualFilterDetailsLabel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
-		manualFilterDeatilsScrollPane.getViewport().setBackground(manualFilterDetailsLabel.getBackground());
-		manualFilterDeatilsScrollPane.setWheelScrollingEnabled(true);
-
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
-		buttonPanel.add(editButton);
-
-		manualFilterPanel.add(buttonPanel, BorderLayout.SOUTH);
-		manualFilterPanel.add(manualFilterDeatilsScrollPane, BorderLayout.CENTER);
-		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
-
-		manualFilterPanel.setBorder(border);
-		editButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(ActionEvent event) {
-				JiraServerCfg jiraServer = jiraFilterListModel.getJiraSelectedServer();
-				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraServerModel,
-						jiraFilterListModel, jiraServer);
-
-				if (jiraServer != null && jiraFilterListModel.getJiraSelectedManualFilter() != null) {
-					jiraIssueFilterPanel.setFilter(jiraFilterListModel.getJiraSelectedManualFilter().getQueryFragment());
-				}
-				jiraIssueFilterPanel.show();
-
-				if (jiraIssueFilterPanel.getExitCode() == 0) {
-					JIRAManualFilter manualFilter = jiraFilterListModel.getJiraSelectedManualFilter();
-					jiraFilterListModel.clearManualFilter(jiraServer);
-					manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
-					jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
-					jiraFilterListModel.selectManualFilter(jiraServer, manualFilter);
-					showManualFilterPanel(true);
-
-					// store filter in project workspace
-					projectConfigurationBean.getJiraConfiguration()
-							.getJiraFilterConfiguaration(
-									jiraFilterListModel.getJiraSelectedServer().getServerId().toString())
-							.setManualFilterForName(
-									JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
-									serializeFilter(jiraIssueFilterPanel.getFilter()));
-				}
-
-			}
-		});
-
-		return manualFilterPanel;
-
-	}
-
-	public List<JiraFilterEntryBean> serializeFilter(List<JIRAQueryFragment> filter) {
-		List<JiraFilterEntryBean> query = new ArrayList<JiraFilterEntryBean>();
-		for (JIRAQueryFragment jiraQueryFragment : filter) {
-			query.add(new JiraFilterEntryBean(jiraQueryFragment.getMap()));
-		}
-		return query;
-	}
-
 	private void showManualFilterPanel(boolean visible) {
 		splitFilterPane.setOrientation(true);
 
 		if (visible) {
-			manualFilterDetailsLabel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-			splitFilterPane.setSecondComponent(manualFilterEditPanel);
+			if (manualFilterEditDetailsPanel != null) {
+				manualFilterEditDetailsPanel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
+			}
+			splitFilterPane.setSecondComponent(manualFilterEditDetailsPanel);
 			splitFilterPane.setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
 		} else {
@@ -959,7 +911,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
+			jiraServerModel.setModelFrozen(true);
 			jiraServerModel.clearAll();
+
 			for (JiraServerCfg server : IdeaHelper.getCfgManager()
 					.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 				if (!jiraServerModel.checkServer(server)) {
@@ -984,6 +938,8 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				jiraServerModel.getProjects(server);
 				setStatusMessage(serverStr + "Server data query finished");
 			}
+			jiraServerModel.setModelFrozen(false);
+						
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					refreshFilterModel();

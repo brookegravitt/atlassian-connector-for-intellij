@@ -18,4 +18,6 @@ public interface JIRAIssueListModelBuilder {
 	void addIssuesToModel(int size, boolean reload) throws JIRAException;
 	void updateIssue(JIRAIssue issue) throws JIRAException;
 	void reset();
+
+	boolean isModelFrozen();
 }
