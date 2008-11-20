@@ -147,6 +147,10 @@ public class JIRAFilterListModel {
 	public void setModelFrozen(boolean frozen) {
 		this.frozen = frozen;
 		
+		fireModelFrozen();
+	}
+
+	private void fireModelFrozen() {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.modelFrozen(this, this.frozen);
 		}
