@@ -4,13 +4,12 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 
 import java.awt.datatransfer.StringSelection;
 
-public abstract class AbstractIssueClipboardAction extends AnAction {
+public abstract class AbstractIssueClipboardAction extends JIRAAbstractAction {
 	public void actionPerformed(final AnActionEvent event) {
 		JIRAIssue issue = getJIRAIssue(event);
 		if (issue != null) {
@@ -18,7 +17,7 @@ public abstract class AbstractIssueClipboardAction extends AnAction {
 		}
 	}
 
-	public void update(final AnActionEvent event) {
+	public void onUpdate(AnActionEvent event) {
 		JIRAIssue issue = getJIRAIssue(event);
 		if (issue != null) {
 			event.getPresentation().setText(getCliboardText(issue));
