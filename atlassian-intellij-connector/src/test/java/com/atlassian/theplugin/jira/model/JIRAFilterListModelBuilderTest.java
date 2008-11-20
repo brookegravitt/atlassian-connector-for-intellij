@@ -173,7 +173,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
 		public JIRAIssue getIssueUpdate(final JiraServerCfg server, final JIRAIssue issue) throws JIRAException {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			return null;
+		}
+
+		public JIRAIssue getIssue(JiraServerCfg server, String key) throws JIRAException {
+			return null;
 		}
 
 		public JIRAIssue getIssueDetails(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
