@@ -19,9 +19,9 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
-import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -79,6 +79,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private JIRAProject currentJiraProject;
 	private JiraServerCfg jiraServerCfg;
 	private FilterActionClear clearFilterAction = new FilterActionClear();
+	private List<JIRAQueryFragment> initialFilter;
 
 	public JIRAIssueFilterPanel(
 			final Project project,
@@ -134,15 +135,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 							refreshGlobalIssueTypeList();
 							break;
 					}
-
 				}
 			}
 		});
 	}
-
-//	public void setProgressAnimation(ProgressAnimationProvider progressAnimation) {
-//		this.panel = progressAnimation;
-//	}
 
 	@Override
 	protected Action[] createActions() {
@@ -405,23 +401,18 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	}
 
 	private void refreshGlobalIssueTypeList() {
-		if (initialFilterSet) {
-			issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, null).toArray());
-		} else {
-			Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
-				@Override
-				public void run(final ProgressIndicator indicator) {
-					enableFields(false);
-					issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, null).toArray());
-					enableFields(true);
-				}
-			};
-
-			ProgressManager.getInstance().run(refresh);
-		}
+		enableFields(false);
+		Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
+			@Override
+			public void run(final ProgressIndicator indicator) {
+				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, null).toArray());
+				enableFields(true);
+			}
+		};
+		ProgressManager.getInstance().run(refresh);
 	}
 
-	private void enableFields(boolean enable) {
+	private void enableFields(final boolean enable) {
 		projectList.setEnabled(enable);
 		issueTypeList.setEnabled(enable);
 		fixForList.setEnabled(enable);
@@ -434,8 +425,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		prioritiesList.setEnabled(enable);
 		getOKAction().setEnabled(enable);
 		getCancelAction().setEnabled(enable);
-		this.clearFilterAction.setEnabled(enable);
-
+		clearFilterAction.setEnabled(enable);
 	}
 
 	private void refreshProjectDependentLists() {
@@ -443,19 +433,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			if (currentJiraProject.getId() == JIRAServerCache.ANY_ID) {
 				clearProjectDependentLists();
 			} else {
-				if (initialFilterSet) {
-					setProjectDependendListValues();
-				} else {
-					Task.Backgroundable refresh =
-							new Task.Backgroundable(project, "Retrieving JIRA Project Dependent List", false) {
-								@Override
-								public void run(final ProgressIndicator indicator) {
-									setProjectDependendListValues();
-								}
-							};
-
-					ProgressManager.getInstance().run(refresh);
-				}
+				setProjectDependendListValues();
 			}
 		} else {
 			clearProjectDependentLists();
@@ -464,29 +442,41 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	private void setProjectDependendListValues() {
 		enableFields(false);
-		issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
-		fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
-		componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
-		affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
-		enableProjectDependentLists(true);
-		enableFields(true);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				Task.Backgroundable tb = new Task.Backgroundable(project, "Setting project-dependent values", false) {
+					public void run(ProgressIndicator indicator) {
+						issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
+						fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
+						componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
+						affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
+						enableProjectDependentLists(true);
+						enableFields(true);
+					}
+				};
+				ProgressManager.getInstance().run(tb);
+			}
+		});
 	}
 
 	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
+		initialFilter = advancedQuery;
+		initialFilterSet = true;
 
-		Task.Backgroundable setServer = new Task.Backgroundable(project, "Setting JIRA Server", false) {
-			@Override
-			public void run(final ProgressIndicator indicator) {
-				projectList.addListSelectionListener(null);
-				initialFilterSet = true;
-				//progressAnimation.startProgressAnimation();
-				enableFields(false);
+	}
 
+	public void show() {
+		projectList.addListSelectionListener(null);
+		enableFields(false);
+
+		Task.Backgroundable tb = new Task.Backgroundable(project, "Querying for JIRA data", false) {
+			public void run(ProgressIndicator indicator) {
 				projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
-				setListValues(projectList, advancedQuery);
+				setListValues(projectList, initialFilter);
 				if ((projectList.getSelectedValues().length > 0) && projectList.getSelectedValues()[0] != null) {
 					currentJiraProject = (JIRAProject) projectList.getSelectedValues()[0];
 				}
+
 				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
 				statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
 				prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
@@ -504,31 +494,36 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
 				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						setListValues(statusList, initialFilter);
+						setListValues(prioritiesList, initialFilter);
+						setListValues(resolutionsList, initialFilter);
+						setListValues(issueTypeList, initialFilter);
+						setListValues(componentsList, initialFilter);
+						setListValues(fixForList, initialFilter);
+						setListValues(affectsVersionsList, initialFilter);
+						setComboValue(assigneeComboBox, initialFilter);
+						setComboValue(reporterComboBox, initialFilter);
+					}
+				});
 
-				setListValues(statusList, advancedQuery);
-				setListValues(prioritiesList, advancedQuery);
-				setListValues(resolutionsList, advancedQuery);
-				setListValues(issueTypeList, advancedQuery);
-				setListValues(componentsList, advancedQuery);
-				setListValues(fixForList, advancedQuery);
-				setListValues(affectsVersionsList, advancedQuery);
-				setComboValue(assigneeComboBox, advancedQuery);
-				setComboValue(reporterComboBox, advancedQuery);
-
-				//progressAnimation.stopProgressAnimation();
-
-				addProjectActionListener();
 				enableFields(true);
-				//initialFilterSet = false;
-
 			}
 		};
 
-		ProgressManager.getInstance().run(setServer);
+		addProjectActionListener();
 
+		ProgressManager.getInstance().run(tb);
+
+		super.show();
 	}
 
 	public void setListValues(JList list, List<JIRAQueryFragment> advancedQuery) {
+		if (advancedQuery == null) {
+			return;
+		}
+
 		List<Integer> selection = new ArrayList<Integer>();
 		for (int i = 0, size = list.getModel().getSize(); i < size; ++i) {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {

@@ -24,8 +24,17 @@ import java.util.Map;
 
 public final class CachedIconLoader {
 	private static Map<String, Icon> icons = new HashMap<String, Icon>();
+	private static Map<String, Icon> disabledIcons = new HashMap<String, Icon>();
 
 	private CachedIconLoader() {
+	}
+
+	public static Icon getDisabledIcon(String urlString) {
+		return disabledIcons.get(urlString);
+	}
+
+	public static void addDisabledIcon(String urlString, Icon icon) {
+		disabledIcons.put(urlString, icon);		
 	}
 
 	public static Icon getIcon(URL url) {
