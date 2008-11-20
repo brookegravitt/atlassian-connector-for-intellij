@@ -7,6 +7,7 @@ import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -16,6 +17,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 
 	private JComboBox combo;
 
+	@Override
 	public void actionPerformed(AnActionEvent e) {
 	}
 
@@ -23,10 +25,12 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 		combo = new JComboBox(createModel());
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(
-						IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext()));
-				if (panel != null) {
-					panel.setGroupBy((JIRAIssueGroupBy) combo.getSelectedItem());
+				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
+				if (currentProject != null) {
+					IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					if (panel != null) {
+						panel.setGroupBy((JIRAIssueGroupBy) combo.getSelectedItem());
+					}
 				}
 			}
 		});		
@@ -37,9 +41,11 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 		return new DefaultComboBoxModel(JIRAIssueGroupBy.values());
 	}
 
+	@Override
 	public void onUpdate(AnActionEvent event) {
 	}
 
+	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
 		if (combo != null) {
 			combo.setEnabled(enabled);
