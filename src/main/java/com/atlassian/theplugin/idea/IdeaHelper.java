@@ -35,6 +35,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -71,29 +72,17 @@ public final class IdeaHelper {
 		return getAppComponent().getState();
 	}
 
+	@Nullable
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
-		Project p = getCurrentProject(event);
-		if (p == null) {
-			return null;
-		}
-		return getIssuesToolWindowPanel(p);
+		return getProjectComponent(event, IssuesToolWindowPanel.class);
 	}
 
-	public static IssuesToolWindowPanel getIssuesToolWindowPanel(Project p) {
-		if (p == null) {
-			return null;
-		}
-
-		com.intellij.openapi.wm.ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.ISSUES.toString());
-        if (content == null) {
-            return null;
-        }
-        return (IssuesToolWindowPanel) content.getComponent();
+	public static IssuesToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
+		return getProjectComponent(project, IssuesToolWindowPanel.class);
 	}
 
 
-	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+ 	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event);
 		if (p == null) {
 			return null;
