@@ -68,6 +68,10 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	public void setModelFrozen(boolean frozen) {
 		this.frozen = frozen;
+		fireModelFrozen();
+	}
+
+	private void fireModelFrozen(){
 		modelFrozen(this, this.frozen);
 	}
 

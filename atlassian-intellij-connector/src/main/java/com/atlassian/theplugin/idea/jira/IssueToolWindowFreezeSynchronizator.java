@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * User: pmaruszak
  */
-public class IssueToolWindowFreezeSynchronizator {
+public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAFilterListModel filterMode;
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;

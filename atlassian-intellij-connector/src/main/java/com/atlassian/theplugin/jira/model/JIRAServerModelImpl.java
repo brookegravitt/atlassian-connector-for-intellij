@@ -140,7 +140,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	}
 
 	public boolean isModelFrozen() {
-		return frozen;
+		return this.frozen;
 	}
 
 	public void setModelFrozen(boolean frozen) {
