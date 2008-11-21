@@ -342,7 +342,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 					int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
 							+ "usage statistics to help us provide a better quality product. Is this ok?",
 							PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
-					pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+					pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(
+							answer == DialogWrapper.OK_EXIT_CODE);
 				}
 			}
 		}, ModalityState.defaultModalityState());
