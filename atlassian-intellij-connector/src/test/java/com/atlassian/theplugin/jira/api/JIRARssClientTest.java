@@ -17,10 +17,17 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import junit.framework.TestCase;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.xml.sax.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JIRARssClientTest extends TestCase
 {
@@ -47,7 +54,38 @@ public class JIRARssClientTest extends TestCase
 */        
     }
 
-    // make a simple mock rss client that overrides URL loading with loading from a file
+	// for testing PL-863
+	public void testBugPl863() throws Exception {
+		JIRARssClient c = new JIRARssClient("file://test") {
+			protected Document retrieveGetResponse(String urlString)
+					throws IOException, JDOMException, RemoteApiSessionExpiredException {
+				SAXBuilder builder = new SAXBuilder();
+				builder.setErrorHandler(new ErrorHandler() {
+					public void warning(SAXParseException exception) throws SAXException {
+						System.out.println(exception.getMessage());
+					}
+
+					public void error(SAXParseException exception) throws SAXException {
+						System.out.println(exception.getMessage());
+					}
+
+					public void fatalError(SAXParseException exception) throws SAXException {
+						System.out.println(exception.getMessage());
+					}
+				});
+				InputStream is = JIRARssClientTest.class.getResourceAsStream("/jira/api/PL-863.xml");
+				Document doc = builder.build(is);
+				preprocessResult(doc);
+				return doc;
+			}
+		};
+		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
+		l. add(new JIRAProjectBean());
+
+		c.getIssues(l, "ASC", "prio", 0, 1);
+	}
+
+	// make a simple mock rss client that overrides URL loading with loading from a file
     private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file) throws RemoteApiMalformedUrlException {
         return new JIRARssClient(url, userName, password) {
             // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
