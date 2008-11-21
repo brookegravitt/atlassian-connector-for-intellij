@@ -32,11 +32,6 @@ public class JIRAConstantListRenderer extends DefaultListCellRenderer {
 		comp.setIcon(icon);
 		if (c.getIconUrl() != null) {
 			Icon disabledIcon = CachedIconLoader.getDisabledIcon(c.getIconUrl().toString());
-			if (disabledIcon == null) {
-				comp.setDisabledIcon(null);
-				disabledIcon = comp.getDisabledIcon();
-				CachedIconLoader.addDisabledIcon(c.getIconUrl().toString(), disabledIcon);
-			}
 			comp.setDisabledIcon(disabledIcon);
 		} else {
 			comp.setDisabledIcon(null);

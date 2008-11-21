@@ -33,15 +33,28 @@ public final class CachedIconLoader {
 		return disabledIcons.get(urlString);
 	}
 
-	public static void addDisabledIcon(String urlString, Icon icon) {
+	private static void addDisabledIcon(String urlString, Icon icon) {
 		disabledIcons.put(urlString, icon);		
+	}
+
+	private static Icon generateDisabledIcon(Icon icon) {
+		return new ImageIcon(GrayFilter.createDisabledImage(((ImageIcon) icon).getImage()));
+	}
+
+	private static void maybeGenerateDisabledIcon(String urlString, Icon icon) {
+		if (disabledIcons.containsKey(urlString) || icon == null) {
+			return;
+		}
+		addDisabledIcon(urlString, generateDisabledIcon(icon));
 	}
 
 	public static Icon getIcon(URL url) {
 		if (url != null) {
 			String key = url.toString();
 			if (!icons.containsKey(key)) {
-				icons.put(key, new ImageIcon(url));
+				Icon i = new ImageIcon(url);
+				icons.put(key, i);
+				maybeGenerateDisabledIcon(key, i);
 			}
 			return icons.get(key);
 		} else {
@@ -54,7 +67,9 @@ public final class CachedIconLoader {
 			if (!icons.containsKey(urlString)) {
 				try {
 					URL url = new URL(urlString);
-					icons.put(urlString, new ImageIcon(url));
+					Icon i = new ImageIcon(url);
+					icons.put(urlString, i);
+					maybeGenerateDisabledIcon(urlString, i);
 				} catch (MalformedURLException e1) {
 					return null;
 				}
