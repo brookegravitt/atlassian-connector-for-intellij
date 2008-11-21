@@ -106,7 +106,7 @@ public class RunIssueActionAction extends AnAction {
 								"Action \""
 										+ action.getName()
 										+ "\" on issue "
-										+ issue
+										+ issue.getKey()
 										+ " is interactive, launching browser");
 						launchBrowser();
 					}
