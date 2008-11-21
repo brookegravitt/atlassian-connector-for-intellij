@@ -394,6 +394,12 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 		if (vf != null) {
 			manager.openFile(vf, true);
+			try {
+				jiraIssueListModelBuilder.updateIssue(vf.getIssue());
+			} catch (JIRAException e) {
+				DialogWithDetails.showExceptionDialog(project, "Cannot open JIRA issue in internal editor ["
+						+ issueKey + "]", e, "Error");
+			}
 		} else {
 			Task.Backgroundable task = new Task.Backgroundable(project, "Fetching JIRA issue " + issueKey, false) {
 				private JIRAIssue issue;
@@ -425,6 +431,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						final JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+							jiraIssueListModelBuilder.updateIssue(issue);
 						} else {
 							exception = new RuntimeException("No JIRA server defined!");
 						}

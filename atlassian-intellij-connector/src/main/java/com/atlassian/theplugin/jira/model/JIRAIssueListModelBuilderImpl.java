@@ -91,7 +91,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		
 		model.setModelFrozen(false);
 		model.fireModelChanged();
-		model.fireIssuesLoaded(l.size());
+		model.fireIssuesLoaded(l != null ? l.size() : 0);
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue) throws JIRAException {

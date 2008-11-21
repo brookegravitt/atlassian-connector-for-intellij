@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class JIRAConstantListRenderer extends DefaultListCellRenderer {
+	@Override
 	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
 		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, o, i, b, b1);
 		JIRAConstant c = (JIRAConstant) o;
