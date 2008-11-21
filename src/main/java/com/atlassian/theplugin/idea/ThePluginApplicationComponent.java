@@ -63,6 +63,7 @@ public class ThePluginApplicationComponent
 	private ConfigPanel configPanel;
 	private final PluginConfigurationBean configuration;
 	private final CfgManager cfgManager;
+	private final NewVersionChecker newVersionChecker;
 
 	private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
 	private static final int TIMER_START_DELAY = 20000;
@@ -80,6 +81,7 @@ public class ThePluginApplicationComponent
 			final NewVersionChecker newVersionChecker) {
 		this.configuration = configuration;
 		this.cfgManager = cfgManager;
+		this.newVersionChecker = newVersionChecker;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 
 		this.schedulableCheckers.add(newVersionChecker);
@@ -121,7 +123,7 @@ public class ThePluginApplicationComponent
 
 	public JComponent createComponent() {
 		if (configPanel == null) {
-			configPanel = new ConfigPanel(configuration, cfgManager);
+			configPanel = new ConfigPanel(configuration, cfgManager, newVersionChecker);
 		}
 		return configPanel;
 	}

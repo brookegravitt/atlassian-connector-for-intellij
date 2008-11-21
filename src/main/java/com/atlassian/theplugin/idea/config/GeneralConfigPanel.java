@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.GeneralConfigForm;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 
@@ -32,22 +33,13 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 	private PluginConfiguration localPluginConfigurationCopy;
 
 	private final PluginConfiguration globalPluginConfiguration;
-	private static GeneralConfigPanel instance;
 
-	private GeneralConfigPanel(PluginConfiguration globalPluginConfiguration) {
+	public GeneralConfigPanel(PluginConfiguration globalPluginConfiguration, final NewVersionChecker newVersionChecker) {
 		this.globalPluginConfiguration = globalPluginConfiguration;
 		localPluginConfigurationCopy = this.globalPluginConfiguration;
 		setLayout(new CardLayout());
-		dialog = new GeneralConfigForm(NewVersionChecker.getInstance());
+		dialog = new GeneralConfigForm(newVersionChecker);
 		add(dialog.getRootPane(), "GeneralConfig");
-	}
-
-	public static GeneralConfigPanel getInstance(PluginConfiguration globalPluginConfiguration) {
-		if (instance == null) {
-			instance = new GeneralConfigPanel(globalPluginConfiguration);
-		}
-		
-		return instance;
 	}
 
 	public boolean isModified() {
@@ -56,8 +48,8 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 					!= globalPluginConfiguration.getGeneralConfigurationData().isAutoUpdateEnabled()
 				|| dialog.getIsCheckUnstableVersionsEnabled()
 					!= globalPluginConfiguration.getGeneralConfigurationData().isCheckUnstableVersionsEnabled()
-				|| dialog.getIsAnonymousFeedbackEnabled()
-					!= globalPluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled()
+				|| MiscUtil.isModified(dialog.getIsAnonymousFeedbackEnabled(),
+					globalPluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled())
 				|| dialog.getUseIdeaProxySettings()
 					!= globalPluginConfiguration.getGeneralConfigurationData().getUseIdeaProxySettings();
 

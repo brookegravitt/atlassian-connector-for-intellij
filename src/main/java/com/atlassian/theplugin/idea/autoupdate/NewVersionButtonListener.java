@@ -35,6 +35,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Lukasz Guminski
  */
@@ -63,7 +65,7 @@ public class NewVersionButtonListener implements ActionListener {
 		}
 
 		public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-            NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
+			generalConfigForm.getNewVersionChecker().doRun(new UpdateActionHandler() {
                 public void doAction(InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
                     newVersion = versionInfo;
                 }
@@ -83,7 +85,7 @@ public class NewVersionButtonListener implements ActionListener {
 		}
 
         @Override
-		public void run(ProgressIndicator indicator) {
+		public void run(@NotNull ProgressIndicator indicator) {
             newVersion = null;
             setCancelText("Stop");
             indicator.setText("Connecting...");
