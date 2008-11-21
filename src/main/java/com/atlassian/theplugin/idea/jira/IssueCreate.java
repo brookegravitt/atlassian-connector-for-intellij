@@ -60,6 +60,7 @@ public class IssueCreate extends DialogWrapper {
 		setTitle("Create JIRA Issue");
 
 		projectComboBox.setRenderer(new ColoredListCellRenderer() {
+			@Override
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
 				if (value != null) {
 					append(((JIRAProject) value).getName(), SimpleTextAttributes.SIMPLE_CELL_ATTRIBUTES);
@@ -68,6 +69,7 @@ public class IssueCreate extends DialogWrapper {
 		});
 
 		typeComboBox.setRenderer(new ColoredListCellRenderer() {
+			@Override
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
 				if (value != null) {
 					JIRAConstant type = (JIRAConstant) value;
@@ -79,6 +81,7 @@ public class IssueCreate extends DialogWrapper {
 		typeComboBox.setEnabled(false);
 
 		priorityComboBox.setRenderer(new ColoredListCellRenderer() {
+			@Override
 			protected void customizeCellRenderer(JList list, Object value, int index, boolean selected, boolean hasFocus) {
 				if (value != null) {
 					JIRAConstant priority = (JIRAConstant) value;
@@ -193,6 +196,7 @@ public class IssueCreate extends DialogWrapper {
 		return issueProxy;
 	}
 
+	@Override
 	protected void doOKAction() {
 		issueProxy = new JIRAIssueBean();
 		issueProxy.setSummary(summary.getText());
@@ -216,10 +220,12 @@ public class IssueCreate extends DialogWrapper {
 		super.doOKAction();
 	}
 
+	@Override
 	public JComponent getPreferredFocusedComponent() {
 		return summary;
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return mainPanel;
