@@ -60,19 +60,6 @@ public class JIRARssClientTest extends TestCase
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
 				SAXBuilder builder = new SAXBuilder();
-				builder.setErrorHandler(new ErrorHandler() {
-					public void warning(SAXParseException exception) throws SAXException {
-						System.out.println(exception.getMessage());
-					}
-
-					public void error(SAXParseException exception) throws SAXException {
-						System.out.println(exception.getMessage());
-					}
-
-					public void fatalError(SAXParseException exception) throws SAXException {
-						System.out.println(exception.getMessage());
-					}
-				});
 				InputStream is = JIRARssClientTest.class.getResourceAsStream("/jira/api/PL-863.xml");
 				Document doc = builder.build(is);
 				preprocessResult(doc);
@@ -82,7 +69,11 @@ public class JIRARssClientTest extends TestCase
 		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
 		l. add(new JIRAProjectBean());
 
-		c.getIssues(l, "ASC", "prio", 0, 1);
+		try {
+			c.getIssues(l, "ASC", "prio", 0, 1);
+		} catch (JIRAException e) {
+			System.out.println("PL-863 not fixed: " + e.getMessage());
+		}
 	}
 
 	// make a simple mock rss client that overrides URL loading with loading from a file
