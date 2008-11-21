@@ -32,6 +32,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.jetbrains.annotations.Nullable;
+
 public class GeneralConfigForm {
 	private JCheckBox chkAutoUpdateEnabled;
 	private JPanel mainPanel;
@@ -46,6 +48,7 @@ public class GeneralConfigForm {
 	private JRadioButton chkNoProxy;
 	private JRadioButton chkUseIdeaProxy;
 	private Boolean isAnonymousFeedbackEnabled;
+	private final NewVersionChecker newVersionChecker;
 
 	public JRadioButton getCheckNewVersionStable() {
 		return checkNewVersionStable;
@@ -56,6 +59,7 @@ public class GeneralConfigForm {
 	}
 
 	public GeneralConfigForm(NewVersionChecker checker) {
+		newVersionChecker = checker;
 
 		checkNowButton.addActionListener(new NewVersionButtonListener(this));
 		chkAutoUpdateEnabled.addActionListener(new ActionListener() {
@@ -110,7 +114,8 @@ public class GeneralConfigForm {
 		chkUnstableVersionsCheckBox.setSelected(isCheckUnstableVersionsEnabled);
 	}
 
-	public boolean getIsAnonymousFeedbackEnabled() {
+	@Nullable
+	public Boolean getIsAnonymousFeedbackEnabled() {
 		return this.isAnonymousFeedbackEnabled;
 	}
 
@@ -244,6 +249,10 @@ public class GeneralConfigForm {
 	 */
 	public JComponent $$$getRootComponent$$$() {
 		return mainPanel;
+	}
+
+	public NewVersionChecker getNewVersionChecker() {
+		return newVersionChecker;
 	}
 }
 

@@ -52,6 +52,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
@@ -334,12 +336,16 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	private void askForUserStatistics() {
-		if (pluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
-			int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
-					+ "usage statistics to help us provide a better quality product. Is this ok?",
-					PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
-			pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
-		}
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				if (pluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
+					int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
+							+ "usage statistics to help us provide a better quality product. Is this ok?",
+							PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
+					pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(answer == DialogWrapper.OK_EXIT_CODE);
+				}
+			}
+		}, ModalityState.defaultModalityState());
 	}
 
 	public void projectClosed() {
