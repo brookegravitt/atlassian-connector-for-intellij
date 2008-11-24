@@ -28,8 +28,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		int x = 0;
 		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon
-		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, " +
-				"left:pref, left:pref, left:pref, 10dlu", "pref:grow"));
+		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, "
+				+ "left:pref, left:pref, left:pref, 10dlu", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();

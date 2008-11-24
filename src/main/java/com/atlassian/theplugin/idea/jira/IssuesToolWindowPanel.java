@@ -28,7 +28,6 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -953,9 +952,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 					jiraServerModel.getProjects(server);
 					setStatusMessage(serverStr + "Server data query finished");
 				}
-			}
-
-			finally {
+			} finally {
 				jiraServerModel.setModelFrozen(false);
 			}
 
