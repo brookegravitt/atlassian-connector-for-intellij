@@ -52,7 +52,6 @@ import java.util.List;
 import java.util.Map;
 
 public final class IssuesToolWindowPanel extends JPanel implements DataProvider {
-	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
 	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
@@ -71,7 +70,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private Splitter splitFilterPane;
-	private JIRAIssueGroupBy groupBy;
+	private JiraIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 	private JIRAManualFilterDetailsPanel manualFilterEditDetailsPanel;
 
@@ -109,7 +108,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 				&& projectConfigurationBean.getJiraConfiguration().getView().getGroupBy() != null) {
 			groupBy = projectConfigurationBean.getJiraConfiguration().getView().getGroupBy();
 		} else {
-			groupBy = JIRAIssueGroupBy.TYPE;
+			groupBy = JiraIssueGroupBy.TYPE;
 		}
 		jiraFilterListModel = new JIRAFilterListModel();
 		JIRAIssueListModel baseIssueListModel = JIRAIssueListModelImpl.createInstance();
@@ -853,11 +852,11 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		messagePane.setMessage(msg, isError);
 	}
 
-	public JIRAIssueGroupBy getGroupBy() {
+	public JiraIssueGroupBy getGroupBy() {
 		return groupBy;
 	}
 
-	public void setGroupBy(JIRAIssueGroupBy groupBy) {
+	public void setGroupBy(JiraIssueGroupBy groupBy) {
 		this.groupBy = groupBy;
 		issueTreeBuilder.setGroupBy(groupBy);
 		issueTreeBuilder.rebuild(issueTree, issuesPanel);
@@ -876,11 +875,11 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		final JiraServerCfg server = builder.getServer();
 
 		if (server != null) {
-			final IssueCreate issueCreate = new IssueCreate(jiraServerModel, server);
+			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server);
 
-			issueCreate.initData();
-			issueCreate.show();
-			if (issueCreate.isOK()) {
+			issueCreateDialog.initData();
+			issueCreateDialog.show();
+			if (issueCreateDialog.isOK()) {
 
 				Task.Backgroundable createTask = new Task.Backgroundable(project, "Creating Issue", false) {
 					@Override
@@ -889,7 +888,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 						String message;
 						boolean isError = false;
 						try {
-							JIRAIssue issueToCreate = issueCreate.getJIRAIssue();
+							JIRAIssue issueToCreate = issueCreateDialog.getJIRAIssue();
 							JIRAIssue createdIssue = jiraServerFacade.createIssue(server, issueToCreate);
 
 							message = "New issue created: <a href="

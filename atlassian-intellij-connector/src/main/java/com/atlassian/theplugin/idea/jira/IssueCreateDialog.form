@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.jira.IssueCreate">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.atlassian.theplugin.idea.jira.IssueCreateDialog">
   <grid id="34a00" binding="mainPanel" layout-manager="GridLayoutManager" row-count="7" column-count="6" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="5" left="5" bottom="5" right="5"/>
     <constraints>

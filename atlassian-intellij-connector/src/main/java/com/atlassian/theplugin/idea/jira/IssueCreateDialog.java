@@ -38,7 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-public class IssueCreate extends DialogWrapper {
+public class IssueCreateDialog extends DialogWrapper {
 	private JPanel mainPanel;
 	private JTextArea description;
 	private JComboBox projectComboBox;
@@ -49,7 +49,7 @@ public class IssueCreate extends DialogWrapper {
 	private final JiraServerCfg jiraServer;
 	private final JIRAServerModel model;
 
-	public IssueCreate(JIRAServerModel model, JiraServerCfg server) {
+	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server) {
 		super(false);
 		this.model = model;
 		$$$setupUI$$$();
