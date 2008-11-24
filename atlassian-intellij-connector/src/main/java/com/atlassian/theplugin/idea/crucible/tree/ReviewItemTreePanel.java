@@ -16,8 +16,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
  */
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -389,6 +389,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			}
 		}
 		return null;
+
 	}
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {

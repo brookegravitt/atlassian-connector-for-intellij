@@ -65,4 +65,20 @@ public abstract class AbstractSortingJIRAIssueListModel
 	public void fireIssuesLoaded(int numberOfLoadedIssues) {
 		issuesLoaded(this, numberOfLoadedIssues);
 	}
+
+	public boolean isModelFrozen() {
+		return parent.isModelFrozen();
+	}
+
+	public void setModelFrozen(boolean frozen) {
+		parent.setModelFrozen(frozen);
+	}
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		parent.addFrozenModelListener(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		parent.removeFrozenModelListener(listener);
+	}
 }

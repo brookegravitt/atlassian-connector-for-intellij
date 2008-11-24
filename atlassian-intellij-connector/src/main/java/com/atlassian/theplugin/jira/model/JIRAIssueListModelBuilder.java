@@ -8,7 +8,7 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
 import java.util.List;
 
-public interface JIRAIssueListModelBuilder {
+public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void setModel(JIRAIssueListModel model);
 	JIRAIssueListModel getModel();
 	void setServer(JiraServerCfg server);
@@ -19,5 +19,5 @@ public interface JIRAIssueListModelBuilder {
 	void updateIssue(JIRAIssue issue) throws JIRAException;
 	void reset();
 
-	boolean isModelFrozen();
+
 }

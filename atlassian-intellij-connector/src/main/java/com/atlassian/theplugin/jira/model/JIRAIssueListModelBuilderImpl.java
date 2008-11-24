@@ -100,9 +100,13 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			return;
 		}
 		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
-		model.setModelFrozen(true);
-		model.setIssue(updatedIssue);
-		model.setModelFrozen(false);
+		try {
+			model.setModelFrozen(true);
+			model.setIssue(updatedIssue);
+		} finally {
+			model.setModelFrozen(false);
+		}
+
 		model.fireModelChanged();
 	}
 
@@ -117,5 +121,17 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public boolean isModelFrozen() {
 		return model.isModelFrozen();
+	}
+
+	public void setModelFrozen(boolean frozen) {
+		this.model.setModelFrozen(frozen);
+	}
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		this.model.addFrozenModelListener(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		this.model.removeFrozenModelListener(listener);
 	}
 }

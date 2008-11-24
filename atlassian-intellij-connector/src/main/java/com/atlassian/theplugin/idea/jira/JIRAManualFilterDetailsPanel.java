@@ -6,10 +6,7 @@ import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
@@ -52,9 +49,12 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter) {
 			}
 
-			public void modelFrozen(boolean frozen) {
-				setEnabled(!frozen);
-				editButton.setEnabled(!frozen);				
+		});
+
+		listModel.addFrozenModelListener(new FrozenModelListener(){
+			public void modelFrozen(FrozenModel model, boolean frozen) {
+						setEnabled(!frozen);
+				editButton.setEnabled(!frozen);
 			}
 		});
 		

@@ -56,32 +56,35 @@ public class JIRAFilterListBuilder {
 		final String filterId = projectConfigurationBean.getJiraConfiguration().getView().getViewFilterId();
 		final String filterServerId = projectConfigurationBean.getJiraConfiguration().getView().getViewServerId();
 
-		listModel.setModelFrozen(true);
-		listModel.clearAllServerFilters();
-		JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-		for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
-			try {
-				if (jiraServer.getServerId().toString().equals(filterServerId)) {
-					addServerSavedFilter(jiraServer, filterId);
-				} else {
-					addServerSavedFilter(jiraServer, "-1");
+		try {
+			listModel.setModelFrozen(true);
+			listModel.clearAllServerFilters();
+			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
+			for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
+				try {
+					if (jiraServer.getServerId().toString().equals(filterServerId)) {
+						addServerSavedFilter(jiraServer, filterId);
+					} else {
+						addServerSavedFilter(jiraServer, "-1");
+					}
+				} catch (JIRAException exc) {
+					e.addException(jiraServer, exc);
 				}
-			} catch (JIRAException exc) {
-				e.addException(jiraServer, exc);
+
+				if (jiraServer.getServerId().toString().equals(filterServerId)) {
+					addManualFilter(jiraServer, filterId);
+				} else {
+					addManualFilter(jiraServer, "");
+				}
 			}
 
-			if (jiraServer.getServerId().toString().equals(filterServerId)) {
-				addManualFilter(jiraServer, filterId);
-			} else {
-				addManualFilter(jiraServer, "");
+			if (!e.getExceptions().isEmpty()) {
+				listModel.setModelFrozen(false);
+				throw e;
 			}
-		}
-
-		if (!e.getExceptions().isEmpty()) {
+		} finally {
 			listModel.setModelFrozen(false);
-			throw e;
 		}
-		listModel.setModelFrozen(false);
 	}
 
 	public void addServerSavedFilter(final JiraServerCfg jiraServer, final String filterId) throws JIRAException {

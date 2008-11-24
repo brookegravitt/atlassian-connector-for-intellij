@@ -5,9 +5,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: jgorycki
@@ -19,6 +17,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 
 	private final Map<JiraServerCfg, JIRAServerCache> serverInfoMap = new HashMap<JiraServerCfg, JIRAServerCache>();
 	private boolean modelFrozen = false;
+	private Collection<FrozenModelListener> frozenListeners = new ArrayList<FrozenModelListener>();
 
 	public JIRAServerModelImpl() {
 		facade = JIRAServerFacadeImpl.getInstance();
@@ -145,6 +144,21 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 
 	public void setModelFrozen(boolean frozen) {
 		this.modelFrozen = frozen;
+		fireModelFrozen();
+	}
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.add(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.remove(listener);
+	}
+
+	private void fireModelFrozen(){
+		for (FrozenModelListener listener : frozenListeners){
+			listener.modelFrozen(this, modelFrozen);
+		}
 	}
 }
 
