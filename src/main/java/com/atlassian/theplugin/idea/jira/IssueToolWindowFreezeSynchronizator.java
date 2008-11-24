@@ -6,17 +6,22 @@ import com.atlassian.theplugin.jira.model.*;
  * User: pmaruszak
  */
 public final class IssueToolWindowFreezeSynchronizator {
-	private JIRAFilterListModel filterMode;
+	private JIRAFilterListModel filterModel;
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;
-	
-	private IssueToolWindowFreezeSynchronizator() {
-	}
-	IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
-										final JIRAServerModel serverModel) {
-		this.filterMode = filterModel;
+
+
+
+	public void setModels(JIRAIssueListModel issueModel, JIRAServerModel serverModel, JIRAFilterListModel filterModel) {
 		this.issueModel = issueModel;
 		this.serverModel = serverModel;
+		this.filterModel = filterModel;
+		if (issueModel != null && serverModel != null && filterModel != null){
+			addListeners();
+		}
+	}
+	
+	private void addListeners(){
 
 
 		issueModel.addFrozenModelListener(new FrozenModelListener() {
