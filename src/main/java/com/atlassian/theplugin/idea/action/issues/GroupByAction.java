@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class GroupByAction extends JIRAAbstractAction implements CustomComponentAction {
-	private final String COMBOBOX_KEY = GroupByAction.class.getName() + ".combo";
+	private static final String COMBOBOX_KEY = GroupByAction.class.getName() + ".combo";
 
 	@Override
 	public void actionPerformed(AnActionEvent e) {
