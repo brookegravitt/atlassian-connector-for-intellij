@@ -10,7 +10,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;
 	
-	private IssueToolWindowFreezeSynchronizator(){
+	private IssueToolWindowFreezeSynchronizator() {
 	}
 	IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
 										final JIRAServerModel serverModel) {
@@ -31,7 +31,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 			}
 		});
 
-		serverModel.addFrozenModelListener(new FrozenModelListener(){
+		serverModel.addFrozenModelListener(new FrozenModelListener() {
 
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 				if (filterModel != null) {
