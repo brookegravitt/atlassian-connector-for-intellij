@@ -12,8 +12,9 @@ public abstract class JIRAAbstractAction extends AnAction {
 	public abstract void onUpdate(AnActionEvent event);
 
 	public void onUpdate(AnActionEvent event, boolean enabled) {
+	}
 
-	};
+	@Override
 	public final void update(AnActionEvent event) {
 		super.update(event);
 		JIRAIssueListModelBuilder issueBuilder =
