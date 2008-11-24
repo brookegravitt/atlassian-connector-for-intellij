@@ -12,9 +12,10 @@ import java.util.Map;
 /**
  * User: pmaruszak
  */
-public class JIRAFilterListModel {
+public class JIRAFilterListModel implements FrozenModel {
 	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
+	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
 	private JiraServerCfg jiraSelectedServer;
 
@@ -150,9 +151,23 @@ public class JIRAFilterListModel {
 		fireModelFrozen();
 	}
 
+
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		frozenModelListeners.add(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		
+	}
+
+	public void removeFrozenModelListener(FrozenModel listener) {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	private void fireModelFrozen() {
-		for (JIRAFilterListModelListener listener : listeners) {
-			listener.modelFrozen(this.modelFrozen);
+		for (FrozenModelListener listener : frozenModelListeners) {
+			listener.modelFrozen(this, this.modelFrozen);
 		}
 	}
 

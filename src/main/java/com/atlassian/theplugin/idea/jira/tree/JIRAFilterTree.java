@@ -3,9 +3,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -36,12 +34,20 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		getSelectionModel().addTreeSelectionListener(treeSelectionListener);
 		setCellRenderer(MY_RENDERER);
 
-		reCreateTree(listModel);		
+		reCreateTree(listModel);
+
+		listModel.addFrozenModelListener(new FrozenModelListener(){
+
+			public void modelFrozen(FrozenModel model, boolean frozen) {
+				JIRAFilterTree.this.setEnabled(!frozen);
+			}
+		});
 
 	}
 
 	private void reCreateTree(final JIRAFilterListModel aListModel) {
-		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();		
+		removeAll();
+		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
 		treeModel = new DefaultTreeModel(rootNode);
 
 		setModel(treeModel);
@@ -49,7 +55,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		if (aListModel != null) {
 			createServerNodes(aListModel, (DefaultMutableTreeNode) treeModel.getRoot());
 		}
-		treeModel.nodeStructureChanged(rootNode);
+		treeModel.nodeStructureChanged((DefaultMutableTreeNode)treeModel.getRoot());
 	}
 
 	public void expandAll() {
@@ -65,7 +71,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 	public void modelChanged(JIRAFilterListModel aListModel) {
-		removeAll();
 		reCreateTree(aListModel);
 		expandAll();
 		
@@ -130,10 +135,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
 	}
 
-	public void modelFrozen(boolean frozen) {
-			this.setEnabled(!frozen);
-	}
-
 
 	private void createServerNodes(JIRAFilterListModel aListModel, DefaultMutableTreeNode rootNode) {
 
@@ -164,14 +165,15 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	private static class ServerTreeRenderer extends DefaultTreeCellRenderer {
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-				boolean expanded, boolean leaf, int row, boolean hasFocus) {
+													  boolean expanded, boolean leaf, int row, boolean hasFocus) {
+
+			JComponent c = (JComponent) super.getTreeCellRendererComponent(
+					tree, value, selected, expanded, leaf, row, hasFocus);
 
 			if (value instanceof JIRAAbstractTreeNode) {
-				JIRAAbstractTreeNode node = (JIRAAbstractTreeNode) value;
-				return node.getRenderer(null, selected, expanded, hasFocus);
-			} else {
-				return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+				return ((JIRAAbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
 			}
+			return c;
 		}
 	}
 

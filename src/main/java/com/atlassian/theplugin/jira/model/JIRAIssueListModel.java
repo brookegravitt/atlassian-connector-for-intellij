@@ -4,7 +4,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.Collection;
 
-public interface JIRAIssueListModel {
+public interface JIRAIssueListModel extends FrozenModel {
 	void clear();
 	void addIssue(JIRAIssue issue);
 	void addIssues(Collection<JIRAIssue> issues);
@@ -20,6 +20,4 @@ public interface JIRAIssueListModel {
 	void addModelListener(JIRAIssueListModelListener listener);
 	void removeModelListener(JIRAIssueListModelListener listener);
 
-	boolean isModelFrozen();
-	void setModelFrozen(boolean frozen);
 }

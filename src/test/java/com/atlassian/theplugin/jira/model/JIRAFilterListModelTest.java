@@ -52,9 +52,6 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedManualFilterSelected++;
 			}
 
-			public void modelFrozen(boolean frozen) {
-
-			}
 		});
 
 		for (int i=0; i<10; i++) {
@@ -120,9 +117,6 @@ public class JIRAFilterListModelTest extends TestCase {
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
 				assertTrue(manual.getQueryFragment().equals(manualFilter));
 				assertTrue(jServer.equals(jiraServer));
-			}
-
-			public void modelFrozen(boolean frozen) {				
 			}
 		});
 		fillInServerFiltersBean(serverFilter1, 3);

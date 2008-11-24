@@ -8,8 +8,9 @@ import java.util.List;
  * Date: Nov 19, 2008
  * Time: 3:06:58 PM
  */
-public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListener {
+public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListener, FrozenModelListener {
 	private List<JIRAIssueListModelListener> listeners = new ArrayList<JIRAIssueListModelListener>();
+	protected List<FrozenModelListener> frozenListeners = new ArrayList<FrozenModelListener>();
 	
 
 	protected void addListener(JIRAIssueListModelListener l) {
@@ -32,9 +33,8 @@ public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListe
 		}
 	}
 
-	public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
-
-	for (JIRAIssueListModelListener l : listeners) {
+	public void modelFrozen(FrozenModel model, boolean frozen) {
+	for (FrozenModelListener l : frozenListeners) {
 			l.modelFrozen(model, frozen);
 		}
 	}

@@ -1,11 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
-
-import java.util.List;
 
 /**
  * User: pmaruszak
@@ -15,48 +10,30 @@ public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;
 
-	private IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
+	IssueToolWindowFreezeSynchronizator(final JIRAFilterListModel filterModel, final JIRAIssueListModel issueModel,
 										final JIRAServerModel serverModel) {
 		this.filterMode = filterModel;
 		this.issueModel = issueModel;
 		this.serverModel = serverModel;
 
-		filterModel.addModelListener(new JIRAFilterListModelListener() {
+		filterModel.addFrozenModelListener(new FrozenModelListener() {
 
-			public void modelChanged(JIRAFilterListModel listModel) {
-			}
-
-			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter) {
-			}
-
-			public void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter) {
-			}
-
-			public void modelFrozen(boolean frozen) {
-				if (issueModel != null) {
-					issueModel.setModelFrozen(frozen);
-				}
-
-				if (serverModel != null) {
+			public void modelFrozen(FrozenModel model, boolean frozen) {
+				if (serverModel != null) {					
 					serverModel.setModelFrozen(frozen);
-				}
+				}				
+
 			}
 		});
 
-		issueModel.addModelListener(new JIRAIssueListModelListener() {
+		issueModel.addFrozenModelListener(new FrozenModelListener() {
 
-			public void modelChanged(JIRAIssueListModel model) {
-			}
-
-			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-			}
-
-			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+			public void modelFrozen(FrozenModel model, boolean frozen) {
 				if (filterModel != null) {
 					filterModel.setModelFrozen(frozen);
 				}
 				if (serverModel != null) {
-						serverModel.setModelFrozen(frozen);
+					serverModel.setModelFrozen(frozen);
 				}
 			}
 		});
