@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel {
+public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel, FrozenModel {
 
 	private Map<String, JIRAIssue> issues;
 
@@ -69,6 +69,14 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	public void setModelFrozen(boolean frozen) {
 		this.modelFrozen = frozen;
 		fireModelFrozen();
+	}
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.add(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.remove(listener);
 	}
 
 	private void fireModelFrozen() {

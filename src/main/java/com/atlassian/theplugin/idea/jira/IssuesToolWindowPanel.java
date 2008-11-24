@@ -88,6 +88,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 	private JIRAServerModel jiraServerModel;
 	private ConfigurationListener configListener = new LocalConfigurationListener();
+	private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
+
 
 	public IssuesToolWindowPanel(@NotNull final Project project, @NotNull final PluginConfigurationBean pluginConfiguration,
 			@NotNull final ProjectConfigurationBean projectConfigurationBean, @NotNull final CfgManager cfgManager) {
@@ -175,11 +177,22 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 					messagePane.enableGetMoreIssues(false);
 				}
 			}
+		});
 
-			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
+		currentIssueListModel.addFrozenModelListener(new FrozenModelListener(){
+
+			public void modelFrozen(FrozenModel model, boolean frozen) {
+				if (messagePane != null) {
+					messagePane.setEnabled(!frozen);
+				}
+
+				if (searchField != null) {
+					searchField.setEnabled(!frozen);
+				}
 
 			}
 		});
+
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}
@@ -208,6 +221,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 			}
 		});
 
+
 		messagePane.addMoreIssuesListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					getNextIssues();
@@ -216,8 +230,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
-		//freezeSynchronizator = new IssueToolWindowFreezeSynchronizator(jiraFilterListModel, currentIssueListModel,
-		//		jiraServerModel);
+		freezeSynchronizator = new IssueToolWindowFreezeSynchronizator(jiraFilterListModel, currentIssueListModel,
+				jiraServerModel);
 
 
 	}
@@ -816,9 +830,9 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		return new JIRAFilterTree(listModel);
 	}
 
-//	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-//		refreshModels();
-//	}
+	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+		refreshModels();
+	}
 
 	/**
 	 * Must be called from dispatch thread
@@ -826,6 +840,9 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	public void refreshModels() {
 				Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
 				ProgressManager.getInstance().run(task);
+	}
+
+	public void projectUnregistered() {
 	}
 
 	public void setStatusMessage(final String message) {
@@ -909,6 +926,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
+			try {
 			jiraServerModel.setModelFrozen(true);
 			jiraServerModel.clearAll();
 
@@ -935,8 +953,12 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 				setStatusMessage(serverStr + "Retrieving projects...");
 				jiraServerModel.getProjects(server);
 				setStatusMessage(serverStr + "Server data query finished");
+			}}
+
+			finally {
+				jiraServerModel.setModelFrozen(false);
 			}
-			jiraServerModel.setModelFrozen(false);
+
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

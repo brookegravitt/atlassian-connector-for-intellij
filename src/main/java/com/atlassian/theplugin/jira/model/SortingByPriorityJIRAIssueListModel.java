@@ -18,12 +18,4 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 	protected Comparator<JIRAIssue> getComparator() {
 		return PRIORITY_ORDER;
 	}
-
-	public boolean isModelFrozen() {
-		return false;  //To change body of implemented methods use File | Settings | File Templates.
-	}
-
-	public void setModelFrozen(boolean frozen) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
 }

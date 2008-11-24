@@ -5,7 +5,7 @@ import com.atlassian.theplugin.jira.api.*;
 
 import java.util.List;
 
-public interface JIRAServerModel {
+public interface JIRAServerModel extends FrozenModel {
 	void clear(JiraServerCfg cfg);
 
 	void clearAll();
@@ -32,6 +32,5 @@ public interface JIRAServerModel {
 
 	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project);
 
-	boolean isModelFrozen();
-	void setModelFrozen(boolean frozen);
+
 }
