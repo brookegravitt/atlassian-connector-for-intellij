@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
-public enum JIRAIssueGroupBy {
+public enum JiraIssueGroupBy {
 	NONE("None"),
 	PROJECT("Project"),
 	TYPE("Type"),
@@ -9,10 +9,11 @@ public enum JIRAIssueGroupBy {
 
 	private String name;
 
-	private JIRAIssueGroupBy(String name) {
+	JiraIssueGroupBy(String name) {
 	    this.name = name;
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
