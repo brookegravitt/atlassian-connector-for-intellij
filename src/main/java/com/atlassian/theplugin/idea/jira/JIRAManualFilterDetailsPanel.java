@@ -51,7 +51,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 
 		});
 
-		listModel.addFrozenModelListener(new FrozenModelListener(){
+		listModel.addFrozenModelListener(new FrozenModelListener() {
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 						setEnabled(!frozen);
 				editButton.setEnabled(!frozen);

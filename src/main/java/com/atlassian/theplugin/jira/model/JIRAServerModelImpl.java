@@ -155,8 +155,8 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		frozenListeners.remove(listener);
 	}
 
-	private void fireModelFrozen(){
-		for (FrozenModelListener listener : frozenListeners){
+	private void fireModelFrozen() {
+		for (FrozenModelListener listener : frozenListeners) {
 			listener.modelFrozen(this, modelFrozen);
 		}
 	}

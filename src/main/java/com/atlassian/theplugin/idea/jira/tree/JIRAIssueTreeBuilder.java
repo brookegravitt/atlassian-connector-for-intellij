@@ -42,7 +42,7 @@ public class JIRAIssueTreeBuilder {
 
 		});
 
-		issueModel.addFrozenModelListener(new FrozenModelListener(){
+		issueModel.addFrozenModelListener(new FrozenModelListener() {
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 				if (lastTree != null) {
 					lastTree.setEnabled(!frozen);
@@ -149,7 +149,8 @@ public class JIRAIssueTreeBuilder {
 		}
 		DefaultMutableTreeNode n = findGroupNode(root, name);
 		if (n == null) {
-			n = new JIRAIssueGroupTreeNode(issueModel, name, CachedIconLoader.getIcon(iconUrl), CachedIconLoader.getDisabledIcon(iconUrl));
+			n = new JIRAIssueGroupTreeNode(issueModel, name, CachedIconLoader.getIcon(iconUrl),
+					CachedIconLoader.getDisabledIcon(iconUrl));
 			root.add(n);
 		}
 		return n;

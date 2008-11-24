@@ -26,9 +26,10 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		int x=0;
+		int x = 0;
 		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon
-		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, left:pref, left:pref, left:pref, 10dlu","pref:grow"));
+		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, " +
+				"left:pref, left:pref, left:pref, 10dlu", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
@@ -38,12 +39,12 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		SimpleTextAttributes textAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor);
 
 
-		Icon typeIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getTypeIconUrl()) :
-				CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+		Icon typeIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
+				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
 		JLabel icon = new JLabel(typeIcon, SwingConstants.LEADING);		
 		icon.setBackground(UIUtil.getTreeTextBackground());
-		p.add(icon, cc.xy(++x,1));
+		p.add(icon, cc.xy(++x, 1));
 
 		cc.xy(++x, 1);
 		SimpleColoredComponent key = new SimpleColoredComponent();
@@ -56,8 +57,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		p.add(summary, cc);
 
 		cc.xy(++x, 1);
-		Icon statusIcon = c.isEnabled()?CachedIconLoader.getIcon(issue.getStatusTypeUrl()) :
-				CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
+		Icon statusIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
+				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
 		
 		SimpleColoredComponent state = new SimpleColoredComponent();
 		state.append(issue.getStatus(), textAttributes);
