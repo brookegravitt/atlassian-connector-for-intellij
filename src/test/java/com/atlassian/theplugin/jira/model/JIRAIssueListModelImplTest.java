@@ -123,7 +123,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		// check mock
 		EasyMock.verify(l);
 
-		// start again
+		// reset mock and start again
 		EasyMock.reset(l);
 		model.removeModelListener(l);
 
@@ -155,14 +155,14 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		Mockito.verify(listener).modelChanged(model);
 		Mockito.verify(listener).issuesLoaded(model, numberOfIssues);
 
-		// start again
+		// start again (don't know how to reset mock without creating new one)
 		model.removeModelListener(listener);
 
 		// use mock
 		model.fireModelChanged();
 		model.fireIssuesLoaded(numberOfIssues);
 
-		// check mock
+		// check mock (no interactions since last verification)
 		Mockito.verifyNoMoreInteractions(listener);
 	}
 }

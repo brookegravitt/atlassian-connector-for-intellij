@@ -19,10 +19,8 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
@@ -58,7 +56,7 @@ import java.util.*;
 import java.util.List;
 
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
-		TableItemSelectedListener<ReviewAdapter>, ConfigurationCredentialsListener {
+		TableItemSelectedListener<ReviewAdapter> {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
 	private Project project;
 	private transient ActionToolbar filterEditToolbar;
@@ -177,7 +175,9 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 			filters.setReadStored(true);
 		}
 
-		IdeaHelper.getCfgManager().addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+		IdeaHelper.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project),
+				new LocalConfigurationListener());
+//				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 
 	}
 
@@ -580,28 +580,28 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 	public CustomFilterBean getCustomFilter() {
 		return filters.getManualFilter();
 	}
-
-	public void configurationCredentialsUpdated(final ServerId serverId) {
-		boolean windowAffected = false;
-
-		// check if changed server credentials are related to one of enabled crucible server and clear the window
-		// assumption here is that we have reviews from several servers displayed in this window
-		CfgManager cfgManager = IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager();
-		Collection<CrucibleServerCfg> cfgServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
-
-		for (CrucibleServerCfg cfgServer : cfgServers) {
-			if (cfgServer.getServerId().equals(serverId)) {
-				windowAffected = true;
-				break;
-			}
-		}
-
-		if (windowAffected) {
-			// clear the window (all filters)
-			clearTables();
-
-		}
-	}
+//
+//	public void configurationCredentialsUpdated(final ServerId serverId) {
+//		boolean windowAffected = false;
+//
+//		// check if changed server credentials are related to one of enabled crucible server and clear the window
+//		// assumption here is that we have reviews from several servers displayed in this window
+//		CfgManager cfgManager = IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager();
+//		Collection<CrucibleServerCfg> cfgServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+//
+//		for (CrucibleServerCfg cfgServer : cfgServers) {
+//			if (cfgServer.getServerId().equals(serverId)) {
+//				windowAffected = true;
+//				break;
+//			}
+//		}
+//
+//		if (windowAffected) {
+//			// clear the window (all filters)
+//			clearTables();
+//
+//		}
+//	}
 
 	private void clearTables() {
 		for (CollapsibleTable table : tables.values()) {
@@ -610,6 +610,31 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 		for (CollapsibleTable table : customTables.values()) {
 			table.clear();
+		}
+	}
+
+	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
+		public void serverConnectionDataUpdated(ServerId serverId) {
+			boolean windowAffected = false;
+
+			// check if changed server credentials are related to one of enabled crucible server and clear the window
+			// assumption here is that we have reviews from several servers displayed in this window
+			CfgManager cfgManager = IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager();
+			Collection<CrucibleServerCfg> cfgServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+
+			for (CrucibleServerCfg cfgServer : cfgServers) {
+				if (cfgServer.getServerId().equals(serverId)) {
+					windowAffected = true;
+					break;
+				}
+			}
+
+			if (windowAffected) {
+				// clear the window (all filters)
+				clearTables();
+
+			}
 		}
 	}
 }
