@@ -30,7 +30,7 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 			this.iconOpen = Icons.DIRECTORY_OPEN_ICON;
 			this.iconClosed = Icons.DIRECTORY_CLOSED_ICON;
 		}
-		if (disabledIcon != null){
+		if (disabledIcon != null) {
 			this.disabledIconOpen = disabledIcon;
 			this.disabledIconClosed = disabledIcon;
 		} else {
@@ -57,10 +57,10 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 		}
 		
 		groupComponet.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
-		panel.add(groupComponet, cc.xy(1,1));
+		panel.add(groupComponet, cc.xy(1, 1));
 
 		groupComponet.append(" (" + getChildCount() + ")", new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
-		panel.add(groupComponet, cc.xy(2,1));
+		panel.add(groupComponet, cc.xy(2, 1));
 		return panel;
 	}
 
