@@ -36,7 +36,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 		reCreateTree(listModel);
 
-		listModel.addFrozenModelListener(new FrozenModelListener(){
+		listModel.addFrozenModelListener(new FrozenModelListener() {
 
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 				JIRAFilterTree.this.setEnabled(!frozen);
