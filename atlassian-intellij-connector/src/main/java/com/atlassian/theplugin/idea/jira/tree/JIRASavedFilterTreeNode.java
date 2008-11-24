@@ -6,6 +6,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * User: pmaruszak
@@ -28,11 +29,19 @@ public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(final JComponent c, final boolean selected,
 	                              final boolean expanded, final boolean hasFocus) {
-		JLabel label = new JLabel(savedFilter.getName(), JIRA_FILTER_ICON, SwingUtilities.HORIZONTAL);
-		label.setOpaque(true);
-		label.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-		label.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
 
+		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
+		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
+
+		fgColor = c.isEnabled() ? fgColor : UIUtil.getInactiveTextColor();
+
+		JLabel label = new JLabel(savedFilter.getName(), JIRA_FILTER_ICON, SwingUtilities.LEADING);
+		label.setDisabledIcon(JIRA_FILTER_ICON);
+		label.setForeground(fgColor);
+		label.setBackground(bgColor);			
+
+		label.setEnabled(c.isEnabled());
+		label.setOpaque(true);
 		return label;
 	}
 

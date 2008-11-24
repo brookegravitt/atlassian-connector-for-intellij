@@ -45,6 +45,8 @@ public class MessageScrollPane extends JPanel implements MessageStatusDisplay {
 		add(statusPanel, gbc);
 
 		setMessage(initialText);
+
+
 	}
 
 	public void setMessage(String message) {
