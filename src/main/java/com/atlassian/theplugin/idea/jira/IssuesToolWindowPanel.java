@@ -179,7 +179,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 			}
 		});
 
-		currentIssueListModel.addFrozenModelListener(new FrozenModelListener(){
+		currentIssueListModel.addFrozenModelListener(new FrozenModelListener() {
 
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 				if (messagePane != null) {
@@ -927,33 +927,34 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
 			try {
-			jiraServerModel.setModelFrozen(true);
-			jiraServerModel.clearAll();
+				jiraServerModel.setModelFrozen(true);
+				jiraServerModel.clearAll();
 
-			for (JiraServerCfg server : IdeaHelper.getCfgManager()
-					.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-				if (!jiraServerModel.checkServer(server)) {
-					setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
-					EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server));
-					continue;
-				}//@todo remove  saved filters download or merge with existing in listModel
-				final String serverStr = "[" + server.getName() + "] ";
-				setStatusMessage(serverStr + "Retrieving saved filters...");
-				jiraServerModel.getSavedFilters(server);
-				setStatusMessage(serverStr + "Retrieving projects...");
-				jiraServerModel.getProjects(server);
-				setStatusMessage(serverStr + "Retrieving issue types...");
-				jiraServerModel.getIssueTypes(server, null);
-				setStatusMessage(serverStr + "Retrieving statuses...");
-				jiraServerModel.getStatuses(server);
-				setStatusMessage(serverStr + "Retrieving resolutions...");
-				jiraServerModel.getResolutions(server);
-				setStatusMessage(serverStr + "Retrieving priorities...");
-				jiraServerModel.getPriorities(server);
-				setStatusMessage(serverStr + "Retrieving projects...");
-				jiraServerModel.getProjects(server);
-				setStatusMessage(serverStr + "Server data query finished");
-			}}
+				for (JiraServerCfg server : IdeaHelper.getCfgManager()
+						.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+					if (!jiraServerModel.checkServer(server)) {
+						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+						EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server));
+						continue;
+					}//@todo remove  saved filters download or merge with existing in listModel
+					final String serverStr = "[" + server.getName() + "] ";
+					setStatusMessage(serverStr + "Retrieving saved filters...");
+					jiraServerModel.getSavedFilters(server);
+					setStatusMessage(serverStr + "Retrieving projects...");
+					jiraServerModel.getProjects(server);
+					setStatusMessage(serverStr + "Retrieving issue types...");
+					jiraServerModel.getIssueTypes(server, null);
+					setStatusMessage(serverStr + "Retrieving statuses...");
+					jiraServerModel.getStatuses(server);
+					setStatusMessage(serverStr + "Retrieving resolutions...");
+					jiraServerModel.getResolutions(server);
+					setStatusMessage(serverStr + "Retrieving priorities...");
+					jiraServerModel.getPriorities(server);
+					setStatusMessage(serverStr + "Retrieving projects...");
+					jiraServerModel.getProjects(server);
+					setStatusMessage(serverStr + "Server data query finished");
+				}
+			}
 
 			finally {
 				jiraServerModel.setModelFrozen(false);
