@@ -228,8 +228,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
-		freezeSynchronizator = new IssueToolWindowFreezeSynchronizator(jiraFilterListModel, currentIssueListModel,
-				jiraServerModel);
+		freezeSynchronizator = IdeaHelper.getProjectComponent(project, IssueToolWindowFreezeSynchronizator.class);
+		freezeSynchronizator.setModels(currentIssueListModel, jiraServerModel, jiraFilterListModel);
 
 
 	}
