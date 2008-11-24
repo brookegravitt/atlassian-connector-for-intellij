@@ -16,13 +16,13 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
+import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 
 
 public class JiraViewConfigurationBean {
 	private String viewServerId;
 	private String viewFilterId;
-	private JIRAIssueGroupBy groupBy;
+	private JiraIssueGroupBy groupBy;
 
 	public JiraViewConfigurationBean() {
 	}
@@ -43,11 +43,11 @@ public class JiraViewConfigurationBean {
 		this.viewFilterId = viewFilterId;
 	}
 
-	public JIRAIssueGroupBy getGroupBy() {
+	public JiraIssueGroupBy getGroupBy() {
 		return groupBy;
 	}
 
-	public void setGroupBy(final JIRAIssueGroupBy groupBy) {
+	public void setGroupBy(final JiraIssueGroupBy groupBy) {
 		this.groupBy = groupBy;
 	}
 }

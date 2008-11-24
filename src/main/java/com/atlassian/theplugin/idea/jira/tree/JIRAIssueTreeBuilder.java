@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.idea.jira.JIRAIssueGroupBy;
+import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class JIRAIssueTreeBuilder {
 
-	private JIRAIssueGroupBy groupBy;
+	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private DefaultTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new JIRAIssueTreeRenderer();
@@ -27,23 +27,23 @@ public class JIRAIssueTreeBuilder {
 
 	private Map<String, String> projectKeysToNames;
 
-	public JIRAIssueTreeBuilder(JIRAIssueGroupBy groupBy, JIRAIssueListModel model) {
+	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, JIRAIssueListModel model) {
 		this.groupBy = groupBy;
 		this.issueModel = model;
 		lastTree = null;
 
 		issueModel.addModelListener(new JIRAIssueListModelListener() {
 
-			public void modelChanged(JIRAIssueListModel model) {
+			public void modelChanged(JIRAIssueListModel aModel) {
 			}
 
-			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+			public void issuesLoaded(JIRAIssueListModel aModel, int loadedIssues) {
 			}
 
 		});
 
 		issueModel.addFrozenModelListener(new FrozenModelListener() {
-			public void modelFrozen(FrozenModel model, boolean frozen) {
+			public void modelFrozen(FrozenModel aModel, boolean frozen) {
 				if (lastTree != null) {
 					lastTree.setEnabled(!frozen);
 				}
@@ -52,7 +52,7 @@ public class JIRAIssueTreeBuilder {
 
 	}
 
-	public void setGroupBy(JIRAIssueGroupBy groupBy) {
+	public void setGroupBy(JiraIssueGroupBy groupBy) {
 		this.groupBy = groupBy;
 	}
 
