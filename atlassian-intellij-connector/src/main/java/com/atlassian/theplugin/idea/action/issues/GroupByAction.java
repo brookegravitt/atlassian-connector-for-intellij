@@ -58,6 +58,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
+			jComboBox.setEnabled(enabled);
 			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 			if (panel != null && !panel.getGroupBy().equals(jComboBox.getSelectedItem())) {
 				jComboBox.setSelectedItem(panel.getGroupBy());
