@@ -19,6 +19,7 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
@@ -49,8 +50,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable,
-		ConfigurationListener {
+public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable {
 
 	private final Project project;
 	private final CfgManager cfgManager;
@@ -58,6 +58,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
+	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
 			final UiTaskExecutor uiTaskExecutor) {
@@ -74,14 +75,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void projectOpened() {
 		load();
-		cfgManager.addProjectConfigurationListener(getProjectId(), this);
+		cfgManager.addProjectConfigurationListener(getProjectId(), configurationListener);
 	}
 
 
 	public void projectClosed() {
-		cfgManager.removeProjectConfigurationListener(getProjectId(), this);
+		cfgManager.removeProjectConfigurationListener(getProjectId(), configurationListener);
 		cfgManager.removeProject(getProjectId());
-		cfgManager.removeAllConfigurationCredentialListeners(getProjectId());
+//		cfgManager.removeAllConfigurationCredentialListeners(getProjectId());
 	}
 
 	@NonNls
@@ -262,11 +263,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = null;
 	}
 
-	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-		save();
-		IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
-	}
-
-	public void projectUnregistered() {
+	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
+		public void configurationUpdated(ProjectConfiguration aProjectConfiguration) {
+			save();
+			IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
+		}
 	}
 }

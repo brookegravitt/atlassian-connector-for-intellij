@@ -16,8 +16,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
  */
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -53,8 +53,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public final class ReviewItemTreePanel extends JPanel implements DataProvider, ConfigurationCredentialsListener,
-		CrucibleReviewListener {
+public final class ReviewItemTreePanel extends JPanel implements DataProvider, CrucibleReviewListener {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
@@ -76,6 +75,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	private Project project;
 
 	private ReviewAdapter crucibleReview = null;
+	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -157,23 +157,25 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		return reviewFilesAndCommentsTree;
 	}
 
-	public void configurationCredentialsUpdated(final ServerId serverId) {
-		if (getCrucibleReview().getServer().getServerId().equals(serverId)) {
-			reviewFilesAndCommentsTree.clear();
-			stopListeningForCredentialChanges();
-		}
-	}
+//	public void configurationCredentialsUpdated(final ServerId serverId) {
+//		if (getCrucibleReview().getServer().getServerId().equals(serverId)) {
+//			reviewFilesAndCommentsTree.clear();
+//			stopListeningForCredentialChanges();
+//		}
+//	}
 
 	public void startListeningForCredentialChanges(final Project aProject, final ReviewAdapter aCrucibleReview) {
 		setCrucibleReview(aCrucibleReview);
 		this.project = aProject;
 		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
-				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+				addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+//				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 	}
 
 	private void stopListeningForCredentialChanges() {
 		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
-				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
+				removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+//				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), configurationListener);
 	}
 
 	public void setStatus(String txt) {
@@ -387,5 +389,15 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			}
 		}
 		return null;
+	}
+
+	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
+		public void serverConnectionDataUpdated(ServerId serverId) {
+			if (getCrucibleReview().getServer().getServerId().equals(serverId)) {
+				reviewFilesAndCommentsTree.clear();
+				stopListeningForCredentialChanges();
+			}
+		}
 	}
 }

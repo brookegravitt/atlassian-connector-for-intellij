@@ -1,10 +1,8 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
@@ -53,7 +51,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class IssuesToolWindowPanel extends JPanel implements ConfigurationListener, DataProvider {
+public final class IssuesToolWindowPanel extends JPanel implements DataProvider {
 	private static final Key<IssuesToolWindowPanel> WINDOW_PROJECT_KEY = Key.create(IssuesToolWindowPanel.class.getName());
 	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
 	private static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
@@ -89,7 +87,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
 	private JIRAServerModel jiraServerModel;
-	//private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
+	private ConfigurationListener configListener = new LocalConfigurationListener();
 
 	public IssuesToolWindowPanel(@NotNull final Project project, @NotNull final PluginConfigurationBean pluginConfiguration,
 			@NotNull final ProjectConfigurationBean projectConfigurationBean, @NotNull final CfgManager cfgManager) {
@@ -179,11 +177,11 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 			}
 
 			public void modelFrozen(JIRAIssueListModel model, boolean frozen) {
-				
+
 			}
 		});
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-			public void modelChanged(JIRAFilterListModel listModel) {				
+			public void modelChanged(JIRAFilterListModel listModel) {
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
@@ -197,7 +195,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 			}
 
-			public void modelFrozen(boolean frozen) {				
+			public void modelFrozen(boolean frozen) {
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
@@ -818,9 +816,9 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return new JIRAFilterTree(listModel);
 	}
 
-	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-		refreshModels();
-	}
+//	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+//		refreshModels();
+//	}
 
 	/**
 	 * Must be called from dispatch thread
@@ -828,9 +826,6 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 	public void refreshModels() {
 				Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
 				ProgressManager.getInstance().run(task);
-	}
-
-	public void projectUnregistered() {
 	}
 
 	public void setStatusMessage(final String message) {
@@ -903,6 +898,10 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 
 	}
 
+	public ConfigurationListener getConfigListener() {
+		return configListener;
+	}
+
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
 		public MetadataFetcherBackgroundableTask() {
 			super(IssuesToolWindowPanel.this.project, "Retrieving JIRA information", false);
@@ -938,7 +937,7 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 				setStatusMessage(serverStr + "Server data query finished");
 			}
 			jiraServerModel.setModelFrozen(false);
-						
+
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					refreshFilterModel();
@@ -956,4 +955,69 @@ public final class IssuesToolWindowPanel extends JPanel implements Configuration
 		return null;
 	}
 
+	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+
+		@Override
+		public void serverDataUpdated(ServerId serverId) {
+			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			if (server.getServerType() == ServerType.JIRA_SERVER) {
+				refreshModels();
+			}
+		}
+
+		//		@Override
+//		public void serverConnectionDataUpdated(ServerId serverId) {
+//			// refresh the Issues View only if currently displayed server has been changed
+//			if (jiraIssueListModelBuilder.getServer().getServerId().equals(serverId)) {
+//				refreshModels();
+//			}
+//		}
+//
+//		@Override
+//		public void serverNameUpdated(ServerId serverId) {
+//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+//			// refresh the view only if JIRA enabled server has been changed
+//			if (server.isEnabled() && server.getServerType() == ServerType.JIRA_SERVER) {
+//				// todo PL-854 refresh only labels on the filter tree
+////				refreshFilterModel();
+////				jiraFilterListModel.fireModelChanged();
+//			}
+//		}
+//
+//		@Override
+//		public void serverEnabled(ServerId serverId) {
+//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+//			// refresh the view only if JIRA enabled server has been changed
+//			if (server.getServerType() == ServerType.JIRA_SERVER) {
+//				// todo PL-854 load data for newly enabled server
+////				refreshFilterModel();
+////				jiraFilterListModel.fireModelChanged();
+//			}
+//		}
+//
+//		@Override
+//		public void serverDisabled(ServerId serverId) {
+//			// todo PL-854 refresh only Filters View without reloading data from server
+////				refreshFilterModel();
+////				jiraFilterListModel.fireModelChanged();
+//		}
+//
+//		@Override
+//		public void serverAdded(ServerCfg newServer) {
+//			// refresh Filters View only if new enabled server has been added
+//			if (newServer.isEnabled()) {
+//				// do the same functionality as for enabled server
+//				serverEnabled(newServer.getServerId());
+//			}
+//		}
+//
+//		@Override
+//		public void serverRemoved(ServerCfg oldServer) {
+//			// refresh Filter View only if removed server was enabled
+//			if (oldServer.isEnabled()) {
+//				// do the same functionality as for disabled server
+//				serverDisabled(oldServer.getServerId());
+//			}
+//		}
+	}
 }
