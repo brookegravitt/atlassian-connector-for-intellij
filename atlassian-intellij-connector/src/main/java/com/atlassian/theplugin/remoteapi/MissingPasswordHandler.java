@@ -18,6 +18,7 @@ package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -35,7 +36,7 @@ import java.util.Set;
 /**
  * Shows a dialog for each Bamboo server that has not the password set.
  */
-public class MissingPasswordHandler implements Runnable, ConfigurationListener {
+public class MissingPasswordHandler implements Runnable {
 
 	private static boolean isDialogShown = false;
 
@@ -50,7 +51,8 @@ public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 		this.serverFacade = serverFacade;
 		this.cfgManager = cfgManager;
 		this.project = project;
-		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), this);
+		// todo make sure the config listener is unregistered / not added every time missignpasswordhandler is created
+		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), new LocalConfigurationListener());
 	}
 
 	private synchronized boolean shouldStop() {
@@ -100,10 +102,10 @@ public class MissingPasswordHandler implements Runnable, ConfigurationListener {
 
 	}
 
-	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-	}
-
-	public synchronized void projectUnregistered() {
-		shouldStop = true;
+	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
+		public void projectUnregistered() {
+			shouldStop = true;
+		}
 	}
 }

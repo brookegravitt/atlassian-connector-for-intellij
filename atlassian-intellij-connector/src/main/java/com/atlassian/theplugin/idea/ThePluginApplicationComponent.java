@@ -17,9 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -49,8 +47,7 @@ import java.util.Timer;
 @State(name = "atlassian-ide-plugin",
 		storages = { @Storage(id = "atlassian-ide-plugin-id", file = "$APP_CONFIG$/atlassian-ide-plugin.app.xml") })
 public class ThePluginApplicationComponent
-		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean>,
-		ConfigurationListener {
+		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
 
 	static {
 		AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
@@ -205,10 +202,33 @@ public class ThePluginApplicationComponent
 		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 	}
 
-	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-		rescheduleStatusCheckers(true);
-	}
+//	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+//		// todo check if AppComponent need to be ConfigListener (I cannot see where it is registered)
+//		rescheduleStatusCheckers(true);
+//	}
+//
+//	public void projectUnregistered() {
+//	}
+//
+//	public void serverCredentialsUpdated(ServerId serverId) {
+//	}
+//
+//	public void serverConnectionDataUpdated(ServerId serverId) {
+//	}
+//
+//	public void serverNameUpdated(ServerId serverId) {
+//	}
+//
+//	public void serverAdded(ServerCfg newServer) {
+//	}
+//
+//	public void serverRemoved(ServerCfg oldServer) {
+//	}
+//
+//	public void serverEnabled(ServerId serverId) {
+//	}
+//
+//	public void serverDisabled(ServerId serverId) {
+//	}
 
-	public void projectUnregistered() {
-	}
 }

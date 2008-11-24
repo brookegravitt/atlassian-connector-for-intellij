@@ -20,8 +20,8 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -261,7 +261,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			configurationListener = new ConfigurationListenerImpl();
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
-			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), issuesToolWindowPanel);
+			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project),
+					issuesToolWindowPanel.getConfigListener());
 
 			created = true;
 		}
@@ -369,7 +370,9 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
-			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), issuesToolWindowPanel);
+			configurationListener = null;
+			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project),
+					issuesToolWindowPanel.getConfigListener());
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
@@ -408,16 +411,15 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return bambooStatusChecker;
 	}
 
-	private class ConfigurationListenerImpl implements ConfigurationListener {
+	private class ConfigurationListenerImpl extends ConfigurationListenerAdapter {
+
+		@Override
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 			// show-hide icons if necessary
 			statusBarBambooIcon.showOrHideIcon();
 			statusBarCrucibleIcon.showOrHideIcon();
 			// show-hide panels if necessary
 			toolWindow.showHidePanels();
-		}
-
-		public void projectUnregistered() {
 		}
 	}
 }
