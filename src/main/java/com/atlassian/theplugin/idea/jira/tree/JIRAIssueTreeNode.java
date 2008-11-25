@@ -13,7 +13,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
@@ -27,24 +26,24 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		int x = 0;
-		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon/issueUpdated
-		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, left:pref,"
-				+ "left:pref, left:pref, 70dlu, 10dlu", "pref:grow"));
+		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon
+		JPanel p = new JPanel(new FormLayout("left:pref, left:pref:grow, "
+				+ "left:pref, left:pref, left:pref, 70dlu, 10dlu", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
 
 		fgColor = c.isEnabled() ? fgColor : UIUtil.getInactiveTextColor();
-		
+
 		SimpleTextAttributes textAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor);
 
 
 		Icon typeIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
 				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
-		JLabel icon = new JLabel(typeIcon, SwingConstants.LEADING);		
+		JLabel icon = new JLabel(typeIcon, SwingConstants.LEADING);
 		icon.setBackground(UIUtil.getTreeTextBackground());
-		p.add(icon, cc.xy(++x, 1));
+//		p.add(icon, cc.xy(++x, 1));
 
 		cc.xy(++x, 1);
 		SimpleColoredComponent key = new SimpleColoredComponent();
@@ -59,7 +58,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		cc.xy(++x, 1);
 		Icon statusIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
 				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
-		
+
 		SimpleColoredComponent state = new SimpleColoredComponent();
 		state.append(issue.getStatus(), textAttributes);
 		p.add(state, cc);
@@ -84,11 +83,13 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 		String t;
+		
 		try {
 			t = ds.format(df.parse(issue.getUpdated()));
-		} catch (ParseException e) {
+		} catch (java.text.ParseException e) {
 			t = "Invalid";
 		}
+
 		updated.append(t, textAttributes);
 		p.add(updated, cc);
 
@@ -99,8 +100,15 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         p.add(padding, cc);
 
 		p.setBackground(bgColor);
+		JPanel panel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
+		panel.setBackground(UIUtil.getTreeTextBackground());
+		panel.add(icon, cc.xy(1,1));
+		panel.add(p, cc.xy(2,1));
 
-		return p;
+		//panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		//((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.TRAILING);
+
+		return panel;
 	}
 
 	public void onSelect() {

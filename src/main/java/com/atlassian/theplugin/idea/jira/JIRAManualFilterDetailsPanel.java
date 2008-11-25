@@ -43,10 +43,11 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 				JIRAManualFilterDetailsPanel.this.listModel = aListModel;
 			}
 
-			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter) {
+			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter, boolean isChanged) {
 			}
 
-			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter) {
+			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter,
+											 boolean isChanged) {
 			}
 
 		});

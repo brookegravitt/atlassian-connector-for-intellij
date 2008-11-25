@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -55,7 +54,6 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	private Project project;
-	private PluginConfigurationBean pluginConfiguration;
 	private ProjectConfigurationBean projectConfigurationBean;
 	private CfgManager cfgManager;
 	private JPanel serversPanel = new JPanel(new BorderLayout());
@@ -89,10 +87,10 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private boolean groupSubtasksUnderParent;
 
 
-	public IssuesToolWindowPanel(@NotNull final Project project, @NotNull final PluginConfigurationBean pluginConfiguration,
-			@NotNull final ProjectConfigurationBean projectConfigurationBean, @NotNull final CfgManager cfgManager) {
-		this.project = project;
-		this.pluginConfiguration = pluginConfiguration;
+	public IssuesToolWindowPanel(@NotNull final Project project,
+								 @NotNull final ProjectConfigurationBean projectConfigurationBean, 
+								 @NotNull final CfgManager cfgManager) {
+		this.project = project;		
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.cfgManager = cfgManager;
 
@@ -198,27 +196,30 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}
 
-			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
-				showManualFilterPanel(true);
-				setIssuesFilterParams(jiraServer, manualFilter);
-				refreshIssues();
+			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
+											 boolean isChanged) {
+				if (isChanged) {
+					showManualFilterPanel(true);
+					setIssuesFilterParams(jiraServer, manualFilter);
 
-				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
-				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
-				projectConfigurationBean.getJiraConfiguration().getView()
-						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+					refreshIssues();
+
+					projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+					projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+					projectConfigurationBean.getJiraConfiguration().getView()
+							.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+				}
 			}
 
-			public void modelFrozen(boolean frozen) {
-			}
-
-			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
-				showManualFilterPanel(false);
-				setIssuesFilterParams(jiraServer, savedFilter);
-				refreshIssues();
-
-				projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
-				projectConfigurationBean.getJiraConfiguration().getView().setViewFilterId(Long.toString(savedFilter.getId()));
+			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
+											boolean isChanged) {
+				if (isChanged) {
+					showManualFilterPanel(false);
+					setIssuesFilterParams(jiraServer, savedFilter);
+					refreshIssues();
+					projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+					projectConfigurationBean.getJiraConfiguration().getView().setViewFilterId(Long.toString(savedFilter.getId()));
+				}
 			}
 		});
 
@@ -235,8 +236,6 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		freezeSynchronizator.setIssueModel(currentIssueListModel);
 		freezeSynchronizator.setServerModel(jiraServerModel);
 		freezeSynchronizator.setFilterModel(jiraFilterListModel);
-
-
 	}
 
 	private void addSearchBoxListener() {
