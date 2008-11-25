@@ -41,6 +41,8 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		JPanel panel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow"));
+		JPanel mainPanel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
+
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
@@ -50,10 +52,9 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 		panel.setBackground(bgColor);
 		SimpleColoredComponent groupComponet = new SimpleColoredComponent();
 		if (c.isEnabled()) {
-			groupComponet.setIcon(expanded ? iconOpen : iconClosed);
-
+			mainPanel.add(new JLabel(expanded ? iconOpen : iconClosed), cc.xy(1, 1));
 		} else {
-			groupComponet.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
+			mainPanel.add(new JLabel(expanded ? disabledIconOpen : disabledIconClosed), cc.xy(1, 1));
 		}
 		
 		groupComponet.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
@@ -61,7 +62,10 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 
 		groupComponet.append(" (" + getChildCount() + ")", new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
 		panel.add(groupComponet, cc.xy(2, 1));
-		return panel;
+
+
+		mainPanel.add(panel, cc.xy(2,1));
+		return mainPanel;
 	}
 
 	public void onSelect() {
