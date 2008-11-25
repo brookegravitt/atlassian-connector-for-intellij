@@ -198,16 +198,10 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 				showManualFilterPanel(true);
 				setIssuesFilterParams(jiraServer, manualFilter);
-				//if (isChanged) {
-					refreshIssues();
-				//}
-				jiraProjectConfiguration.getView()
-						.setViewServerId(jiraServer.getServerId().toString());
-				jiraProjectConfiguration.getView()
-						.setViewServerId(jiraServer.getServerId().toString());
-				jiraProjectConfiguration.getView()
-						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
-
+				refreshIssues();
+				jiraProjectConfiguration.getView().setViewServerId(jiraServer.getServerId().toString());
+				jiraProjectConfiguration.getView().setViewServerId(jiraServer.getServerId().toString());
+				jiraProjectConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
