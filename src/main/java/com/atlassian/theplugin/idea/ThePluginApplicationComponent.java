@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -213,10 +213,10 @@ public class ThePluginApplicationComponent
 //	public void serverCredentialsUpdated(ServerId serverId) {
 //	}
 //
-//	public void serverConnectionDataUpdated(ServerId serverId) {
+//	public void serverConnectionDataChanged(ServerId serverId) {
 //	}
 //
-//	public void serverNameUpdated(ServerId serverId) {
+//	public void serverNameChanged(ServerId serverId) {
 //	}
 //
 //	public void serverAdded(ServerCfg newServer) {

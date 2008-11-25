@@ -19,8 +19,10 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
@@ -615,7 +617,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		@Override
-		public void serverConnectionDataUpdated(ServerId serverId) {
+		public void serverConnectionDataChanged(ServerId serverId) {
 			boolean windowAffected = false;
 
 			// check if changed server credentials are related to one of enabled crucible server and clear the window
