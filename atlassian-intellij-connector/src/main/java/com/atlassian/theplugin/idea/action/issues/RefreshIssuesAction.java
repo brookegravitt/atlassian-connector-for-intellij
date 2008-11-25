@@ -11,7 +11,9 @@ public class RefreshIssuesAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-		panel.refreshIssues();
+		if (panel != null) {
+			panel.refreshIssues();
+		}
 	}
 
 	public void onUpdate(AnActionEvent event) {

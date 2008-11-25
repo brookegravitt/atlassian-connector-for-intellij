@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira.api;
 
 import org.jdom.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,10 @@ public class JIRAIssueBean implements JIRAIssue {
 	private List<JIRAConstant> affectsVersions;
 	private List<JIRAConstant> fixVersions;
 	private List<JIRAConstant> components;
+
+	private List<String> subTaskList;
+	private boolean thisIsASubTask;
+	private String parentIssueKey;
 
 	public JIRAIssueBean() {
     }
@@ -84,7 +89,9 @@ public class JIRAIssueBean implements JIRAIssue {
 		statusId = issue.getStatusId();
 		priorityId = issue.getPriorityId();
 		typeId = issue.getTypeId();
-
+		thisIsASubTask = issue.isSubTask();
+		subTaskList = issue.getSubTaskKeys();
+		parentIssueKey = issue.getParentIssueKey();
 	}
 
 	public JIRAIssueBean(String serverUrl, Element e) {
@@ -122,7 +129,20 @@ public class JIRAIssueBean implements JIRAIssue {
         this.created = getTextSafely(e, "created");
         this.updated = getTextSafely(e, "updated");
         this.resolution = getTextSafely(e, "resolution");
-    }
+
+		this.parentIssueKey = getTextSafely(e, "parent");
+		this.thisIsASubTask = parentIssueKey != null;
+		subTaskList = new ArrayList<String>();
+		Element subtasks = e.getChild("subtasks");
+		if (subtasks != null) {
+			for (Object subtask : subtasks.getChildren("subtask")) {
+				String subTaskKey = ((Element) subtask).getText();
+				if (subTaskKey != null) {
+					subTaskList.add(subTaskKey);
+				}
+			}
+		}
+	}
 
     public JIRAConstant getPriorityConstant() {
         return priorityConstant;
@@ -195,7 +215,19 @@ public class JIRAIssueBean implements JIRAIssue {
         return id;
     }
 
-    public String getProjectKey() {
+	public boolean isSubTask() {
+		return thisIsASubTask;
+	}
+
+	public String getParentIssueKey() {
+		return parentIssueKey;
+	}
+
+	public List<String> getSubTaskKeys() {
+		return subTaskList;
+	}
+
+	public String getProjectKey() {
         return projectKey;
     }
 

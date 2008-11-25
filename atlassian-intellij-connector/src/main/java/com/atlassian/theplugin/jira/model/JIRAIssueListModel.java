@@ -9,6 +9,8 @@ public interface JIRAIssueListModel extends FrozenModel {
 	void addIssue(JIRAIssue issue);
 	void addIssues(Collection<JIRAIssue> issues);
 	Collection<JIRAIssue> getIssues();
+	Collection<JIRAIssue> getIssuesNoSubtasks();
+	Collection<JIRAIssue> getSubtasks(JIRAIssue parent);
 
 	void setSeletedIssue(JIRAIssue issue);
 	JIRAIssue getSelectedIssue();
