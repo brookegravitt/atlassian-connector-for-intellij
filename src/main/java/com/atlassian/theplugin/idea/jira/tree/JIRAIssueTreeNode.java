@@ -102,8 +102,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		p.setBackground(bgColor);
 		JPanel panel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
 		panel.setBackground(UIUtil.getTreeTextBackground());
-		panel.add(icon, cc.xy(1,1));
-		panel.add(p, cc.xy(2,1));
+		panel.add(icon, cc.xy(1, 1));
+		panel.add(p, cc.xy(2, 1));
 
 		//panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
 		//((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.TRAILING);

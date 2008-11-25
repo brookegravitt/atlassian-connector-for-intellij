@@ -64,7 +64,7 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 		panel.add(groupComponet, cc.xy(2, 1));
 
 
-		mainPanel.add(panel, cc.xy(2,1));
+		mainPanel.add(panel, cc.xy(2, 1));
 		return mainPanel;
 	}
 
