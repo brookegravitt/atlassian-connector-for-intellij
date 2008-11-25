@@ -16,12 +16,17 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class JiraProjectConfiguration {
+@State(name = "atlassian-ide-plugin-workspace-issues",
+		storages = {@Storage(id = "atlassian-ide-plugin-workspace-issues-id", file = "$WORKSPACE_FILE$")})
+public class JiraProjectConfiguration implements PersistentStateComponent<JiraProjectConfiguration> {
 	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 
@@ -53,8 +58,8 @@ public class JiraProjectConfiguration {
 	public JiraFilterConfigurationBean getJiraFilterConfiguaration(String id) {
 		JiraFilterConfigurationBean filter = filters.get(id);
 		if (filter == null) {
-			filters.put(id, new JiraFilterConfigurationBean());
-			filter = filters.get(id);
+			filter = new JiraFilterConfigurationBean();
+			filters.put(id, filter);
 		}
 		return filter;
 	}
@@ -64,4 +69,11 @@ public class JiraProjectConfiguration {
 		filters.put(serverId, filterConfiguration);
 	}
 
+	public JiraProjectConfiguration getState() {
+		return this;
+	}
+
+	public void loadState(final JiraProjectConfiguration jiraProjectConfiguration) {
+		copyConfiguration(jiraProjectConfiguration);
+	}
 }

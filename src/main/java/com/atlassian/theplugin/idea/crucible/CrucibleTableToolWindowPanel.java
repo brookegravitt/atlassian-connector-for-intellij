@@ -444,7 +444,7 @@ public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStat
 
 	private void showCrucibleCustomFilterPanel() {
 		filterEditToolbarSetVisible(true);
-		setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());
+		setScrollPaneViewport(crucibleCustomFilterPanel.$$$getRootComponent$$$());       
 	}
 
 	public void showCrucibleCustomFilter() {
