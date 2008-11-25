@@ -51,10 +51,15 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 
 		panel.setBackground(bgColor);
 		SimpleColoredComponent groupComponet = new SimpleColoredComponent();
+		JLabel label = new JLabel();
+		label.setBackground(UIUtil.getTreeTextBackground());
+		
 		if (c.isEnabled()) {
-			mainPanel.add(new JLabel(expanded ? iconOpen : iconClosed), cc.xy(1, 1));
+			label.setIcon(expanded ? iconOpen : iconClosed);
+			mainPanel.add(label, cc.xy(1, 1));
 		} else {
-			mainPanel.add(new JLabel(expanded ? disabledIconOpen : disabledIconClosed), cc.xy(1, 1));
+			label.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
+			mainPanel.add(label, cc.xy(1, 1));
 		}
 		
 		groupComponet.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
@@ -64,6 +69,7 @@ public class JIRAIssueGroupTreeNode extends JIRAAbstractTreeNode {
 		panel.add(groupComponet, cc.xy(2, 1));
 
 
+		mainPanel.setBackground(UIUtil.getTreeTextBackground());
 		mainPanel.add(panel, cc.xy(2, 1));
 		return mainPanel;
 	}
