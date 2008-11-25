@@ -2,8 +2,9 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
@@ -54,7 +55,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	private Project project;
-	private ProjectConfigurationBean projectConfigurationBean;
+	private JiraProjectConfiguration jiraProjectCfg;
 	private CfgManager cfgManager;
 	private JPanel serversPanel = new JPanel(new BorderLayout());
 	private JPanel issuesPanel = new JPanel(new BorderLayout());
@@ -83,15 +84,14 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 	private JIRAServerModel jiraServerModel;
 	private ConfigurationListener configListener = new LocalConfigurationListener();
-	private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
 	private boolean groupSubtasksUnderParent;
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
-								 @NotNull final ProjectConfigurationBean projectConfigurationBean, 
-								 @NotNull final CfgManager cfgManager) {
-		this.project = project;		
-		this.projectConfigurationBean = projectConfigurationBean;
+			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, @NotNull final CfgManager cfgManager,
+			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator) {
+		this.project = project;
+		this.jiraProjectCfg = jiraProjectConfiguration;
 		this.cfgManager = cfgManager;
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -100,12 +100,9 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		this.messagePane = new MessageScrollPane("Issues panel");
 		add(messagePane, BorderLayout.SOUTH);
 
-		if (projectConfigurationBean.getJiraConfiguration() != null
-				&& projectConfigurationBean.getJiraConfiguration().getView() != null
-				&& projectConfigurationBean.getJiraConfiguration().getView().getGroupBy() != null) {
-			groupBy = projectConfigurationBean.getJiraConfiguration().getView().getGroupBy();
-			groupSubtasksUnderParent = projectConfigurationBean.getJiraConfiguration().getView()
-					.isCollapseSubtasksUnderParent();
+		if (jiraProjectConfiguration.getView() != null && jiraProjectConfiguration.getView().getGroupBy() != null) {
+			groupBy = jiraProjectConfiguration.getView().getGroupBy();
+			groupSubtasksUnderParent = jiraProjectConfiguration.getView().isCollapseSubtasksUnderParent();
 		} else {
 			groupBy = JiraIssueGroupBy.TYPE;
 			groupSubtasksUnderParent = false;
@@ -145,7 +142,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		if (jiraFilterListModelBuilder != null) {
 			jiraFilterListModelBuilder.setListModel(jiraFilterListModel);
 			jiraFilterListModelBuilder.setProjectId(CfgUtil.getProjectId(project));
-			jiraFilterListModelBuilder.setProjectConfigurationBean(projectConfigurationBean);
+			jiraFilterListModelBuilder.setJiraProjectCfg(jiraProjectConfiguration);
 		}
 		currentIssueListModel.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel model) {
@@ -204,11 +201,11 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 				//if (isChanged) {
 					refreshIssues();
 				//}
-				projectConfigurationBean.getJiraConfiguration().getView()
+				jiraProjectConfiguration.getView()
 						.setViewServerId(jiraServer.getServerId().toString());
-				projectConfigurationBean.getJiraConfiguration().getView()
+				jiraProjectConfiguration.getView()
 						.setViewServerId(jiraServer.getServerId().toString());
-				projectConfigurationBean.getJiraConfiguration().getView()
+				jiraProjectConfiguration.getView()
 						.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 
 			}
@@ -219,10 +216,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 					showManualFilterPanel(false);
 					setIssuesFilterParams(jiraServer, savedFilter);
 					refreshIssues();
-					projectConfigurationBean.getJiraConfiguration().getView()
-							.setViewServerId(jiraServer.getServerId().toString());
-					projectConfigurationBean.getJiraConfiguration().getView()
-							.setViewFilterId(Long.toString(savedFilter.getId()));
+					jiraProjectConfiguration.getView().setViewServerId(jiraServer.getServerId().toString());
+					jiraProjectConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
 				}
 			}
 		});
@@ -236,7 +231,6 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
-		freezeSynchronizator = IdeaHelper.getProjectComponent(project, IssueToolWindowFreezeSynchronizator.class);
 		freezeSynchronizator.setIssueModel(currentIssueListModel);
 		freezeSynchronizator.setServerModel(jiraServerModel);
 		freezeSynchronizator.setFilterModel(jiraFilterListModel);
@@ -792,7 +786,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		manualFilterEditDetailsPanel = new JIRAManualFilterDetailsPanel(jiraFilterListModel, projectConfigurationBean,
+		manualFilterEditDetailsPanel = new JIRAManualFilterDetailsPanel(jiraFilterListModel, jiraProjectCfg,
 																			project, jiraServerModel);
 
 		filterListScrollPane.setWheelScrollingEnabled(true);
@@ -870,7 +864,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		expandAllIssueTreeNodes();
 
 		// store in project workspace
-		projectConfigurationBean.getJiraConfiguration().getView().setGroupBy(groupBy);
+		jiraProjectCfg.getView().setGroupBy(groupBy);
 	}
 
 	public void createIssue() {
@@ -935,8 +929,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 			issueTreeBuilder.setGroupSubtasksUnderParent(groupSubtasksUnderParent);
 			issueTreeBuilder.rebuild(issueTree, issueTreescrollPane);
 			expandAllIssueTreeNodes();
-			projectConfigurationBean.getJiraConfiguration().getView()
-					.setCollapseSubtasksUnderParent(groupSubtasksUnderParent);
+			jiraProjectCfg.getView().setCollapseSubtasksUnderParent(groupSubtasksUnderParent);
 		}
 	}
 
@@ -998,6 +991,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	}
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
 		public void jiraServersChanged(ProjectConfiguration newConfiguration) {
 			refreshModels();
 		}

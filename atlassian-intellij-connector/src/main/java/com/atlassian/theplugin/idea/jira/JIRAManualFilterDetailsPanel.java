@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
@@ -24,14 +24,14 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 	private JLabel manualFilterDetailsLabel = new JLabel();
 	private JIRAIssueFilterPanel jiraIssueFilterPanel;
 	private Project project;
-	private ProjectConfigurationBean projectConfigBean;
+	private JiraProjectConfiguration jiraProjectCfg;
 	private JIRAServerModel jiraServerModel;
 	private JButton editButton;
 
-	JIRAManualFilterDetailsPanel(JIRAFilterListModel listModel, ProjectConfigurationBean projectConfigBean, Project project,
+	JIRAManualFilterDetailsPanel(JIRAFilterListModel listModel, JiraProjectConfiguration jiraProjectCfg, Project project,
 						  JIRAServerModel jiraServerModel) {
 		super(new BorderLayout());
-		this.projectConfigBean = projectConfigBean;
+		this.jiraProjectCfg = jiraProjectCfg;
 		this.listModel = listModel;
 		this.project = project;
 		this.jiraServerModel = jiraServerModel;
@@ -98,11 +98,8 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 					listModel.setManualFilter(jiraServer, manualFilter);
 					listModel.selectManualFilter(jiraServer, manualFilter);
 					// store filter in project workspace
-					projectConfigBean.getJiraConfiguration()
-							.getJiraFilterConfiguaration(
-									listModel.getJiraSelectedServer().getServerId().toString())
-							.setManualFilterForName(
-									JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
+					jiraProjectCfg.getJiraFilterConfiguaration(listModel.getJiraSelectedServer().getServerId().toString())
+							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
 									serializeFilter(jiraIssueFilterPanel.getFilter()));
 				}
 

@@ -6,7 +6,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class JIRAFilterListBuilder {
 	private JIRAFilterListModel listModel;
-	private ProjectConfigurationBean projectConfigurationBean;
+	private JiraProjectConfiguration jiraProjectCfg;
 	private ProjectId projectId;
 	private final JIRAServerFacade jiraServerFacade;
 	private final CfgManager cfgManager;
@@ -48,13 +48,13 @@ public class JIRAFilterListBuilder {
 		this.listModel = listModel;
 	}
 
-	public void setProjectConfigurationBean(@NotNull ProjectConfigurationBean projectConfigurationBean) {
-		this.projectConfigurationBean = projectConfigurationBean;
+	public void setJiraProjectCfg(@NotNull JiraProjectConfiguration jiraProjectCfg) {
+		this.jiraProjectCfg = jiraProjectCfg;
 	}
 
 	public void rebuildModel() throws JIRAServerFiltersBuilderException {
-		final String filterId = projectConfigurationBean.getJiraConfiguration().getView().getViewFilterId();
-		final String filterServerId = projectConfigurationBean.getJiraConfiguration().getView().getViewServerId();
+		final String filterId = jiraProjectCfg.getView().getViewFilterId();
+		final String filterServerId = jiraProjectCfg.getView().getViewServerId();
 
 		try {
 			listModel.setModelFrozen(true);
@@ -88,8 +88,6 @@ public class JIRAFilterListBuilder {
 	}
 
 	public void addServerSavedFilter(final JiraServerCfg jiraServer, final String filterId) throws JIRAException {
-		List<JIRAQueryFragment> filters = null;
-
 		JIRASavedFilter selection = null;
 		long selectionId = -1;
 		try {
@@ -98,7 +96,7 @@ public class JIRAFilterListBuilder {
 			// invalid filter id wil not be set
 		}
 
-		filters = jiraServerFacade.getSavedFilters(jiraServer);
+		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
 		List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
 
 		for (JIRAQueryFragment query : filters) {
@@ -117,11 +115,10 @@ public class JIRAFilterListBuilder {
 
 	private void addManualFilter(final JiraServerCfg jiraServer, final String filterId) {
 
-		if (projectConfigurationBean != null && projectConfigurationBean.getJiraConfiguration() != null) {
+		if (jiraProjectCfg != null) {
 
-			List<JiraFilterEntryBean> filter = projectConfigurationBean.getJiraConfiguration()
-					.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
-					.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+			List<JiraFilterEntryBean> filter = jiraProjectCfg.getJiraFilterConfiguaration(
+					jiraServer.getServerId().toString()).getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 
 			List<JIRAQueryFragment> query;
 			if (filter != null) {
@@ -149,6 +146,7 @@ public class JIRAFilterListBuilder {
 		private Map<JiraServerCfg, JIRAException> exceptions = new HashMap<JiraServerCfg, JIRAException>();
 
 		public void addException(JiraServerCfg server, JIRAException e) {
+			//noinspection ThrowableResultOfMethodCallIgnored
 			exceptions.put(server, e);
 		}
 
