@@ -204,8 +204,10 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 					refreshIssues();
 
-					projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
-					projectConfigurationBean.getJiraConfiguration().getView().setViewServerId(jiraServer.getServerId().toString());
+					projectConfigurationBean.getJiraConfiguration().getView()
+							.setViewServerId(jiraServer.getServerId().toString());
+					projectConfigurationBean.getJiraConfiguration().getView()
+							.setViewServerId(jiraServer.getServerId().toString());
 					projectConfigurationBean.getJiraConfiguration().getView()
 							.setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 				}
