@@ -24,11 +24,13 @@ public class JIRAIssueTreeBuilder {
 	private DefaultTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new JIRAIssueTreeRenderer();
 	private JTree lastTree;
+	private boolean isGroupSubtasksUnderParent;
 
 	private Map<String, String> projectKeysToNames;
 
-	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, JIRAIssueListModel model) {
+	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model) {
 		this.groupBy = groupBy;
+		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;
 		lastTree = null;
 
@@ -63,8 +65,20 @@ public class JIRAIssueTreeBuilder {
 	public synchronized void rebuild(JTree tree, JComponent treeParent) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		reCreateTree(tree, treeParent, root);
-		for (JIRAIssue issue : issueModel.getIssues()) {
-			getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
+		if (isGroupSubtasksUnderParent) {
+			for (JIRAIssue issue : issueModel.getIssuesNoSubtasks()) {
+				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issueModel, issue);
+				getPlace(issue, root).add(node);
+				if (!issue.getSubTaskKeys().isEmpty()) {
+					for (JIRAIssue sub : issueModel.getSubtasks(issue)) {
+						node.add(new JIRAIssueTreeNode(issueModel, sub));
+					}
+				}
+			}
+		} else {
+			for (JIRAIssue issue : issueModel.getIssues()) {
+				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
+			}
 		}
 		treeModel.nodeStructureChanged(root);
 	}
@@ -109,6 +123,10 @@ public class JIRAIssueTreeBuilder {
 
 	private void registerUI(JTree tree) {
 		tree.setUI(new MyTreeUI());
+	}
+
+	public void setGroupSubtasksUnderParent(boolean groupSubtasksUnderParent) {
+		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 	}
 
 	private class MyTreeUI extends BasicWideNodeTreeUI {

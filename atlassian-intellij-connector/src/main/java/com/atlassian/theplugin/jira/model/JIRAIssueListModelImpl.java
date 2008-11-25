@@ -2,9 +2,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel, FrozenModel {
 
@@ -44,6 +42,31 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	public Collection<JIRAIssue> getIssues() {
 		return issues.values();
+	}
+
+	public Collection<JIRAIssue> getIssuesNoSubtasks() {
+		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+
+		for (JIRAIssue i : issues.values()) {
+			if (!i.isSubTask()) {
+				list.add(i);
+			}
+		}
+		return list;
+	}
+
+	public Collection<JIRAIssue> getSubtasks(JIRAIssue parent) {
+		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+
+		for (JIRAIssue i : getIssues()) {
+			for (String key : parent.getSubTaskKeys()) {
+				if (key.equals(i.getKey())) {
+					list.add(i);
+					break;
+				}
+			}
+		}
+		return list;
 	}
 
 	public void fireModelChanged() {
