@@ -39,8 +39,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		parent.addIssues(issues);
 	}
 
-	public Collection<JIRAIssue> getIssues() {
-		Collection<JIRAIssue> col = parent.getIssues();
+	public Collection<JIRAIssue> search(Collection<JIRAIssue> col) {
 		if (searchTerm.length() == 0) {
 			return col;
 		}
@@ -51,6 +50,18 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 			}
 		}
 		return list;
+	}
+
+	public Collection<JIRAIssue> getIssues() {
+		return search(parent.getIssues());
+	}
+
+	public Collection<JIRAIssue> getIssuesNoSubtasks() {
+		return search(parent.getIssuesNoSubtasks());
+	}
+
+	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
+		return search(parent.getSubtasks(p));
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {

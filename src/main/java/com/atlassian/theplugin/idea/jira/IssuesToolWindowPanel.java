@@ -87,6 +87,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private JIRAServerModel jiraServerModel;
 	private ConfigurationListener configListener = new LocalConfigurationListener();
 	private IssueToolWindowFreezeSynchronizator freezeSynchronizator;
+	private boolean groupSubtasksUnderParent;
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project, @NotNull final PluginConfigurationBean pluginConfiguration,
@@ -106,8 +107,10 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 				&& projectConfigurationBean.getJiraConfiguration().getView() != null
 				&& projectConfigurationBean.getJiraConfiguration().getView().getGroupBy() != null) {
 			groupBy = projectConfigurationBean.getJiraConfiguration().getView().getGroupBy();
+			groupSubtasksUnderParent = projectConfigurationBean.getJiraConfiguration().getView().isCollapseSubtasksUnderParent();
 		} else {
 			groupBy = JiraIssueGroupBy.TYPE;
+			groupSubtasksUnderParent = false;
 		}
 		jiraFilterListModel = new JIRAFilterListModel();
 		JIRAIssueListModel baseIssueListModel = JIRAIssueListModelImpl.createInstance();
@@ -116,7 +119,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		currentIssueListModel = searchingIssueListModel;
 
 		jiraIssueListModelBuilder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), currentIssueListModel);
+		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel);
 
 		jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModelImpl.class);
 
@@ -917,6 +920,21 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 	public ConfigurationListener getConfigListener() {
 		return configListener;
+	}
+
+	public boolean isGroupSubtasksUnderParent() {
+		return groupSubtasksUnderParent;
+	}
+
+	public void setGroupSubtasksUnderParent(boolean state) {
+		if (state != groupSubtasksUnderParent) {
+			groupSubtasksUnderParent = state;
+			issueTreeBuilder.setGroupSubtasksUnderParent(groupSubtasksUnderParent);
+			issueTreeBuilder.rebuild(issueTree, issueTreescrollPane);
+			expandAllIssueTreeNodes();
+			projectConfigurationBean.getJiraConfiguration().getView()
+					.setCollapseSubtasksUnderParent(groupSubtasksUnderParent);
+		}
 	}
 
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {

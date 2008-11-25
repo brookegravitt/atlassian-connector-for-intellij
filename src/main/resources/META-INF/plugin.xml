@@ -588,6 +588,10 @@
 		<action id="ThePlugin.JiraIssues.GroupByCombo"
 		        class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
 				text="Group By"/>
+		<action id="ThePlugin.JiraIssues.GroupSubtasks"
+		        class="com.atlassian.theplugin.idea.action.issues.GroupSubtasks"
+				text="Collapse Sub Issues Under Parent"
+				icon="/icons/inspector/sortByCategory.png" />
 		<action id="ThePlugin.JiraIssues.Refresh"
 				class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction"
 				text="Refresh"
@@ -659,6 +663,7 @@
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
 			<reference id="ThePlugin.JiraIssues.GroupByCombo"/>
+			<reference id="ThePlugin.JiraIssues.GroupSubtasks"/>
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
 			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
 			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
