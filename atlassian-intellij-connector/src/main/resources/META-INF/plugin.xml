@@ -607,7 +607,7 @@
  		<action id="ThePlugin.JiraIssues.CreateIssue"
 		        class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
 				text="Create JIRA Issue"
-				icon="/general/add.png">
+				icon="/icons/add_jira.png">
 			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
 		</action>
 		<action id="ThePlugin.JiraIssues.QuickSearch"
