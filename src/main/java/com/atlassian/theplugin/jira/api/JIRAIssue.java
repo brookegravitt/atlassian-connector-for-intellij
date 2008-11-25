@@ -67,6 +67,12 @@ public interface JIRAIssue {
 
 	String getUpdated();
 
+	boolean isSubTask();
+
+	String getParentIssueKey();
+
+	List<String> getSubTaskKeys();
+
 	long getPriorityId();
 
 	long getStatusId();

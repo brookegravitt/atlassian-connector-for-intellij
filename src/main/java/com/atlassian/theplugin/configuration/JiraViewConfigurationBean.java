@@ -23,6 +23,7 @@ public class JiraViewConfigurationBean {
 	private String viewServerId;
 	private String viewFilterId;
 	private JiraIssueGroupBy groupBy;
+	private boolean collapseSubtasksUnderParent;
 
 	public JiraViewConfigurationBean() {
 	}
@@ -49,5 +50,13 @@ public class JiraViewConfigurationBean {
 
 	public void setGroupBy(final JiraIssueGroupBy groupBy) {
 		this.groupBy = groupBy;
+	}
+
+	public boolean isCollapseSubtasksUnderParent() {
+		return collapseSubtasksUnderParent;
+	}
+
+	public void setCollapseSubtasksUnderParent(boolean collapseSubtasksUnderParent) {
+		this.collapseSubtasksUnderParent = collapseSubtasksUnderParent;
 	}
 }

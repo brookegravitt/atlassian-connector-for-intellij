@@ -28,14 +28,25 @@ public abstract class AbstractSortingJIRAIssueListModel
 
 	protected abstract Comparator<JIRAIssue> getComparator();
 
-	public Collection<JIRAIssue> getIssues() {
-		Collection<JIRAIssue> col = parent.getIssues();
+	private Collection<JIRAIssue> sort(Collection<JIRAIssue> col) {
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 		for (JIRAIssue i : col) {
 			list.add(i);
 		}
 		Collections.sort(list, getComparator());
 		return list;
+	}
+
+	public Collection<JIRAIssue> getIssues() {
+		return sort(parent.getIssues());
+	}
+
+	public Collection<JIRAIssue> getIssuesNoSubtasks() {
+		return sort(parent.getIssuesNoSubtasks());
+	}
+
+	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
+		return sort(parent.getSubtasks(p));
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {
