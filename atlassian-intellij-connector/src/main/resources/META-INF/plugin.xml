@@ -96,7 +96,10 @@
         <arealistener implementation="com.atlassian.theplugin.idea.PerProjectPicoInit"/>
         <customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
         <errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
-        <projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel" serviceImplementation="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"/>
+        <projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"
+                serviceImplementation="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"/>
+        <projectService serviceInterface="com.atlassian.theplugin.configuration.JiraProjectConfiguration" 
+                serviceImplementation="com.atlassian.theplugin.configuration.JiraProjectConfiguration"/>
     </extensions>
 
     <application-components>
