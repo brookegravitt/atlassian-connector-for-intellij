@@ -11,13 +11,13 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
-	private static final int GAP = 6;
-    private static final int ICON_HEIGHT = 16;
-    private static final int RIGHT_PADDING = 24;
 
 	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
 		this.model = model;
@@ -27,9 +27,9 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		int x = 0;
-		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon
-		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, "
-				+ "left:pref, left:pref, left:pref, 10dlu", "pref:grow"));
+		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon/issueUpdated
+		JPanel p = new JPanel(new FormLayout("left:pref, left:pref, left:pref:grow, left:pref,"
+				+ "left:pref, left:pref, 70dlu, 10dlu", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
@@ -78,6 +78,19 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 			priorityIcon.setIcon(prioIcon);
 			p.add(priorityIcon, cc);
         }
+
+		cc.xy(++x, 1);
+		SimpleColoredComponent updated = new SimpleColoredComponent();
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		String t;
+		try {
+			t = ds.format(df.parse(issue.getUpdated()));
+		} catch (ParseException e) {
+			t = "Invalid";
+		}
+		updated.append(t, textAttributes);
+		p.add(updated, cc);
 
 		JLabel padding = new JLabel("  ");
 		cc.xy(++x, 1);
