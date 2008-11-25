@@ -60,8 +60,8 @@ public class JIRAFilterListModel implements FrozenModel {
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedManualFilter = manualFilter;
 
-			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL ||
-					manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter);
+			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL
+					|| manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter);
 
 			filterTypeSlection = TypeOfFilterSelected.MANUAL;
 			fireManualFilterSelected(isChanged);
@@ -134,7 +134,8 @@ public class JIRAFilterListModel implements FrozenModel {
 	public void fireManualFilterSelected(boolean isChanged) {
 		for (JIRAFilterListModelListener listener : listeners) {
 			if (jiraSelectedManualFilter != null && jiraSelectedServer != null) {
-				listener.selectedManualFilter(jiraSelectedServer, jiraSelectedManualFilter.getQueryFragment(),isChanged);
+				listener.selectedManualFilter(jiraSelectedServer, jiraSelectedManualFilter.getQueryFragment(),
+						isChanged);
 			}
 		}
 	}
