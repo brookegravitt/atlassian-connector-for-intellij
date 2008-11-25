@@ -44,11 +44,13 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedModelChanged++;
 			}
 
-			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
+											boolean isChanged) {
 				notifiedSavedFilterSelected++;
 			}
 
-			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
+			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
+											 boolean isChanged) {
 				notifiedManualFilterSelected++;
 			}
 
@@ -56,8 +58,8 @@ public class JIRAFilterListModelTest extends TestCase {
 
 		for (int i=0; i<10; i++) {
 			listModel.fireModelChanged();
-			listModel.fireManualFilterSelected();
-			listModel.fireSavedFilterSelected();
+			listModel.fireManualFilterSelected(true);
+			listModel.fireSavedFilterSelected(true);
 		}
 
 		assertEquals(notifiedModelChanged, 10);
@@ -72,8 +74,8 @@ public class JIRAFilterListModelTest extends TestCase {
 		
 		for (int i=0; i<10; i++) {
 			listModel.fireModelChanged();
-			listModel.fireManualFilterSelected();
-			listModel.fireSavedFilterSelected();
+			listModel.fireManualFilterSelected(true);
+			listModel.fireSavedFilterSelected(true);
 		}
 
 		assertEquals(20, notifiedModelChanged);
@@ -109,12 +111,14 @@ public class JIRAFilterListModelTest extends TestCase {
 			public void modelChanged(final JIRAFilterListModel listModel) {
 			}
 
-			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
+											boolean isChanged) {
 				assertTrue(finalFilters.getSavedFilters().contains(savedFilter));
 				assertTrue(jServer.equals(jiraServer));
 			}
 
-			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter) {
+			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
+											 boolean isChanged) {
 				assertTrue(manual.getQueryFragment().equals(manualFilter));
 				assertTrue(jServer.equals(jiraServer));
 			}

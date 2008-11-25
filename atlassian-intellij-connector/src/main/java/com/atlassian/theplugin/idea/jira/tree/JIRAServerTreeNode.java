@@ -20,6 +20,7 @@ public class JIRAServerTreeNode extends JIRAAbstractTreeNode {
 	public JIRAServerTreeNode(final JIRAFilterListModel listModel, JiraServerCfg jiraServer) {
 		this.listModel = listModel;
 		this.jiraServer = jiraServer;
+		
 	}
 
 	public String toString() {
@@ -28,10 +29,8 @@ public class JIRAServerTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
 
-		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
-		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
-
-		fgColor = c.isEnabled() ? fgColor : UIUtil.getInactiveTextColor();
+		Color bgColor = UIUtil.getTreeTextBackground();
+		Color fgColor = UIUtil.getTreeTextForeground();
 
 		JLabel label = new JLabel(jiraServer.getName(), JIRA_SERVER_ENABLED_ICON, SwingUtilities.LEADING);
 		label.setForeground(fgColor);
@@ -49,5 +48,13 @@ public class JIRAServerTreeNode extends JIRAAbstractTreeNode {
 	}
 
 	public void onSelect() {
+		if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.SAVED) {
+
+			listModel.selectSavedFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedSavedFilter());
+		} else if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.MANUAL) {
+			listModel.selectManualFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedManualFilter());
+
+		}
+
 	}
 }
