@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -996,68 +995,17 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	}
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
-
-		@Override
-		public void serverDataUpdated(ServerId serverId) {
-			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-			if (server.getServerType() == ServerType.JIRA_SERVER) {
-				refreshModels();
-			}
+		public void jiraServersChanged(ProjectConfiguration newConfiguration) {
+			refreshModels();
 		}
 
 		//		@Override
-//		public void serverConnectionDataUpdated(ServerId serverId) {
-//			// refresh the Issues View only if currently displayed server has been changed
-//			if (jiraIssueListModelBuilder.getServer().getServerId().equals(serverId)) {
+//		public void serverDataChanged(ServerId serverId) {
+//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+//			if (server.getServerType() == ServerType.JIRA_SERVER) {
 //				refreshModels();
 //			}
 //		}
-//
-//		@Override
-//		public void serverNameUpdated(ServerId serverId) {
-//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-//			// refresh the view only if JIRA enabled server has been changed
-//			if (server.isEnabled() && server.getServerType() == ServerType.JIRA_SERVER) {
-//				// todo PL-854 refresh only labels on the filter tree
-////				refreshFilterModel();
-////				jiraFilterListModel.fireModelChanged();
-//			}
-//		}
-//
-//		@Override
-//		public void serverEnabled(ServerId serverId) {
-//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-//			// refresh the view only if JIRA enabled server has been changed
-//			if (server.getServerType() == ServerType.JIRA_SERVER) {
-//				// todo PL-854 load data for newly enabled server
-////				refreshFilterModel();
-////				jiraFilterListModel.fireModelChanged();
-//			}
-//		}
-//
-//		@Override
-//		public void serverDisabled(ServerId serverId) {
-//			// todo PL-854 refresh only Filters View without reloading data from server
-////				refreshFilterModel();
-////				jiraFilterListModel.fireModelChanged();
-//		}
-//
-//		@Override
-//		public void serverAdded(ServerCfg newServer) {
-//			// refresh Filters View only if new enabled server has been added
-//			if (newServer.isEnabled()) {
-//				// do the same functionality as for enabled server
-//				serverEnabled(newServer.getServerId());
-//			}
-//		}
-//
-//		@Override
-//		public void serverRemoved(ServerCfg oldServer) {
-//			// refresh Filter View only if removed server was enabled
-//			if (oldServer.isEnabled()) {
-//				// do the same functionality as for disabled server
-//				serverDisabled(oldServer.getServerId());
-//			}
-//		}
+
 	}
 }

@@ -170,6 +170,4 @@ public class JIRAFilterListModel implements FrozenModel {
 			listener.modelFrozen(this, this.modelFrozen);
 		}
 	}
-
-
 }
