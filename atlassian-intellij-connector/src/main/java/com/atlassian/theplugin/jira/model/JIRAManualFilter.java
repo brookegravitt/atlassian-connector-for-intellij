@@ -11,10 +11,18 @@ import java.util.TreeMap;
  */
 public final class JIRAManualFilter {
 	private enum QueryElement {
-		PROJECT("Project"), ISSUE_TYPE("Issue Type"), FIX_FOR("Fix For"),
-		COMPONENTS("Components"), AFFECTS_VERSIONS("Affects Versions"), REPORTER("Reporter"),
-		ASSIGNEE("Assignee"), STATUS("Status"), RESOLUTIONS("Resolutions"),
-		PRIORITIES("Priorities"), UNKNOWN("Unknown");
+		PROJECT("Project"),
+		ISSUE_TYPE("Issue Type"),
+		FIX_FOR("Fix For"),
+		COMPONENTS("Components"),
+		AFFECTS_VERSIONS("Affects Versions"),
+		REPORTER("Reporter"),
+		ASSIGNEE("Assignee"),
+		STATUS("Status"),
+		RESOLUTIONS("Resolutions"),
+		PRIORITIES("Priorities"),
+		UNKNOWN("Unknown");
+
 		private String name;
 
 		QueryElement(final String name) {
@@ -72,41 +80,42 @@ public final class JIRAManualFilter {
 		TreeMap<QueryElement, ArrayList<String>> map = new TreeMap<QueryElement, ArrayList<String>>();
 
 		for (JIRAQueryFragment fragment : queryFragment) {
+			QueryElement qe = QueryElement.UNKNOWN;
 			if (fragment instanceof JIRAProjectBean) {
-				addValueToMap(map, QueryElement.PROJECT, fragment.getName());
+				qe = QueryElement.PROJECT;
 			} else if (fragment instanceof JIRAIssueTypeBean) {
-				addValueToMap(map, QueryElement.ISSUE_TYPE, fragment.getName());
+				qe = QueryElement.ISSUE_TYPE;
 			} else if (fragment instanceof JIRAStatusBean) {
-				addValueToMap(map, QueryElement.STATUS, fragment.getName());
+				qe = QueryElement.STATUS;
 			} else if (fragment instanceof JIRAPriorityBean) {
-				addValueToMap(map, QueryElement.PRIORITIES, fragment.getName());
+				qe = QueryElement.PRIORITIES;
 			} else if (fragment instanceof JIRAResolutionBean) {
-				addValueToMap(map, QueryElement.RESOLUTIONS, fragment.getName());
+				qe = QueryElement.RESOLUTIONS;
 			} else if (fragment instanceof JIRAFixForVersionBean) {
-				addValueToMap(map, QueryElement.FIX_FOR, fragment.getName());
+				qe = QueryElement.FIX_FOR;
 			} else if (fragment instanceof JIRAComponentBean) {
-				addValueToMap(map, QueryElement.COMPONENTS, fragment.getName());
+				qe = QueryElement.COMPONENTS;
 			} else if (fragment instanceof JIRAVersionBean) {
-				addValueToMap(map, QueryElement.AFFECTS_VERSIONS, fragment.getName());
+				qe = QueryElement.AFFECTS_VERSIONS;
 			} else if (fragment instanceof JIRAAssigneeBean) {
-				addValueToMap(map, QueryElement.ASSIGNEE, fragment.getName());
+				qe = QueryElement.ASSIGNEE;
 			} else if (fragment instanceof JIRAReporterBean) {
-				addValueToMap(map, QueryElement.REPORTER, fragment.getName());
-			} else {
-				addValueToMap(map, QueryElement.UNKNOWN, fragment.getName());
+				qe = QueryElement.REPORTER;
 			}
-
-
+			addValueToMap(map, qe, fragment);
 		}
 		return map;
 
 	}
 
-	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key, final String value) {
-		if (!map.containsKey(key)) {
-			map.put(key, new ArrayList<String>());
+	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key,
+							   final JIRAQueryFragment fragment) {
+		if (fragment.getId() != JIRAServerCache.ANY_ID) {
+			if (!map.containsKey(key)) {
+				map.put(key, new ArrayList<String>());
+			}
+			map.get(key).add(fragment.getName());
 		}
-		map.get(key).add(value);
 	}
 
 
