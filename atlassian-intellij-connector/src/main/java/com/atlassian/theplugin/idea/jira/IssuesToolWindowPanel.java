@@ -201,9 +201,9 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 				showManualFilterPanel(true);
 				setIssuesFilterParams(jiraServer, manualFilter);
-				if (isChanged) {
+				//if (isChanged) {
 					refreshIssues();
-				}
+				//}
 				projectConfigurationBean.getJiraConfiguration().getView()
 						.setViewServerId(jiraServer.getServerId().toString());
 				projectConfigurationBean.getJiraConfiguration().getView()
