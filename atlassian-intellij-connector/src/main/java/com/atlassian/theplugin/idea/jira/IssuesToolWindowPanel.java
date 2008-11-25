@@ -107,7 +107,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 				&& projectConfigurationBean.getJiraConfiguration().getView() != null
 				&& projectConfigurationBean.getJiraConfiguration().getView().getGroupBy() != null) {
 			groupBy = projectConfigurationBean.getJiraConfiguration().getView().getGroupBy();
-			groupSubtasksUnderParent = projectConfigurationBean.getJiraConfiguration().getView().isCollapseSubtasksUnderParent();
+			groupSubtasksUnderParent = projectConfigurationBean.getJiraConfiguration().getView()
+					.isCollapseSubtasksUnderParent();
 		} else {
 			groupBy = JiraIssueGroupBy.TYPE;
 			groupSubtasksUnderParent = false;
