@@ -26,6 +26,6 @@ import java.util.List;
  */
 public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
-	void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter);
-	void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter);	
+	void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter, boolean isChanged);
+	void selectedManualFilter(JiraServerCfg jiraServer, List<JIRAQueryFragment> manualFilter, boolean isChanged);	
 }

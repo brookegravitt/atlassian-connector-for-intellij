@@ -33,7 +33,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		getSelectionModel().addTreeSelectionListener(treeSelectionListener);
 		setCellRenderer(MY_RENDERER);
-
+		
 		reCreateTree(listModel);
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
@@ -129,10 +129,14 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 	}
 
-	public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
+	public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
+									boolean isChanged) {
+		setSelectionSavedFilter();
 	}
 
-	public void selectedManualFilter(final JiraServerCfg jiraServer, final java.util.List<JIRAQueryFragment> manualFilter) {
+	public void selectedManualFilter(final JiraServerCfg jiraServer,
+									 final java.util.List<JIRAQueryFragment> manualFilter, boolean isChanged) {
+		setSelectionManualFilter();
 	}
 
 
