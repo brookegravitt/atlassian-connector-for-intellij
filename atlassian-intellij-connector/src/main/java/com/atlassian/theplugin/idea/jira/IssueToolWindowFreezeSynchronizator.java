@@ -37,20 +37,20 @@ public final class IssueToolWindowFreezeSynchronizator {
 				if (filterModel != null) {
 					filterModel.setModelFrozen(frozen);
 				}
-				if (serverModel != null) {
-					serverModel.setModelFrozen(frozen);
-				}
+
 			}
 		});
 
 		serverModel.addFrozenModelListener(new FrozenModelListener() {
 
 			public void modelFrozen(FrozenModel model, boolean frozen) {
-				if (filterModel != null) {
-					filterModel.setModelFrozen(frozen);
+				if (issueModel != null) {
+					issueModel.setModelFrozen(frozen);
 				}
 			}
 		});
+
+
 	}
 			}
 }
