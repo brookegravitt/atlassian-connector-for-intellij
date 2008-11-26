@@ -592,7 +592,7 @@
 		        class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
 				text="Group By"/>
 		<action id="ThePlugin.JiraIssues.GroupSubtasks"
-		        class="com.atlassian.theplugin.idea.action.issues.GroupSubtasks"
+		        class="com.atlassian.theplugin.idea.action.issues.GroupSubtasksAction"
 				text="Collapse Sub Issues Under Parent"
 				icon="/icons/inspector/sortByCategory.png" />
 		<action id="ThePlugin.JiraIssues.Refresh"
