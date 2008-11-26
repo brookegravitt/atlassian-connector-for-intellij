@@ -9,16 +9,17 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
-import java.awt.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  * User: pmaruszak
  */
 public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener {
 
-	private static final ServerTreeRenderer MY_RENDERER = new ServerTreeRenderer();
-	private DefaultTreeModel treeModel;
+	private static final JIRAFilterTreeRenderer MY_RENDERER = new JIRAFilterTreeRenderer();
 	private FilterTreeSelectionListener treeSelectionListener = new FilterTreeSelectionListener();
 	private JIRAFilterListModel listModel;
 	private boolean isAlreadyInitialized = false;
@@ -46,6 +47,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 	}
 
 	private void reCreateTree(final JIRAFilterListModel aListModel) {
+		DefaultTreeModel treeModel;
 		removeAll();
 		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
 		treeModel = new DefaultTreeModel(rootNode);
@@ -164,21 +166,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 			node.add(new JIRAManualFilterTreeNode(aListModel, manualFilter));
 		}
 
-	}
-
-	private static class ServerTreeRenderer extends DefaultTreeCellRenderer {
-		@Override
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-													  boolean expanded, boolean leaf, int row, boolean hasFocus) {
-
-			JComponent c = (JComponent) super.getTreeCellRendererComponent(
-					tree, value, selected, expanded, leaf, row, hasFocus);
-
-			if (value instanceof JIRAAbstractTreeNode) {
-				return ((JIRAAbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
-			}
-			return c;
-		}
 	}
 
 	class FilterTreeSelectionListener implements TreeSelectionListener {
