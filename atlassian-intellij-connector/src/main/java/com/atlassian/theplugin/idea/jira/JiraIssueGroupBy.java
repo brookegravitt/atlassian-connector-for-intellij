@@ -5,7 +5,8 @@ public enum JiraIssueGroupBy {
 	PROJECT("Project"),
 	TYPE("Type"),
 	STATUS("Status"),
-	PRIORITY("Priority");
+	PRIORITY("Priority"),
+	LAST_UPDATED("Last Updated");
 
 	private String name;
 
