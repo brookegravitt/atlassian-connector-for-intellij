@@ -43,11 +43,13 @@ public class JIRAFilterListModel implements FrozenModel {
 
 	public void selectSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 		if (serversFilters.containsKey(jiraServer) && getSavedFilters(jiraServer).contains(savedFilter)) {
+			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.SAVED
+					|| (savedFilter != null && !savedFilter.equals(jiraSelectedSavedFilter)
+					    || !jiraSelectedServer.equals(jiraServer));
+
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedSavedFilter = savedFilter;
 
-			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.SAVED
-					|| savedFilter != null && !savedFilter.equals(jiraSelectedSavedFilter);
 
 			filterTypeSlection = TypeOfFilterSelected.SAVED;
 			fireSavedFilterSelected(isChanged);
@@ -57,11 +59,13 @@ public class JIRAFilterListModel implements FrozenModel {
 
 	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter) {
 		if (serversFilters.containsKey(jiraServer)) {
+			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL
+					|| (manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter)
+						|| !jiraSelectedServer.equals(jiraServer));
+			
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedManualFilter = manualFilter;
 
-			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL
-					|| manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter);
 
 			filterTypeSlection = TypeOfFilterSelected.MANUAL;
 			fireManualFilterSelected(isChanged);
