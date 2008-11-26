@@ -4,8 +4,6 @@ import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.intellij.util.ui.UIUtil;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -104,15 +102,11 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
-		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendDayOfMonth(2).appendLiteral("/")
-				.appendMonthOfYear(2).appendLiteral("/").appendYear(4, 4).appendLiteral(" ")
-				.appendHourOfDay(2).appendLiteral(":").appendMinuteOfHour(2).appendLiteral(":")
-				.appendSecondOfMinute(2).toFormatter();
-
+		DateFormat dfo = new SimpleDateFormat("dd/MM/yyyy HH:mm Z");
+		
 		String t;
 		try {
-			t = ds.format(df.parse(issue.getUpdated()));
+			t = dfo.format(df.parse(issue.getUpdated()));
 		} catch (java.text.ParseException e) {
 			t = "Invalid";
 		}
