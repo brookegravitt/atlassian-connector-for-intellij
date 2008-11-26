@@ -4,6 +4,8 @@ import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.intellij.util.ui.UIUtil;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,26 +27,36 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	}
 
 	private final class SelectableLabel extends JLabel {
-		private SelectableLabel(boolean selected, String text) {
-			this(selected, text, null, SwingConstants.LEADING);
+		private SelectableLabel(boolean selected, boolean enabled, String text) {
+			this(selected, enabled, text, null, SwingConstants.LEADING);
 		}
 
-		private SelectableLabel(boolean selected, String text, Icon icon, int alignment) {
+		private SelectableLabel(boolean selected, boolean enabled, String text, Icon icon, int alignment) {
 			super(text, SwingConstants.LEADING);
 
 			if (icon != null) {
-				setIcon(icon);
+				if (enabled) {
+					setIcon(icon);
+				} else {
+					setDisabledIcon(icon);
+				}
 			}
+
+			setEnabled(enabled);
+			Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
+			fgColor = enabled?fgColor: UIUtil.getInactiveTextColor();
 
 			setHorizontalTextPosition(alignment);
             setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_HEIGHT));
             setOpaque(true);
 			setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-			setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+			setForeground(fgColor);
 		}
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
+		boolean enabled = c.isEnabled();
+
 		JPanel p = new JPanel();
 		p.setBackground(UIUtil.getTreeTextBackground());
 		p.setLayout(new GridBagLayout());
@@ -54,41 +66,49 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		gbc.weightx = 0.0;
 		gbc.insets = new Insets(0, 0, 0, GAP);
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel icon = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.LEADING);
-		icon.setOpaque(true);
-		icon.setBackground(UIUtil.getTreeTextBackground());
-		p.add(icon, gbc);
+		Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl()) :
+						CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+		JLabel typeLabel = new JLabel(typeIcon, SwingConstants.LEADING);
+		typeLabel.setOpaque(true);
+		typeLabel.setBackground(UIUtil.getTreeTextBackground());
+		p.add(typeLabel, gbc);
 
 		gbc.insets = new Insets(0, 0, 0, 0);
 		gbc.gridx++;
-		JLabel key = new SelectableLabel(selected, issue.getKey() + ": ");
+		JLabel key = new SelectableLabel(selected, enabled, issue.getKey() + ": ");
 		p.add(key, gbc);
 
 		gbc.gridx++;
 		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		JLabel summary = new SelectableLabel(selected, issue.getSummary());
+		JLabel summary = new SelectableLabel(selected, enabled, issue.getSummary());
 		p.add(summary, gbc);
 
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel state = new SelectableLabel(selected, issue.getStatus(),
-				CachedIconLoader.getIcon(issue.getStatusTypeUrl()), SwingConstants.LEADING);
+		Icon statusIcon = enabled ? CachedIconLoader.getIcon(issue.getStatusTypeUrl()) :
+				CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
+		JLabel state = new SelectableLabel(selected, enabled, issue.getStatus(), statusIcon, SwingConstants.LEADING);
 		p.add(state, gbc);
 
-        Icon prioIcon = CachedIconLoader.getIcon(issue.getPriorityIconUrl());
+        Icon prioIcon = enabled ? CachedIconLoader.getIcon(issue.getPriorityIconUrl()) :
+				CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
 
             gbc.gridx++;
             gbc.weightx = 0.0;
 	        gbc.insets = new Insets(0, 0, 0, 0);
-			JLabel prio = new SelectableLabel(selected, "", prioIcon, SwingConstants.LEADING);
+			JLabel prio = new SelectableLabel(selected, enabled, "", prioIcon, SwingConstants.LEADING);
 			prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 			p.add(prio, gbc);
 
 
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendDayOfMonth(2).appendLiteral("/")
+				.appendMonthOfYear(2).appendLiteral("/").appendYear(4, 4).appendLiteral(" ")
+				.appendHourOfDay(2).appendLiteral(":").appendMinuteOfHour(2).appendLiteral(":")
+				.appendSecondOfMinute(2).toFormatter();
 
 		String t;
 		try {
@@ -98,7 +118,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		}
 		gbc.gridx++;
         gbc.weightx = 0.0;
-		JLabel updated = new SelectableLabel(selected, t, null, SwingConstants.LEADING);
+		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING);
 		p.add(updated, gbc);
 
 		JPanel padding = new JPanel();
