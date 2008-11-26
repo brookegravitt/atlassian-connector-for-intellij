@@ -15,6 +15,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 	private static final int GAP = 6;
+	private static final int ICON_WIDTH = 16;
     private static final int ICON_HEIGHT = 16;
     private static final int RIGHT_PADDING = 24;
 
@@ -82,7 +83,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
             gbc.weightx = 0.0;
 	        gbc.insets = new Insets(0, 0, 0, 0);
 			JLabel prio = new SelectableLabel(selected, "", prioIcon, SwingConstants.LEADING);
-			prio.setPreferredSize(new Dimension(16, 16));
+			prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 			p.add(prio, gbc);
 
 
