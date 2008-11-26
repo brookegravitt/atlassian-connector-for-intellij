@@ -48,6 +48,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 
 			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter,
 											 boolean isChanged) {
+			
 			}
 
 		});
@@ -96,7 +97,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 					listModel.clearManualFilter(jiraServer);
 					manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
 					listModel.setManualFilter(jiraServer, manualFilter);
-					listModel.selectManualFilter(jiraServer, manualFilter);
+					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
 					jiraProjectCfg.getJiraFilterConfiguaration(listModel.getJiraSelectedServer().getServerId().toString())
 							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
