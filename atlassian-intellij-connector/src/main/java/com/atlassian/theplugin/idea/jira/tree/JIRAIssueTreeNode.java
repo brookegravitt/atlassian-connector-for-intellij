@@ -102,7 +102,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-		DateFormat dfo = new SimpleDateFormat("dd/MM/yyyy");
+		DateFormat dfo = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 		
 		String t;
 		try {
