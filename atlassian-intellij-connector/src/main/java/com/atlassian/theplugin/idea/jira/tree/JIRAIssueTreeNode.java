@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
@@ -17,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
-	private final static Icon unknownIcon = IconLoader.getIcon("/actions/help.png");
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
@@ -79,7 +77,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 
 		JLabel stateLabel;
-		if (statusIcon != null ) {
+		if (statusIcon != null) {
 			stateLabel = new JLabel(statusIcon);
 		} else {
 			stateLabel = new JLabel("");
