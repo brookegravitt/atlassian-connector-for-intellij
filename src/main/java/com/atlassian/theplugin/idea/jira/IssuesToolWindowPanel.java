@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.Constants;

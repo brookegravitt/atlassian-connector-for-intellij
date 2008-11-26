@@ -117,8 +117,9 @@ public class JIRAFilterListBuilder {
 
 		if (jiraProjectCfg != null) {
 
-			List<JiraFilterEntryBean> filter = jiraProjectCfg.getJiraFilterConfiguaration(
-					jiraServer.getServerId().toString()).getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+			List<JiraFilterEntryBean> filter =
+					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
+							.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 
 			List<JIRAQueryFragment> query;
 			if (filter != null) {
