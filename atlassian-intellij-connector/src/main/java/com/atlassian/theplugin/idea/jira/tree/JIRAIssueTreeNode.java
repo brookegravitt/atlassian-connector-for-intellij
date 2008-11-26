@@ -86,7 +86,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 			p.add(prio, gbc);
 
 
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
 
 		String t;
