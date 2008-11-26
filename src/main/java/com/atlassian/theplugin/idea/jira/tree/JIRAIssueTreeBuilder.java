@@ -8,6 +8,8 @@ import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -15,6 +17,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class JIRAIssueTreeBuilder {
@@ -25,6 +29,29 @@ public class JIRAIssueTreeBuilder {
 	private static final TreeCellRenderer TREE_RENDERER = new JIRAIssueTreeRenderer();
 	private JTree lastTree;
 	private boolean isGroupSubtasksUnderParent;
+
+	public enum UpdateGroup {
+		UPDATED_TODAY("Today"),
+		UPDATED_YESTERDAY("Yesterday"),
+		UPDATED_TWO_DAYS_AGO("2 Days Ago"),
+		UPDATED_THIS_WEEK("This Week"),
+		UPDATED_LAST_WEEK("Last Week"),
+		UPDATED_THIS_MONTH("This Month"),
+		UPDATED_LAST_MONTH("Last Month"),
+		UPDATED_EARLIER("Older"),
+		UPDATED_INVALID("Invalid or Unknown");
+
+		private String name;
+
+		UpdateGroup(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+	}
 
 	private Map<String, String> projectKeysToNames;
 
@@ -64,6 +91,9 @@ public class JIRAIssueTreeBuilder {
 
 	public synchronized void rebuild(JTree tree, JComponent treeParent) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
+			createUpdateGroups(root);
+		}
 		reCreateTree(tree, treeParent, root);
 		if (isGroupSubtasksUnderParent) {
 			for (JIRAIssue issue : issueModel.getIssuesNoSubtasks()) {
@@ -79,6 +109,9 @@ public class JIRAIssueTreeBuilder {
 			for (JIRAIssue issue : issueModel.getIssues()) {
 				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
 			}
+		}
+		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
+			pruneEmptyUpdateGroups(root);
 		}
 		treeModel.nodeStructureChanged(root);
 	}
@@ -159,6 +192,9 @@ public class JIRAIssueTreeBuilder {
 				name = issue.getType();
 				iconUrl = issue.getTypeIconUrl();
 				break;
+			case LAST_UPDATED:
+				name = updatedDate2Name(issue).toString();
+				break;
 			default:
 				return root;
 		}
@@ -172,6 +208,56 @@ public class JIRAIssueTreeBuilder {
 			root.add(n);
 		}
 		return n;
+	}
+
+	private UpdateGroup updatedDate2Name(JIRAIssue issue) {
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		UpdateGroup groupName;
+		try {
+			DateMidnight midnight = new DateMidnight();
+			DateTime updated = new DateTime(df.parse(issue.getUpdated()).getTime());
+
+			if (updated.isAfter(midnight)) {
+				groupName = UpdateGroup.UPDATED_TODAY;
+			} else if (updated.isAfter(midnight.minusDays(1))) {
+				groupName = UpdateGroup.UPDATED_YESTERDAY;
+			} else if (updated.isAfter(midnight.minusDays(2))) {
+				groupName = UpdateGroup.UPDATED_TWO_DAYS_AGO;
+			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfWeek()))) {
+				groupName = UpdateGroup.UPDATED_THIS_WEEK;
+			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfWeek() + 7))) {
+				groupName = UpdateGroup.UPDATED_LAST_WEEK;
+			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfMonth()))) {
+				groupName = UpdateGroup.UPDATED_THIS_MONTH;
+			} else if (updated.isAfter(midnight.minusMonths(1))) {
+				groupName = UpdateGroup.UPDATED_LAST_MONTH;
+			} else {
+				groupName = UpdateGroup.UPDATED_EARLIER;
+			}
+		} catch (java.text.ParseException e) {
+			groupName = UpdateGroup.UPDATED_INVALID;
+		}
+		return groupName;
+	}
+
+	private void createUpdateGroups(DefaultMutableTreeNode root) {
+		for (UpdateGroup g : UpdateGroup.values()) {
+			root.add(new JIRAIssueGroupTreeNode(issueModel, g.toString(), null, null));
+		}
+	}
+
+	private void pruneEmptyUpdateGroups(DefaultMutableTreeNode root) {
+		boolean haveEmptyNodes;
+		do {
+			haveEmptyNodes = false;
+			for (int i = 0; i < root.getChildCount(); ++i) {
+				if (root.getChildAt(i).getChildCount() == 0) {
+					root.remove(i);
+					haveEmptyNodes = true;
+					break;
+				}
+			}
+		} while (haveEmptyNodes);
 	}
 
 	private String getProjectName(String key) {
