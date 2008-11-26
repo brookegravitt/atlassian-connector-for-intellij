@@ -20,14 +20,14 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 		        tree, value, selected, expanded, leaf, row, hasFocus);
 
 		if (value instanceof JIRAManualFilterTreeNode && c instanceof JLabel) {
-			((JLabel)c).setIcon(JIRA_MANUAL_FILTER_ICON);
+			((JLabel) c).setIcon(JIRA_MANUAL_FILTER_ICON);
 			
 			return c;
 
 		}
 
 		if (value instanceof JIRASavedFilterTreeNode && c instanceof JLabel) {
-			((JLabel)c).setIcon(JIRA_SAVED_FILTER_ICON);
+			((JLabel) c).setIcon(JIRA_SAVED_FILTER_ICON);
 			return c;
 
 		}
