@@ -44,7 +44,7 @@ public class JIRAFilterListModel implements FrozenModel {
 	public void selectSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter) {
 		if (serversFilters.containsKey(jiraServer) && getSavedFilters(jiraServer).contains(savedFilter)) {
 			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.SAVED
-					|| (savedFilter != null && !savedFilter.equals(jiraSelectedSavedFilter)
+				|| (savedFilter != null && !savedFilter.equals(jiraSelectedSavedFilter)
 					    || !jiraSelectedServer.equals(jiraServer));
 
 			this.jiraSelectedServer = jiraServer;
@@ -57,18 +57,28 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter) {
+	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter,
+					boolean forceRefresh) {
 		if (serversFilters.containsKey(jiraServer)) {
-			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL
-					|| (manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter)
-						|| !jiraSelectedServer.equals(jiraServer));
-			
+
 			this.jiraSelectedServer = jiraServer;
 			this.jiraSelectedManualFilter = manualFilter;
 
 
 			filterTypeSlection = TypeOfFilterSelected.MANUAL;
-			fireManualFilterSelected(isChanged);
+			fireManualFilterSelected(forceRefresh);
+		}
+
+
+	}
+
+	public void selectManualFilter(final JiraServerCfg jiraServer, final JIRAManualFilter manualFilter) {
+		if (serversFilters.containsKey(jiraServer)) {
+			boolean isChanged = filterTypeSlection != TypeOfFilterSelected.MANUAL
+					|| (manualFilter != null && !manualFilter.equals(jiraSelectedManualFilter)
+					|| !jiraSelectedServer.equals(jiraServer));
+
+			selectManualFilter(jiraServer, manualFilter, isChanged);
 		}
 	}
 

@@ -100,6 +100,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 							JIRASavedFilterTreeNode savedFilterNode = (JIRASavedFilterTreeNode) node.getChildAt(j);
 							if (savedFilterNode.getSavedFilter().equals(listModel.getJiraSelectedSavedFilter())) {
 								setSelectionPath(new TreePath(savedFilterNode.getPath()));
+								scrollPathToVisible(new TreePath(savedFilterNode.getPath()));
 								break;
 							}
 						}
@@ -123,6 +124,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);
 							if (manualFilterNode.getManualFilter().equals(listModel.getJiraSelectedManualFilter())) {
 								setSelectionPath(new TreePath(manualFilterNode.getPath()));
+								scrollPathToVisible(new TreePath(manualFilterNode.getPath()));
 								break;
 							}
 						}
