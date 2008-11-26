@@ -210,6 +210,9 @@ public class JIRAIssueTreeBuilder {
 		return n;
 	}
 
+	// isn't this constant defined somewhere?
+	private static final int DAYS_IN_WEEK = 7;
+
 	private UpdateGroup updatedDate2Name(JIRAIssue issue) {
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		UpdateGroup groupName;
@@ -225,7 +228,7 @@ public class JIRAIssueTreeBuilder {
 				groupName = UpdateGroup.UPDATED_TWO_DAYS_AGO;
 			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfWeek()))) {
 				groupName = UpdateGroup.UPDATED_THIS_WEEK;
-			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfWeek() + 7))) {
+			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfWeek() + DAYS_IN_WEEK))) {
 				groupName = UpdateGroup.UPDATED_LAST_WEEK;
 			} else if (updated.isAfter(midnight.minusDays(midnight.getDayOfMonth()))) {
 				groupName = UpdateGroup.UPDATED_THIS_MONTH;
