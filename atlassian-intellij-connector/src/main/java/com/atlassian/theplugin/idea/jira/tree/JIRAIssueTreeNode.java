@@ -3,11 +3,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.intellij.ui.SimpleColoredComponent;
-import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,121 +14,106 @@ import java.util.Locale;
 public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
+	private static final int GAP = 6;
+    private static final int ICON_HEIGHT = 16;
+    private static final int RIGHT_PADDING = 24;
 
 	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
 		this.model = model;
 		this.issue = issue;
 	}
 
+	private final class SelectableLabel extends JLabel {
+		private SelectableLabel(boolean selected, String text) {
+			this(selected, text, null, SwingConstants.LEADING);
+		}
+
+		private SelectableLabel(boolean selected, String text, Icon icon, int alignment) {
+			super(text, SwingConstants.LEADING);
+
+			if (icon != null) {
+				setIcon(icon);
+			}
+
+			setHorizontalTextPosition(alignment);
+            setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_HEIGHT));
+            setOpaque(true);
+			setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+			setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+		}
+	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		int x = 0;
-		//typeIcon/issueKey/issueSummary/issueState/stateLabel/priorityIcon
-		JPanel p = new JPanel(new FormLayout("left:pref, left:pref:grow, "
-				+ "left:pref, left:pref, left:16px, :70dlu, 10dlu", "pref:grow"));
-		CellConstraints cc = new CellConstraints();
-		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
-		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
+		JPanel p = new JPanel();
+		p.setBackground(UIUtil.getTreeTextBackground());
+		p.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0.0;
+		gbc.insets = new Insets(0, 0, 0, GAP);
+		gbc.fill = GridBagConstraints.NONE;
+		JLabel icon = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.LEADING);
+		icon.setOpaque(true);
+		icon.setBackground(UIUtil.getTreeTextBackground());
+		p.add(icon, gbc);
 
-		fgColor = c.isEnabled() ? fgColor : UIUtil.getInactiveTextColor();
+		gbc.insets = new Insets(0, 0, 0, 0);
+		gbc.gridx++;
+		JLabel key = new SelectableLabel(selected, issue.getKey() + ": ");
+		p.add(key, gbc);
 
-		SimpleTextAttributes textAttributes = new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor);
+		gbc.gridx++;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		JLabel summary = new SelectableLabel(selected, issue.getSummary());
+		p.add(summary, gbc);
 
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		JLabel state = new SelectableLabel(selected, issue.getStatus(),
+				CachedIconLoader.getIcon(issue.getStatusTypeUrl()), SwingConstants.LEADING);
+		p.add(state, gbc);
 
-		Icon typeIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+        Icon prioIcon = CachedIconLoader.getIcon(issue.getPriorityIconUrl());
 
-		JLabel typeLabel;
-		if (typeIcon != null) {
-			typeLabel = new JLabel(typeIcon, SwingConstants.LEADING);
-		} else {
-			typeLabel = new JLabel("");
-		}
-		//typeLabel.setBackground(UIUtil.getTreeTextBackground());
-//		p.add(icon, cc.xy(++x, 1));
-
-		cc.xy(++x, 1);
-		SimpleColoredComponent key = new SimpleColoredComponent();
-		key.append(issue.getKey(), textAttributes);
-		p.add(key, cc);
-
-		cc.xy(++x, 1);
-		SimpleColoredComponent summary = new SimpleColoredComponent();
-		summary.append(issue.getSummary(), textAttributes);
-		p.add(summary, cc);
-
-//		cc.xy(++x, 1);
-//		JLabel growLabel = new JLabel("");
-//		growLabel.setForeground(fgColor);
-//		growLabel.setBackground(bgColor);
-//		p.add(growLabel, cc);
-
-		cc.xy(++x, 1);
-		Icon statusIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
-
-		SimpleColoredComponent state = new SimpleColoredComponent();
-		state.append(issue.getStatus(), textAttributes);
-		p.add(state, cc);
+            gbc.gridx++;
+            gbc.weightx = 0.0;
+	        gbc.insets = new Insets(0, 0, 0, 0);
+			JLabel prio = new SelectableLabel(selected, "", prioIcon, SwingConstants.LEADING);
+			prio.setPreferredSize(new Dimension(16, 16));
+			p.add(prio, gbc);
 
 
-		JLabel stateLabel;
-		if (statusIcon != null) {
-			stateLabel = new JLabel(statusIcon);
-		} else {
-			stateLabel = new JLabel("");
-		}
-		cc.xy(++x, 1);
-		p.add(stateLabel, cc);
-
-		Icon prioIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getPriorityIconUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
-
-
-		JLabel priorityLabel;
-		if (prioIcon != null) {
-			priorityLabel = new JLabel(prioIcon);
-		} else {
-			priorityLabel = new JLabel("");
-		}
-		priorityLabel.setBackground(bgColor);
-		priorityLabel.setForeground(fgColor);
-		cc.xy(++x, 1);
-		p.add(priorityLabel, cc);
-
-		cc.xy(++x, 1);
-		SimpleColoredComponent updated = new SimpleColoredComponent();
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
 
 		String t;
-		
 		try {
 			t = ds.format(df.parse(issue.getUpdated()));
 		} catch (java.text.ParseException e) {
 			t = "Invalid";
 		}
+		gbc.gridx++;
+        gbc.weightx = 0.0;
+		JLabel updated = new SelectableLabel(selected, t, null, SwingConstants.LEADING);
+		p.add(updated, gbc);
 
-		updated.append(t, textAttributes);
-		p.add(updated, cc);
+		JPanel padding = new JPanel();
+        gbc.gridx++;
+        gbc.weightx = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+        padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
+		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+        padding.setOpaque(true);
+        p.add(padding, gbc);
 
-		JLabel padding = new JLabel("  ");
-		cc.xy(++x, 1);
-		padding.setBackground(fgColor);
-		padding.setForeground(bgColor);
-        p.add(padding, cc);
-
-		p.setBackground(bgColor);
-		JPanel panel = new JPanel(new FormLayout("pref, pref:grow", "pref:grow"));
-		panel.setBackground(UIUtil.getTreeTextBackground());
-		panel.add(typeLabel, cc.xy(1, 1));
-		panel.add(p, cc.xy(2, 1));
-
-		//panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
-		//((FlowLayout)panel.getLayout()).setAlignment(FlowLayout.TRAILING);
-
-		return panel;
-	}
+        return p;
+		}
 
 	public void onSelect() {
 		model.setSeletedIssue(issue);	
