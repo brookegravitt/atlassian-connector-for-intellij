@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
@@ -13,8 +14,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
+	private final static Icon unknownIcon = IconLoader.getIcon("/actions/help.png");
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
@@ -26,9 +29,9 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		int x = 0;
-		//typeIcon/issueKey/issueSummary/issueState/stateIcon/priorityIcon
+		//typeIcon/issueKey/issueSummary/issueState/stateLabel/priorityIcon
 		JPanel p = new JPanel(new FormLayout("left:pref, left:pref:grow, "
-				+ "left:pref, left:pref, left:pref, 70dlu, 10dlu", "pref:grow"));
+				+ "left:pref, left:pref, left:16px, :70dlu, 10dlu", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
@@ -41,8 +44,13 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		Icon typeIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
 				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
-		JLabel icon = new JLabel(typeIcon, SwingConstants.LEADING);
-		icon.setBackground(UIUtil.getTreeTextBackground());
+		JLabel typeLabel;
+		if (typeIcon != null) {
+			typeLabel = new JLabel(typeIcon, SwingConstants.LEADING);
+		} else {
+			typeLabel = new JLabel("");
+		}
+		//typeLabel.setBackground(UIUtil.getTreeTextBackground());
 //		p.add(icon, cc.xy(++x, 1));
 
 		cc.xy(++x, 1);
@@ -55,6 +63,12 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		summary.append(issue.getSummary(), textAttributes);
 		p.add(summary, cc);
 
+//		cc.xy(++x, 1);
+//		JLabel growLabel = new JLabel("");
+//		growLabel.setForeground(fgColor);
+//		growLabel.setBackground(bgColor);
+//		p.add(growLabel, cc);
+
 		cc.xy(++x, 1);
 		Icon statusIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
 				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
@@ -63,25 +77,36 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		state.append(issue.getStatus(), textAttributes);
 		p.add(state, cc);
 
+
+		JLabel stateLabel;
+		if (statusIcon != null ) {
+			stateLabel = new JLabel(statusIcon);
+		} else {
+			stateLabel = new JLabel("");
+		}
 		cc.xy(++x, 1);
-		SimpleColoredComponent stateIcon = new SimpleColoredComponent();
-		stateIcon.setIcon(statusIcon);
-		p.add(stateIcon, cc);
+		p.add(stateLabel, cc);
 
 		Icon prioIcon = c.isEnabled() ? CachedIconLoader.getIcon(issue.getPriorityIconUrl())
 				: CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
 
+
+		JLabel priorityLabel;
 		if (prioIcon != null) {
-			cc.xy(++x, 1);
-			SimpleColoredComponent priorityIcon = new SimpleColoredComponent();
-			priorityIcon.setIcon(prioIcon);
-			p.add(priorityIcon, cc);
-        }
+			priorityLabel = new JLabel(prioIcon);
+		} else {
+			priorityLabel = new JLabel("");
+		}
+		priorityLabel.setBackground(bgColor);
+		priorityLabel.setForeground(fgColor);
+		cc.xy(++x, 1);
+		p.add(priorityLabel, cc);
 
 		cc.xy(++x, 1);
 		SimpleColoredComponent updated = new SimpleColoredComponent();
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+
 		String t;
 		
 		try {
@@ -100,9 +125,9 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         p.add(padding, cc);
 
 		p.setBackground(bgColor);
-		JPanel panel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
+		JPanel panel = new JPanel(new FormLayout("pref, pref:grow", "pref:grow"));
 		panel.setBackground(UIUtil.getTreeTextBackground());
-		panel.add(icon, cc.xy(1, 1));
+		panel.add(typeLabel, cc.xy(1, 1));
 		panel.add(p, cc.xy(2, 1));
 
 		//panel.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
