@@ -42,7 +42,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 			setEnabled(enabled);
 			Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
-			fgColor = enabled?fgColor: UIUtil.getInactiveTextColor();
+			fgColor = enabled ? fgColor : UIUtil.getInactiveTextColor();
 
 			setHorizontalTextPosition(alignment);
             setPreferredSize(new Dimension((int) getPreferredSize().getWidth(), ICON_HEIGHT));
@@ -64,8 +64,8 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		gbc.weightx = 0.0;
 		gbc.insets = new Insets(0, 0, 0, GAP);
 		gbc.fill = GridBagConstraints.NONE;
-		Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl()) :
-						CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+		Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
+				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 		JLabel typeLabel = new JLabel(typeIcon, SwingConstants.LEADING);
 		typeLabel.setOpaque(true);
 		typeLabel.setBackground(UIUtil.getTreeTextBackground());
@@ -85,13 +85,13 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		Icon statusIcon = enabled ? CachedIconLoader.getIcon(issue.getStatusTypeUrl()) :
-				CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
+		Icon statusIcon = enabled ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
+				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
 		JLabel state = new SelectableLabel(selected, enabled, issue.getStatus(), statusIcon, SwingConstants.LEADING);
 		p.add(state, gbc);
 
-        Icon prioIcon = enabled ? CachedIconLoader.getIcon(issue.getPriorityIconUrl()) :
-				CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
+        Icon prioIcon = enabled ? CachedIconLoader.getIcon(issue.getPriorityIconUrl())
+				: CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
 
             gbc.gridx++;
             gbc.weightx = 0.0;
