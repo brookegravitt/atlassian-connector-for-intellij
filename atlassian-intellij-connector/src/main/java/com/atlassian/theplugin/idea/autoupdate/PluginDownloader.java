@@ -97,6 +97,7 @@ public class PluginDownloader {
 			if (pluginDescr == null) {
 				IdeaActionScheduler.getInstance().invokeLater(new Runnable() {
 					public void run() {
+						// todo add project or parent to the below window
 						Messages.showErrorDialog("Cannot retrieve plugin descriptor", "Error installing plugin");
 					}
 				});
@@ -124,7 +125,8 @@ public class PluginDownloader {
 				String title = "IDEA shutdown";
 				String message =
 						"Atlassian IntelliJ Connector has been installed successfully. "
-						+ "Do you want to restart IDEA to activate the plugin?"; 
+						+ "Do you want to restart IDEA to activate the plugin?";
+				// todo again add project or parent to the below window
 				int answer = Messages.showYesNoDialog(
 						message, title, Messages.getQuestionIcon());
 				if (answer == DialogWrapper.OK_EXIT_CODE) {
@@ -224,6 +226,10 @@ public class PluginDownloader {
 			StartupActionScriptManager.ActionCommand deleteOld = new StartupActionScriptManager.DeleteCommand(oldFile);
 			StartupActionScriptManager.addActionCommand(deleteOld);
 			PluginUtil.getLogger().info("Queueing deletion of [" + oldFile.getPath() + "], exists [" + oldFile.exists() + "]");
+		} else {
+			// we shoud not be here
+			PluginUtil.getLogger().warn("Install error. Cannot find plugin [" + installedPlugin.getName()
+					+ "] with id [" + id.getIdString() + "]. Cannot delete old plugin version installing new version");
 		}
 
 		//noinspection HardCodedStringLiteral
@@ -237,23 +243,25 @@ public class PluginDownloader {
 			StartupActionScriptManager.ActionCommand copyPlugin =
 					new StartupActionScriptManager.CopyCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(copyPlugin);
-			PluginUtil.getLogger().info("Queueing copying of [" + localArchiveFile.getAbsolutePath() + "] to ["
+			PluginUtil.getLogger().info("Queueing copying of jar [" + localArchiveFile.getAbsolutePath() + "] to ["
 					+ newFile.getAbsolutePath() + "]");
 		} else {
 			// add command to unzip file to the IDEA/plugins path
 			String unzipPath;
 			if (ZipUtil.isZipContainsFolder(localArchiveFile)) {
 				unzipPath = PathManager.getPluginsPath();
+				PluginUtil.getLogger().info("Zip [" + localArchiveFile + "] contains a root folder");
 			} else {
 				String dirName = installedPlugin.getName();
 				unzipPath = PathManager.getPluginsPath() + File.separator + dirName;
+				PluginUtil.getLogger().info("Zip [" + localArchiveFile + "] does not contain a root folder");
 			}
 
 			File newFile = new File(unzipPath);
 			StartupActionScriptManager.ActionCommand unzip =
 					new StartupActionScriptManager.UnzipCommand(localArchiveFile, newFile);
 			StartupActionScriptManager.addActionCommand(unzip);
-			PluginUtil.getLogger().info("Queueing unzipping of [" + localArchiveFile.getAbsolutePath() + "] to ["
+			PluginUtil.getLogger().info("Queueing unzipping/copying of [" + localArchiveFile.getAbsolutePath() + "] to ["
 					+ newFile.getAbsolutePath() + "]");
 		}
 
