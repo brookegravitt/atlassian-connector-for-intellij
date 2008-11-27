@@ -398,11 +398,22 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Task.Backgroundable tb = new Task.Backgroundable(project, "Setting project-dependent values", false) {
+					List<JIRAConstant> issueType;
+					List<JIRAFixForVersionBean> fixForVersion;
+					List<JIRAComponentBean> components;
+					List<JIRAVersionBean> versions;
 					public void run(ProgressIndicator indicator) {
-						issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
-						fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
-						componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
-						affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
+						issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
+						fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject);
+						components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
+						versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
+					}
+
+					public void onSuccess() {
+						issueTypeList.setListData(issueType.toArray());
+						fixForList.setListData(fixForVersion.toArray());
+						componentsList.setListData(components.toArray());
+						affectsVersionsList.setListData(versions.toArray());
 						enableProjectDependentLists(true);
 						enableFields(true);
 					}
