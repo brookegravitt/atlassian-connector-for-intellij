@@ -523,7 +523,7 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 			body.add(new BoldLabel("Created"), gbc1);
-			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)");
 			DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 			String t;
 			try {
