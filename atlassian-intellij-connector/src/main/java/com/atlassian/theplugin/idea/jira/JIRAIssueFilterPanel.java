@@ -28,9 +28,11 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -39,6 +41,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 
 public class JIRAIssueFilterPanel extends DialogWrapper {
@@ -350,25 +353,17 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	private void refreshGlobalIssueTypeList() {
 		enableFields(false);
-		Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
-			List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
-			@Override
-			public void run(final ProgressIndicator indicator) {
-				issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
-
-				EventQueue.invokeLater(new Runnable() {
+		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+			public void run() {
+				final List<JIRAConstant> issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
+				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						issueTypeList.setListData(issueTypes.toArray());
 						enableFields(true);
 					}
 				});
 			}
-
-			public void onSuccess() {
-
-			}
-		};
-		ProgressManager.getInstance().run(refresh);
+		});
 	}
 
 	private void enableFields(final boolean enable) {
@@ -383,7 +378,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		statusList.setEnabled(enable);
 		prioritiesList.setEnabled(enable);
 		getOKAction().setEnabled(enable);
-		getCancelAction().setEnabled(enable);
+		//getCancelAction().setEnabled(enable);
 		clearFilterAction.setEnabled(enable);
 	}
 
@@ -401,38 +396,26 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	private void setProjectDependendListValues() {
 		enableFields(false);
-		SwingUtilities.invokeLater(new Runnable() {
+		new Thread(new Runnable() {
 			public void run() {
-				Task.Backgroundable tb = new Task.Backgroundable(project, "Setting project-dependent values", false) {
-					List<JIRAConstant> issueType;
-					List<JIRAFixForVersionBean> fixForVersion;
-					List<JIRAComponentBean> components;
-					List<JIRAVersionBean> versions;
-					public void run(ProgressIndicator indicator) {
-						issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
-						fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject);
-						components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
-						versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
-
-						EventQueue.invokeLater(new Runnable() {
-							public void run() {
-								issueTypeList.setListData(issueType.toArray());
-								fixForList.setListData(fixForVersion.toArray());
-								componentsList.setListData(components.toArray());
-								affectsVersionsList.setListData(versions.toArray());
-								enableProjectDependentLists(true);
-								enableFields(true);
-							}
-						});
+				final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
+				final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject);;
+				final List<JIRAComponentBean> components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
+				final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						if (JIRAIssueFilterPanel.this.isShowing()) {
+							issueTypeList.setListData(issueType.toArray());
+							fixForList.setListData(fixForVersion.toArray());
+							componentsList.setListData(components.toArray());
+							affectsVersionsList.setListData(versions.toArray());
+							enableProjectDependentLists(true);
+							enableFields(true);
+						}
 					}
-
-					public void onSuccess() {
-
-					}
-				};
-				ProgressManager.getInstance().run(tb);
+				});
 			}
-		});
+		}).start();
 	}
 
 	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
@@ -441,16 +424,20 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	}
 
+	@Override
 	public void show() {
 		projectList.addListSelectionListener(null);
 		enableFields(false);
 
 		Task.Backgroundable tb = new Task.Backgroundable(project, "Querying for JIRA data", false) {
+			@Override
 			public void run(ProgressIndicator indicator) {
 				projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
-				setListValues(projectList, initialFilter);
-				if ((projectList.getSelectedValues().length > 0) && projectList.getSelectedValues()[0] != null) {
-					currentJiraProject = (JIRAProject) projectList.getSelectedValues()[0];
+				final List<Integer> prjSel = getSelection(projectList.getModel(), initialFilter);
+				if (prjSel.size() == 1) {
+					currentJiraProject = (JIRAProject) projectList.getModel().getElementAt(prjSel.get(0));
+				} else {
+					currentJiraProject = null;
 				}
 
 				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
@@ -472,13 +459,14 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
-						setListValues(statusList, initialFilter);
-						setListValues(prioritiesList, initialFilter);
-						setListValues(resolutionsList, initialFilter);
-						setListValues(issueTypeList, initialFilter);
-						setListValues(componentsList, initialFilter);
-						setListValues(fixForList, initialFilter);
-						setListValues(affectsVersionsList, initialFilter);
+						setListValues(projectList, prjSel);
+						setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
+						setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
+						setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
+						setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
+						setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
+						setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
+						setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
 						setComboValue(assigneeComboBox, initialFilter);
 						setComboValue(reporterComboBox, initialFilter);
 					}
@@ -495,15 +483,25 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		super.show();
 	}
 
-	public void setListValues(JList list, List<JIRAQueryFragment> advancedQuery) {
+	public void setListValues(JList list, List<Integer> selection) {
+		int i = 0;
+		int[] sel = new int[selection.size()];
+		for (Integer integer : selection) {
+			sel[i++] = integer;
+		}
+		list.setSelectedIndices(sel);
+		list.ensureIndexIsVisible(selection.size() > 0 ? selection.iterator().next() : 0);
+	}
+
+	public List<Integer> getSelection(@NotNull final ListModel model, List<JIRAQueryFragment> advancedQuery) {
 		if (advancedQuery == null) {
-			return;
+			return Collections.emptyList();
 		}
 
 		List<Integer> selection = new ArrayList<Integer>();
-		for (int i = 0, size = list.getModel().getSize(); i < size; ++i) {
+		for (int i = 0, size = model.getSize(); i < size; ++i) {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
-				JIRAQueryFragment fragment = (JIRAQueryFragment) list.getModel().getElementAt(i);
+				JIRAQueryFragment fragment = (JIRAQueryFragment) model.getElementAt(i);
 				if (jiraQueryFragment.getQueryStringFragment().equals(fragment.getQueryStringFragment())) {
 					selection.add(i);
 				}
@@ -515,10 +513,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			for (Integer integer : selection) {
 				sel[j++] = integer;
 			}
-			list.setSelectedIndices(sel);
-			list.ensureIndexIsVisible(sel[0]);
 		}
+		return selection;
 	}
+
 
 	public void setComboValue(JComboBox combo, List<JIRAQueryFragment> advancedQuery) {
 		for (int i = 0, size = combo.getModel().getSize(); i < size; ++i) {
