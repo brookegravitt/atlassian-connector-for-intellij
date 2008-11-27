@@ -62,6 +62,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	}
 
 	public synchronized void addIssuesToModel(int size, boolean reload) throws JIRAException {
+		try {
 		model.setModelFrozen(true);
 		if (server == null || model == null || !(customFilter != null || savedFilter != null)) {
 			if (model != null) {
@@ -89,9 +90,13 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 		startFrom += l != null ? l.size() : 0;
 		
-		model.setModelFrozen(false);
+
 		model.fireModelChanged();
 		model.fireIssuesLoaded(l != null ? l.size() : 0);
+
+		} finally {
+			model.setModelFrozen(false);
+		}
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue) throws JIRAException {
