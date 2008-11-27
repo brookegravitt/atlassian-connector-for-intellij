@@ -351,13 +351,15 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private void refreshGlobalIssueTypeList() {
 		enableFields(false);
 		Task.Backgroundable refresh = new Task.Backgroundable(project, "Retrieving JIRA Issue Type List", false) {
+			List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 			@Override
 			public void run(final ProgressIndicator indicator) {
-				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, null).toArray());
+				issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
 			}
 
 			public void onSuccess() {
-				enableFields(true);				
+				issueTypeList.setListData(issueTypes.toArray());
+				enableFields(true);
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
