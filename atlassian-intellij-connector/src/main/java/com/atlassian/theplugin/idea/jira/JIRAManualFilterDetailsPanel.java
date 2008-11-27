@@ -67,10 +67,10 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 		editButton = new JButton("Edit");
 
 		JScrollPane manualFilterDeatilsScrollPane = new JScrollPane(manualFilterDetailsLabel,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		manualFilterDeatilsScrollPane.getViewport().setBackground(manualFilterDetailsLabel.getBackground());
-		manualFilterDeatilsScrollPane.setWheelScrollingEnabled(true);
+		manualFilterDeatilsScrollPane.setWheelScrollingEnabled(true);		
 
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		buttonPanel.add(editButton);
