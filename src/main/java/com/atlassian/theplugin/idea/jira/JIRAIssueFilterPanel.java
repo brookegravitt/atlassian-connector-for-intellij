@@ -354,7 +354,10 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, null).toArray());
-				enableFields(true);
+			}
+
+			public void onSuccess() {
+				enableFields(true);				
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
