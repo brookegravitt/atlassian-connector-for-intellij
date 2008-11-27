@@ -101,9 +101,9 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 			p.add(prio, gbc);
 
 
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
-		DateFormat dfo = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-		
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
+		//DateFormat dfo = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault());
+		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);		
 		String t;
 		try {
 			t = dfo.format(df.parse(issue.getUpdated()));
@@ -111,21 +111,27 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 			t = "Invalid";
 		}
 		gbc.gridx++;
-        gbc.weightx = 0.0;
+        gbc.weightx = 0.0;		
 		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING);
-		p.add(updated, gbc);
-
+		Dimension minDimension = updated.getPreferredSize();
+		minDimension.setSize(180.0, minDimension.getHeight());
+		
+		updated.setPreferredSize(minDimension);
+		updated.setMinimumSize(minDimension);
+		updated.setMaximumSize(minDimension);
+		
+		p.add(updated, gbc);		
 		JPanel padding = new JPanel();
         gbc.gridx++;
-        gbc.weightx = 0.0;
-        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;		
+		gbc.fill = GridBagConstraints.NONE;
         padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
         padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
         padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
 		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
         padding.setOpaque(true);
-        p.add(padding, gbc);
+        //p.add(padding, gbc);
 
         return p;
 		}
