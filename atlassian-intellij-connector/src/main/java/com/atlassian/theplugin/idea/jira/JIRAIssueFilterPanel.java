@@ -355,11 +355,17 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
+
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						issueTypeList.setListData(issueTypes.toArray());
+						enableFields(true);
+					}
+				});
 			}
 
 			public void onSuccess() {
-				issueTypeList.setListData(issueTypes.toArray());
-				enableFields(true);
+
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
@@ -407,15 +413,21 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 						fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject);
 						components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
 						versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
+
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								issueTypeList.setListData(issueType.toArray());
+								fixForList.setListData(fixForVersion.toArray());
+								componentsList.setListData(components.toArray());
+								affectsVersionsList.setListData(versions.toArray());
+								enableProjectDependentLists(true);
+								enableFields(true);
+							}
+						});
 					}
 
 					public void onSuccess() {
-						issueTypeList.setListData(issueType.toArray());
-						fixForList.setListData(fixForVersion.toArray());
-						componentsList.setListData(components.toArray());
-						affectsVersionsList.setListData(versions.toArray());
-						enableProjectDependentLists(true);
-						enableFields(true);
+
 					}
 				};
 				ProgressManager.getInstance().run(tb);
