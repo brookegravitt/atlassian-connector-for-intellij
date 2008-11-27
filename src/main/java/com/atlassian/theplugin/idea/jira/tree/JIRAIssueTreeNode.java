@@ -114,7 +114,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         gbc.weightx = 0.0;		
 		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING);
 		Dimension minDimension = updated.getPreferredSize();
-		minDimension.setSize(FIXED_DATE_COLUMN_WIDTH, minDimension.getHeight());
+		minDimension.setSize(Math.max(FIXED_DATE_COLUMN_WIDTH, minDimension.getWidth()), minDimension.getHeight());
 		
 		updated.setPreferredSize(minDimension);
 		updated.setMinimumSize(minDimension);
