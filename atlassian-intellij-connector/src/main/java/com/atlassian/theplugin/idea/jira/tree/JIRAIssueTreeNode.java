@@ -18,6 +18,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 	private static final int ICON_WIDTH = 16;
     private static final int ICON_HEIGHT = 16;
     private static final int RIGHT_PADDING = 24;
+	private static final double FIXED_DATE_COLUMN_WIDTH = 180.0;
 
 	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
 		this.model = model;
@@ -102,7 +103,6 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
 
 
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
-		//DateFormat dfo = new SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.getDefault());
 		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);		
 		String t;
 		try {
@@ -114,7 +114,7 @@ public class JIRAIssueTreeNode extends JIRAAbstractTreeNode {
         gbc.weightx = 0.0;		
 		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING);
 		Dimension minDimension = updated.getPreferredSize();
-		minDimension.setSize(180.0, minDimension.getHeight());
+		minDimension.setSize(FIXED_DATE_COLUMN_WIDTH, minDimension.getHeight());
 		
 		updated.setPreferredSize(minDimension);
 		updated.setMinimumSize(minDimension);
