@@ -56,6 +56,7 @@
     <change-notes>
         <![CDATA[
 		<ul>
+			<li>2.0.0-beta-8: More work on new JIRA issues panel</li>
 			<li>2.0.0-beta-7: New layout of the JIRA issues panel</li>
 			<li>2.0.0-beta-6: Bug fixes. Support for IDEA 8. Opening fisheye links in IDEA</li>
 			<li>2.0.0-beta-5: Bug fixes. Fisheye server support. Build information inside the IDE. Re-run failed tests from the build in IDE. Create changelist, assign to myself and start progress in one click</li>
