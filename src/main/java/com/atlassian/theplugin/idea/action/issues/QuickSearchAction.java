@@ -41,7 +41,10 @@ public class QuickSearchAction extends JIRAAbstractAction {
         }
 	}
 
-	public void onUpdate(AnActionEvent event) {		
-
+	public void onUpdate(AnActionEvent event) {
+		final Project project = IdeaHelper.getCurrentProject(event.getDataContext());
+		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+		boolean enabled = builder != null && builder.getServer() != null;
+		event.getPresentation().setEnabled(enabled);
 	}
 }
