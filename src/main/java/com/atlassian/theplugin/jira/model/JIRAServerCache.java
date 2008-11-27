@@ -19,8 +19,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
@@ -110,7 +110,12 @@ public class JIRAServerCache {
         return statuses;
     }
 
-    public List<JIRAConstant> getIssueTypes(JIRAProject project) {
+	/**
+	 *
+	 * @param project
+	 * @return list of issue types or empty collection
+	 */
+	public List<JIRAConstant> getIssueTypes(JIRAProject project) {
 		List<JIRAConstant> issueTypes = project == null ? globalIssueTypes : issueTypesCache.get(project.getKey());
 
 		if (issueTypes == null) {
