@@ -46,6 +46,10 @@ public class JIRAProjectBean implements JIRAProject {
 		this.name = name;
 	}
 
+	public JIRAProjectBean(JIRAProjectBean parent) {
+		this(parent.getMap());
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -60,6 +64,10 @@ public class JIRAProjectBean implements JIRAProject {
 		map.put("lead", getLead());
 		map.put("filterTypeClass", this.getClass().getName());
 		return map;
+	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAProjectBean(this);
 	}
 
 	public String getKey() {
