@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -137,6 +138,27 @@ public class GeneralConfigForm {
 		}
 	}
 
+	public void setCheckNowButtonOption(CheckNowButtonOption option) {
+		switch (option) {
+			case STABLE_AND_SNAPSHOT:
+				checkNewVersionAll.setSelected(true);
+				break;
+			case ONLY_STABLE:
+			default:
+				checkNewVersionStable.setSelected(true);
+		}
+	}
+
+	public CheckNowButtonOption getCheckNotButtonOption() {
+		if (checkNewVersionStable.isSelected()) {
+			return CheckNowButtonOption.ONLY_STABLE;
+		} else if (checkNewVersionAll.isSelected()) {
+			return CheckNowButtonOption.STABLE_AND_SNAPSHOT;
+		} else {
+			return CheckNowButtonOption.ONLY_STABLE;
+		}
+	}
+
 
 	public JComponent getRootComponent() {
 		return $$$getRootComponent$$$();
@@ -232,5 +254,6 @@ public class GeneralConfigForm {
 	public JComponent $$$getRootComponent$$$() {
 		return mainPanel;
 	}
+
 }
 
