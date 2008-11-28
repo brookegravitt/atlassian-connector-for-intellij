@@ -28,7 +28,15 @@ public class JIRAStatusBean extends AbstractJIRAConstantBean {
 		super(id, name, iconUrl);
 	}
 
+	public JIRAStatusBean(JIRAStatusBean parent) {
+		this(parent.getMap());
+	}
+
 	public String getQueryStringFragment() {
         return "status=" + getId();
     }
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAStatusBean(this);
+	}
 }

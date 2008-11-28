@@ -26,4 +26,6 @@ public interface JIRAQueryFragment {
 	String getName();
 
 	HashMap<String, String> getMap();
+
+	JIRAQueryFragment getClone();
 }

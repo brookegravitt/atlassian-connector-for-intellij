@@ -35,4 +35,10 @@ public class JIRAFixForVersionBean extends JIRAVersionBean {
 	public String getQueryStringFragment() {
 		return "fixfor=" + getId();
 	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAFixForVersionBean(this);
+	}
+
+
 }
