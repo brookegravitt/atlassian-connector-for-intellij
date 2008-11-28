@@ -51,7 +51,9 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				|| MiscUtil.isModified(dialog.getIsAnonymousFeedbackEnabled(),
 					globalPluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled())
 				|| dialog.getUseIdeaProxySettings()
-					!= globalPluginConfiguration.getGeneralConfigurationData().getUseIdeaProxySettings();
+					!= globalPluginConfiguration.getGeneralConfigurationData().getUseIdeaProxySettings()
+				|| MiscUtil.isModified(dialog.getCheckNotButtonOption(),
+					globalPluginConfiguration.getGeneralConfigurationData().getCheckNowButtonOption());
 
 	}
 
@@ -72,6 +74,8 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				.setAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
 				.setUseIdeaProxySettings(dialog.getUseIdeaProxySettings());
+		localPluginConfigurationCopy.getGeneralConfigurationData()
+				.setCheckNowButtonOption(dialog.getCheckNotButtonOption());
 
 		globalPluginConfiguration.getGeneralConfigurationData()
 				.setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
@@ -81,6 +85,8 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				.setAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 		globalPluginConfiguration.getGeneralConfigurationData()
 				.setUseIdeaProxySettings(dialog.getUseIdeaProxySettings());
+		globalPluginConfiguration.getGeneralConfigurationData()
+				.setCheckNowButtonOption(dialog.getCheckNotButtonOption());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -93,5 +99,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				.getAnonymousFeedbackEnabled());
 		dialog.setUseIdeaProxySettings(localPluginConfigurationCopy.getGeneralConfigurationData()
 				.getUseIdeaProxySettings());
+		dialog.setCheckNowButtonOption(localPluginConfigurationCopy.getGeneralConfigurationData()
+				.getCheckNowButtonOption());
 	}
 }
