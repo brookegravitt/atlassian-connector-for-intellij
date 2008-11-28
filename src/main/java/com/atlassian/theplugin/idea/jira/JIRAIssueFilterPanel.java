@@ -23,16 +23,16 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -40,8 +40,8 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 
 
 public class JIRAIssueFilterPanel extends DialogWrapper {
@@ -72,6 +72,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private JLabel resolutionsLabel;
 	private JLabel prioritiesLabel;
 	private JLabel affectsVersionsLabel;
+	Task.Backgroundable showBackgroundable;
 
 	private boolean initialFilterSet;
 
@@ -314,6 +315,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		public void actionPerformed(ActionEvent event) {
 			if (filterListModel != null) {
 				filterListModel.clearManualFilter(jiraServerCfg);
+				setFilter(filterListModel.getManualFilter(jiraServerCfg).getQueryFragment());
+				ProgressManager.getInstance().run(showBackgroundable);
+				
 			}
 		}
 	}
@@ -429,7 +433,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		projectList.addListSelectionListener(null);
 		enableFields(false);
 
-		Task.Backgroundable tb = new Task.Backgroundable(project, "Querying for JIRA data", false) {
+		showBackgroundable = new Task.Backgroundable(project, "Querying for JIRA data", false) {
 			@Override
 			public void run(ProgressIndicator indicator) {
 				projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
@@ -478,7 +482,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 		addProjectActionListener();
 
-		ProgressManager.getInstance().run(tb);
+		ProgressManager.getInstance().run(showBackgroundable);
 
 		super.show();
 	}
