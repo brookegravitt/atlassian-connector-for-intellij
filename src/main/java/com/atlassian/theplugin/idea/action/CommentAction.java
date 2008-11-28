@@ -33,6 +33,7 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.Date;
@@ -121,7 +122,7 @@ public class CommentAction extends AnAction {
 			newComment.setToEndLine(end);
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
 						review.addVersionedComment(file, newComment);
 					} catch (RemoteApiException e1) {
