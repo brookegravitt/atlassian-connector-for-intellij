@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class JIRAManualFilterDetailsPanel extends JPanel {
 	private JIRAFilterListModel listModel;
 	private JLabel manualFilterDetailsLabel = new JLabel();
-	private JIRAIssueFilterPanel jiraIssueFilterPanel;
+	private JiraIssuesFilterPanel jiraIssuesFilterPanel;
 	private Project project;
 	private JiraProjectConfiguration jiraProjectCfg;
 	private JIRAServerModel jiraServerModel;
@@ -84,24 +84,24 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 
 			public void actionPerformed(ActionEvent event) {
 				JiraServerCfg jiraServer = listModel.getJiraSelectedServer();
-				jiraIssueFilterPanel = new JIRAIssueFilterPanel(project, jiraServerModel,
+				jiraIssuesFilterPanel = new JiraIssuesFilterPanel(project, jiraServerModel,
 						listModel, jiraServer);
 
 				if (jiraServer != null && listModel.getJiraSelectedManualFilter() != null) {
-					jiraIssueFilterPanel.setFilter(listModel.getJiraSelectedManualFilter().getQueryFragment());
+					jiraIssuesFilterPanel.setFilter(listModel.getJiraSelectedManualFilter().getQueryFragment());
 				}
-				jiraIssueFilterPanel.show();
+				jiraIssuesFilterPanel.show();
 
-				if (jiraIssueFilterPanel.getExitCode() == 0) {
+				if (jiraIssuesFilterPanel.getExitCode() == 0) {
 					JIRAManualFilter manualFilter = listModel.getJiraSelectedManualFilter();
 					listModel.clearManualFilter(jiraServer);
-					manualFilter.getQueryFragment().addAll(jiraIssueFilterPanel.getFilter());
+					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
 					listModel.setManualFilter(jiraServer, manualFilter);
 					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
 					jiraProjectCfg.getJiraFilterConfiguaration(listModel.getJiraSelectedServer().getServerId().toString())
 							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
-									serializeFilter(jiraIssueFilterPanel.getFilter()));
+									serializeFilter(jiraIssuesFilterPanel.getFilter()));
 				}
 
 			}
