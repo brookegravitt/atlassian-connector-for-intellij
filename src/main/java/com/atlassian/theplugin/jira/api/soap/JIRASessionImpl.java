@@ -21,9 +21,9 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
-import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.axis.*;
+import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.axis.AxisProperties;
 
@@ -439,6 +439,10 @@ public class JIRASessionImpl implements JIRASession {
 			return new JIRAUserBean(-1, ru.getFullname(), ru.getName()) {
 				public String getQueryStringFragment() {
 					return null;
+				}
+
+				public JIRAQueryFragment getClone() {
+					return getClone();
 				}
 			};
 		} catch (RemoteException e) {

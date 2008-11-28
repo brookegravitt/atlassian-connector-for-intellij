@@ -80,7 +80,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JIRAProject currentJiraProject;
 	private JiraServerCfg jiraServerCfg;
 	private FilterActionClear clearFilterAction = new FilterActionClear();
-	private List<JIRAQueryFragment> initialFilter;
+	private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
 
 	public JiraIssuesFilterPanel(
 			final Project project,
@@ -99,8 +99,6 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		init();
 		pack();
 
-
-		this.project = project;
 		this.projectList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.issueTypeList.setCellRenderer(new JIRAConstantListRenderer());
 		this.statusList.setCellRenderer(new JIRAConstantListRenderer());
@@ -280,8 +278,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		label5.setText("Project/ Issue");
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
+		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -310,8 +308,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 		public void actionPerformed(ActionEvent event) {
 			if (filterListModel != null) {
-				filterListModel.clearManualFilter(jiraServerCfg);
-				setFilter(filterListModel.getManualFilter(jiraServerCfg).getQueryFragment());
+				initialFilter.clear();
 				ApplicationManager.getApplication().executeOnPooledThread(new SyncViewWithModelRunnable());
 			}
 		}
@@ -418,9 +415,11 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	}
 
 	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
-		initialFilter = advancedQuery;
-		initialFilterSet = true;
 
+		initialFilter.clear();
+		for (JIRAQueryFragment fragment : advancedQuery) {
+			initialFilter.add(fragment.getClone());
+		}
 	}
 
 	@Override

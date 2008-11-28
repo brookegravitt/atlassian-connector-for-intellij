@@ -31,7 +31,15 @@ public class JIRAReporterBean extends JIRAUserBean {
 		super(map);
 	}
 
+	public JIRAReporterBean(JIRAReporterBean parent) {
+		this(parent.getMap());
+	}
+
 	public String getQueryStringFragment() {
 		return "reporter=" + getValue();
+	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAReporterBean(this);
 	}
 }

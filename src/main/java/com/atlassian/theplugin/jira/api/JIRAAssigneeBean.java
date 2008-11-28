@@ -30,7 +30,15 @@ public class JIRAAssigneeBean extends JIRAUserBean {
 		super(map);
 	}
 
+	public JIRAAssigneeBean(JIRAAssigneeBean parent) {
+		this(parent.getMap());
+	}
+
 	public String getQueryStringFragment() {
 		return "assignee=" + getValue();
+	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAAssigneeBean(this);
 	}
 }
