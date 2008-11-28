@@ -16,27 +16,64 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.TestCase;
+import static junitx.framework.Assert.assertNotEquals;
 
 public class ConfigurationTest extends TestCase {
-    @Override
+	private PluginConfigurationBean baseConf;
+	private PluginConfigurationBean newConf;
+
+	@Override
 	protected void setUp() throws Exception {
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
-    }
+		baseConf = new PluginConfigurationBean();
+		ConfigurationFactory.setConfiguration(baseConf);
 
-    public void testConfiguration() throws ServerPasswordNotProvidedException {
+		newConf = new PluginConfigurationBean(baseConf);
+	}
+
+    public void testCopyConstructor() throws ServerPasswordNotProvidedException {
        // now let's test cloning a configuration
-        PluginConfigurationBean newConfig = new PluginConfigurationBean(ConfigurationFactory.getConfiguration());
-        assertEquals(ConfigurationFactory.getConfiguration(), newConfig);
+        assertEquals(baseConf, newConf);
     }
-
-
 
 	public void testProjectSettings() {
         assertEquals("Atlassian IntelliJ Connector", PluginUtil.getInstance().getName());
     }
+
+	public void testGeneralConfigEquals() {
+
+		GeneralConfigurationBean generalConf = baseConf.getGeneralConfigurationData();
+
+		assertEquals(baseConf, newConf);
+		generalConf.setAnonymousFeedbackEnabled(
+				generalConf.getAnonymousFeedbackEnabled() == null || !generalConf.getAnonymousFeedbackEnabled());
+		assertNotEquals(baseConf, newConf);
+
+		newConf.setGeneralConfigurationData(new GeneralConfigurationBean(generalConf));
+		assertEquals(baseConf, newConf);
+		generalConf.setAutoUpdateEnabled(!generalConf.isAutoUpdateEnabled());
+		assertNotEquals(baseConf, newConf);
+		
+		newConf.setGeneralConfigurationData(new GeneralConfigurationBean(generalConf));
+		assertEquals(baseConf, newConf);
+		generalConf.setCheckNowButtonOption(CheckNowButtonOption.STABLE_AND_SNAPSHOT);
+		assertNotEquals(baseConf, newConf);
+
+		newConf.setGeneralConfigurationData(new GeneralConfigurationBean(generalConf));
+		assertEquals(baseConf, newConf);
+		generalConf.setCheckUnstableVersionsEnabled(!generalConf.isCheckUnstableVersionsEnabled());
+		assertNotEquals(baseConf, newConf);
+
+		newConf.setGeneralConfigurationData(new GeneralConfigurationBean(generalConf));
+		assertEquals(baseConf, newConf);
+		generalConf.setUseIdeaProxySettings(!generalConf.getUseIdeaProxySettings());
+		assertNotEquals(baseConf, newConf);
+
+	}
 }
