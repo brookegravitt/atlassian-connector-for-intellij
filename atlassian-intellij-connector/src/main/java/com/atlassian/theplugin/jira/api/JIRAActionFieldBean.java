@@ -24,9 +24,17 @@ public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIR
 		this.fieldId = fieldId;
 	}
 
+	public JIRAActionFieldBean(JIRAActionFieldBean parent) {
+		this(parent.fieldId, parent.name);
+	}
+
 	public String getQueryStringFragment() {
 		// todo: I am almost absolutely sure this is wrong. Once we get
 		// to actually handling action fields, this will have to be fixed
 		return fieldId + "=";
+	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAActionFieldBean(this);
 	}
 }

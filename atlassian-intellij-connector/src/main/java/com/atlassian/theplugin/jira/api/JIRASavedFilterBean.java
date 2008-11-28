@@ -37,6 +37,10 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
 		this.id = id;
 	}
 
+	public JIRASavedFilterBean(JIRASavedFilterBean project) {
+		this(project.getMap());
+	}
+
 	public String getName() {
         return name;
     }
@@ -49,6 +53,10 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
 		map.put("project", getProject());
 		map.put("filterTypeClass", this.getClass().getName());
 		return map;
+	}
+
+	public JIRAQueryFragment getClone() {
+		return new JIRASavedFilterBean(this);
 	}
 
 	public long getId() {

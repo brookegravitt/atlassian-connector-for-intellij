@@ -21,9 +21,17 @@ public class JIRAActionBean extends AbstractJIRAConstantBean implements JIRAActi
 		super(id, name, null);
     }
 
-    public String getQueryStringFragment() {
+	public JIRAActionBean(JIRAActionBean parent) {
+		this(parent.id, parent.name);
+	}
+
+	public String getQueryStringFragment() {
         return "action=" + id;
     }
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAActionBean(this);
+	}
 
 	public String toString() {
 		return name;

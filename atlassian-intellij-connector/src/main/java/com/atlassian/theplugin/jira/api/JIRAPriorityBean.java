@@ -28,7 +28,17 @@ public class JIRAPriorityBean extends AbstractJIRAConstantBean {
 		super(id, name, iconUrl);
 	}
 
+	public JIRAPriorityBean(JIRAPriorityBean parent) {
+		super(parent.getMap());		
+	}
+
 	public String getQueryStringFragment() {
         return "priority=" + getId();
     }
+
+	public JIRAQueryFragment getClone() {
+		return new JIRAPriorityBean(this);
+	}
+
+
 }
