@@ -301,7 +301,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 	// CHECKSTYLE:ON
 
-	private class FilterActionClear extends AbstractAction {
+	private final class FilterActionClear extends AbstractAction {
 		private static final String CLEAR_FILTER = "Clear filter";
 
 		private FilterActionClear() {
