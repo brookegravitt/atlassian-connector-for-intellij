@@ -22,8 +22,8 @@ import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.util.PluginUtil;
+import static com.spartez.util.junit3.TestUtil.assertNotEquals;
 import junit.framework.TestCase;
-import static junitx.framework.Assert.assertNotEquals;
 
 public class ConfigurationTest extends TestCase {
 	private PluginConfigurationBean baseConf;
