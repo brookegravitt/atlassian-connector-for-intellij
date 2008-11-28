@@ -102,7 +102,7 @@
 		<Bug pattern="SE_TRANSIENT_FIELD_NOT_RESTORED"/>
 	</Match>
 	<Match>
-		<Class name="com.atlassian.theplugin.idea.jira.JIRAIssueFilterPanel"/>
+		<Class name="com.atlassian.theplugin.idea.jira.JiraIssuesFilterPanel"/>
 	</Match>
 
 </FindBugsFilter>

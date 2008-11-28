@@ -23,16 +23,14 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -40,11 +38,11 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Collections;
 
 
-public class JIRAIssueFilterPanel extends DialogWrapper {
+public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JList projectList;
 	private JList issueTypeList;
 	private JList fixForList;
@@ -72,7 +70,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private JLabel resolutionsLabel;
 	private JLabel prioritiesLabel;
 	private JLabel affectsVersionsLabel;
-	Task.Backgroundable showBackgroundable;
 
 	private boolean initialFilterSet;
 
@@ -85,7 +82,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	private FilterActionClear clearFilterAction = new FilterActionClear();
 	private List<JIRAQueryFragment> initialFilter;
 
-	public JIRAIssueFilterPanel(
+	public JiraIssuesFilterPanel(
 			final Project project,
 			final JIRAServerModel jiraServerModel,
 			final JIRAFilterListModel filterListModel,
@@ -114,9 +111,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		this.affectsVersionsList.setCellRenderer(new JIRAQueryFragmentListRenderer());
 		this.reporterComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
 		this.assigneeComboBox.setRenderer(new JIRAQueryFragmentListRenderer());
-
-		//addProjectActionListener();
-
 	}
 
 	private void addProjectActionListener() {
@@ -316,8 +310,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 			if (filterListModel != null) {
 				filterListModel.clearManualFilter(jiraServerCfg);
 				setFilter(filterListModel.getManualFilter(jiraServerCfg).getQueryFragment());
-				ProgressManager.getInstance().run(showBackgroundable);
-				
+				ApplicationManager.getApplication().executeOnPooledThread(new SyncViewWithModelRunnable());
 			}
 		}
 	}
@@ -360,12 +353,12 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
 				final List<JIRAConstant> issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
-				SwingUtilities.invokeLater(new Runnable() {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						issueTypeList.setListData(issueTypes.toArray());
 						enableFields(true);
 					}
-				});
+				}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
 			}
 		});
 	}
@@ -382,7 +375,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		statusList.setEnabled(enable);
 		prioritiesList.setEnabled(enable);
 		getOKAction().setEnabled(enable);
-		//getCancelAction().setEnabled(enable);
 		clearFilterAction.setEnabled(enable);
 	}
 
@@ -400,15 +392,16 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 
 	private void setProjectDependendListValues() {
 		enableFields(false);
-		new Thread(new Runnable() {
+		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
 				final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
-				final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject);;
+				final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(
+						jiraServerCfg, currentJiraProject);
 				final List<JIRAComponentBean> components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
 				final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
-				SwingUtilities.invokeLater(new Runnable() {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						if (JIRAIssueFilterPanel.this.isShowing()) {
+						if (JiraIssuesFilterPanel.this.isShowing()) {
 							issueTypeList.setListData(issueType.toArray());
 							fixForList.setListData(fixForVersion.toArray());
 							componentsList.setListData(components.toArray());
@@ -417,9 +410,9 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 							enableFields(true);
 						}
 					}
-				});
+				}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
 			}
-		}).start();
+		});
 	}
 
 	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
@@ -432,58 +425,7 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 	public void show() {
 		projectList.addListSelectionListener(null);
 		enableFields(false);
-
-		showBackgroundable = new Task.Backgroundable(project, "Querying for JIRA data", false) {
-			@Override
-			public void run(ProgressIndicator indicator) {
-				projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
-				final List<Integer> prjSel = getSelection(projectList.getModel(), initialFilter);
-				if (prjSel.size() == 1) {
-					currentJiraProject = (JIRAProject) projectList.getModel().getElementAt(prjSel.get(0));
-				} else {
-					currentJiraProject = null;
-				}
-
-				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
-				statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
-				prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
-				resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg).toArray());
-				fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
-				componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
-				affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
-
-				reporterComboBox.removeAllItems();
-				reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
-				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
-
-				assigneeComboBox.removeAllItems();
-				assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
-
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						setListValues(projectList, prjSel);
-						setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
-						setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
-						setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
-						setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
-						setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
-						setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
-						setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
-						setComboValue(assigneeComboBox, initialFilter);
-						setComboValue(reporterComboBox, initialFilter);
-					}
-				});
-
-				enableFields(true);
-			}
-		};
-
-		addProjectActionListener();
-
-		ProgressManager.getInstance().run(showBackgroundable);
-
+		ApplicationManager.getApplication().executeOnPooledThread(new SyncViewWithModelRunnable());
 		super.show();
 	}
 
@@ -509,13 +451,6 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 				if (jiraQueryFragment.getQueryStringFragment().equals(fragment.getQueryStringFragment())) {
 					selection.add(i);
 				}
-			}
-		}
-		if (selection.size() > 0) {
-			int[] sel = new int[selection.size()];
-			int j = 0;
-			for (Integer integer : selection) {
-				sel[j++] = integer;
 			}
 		}
 		return selection;
@@ -571,5 +506,51 @@ public class JIRAIssueFilterPanel extends DialogWrapper {
 		return this.$$$getRootComponent$$$();
 	}
 
+	private class SyncViewWithModelRunnable implements Runnable {
+		public void run() {
+			projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
+			final List<Integer> prjSel = getSelection(projectList.getModel(), initialFilter);
+			if (prjSel.size() == 1) {
+				currentJiraProject = (JIRAProject) projectList.getModel().getElementAt(prjSel.get(0));
+			} else {
+				currentJiraProject = null;
+			}
+
+			issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
+			statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
+			prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
+			resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg).toArray());
+			fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
+			componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
+			affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
+
+			reporterComboBox.removeAllItems();
+			reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
+			reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+
+			assigneeComboBox.removeAllItems();
+			assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
+			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
+			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					setListValues(projectList, prjSel);
+					setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
+					setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
+					setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
+					setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
+					setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
+					setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
+					setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
+					setComboValue(assigneeComboBox, initialFilter);
+					setComboValue(reporterComboBox, initialFilter);
+					addProjectActionListener();
+					enableFields(true);
+				}
+			}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
+
+		}
+	}
 }
 
