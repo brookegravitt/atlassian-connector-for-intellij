@@ -102,6 +102,11 @@ public class CommentAction extends AnAction {
 		final ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 		final CrucibleFileInfo file = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
+		// PL-833 - review can not be null when adding comment
+		// doesn't look like action called by Idea but anyway should not be null
+		if (review == null) {
+			return;
+		}
 
 		final VersionedCommentBean newComment = new VersionedCommentBean();
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
