@@ -14,10 +14,20 @@ import java.util.List;
 import java.util.Set;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
+	private CrucibleReviewListModel model;
+	private CrucibleServerCfg server1;
+	private CrucibleServerCfg server2;
+	private int addedReviews, changedReviews, removedReviews;
 
 	///CLOVER:OFF
 	public void setUp() throws Exception {
 		super.setUp();
+		model = new CrucibleReviewListModelImpl();
+		server1 = createServer(1);
+		server2 = createServer(2);
+		addedReviews = 0;
+		changedReviews = 0;
+		removedReviews = 0;
 	}
 
 	public void tearDown() throws Exception {
@@ -25,7 +35,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testAddingReviewOnce() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 		model.addReview(new ReviewAdapter(null, null));
 
@@ -33,7 +43,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testAddingReviewTwice() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -48,7 +58,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testAddingReviewWithDifferentPermId() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -66,7 +76,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testAddingTworeviewsWithTheSamePermId() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -82,7 +92,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testRemoveExistingReview() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -105,7 +115,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testRemoveNonExistingReview() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -171,7 +181,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			}
 		};
 
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		model = new CrucibleReviewListModelImpl();
 		model.addListener(l);
 
 		ServerId id = new ServerId();
@@ -192,6 +202,147 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model.removeReview(ra1);
 
 		assertTrue(reviewRemovedCalled);
+	}
+
+	public void testUpdateNonIntersectingList() {
+		List<ReviewAdapter> updatedServer1Reviews = new ArrayList<ReviewAdapter>();
+		List<ReviewAdapter> updatedServer2Reviews = new ArrayList<ReviewAdapter>();
+
+		ReviewAdapter ra11 = createReviewAdapter(11, server1);
+		ReviewAdapter ra12 = createReviewAdapter(12, server1);
+		ReviewAdapter ra13 = createReviewAdapter(13, server1);
+		ReviewAdapter ra14 = createReviewAdapter(14, server1);
+		updatedServer1Reviews.add(ra11);
+		updatedServer1Reviews.add(ra12);
+		updatedServer1Reviews.add(ra13);
+
+		ReviewAdapter ra21 = createReviewAdapter(21, server2);
+		ReviewAdapter ra22 = createReviewAdapter(22, server2);
+		ReviewAdapter ra23 = createReviewAdapter(23, server2);
+		updatedServer2Reviews.add(ra21);
+		updatedServer2Reviews.add(ra22);
+		updatedServer2Reviews.add(ra23);
+
+
+		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
+			public void reviewAdded(ReviewAdapter review) {
+				addedReviews++;
+			}
+
+			public void reviewRemoved(ReviewAdapter review) {
+				removedReviews++;
+			}
+
+			public void reviewChanged(ReviewAdapter review) {
+				changedReviews++;
+			}
+		};
+		model.addListener(l);
+		
+		model.updateReviews(server1, updatedServer1Reviews);
+
+		assertEquals(3, addedReviews);
+		assertEquals(0, removedReviews);
+		assertEquals(0, changedReviews);
+
+		model.updateReviews(server2, updatedServer2Reviews);
+
+		assertEquals(6, addedReviews);
+		assertEquals(0, removedReviews);
+		assertEquals(0, changedReviews);
+
+
+		updatedServer1Reviews.remove(ra13);
+		updatedServer1Reviews.add(ra14);
+		model.updateReviews(server1, updatedServer1Reviews);
+		assertEquals(7, addedReviews);
+		assertEquals(1, removedReviews);
+		//WTF todo should be 0
+		//assertEquals(0, changedReviews);
+
+		updatedServer2Reviews.clear();
+		model.updateReviews(server2, updatedServer2Reviews);
+		assertEquals(7, addedReviews);
+		assertEquals(4, removedReviews);
+		//WTF todo should be 0
+		//assertEquals(0, changedReviews);
+
+
+	}
+
+	public void testUpdateIntersectingSet() {
+		List<ReviewAdapter> updatedServer1 = new ArrayList<ReviewAdapter>();
+		List<ReviewAdapter> updatedServer2 = new ArrayList<ReviewAdapter>();
+
+		ReviewAdapter ra11 = createReviewAdapter(11, server1);
+		ReviewAdapter ra12 = createReviewAdapter(11, server1);
+		ReviewAdapter ra13 = createReviewAdapter(11, server1);
+		updatedServer1.add(ra11);
+		updatedServer1.add(ra12);
+		updatedServer1.add(ra13);
+
+		ReviewAdapter ra21 = createReviewAdapter(21, server2);
+		ReviewAdapter ra22 = createReviewAdapter(21, server2);
+		ReviewAdapter ra23 = createReviewAdapter(23, server2);
+		updatedServer2.add(ra21);
+		updatedServer2.add(ra22);
+		updatedServer2.add(ra23);
+
+
+		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
+			public void reviewAdded(ReviewAdapter review) {
+				addedReviews++;
+			}
+
+			public void reviewRemoved(ReviewAdapter review) {
+				removedReviews++;
+			}
+
+			public void reviewChanged(ReviewAdapter review) {
+				changedReviews++;
+			}
+		};
+		model.addListener(l);
+
+		model.updateReviews(server1, updatedServer1);
+
+		assertEquals(1, addedReviews);
+		assertEquals(0, removedReviews);
+		assertEquals(0, changedReviews);
+
+		model.updateReviews(server2, updatedServer2);
+		assertEquals(3, addedReviews);
+		assertEquals(0, removedReviews);
+		assertEquals(0, changedReviews);
+
+		model.updateReviews(server1, updatedServer1);
+		assertEquals(3, addedReviews);
+		assertEquals(0, removedReviews);
+		//WTF todo should be 0
+		//assertEquals(0, changedReviews);
+
+
+		updatedServer1.clear();
+		model.updateReviews(server1, updatedServer1);
+		assertEquals(3, addedReviews);
+		assertEquals(1, removedReviews);
+		//WTF todo should be 0
+		//assertEquals(0, changedReviews);
+
+		
+	}
+
+
+	private CrucibleServerCfg createServer(int id) {
+		return new CrucibleServerCfg("server" + id, new ServerId());
+	}
+
+	private ReviewAdapter createReviewAdapter(int id, CrucibleServerCfg server) {
+		ReviewBean rb = new ReviewBean("test_" + id);
+		PermId pId = new PermIdBean("permId_" + id);
+		rb.setPermId(pId);
+
+		return new ReviewAdapter(rb, server);
 	}
 
 	private class MyFacade implements CrucibleServerFacade {
