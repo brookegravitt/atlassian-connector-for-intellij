@@ -13,7 +13,7 @@ public class StatusBarIssuesPane extends StatusBarPaneAbstract {
 
 	
 	public StatusBarIssuesPane(String initialText) {
-		super (initialText);
+		super(initialText);
 
 		getMoreIssues = new HyperlinkLabel("Get More Issues...");
 		enableGetMoreIssues(false);
