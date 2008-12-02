@@ -40,9 +40,9 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
                 "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/commons/Action.java",
                 "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java1",
                 "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode1.java",
-                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/CommentNode.java",
-                "PL/trunk/ThePlugin/idea1/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java",
-                "com/atlassian/theplugin/common/crucible/CommentNode.java",
+                //"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/CommentNode.java",
+                //"PL/trunk/ThePlugin/idea1/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java",
+                //"com/atlassian/theplugin/common/crucible/CommentNode.java",
                 "",
         };
 
@@ -81,10 +81,12 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
         final PsiFile mock2 = EasyMock.createMock(PsiFile.class);
         final PsiFile mock3 = EasyMock.createMock(PsiFile.class);
 		final PsiFile mock4 = EasyMock.createMock(PsiFile.class);
-        EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
-        EasyMock.expect(mock2.getVirtualFile()).andReturn(new MockVirtualFile(vf2s)).anyTimes();
-        EasyMock.expect(mock3.getVirtualFile()).andReturn(new MockVirtualFile(vf3s)).anyTimes();
+
+		EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
+		EasyMock.expect(mock2.getVirtualFile()).andReturn(new MockVirtualFile(vf2s)).anyTimes();
+		EasyMock.expect(mock3.getVirtualFile()).andReturn(new MockVirtualFile(vf3s)).anyTimes();
 		EasyMock.expect(mock4.getVirtualFile()).andReturn(new MockVirtualFile(vf4s)).anyTimes();
+
 		EasyMock.replay(mock1, mock2, mock3, mock4);
         final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
         assertSame(mock2, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
