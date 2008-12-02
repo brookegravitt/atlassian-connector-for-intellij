@@ -77,7 +77,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private JScrollPane issueTreescrollPane;
 	private JIRAFilterTree serversTree;
 
-	private MessageScrollPane messagePane;
+	private StatusBarIssuesPane messagePane;
 	private JIRAIssueListModel currentIssueListModel;
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
@@ -96,7 +96,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
 		setLayout(new BorderLayout());
-		this.messagePane = new MessageScrollPane("Issues panel");
+		this.messagePane = new StatusBarIssuesPane("Issues panel");
 		add(messagePane, BorderLayout.SOUTH);
 
 		if (jiraProjectConfiguration.getView() != null && jiraProjectConfiguration.getView().getGroupBy() != null) {
@@ -150,7 +150,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = jiraIssueListModelBuilder.getServer();
 						if (srvcfg == null) {
-							messagePane.setMessage("Server not defined", true);
+							messagePane.setErrorMessage("Server not defined");
 							return;
 						}
 						Map<String, String> projectMap = new HashMap<String, String>();
@@ -677,7 +677,6 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 
 
 	private void refreshFilterModel() {
-
 		try {
 			jiraFilterListModelBuilder.rebuildModel();
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
@@ -847,7 +846,11 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	}
 
 	public void setStatusMessage(final String msg, final boolean isError) {
-		messagePane.setMessage(msg, isError);
+		if (isError) {
+			messagePane.setErrorMessage(msg);
+		} else {
+			messagePane.setMessage(msg);
+		}
 	}
 
 	public JiraIssueGroupBy getGroupBy() {
