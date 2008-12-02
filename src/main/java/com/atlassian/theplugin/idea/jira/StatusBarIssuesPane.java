@@ -1,0 +1,39 @@
+package com.atlassian.theplugin.idea.jira;
+
+import com.intellij.ui.HyperlinkLabel;
+
+import javax.swing.event.HyperlinkListener;
+
+/**
+ * User: pmaruszak
+ */
+public class StatusBarIssuesPane extends StatusBarPaneAbstract {
+
+	private HyperlinkLabel getMoreIssues;
+
+	
+	public StatusBarIssuesPane(String initialText) {
+		super (initialText);
+
+		getMoreIssues = new HyperlinkLabel("Get More Issues...");
+		enableGetMoreIssues(false);
+
+		addComponent(getMoreIssues);
+	}
+
+	public void addMoreIssuesListener(HyperlinkListener listener) {
+		getMoreIssues.addHyperlinkListener(listener);
+	}
+
+	public void removeMoreListener(HyperlinkListener listener) {
+		getMoreIssues.removeHyperlinkListener(listener);
+	}
+
+	public void enableGetMoreIssues(boolean enable) {
+		if (enable) {
+			getMoreIssues.setVisible(true);
+		} else {
+			getMoreIssues.setVisible(false);
+		}
+	}
+}

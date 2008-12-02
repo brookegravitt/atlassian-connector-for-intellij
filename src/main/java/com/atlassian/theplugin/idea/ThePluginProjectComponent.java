@@ -20,8 +20,8 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -31,16 +31,15 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.*;
-import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
@@ -52,8 +51,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.table.TableView;
@@ -78,29 +75,31 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 	private final CfgManager cfgManager;
+
 	private final TestResultsToolWindow testResultsToolWindow;
 	private final BuildChangesToolWindow buildChangesToolWindow;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
-
 	private CrucibleStatusIcon statusBarCrucibleIcon;
+
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private CrucibleStatusChecker crucibleStatusChecker;
-
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
+
 	private BambooTableToolWindowPanel bambooToolWindowPanel;
 	private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
-
 	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
+
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
-
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
+	private ReviewsToolWindowPanel reviewsToolWindowPanel;
+
 	private JIRAServerCache currentJiraServerCache;
 
 	private PluginToolWindow toolWindow;
@@ -108,11 +107,16 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
 
-	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
-			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
-			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
-			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-			BuildChangesToolWindow buildChangesToolWindow) {
+	public ThePluginProjectComponent(Project project,
+									 ToolWindowManager toolWindowManager,
+									 PluginConfiguration pluginConfiguration,
+									 UIActionScheduler actionScheduler,
+									 ProjectConfigurationBean projectConfigurationBean,
+									 CfgManager cfgManager,
+									 TestResultsToolWindow testResultsToolWindow,
+									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
+									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
+									 BuildChangesToolWindow buildChangesToolWindow) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -124,6 +128,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
+		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.buildChangesToolWindow = buildChangesToolWindow;
 		/*
 
@@ -312,12 +317,24 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
 		Content content = peerFactory.getContentFactory().createContent(
+				reviewsToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
+		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+
+		return content;
+	}
+
+	public Content createCrucibleContentNew() {
+		PeerFactory peerFactory = PeerFactory.getInstance();
+
+		Content content = peerFactory.getContentFactory().createContent(
 				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 
 		return content;
 	}
+
 
 	public Content createIssuesContent() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
