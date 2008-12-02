@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,17 +18,17 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 public final class CodeNavigationUtil {
 
-    private CodeNavigationUtil() {
-        // this is utility class
-    }
+	private CodeNavigationUtil() {
+		// this is utility class
+	}
 
 	/**
 	 * Note: must be run from event dispatch thread or inside read-action only!
@@ -40,20 +40,25 @@ public final class CodeNavigationUtil {
 		// e.g. Bamboo works on Windows, send pathname and the user has a project opened in IDEA on Linux
 		pathname = pathname.replace('\\', '/');
 
-		String bestMatchPath = null;
 		PsiFile bestMatch = null;
+
+		int difference = 0;
+
 		for (PsiFile psiFile : psifiles) {
 			// we use hard-coded '/' as separator in order to make string comparison platform independent
-			String relativePath = VfsUtil.getPath(baseDir, psiFile.getVirtualFile(), '/');
-			if (relativePath == null) {
+			String absolutePath = psiFile.getVirtualFile().getUrl();//VfsUtil.getPath(baseDir, psiFile.getVirtualFile(), '/');
+			if ( absolutePath == null) {
 				continue;
 			}
-			if (pathname.endsWith(relativePath) == true) {
-				if (bestMatch == null || (relativePath.length() > bestMatchPath.length())) {
-					bestMatchPath = relativePath;
-					bestMatch = psiFile;
-				}
 
+			int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
+					, StringUtils.reverse( absolutePath));
+			if (diff >= FilenameUtils.getName( absolutePath).length() && (diff > difference ||  absolutePath.equals(pathname))) {
+				difference = diff;
+				bestMatch = psiFile;
+				if ( absolutePath.equals(pathname)) {
+					break;
+				}
 			}
 		}
 		return bestMatch;
@@ -64,7 +69,7 @@ public final class CodeNavigationUtil {
 	 */
 	@Nullable
 	public static PsiFile guessCorrespondingPsiFile(final Project project, final String filepath) {
-        final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(FilenameUtils.getName(filepath), project);
+		final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(FilenameUtils.getName(filepath), project);
 		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
 	}
 
