@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
-import com.atlassian.theplugin.idea.jira.StatusBarIssuesPane;
+import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import org.jetbrains.annotations.NotNull;
@@ -31,16 +31,19 @@ import java.awt.event.ComponentEvent;
  * @author Jacek Jaroczynski
  */
 public class ReviewsToolWindowPanel extends JPanel {
-	private static final float REVIEWS_PANEL_SPLIT_RATIO = 0.3f;
+
+	private final CrucibleProjectConfiguration crucibleProjectCfg;
 
 	private final Project project;
 	private final CfgManager cfgManager;
-	private final CrucibleProjectConfiguration crucibleProjectCfg;
 
-	private final Splitter splitPane = new Splitter(true, REVIEWS_PANEL_SPLIT_RATIO);
+	private static final float PANEL_SPLIT_RATIO = 0.3f;
+	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
+
+
 	// left panel
 	private Splitter splitFilterPane;
-	private final StatusBarIssuesPane messagePane;
+	private StatusBarPane statusBarPane = null;
 	private JPanel serversPanel = new JPanel(new BorderLayout());
 	private JTree serversTree;
 	private JPanel manualFilterDetailsPanel;
@@ -53,16 +56,21 @@ public class ReviewsToolWindowPanel extends JPanel {
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration, @NotNull final CfgManager cfgManager) {
 
 		this.project = project;
-		this.crucibleProjectCfg = crucibleProjectConfiguration;
 		this.cfgManager = cfgManager;
+		this.crucibleProjectCfg = crucibleProjectConfiguration;
+
+		initialize();
+
+	}
+
+	private void initialize() {
 
 		setLayout(new BorderLayout());
-		this.messagePane = new StatusBarIssuesPane("Reviews panel");
-		add(messagePane, BorderLayout.SOUTH);
+
+		splitPane.setFirstComponent(createLeftContent());
+		splitPane.setSecondComponent(createRightContent());
 
 		splitPane.setShowDividerControls(false);
-		splitPane.setFirstComponent(createFilterContent());
-		splitPane.setSecondComponent(createIssuesContent());
 		splitPane.setHonorComponentsMinimumSize(true);
 
 		addComponentListener(new ComponentAdapter() {
@@ -79,11 +87,15 @@ public class ReviewsToolWindowPanel extends JPanel {
 
 		add(splitPane, BorderLayout.CENTER);
 
-
-
+		add(createStatusBar(), BorderLayout.SOUTH);
 	}
 
-	private JComponent createFilterContent() {
+	protected JComponent createStatusBar() {
+		statusBarPane = new StatusBarPane("Reviews panel");
+		return statusBarPane;
+	}
+
+	protected JComponent createLeftContent() {
 		splitFilterPane = new Splitter(false, 1.0f);
 		splitFilterPane.setOrientation(true);
 
@@ -110,7 +122,7 @@ public class ReviewsToolWindowPanel extends JPanel {
 		return new JLabel();
 	}
 
-	private JComponent createIssuesContent() {
+	protected JComponent createRightContent() {
 		reviewsPanel = new JPanel(new BorderLayout());
 
 		reviewTreescrollPane = new JScrollPane(createIssuesTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
