@@ -223,7 +223,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		updatedServer2Reviews.add(ra22);
 		updatedServer2Reviews.add(ra23);
 
-
 		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
 			public void reviewAdded(ReviewAdapter review) {
 				addedReviews++;
@@ -251,23 +250,18 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		assertEquals(0, removedReviews);
 		assertEquals(0, changedReviews);
 
-
 		updatedServer1Reviews.remove(ra13);
 		updatedServer1Reviews.add(ra14);
 		model.updateReviews(server1, updatedServer1Reviews);
 		assertEquals(7, addedReviews);
 		assertEquals(1, removedReviews);
-		//WTF todo should be 0
-		//assertEquals(0, changedReviews);
+		assertEquals(0, changedReviews);
 
 		updatedServer2Reviews.clear();
 		model.updateReviews(server2, updatedServer2Reviews);
 		assertEquals(7, addedReviews);
 		assertEquals(4, removedReviews);
-		//WTF todo should be 0
-		//assertEquals(0, changedReviews);
-
-
+		assertEquals(0, changedReviews);
 	}
 
 	public void testUpdateIntersectingSet() {
@@ -318,18 +312,13 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model.updateReviews(server1, updatedServer1);
 		assertEquals(3, addedReviews);
 		assertEquals(0, removedReviews);
-		//WTF todo should be 0
-		//assertEquals(0, changedReviews);
-
+		assertEquals(0, changedReviews);
 
 		updatedServer1.clear();
 		model.updateReviews(server1, updatedServer1);
 		assertEquals(3, addedReviews);
 		assertEquals(1, removedReviews);
-		//WTF todo should be 0
-		//assertEquals(0, changedReviews);
-
-		
+		assertEquals(0, changedReviews);
 	}
 
 
