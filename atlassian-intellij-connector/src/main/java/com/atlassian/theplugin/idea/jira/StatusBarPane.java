@@ -21,7 +21,7 @@ import java.awt.*;
 /**
  * @author Jacek Jaroczynski
  */
-public class StatusBarPaneAbstract extends JPanel implements StatusBar {
+public class StatusBarPane extends JPanel implements StatusBar {
 	private static final Color FAIL_COLOR = new Color(255, 100, 100);
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final int PAD_Y = 8;
@@ -30,7 +30,7 @@ public class StatusBarPaneAbstract extends JPanel implements StatusBar {
 	protected JLabel pane = new JLabel();
 	protected JPanel statusPanel;
 
-	public StatusBarPaneAbstract(String initialText) {
+	public StatusBarPane(String initialText) {
 
 		statusPanel = new JPanel();
 		statusPanel.setLayout(new FlowLayout());
