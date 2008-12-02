@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 import java.util.Collection;
@@ -16,4 +17,5 @@ public interface CrucibleReviewListModel {
 	void removeAll();
 	void addListener(CrucibleReviewListModelListener listener);
 	void removeListener(CrucibleReviewListModelListener listener);
+	void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews);
 }

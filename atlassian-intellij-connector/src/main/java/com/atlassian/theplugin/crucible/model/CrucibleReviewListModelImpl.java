@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
@@ -55,6 +56,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	}
 
 	public synchronized void addReview(ReviewAdapter review) {
+
 		int idx = reviews.indexOf(review);
 		if (idx != -1) {
 			ReviewAdapter a = reviews.get(idx);
@@ -91,6 +93,29 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	public void removeListener(CrucibleReviewListModelListener listener) {
 		listeners.remove(listener);
+	}
+
+	public synchronized void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
+		///create set in order to remove duplicates
+		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
+		reviewSet.addAll(updatedReviews);
+
+		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
+
+		for (ReviewAdapter adapter : reviewSet) {
+			if (adapter.getServer().equals(serverCfg)) {
+				addReview(adapter);
+			}
+		}
+
+		removed.addAll(reviews);
+		removed.removeAll(reviewSet);
+
+		for (ReviewAdapter r : removed) {
+			if (r.getServer().equals(serverCfg)) {
+				removeReview(r);
+			}
+		}				
 	}
 
 	private void notifyReviewChanged(ReviewAdapter review) {
