@@ -46,17 +46,18 @@ public final class CodeNavigationUtil {
 
 		for (PsiFile psiFile : psifiles) {
 			// we use hard-coded '/' as separator in order to make string comparison platform independent
-			String absolutePath = psiFile.getVirtualFile().getUrl();//VfsUtil.getPath(baseDir, psiFile.getVirtualFile(), '/');
-			if ( absolutePath == null) {
+			String absolutePath = psiFile.getVirtualFile().getUrl();
+			if (absolutePath == null) {
 				continue;
 			}
 
 			int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
 					, StringUtils.reverse( absolutePath));
-			if (diff >= FilenameUtils.getName( absolutePath).length() && (diff > difference ||  absolutePath.equals(pathname))) {
+			if (diff >= FilenameUtils.getName(absolutePath).length()
+					&& (diff > difference ||  absolutePath.equals(pathname))) {
 				difference = diff;
 				bestMatch = psiFile;
-				if ( absolutePath.equals(pathname)) {
+				if (absolutePath.equals(pathname)) {
 					break;
 				}
 			}
