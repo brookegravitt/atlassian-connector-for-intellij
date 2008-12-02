@@ -7,7 +7,7 @@ import javax.swing.event.HyperlinkListener;
 /**
  * User: pmaruszak
  */
-public class StatusBarIssuesPane extends StatusBarPaneAbstract {
+public class StatusBarIssuesPane extends StatusBarPane {
 
 	private HyperlinkLabel getMoreIssues;
 

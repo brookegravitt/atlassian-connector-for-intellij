@@ -77,7 +77,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private JScrollPane issueTreescrollPane;
 	private JIRAFilterTree serversTree;
 
-	private StatusBarIssuesPane messagePane;
+	private StatusBarIssuesPane statusBarPane;
 	private JIRAIssueListModel currentIssueListModel;
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
@@ -96,8 +96,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
 		setLayout(new BorderLayout());
-		this.messagePane = new StatusBarIssuesPane("Issues panel");
-		add(messagePane, BorderLayout.SOUTH);
+		this.statusBarPane = new StatusBarIssuesPane("Issues panel");
+		add(statusBarPane, BorderLayout.SOUTH);
 
 		if (jiraProjectConfiguration.getView() != null && jiraProjectConfiguration.getView().getGroupBy() != null) {
 			groupBy = jiraProjectConfiguration.getView().getGroupBy();
@@ -150,7 +150,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = jiraIssueListModelBuilder.getServer();
 						if (srvcfg == null) {
-							messagePane.setErrorMessage("Server not defined");
+							statusBarPane.setErrorMessage("Server not defined");
 							return;
 						}
 						Map<String, String> projectMap = new HashMap<String, String>();
@@ -160,16 +160,16 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(issueTree, issueTreescrollPane);
 						expandAllIssueTreeNodes();
-						messagePane.setMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues");
+						statusBarPane.setMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues");
 					}
 				});
 			}
 
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 				if (loadedIssues >= JIRA_ISSUE_PAGE_SIZE) {
-					messagePane.enableGetMoreIssues(true);
+					statusBarPane.enableGetMoreIssues(true);
 				} else {
-					messagePane.enableGetMoreIssues(false);
+					statusBarPane.enableGetMoreIssues(false);
 				}
 			}
 		});
@@ -177,8 +177,8 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		currentIssueListModel.addFrozenModelListener(new FrozenModelListener() {
 
 			public void modelFrozen(FrozenModel model, boolean frozen) {
-				if (messagePane != null) {
-					messagePane.setEnabled(!frozen);
+				if (statusBarPane != null) {
+					statusBarPane.setEnabled(!frozen);
 				}
 
 				if (searchField != null) {
@@ -220,7 +220,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		});
 
 
-		messagePane.addMoreIssuesListener(new HyperlinkListener() {
+		statusBarPane.addMoreIssuesListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					getNextIssues();
 				}
@@ -708,7 +708,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					messagePane.setMessage("Loading issues...");
+					statusBarPane.setMessage("Loading issues...");
 					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
@@ -842,14 +842,14 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	}
 
 	public void setStatusMessage(final String message) {
-		messagePane.setMessage(message);
+		statusBarPane.setMessage(message);
 	}
 
 	public void setStatusMessage(final String msg, final boolean isError) {
 		if (isError) {
-			messagePane.setErrorMessage(msg);
+			statusBarPane.setErrorMessage(msg);
 		} else {
-			messagePane.setMessage(msg);
+			statusBarPane.setMessage(msg);
 		}
 	}
 
