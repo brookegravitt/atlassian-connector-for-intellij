@@ -34,6 +34,9 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -107,10 +110,12 @@ private void doRunCrucible() {
 				= new HashMap<String, ReviewNotificationBean>();
 
 		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
-
+			List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
+			boolean communicationFailed = false;
 			for (int i = 0;
 				 i < crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters().length
 						 &&	i < PredefinedFilter.values().length; i++) {
+
 				if (crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters()[i]) {
 					PredefinedFilter filter = PredefinedFilter.values()[i];
 					if (!reviews.containsKey(filter)) {
@@ -127,7 +132,9 @@ private void doRunCrucible() {
 						List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
 						List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
 						for (Review r : review) {
-							reviewData.add(new ReviewAdapter(r, server));
+							final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
+							reviewData.add(reviewAdapter);
+							allServerReviews.add(reviewAdapter);
 						}
 
 						bean.getReviews().addAll(reviewData);
@@ -135,17 +142,30 @@ private void doRunCrucible() {
 						ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 								ModalityState.defaultModalityState());
 						bean.setException(exception);
+						communicationFailed = true;
+						break;
 					} catch (RemoteApiLoginFailedException exception) {
 						ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 								ModalityState.defaultModalityState());
 						bean.setException(exception);
+						communicationFailed = true;
+						break;
 					} catch (RemoteApiException e) {
 						PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 								+ " server", e);
 						bean.setException(e);
+						communicationFailed = true;
+						break;
 					}
 				}
 			}
+
+			CrucibleReviewListModel listModel =
+					IdeaHelper.getProjectComponent(project, CrucibleReviewListModelImpl.class);
+			if (listModel != null && !communicationFailed) {
+				listModel.updateReviews(server, allServerReviews);				
+			}
+
 		}
 
 
