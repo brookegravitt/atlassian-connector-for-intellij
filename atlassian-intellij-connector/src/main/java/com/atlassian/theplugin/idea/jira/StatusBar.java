@@ -18,8 +18,7 @@ package com.atlassian.theplugin.idea.jira;
 /**
  * User: pmaruszak
  */
-public interface MessageStatusDisplay {
+public interface StatusBar {
 	void setMessage(String message);
-	void setMessage(String msg, boolean isError);
-//	void setStatus(String message);
+	void setErrorMessage(String msg);
 }
