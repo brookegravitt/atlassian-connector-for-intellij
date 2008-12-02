@@ -125,7 +125,7 @@ public class MockVirtualFile extends VirtualFile {
 
     @NotNull
     public String getUrl() {
-        throw new UnsupportedOperationException("not implemented for unit test");
+		return "file://" + file.getAbsolutePath();
     }
 
     public boolean isWritable() {
