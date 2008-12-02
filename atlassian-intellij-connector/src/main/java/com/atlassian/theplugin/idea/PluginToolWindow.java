@@ -156,6 +156,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								break;
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
+								ideaToolWindow.getContentManager().addContent(
+										project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew()
+								);
 								break;
 							case ISSUES:
 								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
@@ -206,6 +209,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 					case CRUCIBLE:
 						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
 						contentManager.addContent(content);
+
+						contentManager.addContent(
+									project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew());
+
 						break;
 					case ISSUES:
 						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();

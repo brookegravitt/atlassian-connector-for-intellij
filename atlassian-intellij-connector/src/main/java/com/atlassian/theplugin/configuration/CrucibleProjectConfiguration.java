@@ -22,6 +22,9 @@ public class CrucibleProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration =
 			new ProjectToolWindowTableConfiguration();
 
+	public CrucibleProjectConfiguration() {
+	}
+
 	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
 
 	public CrucibleFiltersBean getCrucibleFilters() {
@@ -31,10 +34,6 @@ public class CrucibleProjectConfiguration {
 	public void setCrucibleFilters(CrucibleFiltersBean filters) {
 		this.crucibleFilters = filters;
 	}
-
-    public CrucibleProjectConfiguration() {
-
-    }
 
 	public ProjectToolWindowTableConfiguration getTableConfiguration() {
 		return tableConfiguration;

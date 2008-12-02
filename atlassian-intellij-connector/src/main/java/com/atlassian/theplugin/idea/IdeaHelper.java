@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,8 +35,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -81,8 +82,16 @@ public final class IdeaHelper {
 		return getProjectComponent(project, IssuesToolWindowPanel.class);
 	}
 
+	@Nullable
+	public static ReviewsToolWindowPanel getReviewsToolWindowPanel(AnActionEvent event) {
+		return getProjectComponent(event, ReviewsToolWindowPanel.class);
+	}
 
- 	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+	public static ReviewsToolWindowPanel getReviewsToolWindowPanel(@NotNull final Project project) {
+		return getProjectComponent(project, ReviewsToolWindowPanel.class);
+	}
+
+	 public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event);
 		if (p == null) {
 			return null;
