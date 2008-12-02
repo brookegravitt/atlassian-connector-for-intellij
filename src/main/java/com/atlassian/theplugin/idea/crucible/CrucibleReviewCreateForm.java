@@ -713,10 +713,11 @@ public class CrucibleReviewCreateForm extends DialogWrapper {
 		return getRootComponent();
 	}
 
-	private class ReviewProvider extends ReviewImpl {
+	private class ReviewProvider extends ReviewBean {
 		private final CrucibleServerCfg server;
 
 		public ReviewProvider(CrucibleServerCfg server) {
+			super(server.getUrl());
 			this.server = server;
 		}
 
