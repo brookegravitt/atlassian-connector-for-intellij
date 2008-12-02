@@ -52,7 +52,7 @@ public final class CodeNavigationUtil {
 			}
 
 			int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
-					, StringUtils.reverse( absolutePath));
+					, StringUtils.reverse(absolutePath));
 			if (diff >= FilenameUtils.getName(absolutePath).length()
 					&& (diff > difference ||  absolutePath.equals(pathname))) {
 				difference = diff;
