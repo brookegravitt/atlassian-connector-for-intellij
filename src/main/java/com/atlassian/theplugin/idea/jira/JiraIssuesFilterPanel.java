@@ -298,6 +298,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		return rootPanel;
 	}
 
+	// CHECKSTYLE:OFF
+
 	// CHECKSTYLE:ON
 
 	private final class FilterActionClear extends AbstractAction {

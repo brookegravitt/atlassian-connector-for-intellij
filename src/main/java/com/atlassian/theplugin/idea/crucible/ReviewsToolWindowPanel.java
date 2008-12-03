@@ -43,14 +43,15 @@ public class ReviewsToolWindowPanel extends JPanel {
 
 	// left panel
 	private Splitter splitFilterPane;
-	private StatusBarPane statusBarPane = null;
-	private JPanel serversPanel = new JPanel(new BorderLayout());
+	private JPanel serversPanel;
 	private JTree serversTree;
 	private JPanel manualFilterDetailsPanel;
 	// right panel
 	private JPanel reviewsPanel;
-	private JScrollPane reviewTreescrollPane;
+	private JScrollPane reviewTreeScrollPane;
 	private JTree reviewTree;
+	// bottom panel
+	private StatusBarPane statusBarPane;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration, @NotNull final CfgManager cfgManager) {
@@ -111,7 +112,6 @@ public class ReviewsToolWindowPanel extends JPanel {
 		serversPanel.add(filterListScrollPane, BorderLayout.CENTER);
 		serversPanel.add(createServersToolbar(), BorderLayout.NORTH);
 
-		//create manual filter panel
 		splitFilterPane.setFirstComponent(serversPanel);
 
 		return splitFilterPane;
@@ -125,16 +125,16 @@ public class ReviewsToolWindowPanel extends JPanel {
 	protected JComponent createRightContent() {
 		reviewsPanel = new JPanel(new BorderLayout());
 
-		reviewTreescrollPane = new JScrollPane(createIssuesTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		reviewTreeScrollPane = new JScrollPane(createReviewsTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		reviewTreescrollPane.setWheelScrollingEnabled(true);
+		reviewTreeScrollPane.setWheelScrollingEnabled(true);
 
-		reviewsPanel.add(reviewTreescrollPane, BorderLayout.CENTER);
+		reviewsPanel.add(reviewTreeScrollPane, BorderLayout.CENTER);
 		reviewsPanel.add(createReviewsToolbar(), BorderLayout.NORTH);
 		return reviewsPanel;
 	}
 
-	private JTree createIssuesTree() {
+	private JTree createReviewsTree() {
 		reviewTree = new JTree();
 //		issueTreeBuilder.rebuild(reviewTree, issuesPanel);
 		return reviewTree;
