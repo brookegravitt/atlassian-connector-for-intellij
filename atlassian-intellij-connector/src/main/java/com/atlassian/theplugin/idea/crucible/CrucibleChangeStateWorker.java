@@ -29,7 +29,6 @@ public class CrucibleChangeStateWorker {
 		this.review = reviewInfo;
 		this.action = action;
 		this.project = project;
-
 	}
 
 	public void run() {
@@ -39,7 +38,4 @@ public class CrucibleChangeStateWorker {
 
 		changeReviewStateForm.showDialog();
 	}
-
-
-
 }

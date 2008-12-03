@@ -123,7 +123,7 @@ public final class IdeaHelper {
 		}
 
 		ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString());
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD.toString());
 		if (content == null) {
 			return null;
 		}

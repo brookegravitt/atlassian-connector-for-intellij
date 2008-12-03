@@ -30,6 +30,8 @@ public final class Util {
 				return ServerType.BAMBOO_SERVER;
 			case CRUCIBLE:
 				return ServerType.CRUCIBLE_SERVER;
+			case CRUCIBLE_OLD:
+				return ServerType.CRUCIBLE_SERVER;
 			case ISSUES:
 				return ServerType.JIRA_SERVER;
 			default:

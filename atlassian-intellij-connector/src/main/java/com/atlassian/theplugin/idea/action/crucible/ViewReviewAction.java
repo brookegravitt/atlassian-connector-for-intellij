@@ -24,6 +24,7 @@ import com.intellij.openapi.project.Project;
  * @author mwent
  */
 
+@Deprecated
 public class ViewReviewAction extends TableSelectedAction {
 
 	@Override
