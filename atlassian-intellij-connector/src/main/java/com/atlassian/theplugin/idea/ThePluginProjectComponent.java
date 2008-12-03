@@ -38,6 +38,7 @@ import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -67,6 +68,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
 	private final ProjectConfigurationBean projectConfigurationBean;
+	private final CrucibleReviewListModel reviewListModel;
 
 	private final Project project;
 
@@ -116,7 +118,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 									 TestResultsToolWindow testResultsToolWindow,
 									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-									 BuildChangesToolWindow buildChangesToolWindow) {
+									 BuildChangesToolWindow buildChangesToolWindow,
+									 @NotNull final CrucibleReviewListModel reviewListModel) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -125,6 +128,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
+		this.reviewListModel = reviewListModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
@@ -195,7 +199,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			this.crucibleStatusChecker = new CrucibleStatusChecker(cfgManager, project,
 					pluginConfiguration.getCrucibleConfigurationData(), projectConfigurationBean.getCrucibleConfiguration(),
-					new MissingPasswordHandler(crucibleServerFacade, cfgManager, project));
+					new MissingPasswordHandler(crucibleServerFacade, cfgManager, project), reviewListModel);
 
 			// DependencyValidationManager.getHolder(project, "", )
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);

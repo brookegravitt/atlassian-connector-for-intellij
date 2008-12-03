@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -66,7 +67,9 @@ public final class Constants {
 
 	public static final String ISSUE = "com.atlassian.connector.issue";
 	public static final DataKey<JIRAIssue> ISSUE_KEY = DataKey.create(ISSUE);
-	
+	public static final String REVIEW = "com.atlassian.connector.review";
+	public static final DataKey<ReviewAdapter> REVIEW_KEY = DataKey.create(REVIEW);
+
 	private Constants() { }
 
 	public static final int DIALOG_MARGIN = 12;

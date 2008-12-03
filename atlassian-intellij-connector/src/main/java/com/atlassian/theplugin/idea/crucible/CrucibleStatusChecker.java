@@ -35,8 +35,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -72,15 +70,20 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private final CrucibleConfigurationBean crucibleConfigurationBean;
 	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private final MissingPasswordHandler missingPasswordHandler;
+	private final CrucibleReviewListModel reviewListModel;
 
 
-	public CrucibleStatusChecker(CfgManager cfgManager, Project project, CrucibleConfigurationBean crucibleConfigurationBean,
-			CrucibleProjectConfiguration crucibleProjectConfiguration, final MissingPasswordHandler missingPasswordHandler) {
+	public CrucibleStatusChecker(CfgManager cfgManager, Project project,
+								 CrucibleConfigurationBean crucibleConfigurationBean,
+								 CrucibleProjectConfiguration crucibleProjectConfiguration,
+								 final MissingPasswordHandler missingPasswordHandler,
+								 CrucibleReviewListModel reviewListModel) {
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.crucibleConfigurationBean = crucibleConfigurationBean;
 		this.crucibleProjectConfiguration = crucibleProjectConfiguration;
 		this.missingPasswordHandler = missingPasswordHandler;
+		this.reviewListModel = reviewListModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 
 	}
@@ -160,14 +163,10 @@ private void doRunCrucible() {
 				}
 			}
 
-			CrucibleReviewListModel listModel =
-					IdeaHelper.getProjectComponent(project, CrucibleReviewListModelImpl.class);
-			if (listModel != null && !communicationFailed) {
-				listModel.updateReviews(server, allServerReviews);				
+			if (!communicationFailed) {
+				reviewListModel.updateReviews(server, allServerReviews);
 			}
-
 		}
-
 
 		CustomFilterBean filter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
 

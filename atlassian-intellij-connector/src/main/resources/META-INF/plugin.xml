@@ -760,5 +760,67 @@
             <reference id="ThePlugin.JIRA.AddEditorComment"/>
         </group>
 
-    </actions>
+		<action id="ThePlugin.Reviews.ViewReview"
+				class="com.atlassian.theplugin.idea.action.reviews.ViewReviewAction"
+				text="View Review in Browser"
+				icon="/general/web.png"/>
+		<action id="ThePlugin.Reviews.GetComments"
+				class="com.atlassian.theplugin.idea.action.reviews.OpenReviewAction"
+				text="Open Review"
+				icon="/icons/inspector/sortByCategory.png"/>
+		<!--<action id="ThePlugin.Reviews.CompleteReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.CompleteReviewAction" -->
+				<!--text="Complete Review"/>-->
+		<!--<action id="ThePlugin.Reviews.UncompleteReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.UncompleteReviewAction" -->
+				<!--text="Uncomplete Review"/>-->
+		<!--<action id="ThePlugin.Reviews.ApproveReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.ApproveReviewAction" -->
+				<!--text="Approve Review"/>-->
+		<!--<action id="ThePlugin.Reviews.SubmitReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.SubmitReviewAction" -->
+				<!--text="Submit Review"/>-->
+		<!--<action id="ThePlugin.Reviews.CloseReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction" -->
+				<!--text="Close Review"/>-->
+		<!--<action id="ThePlugin.Reviews.ReopenReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.ReopenReviewAction" -->
+				<!--text="Reopen Review"/>-->
+		<!--<action id="ThePlugin.Reviews.SummarizeReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.SummarizeReviewAction" -->
+				<!--text="Summarize Review"/>-->
+		<!--<action id="ThePlugin.Reviews.AbandonReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.AbandonReviewAction" -->
+				<!--text="Abandon Review"/>-->
+		<!--<action id="ThePlugin.Reviews.RecoverReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.RecoverReviewAction"-->
+				<!--text="Recover Abandoned Review"/>-->
+		<!--<action id="ThePlugin.Reviews.JoinReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.JoinReviewAction" -->
+				<!--text="Join Review"/>-->
+		<!--<action id="ThePlugin.Reviews.SetReviewers"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.SetReviewersAction" -->
+				<!--text="Set Reviewers"/>-->
+
+		<group id="ThePlugin.Reviews.ReviewPopupMenu" popup="true">
+			<reference id="ThePlugin.Reviews.ViewReview"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.GetComments"/>
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.Reviews.CompleteReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.UncompleteReview"/>-->
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.Reviews.ApproveReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.SubmitReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.CloseReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.ReopenReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.SummarizeReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.AbandonReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.RecoverReview"/>-->
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.Reviews.JoinReview"/>-->
+			<!--<reference id="ThePlugin.Reviews.SetReviewers"/>-->
+		</group>
+
+	</actions>
 </idea-plugin>

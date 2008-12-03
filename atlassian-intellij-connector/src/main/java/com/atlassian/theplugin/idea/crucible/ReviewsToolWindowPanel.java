@@ -16,23 +16,35 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
+import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewsToolWindowPanel extends JPanel {
+public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
+
+	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 
 	private final CrucibleProjectConfiguration crucibleProjectCfg;
+	private final CrucibleReviewListModel reviewListModel;
 
 	private final Project project;
 	private final CfgManager cfgManager;
@@ -54,11 +66,14 @@ public class ReviewsToolWindowPanel extends JPanel {
 	private StatusBarPane statusBarPane;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
-			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration, @NotNull final CfgManager cfgManager) {
+			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
+			@NotNull final CfgManager cfgManager,
+			@NotNull final CrucibleReviewListModel reviewListModel) {
 
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.crucibleProjectCfg = crucibleProjectConfiguration;
+		this.reviewListModel = reviewListModel;
 
 		initialize();
 
@@ -136,6 +151,8 @@ public class ReviewsToolWindowPanel extends JPanel {
 
 	private JTree createReviewsTree() {
 		reviewTree = new JTree();
+		addReviewTreeListeners();
+
 //		issueTreeBuilder.rebuild(reviewTree, issuesPanel);
 		return reviewTree;
 	}
@@ -145,4 +162,78 @@ public class ReviewsToolWindowPanel extends JPanel {
 		return new JLabel();
 	}
 
+	private ReviewAdapter getSelectedReview() {
+		// todo: this is temporary, we will fix it later, when the tree is actually functional
+		Collection<ReviewAdapter> reviews = reviewListModel.getReviews();
+		if (reviews != null && reviews.size() > 0) {
+			return reviews.iterator().next();
+		}
+		return null;
+	}
+
+	public void openReview(final ReviewAdapter review) {
+		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(review);
+	}
+
+	private void addReviewTreeListeners() {
+		reviewTree.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				final ReviewAdapter review = getSelectedReview();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
+					openReview(review);
+				}
+			}
+		});
+
+		reviewTree.addMouseListener(new PopupAwareMouseAdapter() {
+
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				final ReviewAdapter review = getSelectedReview();
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && review != null) {
+					openReview(review);
+				}
+			}
+
+			@Override
+			protected void onPopup(MouseEvent e) {
+				int selRow = reviewTree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = reviewTree.getPathForLocation(e.getX(), e.getY());
+				if (selRow != -1 && selPath != null) {
+					reviewTree.setSelectionPath(selPath);
+					final ReviewAdapter review = getSelectedReview();
+					if (review != null) {
+						launchContextMenu(e);
+					}
+				}
+			}
+		});
+	}
+
+	private String getPlaceName() {
+		return PLACE_PREFIX + this.project.getName();
+	}
+
+	private void launchContextMenu(MouseEvent e) {
+		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+
+		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+				.getInstance().getAction("ThePlugin.Reviews.ReviewPopupMenu");
+		actionGroup.addAll(configActionGroup);
+
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getPlaceName(), actionGroup);
+
+		final JPopupMenu jPopupMenu = popup.getComponent();
+		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	@Nullable
+	public Object getData(@NonNls String dataId) {
+		if (dataId.equals(Constants.REVIEW)) {
+			return getSelectedReview();
+		}
+		return null;
+
+	}
 }
