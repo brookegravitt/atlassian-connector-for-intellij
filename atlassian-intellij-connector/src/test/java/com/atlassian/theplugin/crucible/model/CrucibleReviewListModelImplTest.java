@@ -4,20 +4,21 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import junit.framework.TestCase;
+import org.easymock.EasyMock;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModel model;
 	private CrucibleServerCfg server1;
 	private CrucibleServerCfg server2;
 	private int addedReviews, changedReviews, removedReviews;
+	private Date date = new Date();
 
 	///CLOVER:OFF
 	public void setUp() throws Exception {
@@ -163,45 +164,80 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	public void testListeners() throws Exception {
 
-		reviewAddedCalled = false;
-		reviewChangedCalled = false;
-		reviewRemovedCalled = false;
+		ServerId id = new ServerId();
+		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
 
-		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
-			public void reviewAdded(ReviewAdapter review) {
-				reviewAddedCalled = true;
-			}
+		ReviewBean reviewBean = new ReviewBean("test");
+		reviewBean.setPermId(new PermIdBean("test1"));
+		ReviewAdapter reviewAdapter = new ReviewAdapter(reviewBean, cfg);
+		reviewAdapter.setFacade(new MyFacade());
+		reviewAdapter.setGeneralComments(new ArrayList<GeneralComment>());
 
-			public void reviewRemoved(ReviewAdapter review) {
-				reviewRemovedCalled = true;
-			}
-
-			public void reviewChanged(ReviewAdapter review) {
-				reviewChangedCalled = true;
-			}
-		};
+		CrucibleReviewListModelListener listener = EasyMock.createStrictMock(CrucibleReviewListModelListener.class);
 
 		model = new CrucibleReviewListModelImpl();
-		model.addListener(l);
+		model.addListener(listener);
+
+		listener.reviewAdded(reviewAdapter);
+		listener.reviewChanged(reviewAdapter);
+		listener.reviewRemoved(reviewAdapter);
+
+		EasyMock.replay(listener);
+
+		model.addReview(reviewAdapter);
+		reviewAdapter.addGeneralComment(new GeneralCommentBean());
+		model.removeReview(reviewAdapter);
+
+		EasyMock.verify(listener);
+	}
+
+	public void testListenersAfterCrucibleStatusCheckerUpdate() throws Exception {
+
+		int reviewId = 1;
 
 		ServerId id = new ServerId();
 		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
-		ReviewBean r1 = new ReviewBean("test");
-		r1.setPermId(new PermIdBean("test1"));
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
-		ra1.setFacade(new MyFacade());
-		ra1.setGeneralComments(new ArrayList<GeneralComment>());
-		model.addReview(ra1);
 
-		assertTrue(reviewAddedCalled);
+		ReviewAdapter reviewAdapter_1 = createReviewAdapterWithComments(reviewId, cfg);
+		ReviewAdapter reviewAdapter_2 = createReviewAdapterWithComments(reviewId, cfg);
 
-		ra1.addGeneralComment(new GeneralCommentBean());
+		CrucibleReviewListModelListener listener = EasyMock.createStrictMock(CrucibleReviewListModelListener.class);
 
-		assertTrue(reviewChangedCalled);
+		model = new CrucibleReviewListModelImpl();
+		model.addListener(listener);
 
-		model.removeReview(ra1);
+		// test 1 (add review)
 
-		assertTrue(reviewRemovedCalled);
+		listener.reviewListUpdateStarted();
+		listener.reviewAdded(reviewAdapter_1);
+		listener.reviewListUpdateFinished();
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_1));
+		EasyMock.verify(listener);
+
+		// test 2 (the same review)
+
+		EasyMock.reset(listener);
+
+		listener.reviewListUpdateStarted();
+		listener.reviewListUpdateFinished();
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_2));
+		EasyMock.verify(listener);
+
+
+		// test 3 (remove review)
+
+		EasyMock.reset(listener);
+
+		listener.reviewListUpdateStarted();
+		listener.reviewRemoved(reviewAdapter_1);
+		listener.reviewListUpdateFinished();
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Collections.EMPTY_LIST);
 	}
 
 	public void testUpdateNonIntersectingList() {
@@ -223,7 +259,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		updatedServer2Reviews.add(ra22);
 		updatedServer2Reviews.add(ra23);
 
-		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
+		CrucibleReviewListModelListener l = new CrucibleReviewListModelListenerAdapter() {
 			public void reviewAdded(ReviewAdapter review) {
 				addedReviews++;
 			}
@@ -283,7 +319,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		updatedServer2.add(ra23);
 
 
-		CrucibleReviewListModelListener l = new CrucibleReviewListModelListener() {
+		CrucibleReviewListModelListener l = new CrucibleReviewListModelListenerAdapter() {
 			public void reviewAdded(ReviewAdapter review) {
 				addedReviews++;
 			}
@@ -332,6 +368,22 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		rb.setPermId(pId);
 
 		return new ReviewAdapter(rb, server);
+	}
+
+	private ReviewAdapter createReviewAdapterWithComments(int id, CrucibleServerCfg server)
+			throws RemoteApiException, ValueNotYetInitialized, ServerPasswordNotProvidedException {
+		ReviewBean rb = new ReviewBean("test_" + id);
+		PermId pId = new PermIdBean("permId_" + id);
+		rb.setPermId(pId);
+
+		ReviewAdapter adapter = new ReviewAdapter(rb, server);
+		adapter.setFacade(new MyFacade());
+		adapter.setGeneralComments(new ArrayList<GeneralComment>());
+		GeneralCommentBean generalComment = new GeneralCommentBean();
+		generalComment.setCreateDate(date);
+		adapter.addGeneralComment(generalComment);
+
+		return adapter;
 	}
 
 	private class MyFacade implements CrucibleServerFacade {

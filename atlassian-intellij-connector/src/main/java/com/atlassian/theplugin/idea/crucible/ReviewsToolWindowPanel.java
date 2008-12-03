@@ -19,16 +19,16 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NonNls;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
@@ -150,10 +150,11 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 	}
 
 	private JTree createReviewsTree() {
+		reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
 		reviewTree = new JTree();
+//		issueTreeBuilder.rebuild(reviewTree, issuesPanel);
 		addReviewTreeListeners();
 
-//		issueTreeBuilder.rebuild(reviewTree, issuesPanel);
 		return reviewTree;
 	}
 
