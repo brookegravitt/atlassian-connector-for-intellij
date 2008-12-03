@@ -27,8 +27,8 @@ public class JIRAComponentBean extends AbstractJIRAConstantBean {
 		super(id, name, null);
 	}
 
-	public JIRAComponentBean(JIRAComponentBean parent) {
-		this(parent.getMap());
+	public JIRAComponentBean(JIRAComponentBean other) {
+		this(other.getMap());
 	}
 
 	// returns from this object a fragment of a query string that the IssueNavigator will understand
@@ -36,7 +36,7 @@ public class JIRAComponentBean extends AbstractJIRAConstantBean {
         return "component=" + getId();
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRAComponentBean getClone() {
 		return new JIRAComponentBean(this);
 	}
 }

@@ -31,8 +31,8 @@ public class JIRAVersionBean extends AbstractJIRAConstantBean {
 		this.name = name;
 	}
 
-	public JIRAVersionBean(JIRAVersionBean parent) {
-		this(parent.getMap());
+	public JIRAVersionBean(JIRAVersionBean other) {
+		this(other.getMap());
 	}
 
 	public boolean isReleased() {
@@ -47,7 +47,7 @@ public class JIRAVersionBean extends AbstractJIRAConstantBean {
 		return "version=" + getId();
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRAVersionBean getClone() {
 		return new JIRAVersionBean(this);
 	}
 }

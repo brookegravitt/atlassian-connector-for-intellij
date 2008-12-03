@@ -37,8 +37,8 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
 		this.id = id;
 	}
 
-	public JIRASavedFilterBean(JIRASavedFilterBean project) {
-		this(project.getMap());
+	public JIRASavedFilterBean(JIRASavedFilterBean other) {
+		this(other.getMap());
 	}
 
 	public String getName() {
@@ -55,7 +55,7 @@ public class JIRASavedFilterBean implements JIRASavedFilter {
 		return map;
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRASavedFilterBean getClone() {
 		return new JIRASavedFilterBean(this);
 	}
 
