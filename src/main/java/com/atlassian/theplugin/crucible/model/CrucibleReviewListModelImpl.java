@@ -96,6 +96,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	}
 
 	public synchronized void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
+
+		notifyReviewListUpdateStarted();
+
 		///create set in order to remove duplicates
 		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
 		reviewSet.addAll(updatedReviews);
@@ -115,7 +118,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			if (r.getServer().equals(serverCfg)) {
 				removeReview(r);
 			}
-		}				
+		}
+
+		notifyReviewListUpdateFinished();
 	}
 
 	private void notifyReviewChanged(ReviewAdapter review) {
@@ -135,4 +140,17 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			listener.reviewRemoved(review);
 		}
 	}
+
+	private void notifyReviewListUpdateStarted() {
+		for (CrucibleReviewListModelListener listener : listeners) {
+			listener.reviewListUpdateStarted();
+		}
+	}
+
+	private void notifyReviewListUpdateFinished() {
+		for (CrucibleReviewListModelListener listener : listeners) {
+			listener.reviewListUpdateFinished();
+		}
+	}
+
 }
