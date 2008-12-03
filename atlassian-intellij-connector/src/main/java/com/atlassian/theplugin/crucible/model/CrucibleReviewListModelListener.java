@@ -11,4 +11,8 @@ public interface CrucibleReviewListModelListener {
 	void reviewAdded(ReviewAdapter review);
 	void reviewRemoved(ReviewAdapter review);
 	void reviewChanged(ReviewAdapter review);
+
+	void reviewListUpdateStarted();
+
+	void reviewListUpdateFinished();
 }
