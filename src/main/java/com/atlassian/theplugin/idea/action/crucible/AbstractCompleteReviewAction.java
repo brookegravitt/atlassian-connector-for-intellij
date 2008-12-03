@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public abstract class AbstractCompleteReviewAction extends AnAction {
     private ReviewAdapter rd;
 
