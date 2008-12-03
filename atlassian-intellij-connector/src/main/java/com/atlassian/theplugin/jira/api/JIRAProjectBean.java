@@ -46,8 +46,8 @@ public class JIRAProjectBean implements JIRAProject {
 		this.name = name;
 	}
 
-	public JIRAProjectBean(JIRAProjectBean parent) {
-		this(parent.getMap());
+	public JIRAProjectBean(JIRAProjectBean other) {
+		this(other.getMap());
 	}
 
 	public String getName() {
@@ -66,7 +66,7 @@ public class JIRAProjectBean implements JIRAProject {
 		return map;
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRAProjectBean getClone() {
 		return new JIRAProjectBean(this);
 	}
 
