@@ -27,6 +27,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
+@Deprecated
 public class OpenReviewAction extends TableSelectedAction {
 
 	@Override

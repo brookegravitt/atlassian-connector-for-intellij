@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 
-
+@Deprecated
 public class JoinReviewAction extends AnAction {
 	private ReviewAdapter rd;
 
