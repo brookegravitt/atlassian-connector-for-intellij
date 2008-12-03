@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+@Deprecated
 public abstract class AbstractTransitionReviewAction extends AnAction {
     protected abstract Action getRequestedTransition();
 

@@ -222,6 +222,8 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
+
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 			//@todo add configuration restore here
 
@@ -317,7 +319,7 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 
-	public Content createCrucibleContent() {
+	public Content createCrucibleContentNew() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
 		Content content = peerFactory.getContentFactory().createContent(
@@ -328,11 +330,11 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 		return content;
 	}
 
-	public Content createCrucibleContentNew() {
+	public Content createCrucibleContentOld() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
 		Content content = peerFactory.getContentFactory().createContent(
-				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
+				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 

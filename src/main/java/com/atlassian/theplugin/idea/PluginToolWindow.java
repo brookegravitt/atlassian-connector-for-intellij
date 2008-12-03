@@ -155,10 +155,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
-								ideaToolWindow.getContentManager().addContent(
-										project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew()
-								);
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+								break;
+							case CRUCIBLE_OLD:
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 								break;
 							case ISSUES:
 								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
@@ -206,13 +206,13 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 						contentManager.addContent(content);
 						break;
-					case CRUCIBLE:
-						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
+					case CRUCIBLE_OLD:
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 						contentManager.addContent(content);
-
-						contentManager.addContent(
-									project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew());
-
+						break;
+					case CRUCIBLE:
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+						contentManager.addContent(content);
 						break;
 					case ISSUES:
 						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
@@ -239,6 +239,8 @@ public class PluginToolWindow extends ContentManagerAdapter {
 			focusPanel(project, ToolWindowPanels.BAMBOO);
 		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE.toString())) {
 			focusPanel(project, ToolWindowPanels.CRUCIBLE);
+		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE_OLD.toString())) {
+			focusPanel(project, ToolWindowPanels.CRUCIBLE_OLD);
 		} else if (tabName.equals(ToolWindowPanels.ISSUES.toString())) {
 			focusPanel(project, ToolWindowPanels.ISSUES);
 		}
@@ -308,7 +310,10 @@ public class PluginToolWindow extends ContentManagerAdapter {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+								break;
+							case CRUCIBLE_OLD:
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 								break;
 							case ISSUES:
 								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
@@ -389,8 +394,9 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public enum ToolWindowPanels {
 		BAMBOO("Builds"),
 		CRUCIBLE("Reviews"),
-		ISSUES("Issues");
-
+		ISSUES("Issues"),
+		CRUCIBLE_OLD("Old Crucible Panel");
+		
 		private final String title;
 
 		ToolWindowPanels(String title) {
