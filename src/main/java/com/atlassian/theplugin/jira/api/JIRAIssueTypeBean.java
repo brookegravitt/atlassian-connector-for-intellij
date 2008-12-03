@@ -30,15 +30,15 @@ public class JIRAIssueTypeBean extends AbstractJIRAConstantBean {
 		super(id, name, iconUrl);
 	}
 
-	public JIRAIssueTypeBean(JIRAIssueTypeBean parent) {
-		this(parent.getMap());
+	public JIRAIssueTypeBean(JIRAIssueTypeBean other) {
+		this(other.getMap());
 	}
 
 	public String getQueryStringFragment() {
         return "type=" + getId();
     }
 
-	public JIRAQueryFragment getClone() {
+	public JIRAIssueTypeBean getClone() {
 		return new JIRAIssueTypeBean(this);
 	}
 

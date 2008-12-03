@@ -71,9 +71,6 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JLabel prioritiesLabel;
 	private JLabel affectsVersionsLabel;
 
-	private boolean initialFilterSet;
-
-	private Project project;
 
 	private final JIRAServerModel jiraServerModel;
 	private final JIRAFilterListModel filterListModel;
@@ -418,11 +415,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	}
 
 	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
-
-		initialFilter.clear();
-		for (JIRAQueryFragment fragment : advancedQuery) {
-			initialFilter.add(fragment.getClone());
-		}
+		this.initialFilter = advancedQuery;
 	}
 
 	@Override

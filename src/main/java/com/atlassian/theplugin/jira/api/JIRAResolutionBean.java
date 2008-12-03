@@ -28,15 +28,15 @@ public class JIRAResolutionBean extends AbstractJIRAConstantBean {
 		super(id, name, null);
 	}
 
-	public JIRAResolutionBean(JIRAResolutionBean parent) {
-		this(parent.getMap());
+	public JIRAResolutionBean(JIRAResolutionBean other) {
+		this(other.getMap());
 	}
 
 	public String getQueryStringFragment() {
         return "resolution=" + id;
     }
 
-	public JIRAQueryFragment getClone() {
+	public JIRAResolutionBean getClone() {
 		return new JIRAResolutionBean(this);
 	}
 }

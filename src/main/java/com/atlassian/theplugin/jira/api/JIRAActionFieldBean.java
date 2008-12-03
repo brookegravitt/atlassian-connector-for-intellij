@@ -24,8 +24,8 @@ public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIR
 		this.fieldId = fieldId;
 	}
 
-	public JIRAActionFieldBean(JIRAActionFieldBean parent) {
-		this(parent.fieldId, parent.name);
+	public JIRAActionFieldBean(JIRAActionFieldBean other) {
+		this(other.fieldId, other.name);
 	}
 
 	public String getQueryStringFragment() {
@@ -34,7 +34,7 @@ public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIR
 		return fieldId + "=";
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRAActionFieldBean getClone() {
 		return new JIRAActionFieldBean(this);
 	}
 }
