@@ -778,7 +778,7 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 	private JComponent createFilterContent() {
 		serversPanel = new JPanel(new BorderLayout());
 
-		serversTree = createJiraServersTree(jiraFilterListModel);
+		serversTree = new JIRAFilterTree(jiraFilterListModel);
 		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -820,10 +820,6 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		ActionToolbar actionToolbar = actionManager.createActionToolbar("ThePlugin.Issues.ServersToolBar.Place", toolbar, true);
 
 		return actionToolbar.getComponent();
-	}
-
-	private JIRAFilterTree createJiraServersTree(JIRAFilterListModel listModel) {
-		return new JIRAFilterTree(listModel);
 	}
 
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
