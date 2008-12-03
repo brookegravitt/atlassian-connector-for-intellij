@@ -442,7 +442,7 @@ public class JIRASessionImpl implements JIRASession {
 				}
 
 				public JIRAQueryFragment getClone() {
-					return getClone();
+					return null;
 				}
 			};
 		} catch (RemoteException e) {

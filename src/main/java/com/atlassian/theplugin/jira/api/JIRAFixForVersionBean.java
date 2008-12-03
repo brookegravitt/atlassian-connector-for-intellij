@@ -28,15 +28,18 @@ public class JIRAFixForVersionBean extends JIRAVersionBean {
 		super(id, name);
 	}
 
-	public JIRAFixForVersionBean(JIRAVersionBean version) {
-		super(version.getId(), version.getName());
+	public JIRAFixForVersionBean(JIRAFixForVersionBean other) {
+		super(other.getId(), other.getName());
+	}
+	public JIRAFixForVersionBean(JIRAVersionBean other) {
+		super(other.getId(), other.getName());
 	}
 
 	public String getQueryStringFragment() {
 		return "fixfor=" + getId();
 	}
 
-	public JIRAQueryFragment getClone() {
+	public JIRAFixForVersionBean getClone() {
 		return new JIRAFixForVersionBean(this);
 	}
 

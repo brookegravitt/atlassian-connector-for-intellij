@@ -111,8 +111,7 @@ public class JIRAServerCache {
     }
 
 	/**
-	 *
-	 * @param project
+	 *	 
 	 * @return list of issue types or empty collection
 	 */
 	public List<JIRAConstant> getIssueTypes(JIRAProject project) {
