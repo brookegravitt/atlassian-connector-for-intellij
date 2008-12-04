@@ -21,170 +21,53 @@ import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
-import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Splitter;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
-import javax.swing.tree.TreePath;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
+public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
-
-	private final CrucibleProjectConfiguration crucibleProjectCfg;
 	private final CrucibleReviewListModel reviewListModel;
-
-	private final Project project;
-	private final CfgManager cfgManager;
-
-	private static final float PANEL_SPLIT_RATIO = 0.3f;
-	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
-
-
-	// left panel
-	private Splitter splitFilterPane;
-	private JPanel serversPanel;
-	private JTree serversTree;
-	private JPanel manualFilterDetailsPanel;
-	// right panel
-	private JPanel reviewsPanel;
-	private JScrollPane reviewTreeScrollPane;
 	private JTree reviewTree;
-	// bottom panel
-	private StatusBarPane statusBarPane;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel) {
+		super(project, cfgManager, "ThePlugin.Reviews.StatusesToolbar", "ThePlugin.Reviews.ReviewsToolbar");
 
-		this.project = project;
-		this.cfgManager = cfgManager;
-		this.crucibleProjectCfg = crucibleProjectConfiguration;
 		this.reviewListModel = reviewListModel;
-
-		initialize();
-
-	}
-
-	private void initialize() {
-
-		setLayout(new BorderLayout());
-
-		splitPane.setFirstComponent(createLeftContent());
-		splitPane.setSecondComponent(createRightContent());
-
-		splitPane.setShowDividerControls(false);
-		splitPane.setHonorComponentsMinimumSize(true);
-
-		addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				final Dimension dimension = e.getComponent().getSize();
-				final boolean doVertical = dimension.getWidth() < dimension.getHeight();
-				if (doVertical != splitPane.getOrientation()) {
-					splitPane.setOrientation(doVertical);
-				}
-
-			}
-		});
-
-		add(splitPane, BorderLayout.CENTER);
-
-		add(createStatusBar(), BorderLayout.SOUTH);
-	}
-
-	protected JComponent createStatusBar() {
-		statusBarPane = new StatusBarPane("Reviews panel");
-		return statusBarPane;
-	}
-
-	protected JComponent createLeftContent() {
-		splitFilterPane = new Splitter(false, 1.0f);
-		splitFilterPane.setOrientation(true);
-
-		serversPanel = new JPanel(new BorderLayout());
-
-		serversTree = new JTree();
-		JScrollPane filterListScrollPane = new JScrollPane(serversTree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		filterListScrollPane.setWheelScrollingEnabled(true);
-
-		manualFilterDetailsPanel = new JPanel();
-
-		serversPanel.add(filterListScrollPane, BorderLayout.CENTER);
-		serversPanel.add(createServersToolbar(), BorderLayout.NORTH);
-
-		splitFilterPane.setFirstComponent(serversPanel);
-
-		return splitFilterPane;
-	}
-
-	private JComponent createServersToolbar() {
-		// todo create toolbar
-		return new JLabel();
-	}
-
-	protected JComponent createRightContent() {
-		reviewsPanel = new JPanel(new BorderLayout());
-
-		reviewTreeScrollPane = new JScrollPane(createReviewsTree(), JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		reviewTreeScrollPane.setWheelScrollingEnabled(true);
-
-		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
-		uiSetup.initializeUI(reviewTree, reviewTreeScrollPane);
-
-		reviewTree.setShowsRootHandles(true);
-		reviewTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		reviewTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				final TreePath selectionPath = reviewTree.getSelectionModel().getSelectionPath();
-				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-				}
-			}
-		});
-
-		reviewsPanel.add(reviewTreeScrollPane, BorderLayout.CENTER);
-		reviewsPanel.add(createReviewsToolbar(), BorderLayout.NORTH);
-		return reviewsPanel;
-	}
-
-	private JTree createReviewsTree() {
-		reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
+		init();
 		addReviewTreeListeners();
-
-		return reviewTree;
+		setupReviewTree(reviewTree);
 	}
 
-	private JComponent createReviewsToolbar() {
-		// todo create toolbar
-		return new JLabel();
-	}
 
 	public void openReview(final ReviewAdapter review) {
-		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(review);
+		CrucibleReviewWindow.getInstance(getProject()).showCrucibleReviewWindow(review);
 	}
 
 	private void addReviewTreeListeners() {
@@ -223,10 +106,6 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 		});
 	}
 
-	private String getPlaceName() {
-		return PLACE_PREFIX + this.project.getName();
-	}
-
 	private void launchContextMenu(MouseEvent e) {
 		final DefaultActionGroup actionGroup = new DefaultActionGroup();
 
@@ -234,7 +113,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 				.getInstance().getAction("ThePlugin.Reviews.ReviewPopupMenu");
 		actionGroup.addAll(configActionGroup);
 
-		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getPlaceName(), actionGroup);
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getActionPlaceName(), actionGroup);
 
 		final JPopupMenu jPopupMenu = popup.getComponent();
 		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
@@ -247,5 +126,44 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 		}
 		return null;
 
+	}
+
+	public void addSearchBoxListener() {
+
+	}
+
+	public JTree createRightTree() {
+		if (reviewTree == null) {
+			reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
+		}
+		return reviewTree;
+	}
+
+	public JTree createLeftTree() {
+		return new JTree();
+	}
+
+	public void onEditButtonClickAction() {		
+	}
+
+	public String getActionPlaceName() {
+		return PLACE_PREFIX + this.getProject().getName();
+	}
+
+	private void setupReviewTree(JTree reviewTree){
+		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		uiSetup.initializeUI(reviewTree, getRightScrollPane());
+		final JTree finalReviewTree = reviewTree;
+
+		reviewTree.setShowsRootHandles(true);
+		reviewTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		reviewTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent e) {
+				final TreePath selectionPath = finalReviewTree.getSelectionModel().getSelectionPath();
+				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+				}
+			}
+		});
 	}
 }
