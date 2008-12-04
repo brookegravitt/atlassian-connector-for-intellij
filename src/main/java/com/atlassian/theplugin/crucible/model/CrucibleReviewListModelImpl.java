@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 
@@ -97,7 +98,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	public synchronized void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
 
-		notifyReviewListUpdateStarted();
+		notifyReviewListUpdateStarted(serverCfg.getServerId());
 
 		///create set in order to remove duplicates
 		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
@@ -120,7 +121,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			}
 		}
 
-		notifyReviewListUpdateFinished();
+		notifyReviewListUpdateFinished(serverCfg.getServerId());
 	}
 
 	private void notifyReviewChanged(ReviewAdapter review) {
@@ -141,15 +142,15 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 	}
 
-	private void notifyReviewListUpdateStarted() {
+	private void notifyReviewListUpdateStarted(ServerId serverId) {
 		for (CrucibleReviewListModelListener listener : listeners) {
-			listener.reviewListUpdateStarted();
+			listener.reviewListUpdateStarted(serverId);
 		}
 	}
 
-	private void notifyReviewListUpdateFinished() {
+	private void notifyReviewListUpdateFinished(ServerId serverId) {
 		for (CrucibleReviewListModelListener listener : listeners) {
-			listener.reviewListUpdateFinished();
+			listener.reviewListUpdateFinished(serverId);
 		}
 	}
 

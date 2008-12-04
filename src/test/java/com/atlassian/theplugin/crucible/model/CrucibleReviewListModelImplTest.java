@@ -208,9 +208,9 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		// test 1 (add review)
 
-		listener.reviewListUpdateStarted();
+		listener.reviewListUpdateStarted(cfg.getServerId());
 		listener.reviewAdded(reviewAdapter_1);
-		listener.reviewListUpdateFinished();
+		listener.reviewListUpdateFinished(cfg.getServerId());
 
 		EasyMock.replay(listener);
 		model.updateReviews(cfg, Arrays.asList(reviewAdapter_1));
@@ -220,8 +220,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		EasyMock.reset(listener);
 
-		listener.reviewListUpdateStarted();
-		listener.reviewListUpdateFinished();
+		listener.reviewListUpdateStarted(cfg.getServerId());
+		listener.reviewListUpdateFinished(cfg.getServerId());
 
 		EasyMock.replay(listener);
 		model.updateReviews(cfg, Arrays.asList(reviewAdapter_2));
@@ -232,9 +232,9 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		EasyMock.reset(listener);
 
-		listener.reviewListUpdateStarted();
+		listener.reviewListUpdateStarted(cfg.getServerId());
 		listener.reviewRemoved(reviewAdapter_1);
-		listener.reviewListUpdateFinished();
+		listener.reviewListUpdateFinished(cfg.getServerId());
 
 		EasyMock.replay(listener);
 		model.updateReviews(cfg, Collections.EMPTY_LIST);

@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 /**
@@ -12,7 +13,7 @@ public interface CrucibleReviewListModelListener {
 	void reviewRemoved(ReviewAdapter review);
 	void reviewChanged(ReviewAdapter review);
 
-	void reviewListUpdateStarted();
+	void reviewListUpdateStarted(ServerId serverId);
 
-	void reviewListUpdateFinished();
+	void reviewListUpdateFinished(ServerId serverId);
 }
