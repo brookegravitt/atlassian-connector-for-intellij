@@ -8,7 +8,7 @@ public class ExpandServersAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null) {
-			panel.expandAllFilterTreeNodes();
+			panel.expandAllLeftTreeNodes();
 		}
 	}
 
