@@ -24,6 +24,9 @@ import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
@@ -32,10 +35,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
@@ -43,6 +49,7 @@ import java.util.Collection;
 public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
+	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
 	private final CrucibleProjectConfiguration crucibleProjectCfg;
 	private final CrucibleReviewListModel reviewListModel;
@@ -145,6 +152,20 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		reviewTreeScrollPane.setWheelScrollingEnabled(true);
 
+		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		uiSetup.initializeUI(reviewTree, reviewTreeScrollPane);
+
+		reviewTree.setShowsRootHandles(true);
+		reviewTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		reviewTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent e) {
+				final TreePath selectionPath = reviewTree.getSelectionModel().getSelectionPath();
+				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+				}
+			}
+		});
+
 		reviewsPanel.add(reviewTreeScrollPane, BorderLayout.CENTER);
 		reviewsPanel.add(createReviewsToolbar(), BorderLayout.NORTH);
 		return reviewsPanel;
@@ -152,7 +173,6 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 
 	private JTree createReviewsTree() {
 		reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
-//		reviewTree = new JTree();
 		addReviewTreeListeners();
 
 		return reviewTree;
@@ -163,15 +183,6 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 		return new JLabel();
 	}
 
-	private ReviewAdapter getSelectedReview() {
-		// todo: this is temporary, we will fix it later, when the tree is actually functional
-		Collection<ReviewAdapter> reviews = reviewListModel.getReviews();
-		if (reviews != null && reviews.size() > 0) {
-			return reviews.iterator().next();
-		}
-		return null;
-	}
-
 	public void openReview(final ReviewAdapter review) {
 		CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(review);
 	}
@@ -180,7 +191,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 		reviewTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				final ReviewAdapter review = getSelectedReview();
+				final ReviewAdapter review = reviewListModel.getSelectedReview();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
 					openReview(review);
 				}
@@ -191,7 +202,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final ReviewAdapter review = getSelectedReview();
+				final ReviewAdapter review = reviewListModel.getSelectedReview();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && review != null) {
 					openReview(review);
 				}
@@ -203,7 +214,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 				TreePath selPath = reviewTree.getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
 					reviewTree.setSelectionPath(selPath);
-					final ReviewAdapter review = getSelectedReview();
+					final ReviewAdapter review = reviewListModel.getSelectedReview();
 					if (review != null) {
 						launchContextMenu(e);
 					}
@@ -232,7 +243,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 	@Nullable
 	public Object getData(@NonNls String dataId) {
 		if (dataId.equals(Constants.REVIEW)) {
-			return getSelectedReview();
+			return reviewListModel.getSelectedReview();
 		}
 		return null;
 

@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -179,9 +180,9 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 
 			if (selectionPath != null
 					&& selectionPath.getLastPathComponent() != null
-					&& selectionPath.getLastPathComponent() instanceof JIRAAbstractTreeNode) {
+					&& selectionPath.getLastPathComponent() instanceof AbstractTreeNode) {
 
-				((JIRAAbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+				((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
 			}
 		}
 	}
