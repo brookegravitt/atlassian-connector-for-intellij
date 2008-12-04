@@ -36,7 +36,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	private JTree rightTree;
 	private JTree leftTree;
 	private JScrollPane leftUpperScrollPane;
-	private JScrollPane leftDownScrollPane;
 
 	public PluginToolWindowPanel(@NotNull final Project project,
 								 @NotNull final CfgManager cfgManager,
@@ -111,8 +110,8 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		splitLeftPane.setShowDividerControls(true);
 		splitLeftPane.setHonorComponentsMinimumSize(true);
 
-		leftDownScrollPane =  new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//		JScrollPane leftDownScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+//				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		leftPanel.add(splitLeftPane, BorderLayout.CENTER);
 
@@ -126,7 +125,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 		return leftPanel;
 
-	};
+	}
 
 
 	public JScrollPane getRightScrollPane() {
@@ -191,7 +190,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		rightPanel.add(toolBarPanel, BorderLayout.NORTH);
 		
 		return rightPanel;
-	};
+	}
 
 	public JPanel getRightPanel() {
 		return rightPanel;
@@ -202,14 +201,14 @@ public abstract class PluginToolWindowPanel extends JPanel {
 			rightTree = createRightTree();
 		}
 		return rightTree;
-	};
+	}
 
 	public JTree getLeftTree() {
 		if (leftTree == null) {
 			leftTree = createLeftTree();
 		}
 		return leftTree;
-	};
+	}
 
 	public void expandAllRightTreeNodes() {
 		for (int i = 0; i < getRightTree().getRowCount(); i++) {
