@@ -30,6 +30,7 @@ import java.util.ArrayList;
 public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewListModelListener {
 
 	private CrucibleReviewListModel reviewListModel;
+	private boolean treeInitialized = false;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new CrucibleReviewGroupTreeNode(reviewListModel, "No Grouping At All", null, null));
@@ -100,10 +101,18 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 
 	public void reviewAdded(ReviewAdapter review) {
 		System.out.println("review added");
+
+		if (treeInitialized) {
+			this.nodeStructureChanged(root);
+		}
 	}
 
 	public void reviewRemoved(ReviewAdapter review) {
 		System.out.println("review removed");
+
+		if (treeInitialized) {
+			this.nodeStructureChanged(root);
+		}
 	}
 
 	public void reviewChanged(ReviewAdapter review) {
@@ -117,6 +126,18 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	public void reviewListUpdateFinished(ServerId serverId) {
 		System.out.println("reviews updated finished");
 
-		this.nodeStructureChanged(root);
+		if (!treeInitialized) {
+			// draw entire tree
+			this.nodeStructureChanged(root);
+			treeInitialized = true;
+		}
+	}
+
+	public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
+		System.out.println("review changed without files");
+		
+		if (treeInitialized) {
+			this.nodeStructureChanged(root);
+		}
 	}
 }
