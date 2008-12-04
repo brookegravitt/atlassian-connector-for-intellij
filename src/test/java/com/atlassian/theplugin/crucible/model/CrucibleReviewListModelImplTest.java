@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -76,7 +77,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		assertEquals(2, model.getReviews().size());
 	}
 
-	public void testAddingTworeviewsWithTheSamePermId() throws Exception {
+	public void testAddingTwoReviewsWithTheSamePermId() throws Exception {
 		model = new CrucibleReviewListModelImpl();
 
 
@@ -158,10 +159,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		assertEquals(0, model.getReviews().size());
 	}
 
-	private boolean reviewAddedCalled;
-	private boolean reviewRemovedCalled;
-	private boolean reviewChangedCalled;
-
 	public void testListeners() throws Exception {
 
 		ServerId id = new ServerId();
@@ -179,7 +176,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model.addListener(listener);
 
 		listener.reviewAdded(reviewAdapter);
-		listener.reviewChanged(reviewAdapter);
+//		listener.reviewChanged(reviewAdapter);
 		listener.reviewRemoved(reviewAdapter);
 
 		EasyMock.replay(listener);
@@ -227,8 +224,20 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model.updateReviews(cfg, Arrays.asList(reviewAdapter_2));
 		EasyMock.verify(listener);
 
+		// test 3 (change review)
+		EasyMock.reset(listener);
 
-		// test 3 (remove review)
+		listener.reviewListUpdateStarted(cfg.getServerId());
+		listener.reviewChangedWithoutFiles(reviewAdapter_1);
+		listener.reviewListUpdateFinished(cfg.getServerId());
+
+		EasyMock.replay(listener);
+		reviewAdapter_2.getGeneralComments().add(new GeneralCommentBean());
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_2));
+		EasyMock.verify(listener);
+
+
+		// test 4 (remove review)
 
 		EasyMock.reset(listener);
 
@@ -376,12 +385,29 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
 
+		// create review adapter
 		ReviewAdapter adapter = new ReviewAdapter(rb, server);
 		adapter.setFacade(new MyFacade());
+
+		// add general comments
 		adapter.setGeneralComments(new ArrayList<GeneralComment>());
 		GeneralCommentBean generalComment = new GeneralCommentBean();
 		generalComment.setCreateDate(date);
 		adapter.addGeneralComment(generalComment);
+
+		// add files and versioned comments
+		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+		CrucibleFileInfoImpl file = new CrucibleFileInfoImpl(
+				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
+				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
+				new PermIdBean("file ID"));
+		files.add(file);
+		List<VersionedComment> versionedComments = new ArrayList<VersionedComment>();
+		VersionedCommentBean versionedComment = new VersionedCommentBean();
+		versionedComment.setReviewItemId(file.getPermId());
+		versionedComment.setPermId(new PermIdBean("comment ID"));
+		versionedComments.add(versionedComment);
+		adapter.setFilesAndVersionedComments(files, versionedComments);
 
 		return adapter;
 	}
