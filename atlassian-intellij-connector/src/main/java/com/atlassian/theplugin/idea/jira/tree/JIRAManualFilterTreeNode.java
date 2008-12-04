@@ -2,17 +2,19 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
 
 /**
  * User: pmaruszak
  */
-public class JIRAManualFilterTreeNode extends JIRAAbstractTreeNode {	
+public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 	private JIRAManualFilter manualFilter;
 	private JIRAFilterListModel listModel;
 
 	public JIRAManualFilterTreeNode(final JIRAFilterListModel listModel, final JIRAManualFilter manualFilter) {
+		super(manualFilter.getName(), null, null);
 		this.listModel = listModel;
 		this.manualFilter = manualFilter;
 
