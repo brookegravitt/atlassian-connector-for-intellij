@@ -767,10 +767,10 @@ public final class IssuesToolWindowPanel extends JPanel implements DataProvider 
 		CellConstraints cc = new CellConstraints();
 
 		final JPanel toolBarPanel = new JPanel(
-				new FormLayout("left:1dlu:grow, right:1dlu:grow, left:pref:grow, right:pref:grow", "pref:grow"));
-		toolBarPanel.add(new JLabel("Group By "), cc.xy(2, 1));
-		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(2 + 1, 1));
-		toolBarPanel.add(searchField, cc.xy(2 + 2, 1));
+				new FormLayout("left:pref, left:pref:grow, right:pref:grow", "pref:grow"));
+		toolBarPanel.add(new JLabel("Group By "), cc.xy(1, 1));
+		toolBarPanel.add(actionToolbar.getComponent(), cc.xy(2, 1));
+		toolBarPanel.add(searchField, cc.xy(2 + 1, 1));
 
 		return toolBarPanel;
 	}
