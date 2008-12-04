@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	private CrucibleReviewListModel reviewListModel;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
-		super(new DefaultMutableTreeNode());
+		super(new CrucibleReviewGroupTreeNode(reviewListModel, "No Grouping At All", null, null));
 		this.reviewListModel = reviewListModel;
 
 		reviewListModel.addListener(this);
@@ -48,14 +47,24 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	}
 
 	public Object getChild(Object parent, int index) {
-		if (parent != null && parent instanceof DefaultMutableTreeNode && parent == root) {
-			return reviewListModel.getReviews().toArray()[index];
+		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+			ReviewAdapter r = (ReviewAdapter) reviewListModel.getReviews().toArray()[index];
+			if (r != null) {
+				CrucibleReviewGroupTreeNode p = (CrucibleReviewGroupTreeNode) parent;
+				if (index < p.getChildCount()) {
+					return p.getChildAt(index);
+				}
+
+				CrucibleReviewTreeNode n = new CrucibleReviewTreeNode(reviewListModel, r);
+				p.add(n);
+				return n;
+			}
 		}
 		return null;
 	}
 
 	public int getChildCount(Object parent) {
-		if (parent != null && parent instanceof DefaultMutableTreeNode && parent == root) {
+		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
 			return reviewListModel.getReviews().size();
 		}
 
@@ -75,8 +84,11 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
-		if (parent != null && parent instanceof DefaultMutableTreeNode && parent == root) {
-			return new ArrayList<ReviewAdapter>(reviewListModel.getReviews()).indexOf((ReviewAdapter) child);
+		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+			if (child instanceof CrucibleReviewTreeNode) {
+				ReviewAdapter review = ((CrucibleReviewTreeNode) child).getReview();
+				return new ArrayList<ReviewAdapter>(reviewListModel.getReviews()).indexOf(review);
+			}
 		}
 
 		return -1;

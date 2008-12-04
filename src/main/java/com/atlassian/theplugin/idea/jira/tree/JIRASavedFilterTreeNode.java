@@ -2,18 +2,20 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
 
 /**
  * User: pmaruszak
  */
-public class JIRASavedFilterTreeNode extends JIRAAbstractTreeNode {	
+public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 	private JIRASavedFilter savedFilter;
 
 	private JIRAFilterListModel listModel;
 
 	public JIRASavedFilterTreeNode(final JIRAFilterListModel listModel, final JIRASavedFilter savedFilter) {
+		super(savedFilter.getName(), null, null);
 		this.listModel = listModel;
 		this.savedFilter = savedFilter;
 	}

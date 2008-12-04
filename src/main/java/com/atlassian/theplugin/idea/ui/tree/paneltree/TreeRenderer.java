@@ -1,18 +1,18 @@
-package com.atlassian.theplugin.idea.jira.tree;
+package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
 
-public class JIRAIssueTreeRenderer extends DefaultTreeCellRenderer {
+public class TreeRenderer extends DefaultTreeCellRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
 	                                              boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 		JComponent c = (JComponent) super.getTreeCellRendererComponent(
 		        tree, value, selected, expanded, leaf, row, hasFocus);
 
-		if (value instanceof JIRAAbstractTreeNode) {
-			return ((JIRAAbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
+		if (value instanceof AbstractTreeNode) {
+			return ((AbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
 		}
 		return c;
 	}

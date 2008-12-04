@@ -1,8 +1,10 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
@@ -15,8 +17,6 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class JIRAIssueTreeBuilder {
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private DefaultTreeModel treeModel;
-	private static final TreeCellRenderer TREE_RENDERER = new JIRAIssueTreeRenderer();
+	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
 	private boolean isGroupSubtasksUnderParent;
 
@@ -120,7 +120,8 @@ public class JIRAIssueTreeBuilder {
 		tree.removeAll();
 		treeModel = new DefaultTreeModel(root);
 		tree.setModel(treeModel);
-		registerUI(tree);
+		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		uiSetup.registerUI(tree);
 		if (this.lastTree != tree) {
 			this.lastTree = tree;
 			tree.setShowsRootHandles(true);
@@ -129,49 +130,18 @@ public class JIRAIssueTreeBuilder {
 				public void valueChanged(TreeSelectionEvent e) {
 					final TreePath selectionPath = tree.getSelectionModel().getSelectionPath();
 					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-						((JIRAAbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+						((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
 					}
 				}
 			});
-			initializeUI(tree, treeParent);
+			uiSetup.initializeUI(tree, treeParent);
 			tree.setRootVisible(false);
 		}
-	}
-
-	//
-	// voodoo magic below - makes the lastTree node as wide as the whole panel. Somehow. Like I said - it is magic.
-	//
-
-	public void initializeUI(final JTree tree, final JComponent treeParent) {
-		registerUI(tree);
-		treeParent.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if (tree.isVisible()) {
-					registerUI(tree);
-				}
-			}
-		});
-	}
-
-	private void registerUI(JTree tree) {
-		tree.setUI(new MyTreeUI());
 	}
 
 	public void setGroupSubtasksUnderParent(boolean groupSubtasksUnderParent) {
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 	}
-
-	private class MyTreeUI extends BasicWideNodeTreeUI {
-		@Override
-		protected TreeCellRenderer createDefaultCellRenderer() {
-			return TREE_RENDERER;
-		}
-	}
-
-	//
-	// end of voodoo magic
-	//
 
 	private DefaultMutableTreeNode getPlace(JIRAIssue issue, DefaultMutableTreeNode root) {
 		String name;

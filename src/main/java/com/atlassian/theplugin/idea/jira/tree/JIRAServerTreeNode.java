@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
 
@@ -11,13 +12,14 @@ import java.awt.*;
 /**
  * User: pmaruszak
  */
-public class JIRAServerTreeNode extends JIRAAbstractTreeNode {
+public class JIRAServerTreeNode extends AbstractTreeNode {
 	private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
 	private JiraServerCfg jiraServer;
 	private JIRAFilterListModel listModel;
 
 	public JIRAServerTreeNode(final JIRAFilterListModel listModel, JiraServerCfg jiraServer) {
+		super(jiraServer.getName(), null, null);
 		this.listModel = listModel;
 		this.jiraServer = jiraServer;
 		

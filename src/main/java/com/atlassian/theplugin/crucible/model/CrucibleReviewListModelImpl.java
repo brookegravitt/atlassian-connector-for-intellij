@@ -15,6 +15,7 @@ import java.util.*;
 public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private List<CrucibleReviewListModelListener> listeners = new ArrayList<CrucibleReviewListModelListener>();
 	private List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+	private ReviewAdapter selectedReview;
 
 	private CrucibleReviewListener reviewListener = new CrucibleReviewListener() {
 		public void createdOrEditedVersionedCommentReply(ReviewAdapter review, PermId file,
@@ -84,6 +85,19 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		for (ReviewAdapter r : removed) {
 			notifyReviewRemoved(r);
 		}
+	}
+
+	public synchronized void setSelectedReview(ReviewAdapter review) {
+		if (review == null || reviews.contains(review)) {
+			selectedReview = review;
+		}
+	}
+
+	public synchronized ReviewAdapter getSelectedReview() {
+		if (reviews.contains(selectedReview)) {
+			return selectedReview;
+		}
+		return null;
 	}
 
 	public void addListener(CrucibleReviewListModelListener listener) {
