@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
@@ -62,6 +63,10 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	}
 
 	public boolean isLeaf(Object node) {
+		if (node == super.getRoot()) {
+			return false;
+		}
+
 		return true;
 	}
 
@@ -82,22 +87,24 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 	 */
 
 	public void reviewAdded(ReviewAdapter review) {
-//		System.out.println("review added");
+		System.out.println("review added");
 	}
 
 	public void reviewRemoved(ReviewAdapter review) {
-//		System.out.println("review removed");
+		System.out.println("review removed");
 	}
 
 	public void reviewChanged(ReviewAdapter review) {
-//		System.out.println("review changed");
+		System.out.println("review changed");
 	}
 
-	public void reviewListUpdateStarted() {
-//		System.out.println("reviews update started");
+	public void reviewListUpdateStarted(ServerId serverId) {
+		System.out.println("reviews update started");
 	}
 
-	public void reviewListUpdateFinished() {
-//		System.out.println("reviews updated finished");
+	public void reviewListUpdateFinished(ServerId serverId) {
+		System.out.println("reviews updated finished");
+
+		this.nodeStructureChanged(root);
 	}
 }
