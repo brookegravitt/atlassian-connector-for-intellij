@@ -8,7 +8,7 @@ public class CollapseServersAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null) {
-			panel.collapseAllFilterTreeNodes();
+			panel.collapseAllLeftTreeNodes();
 		}
 	}
 

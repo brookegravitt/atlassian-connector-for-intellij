@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ExpandIssuesAction extends JIRAAbstractAction {
 	public void actionPerformed(final AnActionEvent e) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-		panel.expandAllIssueTreeNodes();
+		panel.expandAllRightTreeNodes();
 	}
 
 	public void onUpdate(AnActionEvent event) {
