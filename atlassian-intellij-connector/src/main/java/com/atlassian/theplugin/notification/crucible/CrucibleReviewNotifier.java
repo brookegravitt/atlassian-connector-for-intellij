@@ -118,7 +118,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					}
 
 					for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewUpdated(review);
+						listener.reviewChangedWithoutFiles(review);
 					}
 
 //					GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
@@ -135,7 +135,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 				notifications.add(new RemovedReplyCommentNotification(review, gc));
 
 				for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewUpdated(review);
+						listener.reviewChangedWithoutFiles(review);
 				}
 
 //				CommentRemoved event = new CommentRemoved(CrucibleReviewListenerImpl.ANONYMOUS, review, gc);
@@ -166,7 +166,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 //					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 
 					for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewUpdated(review);
+						listener.reviewChangedWithoutFiles(review);
 					}
 				}
 			}
@@ -181,7 +181,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 //				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 
 				for (CrucibleReviewListener listener : reviewListenerList) {
-					listener.reviewUpdated(review);
+					listener.reviewChangedWithoutFiles(review);
 				}
 
 			}
@@ -210,7 +210,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
 
 				for (CrucibleReviewListener listener : reviewListenerList) {
-					listener.reviewUpdated(newReview);
+					listener.reviewChangedWithoutFiles(newReview);
 				}
 
 			}
@@ -222,7 +222,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		for (GeneralComment gc : deletedGen) {
 			notifications.add(new RemovedGeneralCommentNotification(newReview, gc));
 			for (CrucibleReviewListener listener : reviewListenerList) {
-				listener.reviewUpdated(newReview);
+				listener.reviewChangedWithoutFiles(newReview);
 			}
 		}
 
@@ -248,7 +248,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 					if (project != null) {
 
 						for (CrucibleReviewListener listener : reviewListenerList) {
-							listener.reviewUpdated(newReview);
+							listener.reviewChangedWithoutFiles(newReview);
 						}
 					}
 				}
@@ -271,7 +271,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 			notifications.add(new RemovedVersionedCommentNotification(newReview, vc));
 
 			for (CrucibleReviewListener listener : reviewListenerList) {
-				listener.reviewUpdated(newReview);
+				listener.reviewChangedWithoutFiles(newReview);
 			}
 
 		}

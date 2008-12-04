@@ -19,6 +19,7 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -53,7 +54,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public final class ReviewItemTreePanel extends JPanel implements DataProvider, CrucibleReviewListener {
+public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	//	ProjectView.
 	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
@@ -76,6 +77,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 
 	private ReviewAdapter crucibleReview = null;
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
+	private final CrucibleReviewListener reviewListener = new LocalReviewListener();
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -182,42 +184,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		statusLabel.setText(txt);
 	}
 
-	public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-		reviewChanged(review);
-	}
 
-
-	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-			final GeneralComment comment) {
-
-		reviewChanged(review);
-	}
-
-	public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
-			final VersionedComment comment) {
-
-		reviewChanged(review);
-	}
-
-	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
-			final VersionedComment parentComment, final VersionedComment comment) {
-
-		reviewChanged(review);
-	}
-
-	public void removedComment(final ReviewAdapter review, final Comment comment) {
-		reviewChanged(review);
-	}
-
-	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
-		reviewChanged(review);
-	}
-
-	public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
-			final VersionedComment comment) {
-
-		reviewChanged(review);
-	}
 
 	public void showReview(ReviewAdapter reviewItem) {
 
@@ -250,24 +217,24 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 	}
 
 
-	private void reviewChanged(ReviewAdapter review) {
+	private void refreshView(ReviewAdapter review) {
 		this.crucibleReview = review;
 		EventQueue.invokeLater(new MyRunnable(review));
 	}
 
-	public void reviewUpdated(final ReviewAdapter newReview) {
+	public void reviewChangedWithoutFiles(final ReviewAdapter newReview) {
 		if (newReview.equals(crucibleReview)) {
 			this.crucibleReview.fillReview(newReview);
 			showReview(crucibleReview);
 		}
 	}
 
-	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
-	}
-
-
-	public void showDiff(final CrucibleFileInfo file) {
-	}
+//	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
+//	}
+//
+//
+//	public void showDiff(final CrucibleFileInfo file) {
+//	}
 
 	private String createGeneralInfoText(final ReviewAdapter reviewItem) {
 		final StringBuilder buffer = new StringBuilder();
@@ -307,6 +274,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 		buffer.append("</html>");
 
 		return buffer.toString();
+	}
+
+	public CrucibleReviewListener getReviewListener() {
+		return reviewListener;
 	}
 
 	private class MyRunnable implements Runnable {
@@ -401,4 +372,53 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider, C
 			}
 		}
 	}
+
+
+	private class LocalReviewListener extends CrucibleReviewListenerAdapter {
+		@Override
+		public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
+													   final GeneralComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
+													final VersionedComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
+														 final VersionedComment parentComment,
+														 final VersionedComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void removedComment(final ReviewAdapter review, final Comment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
+											  final VersionedComment comment) {
+			refreshView(review);
+		}
+
+		@Override
+		public void reviewChanged(ReviewAdapter reviewAdapter) {
+			refreshView(reviewAdapter);
+		}
+	}
+
 }

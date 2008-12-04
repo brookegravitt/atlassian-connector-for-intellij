@@ -94,13 +94,13 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	public void showCrucibleReviewWindow(final ReviewAdapter crucibleReview) {
 
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
-		crucibleReview.addReviewListener(reviewItemTreePanel);
+		crucibleReview.addReviewListener(reviewItemTreePanel.getReviewListener());
 
 		CrucibleReviewNotifier notifier =
 				IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCrucibleReviewNotifier();
 
 		if (notifier != null) {
-			notifier.registerReviewListener(reviewItemTreePanel);
+			notifier.registerReviewListener(reviewItemTreePanel.getReviewListener());
 		}
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
