@@ -150,7 +150,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return PLACE_PREFIX + this.getProject().getName();
 	}
 
-	private void setupReviewTree(JTree reviewTree){
+	private void setupReviewTree(JTree reviewTree) {
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		uiSetup.initializeUI(reviewTree, getRightScrollPane());
 		final JTree finalReviewTree = reviewTree;

@@ -77,7 +77,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		
 	}
 
-	public void enableGetMoreIssues(boolean enable){
+	public void enableGetMoreIssues(boolean enable) {
 		statusBarPane.enableGetMoreIssues(enable);
 	}
 
@@ -106,7 +106,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 
 		leftUpperScrollPane.setWheelScrollingEnabled(true);
-		splitLeftPane = new Splitter(false, 0.5f);
+		splitLeftPane = new Splitter(false, MANUAL_FILTER_PROPORTION_HIDDEN);
 		splitLeftPane.setOrientation(true);
 		splitLeftPane.setShowDividerControls(true);
 		splitLeftPane.setHonorComponentsMinimumSize(true);
@@ -141,7 +141,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		return searchField;
 	}
 
-	private JComponent createToolBar(String toolbarName, String toolbarPalce){
+	private JComponent createToolBar(String toolbarName, String toolbarPalce) {
 		JComponent component = null;
 		ActionManager actionManager = ActionManager.getInstance();
 		ActionGroup toolbar = (ActionGroup) actionManager.getAction(toolbarName);
@@ -167,7 +167,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		}
 	}
 
-	private JComponent createRightContent(String rightToolbarName, String rightToolbarPlace){
+	private JComponent createRightContent(String rightToolbarName, String rightToolbarPlace) {
 		rightPanel = new JPanel(new BorderLayout());
 
 		rightScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
