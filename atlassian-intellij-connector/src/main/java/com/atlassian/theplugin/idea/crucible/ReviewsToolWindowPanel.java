@@ -151,8 +151,7 @@ public class ReviewsToolWindowPanel extends JPanel implements DataProvider {
 
 	private JTree createReviewsTree() {
 		reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
-		reviewTree = new JTree();
-//		issueTreeBuilder.rebuild(reviewTree, issuesPanel);
+//		reviewTree = new JTree();
 		addReviewTreeListeners();
 
 		return reviewTree;
