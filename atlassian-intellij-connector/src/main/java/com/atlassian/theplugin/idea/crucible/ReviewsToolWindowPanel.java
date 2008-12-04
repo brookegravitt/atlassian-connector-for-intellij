@@ -21,6 +21,7 @@ import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
