@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class CollapseIssuesAction extends JIRAAbstractAction {
 	public void actionPerformed(final AnActionEvent e) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-		panel.collapseAllIssueTreeNodes();
+		panel.collapseAllRightTreeNodes();
 	}
 
 	public void onUpdate(AnActionEvent event) {		

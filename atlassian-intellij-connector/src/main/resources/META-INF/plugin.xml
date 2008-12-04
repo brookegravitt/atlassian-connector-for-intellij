@@ -760,6 +760,17 @@
             <reference id="ThePlugin.JIRA.AddEditorComment"/>
         </group>
 
+		<action id="ThePlugin.Reviews.RefreshReviews"
+                class="com.atlassian.theplugin.idea.action.reviews.RefreshReviewsFromServersAction" text="Refresh"
+                icon="/actions/sync.png"/>
+
+		<group id="ThePlugin.Reviews.StatusesToolbar" popup="false">
+			<reference id="ThePlugin.Reviews.RefreshReviews"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.ReviewsToolbar" popup="false">            
+        </group>
+
 		<action id="ThePlugin.Reviews.ViewReview"
 				class="com.atlassian.theplugin.idea.action.reviews.ViewReviewAction"
 				text="View Review in Browser"
