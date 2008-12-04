@@ -62,7 +62,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		this.reviewListModel = reviewListModel;
 		init();
 		addReviewTreeListeners();
-		setupReviewTree(reviewTree);
+		setupReviewTree();
 	}
 
 
@@ -150,10 +150,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return PLACE_PREFIX + this.getProject().getName();
 	}
 
-	private void setupReviewTree(JTree reviewTree) {
+	private void setupReviewTree() {
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		uiSetup.initializeUI(reviewTree, getRightScrollPane());
-		final JTree finalReviewTree = reviewTree;
+		final JTree finalReviewTree = getRightTree();
 
 		reviewTree.setShowsRootHandles(true);
 		reviewTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
