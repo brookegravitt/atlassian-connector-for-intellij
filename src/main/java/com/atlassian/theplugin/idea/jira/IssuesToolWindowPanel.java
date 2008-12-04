@@ -61,7 +61,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private JiraIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 	private JIRAManualFilterDetailsPanel manualFilterEditDetailsPanel;
-	JIRAFilterTree jiraFilterTree;
+	private JIRAFilterTree jiraFilterTree;
 
 
 	private JIRAServerFacade jiraServerFacade;
@@ -72,8 +72,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private ConfigurationListener configListener = new LocalConfigurationListener();
 	private boolean groupSubtasksUnderParent;
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
-	JTree issueTree;
-	private JIRAFilterListModel JIRAFilterListModel;
+	private JTree issueTree;
 
 
 
@@ -887,7 +886,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public JTree createRightTree() {
-		if (issueTree == null){
+		if (issueTree == null) {
 			issueTree = new JTree();
 		}
 
