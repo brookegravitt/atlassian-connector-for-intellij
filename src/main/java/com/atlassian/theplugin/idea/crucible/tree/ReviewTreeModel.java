@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -27,16 +28,18 @@ import java.util.ArrayList;
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewListModelListener {
+public class ReviewTreeModel extends DefaultTreeModel {
 
 	private CrucibleReviewListModel reviewListModel;
 	private boolean treeInitialized = false;
+
+	private CrucibleReviewListModelListener modelListener = new LocalCrucibeReviewListModelListener();
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new CrucibleReviewGroupTreeNode(reviewListModel, "No Grouping At All", null, null));
 		this.reviewListModel = reviewListModel;
 
-		reviewListModel.addListener(this);
+		reviewListModel.addListener(modelListener);
 	}
 
 	/*
@@ -95,49 +98,53 @@ public class ReviewTreeModel extends DefaultTreeModel implements CrucibleReviewL
 		return -1;
 	}
 
-	/*
-	Implement CrucibleReviewListModelListener interface
-	 */
-
-	public void reviewAdded(ReviewAdapter review) {
-		System.out.println("review added");
-
-		if (treeInitialized) {
-			this.nodeStructureChanged(root);
-		}
-	}
-
-	public void reviewRemoved(ReviewAdapter review) {
-		System.out.println("review removed");
-
-		if (treeInitialized) {
-			this.nodeStructureChanged(root);
-		}
-	}
-
-	public void reviewChanged(ReviewAdapter review) {
-		System.out.println("review changed");
-	}
-
-	public void reviewListUpdateStarted(ServerId serverId) {
-		System.out.println("reviews update started");
-	}
-
-	public void reviewListUpdateFinished(ServerId serverId) {
-		System.out.println("reviews updated finished");
-
-		if (!treeInitialized) {
-			// draw entire tree
-			this.nodeStructureChanged(root);
-			treeInitialized = true;
-		}
-	}
-
 	public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
 		System.out.println("review changed without files");
 		
 		if (treeInitialized) {
 			this.nodeStructureChanged(root);
+		}
+	}
+
+	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+
+		@Override
+		public void reviewAdded(ReviewAdapter review) {
+			System.out.println("review added");
+
+			if (treeInitialized) {
+				nodeStructureChanged(root);
+			}
+		}
+
+		@Override
+		public void reviewRemoved(ReviewAdapter review) {
+
+		}
+
+		@Override
+		public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
+			System.out.println("review changed without files");
+
+			if (treeInitialized) {
+				nodeStructureChanged(root);
+			}
+		}
+
+		@Override
+		public void reviewListUpdateStarted(ServerId serverId) {
+			System.out.println("reviews update started");
+		}
+
+		@Override
+		public void reviewListUpdateFinished(ServerId serverId) {
+			System.out.println("reviews updated finished");
+
+			if (!treeInitialized) {
+				// draw entire tree
+				nodeStructureChanged(root);
+				treeInitialized = true;
+			}
 		}
 	}
 }
