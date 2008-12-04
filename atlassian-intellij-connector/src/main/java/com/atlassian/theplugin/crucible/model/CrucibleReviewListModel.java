@@ -18,4 +18,6 @@ public interface CrucibleReviewListModel {
 	void addListener(CrucibleReviewListModelListener listener);
 	void removeListener(CrucibleReviewListModelListener listener);
 	void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews);
+	ReviewAdapter getSelectedReview();
+	void setSelectedReview(ReviewAdapter review);
 }

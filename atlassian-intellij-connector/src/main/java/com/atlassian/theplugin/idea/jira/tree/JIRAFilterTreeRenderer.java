@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.intellij.openapi.util.IconLoader;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -32,8 +33,8 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 
 		}
 		
-		if (value instanceof JIRAAbstractTreeNode) {
-			return ((JIRAAbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
+		if (value instanceof AbstractTreeNode) {
+			return ((AbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
 		}
 		return c;
 	}
