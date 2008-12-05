@@ -27,11 +27,11 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 
 			PredefinedFilter predefinedFilter = null;
 			if (index >= 0 && index < filterModel.getPredefinedFilters().size()) {
-				predefinedFilter = (PredefinedFilter)(filterModel.getPredefinedFilters()).toArray()[index];
+				predefinedFilter = (PredefinedFilter) (filterModel.getPredefinedFilters()).toArray()[index];
 			}
 
 			if (predefinedFilter != null) {
-				DefaultMutableTreeNode p = (DefaultMutableTreeNode)root;
+				DefaultMutableTreeNode p = (DefaultMutableTreeNode) root;
 				if (index < p.getChildCount()) {
 					return p.getChildAt(index);
 				}
