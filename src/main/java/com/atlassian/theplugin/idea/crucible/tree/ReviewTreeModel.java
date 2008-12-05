@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -34,6 +35,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private boolean treeInitialized = false;
 
 	private CrucibleReviewListModelListener modelListener = new LocalCrucibeReviewListModelListener();
+	private CrucibleReviewGroupBy groupBy;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new CrucibleReviewGroupTreeNode(reviewListModel, "No Grouping At All", null, null));
@@ -42,14 +44,20 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		reviewListModel.addListener(modelListener);
 	}
 
+	public void groupBy(CrucibleReviewGroupBy groupBy) {
+		this.groupBy = groupBy;
+	}
+
 	/*
 	Override TreeModel methods
 	 */
 
+	@Override
 	public Object getRoot() {
 		return super.getRoot();
 	}
 
+	@Override
 	public Object getChild(Object parent, int index) {
 		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
 			ReviewAdapter r = (ReviewAdapter) reviewListModel.getReviews().toArray()[index];
@@ -67,6 +75,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return null;
 	}
 
+	@Override
 	public int getChildCount(Object parent) {
 		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
 			return reviewListModel.getReviews().size();
@@ -75,6 +84,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return 0;
 	}
 
+	@Override
 	public boolean isLeaf(Object node) {
 		if (node == super.getRoot()) {
 			return false;
@@ -83,10 +93,12 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return true;
 	}
 
+	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
 		System.out.println("valueForPathChanged");
 	}
 
+	@Override
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
 			if (child instanceof CrucibleReviewTreeNode) {
@@ -98,14 +110,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return -1;
 	}
 
-	public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
-		System.out.println("review changed without files");
-		
-		if (treeInitialized) {
-			this.nodeStructureChanged(root);
-		}
-	}
-
+	/*
+	Listen to the review list model changes
+	 */
 	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
 
 		@Override
@@ -119,7 +126,11 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewRemoved(ReviewAdapter review) {
+			System.out.println("review removed");
 
+			if (treeInitialized) {
+				nodeStructureChanged(root);
+			}
 		}
 
 		@Override
@@ -147,4 +158,5 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			}
 		}
 	}
+
 }
