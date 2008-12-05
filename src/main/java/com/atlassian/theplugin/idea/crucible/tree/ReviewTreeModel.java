@@ -27,7 +27,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
@@ -37,25 +39,25 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private CrucibleReviewListModel reviewListModel;
 	private boolean treeInitialized = false;
 
-	private CrucibleReviewListModelListener modelListener = new LocalCrucibeReviewListModelListener();
+	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode());
+
 		this.reviewListModel = reviewListModel;
 
-
-		reviewListModel.addListener(modelListener);
+		reviewListModel.addListener(localModelListener);
 	}
 
 	public void groupBy(CrucibleReviewGroupBy aGroupBy) {
 		this.groupBy = aGroupBy;
 
 		// clear entire tree
-		((DefaultMutableTreeNode) root).removeAllChildren();
+		getRoot().removeAllChildren();
 
 		// redraw tree
-		nodeStructureChanged(root);
+		nodeStructureChanged(getRoot());
 	}
 
 	/*
@@ -63,8 +65,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	 */
 
 	@Override
-	public Object getRoot() {
-		return super.getRoot();
+	public DefaultMutableTreeNode getRoot() {
+		return (DefaultMutableTreeNode) super.getRoot();
 	}
 
 	@Override
@@ -80,15 +82,15 @@ public class ReviewTreeModel extends DefaultTreeModel {
 				break;
 			case STATE:
 
-				if (parent == root) {
+				if (parent == getRoot()) {
 
-					CrucibleReviewGroupTreeNode p = (CrucibleReviewGroupTreeNode) parent;
+					DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
 
 					if (index < p.getChildCount()) {
 						return p.getChildAt(index);
 					}
 
-					State state = State.values()[index];
+					State state = getDistinctStates().get(index);
 
 					CrucibleReviewStateTreeNode stateNode = new CrucibleReviewStateTreeNode(reviewListModel, state);
 					p.add(stateNode);
@@ -113,10 +115,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case NONE:
 			default:
 
-				if (parent == root) {
+				if (parent == getRoot()) {
 					ReviewAdapter r = (ReviewAdapter) reviewListModel.getReviews().toArray()[index];
 					if (r != null) {
-						CrucibleReviewGroupTreeNode p = (CrucibleReviewGroupTreeNode) parent;
+						DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
 						if (index < p.getChildCount()) {
 							return p.getChildAt(index);
 						}
@@ -131,17 +133,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return null;
 	}
 
-	private ReviewAdapter getReviewInState(State crucibleState, int index) {
-		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
-		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getState() == crucibleState) {
-				array.add(review);
-			}
-		}
-
-		return array.get(index);
-	}
-
 	@Override
 	public int getChildCount(Object parent) {
 		int childCount = 0;
@@ -154,8 +145,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case SERVER:
 				break;
 			case STATE:
-				if (parent == root) {
-					childCount = getNumOfDistinctStates();
+				if (parent == getRoot()) {
+					childCount = getDistinctStates().size();
 				} else if (parent instanceof CrucibleReviewStateTreeNode) {
 					CrucibleReviewStateTreeNode stateNode = (CrucibleReviewStateTreeNode) parent;
 					childCount = gentNumOfReviewsInState(stateNode.getCrucibleState());
@@ -163,7 +154,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 				break;
 			case NONE:
 			default:
-				if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+				if (parent == getRoot()) {
 					childCount = reviewListModel.getReviews().size();
 				}
 		}
@@ -171,25 +162,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return childCount;
 	}
 
-	private int gentNumOfReviewsInState(State crucibleState) {
-		int ret = 0;
-		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getState() == crucibleState) {
-				++ret;
-			}
-		}
-
-		return ret;
-	}
-
-	private int getNumOfDistinctStates() {
-		// todo return number of distinct states (not all as it is now)
-		return State.values().length;
-	}
-
 	@Override
 	public boolean isLeaf(Object node) {
-		if (node == super.getRoot()
+		if (node == getRoot()
 				|| node instanceof CrucibleReviewStateTreeNode) {
 			return false;
 		}
@@ -203,8 +178,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	}
 
 	@Override
+	// todo add group by handling if necessary
 	public int getIndexOfChild(Object parent, Object child) {
-		if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+		if (parent == getRoot()) {
 			if (child instanceof CrucibleReviewTreeNode) {
 				ReviewAdapter review = ((CrucibleReviewTreeNode) child).getReview();
 				return new ArrayList<ReviewAdapter>(reviewListModel.getReviews()).indexOf(review);
@@ -212,6 +188,44 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		}
 
 		return -1;
+	}
+
+	/*
+	Additional private methods
+	 */
+
+	private int gentNumOfReviewsInState(State crucibleState) {
+		int ret = 0;
+		for (ReviewAdapter review : reviewListModel.getReviews()) {
+			if (review.getState() == crucibleState) {
+				++ret;
+			}
+		}
+
+		return ret;
+	}
+
+	private ReviewAdapter getReviewInState(State crucibleState, int index) {
+		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
+
+		// get all reviews in state
+		for (ReviewAdapter review : reviewListModel.getReviews()) {
+			if (review.getState() == crucibleState) {
+				array.add(review);
+			}
+		}
+
+		return array.get(index);
+	}
+
+	private List<State> getDistinctStates() {
+		Set<State> states = new LinkedHashSet<State>();	// ordered set
+
+		for (ReviewAdapter review : reviewListModel.getReviews()) {
+			states.add(review.getState());
+		}
+
+		return new ArrayList<State>(states);
 	}
 
 	/*
@@ -223,8 +237,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		public void reviewAdded(ReviewAdapter review) {
 			System.out.println("review added");
 
+			// todo add implementation
+
 			if (treeInitialized) {
-				nodeStructureChanged(root);
+				nodeStructureChanged(getRoot());
 			}
 		}
 
@@ -232,8 +248,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		public void reviewRemoved(ReviewAdapter review) {
 			System.out.println("review removed");
 
+			// todo add implementation
+
 			if (treeInitialized) {
-				nodeStructureChanged(root);
+				nodeStructureChanged(getRoot());
 			}
 		}
 
@@ -241,8 +259,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
 			System.out.println("review changed without files");
 
+			// todo add implementation
+
 			if (treeInitialized) {
-				nodeStructureChanged(root);
+				nodeStructureChanged(getRoot());
 			}
 		}
 
@@ -261,7 +281,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 				treeInitialized = true;
 			}
 
-			// todo remove that example groupBy call
+			// todo remove that example groupBy call and uncomment above 
 			groupBy(CrucibleReviewGroupBy.STATE);
 		}
 	}

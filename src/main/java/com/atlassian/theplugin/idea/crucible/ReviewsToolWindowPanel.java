@@ -172,6 +172,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public void groupBy(CrucibleReviewGroupBy groupBy) {
 		reviewTreeModel.groupBy(groupBy);
+		expandAllRightTreeNodes();
 
 		// todo save user selected groupby value
 	}
