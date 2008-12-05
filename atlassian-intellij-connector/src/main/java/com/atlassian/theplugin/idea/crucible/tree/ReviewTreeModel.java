@@ -23,6 +23,7 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
@@ -40,8 +41,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
-		super(new CrucibleReviewGroupTreeNode(reviewListModel, "No Grouping At All", null, null));
+		super(new DefaultMutableTreeNode());
 		this.reviewListModel = reviewListModel;
+
 
 		reviewListModel.addListener(modelListener);
 	}
@@ -49,6 +51,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	public void groupBy(CrucibleReviewGroupBy aGroupBy) {
 		this.groupBy = aGroupBy;
 
+		// clear entire tree
+		((DefaultMutableTreeNode) root).removeAllChildren();
+
+		// redraw tree
 		nodeStructureChanged(root);
 	}
 
@@ -74,7 +80,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 				break;
 			case STATE:
 
-				if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+				if (parent == root) {
 
 					CrucibleReviewGroupTreeNode p = (CrucibleReviewGroupTreeNode) parent;
 
@@ -86,6 +92,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 					CrucibleReviewStateTreeNode stateNode = new CrucibleReviewStateTreeNode(reviewListModel, state);
 					p.add(stateNode);
+					
 					return stateNode;
 
 				} else if (parent instanceof CrucibleReviewStateTreeNode) {
@@ -106,7 +113,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case NONE:
 			default:
 
-				if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+				if (parent == root) {
 					ReviewAdapter r = (ReviewAdapter) reviewListModel.getReviews().toArray()[index];
 					if (r != null) {
 						CrucibleReviewGroupTreeNode p = (CrucibleReviewGroupTreeNode) parent;
@@ -147,7 +154,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case SERVER:
 				break;
 			case STATE:
-				if (parent instanceof CrucibleReviewGroupTreeNode && parent == root) {
+				if (parent == root) {
 					childCount = getNumOfDistinctStates();
 				} else if (parent instanceof CrucibleReviewStateTreeNode) {
 					CrucibleReviewStateTreeNode stateNode = (CrucibleReviewStateTreeNode) parent;
