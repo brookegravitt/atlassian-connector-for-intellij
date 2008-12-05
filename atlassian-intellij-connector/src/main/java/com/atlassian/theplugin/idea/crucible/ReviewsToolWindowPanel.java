@@ -135,7 +135,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTreeModel = new ReviewTreeModel(reviewListModel)
+			reviewTreeModel = new ReviewTreeModel(reviewListModel);
 			reviewTree = new JTree(reviewTreeModel);
 		}
 		return reviewTree;
