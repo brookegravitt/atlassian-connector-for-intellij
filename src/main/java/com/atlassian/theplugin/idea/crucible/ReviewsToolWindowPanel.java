@@ -137,6 +137,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		if (reviewTree == null) {
 			reviewTreeModel = new ReviewTreeModel(reviewListModel);
 			reviewTree = new JTree(reviewTreeModel);
+			reviewTree.setRootVisible(false);
 		}
 		return reviewTree;
 	}

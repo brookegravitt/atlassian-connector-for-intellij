@@ -25,7 +25,6 @@ public class CrucibleReviewStateTreeNode extends CrucibleReviewGroupTreeNode {
 	private State crucibleState;
 
 	public CrucibleReviewStateTreeNode(CrucibleReviewListModel model, State crucibleState) {
-		// todo set icons instead of null values
 		super(model, crucibleState.value(), null, null);
 
 		this.crucibleState = crucibleState;
