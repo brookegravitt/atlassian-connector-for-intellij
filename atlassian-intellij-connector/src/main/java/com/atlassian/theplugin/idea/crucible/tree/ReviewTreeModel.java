@@ -43,6 +43,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator stateNodeManipulator;
 	private NodeManipulator serverNodeManipulator;
 	private NodeManipulator authorNodeManipulator;
+	private NodeManipulator projectNodeManipulator;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode());
@@ -53,6 +54,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
 		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
+		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 
 		reviewListModel.addListener(localModelListener);
 	}
@@ -80,11 +82,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	public Object getChild(Object parent, int index) {
 
 		switch (groupBy) {
-
 			case AUTHOR:
 				return authorNodeManipulator.getChild(parent, index);
 			case PROJECT:
-				break;
+				return projectNodeManipulator.getChild(parent, index);
 			case SERVER:
 				return serverNodeManipulator.getChild(parent, index);
 			case STATE:
@@ -93,8 +94,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			default:
 				return generalNodeManipulator.getChild(parent, index);
 		}
-
-		return null;
 	}
 
 	@Override
@@ -104,7 +103,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case AUTHOR:
 				return authorNodeManipulator.getChildCount(parent);
 			case PROJECT:
-				break;
+				return projectNodeManipulator.getChildCount(parent);
 			case SERVER:
 				return serverNodeManipulator.getChildCount(parent);
 			case STATE:
@@ -113,8 +112,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			default:
 				return generalNodeManipulator.getChildCount(parent);
 		}
-
-		return 0;
 	}
 
 	@Override
@@ -122,7 +119,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		if (node == getRoot()
 				|| node instanceof CrucibleReviewStateTreeNode
 				|| node instanceof CrucibleReviewServerTreeNode
-				|| node instanceof CrucibleReviewAuthorTreeNode) {
+				|| node instanceof CrucibleReviewAuthorTreeNode
+				|| node instanceof CrucibleReviewProjectTreeNode) {
 			return false;
 		}
 
