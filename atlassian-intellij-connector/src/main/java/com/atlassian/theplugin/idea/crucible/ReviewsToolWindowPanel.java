@@ -52,6 +52,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private final CrucibleReviewListModel reviewListModel;
 	private JTree reviewTree;
+	private ReviewTreeModel reviewTreeModel;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
@@ -134,7 +135,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTree = new JTree(new ReviewTreeModel(reviewListModel));
+			reviewTreeModel = new ReviewTreeModel(reviewListModel)
+			reviewTree = new JTree(reviewTreeModel);
 		}
 		return reviewTree;
 	}
@@ -165,5 +167,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				}
 			}
 		});
+	}
+
+	public void groupBy(CrucibleReviewGroupBy groupBy) {
+		reviewTreeModel.groupBy(groupBy);
+
+		// todo save user selected groupby value
 	}
 }
