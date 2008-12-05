@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,18 +28,18 @@ import java.util.Set;
 /**
  * @author Jacek Jaroczynski
  */
-public class ServerNodeManipulator extends NodeManipulator {
-	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
+public class AuthorNodeManipulator extends NodeManipulator {
+	public AuthorNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
 		super(reviewListModel, root);
 	}
 
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == rootNode) {
-			return getDistinctServers().size();
-		} else if (parent instanceof CrucibleReviewServerTreeNode) {
-			CrucibleReviewServerTreeNode serverNode = (CrucibleReviewServerTreeNode) parent;
-			return gentNumOfReviewsForServer(serverNode.getCrucibleServer());
+			return getDistinctAuthors().size();
+		} else if (parent instanceof CrucibleReviewAuthorTreeNode) {
+			CrucibleReviewAuthorTreeNode authorNode = (CrucibleReviewAuthorTreeNode) parent;
+			return gentNumOfReviewsForAuthor(authorNode.getAuthor());
 		}
 
 		return 0;
@@ -55,21 +55,21 @@ public class ServerNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			ServerCfg server = getDistinctServers().get(index);
+			User author = getDistinctAuthors().get(index);
 
-			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(reviewListModel, server);
+			CrucibleReviewAuthorTreeNode serverNode = new CrucibleReviewAuthorTreeNode(reviewListModel, author);
 			p.add(serverNode);
 
 			return serverNode;
 
-		} else if (parent instanceof CrucibleReviewServerTreeNode) {
-			CrucibleReviewServerTreeNode p = (CrucibleReviewServerTreeNode) parent;
+		} else if (parent instanceof CrucibleReviewAuthorTreeNode) {
+			CrucibleReviewAuthorTreeNode p = (CrucibleReviewAuthorTreeNode) parent;
 
 			if (index < p.getChildCount()) {
 				return p.getChildAt(index);
 			}
 
-			ReviewAdapter review = getReviewForServer(p.getCrucibleServer(), index);
+			ReviewAdapter review = getReviewForAuthor(p.getAuthor(), index);
 			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
 			p.add(node);
 
@@ -80,20 +80,20 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 	}
 
-	private List<ServerCfg> getDistinctServers() {
-		Set<ServerCfg> servers = new LinkedHashSet<ServerCfg>();	// ordered set
+	private List<User> getDistinctAuthors() {
+		Set<User> servers = new LinkedHashSet<User>();	// ordered set
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(review.getServer());
+			servers.add(review.getAuthor());
 		}
 
-		return new ArrayList<ServerCfg>(servers);
+		return new ArrayList<User>(servers);
 	}
 
-	private int gentNumOfReviewsForServer(ServerCfg server) {
+	private int gentNumOfReviewsForAuthor(User author) {
 		int ret = 0;
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getServer().equals(server)) {
+			if (review.getAuthor().equals(author)) {
 				++ret;
 			}
 		}
@@ -101,12 +101,12 @@ public class ServerNodeManipulator extends NodeManipulator {
 		return ret;
 	}
 
-	private ReviewAdapter getReviewForServer(ServerCfg server, int index) {
+	private ReviewAdapter getReviewForAuthor(User author, int index) {
 		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
 
 		// get all reviews in state
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getServer().equals(server)) {
+			if (review.getAuthor().equals(author)) {
 				array.add(review);
 			}
 		}
