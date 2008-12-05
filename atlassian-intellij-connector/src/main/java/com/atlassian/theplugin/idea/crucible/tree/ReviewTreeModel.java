@@ -44,8 +44,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		reviewListModel.addListener(modelListener);
 	}
 
-	public void groupBy(CrucibleReviewGroupBy groupBy) {
-		this.groupBy = groupBy;
+	public void groupBy(CrucibleReviewGroupBy aGroupBy) {
+		this.groupBy = aGroupBy;
+
+		nodeStructureChanged(root);
 	}
 
 	/*
@@ -156,6 +158,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 				nodeStructureChanged(root);
 				treeInitialized = true;
 			}
+
+			// todo remove that example groupBy call
+			groupBy(CrucibleReviewGroupBy.STATE);
 		}
 	}
 
