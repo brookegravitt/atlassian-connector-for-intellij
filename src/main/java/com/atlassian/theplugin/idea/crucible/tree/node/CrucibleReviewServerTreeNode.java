@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.crucible.tree;
+package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class CrucibleReviewStateTreeNode extends CrucibleReviewGroupTreeNode {
-	private State crucibleState;
+public class CrucibleReviewServerTreeNode extends CrucibleReviewGroupTreeNode {
+	private ServerCfg crucibleServer;
 
-	public CrucibleReviewStateTreeNode(CrucibleReviewListModel model, State crucibleState) {
-		super(model, crucibleState.value(), null, null);
+	public CrucibleReviewServerTreeNode(CrucibleReviewListModel model, ServerCfg server) {
+		super(model, server.getName(), null, null);
 
-		this.crucibleState = crucibleState;
+		this.crucibleServer = server;
 	}
 
-	public State getCrucibleState() {
-		return crucibleState;
+	public ServerCfg getCrucibleServer() {
+		return crucibleServer;
 	}
 }
