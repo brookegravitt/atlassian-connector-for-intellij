@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.crucible.tree;
+package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
