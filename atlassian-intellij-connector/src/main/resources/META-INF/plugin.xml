@@ -404,7 +404,7 @@
                 text="View Review in Browser" icon="/general/web.png"/>
         <action id="ThePlugin.Crucible.GetComments"
                 class="com.atlassian.theplugin.idea.action.crucible.OpenReviewAction" text="Open Review"
-                icon="/icons/inspector/sortByCategory.png"/>
+                icon="/actions/editSource.png"/>
         <action id="ThePlugin.Crucible.GetGeneralCommentReplies"
                 class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"
                 icon="/icons/inspector/sortByCategory.png"/>
@@ -760,17 +760,6 @@
             <reference id="ThePlugin.JIRA.AddEditorComment"/>
         </group>
 
-		<action id="ThePlugin.Reviews.RefreshReviews"
-                class="com.atlassian.theplugin.idea.action.reviews.RefreshReviewsFromServersAction" text="Refresh"
-                icon="/actions/sync.png"/>
-
-		<group id="ThePlugin.Reviews.StatusesToolbar" popup="false">
-			<reference id="ThePlugin.Reviews.RefreshReviews"/>
-		</group>
-
-		<group id="ThePlugin.Reviews.ReviewsToolbar" popup="false">            
-        </group>
-
 		<action id="ThePlugin.Reviews.ViewReview"
 				class="com.atlassian.theplugin.idea.action.reviews.ViewReviewAction"
 				text="View Review in Browser"
@@ -778,7 +767,7 @@
 		<action id="ThePlugin.Reviews.GetComments"
 				class="com.atlassian.theplugin.idea.action.reviews.OpenReviewAction"
 				text="Open Review"
-				icon="/icons/inspector/sortByCategory.png"/>
+				icon="/actions/editSource.png"/>
 		<action id="ThePlugin.Reviews.CompleteReview"
 				class="com.atlassian.theplugin.idea.action.reviews.CompleteReviewAction"
 				text="Complete Review"/>
@@ -813,6 +802,22 @@
 				class="com.atlassian.theplugin.idea.action.reviews.SetReviewersAction"
 				text="Set Reviewers"/>
 
+		<action id="ThePlugin.Reviews.Refresh"
+                class="com.atlassian.theplugin.idea.action.reviews.RefreshReviewsFromServersAction"
+				text="Refresh"
+                icon="/actions/sync.png"/>
+
+		<action id="ThePlugin.Reviews.GroupByCombo"
+		        class="com.atlassian.theplugin.idea.action.reviews.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.Reviews.ExpandAll"
+				class="com.atlassian.theplugin.idea.action.reviews.ExpandAllAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Reviews.CollapseAll"
+				class="com.atlassian.theplugin.idea.action.reviews.CollapseAllAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+
 		<group id="ThePlugin.Reviews.ReviewPopupMenu" popup="true">
 			<reference id="ThePlugin.Reviews.ViewReview"/>
 			<separator/>
@@ -831,6 +836,21 @@
 			<separator/>
 			<reference id="ThePlugin.Reviews.JoinReview"/>
 			<reference id="ThePlugin.Reviews.SetReviewers"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.LeftToolBar" popup="false" text="">
+			<reference id="ThePlugin.ShowSettings"/>
+			<reference id="ThePlugin.Reviews.Refresh"/>
+		</group>
+
+		<group id="ThePlugin.Reviews.RightToolBar" popup="false" text="">
+			<reference id="ThePlugin.Reviews.GroupByCombo"/>
+			<reference id="ThePlugin.Reviews.ExpandAll"/>
+			<reference id="ThePlugin.Reviews.CollapseAll"/>
+			<separator/>
+			<reference id="ThePlugin.Reviews.GetComments"/>
+			<reference id="ThePlugin.Reviews.ViewReview"/>
+			<reference id="ThePlugin.HelpCrucible"/>
 		</group>
 
 	</actions>
