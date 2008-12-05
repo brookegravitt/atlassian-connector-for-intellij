@@ -18,13 +18,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelImpl;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -64,7 +64,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel) {
-		super(project, cfgManager, "ThePlugin.Reviews.StatusesToolbar", "ThePlugin.Reviews.ReviewsToolbar");
+		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		this.reviewListModel = reviewListModel;
 		crucibleFilterListModel = new CrucibleFilterListModelImpl();
@@ -160,7 +160,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return filterTree;
 	}
 
-	public void onEditButtonClickAction() {		
+	public void onEditButtonClickAction() {
 	}
 
 	public String getActionPlaceName() {
@@ -202,11 +202,29 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		});
 	}
 
+	private CrucibleReviewGroupBy currentGroupBy = CrucibleReviewGroupBy.NONE;
 
-	public void groupBy(CrucibleReviewGroupBy groupBy) {
+	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
+		currentGroupBy = groupBy;
 		reviewTreeModel.groupBy(groupBy);
 		expandAllRightTreeNodes();
 
 		// todo save user selected groupby value
+	}
+
+	public CrucibleReviewGroupBy getGroupBy() {
+		return currentGroupBy;
+	}
+
+	public void expandAll() {
+		for (int i = 0; i < reviewTree.getRowCount(); i++) {
+			reviewTree.expandRow(i);
+		}
+	}
+
+	public void collapseAll() {
+		for (int i = 0; i < reviewTree.getRowCount(); i++) {
+			reviewTree.collapseRow(i);
+		}
 	}
 }
