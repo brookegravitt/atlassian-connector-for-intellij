@@ -17,19 +17,16 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
+import com.atlassian.theplugin.idea.crucible.tree.node.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
@@ -42,10 +39,18 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 
+	private NodeManipulator generalNodeManipulator;
+	private NodeManipulator stateNodeManipulator;
+	private NodeManipulator serverNodeManupulator;
+
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;
+
+		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
+		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
+		serverNodeManupulator = new ServerNodeManipulator(reviewListModel, getRoot());
 
 		reviewListModel.addListener(localModelListener);
 	}
@@ -79,55 +84,12 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case PROJECT:
 				break;
 			case SERVER:
-				break;
+				return serverNodeManupulator.getChild(parent, index);
 			case STATE:
-
-				if (parent == getRoot()) {
-
-					DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
-
-					if (index < p.getChildCount()) {
-						return p.getChildAt(index);
-					}
-
-					State state = getDistinctStates().get(index);
-
-					CrucibleReviewStateTreeNode stateNode = new CrucibleReviewStateTreeNode(reviewListModel, state);
-					p.add(stateNode);
-					
-					return stateNode;
-
-				} else if (parent instanceof CrucibleReviewStateTreeNode) {
-					CrucibleReviewStateTreeNode p = (CrucibleReviewStateTreeNode) parent;
-
-					if (index < p.getChildCount()) {
-						return p.getChildAt(index);
-					}
-
-					ReviewAdapter review = getReviewInState(p.getCrucibleState(), index);
-					CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
-					p.add(node);
-
-					return node;
-				}
-
-				break;
+				return stateNodeManipulator.getChild(parent, index);
 			case NONE:
 			default:
-
-				if (parent == getRoot()) {
-					ReviewAdapter r = (ReviewAdapter) reviewListModel.getReviews().toArray()[index];
-					if (r != null) {
-						DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
-						if (index < p.getChildCount()) {
-							return p.getChildAt(index);
-						}
-
-						CrucibleReviewTreeNode n = new CrucibleReviewTreeNode(reviewListModel, r);
-						p.add(n);
-						return n;
-					}
-				}
+				return generalNodeManipulator.getChild(parent, index);
 		}
 
 		return null;
@@ -135,7 +97,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	@Override
 	public int getChildCount(Object parent) {
-		int childCount = 0;
 
 		switch (groupBy) {
 			case AUTHOR:
@@ -143,29 +104,22 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			case PROJECT:
 				break;
 			case SERVER:
-				break;
+				return serverNodeManupulator.getChildCount(parent);
 			case STATE:
-				if (parent == getRoot()) {
-					childCount = getDistinctStates().size();
-				} else if (parent instanceof CrucibleReviewStateTreeNode) {
-					CrucibleReviewStateTreeNode stateNode = (CrucibleReviewStateTreeNode) parent;
-					childCount = gentNumOfReviewsInState(stateNode.getCrucibleState());
-				}
-				break;
+				return stateNodeManipulator.getChildCount(parent);
 			case NONE:
 			default:
-				if (parent == getRoot()) {
-					childCount = reviewListModel.getReviews().size();
-				}
+				return generalNodeManipulator.getChildCount(parent);
 		}
 
-		return childCount;
+		return 0;
 	}
 
 	@Override
 	public boolean isLeaf(Object node) {
 		if (node == getRoot()
-				|| node instanceof CrucibleReviewStateTreeNode) {
+				|| node instanceof CrucibleReviewStateTreeNode
+				|| node instanceof CrucibleReviewServerTreeNode) {
 			return false;
 		}
 
@@ -188,44 +142,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		}
 
 		return -1;
-	}
-
-	/*
-	Additional private methods
-	 */
-
-	private int gentNumOfReviewsInState(State crucibleState) {
-		int ret = 0;
-		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getState() == crucibleState) {
-				++ret;
-			}
-		}
-
-		return ret;
-	}
-
-	private ReviewAdapter getReviewInState(State crucibleState, int index) {
-		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
-
-		// get all reviews in state
-		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getState() == crucibleState) {
-				array.add(review);
-			}
-		}
-
-		return array.get(index);
-	}
-
-	private List<State> getDistinctStates() {
-		Set<State> states = new LinkedHashSet<State>();	// ordered set
-
-		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			states.add(review.getState());
-		}
-
-		return new ArrayList<State>(states);
 	}
 
 	/*
