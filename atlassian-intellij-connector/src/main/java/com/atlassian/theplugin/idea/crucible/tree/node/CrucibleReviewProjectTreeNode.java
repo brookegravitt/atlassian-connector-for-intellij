@@ -17,21 +17,19 @@ package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class NodeManipulator {
-	protected final CrucibleReviewListModel reviewListModel;
-	protected final DefaultMutableTreeNode rootNode;
+public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
+	private String project;
 
-	public NodeManipulator(final CrucibleReviewListModel reviewListModel, final DefaultMutableTreeNode rootNode) {
-		this.reviewListModel = reviewListModel;
-		this.rootNode = rootNode;
+	public CrucibleReviewProjectTreeNode(CrucibleReviewListModel model, String project) {
+		super(model, project, null, null);
+
+		this.project = project;
 	}
 
-	public abstract int getChildCount(Object parent);
-
-	public abstract Object getChild(Object parent, int index);
+	public String getProject() {
+		return project;
+	}
 }
