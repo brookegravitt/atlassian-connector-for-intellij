@@ -10,9 +10,9 @@ import java.util.Collection;
  * User: pmaruszak
  */
 public class CrucibleFilterListModelImpl implements CrucibleFilterListModel {
-	Collection<CrucibleFilterListModelListener> listeners = new ArrayList<CrucibleFilterListModelListener>();
-	Collection<PredefinedFilter> predefinedFilters = new ArrayList<PredefinedFilter>();
-	Collection<CustomFilter> customFilters = new ArrayList<CustomFilter>();
+	private Collection<CrucibleFilterListModelListener> listeners = new ArrayList<CrucibleFilterListModelListener>();
+	private Collection<PredefinedFilter> predefinedFilters = new ArrayList<PredefinedFilter>();
+	private Collection<CustomFilter> customFilters = new ArrayList<CustomFilter>();
 	private PredefinedFilter selectedPredefinedFilter;
 	private CustomFilter selectedCustomFilter;
 
