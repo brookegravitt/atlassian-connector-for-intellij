@@ -41,7 +41,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	private NodeManipulator generalNodeManipulator;
 	private NodeManipulator stateNodeManipulator;
-	private NodeManipulator serverNodeManupulator;
+	private NodeManipulator serverNodeManipulator;
+	private NodeManipulator authorNodeManipulator;
 
 	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode());
@@ -50,7 +51,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManupulator = new ServerNodeManipulator(reviewListModel, getRoot());
+		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
+		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 
 		reviewListModel.addListener(localModelListener);
 	}
@@ -80,11 +82,11 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		switch (groupBy) {
 
 			case AUTHOR:
-				break;
+				return authorNodeManipulator.getChild(parent, index);
 			case PROJECT:
 				break;
 			case SERVER:
-				return serverNodeManupulator.getChild(parent, index);
+				return serverNodeManipulator.getChild(parent, index);
 			case STATE:
 				return stateNodeManipulator.getChild(parent, index);
 			case NONE:
@@ -100,11 +102,11 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		switch (groupBy) {
 			case AUTHOR:
-				break;
+				return authorNodeManipulator.getChildCount(parent);
 			case PROJECT:
 				break;
 			case SERVER:
-				return serverNodeManupulator.getChildCount(parent);
+				return serverNodeManipulator.getChildCount(parent);
 			case STATE:
 				return stateNodeManipulator.getChildCount(parent);
 			case NONE:
@@ -119,7 +121,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	public boolean isLeaf(Object node) {
 		if (node == getRoot()
 				|| node instanceof CrucibleReviewStateTreeNode
-				|| node instanceof CrucibleReviewServerTreeNode) {
+				|| node instanceof CrucibleReviewServerTreeNode
+				|| node instanceof CrucibleReviewAuthorTreeNode) {
 			return false;
 		}
 
@@ -193,12 +196,9 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 			if (!treeInitialized) {
 				// draw entire tree
-//				nodeStructureChanged(root);
+				nodeStructureChanged(root);
 				treeInitialized = true;
 			}
-
-			// todo remove that example groupBy call and uncomment above 
-			groupBy(CrucibleReviewGroupBy.STATE);
 		}
 	}
 
