@@ -18,10 +18,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelImpl;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -53,6 +56,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private final CrucibleReviewListModel reviewListModel;
 	private JTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
+	private CrucibleFilterListModel crucibleFilterListModel;
+	private CrucibleFilterTreeModel filterTreeModel;
+	private JTree filterTree;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
 			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
@@ -61,9 +67,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		super(project, cfgManager, "ThePlugin.Reviews.StatusesToolbar", "ThePlugin.Reviews.ReviewsToolbar");
 
 		this.reviewListModel = reviewListModel;
+		crucibleFilterListModel = new CrucibleFilterListModelImpl();
+
 		init();
 		addReviewTreeListeners();
 		setupReviewTree();
+		setupFilterTree();
 	}
 
 
@@ -143,7 +152,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public JTree createLeftTree() {
-		return new JTree();
+		if (filterTree == null) {
+			filterTreeModel = new CrucibleFilterTreeModel(crucibleFilterListModel);
+			filterTree = new JTree(filterTreeModel);
+		}
+
+		return filterTree;
 	}
 
 	public void onEditButtonClickAction() {		
@@ -169,6 +183,25 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			}
 		});
 	}
+
+	private void setupFilterTree() {
+		//TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		//uiSetup.initializeUI(reviewTree, getRightScrollPane());
+		final JTree finalFilterTree = getLeftTree();
+
+		filterTree.setShowsRootHandles(true);
+		filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		filterTree.setRootVisible(false);
+		filterTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent e) {
+				final TreePath selectionPath = finalFilterTree.getSelectionModel().getSelectionPath();
+				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+				}
+			}
+		});
+	}
+
 
 	public void groupBy(CrucibleReviewGroupBy groupBy) {
 		reviewTreeModel.groupBy(groupBy);
