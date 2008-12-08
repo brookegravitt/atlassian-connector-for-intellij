@@ -59,6 +59,10 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		reviewListModel.addListener(localModelListener);
 	}
 
+	/**
+	 * Sets groupBy field used to group the tree and triggers tree to rebuild
+	 * @param aGroupBy
+	 */
 	public void groupBy(CrucibleReviewGroupBy aGroupBy) {
 		this.groupBy = aGroupBy;
 
@@ -67,6 +71,14 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		// redraw tree
 		nodeStructureChanged(getRoot());
+	}
+
+	/**
+	 * Simple setter (does not trigger tree to rebuild)
+	 * @param groupBy
+	 */
+	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
+		this.groupBy = groupBy;
 	}
 
 	/*

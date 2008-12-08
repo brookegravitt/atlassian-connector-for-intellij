@@ -16,7 +16,13 @@
 
 package com.atlassian.theplugin.configuration;
 
-public class ProjectConfigurationBean {
+import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
+
+@State(name = "atlassian-ide-plugin-workspace",
+		storages = {@Storage(id = "atlassian-ide-plugin-workspace-id", file = "$WORKSPACE_FILE$")})
+public class ProjectConfigurationBean implements PersistentStateComponent<ProjectConfigurationBean> {
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
 	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
@@ -55,4 +61,15 @@ public class ProjectConfigurationBean {
 	public void setActiveToolWindowTab(String activeToolWindowTab) {
 		this.activeToolWindowTab = activeToolWindowTab;
 	}
+
+	public ProjectConfigurationBean getState() {
+		return this;
+//		return projectConfigurationBean;
+	}
+
+	public void loadState(ProjectConfigurationBean state) {
+		copyConfiguration(state);
+//		projectConfigurationBean.copyConfiguration(state);
+	}
+
 }
