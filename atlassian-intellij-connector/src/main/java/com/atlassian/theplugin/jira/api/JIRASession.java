@@ -63,7 +63,7 @@ public interface JIRASession {
 
 	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
 
-	JIRAUserBean getUser(String loginName) throws RemoteApiException;
+	JIRAUserBean getUser(String loginName) throws RemoteApiException, JiraUserNotFoundException;
 
 	List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException;
 

@@ -326,7 +326,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException {
+	public JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException, JiraUserNotFoundException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getUser(loginName);
