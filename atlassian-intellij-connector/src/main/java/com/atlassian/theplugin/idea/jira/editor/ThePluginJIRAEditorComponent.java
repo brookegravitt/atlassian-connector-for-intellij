@@ -913,7 +913,6 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 								try {
 									u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
 								} catch (JiraUserNotFoundException e) {
-									e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 									c.setAuthorFullName(c.getAuthor());
 								}
 								c.setAuthorFullName(c.getAuthor());
