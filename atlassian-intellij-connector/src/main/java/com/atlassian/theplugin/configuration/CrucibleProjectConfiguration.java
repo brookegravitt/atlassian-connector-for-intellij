@@ -19,13 +19,24 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 
 public class CrucibleProjectConfiguration {
+
+	private CrucibleViewConfigurationBean view = new CrucibleViewConfigurationBean();
+
+	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
+
 	private ProjectToolWindowTableConfiguration tableConfiguration =
 			new ProjectToolWindowTableConfiguration();
 
 	public CrucibleProjectConfiguration() {
 	}
 
-	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
+	public CrucibleViewConfigurationBean getView() {
+		return view;
+	}
+
+	public void setView(CrucibleViewConfigurationBean view) {
+		this.view = view;
+	}
 
 	public CrucibleFiltersBean getCrucibleFilters() {
 		return crucibleFilters;
@@ -48,5 +59,7 @@ public class CrucibleProjectConfiguration {
 		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
 		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
         crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
-    }
+		view.copyConfiguration(crucibleConfiguration.getView());
+	}
+
 }

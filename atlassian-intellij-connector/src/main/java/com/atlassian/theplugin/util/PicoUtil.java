@@ -18,7 +18,6 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindow;
@@ -66,7 +65,7 @@ public final class PicoUtil {
 			TestResultsToolWindow.class,
 			BuildChangesToolWindow.class,
 			CrucibleTableToolWindowPanel.class,
-			ProjectConfigurationBean.class,
+//			ProjectConfigurationBean.class,
 			StackTraceConsole.class,
 			BambooBuildToolWindow.class,
 			JIRAServerModelImpl.class,			
