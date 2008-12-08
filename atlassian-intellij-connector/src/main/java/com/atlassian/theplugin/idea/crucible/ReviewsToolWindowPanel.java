@@ -251,6 +251,21 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 	}
 
+	public void refresh() {
+		final CrucibleStatusChecker checker = IdeaHelper.getCrucibleStatusChecker(getProject());
+
+		if (checker != null) {
+			if (checker.canSchedule()) {
+				Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
+							public void run(final ProgressIndicator indicator) {
+								checker.newTimerTask().run();
+							}
+						};
+				ProgressManager.getInstance().run(refresh);
+			}
+		}
+	}
+
 	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterListModelListener {
 		public void filterChanged() {
 
@@ -272,22 +287,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			confFilters[selectedPredefinedFilter.ordinal()] = true;
 
 			// restart checker
-			restartChecker(IdeaHelper.getCrucibleStatusChecker(getProject()));
-
+			refresh();
 		}
 
-		private void restartChecker(final CrucibleStatusChecker checker) {
-			if (checker != null) {
-				if (checker.canSchedule()) {
-					Task.Backgroundable refresh =
-							new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
-								public void run(final ProgressIndicator indicator) {
-									checker.newTimerTask().run();
-								}
-							};
-					ProgressManager.getInstance().run(refresh);
-				}
-			}
-		}
 	}
 }
