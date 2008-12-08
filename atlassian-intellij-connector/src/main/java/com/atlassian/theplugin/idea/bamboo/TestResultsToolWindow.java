@@ -333,6 +333,11 @@ public final class TestResultsToolWindow {
 			}
 		}
 
+		private String getPackageFromClassName(String fqcn) {
+			int pkgidx = fqcn.lastIndexOf('.');
+			return pkgidx > -1 ? fqcn.substring(0, pkgidx) : "<default>";
+		}
+
 		private JTree createTestTree() {
 			NonLeafNode root = new PackageNode("All Tests",
 					failedTests.size() + succeededTests.size(), failedTests.size());
@@ -340,7 +345,7 @@ public final class TestResultsToolWindow {
 			Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
 			for (TestDetails d : succeededTests) {
 				String fqcn = d.getTestClassName();
-				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+				String pkg = getPackageFromClassName(fqcn);
 				NonLeafNode n = packages.get(pkg);
 				if (n == null) {
 					packages.put(pkg, new PackageNode(pkg, 1, 0));
@@ -350,7 +355,7 @@ public final class TestResultsToolWindow {
 			}
 			for (TestDetails d : failedTests) {
 				String fqcn = d.getTestClassName();
-				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+				String pkg = getPackageFromClassName(fqcn);
 				NonLeafNode n = packages.get(pkg);
 				if (n == null) {
 					packages.put(pkg, new PackageNode(pkg, 1, 1));
@@ -390,7 +395,7 @@ public final class TestResultsToolWindow {
 
 			for (Map.Entry<String, NonLeafNode> c : classes.entrySet()) {
 				String fqcn = c.getKey();
-				String pkg = fqcn.substring(0, fqcn.lastIndexOf('.'));
+				String pkg = getPackageFromClassName(fqcn);
 				NonLeafNode n = c.getValue();
 				packages.get(pkg);
 				if (n.isFailed() || passedTestsVisible) {

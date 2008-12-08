@@ -3,6 +3,7 @@ package com.atlassian.theplugin.jira;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.jira.api.JiraUserNotFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +23,7 @@ public final class JIRAUserNameCache {
 		return instance;
 	}
 
-	public JIRAUserBean getUser(JiraServerCfg server, String userId) throws JIRAException {
+	public JIRAUserBean getUser(JiraServerCfg server, String userId) throws JIRAException, JiraUserNotFoundException {
 		Map<String, JIRAUserBean> userMap = serverMap.get(server);
 		if (userMap == null) {
 			userMap = new HashMap<String, JIRAUserBean>();

@@ -909,8 +909,14 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 							final List<JIRAComment> comments = facade.getComments(server, issue);
 
 							for (JIRAComment c : comments) {
-								JIRAUserBean u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
-								c.setAuthorFullName(u.getName());
+								JIRAUserBean u = null;
+								try {
+									u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
+								} catch (JiraUserNotFoundException e) {
+									e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+									c.setAuthorFullName(c.getAuthor());
+								}
+								c.setAuthorFullName(c.getAuthor());
 							}
 
 							SwingUtilities.invokeLater(new Runnable() {
