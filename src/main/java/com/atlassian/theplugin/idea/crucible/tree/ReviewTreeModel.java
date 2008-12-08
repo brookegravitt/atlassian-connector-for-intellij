@@ -169,7 +169,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			// todo add implementation
 
 			if (treeInitialized) {
-				nodeStructureChanged(getRoot());
+				fireTreeChanged(getRoot());
 			}
 		}
 
@@ -180,7 +180,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			// todo add implementation
 
 			if (treeInitialized) {
-				nodeStructureChanged(getRoot());
+				fireTreeChanged(getRoot());
 			}
 		}
 
@@ -191,7 +191,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			// todo add implementation
 
 			if (treeInitialized) {
-				nodeStructureChanged(getRoot());
+				fireTreeChanged(getRoot());
 			}
 		}
 
@@ -206,10 +206,16 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 			if (!treeInitialized) {
 				// draw entire tree
-				nodeStructureChanged(root);
+				fireTreeChanged(getRoot());
 				treeInitialized = true;
 			}
 		}
+
+		private void fireTreeChanged(DefaultMutableTreeNode node) {
+			node.removeAllChildren();
+			nodeStructureChanged(node);
+		}
+
 	}
 
 }
