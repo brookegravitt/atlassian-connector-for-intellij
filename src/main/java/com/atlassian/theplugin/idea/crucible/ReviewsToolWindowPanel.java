@@ -18,13 +18,14 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelImpl;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -54,27 +55,44 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private final CrucibleReviewListModel reviewListModel;
+	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private JTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
 	private CrucibleFilterListModel crucibleFilterListModel;
 	private CrucibleFilterTreeModel filterTreeModel;
+
+	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 	private JTree filterTree;
 
+
 	public ReviewsToolWindowPanel(@NotNull final Project project,
-			@NotNull final CrucibleProjectConfiguration crucibleProjectConfiguration,
+			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel) {
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		this.reviewListModel = reviewListModel;
-		crucibleFilterListModel = new CrucibleFilterListModelImpl();
+		this.crucibleFilterListModel = new CrucibleFilterListModelImpl();
+		this.crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
 		init();
+	}
+
+	@Override
+	public void init() {
+		super.init();
+
 		addReviewTreeListeners();
 		setupReviewTree();
 		setupFilterTree();
-	}
 
+		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
+			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
+		}
+		reviewTreeModel.setGroupBy(groupBy);
+
+
+	}
 
 	public void openReview(final ReviewAdapter review) {
 		CrucibleReviewWindow.getInstance(getProject()).showCrucibleReviewWindow(review);
@@ -202,18 +220,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		});
 	}
 
-	private CrucibleReviewGroupBy currentGroupBy = CrucibleReviewGroupBy.NONE;
-
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
-		currentGroupBy = groupBy;
+		this.groupBy = groupBy;
 		reviewTreeModel.groupBy(groupBy);
 		expandAllRightTreeNodes();
 
-		// todo save user selected groupby value
+		crucibleProjectConfiguration.getView().setGroupBy(groupBy);
 	}
 
 	public CrucibleReviewGroupBy getGroupBy() {
-		return currentGroupBy;
+		return groupBy;
 	}
 
 	public void expandAll() {

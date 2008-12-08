@@ -98,15 +98,19 @@
         <customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
         <errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
+		<!-- PLUGIN WORKSPACE CONFIGURATION -->
+		<projectService serviceInterface="com.atlassian.theplugin.configuration.ProjectConfigurationBean"
+						serviceImplementation="com.atlassian.theplugin.configuration.ProjectConfigurationBean"/>
+
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"
                 serviceImplementation="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"/>
-        <projectService serviceInterface="com.atlassian.theplugin.configuration.JiraProjectConfiguration"
+		<projectService serviceInterface="com.atlassian.theplugin.configuration.JiraProjectConfiguration"
                 serviceImplementation="com.atlassian.theplugin.configuration.JiraProjectConfiguration"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel"
                 serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel"/>
-		<projectService serviceInterface="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration" 
-                serviceImplementation="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration"/>
+		<!--<projectService serviceInterface="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration" -->
+		<!--serviceImplementation="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration"/>-->
 
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
                 serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>		

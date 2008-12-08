@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.*;
@@ -38,13 +39,9 @@ import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -62,9 +59,8 @@ import javax.swing.*;
 /**
  * Per-project plugin component.
  */
-@State(name = "atlassian-ide-plugin-workspace",
-		storages = {@Storage(id = "atlassian-ide-plugin-workspace-id", file = "$WORKSPACE_FILE$")})
-public class ThePluginProjectComponent implements ProjectComponent, PersistentStateComponent<ProjectConfigurationBean> {
+
+public class ThePluginProjectComponent implements ProjectComponent {
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
 	private final ProjectConfigurationBean projectConfigurationBean;
@@ -405,13 +401,6 @@ public class ThePluginProjectComponent implements ProjectComponent, PersistentSt
 	}
 
 
-	public ProjectConfigurationBean getState() {
-		return projectConfigurationBean;
-	}
-
-	public void loadState(ProjectConfigurationBean state) {
-		projectConfigurationBean.copyConfiguration(state);
-	}
 
 	public ProjectConfigurationBean getProjectConfigurationBean() {
 		return projectConfigurationBean;

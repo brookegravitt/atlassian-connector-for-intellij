@@ -45,7 +45,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		this.cfgManager = cfgManager;
 		setLayout(new BorderLayout());
 
-		this.statusBarPane = new StatusBarIssuesPane("Issues panel");
+		this.statusBarPane = new StatusBarIssuesPane("");
 		add(statusBarPane, BorderLayout.SOUTH);
 
 		splitPane.setShowDividerControls(false);
@@ -72,8 +72,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	public void init() {
 		leftUpperScrollPane.setViewportView(getLeftTree());
 		rightScrollPane.setViewportView(getRightTree());
-		addSearchBoxListener();
-		
+		addSearchBoxListener();		
 	}
 
 	public void enableGetMoreIssues(boolean enable) {
