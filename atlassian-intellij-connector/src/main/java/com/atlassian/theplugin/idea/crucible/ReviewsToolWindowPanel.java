@@ -264,7 +264,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			// clear all predefined filters from configuration (single selection support temporarily)
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
-			for (int i = 0 ; i < confFilters.length ; ++i) {
+			for (int i = 0; i < confFilters.length; ++i) {
 				confFilters[i] = false;
 			}
 
