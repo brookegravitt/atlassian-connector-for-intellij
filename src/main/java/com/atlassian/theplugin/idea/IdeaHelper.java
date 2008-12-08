@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
@@ -108,6 +109,10 @@ public final class IdeaHelper {
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
 		Project project = getCurrentProject(e.getDataContext());
 
+		return getCurrentProjectComponent(project);
+	}
+
+	public static ThePluginProjectComponent getCurrentProjectComponent(Project project) {
 		if (project == null) {
 			return null;
 		} else {
@@ -174,5 +179,10 @@ public final class IdeaHelper {
 			return null;
 		}
 		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));
+	}
+
+	public static CrucibleStatusChecker getCrucibleStatusChecker(Project project) {
+
+		return getCurrentProjectComponent(project).getCrucibleStatusChecker();
 	}
 }
