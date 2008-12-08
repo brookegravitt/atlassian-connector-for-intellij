@@ -912,10 +912,10 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 								JIRAUserBean u = null;
 								try {
 									u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
+									c.setAuthorFullName(u.getName());
 								} catch (JiraUserNotFoundException e) {
 									c.setAuthorFullName(c.getAuthor());
 								}
-								c.setAuthorFullName(c.getAuthor());
 							}
 
 							SwingUtilities.invokeLater(new Runnable() {
