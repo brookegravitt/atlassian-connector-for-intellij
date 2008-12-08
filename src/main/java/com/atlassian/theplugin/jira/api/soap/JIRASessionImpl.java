@@ -433,9 +433,12 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public JIRAUserBean getUser(String loginName) throws RemoteApiException {
+	public JIRAUserBean getUser(String loginName) throws RemoteApiException, JiraUserNotFoundException {
 		try {
 			RemoteUser ru = service.getUser(token, loginName);
+			if (ru == null) {
+				throw new JiraUserNotFoundException("User Name for " + loginName + " not found");
+			}
 			return new JIRAUserBean(-1, ru.getFullname(), ru.getName()) {
 				public String getQueryStringFragment() {
 					return null;

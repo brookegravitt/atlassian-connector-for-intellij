@@ -77,7 +77,7 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
 	void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException;
 
-	JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException;
+	JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException, JiraUserNotFoundException;
 
 	List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException;
 }
