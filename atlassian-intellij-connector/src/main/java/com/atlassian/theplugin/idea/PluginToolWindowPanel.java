@@ -149,10 +149,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		return component;
 	}
 
-
-
-
-
 	public void setStatusMessage(final String message) {
 		statusBarPane.setMessage(message);
 	}

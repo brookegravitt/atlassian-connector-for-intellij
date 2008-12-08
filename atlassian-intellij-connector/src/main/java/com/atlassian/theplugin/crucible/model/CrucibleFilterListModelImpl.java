@@ -49,7 +49,7 @@ public class CrucibleFilterListModelImpl implements CrucibleFilterListModel {
 
 	private void fireSelectedPredefinedFilter() {
 		for (CrucibleFilterListModelListener listener : listeners) {
-			listener.selectedCutomFilter();
+			listener.selectedPredefinedFilter(selectedPredefinedFilter);
 		}
 	}
 

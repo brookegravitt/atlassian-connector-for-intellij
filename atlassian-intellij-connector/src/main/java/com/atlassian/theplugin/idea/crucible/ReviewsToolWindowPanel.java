@@ -16,14 +16,17 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelImpl;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
@@ -32,6 +35,9 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +64,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private JTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
-	private CrucibleFilterListModel crucibleFilterListModel;
+	private CrucibleFilterListModel crucibleFilterListModel = new CrucibleFilterListModelImpl();
 	private CrucibleFilterTreeModel filterTreeModel;
 
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
@@ -72,8 +78,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		this.reviewListModel = reviewListModel;
-		this.crucibleFilterListModel = new CrucibleFilterListModelImpl();
 		this.crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
+
+		crucibleFilterListModel.addListener(new LocalCrucibleFilterListModelLisener());
 
 		init();
 	}
@@ -241,6 +248,46 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public void collapseAll() {
 		for (int i = 0; i < reviewTree.getRowCount(); i++) {
 			reviewTree.collapseRow(i);
+		}
+	}
+
+	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterListModelListener {
+		public void filterChanged() {
+
+		}
+
+		public void selectedCutomFilter() {
+
+		}
+
+		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
+			// clear all predefined filters from configuration (single selection support temporarily)
+			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
+
+			for (int i = 0 ; i < confFilters.length ; ++i) {
+				confFilters[i] = false;
+			}
+
+			// rember the filters selection in plugin configuration
+			confFilters[selectedPredefinedFilter.ordinal()] = true;
+
+			// restart checker
+			restartChecker(IdeaHelper.getCrucibleStatusChecker(getProject()));
+
+		}
+
+		private void restartChecker(final CrucibleStatusChecker checker) {
+			if (checker != null) {
+				if (checker.canSchedule()) {
+					Task.Backgroundable refresh =
+							new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
+								public void run(final ProgressIndicator indicator) {
+									checker.newTimerTask().run();
+								}
+							};
+					ProgressManager.getInstance().run(refresh);
+				}
+			}
 		}
 	}
 }
