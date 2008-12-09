@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class ReviewKeyComparatorTest extends TestCase {
 
@@ -73,7 +74,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-            public List<Action> getActions() throws ValueNotYetInitialized {
+            public Set<Action> getActions() throws ValueNotYetInitialized {
                 return null; 
             }
 
