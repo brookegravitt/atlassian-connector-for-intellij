@@ -29,7 +29,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	private StatusBarIssuesPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, ISSUES_PANEL_SPLIT_RATIO);
 	private Splitter splitLeftPane;
-	private JPanel leftPanel;
 	private JPanel rightPanel;
 	private JScrollPane rightScrollPane;
 	private SearchTextField searchField = new SearchTextField();
@@ -52,7 +51,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		this.statusBarPane = new StatusBarIssuesPane("");
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
-		splitPane.setSecondComponent(createRightContent(rightToolbarName, getActionPlaceName()));
+		splitPane.setSecondComponent(createRightContent());
 		splitPane.setHonorComponentsMinimumSize(true);
 
 		addComponentListener(new ComponentAdapter() {
@@ -80,7 +79,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public void init() {
-		splitPane.setFirstComponent(createLeftContent(leftToolbarName, getActionPlaceName()));
+		splitPane.setFirstComponent(createLeftContent());
 		leftUpperScrollPane.setViewportView(getLeftTree());
 		rightScrollPane.setViewportView(getRightTree());
 		addSearchBoxListener();		
@@ -106,8 +105,8 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		this.statusBarPane = statusBarPane;
 	}
 
-	public JComponent createLeftContent(String leftToolbarName, String leftToolbarPlace) {
-		leftPanel = new JPanel(new BorderLayout());
+	public JComponent createLeftContent() {
+		JPanel leftPanel = new JPanel(new BorderLayout());
 
 		leftUpperScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -125,7 +124,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 		leftPanel.add(splitLeftPane, BorderLayout.CENTER);
 
-		final JComponent toolBar = createToolBar(leftToolbarName, leftToolbarPlace);
+		final JComponent toolBar = createToolBar(leftToolbarName, getActionPlaceName());
 
 		if (toolBar != null) {
 			leftPanel.add(toolBar, BorderLayout.NORTH);
@@ -172,7 +171,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		}
 	}
 
-	private JComponent createRightContent(String rightToolbarName, String rightToolbarPlace) {
+	private JComponent createRightContent() {
 		rightPanel = new JPanel(new BorderLayout());
 
 		rightScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -182,7 +181,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		rightPanel.add(rightScrollPane, BorderLayout.CENTER);
 
 		CellConstraints cc = new CellConstraints();
-		JComponent rightToolbar = createToolBar(rightToolbarName, rightToolbarPlace);
+		JComponent rightToolbar = createToolBar(rightToolbarName, getActionPlaceName());
 
 		final JPanel toolBarPanel = new JPanel(
 				new FormLayout("left:pref, left:pref:grow, right:pref:grow", "pref:grow"));
