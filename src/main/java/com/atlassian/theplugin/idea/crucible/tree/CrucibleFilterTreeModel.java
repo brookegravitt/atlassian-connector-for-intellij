@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 
@@ -15,6 +16,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	private CrucibleFilterListModel filterModel;
 
 
+
 	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel) {
 		super(new DefaultMutableTreeNode(), false);
 		this.filterModel = filterModel;
@@ -25,22 +27,39 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	public Object getChild(Object parent, int index) {
 		if (parent == root) {
 
+			DefaultMutableTreeNode p = (DefaultMutableTreeNode) root;
 			PredefinedFilter predefinedFilter = null;
+			CustomFilter customFilter = null;
+
 			if (index >= 0 && index < filterModel.getPredefinedFilters().size()) {
 				predefinedFilter = (PredefinedFilter) (filterModel.getPredefinedFilters()).toArray()[index];
-			}
 
-			if (predefinedFilter != null) {
-				DefaultMutableTreeNode p = (DefaultMutableTreeNode) root;
-				if (index < p.getChildCount()) {
-					return p.getChildAt(index);
+				if (predefinedFilter != null) {
+
+					if (index < p.getChildCount()) {
+						return p.getChildAt(index);
+					}
+
+					CruciblePredefinedFilterTreeNode n =
+							new CruciblePredefinedFilterTreeNode(filterModel, predefinedFilter);
+					p.add(n);
+					return n;
+
 				}
+			} else if (index >= 0 && index == filterModel.getPredefinedFilters().size()) {
+				customFilter = filterModel.getCustomFilter();
 
-				CruciblePredefinedFilterTreeNode n =
-						new CruciblePredefinedFilterTreeNode(filterModel, predefinedFilter);
-				p.add(n);
-				return n;
+					if (index < p.getChildCount()) {
+						return p.getChildAt(index);
+					}
+
+					CrucibleCustomFilterTreeNode n =
+							new CrucibleCustomFilterTreeNode(filterModel, customFilter);
+					p.add(n);
+					return n;				
 			}
+
+
 		}
 		return null;
 	}
@@ -48,7 +67,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == root) {
-			return filterModel.getPredefinedFilters().size();
+			//one means CustomFilter
+			return filterModel.getPredefinedFilters().size() + getNumberOfCustomFilters();
 		}
 
 		return 0;
@@ -68,6 +88,10 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 		return true;
 	}
 
+	public int getNumberOfCustomFilters() {
+		return 1;
+	}
+
 	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
 		System.out.println("valueForPathChanged");
@@ -79,6 +103,10 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 			if (child instanceof CruciblePredefinedFilterTreeNode) {
 				PredefinedFilter predefinedFilter = ((CruciblePredefinedFilterTreeNode) child).getFilter();
 				return new ArrayList<PredefinedFilter>(filterModel.getPredefinedFilters()).indexOf(predefinedFilter);
+
+			} else if (child instanceof CrucibleCustomFilterTreeNode) {
+
+				return filterModel.getPredefinedFilters().size();//last index + 1
 			}
 		}
 

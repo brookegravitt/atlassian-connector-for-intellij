@@ -29,7 +29,8 @@ public interface CrucibleFilterListModel {
 	void setSelectedPredefinedFilter(PredefinedFilter filter);
 	PredefinedFilter getSelectedPredefinedFilter();
 	Collection<PredefinedFilter> getPredefinedFilters();
-	Collection<CustomFilter> getCustomFilters();
+	CustomFilter getCustomFilter();
+	void setCustomFilter(CustomFilter customFilter);
 	void addListener(CrucibleFilterListModelListener listener);
 	void removeListener(CrucibleFilterListModelListener listener);
 
