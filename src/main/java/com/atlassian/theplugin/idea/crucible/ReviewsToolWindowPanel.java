@@ -87,9 +87,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterListModel.setCustomFilter(crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 
-		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
-
 		init();
+
+		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
 	}
 
 	@Override
@@ -98,7 +98,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		addReviewTreeListeners();
 		setupReviewTree();
-		setupFilterTree();
 
 		initToolBar();
 
@@ -218,7 +217,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public JTree createLeftTree() {
 		if (filterTree == null && filterTreeModel != null) {
 
-			filterTree = new FilterTree(filterTreeModel);
+			filterTree = new FilterTree(filterTreeModel, crucibleProjectConfiguration);
 		}
 
 		return filterTree;
@@ -246,22 +245,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				}
 			}
 		});
-	}
-
-	private void setupFilterTree() {
-		//TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
-		//uiSetup.initializeUI(reviewTree, getRightScrollPane());
-
-		// restore selection setting
-		Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
-
-		for (int i = 0; i < confFilters.length; ++i) {
-			if (confFilters[i]) {
-				filterTree.selectPredefinedFilter(PredefinedFilter.values()[i]);
-			}
-		}
-		filterTree.init();
-
 	}
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
