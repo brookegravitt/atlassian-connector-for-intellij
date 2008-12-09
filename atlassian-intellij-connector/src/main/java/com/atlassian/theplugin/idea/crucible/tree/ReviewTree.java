@@ -20,8 +20,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -44,18 +42,6 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		setRootVisible(false);
 		setShowsRootHandles(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				final TreePath selectionPath = ReviewTree.this.getSelectionModel().getSelectionPath();
-				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					selectedReview = ((ReviewTreeNode) selectionPath.getLastPathComponent()).getReview();
-				} else {
-					// clear selection
-					selectedReview = null;
-				}
-			}
-		});
-
 	}
 
 	public void treeNodesChanged(TreeModelEvent e) {
@@ -83,6 +69,12 @@ public class ReviewTree extends JTree implements TreeModelListener {
 	}
 
 	public ReviewAdapter getSelectedReview() {
-		return selectedReview;
+		final TreePath selectionPath = getSelectionPath();
+		if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+			return ((ReviewTreeNode) selectionPath.getLastPathComponent()).getReview();
+		} else {
+			// nothing selected
+			return null;
+		}
 	}
 }
