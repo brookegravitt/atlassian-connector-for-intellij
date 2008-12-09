@@ -188,6 +188,60 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		EasyMock.verify(listener);
 	}
 
+	public void testListenersActionsDifferentOrder() throws Exception {
+
+		int reviewId = 1;
+
+		ServerId id = new ServerId();
+		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+
+		ReviewAdapter reviewAdapter_1 = createReviewAdapter(reviewId, cfg);
+		ReviewAdapter reviewAdapter_2 = createReviewAdapter(reviewId, cfg);
+		ReviewAdapter reviewAdapter_3 = createReviewAdapter(reviewId, cfg);
+
+		CrucibleReviewListModelListener listener = EasyMock.createStrictMock(CrucibleReviewListModelListener.class);
+
+		model = new CrucibleReviewListModelImpl();
+		model.addListener(listener);
+
+		// test 1 (add review)
+
+		listener.reviewListUpdateStarted(cfg.getServerId());
+		listener.reviewAdded(reviewAdapter_1);
+		listener.reviewListUpdateFinished(cfg.getServerId());
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_1));
+		EasyMock.verify(listener);
+
+		// test 2 (added actions)
+		reviewAdapter_2.getActions().add(Action.ABANDON);
+		reviewAdapter_2.getActions().add(Action.CLOSE);
+
+		EasyMock.reset(listener);
+
+		listener.reviewListUpdateStarted(cfg.getServerId());
+		listener.reviewChangedWithoutFiles(reviewAdapter_2);
+		listener.reviewListUpdateFinished(cfg.getServerId());
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_2));
+		EasyMock.verify(listener);
+
+		// test 3 (actions different order)
+		reviewAdapter_3.getActions().add(Action.CLOSE);
+		reviewAdapter_3.getActions().add(Action.ABANDON);
+
+		EasyMock.reset(listener);
+
+		listener.reviewListUpdateStarted(cfg.getServerId());
+		listener.reviewListUpdateFinished(cfg.getServerId());
+
+		EasyMock.replay(listener);
+		model.updateReviews(cfg, Arrays.asList(reviewAdapter_3));
+		EasyMock.verify(listener);
+	}
+
 	public void testListenersAfterCrucibleStatusCheckerUpdate() throws Exception {
 
 		int reviewId = 1;
@@ -375,6 +429,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		ReviewBean rb = new ReviewBean("test_" + id);
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
+		rb.setActions(new HashSet<Action>());
 
 		return new ReviewAdapter(rb, server);
 	}

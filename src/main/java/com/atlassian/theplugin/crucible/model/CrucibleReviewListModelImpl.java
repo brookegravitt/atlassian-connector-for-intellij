@@ -26,6 +26,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	public synchronized void addReview(ReviewAdapter review) {
 
+//		review.getActions().
+
 		int idx = reviews.indexOf(review);
 		if (idx != -1) {
 			ReviewAdapter a = reviews.get(idx);
