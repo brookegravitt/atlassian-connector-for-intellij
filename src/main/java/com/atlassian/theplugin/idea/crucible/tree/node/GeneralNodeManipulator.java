@@ -46,7 +46,7 @@ public class GeneralNodeManipulator extends NodeManipulator {
 					return p.getChildAt(index);
 				}
 
-				CrucibleReviewTreeNode n = new CrucibleReviewTreeNode(reviewListModel, r);
+				CrucibleReviewTreeNode n = new CrucibleReviewTreeNode(r);
 				p.add(n);
 				return n;
 			}

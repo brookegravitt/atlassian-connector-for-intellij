@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.crucible.tree.node;
+package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+
+import javax.swing.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class CrucibleReviewStateTreeNode extends CrucibleReviewGroupTreeNode {
-	private State crucibleState;
-
-	public CrucibleReviewStateTreeNode(State crucibleState) {
-		super(crucibleState.value(), null, null);
-
-		this.crucibleState = crucibleState;
+public abstract class ReviewTreeNode extends AbstractTreeNode {
+	public ReviewTreeNode(String name, Icon icon, Icon disabledIcon) {
+		super(name, icon, disabledIcon);
 	}
 
-	public State getCrucibleState() {
-		return crucibleState;
-	}
+	public abstract ReviewAdapter getReview();
 }

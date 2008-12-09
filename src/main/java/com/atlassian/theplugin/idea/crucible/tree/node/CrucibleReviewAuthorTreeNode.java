@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 /**
  * @author Jacek Jaroczynski
@@ -24,8 +23,8 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 public class CrucibleReviewAuthorTreeNode extends CrucibleReviewGroupTreeNode {
 	private User author;
 
-	public CrucibleReviewAuthorTreeNode(CrucibleReviewListModel model, User author) {
-		super(model, author.getDisplayName(), null, null);
+	public CrucibleReviewAuthorTreeNode(User author) {
+		super(author.getDisplayName(), null, null);
 
 		this.author = author;
 	}

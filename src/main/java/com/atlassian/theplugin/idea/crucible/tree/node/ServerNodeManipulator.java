@@ -57,7 +57,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 			ServerCfg server = getDistinctServers().get(index);
 
-			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(reviewListModel, server);
+			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(server);
 			p.add(serverNode);
 
 			return serverNode;
@@ -70,7 +70,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewForServer(p.getCrucibleServer(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
 			return node;

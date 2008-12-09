@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 
 import javax.swing.*;
 
@@ -10,12 +10,10 @@ import javax.swing.*;
  * Date: Dec 4, 2008
  * Time: 11:40:13 AM
  */
-public class CrucibleReviewGroupTreeNode extends AbstractTreeNode {
-	private final CrucibleReviewListModel model;
+public class CrucibleReviewGroupTreeNode extends ReviewTreeNode {
 
-	public CrucibleReviewGroupTreeNode(CrucibleReviewListModel model, String name, Icon icon, Icon disabledIcon) {
+	public CrucibleReviewGroupTreeNode(String name, Icon icon, Icon disabledIcon) {
 		super(name, icon,  disabledIcon);
-		this.model = model;
 	}
 
 	public String toString() {
@@ -27,6 +25,10 @@ public class CrucibleReviewGroupTreeNode extends AbstractTreeNode {
 	}
 
 	public void onSelect() {
-		model.setSelectedReview(null);
+//		model.setSelectedReview(null); <- selection is stored inside the tree instead of global plugin review model
+	}
+
+	public ReviewAdapter getReview() {
+		return null;	// no review associated with this node
 	}
 }
