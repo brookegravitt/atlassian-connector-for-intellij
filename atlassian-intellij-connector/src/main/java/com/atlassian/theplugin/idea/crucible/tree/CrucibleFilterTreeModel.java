@@ -106,7 +106,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 
 			} else if (child instanceof CrucibleCustomFilterTreeNode) {
 
-				return filterModel.getPredefinedFilters().size();//last index + 1
+				return filterModel.getPredefinedFilters().size(); //last index + 1
 			}
 		}
 

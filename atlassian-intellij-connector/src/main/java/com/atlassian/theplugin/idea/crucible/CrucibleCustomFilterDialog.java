@@ -186,6 +186,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		if (underReviewCheckBox.isSelected()) {
 			states.add(State.REVIEW.value());
 		}
+		if (abandonedCheckBox.isSelected()) {
+			states.add(State.ABANDONED.value());
+		}
 
 
 		filter.setState(states.toArray(new String[states.size()]));
@@ -340,6 +343,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 						break;
 					case REJECTED:
 						rejectedCheckBox.setSelected(true);
+						break;
+					case ABANDONED:
+						abandonedCheckBox.setSelected(true);
 						break;
 				}
 			}
