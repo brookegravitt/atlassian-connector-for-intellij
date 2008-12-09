@@ -36,6 +36,8 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	private JTree rightTree;
 	private JTree leftTree;
 	private JScrollPane leftUpperScrollPane;
+	private String rightToolbarName;
+	private String leftToolbarName;
 
 	public PluginToolWindowPanel(@NotNull final Project project,
 								 @NotNull final CfgManager cfgManager,
@@ -44,12 +46,12 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		setLayout(new BorderLayout());
+		this.leftToolbarName = leftToolbarName;
+		this.rightToolbarName = rightToolbarName;
 
 		this.statusBarPane = new StatusBarIssuesPane("");
 		add(statusBarPane, BorderLayout.SOUTH);
-
 		splitPane.setShowDividerControls(false);
-		splitPane.setFirstComponent(createLeftContent(leftToolbarName, getActionPlaceName()));
 		splitPane.setSecondComponent(createRightContent(rightToolbarName, getActionPlaceName()));
 		splitPane.setHonorComponentsMinimumSize(true);
 
@@ -67,9 +69,18 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 
 		add(splitPane, BorderLayout.CENTER);
+
+
+
+
+	}
+
+	public CfgManager getCfgManager() {
+		return cfgManager;
 	}
 
 	public void init() {
+		splitPane.setFirstComponent(createLeftContent(leftToolbarName, getActionPlaceName()));
 		leftUpperScrollPane.setViewportView(getLeftTree());
 		rightScrollPane.setViewportView(getRightTree());
 		addSearchBoxListener();		

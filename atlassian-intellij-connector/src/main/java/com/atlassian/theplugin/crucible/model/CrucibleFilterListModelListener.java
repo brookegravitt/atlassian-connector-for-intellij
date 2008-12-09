@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
 /**
@@ -23,6 +24,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 public interface CrucibleFilterListModelListener {
 	void filterChanged();
 
-	void selectedCutomFilter();
+	void selectedCustomFilter(CustomFilter customFilter);
 	void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter);
 }

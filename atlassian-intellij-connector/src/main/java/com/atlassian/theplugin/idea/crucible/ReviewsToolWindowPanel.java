@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
@@ -29,7 +30,7 @@ import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.CruciblePredefinedFilterTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -66,11 +67,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private JTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
-	private CrucibleFilterListModel crucibleFilterListModel = new CrucibleFilterListModelImpl();
+	private CrucibleFilterListModel filterListModel = new CrucibleFilterListModelImpl();
 	private CrucibleFilterTreeModel filterTreeModel;
 
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
-	private JTree filterTree;
+	private FilterTree filterTree;
+	private CrucibleCustomFilterDetailsPanel detailsPanel;
 
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
@@ -80,10 +82,14 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		this.reviewListModel = reviewListModel;
-		this.crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
-		init();
+		filterListModel = new CrucibleFilterListModelImpl();
+		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
+		filterListModel.setCustomFilter(crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
+		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 
-		crucibleFilterListModel.addListener(new LocalCrucibleFilterListModelLisener());
+		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
+
+		init();
 	}
 
 	@Override
@@ -96,6 +102,34 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		initToolBar();
 
+		filterListModel.addListener(new CrucibleFilterListModelListener() {
+
+			public void filterChanged() {
+
+			}
+
+			public void selectedCustomFilter(CustomFilter customFilter) {
+				showManualFilterPanel(true);
+			}
+
+			public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
+				showManualFilterPanel(false);
+			}
+
+		});
+
+
+		detailsPanel = new CrucibleCustomFilterDetailsPanel(getProject(), getCfgManager(),
+															crucibleProjectConfiguration,
+															filterListModel);
+
+		filterTreeModel.nodeChanged((DefaultMutableTreeNode)filterTreeModel.getRoot());
+
+
+		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
+			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
+		}
+		reviewTreeModel.setGroupBy(groupBy);
 	}
 
 	private void initToolBar() {
@@ -182,9 +216,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public JTree createLeftTree() {
-		if (filterTree == null) {
-			filterTreeModel = new CrucibleFilterTreeModel(crucibleFilterListModel);
-			filterTree = new JTree(filterTreeModel);
+		if (filterTree == null && filterTreeModel != null) {
+
+			filterTree = new FilterTree(filterTreeModel);
 		}
 
 		return filterTree;
@@ -217,49 +251,17 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private void setupFilterTree() {
 		//TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		//uiSetup.initializeUI(reviewTree, getRightScrollPane());
-		final JTree finalFilterTree = getLeftTree();
-
-		filterTree.setShowsRootHandles(true);
-		filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		filterTree.setRootVisible(false);
-
-		filterTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				final TreePath selectionPath = finalFilterTree.getSelectionModel().getSelectionPath();
-				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-				}
-			}
-		});
 
 		// restore selection setting
 		Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
 		for (int i = 0; i < confFilters.length; ++i) {
 			if (confFilters[i]) {
-				selectFilter(PredefinedFilter.values()[i]);
+				filterTree.selectPredefinedFilter(PredefinedFilter.values()[i]);
 			}
 		}
+		filterTree.init();
 
-	}
-
-	// todo move that method to the Tree object
-	private void selectFilter(PredefinedFilter predefinedFilter) {
-		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (filterTree.getModel().getRoot()));
-		if (rootNode == null) {
-			return;
-		}
-		for (int i = 0; i < rootNode.getChildCount(); i++) {
-			if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
-				CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
-
-				if (node.getFilter().equals(predefinedFilter)) {
-					filterTree.setSelectionPath(new TreePath(node.getPath()));
-					filterTree.setSelectionPath(new TreePath(node.getPath()));
-					break;
-				}
-			}
-		}
 	}
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
@@ -274,15 +276,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return groupBy;
 	}
 
-	public void expandAll() {
-		for (int i = 0; i < reviewTree.getRowCount(); i++) {
-			reviewTree.expandRow(i);
-		}
-	}
+	protected void showManualFilterPanel(boolean visible) {
+		getSplitLeftPane().setOrientation(true);
 
-	public void collapseAll() {
-		for (int i = 0; i < reviewTree.getRowCount(); i++) {
-			reviewTree.collapseRow(i);
+		if (visible) {
+			getSplitLeftPane().setSecondComponent(detailsPanel);
+			getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
+
+		} else {
+			getSplitLeftPane().setSecondComponent(null);
+			getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 		}
 	}
 
@@ -306,14 +309,13 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		}
 
-		public void selectedCutomFilter() {
+		public void selectedCustomFilter(CustomFilter customFilter) {
 
 		}
 
-		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
 
+		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
 			// clear all predefined filters from configuration (single selection support temporarily)
-			// todo add mutiselection support
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
 			for (int i = 0; i < confFilters.length; ++i) {
