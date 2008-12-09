@@ -17,5 +17,5 @@ public interface CrucibleReviewListModelListener {
 
 	void reviewListUpdateFinished(ServerId serverId);
 
-	void reviewChangedWithoutFiles(ReviewAdapter newReview);
+	void reviewChangedWithoutFiles(ReviewAdapter review);
 }

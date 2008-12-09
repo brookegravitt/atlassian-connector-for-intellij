@@ -164,7 +164,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewAdded(ReviewAdapter review) {
-			System.out.println("review added");
+			System.out.println("review added: " + review.getPermId().getId());
 
 			// todo add implementation
 
@@ -175,7 +175,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewRemoved(ReviewAdapter review) {
-			System.out.println("review removed");
+			System.out.println("review removed: " + review.getPermId().getId());
 
 			// todo add implementation
 
@@ -185,8 +185,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		}
 
 		@Override
-		public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
-			System.out.println("review changed without files");
+		public void reviewChangedWithoutFiles(ReviewAdapter review) {
+			System.out.println("review changed without files: " + review.getPermId().getId());
 
 			// todo add implementation
 

@@ -195,7 +195,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		if (reviewTree == null) {
 			reviewTreeModel = new ReviewTreeModel(reviewListModel);
 			reviewTree = new ReviewTree(reviewTreeModel);
-			reviewTree.setRootVisible(false);
+
 		}
 		return reviewTree;
 	}
@@ -219,7 +219,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
 		this.groupBy = groupBy;
 		reviewTreeModel.groupBy(groupBy);
-		expandAllRightTreeNodes();
+//		expandAllRightTreeNodes();
 
 		crucibleProjectConfiguration.getView().setGroupBy(groupBy);
 	}

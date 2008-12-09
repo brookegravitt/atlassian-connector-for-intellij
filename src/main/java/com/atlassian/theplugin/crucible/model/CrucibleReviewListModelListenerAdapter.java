@@ -38,6 +38,6 @@ public class CrucibleReviewListModelListenerAdapter implements CrucibleReviewLis
 	public void reviewListUpdateFinished(ServerId serverId) {
 	}
 
-	public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
+	public void reviewChangedWithoutFiles(ReviewAdapter review) {
 	}
 }
