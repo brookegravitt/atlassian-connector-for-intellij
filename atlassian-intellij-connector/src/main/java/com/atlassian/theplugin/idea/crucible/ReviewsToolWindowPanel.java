@@ -29,6 +29,7 @@ import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.CruciblePredefinedFilterTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -79,10 +81,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		this.reviewListModel = reviewListModel;
 		this.crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
+		init();
 
 		crucibleFilterListModel.addListener(new LocalCrucibleFilterListModelLisener());
-
-		init();
 	}
 
 	@Override
@@ -93,12 +94,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		setupReviewTree();
 		setupFilterTree();
 
+		initToolBar();
+
+	}
+
+	private void initToolBar() {
+		// restore GroupBy setting
 		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
 			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
 		}
 		reviewTreeModel.setGroupBy(groupBy);
-
-
 	}
 
 	public void openReview(final ReviewAdapter review) {
@@ -217,6 +222,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterTree.setShowsRootHandles(true);
 		filterTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		filterTree.setRootVisible(false);
+
 		filterTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
 				final TreePath selectionPath = finalFilterTree.getSelectionModel().getSelectionPath();
@@ -225,6 +231,35 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				}
 			}
 		});
+
+		// restore selection setting
+		Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
+
+		for (int i = 0; i < confFilters.length; ++i) {
+			if (confFilters[i]) {
+				selectFilter(PredefinedFilter.values()[i]);
+			}
+		}
+
+	}
+
+	// todo move that method to the Tree object
+	private void selectFilter(PredefinedFilter predefinedFilter) {
+		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (filterTree.getModel().getRoot()));
+		if (rootNode == null) {
+			return;
+		}
+		for (int i = 0; i < rootNode.getChildCount(); i++) {
+			if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
+				CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
+
+				if (node.getFilter().equals(predefinedFilter)) {
+					filterTree.setSelectionPath(new TreePath(node.getPath()));
+					filterTree.setSelectionPath(new TreePath(node.getPath()));
+					break;
+				}
+			}
+		}
 	}
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
@@ -276,7 +311,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 
 		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
+
 			// clear all predefined filters from configuration (single selection support temporarily)
+			// todo add mutiselection support
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
 			for (int i = 0; i < confFilters.length; ++i) {
