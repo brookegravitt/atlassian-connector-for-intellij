@@ -12,7 +12,7 @@ import java.util.Collection;
 public class CrucibleFilterListModelImpl implements CrucibleFilterListModel {
 	private Collection<CrucibleFilterListModelListener> listeners = new ArrayList<CrucibleFilterListModelListener>();
 	private Collection<PredefinedFilter> predefinedFilters = new ArrayList<PredefinedFilter>();
-	private Collection<CustomFilter> customFilters = new ArrayList<CustomFilter>();
+	private CustomFilter customFilter;
 	private PredefinedFilter selectedPredefinedFilter;
 	private CustomFilter selectedCustomFilter;
 
@@ -24,17 +24,17 @@ public class CrucibleFilterListModelImpl implements CrucibleFilterListModel {
 		predefinedFilters.add(PredefinedFilter.OutForReview);
 		predefinedFilters.add(PredefinedFilter.RequireMyApproval);
 		predefinedFilters.add(PredefinedFilter.ToReview);
-		predefinedFilters.add(PredefinedFilter.ToSummarize);		
+		predefinedFilters.add(PredefinedFilter.ToSummarize);
 	}
 
 	public void setSelectedCustomFilter(CustomFilter filter) {
 		selectedCustomFilter = filter;
-		fireSelectedCustomFilter();
+		fireSelectedCustomFilter(filter);
 	}
 
-	private void fireSelectedCustomFilter() {
+	private void fireSelectedCustomFilter(CustomFilter filter) {
 		for (CrucibleFilterListModelListener listener : listeners) {
-			listener.selectedCutomFilter();
+			listener.selectedCustomFilter(filter);
 		}
 	}
 
@@ -61,8 +61,12 @@ public class CrucibleFilterListModelImpl implements CrucibleFilterListModel {
 		return predefinedFilters;
 	}
 
-	public Collection<CustomFilter> getCustomFilters() {
-		return customFilters;
+	public CustomFilter getCustomFilter() {
+		return customFilter;
+	}
+
+	public void setCustomFilter(CustomFilter customFilter) {
+		this.customFilter = customFilter;
 	}
 
 	public void addListener(CrucibleFilterListModelListener listener) {
