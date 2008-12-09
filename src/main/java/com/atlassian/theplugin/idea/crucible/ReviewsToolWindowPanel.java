@@ -88,6 +88,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		init();
 
 		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
+
+		// todo remove disabling searchbox when search implemented
+		getSearchField().setEnabled(false);
+		getSearchField().setVisible(false);
 	}
 
 	@Override
