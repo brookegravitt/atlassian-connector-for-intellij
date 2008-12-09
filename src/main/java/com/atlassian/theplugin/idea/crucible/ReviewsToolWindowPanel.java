@@ -31,9 +31,9 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.actionSystem.*;
@@ -46,12 +46,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -63,9 +60,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
+
 	private final CrucibleReviewListModel reviewListModel;
 	private CrucibleProjectConfiguration crucibleProjectConfiguration;
-	private JTree reviewTree;
+	private ReviewTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
 	private CrucibleFilterListModel filterListModel = new CrucibleFilterListModelImpl();
 	private CrucibleFilterTreeModel filterTreeModel;
@@ -129,6 +127,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
 		}
 		reviewTreeModel.setGroupBy(groupBy);
+	}
+
+	private void setupReviewTree() {
+		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		uiSetup.initializeUI(reviewTree, getRightScrollPane());
 	}
 
 	private void initToolBar() {
@@ -208,7 +211,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public JTree createRightTree() {
 		if (reviewTree == null) {
 			reviewTreeModel = new ReviewTreeModel(reviewListModel);
-			reviewTree = new JTree(reviewTreeModel);
+			reviewTree = new ReviewTree(reviewTreeModel);
 			reviewTree.setRootVisible(false);
 		}
 		return reviewTree;
@@ -216,7 +219,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public JTree createLeftTree() {
 		if (filterTree == null && filterTreeModel != null) {
-
 			filterTree = new FilterTree(filterTreeModel, crucibleProjectConfiguration);
 		}
 
@@ -230,22 +232,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return PLACE_PREFIX + this.getProject().getName();
 	}
 
-	private void setupReviewTree() {
-		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
-		uiSetup.initializeUI(reviewTree, getRightScrollPane());
-		final JTree finalReviewTree = getRightTree();
-
-		reviewTree.setShowsRootHandles(true);
-		reviewTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		reviewTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				final TreePath selectionPath = finalReviewTree.getSelectionModel().getSelectionPath();
-				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-				}
-			}
-		});
-	}
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
 		this.groupBy = groupBy;
