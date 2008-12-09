@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.intellij.util.ui.UIUtil;
 
@@ -15,16 +14,14 @@ import java.text.DateFormat;
  * Date: Dec 4, 2008
  * Time: 11:40:51 AM
  */
-public class CrucibleReviewTreeNode extends AbstractTreeNode {
+public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private static final int STATUS_LABEL_WIDTH = 80;
 	private static final int AUTHOR_LABEL_WIDTH = 120;
 
-	private final CrucibleReviewListModel model;
 	private final ReviewAdapter review;
 
-	public CrucibleReviewTreeNode(CrucibleReviewListModel model, ReviewAdapter review) {
+	public CrucibleReviewTreeNode(ReviewAdapter review) {
 		super(review.getPermId().getId(), null, null);
-		this.model = model;
 		this.review = review;
 	}
 
@@ -101,7 +98,7 @@ public class CrucibleReviewTreeNode extends AbstractTreeNode {
 	}
 
 	public void onSelect() {
-		model.setSelectedReview(review);
+//		model.setSelectedReview(review); <- selection is stored inside the tree instead of global plugin review model
 	}
 
 	private static void setFixedComponentSize(JComponent c, int width, int height) {

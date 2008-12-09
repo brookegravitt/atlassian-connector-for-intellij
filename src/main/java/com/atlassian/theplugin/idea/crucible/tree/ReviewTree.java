@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
@@ -29,6 +29,7 @@ import javax.swing.tree.TreeSelectionModel;
  * @author Jacek Jaroczynski
  */
 public class ReviewTree extends JTree implements TreeModelListener {
+	private ReviewAdapter selectedReview;
 
 	public ReviewTree(ReviewTreeModel reviewTreeModel) {
 		super(reviewTreeModel);
@@ -47,7 +48,10 @@ public class ReviewTree extends JTree implements TreeModelListener {
 			public void valueChanged(TreeSelectionEvent e) {
 				final TreePath selectionPath = ReviewTree.this.getSelectionModel().getSelectionPath();
 				if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+					selectedReview = ((ReviewTreeNode) selectionPath.getLastPathComponent()).getReview();
+				} else {
+					// clear selection
+					selectedReview = null;
 				}
 			}
 		});
@@ -76,5 +80,9 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
 		}
+	}
+
+	public ReviewAdapter getSelectedReview() {
+		return selectedReview;
 	}
 }

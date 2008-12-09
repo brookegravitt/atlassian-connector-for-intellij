@@ -15,16 +15,14 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-
 /**
  * @author Jacek Jaroczynski
  */
 public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
 	private String project;
 
-	public CrucibleReviewProjectTreeNode(CrucibleReviewListModel model, String project) {
-		super(model, project, null, null);
+	public CrucibleReviewProjectTreeNode(String project) {
+		super(project, null, null);
 
 		this.project = project;
 	}
