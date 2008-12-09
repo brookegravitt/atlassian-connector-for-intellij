@@ -18,6 +18,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -26,16 +28,19 @@ import javax.swing.tree.TreeSelectionModel;
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewTree extends JTree {
+public class ReviewTree extends JTree implements TreeModelListener {
 
 	public ReviewTree(ReviewTreeModel reviewTreeModel) {
 		super(reviewTreeModel);
+
+		reviewTreeModel.addTreeModelListener(this);
 
 		init();
 	}
 
 	private void init() {
 
+		setRootVisible(false);
 		setShowsRootHandles(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -46,6 +51,30 @@ public class ReviewTree extends JTree {
 				}
 			}
 		});
+
 	}
 
+	public void treeNodesChanged(TreeModelEvent e) {
+		System.out.println("tree nodes changed");
+	}
+
+	public void treeNodesInserted(TreeModelEvent e) {
+		System.out.println("tree nodes inserted");
+	}
+
+	public void treeNodesRemoved(TreeModelEvent e) {
+		System.out.println("tree nodes remmoved");
+	}
+
+	public void treeStructureChanged(TreeModelEvent e) {
+		System.out.println("tree structure changed");
+
+		expandTree();
+	}
+
+	private void expandTree() {
+		for (int i = 0; i < getRowCount(); i++) {
+			expandRow(i);
+		}
+	}
 }
