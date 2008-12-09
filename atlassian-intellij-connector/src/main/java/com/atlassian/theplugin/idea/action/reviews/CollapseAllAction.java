@@ -11,6 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class CollapseAllAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getReviewsToolWindowPanel(e).collapseAll();
+		IdeaHelper.getReviewsToolWindowPanel(e).collapseAllRightTreeNodes();
 	}
 }

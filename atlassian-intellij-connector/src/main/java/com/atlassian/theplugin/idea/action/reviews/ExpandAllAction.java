@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 /**
  * User: jgorycki
@@ -11,6 +11,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
  */
 public class ExpandAllAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getReviewsToolWindowPanel(e).expandAll();
+		IdeaHelper.getReviewsToolWindowPanel(e).expandAllRightTreeNodes();
 	}
 }
