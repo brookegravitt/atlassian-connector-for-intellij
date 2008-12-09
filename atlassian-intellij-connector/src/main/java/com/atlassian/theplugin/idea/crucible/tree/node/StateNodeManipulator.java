@@ -58,7 +58,7 @@ public class StateNodeManipulator extends NodeManipulator {
 
 			State state = getDistinctStates().get(index);
 
-			CrucibleReviewStateTreeNode stateNode = new CrucibleReviewStateTreeNode(reviewListModel, state);
+			CrucibleReviewStateTreeNode stateNode = new CrucibleReviewStateTreeNode(state);
 			p.add(stateNode);
 
 			return stateNode;
@@ -71,7 +71,7 @@ public class StateNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewInState(p.getCrucibleState(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
 			return node;

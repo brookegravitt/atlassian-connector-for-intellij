@@ -56,7 +56,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 
 			String project = getDistinctProjects().get(index);
 
-			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(reviewListModel, project);
+			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(project);
 			p.add(serverNode);
 
 			return serverNode;
@@ -69,7 +69,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewForProject(p.getProject(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
 			return node;
