@@ -60,7 +60,7 @@ public class FilterTree extends JTree {
 		if (rootNode == null) {
 			return;
 		}
-		int noOfCustomFilters = ((CrucibleFilterTreeModel)getModel()).getNumberOfCustomFilters();
+		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
 		for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; i++) {
 			if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
 				CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
