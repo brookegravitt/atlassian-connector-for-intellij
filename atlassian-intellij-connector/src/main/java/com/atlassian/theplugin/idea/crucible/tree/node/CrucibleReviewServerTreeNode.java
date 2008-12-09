@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 /**
  * @author Jacek Jaroczynski
@@ -24,8 +23,8 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 public class CrucibleReviewServerTreeNode extends CrucibleReviewGroupTreeNode {
 	private ServerCfg crucibleServer;
 
-	public CrucibleReviewServerTreeNode(CrucibleReviewListModel model, ServerCfg server) {
-		super(model, server.getName(), null, null);
+	public CrucibleReviewServerTreeNode(ServerCfg server) {
+		super(server.getName(), null, null);
 
 		this.crucibleServer = server;
 	}

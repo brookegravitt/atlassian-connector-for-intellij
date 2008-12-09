@@ -57,7 +57,7 @@ public class AuthorNodeManipulator extends NodeManipulator {
 
 			User author = getDistinctAuthors().get(index);
 
-			CrucibleReviewAuthorTreeNode serverNode = new CrucibleReviewAuthorTreeNode(reviewListModel, author);
+			CrucibleReviewAuthorTreeNode serverNode = new CrucibleReviewAuthorTreeNode(author);
 			p.add(serverNode);
 
 			return serverNode;
@@ -70,7 +70,7 @@ public class AuthorNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewForAuthor(p.getAuthor(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
 			return node;

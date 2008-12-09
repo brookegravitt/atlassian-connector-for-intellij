@@ -133,7 +133,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		reviewTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				final ReviewAdapter review = reviewListModel.getSelectedReview();
+				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
 					openReview(review);
 				}
@@ -144,7 +144,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final ReviewAdapter review = reviewListModel.getSelectedReview();
+				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && review != null) {
 					openReview(review);
 				}
@@ -156,7 +156,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				TreePath selPath = reviewTree.getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
 					reviewTree.setSelectionPath(selPath);
-					final ReviewAdapter review = reviewListModel.getSelectedReview();
+					final ReviewAdapter review = reviewTree.getSelectedReview();
 					if (review != null) {
 						launchContextMenu(e);
 					}
@@ -181,10 +181,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Nullable
 	public Object getData(@NonNls String dataId) {
 		if (dataId.equals(Constants.REVIEW)) {
-			return reviewListModel.getSelectedReview();
+//			return reviewListModel.getSelectedReview();
+			return reviewTree.getSelectedReview();
 		}
 		return null;
-
+		
 	}
 
 	public void addSearchBoxListener() {
