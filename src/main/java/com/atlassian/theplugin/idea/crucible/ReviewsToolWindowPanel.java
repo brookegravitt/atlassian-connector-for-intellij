@@ -99,23 +99,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		initToolBar();
 
-		filterListModel.addListener(new CrucibleFilterListModelListener() {
-
-			public void filterChanged() {
-
-			}
-
-			public void selectedCustomFilter(CustomFilter customFilter) {
-				showManualFilterPanel(true);
-			}
-
-			public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
-				showManualFilterPanel(false);
-			}
-
-		});
-
-
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(getProject(), getCfgManager(),
 															crucibleProjectConfiguration,
 															filterListModel);
@@ -279,11 +262,13 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 
 		public void selectedCustomFilter(CustomFilter customFilter) {
-
+			showManualFilterPanel(true);
 		}
 
 
 		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
+			showManualFilterPanel(false);
+
 			// clear all predefined filters from configuration (single selection support temporarily)
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
