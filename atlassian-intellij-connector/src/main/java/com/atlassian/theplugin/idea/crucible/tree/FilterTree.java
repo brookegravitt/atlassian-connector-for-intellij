@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
@@ -14,16 +15,23 @@ import javax.swing.tree.TreeSelectionModel;
  * User: pmaruszak
  */
 public class FilterTree extends JTree {
+	private CrucibleProjectConfiguration crucibleConfiguration;
 
-	public FilterTree(CrucibleFilterTreeModel filterTreeModel) {
+	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleProjectConfiguration crucibleConfiguration) {
 		super(filterTreeModel);
+
+		this.crucibleConfiguration = crucibleConfiguration;
+
+		init();
 	}
 
 	public void init() {
 		setShowsRootHandles(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		setRootVisible(false);
-		
+
+		restoreSelection();
+
 		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 				public void valueChanged(TreeSelectionEvent e) {
 					final TreePath selectionPath = getSelectionModel().getSelectionPath();
@@ -33,6 +41,18 @@ public class FilterTree extends JTree {
 				}
 			});
 
+	}
+
+	private void restoreSelection() {
+		Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
+
+		// find selection
+		for (int i = 0; i < confFilters.length; ++i) {
+			if (confFilters[i]) {
+				// select node
+				selectPredefinedFilter(PredefinedFilter.values()[i]);
+			}
+		}
 	}
 
 	public void selectPredefinedFilter(PredefinedFilter predefinedFilter) {
