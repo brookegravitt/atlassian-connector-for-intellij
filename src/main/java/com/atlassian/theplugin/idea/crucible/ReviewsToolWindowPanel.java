@@ -103,7 +103,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 															crucibleProjectConfiguration,
 															filterListModel);
 
-		filterTreeModel.nodeChanged((DefaultMutableTreeNode)filterTreeModel.getRoot());
+		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
 
 		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
