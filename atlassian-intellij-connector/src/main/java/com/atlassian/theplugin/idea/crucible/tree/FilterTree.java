@@ -63,16 +63,8 @@ public class FilterTree extends JTree {
 
 					fireSelectedPredefinedFilter(predefinedFilters);
 					fireSelectedCustomFilter(customFilter);
-
-					//					final TreePath selectionPath = getSelectionModel().getSelectionPath();
-					//
-					//					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-					//						((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-					//					}
 				}
 			}
-
-
 		});
 	}
 
@@ -93,10 +85,14 @@ public class FilterTree extends JTree {
 	}
 
 	private void fireSelectedCustomFilter(CustomFilter filter) {
-		for (CrucibleFilterListModelListener listener : listeners) {
-			if (filter != null) {
+		if (filter != null) {
+			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
+			for (CrucibleFilterListModelListener listener : listeners) {
 				listener.selectedCustomFilter(filter);
-			} else {
+			}
+		} else {
+			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
+			for (CrucibleFilterListModelListener listener : listeners) {
 				listener.unselectedCustomFilter();
 			}
 		}
@@ -115,22 +111,21 @@ public class FilterTree extends JTree {
 		}
 
 		// select nodes
-		selectPredefinedFilter(selectedPredefinedFilters);
+		selectNodes(selectedPredefinedFilters);
 	}
 
-	private void selectPredefinedFilter(Collection<PredefinedFilter> predefinedFilters) {
+	private void selectNodes(Collection<PredefinedFilter> predefinedFilters) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (getModel().getRoot()));
 		if (rootNode == null) {
 			return;
 		}
 
+		// create selected TreePath-s for PredefinedFilters
 		Collection<TreePath> selectedPaths = new ArrayList<TreePath>();
 
 		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
 
 		for (PredefinedFilter predefinedFilter : predefinedFilters) {
-
-
 			for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; i++) {
 				if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
 					CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
@@ -139,6 +134,17 @@ public class FilterTree extends JTree {
 						selectedPaths.add(new TreePath(node.getPath()));
 						break;
 					}
+				}
+			}
+		}
+
+		// create selected TreePath for CustomFilter (single custom filter support)
+		if (crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
+			for (int i = rootNode.getChildCount() - 1; i >= 0; --i) {
+				if (rootNode.getChildAt(i) instanceof CrucibleCustomFilterTreeNode) {
+					CrucibleCustomFilterTreeNode node = (CrucibleCustomFilterTreeNode) rootNode.getChildAt(i);
+					selectedPaths.add(new TreePath(node.getPath()));
+					break;
 				}
 			}
 		}
