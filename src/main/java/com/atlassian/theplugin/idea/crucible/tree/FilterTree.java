@@ -104,31 +104,45 @@ public class FilterTree extends JTree {
 
 	private void restoreSelection() {
 		Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
+		Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
 
 		// find selection
 		for (int i = 0; i < confFilters.length; ++i) {
 			if (confFilters[i]) {
-				// select node
-				selectPredefinedFilter(PredefinedFilter.values()[i]);
+				// remember node
+				selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
 			}
 		}
+
+		// select nodes
+		selectPredefinedFilter(selectedPredefinedFilters);
 	}
 
-	private void selectPredefinedFilter(PredefinedFilter predefinedFilter) {
+	private void selectPredefinedFilter(Collection<PredefinedFilter> predefinedFilters) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (getModel().getRoot()));
 		if (rootNode == null) {
 			return;
 		}
-		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
-		for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; i++) {
-			if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
-				CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
 
-				if (node.getFilter().equals(predefinedFilter)) {
-					setSelectionPath(new TreePath(node.getPath()));
-					break;
+		Collection<TreePath> selectedPaths = new ArrayList<TreePath>();
+
+		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
+
+		for (PredefinedFilter predefinedFilter : predefinedFilters) {
+
+
+			for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; i++) {
+				if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
+					CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
+
+					if (node.getFilter().equals(predefinedFilter)) {
+						selectedPaths.add(new TreePath(node.getPath()));
+						break;
+					}
 				}
 			}
 		}
+
+		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
 }
