@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 
@@ -14,12 +14,13 @@ import java.util.ArrayList;
  */
 public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	private CrucibleFilterListModel filterModel;
+	private CustomFilterBean manualFilter;
 
 
-
-	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel) {
+	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel, CustomFilterBean manualFilter) {
 		super(new DefaultMutableTreeNode(), false);
 		this.filterModel = filterModel;
+		this.manualFilter = manualFilter;
 
 	}
 
@@ -28,8 +29,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 		if (parent == root) {
 
 			DefaultMutableTreeNode p = (DefaultMutableTreeNode) root;
-			PredefinedFilter predefinedFilter = null;
-			CustomFilter customFilter = null;
+			PredefinedFilter predefinedFilter;
 
 			if (index >= 0 && index < filterModel.getPredefinedFilters().size()) {
 				predefinedFilter = (PredefinedFilter) (filterModel.getPredefinedFilters()).toArray()[index];
@@ -41,20 +41,19 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 					}
 
 					CruciblePredefinedFilterTreeNode n =
-							new CruciblePredefinedFilterTreeNode(filterModel, predefinedFilter);
+							new CruciblePredefinedFilterTreeNode(predefinedFilter);
 					p.add(n);
 					return n;
 
 				}
 			} else if (index >= 0 && index == filterModel.getPredefinedFilters().size()) {
-				customFilter = filterModel.getCustomFilter();
 
 					if (index < p.getChildCount()) {
 						return p.getChildAt(index);
 					}
 
 					CrucibleCustomFilterTreeNode n =
-							new CrucibleCustomFilterTreeNode(filterModel, customFilter);
+							new CrucibleCustomFilterTreeNode(filterModel, manualFilter);
 					p.add(n);
 					return n;				
 			}

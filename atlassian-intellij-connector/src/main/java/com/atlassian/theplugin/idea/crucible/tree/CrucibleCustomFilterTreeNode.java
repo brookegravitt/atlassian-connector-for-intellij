@@ -29,4 +29,8 @@ public class CrucibleCustomFilterTreeNode  extends AbstractTreeNode {
 	public void onSelect() {
 		listModel.setSelectedCustomFilter(filter);
 	}
+
+	public CustomFilter getFilter() {
+		return filter;
+	}
 }

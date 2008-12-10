@@ -18,6 +18,8 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
+import java.util.Collection;
+
 /**
  * User: pmaruszak
  */
@@ -25,5 +27,7 @@ public interface CrucibleFilterListModelListener {
 	void filterChanged();
 
 	void selectedCustomFilter(CustomFilter customFilter);
-	void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter);
+	void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters);
+
+	void unselectedCustomFilter();
 }

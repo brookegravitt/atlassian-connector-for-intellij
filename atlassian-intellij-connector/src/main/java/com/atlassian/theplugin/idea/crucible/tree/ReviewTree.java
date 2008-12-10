@@ -27,7 +27,6 @@ import javax.swing.tree.TreeSelectionModel;
  * @author Jacek Jaroczynski
  */
 public class ReviewTree extends JTree implements TreeModelListener {
-	private ReviewAdapter selectedReview;
 
 	public ReviewTree(ReviewTreeModel reviewTreeModel) {
 		super(reviewTreeModel);
@@ -45,19 +44,19 @@ public class ReviewTree extends JTree implements TreeModelListener {
 	}
 
 	public void treeNodesChanged(TreeModelEvent e) {
-		System.out.println("tree nodes changed");
+//		System.out.println("tree nodes changed");
 	}
 
 	public void treeNodesInserted(TreeModelEvent e) {
-		System.out.println("tree nodes inserted");
+//		System.out.println("tree nodes inserted");
 	}
 
 	public void treeNodesRemoved(TreeModelEvent e) {
-		System.out.println("tree nodes remmoved");
+//		System.out.println("tree nodes remmoved");
 	}
 
 	public void treeStructureChanged(TreeModelEvent e) {
-		System.out.println("tree structure changed");
+//		System.out.println("tree structure changed");
 
 		expandTree();
 	}

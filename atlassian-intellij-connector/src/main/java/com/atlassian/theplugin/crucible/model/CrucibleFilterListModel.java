@@ -26,8 +26,6 @@ import java.util.Collection;
 public interface CrucibleFilterListModel {
 	void setSelectedCustomFilter(CustomFilter filter);
 	CustomFilter getSelectedCustomFilter();
-	void setSelectedPredefinedFilter(PredefinedFilter filter);
-	PredefinedFilter getSelectedPredefinedFilter();
 	Collection<PredefinedFilter> getPredefinedFilters();
 	CustomFilter getCustomFilter();
 	void setCustomFilter(CustomFilter customFilter);
