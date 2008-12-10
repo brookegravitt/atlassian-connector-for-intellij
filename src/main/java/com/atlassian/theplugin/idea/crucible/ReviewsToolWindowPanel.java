@@ -52,6 +52,7 @@ import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
@@ -83,11 +84,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterListModel = new CrucibleFilterListModelImpl();
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 		filterListModel.setCustomFilter(crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
-		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
+		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 
 		init();
 
 		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
+		filterTree.addListener(new LocalCrucibleFilterListModelLisener());
 
 		// todo remove disabling searchbox when search implemented
 		getSearchField().setEnabled(false);
@@ -105,7 +107,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(getProject(), getCfgManager(),
 															crucibleProjectConfiguration,
-															filterListModel);
+															filterListModel, filterTree);
 
 		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
@@ -271,21 +273,26 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 
 
-		public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
-			showManualFilterPanel(false);
-
-			// clear all predefined filters from configuration (single selection support temporarily)
+		public void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters) {
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
+			// clear all predefined filters from configuration (single selection support temporarily)
 			for (int i = 0; i < confFilters.length; ++i) {
 				confFilters[i] = false;
 			}
 
 			// rember the filters selection in plugin configuration
-			confFilters[selectedPredefinedFilter.ordinal()] = true;
+			for (PredefinedFilter filter : predefinedFilters) {
+				confFilters[filter.ordinal()] = true;
+			}
 
 			// restart checker
 			refresh();
+		}
+
+		public void unselectedCustomFilter() {
+			showManualFilterPanel(false);
+			
 		}
 
 	}

@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
@@ -10,12 +9,10 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
-	private CrucibleFilterListModel listModel;
 	private PredefinedFilter filter;
 
-	CruciblePredefinedFilterTreeNode(CrucibleFilterListModel listModel, PredefinedFilter filter) {
+	CruciblePredefinedFilterTreeNode(PredefinedFilter filter) {
 		super(filter.getFilterName(), null, null);
-		this.listModel = listModel;
 		this.filter = filter;
 	}
 
@@ -28,7 +25,6 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 	}
 
 	public void onSelect() {
-		listModel.setSelectedPredefinedFilter(filter);
 	}
 
 	public PredefinedFilter getFilter() {

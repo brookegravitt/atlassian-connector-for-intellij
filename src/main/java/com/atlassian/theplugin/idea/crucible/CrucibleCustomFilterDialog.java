@@ -10,7 +10,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -57,17 +56,14 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	CrucibleCustomFilterPanel panel;
 	private CfgManager cfgManager;
 	private Project project;
-	private CrucibleFilterListModel filterModel;
 	private CustomFilterBean filter;
 	private CrucibleServerFacade crucibleServerFacade;
 	private CrucibleServerCfg serverCfg;
 
-	CrucibleCustomFilterDialog(final Project project, final CfgManager cfgManager,
-							   CrucibleFilterListModel filterModel, CustomFilterBean filter) {
+	CrucibleCustomFilterDialog(final Project project, final CfgManager cfgManager, CustomFilterBean filter) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
-		this.filterModel = filterModel;
 		this.filter = filter;
 		$$$setupUI$$$();
 
@@ -98,7 +94,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Apply");
 
 
-		setFilter((CustomFilterBean) filterModel.getSelectedCustomFilter());
+		setFilter(filter);
 
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
