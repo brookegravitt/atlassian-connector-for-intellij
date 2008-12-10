@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
@@ -11,11 +10,9 @@ import javax.swing.*;
  */
 public class CrucibleCustomFilterTreeNode  extends AbstractTreeNode {
 	private CustomFilter filter;
-	private CrucibleFilterListModel listModel;
 
-	public CrucibleCustomFilterTreeNode(CrucibleFilterListModel listModel, CustomFilter filter) {
+	public CrucibleCustomFilterTreeNode(CustomFilter filter) {
 		super("Custom Filter", null, null);
-		this.listModel = listModel;
 		this.filter = filter;
 	}
 	public String toString() {
@@ -27,7 +24,6 @@ public class CrucibleCustomFilterTreeNode  extends AbstractTreeNode {
 	}
 
 	public void onSelect() {
-		listModel.setSelectedCustomFilter(filter);
 	}
 
 	public CustomFilter getFilter() {

@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelImpl;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
@@ -66,7 +65,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
-	private CrucibleFilterListModel filterListModel = new CrucibleFilterListModelImpl();
+	private CrucibleFilterListModel filterListModel;
 	private CrucibleFilterTreeModel filterTreeModel;
 
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
@@ -81,16 +80,14 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		this.reviewListModel = reviewListModel;
-		filterListModel = new CrucibleFilterListModelImpl();
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
-		filterListModel.setCustomFilter(crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
-		filterTreeModel = new CrucibleFilterTreeModel(filterListModel,
+		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
+		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 
 		init();
-
-		filterListModel.addListener(new LocalCrucibleFilterListModelLisener());
 		filterTree.addListener(new LocalCrucibleFilterListModelLisener());
+
 
 		// todo remove disabling searchbox when search implemented
 		getSearchField().setEnabled(false);
@@ -106,17 +103,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		initToolBar();
 
-		detailsPanel = new CrucibleCustomFilterDetailsPanel(getProject(), getCfgManager(),
-															crucibleProjectConfiguration,
-															filterListModel, filterTree);
+		detailsPanel = new CrucibleCustomFilterDetailsPanel(
+				getProject(), getCfgManager(), crucibleProjectConfiguration, filterTree);
 
 		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
-
-		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
-			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
+		if (crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
+			showManualFilterPanel(true);
+		} else {
+			showManualFilterPanel(false);
 		}
-		reviewTreeModel.setGroupBy(groupBy);
 	}
 
 	private void setupReviewTree() {
@@ -293,7 +289,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		public void unselectedCustomFilter() {
 			showManualFilterPanel(false);
-			
 		}
 
 	}
