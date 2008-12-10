@@ -84,7 +84,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterListModel = new CrucibleFilterListModelImpl();
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 		filterListModel.setCustomFilter(crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
-		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
+		filterTreeModel = new CrucibleFilterTreeModel(filterListModel,
+				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 
 		init();
 
