@@ -10,6 +10,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
+import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
@@ -17,6 +18,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -33,7 +35,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 	public CrucibleCustomFilterDetailsPanel(final Project project, final CfgManager cfgManager,
 											final CrucibleProjectConfiguration crucibleCfg,
-											final CrucibleFilterListModel filterModel) {
+											final CrucibleFilterListModel filterModel,
+											final FilterTree tree) {
 		super(new BorderLayout());
 		this.filterModel = filterModel;
 		this.projectCrucibleCfg = crucibleCfg;
@@ -41,9 +44,10 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		this.cfgManager = cfgManager;
 
 		setLabelText();
-		filter = (CustomFilterBean) filterModel.getCustomFilter();
+		filter = crucibleCfg.getCrucibleFilters().getManualFilter();
 
-		filterModel.addListener(new CrucibleFilterListModelListener() {
+
+		CrucibleFilterListModelListener listener = new CrucibleFilterListModelListener() {
 			public void filterChanged() {
 			}
 
@@ -52,23 +56,29 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 				setLabelText();
 			}
 
-			public void selectedPredefinedFilter(PredefinedFilter selectedPredefinedFilter) {
+			public void selectedPredefinedFilters(Collection<PredefinedFilter> selectedPredefinedFilter) {
 			}
 
-		});
+			public void unselectedCustomFilter() {
+
+			}
+
+		};
+
+		filterModel.addListener(listener);
+		tree.addListener(listener);
 
 		editButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
 
 				CrucibleCustomFilterDialog dialog =
-						new CrucibleCustomFilterDialog(project, cfgManager, filterModel, 
+						new CrucibleCustomFilterDialog(project, cfgManager,
 								projectCrucibleCfg.getCrucibleFilters().getManualFilter());
 				dialog.show();
 				if (dialog.getExitCode() == 0 && dialog.getFilter() != null) {
 					filter = dialog.getFilter();
 					projectCrucibleCfg.getCrucibleFilters().setManualFilter(filter);
-					filterModel.setCustomFilter(filter);
 					setLabelText();
 				}
 			}
