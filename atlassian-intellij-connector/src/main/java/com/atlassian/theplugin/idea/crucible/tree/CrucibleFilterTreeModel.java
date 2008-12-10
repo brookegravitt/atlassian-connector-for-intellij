@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 
@@ -14,14 +13,11 @@ import java.util.ArrayList;
  */
 public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	private CrucibleFilterListModel filterModel;
-	private CustomFilterBean manualFilter;
 
 
-	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel, CustomFilterBean manualFilter) {
+	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel) {
 		super(new DefaultMutableTreeNode(), false);
 		this.filterModel = filterModel;
-		this.manualFilter = manualFilter;
-
 	}
 
 	@Override
@@ -53,7 +49,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 					}
 
 					CrucibleCustomFilterTreeNode n =
-							new CrucibleCustomFilterTreeNode(filterModel, manualFilter);
+							new CrucibleCustomFilterTreeNode(filterModel.getCustomFilter());
 					p.add(n);
 					return n;				
 			}

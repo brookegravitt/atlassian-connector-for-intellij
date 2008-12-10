@@ -1,35 +1,31 @@
-/**
- * Copyright (C) 2008 Atlassian
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
  * User: pmaruszak
  */
-public interface CrucibleFilterListModel {
-	void setSelectedCustomFilter(CustomFilter filter);
-	CustomFilter getSelectedCustomFilter();
-	Collection<PredefinedFilter> getPredefinedFilters();
-	CustomFilter getCustomFilter();
-	void setCustomFilter(CustomFilter customFilter);
-	void addListener(CrucibleFilterListModelListener listener);
-	void removeListener(CrucibleFilterListModelListener listener);
+public class CrucibleFilterListModel {
+	private Collection<PredefinedFilter> predefinedFilters = new ArrayList<PredefinedFilter>();
+	private CustomFilter customFilter;
 
+	public CrucibleFilterListModel(CustomFilter customFilter) {
+
+		predefinedFilters.addAll(Arrays.asList(PredefinedFilter.values()));
+		this.customFilter = customFilter;
+	}
+
+
+	public Collection<PredefinedFilter> getPredefinedFilters() {
+		return predefinedFilters;
+	}
+
+	public CustomFilter getCustomFilter() {
+		return customFilter;
+	}
 }
