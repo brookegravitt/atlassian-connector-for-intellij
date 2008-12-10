@@ -8,7 +8,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.intellij.openapi.project.Project;
@@ -25,7 +24,6 @@ import java.util.HashMap;
  * User: pmaruszak
  */
 public class CrucibleCustomFilterDetailsPanel extends JPanel {
-	private final CrucibleFilterListModel filterModel;
 	private CustomFilterBean filter;
 	private JLabel label = new JLabel();
 	private JButton editButton = new JButton("Edit");
@@ -35,16 +33,14 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 	public CrucibleCustomFilterDetailsPanel(final Project project, final CfgManager cfgManager,
 											final CrucibleProjectConfiguration crucibleCfg,
-											final CrucibleFilterListModel filterModel,
 											final FilterTree tree) {
 		super(new BorderLayout());
-		this.filterModel = filterModel;
 		this.projectCrucibleCfg = crucibleCfg;
 		this.project = project;
 		this.cfgManager = cfgManager;
 
-		setLabelText();
 		filter = crucibleCfg.getCrucibleFilters().getManualFilter();
+		setLabelText();
 
 
 		CrucibleFilterListModelListener listener = new CrucibleFilterListModelListener() {
@@ -65,7 +61,6 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 		};
 
-		filterModel.addListener(listener);
 		tree.addListener(listener);
 
 		editButton.addActionListener(new ActionListener() {
@@ -109,7 +104,11 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 				if (key.toString().equals("Server")) {
 					ServerId serverId = new ServerId(map.get(key));
 					ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-					html += "<tr><td>" + key + ":</td><td>" + server.getName() + "</td></tr>";
+						html += "<tr><td>" + key + ":</td><td>"
+								// server is null when component is initialized by the PICO for the first time
+								// todo force cfgManager to read configuration earlier
+								+ (server != null ? server.getName() : "")
+								+ "</td></tr>";
 				} else {
 					html += "<tr><td>" + key + ":</td><td>" + map.get(key) + "</td></tr>";
 				}
