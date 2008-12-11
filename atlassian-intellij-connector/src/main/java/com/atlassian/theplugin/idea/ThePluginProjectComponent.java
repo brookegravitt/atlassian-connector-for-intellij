@@ -218,7 +218,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
+//			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
 
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 			//@todo add configuration restore here
