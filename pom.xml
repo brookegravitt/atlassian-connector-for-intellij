@@ -342,6 +342,7 @@
 					<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
 					<targetPercentage>60%</targetPercentage>
 					<jdkLevel>${jdkLevel}</jdkLevel>
+					<includesTestSourceRoots>false</includesTestSourceRoots>
 					<excludes>
 						<exclude>**/thirdparty/**/*.*</exclude>
 						<exclude>**/soap/xfire/**/*.*</exclude>
