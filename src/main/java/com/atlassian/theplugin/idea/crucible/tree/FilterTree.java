@@ -139,7 +139,9 @@ public class FilterTree extends JTree {
 		}
 
 		// create selected TreePath for CustomFilter (single custom filter support)
-		if (crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
+		if (crucibleConfiguration != null 
+				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
+				&& crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
 			for (int i = rootNode.getChildCount() - 1; i >= 0; --i) {
 				if (rootNode.getChildAt(i) instanceof CrucibleCustomFilterTreeNode) {
 					CrucibleCustomFilterTreeNode node = (CrucibleCustomFilterTreeNode) rootNode.getChildAt(i);
