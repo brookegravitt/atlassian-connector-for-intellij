@@ -61,10 +61,6 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		expandTree();
 	}
 
-	public void updateUI() {
-		System.out.println("Tree updateUI event");
-	}
-
 	private void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
