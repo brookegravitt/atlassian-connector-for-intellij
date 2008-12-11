@@ -23,7 +23,7 @@ import java.util.Collection;
 /**
  * User: pmaruszak
  */
-public interface CrucibleFilterListModelListener {
+public interface CrucibleFilterSelectionListener {
 	void filterChanged();
 
 	void selectedCustomFilter(CustomFilter customFilter);

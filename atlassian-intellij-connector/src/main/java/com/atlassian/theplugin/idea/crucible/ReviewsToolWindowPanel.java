@@ -22,12 +22,13 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
@@ -86,7 +87,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 
 		init();
-		filterTree.addListener(new LocalCrucibleFilterListModelLisener());
+		filterTree.addSelectionListener(new LocalCrucibleFilterListModelLisener());
 
 
 		// todo remove disabling searchbox when search implemented
@@ -105,6 +106,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
 				getProject(), getCfgManager(), crucibleProjectConfiguration, filterTree);
+		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
+			public void customFilterChanged(CustomFilter customFilter) {
+				refresh();
+			}
+		});
 
 		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
@@ -262,7 +268,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 	}
 
-	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterListModelListener {
+	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterSelectionListener {
 		public void filterChanged() {
 
 		}
