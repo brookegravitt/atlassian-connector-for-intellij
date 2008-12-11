@@ -57,6 +57,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
+//todo PL-947
 public class CrucibleTableToolWindowPanel extends JPanel implements CrucibleStatusListener,
 		TableItemSelectedListener<ReviewAdapter> {
 	public static final String PLACE_PREFIX = CrucibleTableToolWindowPanel.class.getSimpleName();
