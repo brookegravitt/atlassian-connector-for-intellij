@@ -233,7 +233,8 @@ private void doRunCrucible() {
 		}
 
 		// dispatch to the status checker listeners
-		// todo it should be removed after switching all listeners to the new review model
+		//todo PL-947
+		// todo it should be removed after switching all listeners (review notifier) to the new review model
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				synchronized (listenerList) {
