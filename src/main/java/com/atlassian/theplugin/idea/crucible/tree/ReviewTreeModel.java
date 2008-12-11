@@ -165,7 +165,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewAdded(ReviewAdapter review) {
-			System.out.println("review added: " + review.getPermId().getId());
+//			System.out.println("review added: " + review.getPermId().getId());
 
 //			fireTreeChanged(getRoot());
 			treeChanged = true;
@@ -173,7 +173,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewRemoved(ReviewAdapter review) {
-			System.out.println("review removed: " + review.getPermId().getId());
+//			System.out.println("review removed: " + review.getPermId().getId());
 
 //			fireTreeChanged(getRoot());
 			treeChanged = true;
@@ -181,7 +181,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewChangedWithoutFiles(ReviewAdapter review) {
-			System.out.println("review changed without files: " + review.getPermId().getId());
+//			System.out.println("review changed without files: " + review.getPermId().getId());
 
 //			fireTreeChanged(getRoot());
 			treeChanged = true;
@@ -189,7 +189,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewListUpdateStarted(ServerId serverId) {
-			System.out.println("reviews update started");
+//			System.out.println("reviews update started");
 
 			// reset tree state
 			treeChanged = false;
@@ -197,7 +197,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		@Override
 		public void reviewListUpdateFinished(ServerId serverId) {
-			System.out.println("reviews updated finished");
+//			System.out.println("reviews updated finished");
 
 			if (treeChanged) {
 				// draw entire tree
