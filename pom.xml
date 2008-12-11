@@ -349,13 +349,13 @@
 					</excludes>
 				</configuration>
 				<executions>
-					<execution>
+					<!--execution>
 						<phase>pre-site</phase>
 						<goals>
 							<goal>instrument</goal>
 							<goal>aggregate</goal>
 						</goals>
-					</execution>
+					</execution-->
 				</executions>
 			</plugin>
 			<plugin>
