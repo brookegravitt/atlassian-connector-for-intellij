@@ -2,15 +2,18 @@
 	<version>
 		<number>${project.version}, SVN:${buildNumber}</number>
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
-        <releaseNotes><![CDATA[<html><body><p>Atlassian is delighted to present <b>version 2.0 Beta 8</b> of the <b>Atlassian IntelliJ Connector</b>. For this release, we have continued our drive to enhance the the connector's Issues tab. </p>
-                                <p>You can nowa <b>group the JIRA issues by project, type, status, priority or date last updated</b>. In the heading for each group, the connector displays the number of issues in the group. If an issue has subtasks, they will appear under the issue and you can collapse or expand them too.</p>
+        <releaseNotes><![CDATA[
+        <html><body>
+        <p>
+        With pleasure, Atlassian presents version <b>2.0 Beta 9</b> of the Atlassian IntelliJ Connector.
+		In this iteration we have focused on the new connector's Reviews tab. Your Crucible filters are shown in a tree structure on the left of the tab,
+		with the reviews for the selected filter shown on the right.
+        </p>
+        <p>You can now <b>group the reviews by author, state, project and server </b>. In the heading for each group, the connector displays the number of reviews in the group.
+        </p>
 
-                                <p>Do you want quick access to an issue? Just type the issue key into the search box at top right of the Issues tab. The connector will display matching issues as you type.</p>
+        <p>The custom filter dialogue box is now much prettier and easier to use.</p>
 
-                                <p>The custom filter dialogue box is now much prettier and easier to use.</p>
-
-                                <p>Take a look at the full list of improvements and bug fixes below.</p>
-                                <p>Awsome things <ul><li>Search JIRA action opens given issue in IDE editor</li></ul>
 
                                                                 </body></html>
         ]]></releaseNotes>
