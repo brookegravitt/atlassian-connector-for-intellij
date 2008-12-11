@@ -34,7 +34,6 @@ import java.util.ArrayList;
 public class ReviewTreeModel extends DefaultTreeModel {
 
 	private CrucibleReviewListModel reviewListModel;
-	private boolean treeInitialized = false;
 
 	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
@@ -162,52 +161,48 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	 */
 	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
 
+		private boolean treeChanged = false;
+
 		@Override
 		public void reviewAdded(ReviewAdapter review) {
 			System.out.println("review added: " + review.getPermId().getId());
 
-			// todo add implementation
-
-			if (treeInitialized) {
-				fireTreeChanged(getRoot());
-			}
+//			fireTreeChanged(getRoot());
+			treeChanged = true;
 		}
 
 		@Override
 		public void reviewRemoved(ReviewAdapter review) {
 			System.out.println("review removed: " + review.getPermId().getId());
 
-			// todo add implementation
-
-			if (treeInitialized) {
-				fireTreeChanged(getRoot());
-			}
+//			fireTreeChanged(getRoot());
+			treeChanged = true;
 		}
 
 		@Override
 		public void reviewChangedWithoutFiles(ReviewAdapter review) {
 			System.out.println("review changed without files: " + review.getPermId().getId());
 
-			// todo add implementation
-
-			if (treeInitialized) {
-				fireTreeChanged(getRoot());
-			}
+//			fireTreeChanged(getRoot());
+			treeChanged = true;
 		}
 
 		@Override
 		public void reviewListUpdateStarted(ServerId serverId) {
 			System.out.println("reviews update started");
+
+			// reset tree state
+			treeChanged = false;
 		}
 
 		@Override
 		public void reviewListUpdateFinished(ServerId serverId) {
 			System.out.println("reviews updated finished");
 
-			if (!treeInitialized) {
+			if (treeChanged) {
 				// draw entire tree
 				fireTreeChanged(getRoot());
-				treeInitialized = true;
+				treeChanged = false;
 			}
 		}
 
