@@ -342,20 +342,19 @@
 					<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
 					<targetPercentage>60%</targetPercentage>
 					<jdkLevel>${jdkLevel}</jdkLevel>
-					<includesTestSourceRoots>false</includesTestSourceRoots>
 					<excludes>
 						<exclude>**/thirdparty/**/*.*</exclude>
 						<exclude>**/soap/xfire/**/*.*</exclude>
 					</excludes>
 				</configuration>
 				<executions>
-					<!--execution>
+					<execution>
 						<phase>pre-site</phase>
 						<goals>
 							<goal>instrument</goal>
 							<goal>aggregate</goal>
 						</goals>
-					</execution-->
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
