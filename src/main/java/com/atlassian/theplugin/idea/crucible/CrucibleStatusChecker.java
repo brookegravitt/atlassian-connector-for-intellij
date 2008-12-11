@@ -114,9 +114,9 @@ private void doRunCrucible() {
 
 		CustomFilterBean manualFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
 
-		for (CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
+		for (final CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
 
-			List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
+			final List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
 			boolean communicationFailed = false;
 
 			// retrieve reviews for predefined filters
@@ -224,7 +224,11 @@ private void doRunCrucible() {
 
 			// update global list model for processed server (and notify model listeners)
 			if (!communicationFailed) {
-				reviewListModel.updateReviews(server, allServerReviews);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						reviewListModel.updateReviews(server, allServerReviews);
+					}
+				});
 			}
 		}
 
