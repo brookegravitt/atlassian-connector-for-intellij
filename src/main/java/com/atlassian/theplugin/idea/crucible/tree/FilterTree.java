@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -20,7 +20,7 @@ import java.util.HashSet;
  */
 public class FilterTree extends JTree {
 	private CrucibleProjectConfiguration crucibleConfiguration;
-	private Collection<CrucibleFilterListModelListener> listeners = new ArrayList<CrucibleFilterListModelListener>();
+	private Collection<CrucibleFilterSelectionListener> listeners = new ArrayList<CrucibleFilterSelectionListener>();
 
 	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleProjectConfiguration crucibleConfiguration) {
 		super(filterTreeModel);
@@ -68,18 +68,18 @@ public class FilterTree extends JTree {
 		});
 	}
 
-	public void addListener(CrucibleFilterListModelListener listener) {
+	public void addSelectionListener(CrucibleFilterSelectionListener listener) {
 		if (!listeners.contains(listener)) {
 			listeners.add(listener);
 		}
 	}
 
-	public void removeListener(CrucibleFilterListModelListener listener) {
+	public void removeSelectionListener(CrucibleFilterSelectionListener listener) {
 		listeners.remove(listener);
 	}
 
 	private void fireSelectedPredefinedFilter(Collection<PredefinedFilter> filters) {
-		for (CrucibleFilterListModelListener listener : listeners) {
+		for (CrucibleFilterSelectionListener listener : listeners) {
 			listener.selectedPredefinedFilters(filters);
 		}
 	}
@@ -87,12 +87,12 @@ public class FilterTree extends JTree {
 	private void fireSelectedCustomFilter(CustomFilter filter) {
 		if (filter != null) {
 			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
-			for (CrucibleFilterListModelListener listener : listeners) {
+			for (CrucibleFilterSelectionListener listener : listeners) {
 				listener.selectedCustomFilter(filter);
 			}
 		} else {
 			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
-			for (CrucibleFilterListModelListener listener : listeners) {
+			for (CrucibleFilterSelectionListener listener : listeners) {
 				listener.unselectedCustomFilter();
 			}
 		}
