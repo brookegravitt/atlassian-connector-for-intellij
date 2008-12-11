@@ -8,7 +8,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModelListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.intellij.openapi.project.Project;
 
@@ -17,6 +18,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -30,6 +32,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CrucibleProjectConfiguration projectCrucibleCfg;
 	private Project project;
 	private CfgManager cfgManager;
+	private FilterTree tree;
+	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
 	public CrucibleCustomFilterDetailsPanel(final Project project, final CfgManager cfgManager,
 											final CrucibleProjectConfiguration crucibleCfg,
@@ -38,12 +42,35 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		this.projectCrucibleCfg = crucibleCfg;
 		this.project = project;
 		this.cfgManager = cfgManager;
+		this.tree = tree;
 
 		filter = crucibleCfg.getCrucibleFilters().getManualFilter();
+		init();
+	}
+
+	private void init() {
 		setLabelText();
 
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		buttonPanel.add(editButton);
+		JScrollPane scrollPane = new JScrollPane(label, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		CrucibleFilterListModelListener listener = new CrucibleFilterListModelListener() {
+		scrollPane.getViewport().setBackground(label.getBackground());
+
+		scrollPane.setWheelScrollingEnabled(true);
+		add(scrollPane, BorderLayout.CENTER);
+		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
+
+		this.setBorder(border);
+
+		this.add(buttonPanel, BorderLayout.SOUTH);
+
+		initListeners();
+	}
+
+	private void initListeners() {
+		CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListener() {
 			public void filterChanged() {
 			}
 
@@ -56,44 +83,32 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			}
 
 			public void unselectedCustomFilter() {
-
 			}
-
 		};
 
-		tree.addListener(listener);
+		tree.addSelectionListener(listener);
 
 		editButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
 
-				CrucibleCustomFilterDialog dialog =
-						new CrucibleCustomFilterDialog(project, cfgManager,
-								projectCrucibleCfg.getCrucibleFilters().getManualFilter());
+				CrucibleCustomFilterDialog dialog = new CrucibleCustomFilterDialog(
+						project, cfgManager, projectCrucibleCfg.getCrucibleFilters().getManualFilter());
+
 				dialog.show();
+
 				if (dialog.getExitCode() == 0 && dialog.getFilter() != null) {
 					filter = dialog.getFilter();
 					projectCrucibleCfg.getCrucibleFilters().setManualFilter(filter);
 					setLabelText();
+					// refresh reviews panel
+					for (CustomFilterChangeListener listener : listeners) {
+						listener.customFilterChanged(filter);
+					}
+
 				}
 			}
 		});
-
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));		
-		buttonPanel.add(editButton);
-		JScrollPane scrollPane = new JScrollPane(label, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		scrollPane.getViewport().setBackground(label.getBackground());
-		
-		scrollPane.setWheelScrollingEnabled(true);
-		add(scrollPane, BorderLayout.CENTER);
-		TitledBorder border = BorderFactory.createTitledBorder("Custom Filter");
-
-		this.setBorder(border);
-
-
-		this.add(buttonPanel, BorderLayout.SOUTH);
 	}
 
 	private void setLabelText() {
@@ -116,5 +131,15 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			html += "</table></body></html>";
 			label.setText(html);
 		}
+	}
+
+	public void addCustomFilterChangeListener(CustomFilterChangeListener listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	public void removeCustomFilterChangeListener(CustomFilterChangeListener listener) {
+		listeners.remove(listener);
 	}
 }
