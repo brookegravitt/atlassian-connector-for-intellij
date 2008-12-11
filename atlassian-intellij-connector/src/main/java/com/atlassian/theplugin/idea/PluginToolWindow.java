@@ -157,6 +157,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
 								break;
+							//todo PL-947
 							case CRUCIBLE_OLD:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 								break;
@@ -206,6 +207,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
 						contentManager.addContent(content);
 						break;
+					//todo PL-947
 					case CRUCIBLE_OLD:
 						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 						contentManager.addContent(content);
@@ -312,6 +314,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
 								break;
+							//todo PL-947 
 							case CRUCIBLE_OLD:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
 								break;
@@ -395,7 +398,7 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		BAMBOO("Builds"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues"),
-		CRUCIBLE_OLD("Old Crucible Panel");
+		CRUCIBLE_OLD("Old Crucible Panel");	//todo PL-947
 		
 		private final String title;
 

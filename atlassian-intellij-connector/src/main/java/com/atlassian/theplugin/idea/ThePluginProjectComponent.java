@@ -199,6 +199,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// DependencyValidationManager.getHolder(project, "", )
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			//todo PL-947
 			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
 					projectConfigurationBean, crucibleStatusChecker);
 
@@ -246,6 +247,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// setup Crucible status checker and listeners
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(crucibleStatusChecker);
+			//todo PL-947
 			crucibleStatusChecker.registerListener(crucibleToolWindowPanel);
 			// create crucible status bar icon
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
@@ -326,6 +328,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return content;
 	}
 
+	//todo PL-947
 	public Content createCrucibleContentOld() {
 		PeerFactory peerFactory = PeerFactory.getInstance();
 
@@ -386,6 +389,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
+			//todo PL-947
 			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
