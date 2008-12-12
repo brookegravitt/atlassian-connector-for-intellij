@@ -96,8 +96,8 @@ public class FilterTree extends JTree {
 			CustomFilterBean filterBean = new CustomFilterBean();
 			filter = filterBean;
 			crucibleConfiguration.getCrucibleFilters().setManualFilter(filterBean);
-			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);	
 		}
+		crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
 		for (CrucibleFilterSelectionListener listener : listeners) {
 				listener.selectedCustomFilter(filter);
 		}
