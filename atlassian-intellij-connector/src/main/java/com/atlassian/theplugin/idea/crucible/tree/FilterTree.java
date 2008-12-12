@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -91,12 +91,7 @@ public class FilterTree extends JTree {
 		}
 	}
 
-	private void fireSelectedCustomFilter(CustomFilter filter) {
-		if (filter == null) {
-			CustomFilterBean filterBean = new CustomFilterBean();
-			filter = filterBean;
-			crucibleConfiguration.getCrucibleFilters().setManualFilter(filterBean);
-		}
+	private void fireSelectedCustomFilter(@NotNull CustomFilter filter) {
 		crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
 		for (CrucibleFilterSelectionListener listener : listeners) {
 				listener.selectedCustomFilter(filter);
@@ -104,9 +99,7 @@ public class FilterTree extends JTree {
 	}
 
 	private void fireUnselectedCustomFilter() {
-		if (crucibleConfiguration.getCrucibleFilters().getManualFilter() != null) {
-			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
-		}
+		crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
 		for (CrucibleFilterSelectionListener listener : listeners) {
 			listener.unselectedCustomFilter();
 		}
