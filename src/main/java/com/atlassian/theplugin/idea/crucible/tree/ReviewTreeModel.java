@@ -169,12 +169,12 @@ public class ReviewTreeModel extends DefaultTreeModel {
 //			System.out.println("review added: " + review.getPermId().getId());
 
 //			fireTreeChanged(getRoot());
-//			treeChanged = true;
+			treeChanged = true;
 
-			if (treeInitialized) {
-				DefaultMutableTreeNode parentNode = findParentNode(review);
-				fireTreeChanged(parentNode);
-			}
+//			if (treeInitialized) {
+//				DefaultMutableTreeNode parentNode = findParentNode(review);
+//				fireTreeChanged(parentNode);
+//			}
 		}
 
 		private DefaultMutableTreeNode findParentNode(ReviewAdapter review) {
