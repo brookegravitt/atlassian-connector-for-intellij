@@ -79,12 +79,25 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		anyUser.setDisplayName("Any");
 		anyUser.setUserName("_any_");
 
+		projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
+		projectComboBox.setSelectedIndex(0);
+		authorComboBox.addItem(new UserComboBoxItem(anyUser));
+		authorComboBox.setSelectedIndex(0);
+		moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
+		moderatorComboBox.setSelectedIndex(0);
+		creatorComboBox.addItem(new UserComboBoxItem(anyUser));
+		creatorComboBox.setSelectedIndex(0);
+		reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+		reviewerComboBox.setSelectedIndex(0);
+
 		reviewerStatusComboBox.addItem("Any");
 		reviewerStatusComboBox.addItem("Incomplete");
 		reviewerStatusComboBox.addItem("Complete");
+		reviewerStatusComboBox.setSelectedIndex(0);
 
 		matchRoleComboBox.addItem("Any");
 		matchRoleComboBox.addItem("All");
+		matchRoleComboBox.setSelectedIndex(0);
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
@@ -275,6 +288,36 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void updateServerRelatedCombos(List<com.atlassian.theplugin.commons.crucible.api.model.Project> projects, List<User> users) {
+
+		if (filter.getState() != null) {
+			for (String state : filter.getState()) {
+				State value = State.fromValue(state);
+				switch (value) {
+					case APPROVAL:
+						pendingApprovalCheckBox.setSelected(true);
+						break;
+					case DRAFT:
+						draftCheckBox.setSelected(true);
+						break;
+					case REVIEW:
+						underReviewCheckBox.setSelected(true);
+						break;
+					case SUMMARIZE:
+						summarizeCheckBox.setSelected(true);
+						break;
+					case CLOSED:
+						closedCheckBox.setSelected(true);
+						break;
+					case REJECTED:
+						rejectedCheckBox.setSelected(true);
+						break;
+					case ABANDONED:
+						abandonedCheckBox.setSelected(true);
+						break;
+				}
+			}
+		}
+		
 		projectComboBox.removeAllItems();
 		projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
 		authorComboBox.removeAllItems();
@@ -321,34 +364,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		rejectedCheckBox.setSelected(false);
 		reviewNeedsFixingCheckBox.setSelected(false);
 
-		if (filter.getState() != null) {
-			for (String state : filter.getState()) {
-				State value = State.fromValue(state);
-				switch (value) {
-					case APPROVAL:
-						pendingApprovalCheckBox.setSelected(true);
-						break;
-					case DRAFT:
-						draftCheckBox.setSelected(true);
-						break;
-					case REVIEW:
-						underReviewCheckBox.setSelected(true);
-						break;
-					case SUMMARIZE:
-						summarizeCheckBox.setSelected(true);
-						break;
-					case CLOSED:
-						closedCheckBox.setSelected(true);
-						break;
-					case REJECTED:
-						rejectedCheckBox.setSelected(true);
-						break;
-					case ABANDONED:
-						abandonedCheckBox.setSelected(true);
-						break;
-				}
-			}
-		}
 
 	}
 
