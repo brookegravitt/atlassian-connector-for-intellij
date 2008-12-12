@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atlassian.connector</groupId>
 		<artifactId>atlassian-connector-parent-pom</artifactId>
-		<version>2.1.0</version>
+		<version>2.1.1-SNAPSHOT</version>
 	</parent>
 	<name>Atlassian Intellij IDEA Plugin</name>
 	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
@@ -24,7 +24,7 @@
 		<dependency>
 			<groupId>com.atlassian.connector</groupId>
 			<artifactId>atlassian-connector-commons</artifactId>
-			<version>2.0.0</version>
+			<version>2.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ddsteps</groupId>
@@ -348,13 +348,13 @@
 					</excludes>
 				</configuration>
 				<executions>
-					<!--execution>
+					<execution>
 						<phase>pre-site</phase>
 						<goals>
 							<goal>instrument</goal>
 							<goal>aggregate</goal>
 						</goals>
-					</execution-->
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>
