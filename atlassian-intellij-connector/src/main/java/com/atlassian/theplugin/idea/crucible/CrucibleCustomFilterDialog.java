@@ -289,6 +289,15 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	private void updateServerRelatedCombos(List<com.atlassian.theplugin.commons.crucible.api.model.Project> projects, List<User> users) {
 
+		draftCheckBox.setSelected(false);
+		pendingApprovalCheckBox.setSelected(false);
+		underReviewCheckBox.setSelected(false);
+		summarizeCheckBox.setSelected(false);
+		closedCheckBox.setSelected(false);
+		abandonedCheckBox.setSelected(false);
+		rejectedCheckBox.setSelected(false);
+		reviewNeedsFixingCheckBox.setSelected(false);
+
 		if (filter.getState() != null) {
 			for (String state : filter.getState()) {
 				State value = State.fromValue(state);
@@ -355,14 +364,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setActiveUser(filter.getModerator(), moderatorComboBox);
 		setActiveUser(filter.getReviewer(), reviewerComboBox);
 
-		draftCheckBox.setSelected(false);
-		pendingApprovalCheckBox.setSelected(false);
-		underReviewCheckBox.setSelected(false);
-		summarizeCheckBox.setSelected(false);
-		closedCheckBox.setSelected(false);
-		abandonedCheckBox.setSelected(false);
-		rejectedCheckBox.setSelected(false);
-		reviewNeedsFixingCheckBox.setSelected(false);
 
 
 	}
