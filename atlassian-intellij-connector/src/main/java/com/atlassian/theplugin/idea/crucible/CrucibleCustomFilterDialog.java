@@ -15,6 +15,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Action;
@@ -60,7 +61,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private CrucibleServerFacade crucibleServerFacade;
 	private CrucibleServerCfg serverCfg;
 
-	CrucibleCustomFilterDialog(final Project project, final CfgManager cfgManager, CustomFilterBean filter) {
+	CrucibleCustomFilterDialog(final Project project, final CfgManager cfgManager, @NotNull CustomFilterBean filter) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -93,12 +94,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
+		setFilter(filter);
 
-		if (filter != null) {
-			setFilter(filter);
-		} else {
-			setFilter(new CustomFilterBean());
-		}
+
 
 
 		serverComboBox.addActionListener(new ActionListener() {
