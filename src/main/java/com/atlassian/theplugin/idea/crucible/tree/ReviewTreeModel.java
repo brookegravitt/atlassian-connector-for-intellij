@@ -244,7 +244,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		public void reviewListUpdateFinished(ServerId serverId) {
 //			System.out.println("reviews updated finished");
 
-			if (treeChanged || ! treeInitialized) {
+			if (treeChanged || !treeInitialized) {
 				// draw entire tree
 				fireTreeChanged(getRoot());
 				treeChanged = false;
