@@ -94,7 +94,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Apply");
 
 
-		setFilter(filter);
+		if (filter != null) {
+			setFilter(filter);
+		} else {
+			setFilter(new CustomFilterBean());
+		}
+
 
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
