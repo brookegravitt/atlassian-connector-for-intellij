@@ -162,13 +162,58 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
 
 		private boolean treeChanged = false;
+		private boolean treeInitialized = false;
 
 		@Override
 		public void reviewAdded(ReviewAdapter review) {
 //			System.out.println("review added: " + review.getPermId().getId());
 
 //			fireTreeChanged(getRoot());
-			treeChanged = true;
+//			treeChanged = true;
+
+			if (treeInitialized) {
+				DefaultMutableTreeNode parentNode = findParentNode(review);
+				fireTreeChanged(parentNode);
+			}
+		}
+
+		private DefaultMutableTreeNode findParentNode(ReviewAdapter review) {
+			DefaultMutableTreeNode root = getRoot();
+
+			switch (groupBy) {
+
+				case AUTHOR:
+					for (int i = 0; i < getChildCount(root); ++i) {
+						Object node = getChild(root, i);
+						if (node instanceof CrucibleReviewAuthorTreeNode) {
+							CrucibleReviewAuthorTreeNode parent = (CrucibleReviewAuthorTreeNode) node;
+							if (parent.getAuthor().equals(review.getAuthor())) {
+								return parent;
+							}
+						}
+					}
+					break;
+				case PROJECT:
+					break;
+				case SERVER:
+					break;
+				case STATE:
+					for (int i = 0; i < getChildCount(root); ++i) {
+						Object node = getChild(root, i);
+						if (node instanceof CrucibleReviewStateTreeNode) {
+							CrucibleReviewStateTreeNode parent = (CrucibleReviewStateTreeNode) node;
+							if (parent.getCrucibleState().equals(review.getState())) {
+								return parent;
+							}
+						}
+					}
+					break;
+				case NONE:
+				default:
+					break;
+			}
+
+			return root;
 		}
 
 		@Override
@@ -199,10 +244,11 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		public void reviewListUpdateFinished(ServerId serverId) {
 //			System.out.println("reviews updated finished");
 
-			if (treeChanged) {
+			if (treeChanged || ! treeInitialized) {
 				// draw entire tree
 				fireTreeChanged(getRoot());
 				treeChanged = false;
+				treeInitialized = true;
 			}
 		}
 
