@@ -34,6 +34,7 @@ public class JIRAAssigneeBean extends JIRAUserBean {
 		this(other.getMap());
 	}
 
+	@Override
 	public String getQueryStringFragment() {
 		return "assignee=" + getValue();
 	}
