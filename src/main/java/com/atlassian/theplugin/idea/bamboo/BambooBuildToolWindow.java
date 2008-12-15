@@ -43,7 +43,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
@@ -78,7 +77,7 @@ public class BambooBuildToolWindow {
 
 		Task.Backgroundable buildLogTask = new Task.Backgroundable(project, "Retrieving Build Log", false) {
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 //				ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 //					public void run() {
 //
@@ -149,8 +148,7 @@ public class BambooBuildToolWindow {
 			console = builder.getConsole();
 			consoleMap.put(contentKey, console);
 
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(console.getComponent(), contentKey, true);
+			content = contentManager.getFactory().createContent(console.getComponent(), contentKey, true);
 			content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			contentManager.addContent(content);

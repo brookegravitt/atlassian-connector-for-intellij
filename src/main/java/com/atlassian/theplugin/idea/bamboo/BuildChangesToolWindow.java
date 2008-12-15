@@ -35,9 +35,9 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
@@ -93,21 +93,21 @@ public final class BuildChangesToolWindow {
 			commitDetailsToolWindow.setIcon(Constants.BAMBOO_COMMITS_ICON);
 		}
 
-		Content content = commitDetailsToolWindow.getContentManager().findContent(contentKey);
+		final ContentManager contentManager = commitDetailsToolWindow.getContentManager();
+		Content content = contentManager.findContent(contentKey);
 
 		if (content == null) {
 			CommitDetailsPanel detailsPanel = new CommitDetailsPanel(project, contentKey, commits);
 			panelMap.remove(contentKey);
 			panelMap.put(contentKey, detailsPanel);
 
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
+			content = contentManager.getFactory().createContent(detailsPanel, contentKey, true);
 			content.setIcon(Constants.BAMBOO_COMMITS_ICON);
 			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-			commitDetailsToolWindow.getContentManager().addContent(content);
+			contentManager.addContent(content);
 		}
 
-		commitDetailsToolWindow.getContentManager().setSelectedContent(content);
+		contentManager.setSelectedContent(content);
 		commitDetailsToolWindow.show(null);
 	}
 

@@ -26,8 +26,8 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 
 import java.util.HashMap;
 
@@ -61,7 +61,8 @@ public final class StackTraceConsole {
 			consoleToolWindow.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 		}
 
-		Content content = consoleToolWindow.getContentManager().findContent(contentKey);
+		final ContentManager contentManager = consoleToolWindow.getContentManager();
+		Content content = contentManager.findContent(contentKey);
 
 		if (content != null) {
 			console = consoleMap.get(contentKey);
@@ -72,13 +73,12 @@ public final class StackTraceConsole {
 			consoleMap.remove(contentKey);
 			consoleMap.put(contentKey, console);
 
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(console.getComponent(), contentKey, true);
+			content = contentManager.getFactory().createContent(console.getComponent(), contentKey, true);
 			content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-			consoleToolWindow.getContentManager().addContent(content);
+			contentManager.addContent(content);
 		}
-		consoleToolWindow.getContentManager().setSelectedContent(content);
+		contentManager.setSelectedContent(content);
 		consoleToolWindow.show(null);
 
 		return console;

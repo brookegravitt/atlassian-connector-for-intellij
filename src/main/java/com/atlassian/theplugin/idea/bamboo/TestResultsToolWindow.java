@@ -41,7 +41,6 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.ui.content.Content;
@@ -106,8 +105,7 @@ public final class TestResultsToolWindow {
 			panelMap.remove(contentKey);
 			panelMap.put(contentKey, detailsPanel);
 
-			PeerFactory peerFactory = PeerFactory.getInstance();
-			content = peerFactory.getContentFactory().createContent(detailsPanel, contentKey, true);
+			content = testDetailsToolWindow.getContentManager().getFactory().createContent(detailsPanel, contentKey, true);
 			content.setIcon(Constants.BAMBOO_TRACE_ICON);
 			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			testDetailsToolWindow.getContentManager().addContent(content);
@@ -223,9 +221,30 @@ public final class TestResultsToolWindow {
 				// no-op for packages
 			}
 
+			@Override
 			public boolean createTestConfiguration(RunConfiguration configuration) {
-				// bummer, JUnit does not support testing the whole package
-				return false;
+				if (configuration != null) {
+					JUnitConfiguration conf = (JUnitConfiguration) configuration;
+					conf.getPersistentData().TEST_OBJECT =  JUnitConfiguration.TEST_PACKAGE;
+					conf.getPersistentData().PACKAGE_NAME = toString();
+				}
+				return true;
+			}
+		}
+
+		private class AllTestsNode extends PackageNode {
+			public AllTestsNode(final int totalTests, final int failedTests) {
+				super("All Tests", totalTests, failedTests);
+			}
+
+			@Override
+			public boolean createTestConfiguration(RunConfiguration configuration) {
+				if (configuration != null) {
+					JUnitConfiguration conf = (JUnitConfiguration) configuration;
+					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+					conf.getPersistentData().PACKAGE_NAME = "";
+				}
+				return true;
 			}
 		}
 
@@ -245,6 +264,7 @@ public final class TestResultsToolWindow {
 				}
 			}
 
+			@Override
 			public boolean createTestConfiguration(RunConfiguration configuration) {
 				PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 				if (cls == null) {
@@ -287,6 +307,7 @@ public final class TestResultsToolWindow {
 				}
 			}
 
+			@Override
 			public boolean createTestConfiguration(RunConfiguration configuration) {
 				PsiMethod m = getMethod();
 
@@ -339,7 +360,7 @@ public final class TestResultsToolWindow {
 		}
 
 		private JTree createTestTree() {
-			NonLeafNode root = new PackageNode("All Tests",
+			NonLeafNode root = new AllTestsNode(
 					failedTests.size() + succeededTests.size(), failedTests.size());
 
 			Map<String, NonLeafNode> packages = new LinkedHashMap<String, NonLeafNode>();
