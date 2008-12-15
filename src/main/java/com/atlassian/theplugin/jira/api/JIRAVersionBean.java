@@ -19,7 +19,7 @@ package com.atlassian.theplugin.jira.api;
 import java.util.Map;
 
 public class JIRAVersionBean extends AbstractJIRAConstantBean {
-	protected boolean isReleased = false;
+	protected boolean isReleased;
 
 	public JIRAVersionBean(Map<String, String> map) {
 		super(map);

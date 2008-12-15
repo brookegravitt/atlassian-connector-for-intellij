@@ -20,7 +20,6 @@ import java.util.Map;
 
 public class JIRAReporterBean extends JIRAUserBean {
 	public JIRAReporterBean() {
-		super();
 	}
 
 	public JIRAReporterBean(long id, String name, String value) {
@@ -35,6 +34,7 @@ public class JIRAReporterBean extends JIRAUserBean {
 		this(other.getMap());
 	}
 
+	@Override
 	public String getQueryStringFragment() {
 		return "reporter=" + getValue();
 	}
