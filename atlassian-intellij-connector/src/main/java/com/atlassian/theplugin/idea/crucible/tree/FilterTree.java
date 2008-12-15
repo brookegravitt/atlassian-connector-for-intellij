@@ -44,7 +44,6 @@ public class FilterTree extends JTree {
 						new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1);
 
 				CustomFilter customFilter = null;
-				boolean customFilterSelected = false;
 
 				TreePath[] selectionPaths = getSelectionPaths();
 
@@ -59,17 +58,17 @@ public class FilterTree extends JTree {
 							} else if (selectionPath.getLastPathComponent() instanceof CrucibleCustomFilterTreeNode) {
 								customFilter = ((CrucibleCustomFilterTreeNode)
 										selectionPath.getLastPathComponent()).getFilter();
-								customFilterSelected = true;
 							}
 						}
 					}
+				}
+				
+				fireSelectedPredefinedFilter(predefinedFilters);
 
-					fireSelectedPredefinedFilter(predefinedFilters);
-					if (customFilterSelected) {
+				if (customFilter != null) {
 	 					fireSelectedCustomFilter(customFilter);
 					} else {
 						fireUnselectedCustomFilter();
-					}
 				}
 			}
 		});
