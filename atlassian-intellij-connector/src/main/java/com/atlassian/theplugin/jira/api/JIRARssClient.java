@@ -25,7 +25,9 @@ package com.atlassian.theplugin.jira.api;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
+import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
@@ -42,21 +44,23 @@ import java.util.List;
 public class JIRARssClient extends AbstractHttpSession {
     private static final Logger LOGGER = Logger.getInstance(JIRARssClient.class.getName());
 
-    public JIRARssClient(String url) throws RemoteApiMalformedUrlException {
-		super(url);
-    }
+	public JIRARssClient(final Server server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
+		super(server, callback);
+	}
 
+	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
 	}
 
+	@Override
 	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
-	public JIRARssClient(String url, String userName, String password) throws RemoteApiMalformedUrlException {
-		super(url);
-        this.userName = userName;
-        this.password = password;
-    }
+//	public JIRARssClient(String url, String userName, String password) throws RemoteApiMalformedUrlException {
+//		super(url);
+//        this.userName = userName;
+//        this.password = password;
+//    }
 
     public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
 						  String sortBy,

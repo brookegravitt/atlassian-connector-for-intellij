@@ -16,11 +16,15 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
-import com.atlassian.theplugin.commons.configuration.*;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpMethod;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -34,11 +38,7 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Apr 23, 2008
- * Time: 3:32:55 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public class AbstractHttpSessionTest extends TestCase {
 	private Server httpServer;
@@ -58,9 +58,35 @@ public class AbstractHttpSessionTest extends TestCase {
     public void testRetrieveGetResponseWithDataTransferTimeout() throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
 		int timeout; // 7 sec
 		long t1;
-		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
+		final String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
 		mockServer.expect(SOME_URL, new TimeoutingOnDataTransferCallback());
-		TestHttpSession session = new TestHttpSession(mockBaseUrl);
+		TestHttpSession session = new TestHttpSession(new com.atlassian.theplugin.commons.cfg.Server() {
+
+			private ServerId serverId = new ServerId();
+			public ServerId getServerId() {
+				return serverId;
+			}
+
+			public String getName() {
+				return null;
+			}
+
+			public String getUrl() {
+				return mockBaseUrl;
+			}
+
+			public String getUsername() {
+				return null;
+			}
+
+			public String getPassword() {
+				return null;
+			}
+
+			public boolean isEnabled() {
+				return true;
+			}
+		}, new HttpSessionCallbackImpl());
 
 		timeout = 100;
 		HttpClientFactory.setDataTimeout(timeout);
@@ -97,21 +123,18 @@ public class AbstractHttpSessionTest extends TestCase {
 			return super.retrievePostResponse(urlString, request);	//To change body of overridden methods use File | Settings | File Templates.
 		}
 
-		/**
-		 * Public constructor for AbstractHttpSession
-		 *
-		 * @param baseUrl base URL for server instance
-		 * @throws com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException
-		 *          for malformed url
-		 */
-		public TestHttpSession(String baseUrl) throws RemoteApiMalformedUrlException {
-			super(baseUrl);
+
+		private TestHttpSession(final com.atlassian.theplugin.commons.cfg.Server server, final HttpSessionCallback callback)
+				throws RemoteApiMalformedUrlException {
+			super(server, callback);
 		}
 
+		@Override
 		protected void adjustHttpHeader(HttpMethod method) {
 
 		}
 
+		@Override
 		protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 
 		}
