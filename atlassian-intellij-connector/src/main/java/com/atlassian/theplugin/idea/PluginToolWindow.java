@@ -28,7 +28,6 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerAdapter;
@@ -121,17 +120,18 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public void showHidePanels() {
 		//stopTabChangeListener();
 
+		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project)).size() == 0) {
 			// no servers defined, show config panel
-			if (ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME) == null) {
-				Content content = PeerFactory.getInstance().getContentFactory().
-						createContent(new ToolWindowConfigPanel(project), CONFIGURE_TAB_NAME, false);
+			if (contentManager.findContent(CONFIGURE_TAB_NAME) == null) {
+				final Content content = contentManager.getFactory().createContent(
+						new ToolWindowConfigPanel(project), CONFIGURE_TAB_NAME, false);
 				content.setCloseable(false);
 				ideaToolWindow.getContentManager().addContent(content);
 			}
 		} else {
 			// servers defined, find config panel, hide config panel
-			Content content = ideaToolWindow.getContentManager().findContent(CONFIGURE_TAB_NAME);
+			final Content content = contentManager.findContent(CONFIGURE_TAB_NAME);
 			if (content != null) {
 				ideaToolWindow.getContentManager().removeContent(content, true);
 			}
@@ -152,17 +152,21 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 						switch (entry) {
 							case BAMBOO:
-								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
+										contentManager);
 								break;
 							//todo PL-947
 							case CRUCIBLE_OLD:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld(
+										contentManager);
 								break;
 							case ISSUES:
-								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent(
+										contentManager);
 								break;
 							default:
 								break;
@@ -197,27 +201,29 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	public static void focusPanel(Project project, ToolWindowPanels component) {
 		ToolWindow tw = IdeaHelper.getToolWindow(project);
 		if (tw != null) {
-			ContentManager contentManager = tw.getContentManager();
+			final ContentManager contentManager = tw.getContentManager();
 			tw.activate(null);
 			Content content = contentManager.findContent(component.toString());
 
 			if (content == null) {
 				switch (component) {
 					case BAMBOO:
-						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
+						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
 						contentManager.addContent(content);
 						break;
 					//todo PL-947
 					case CRUCIBLE_OLD:
-						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld(
+								contentManager);
 						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
-						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
+								contentManager);
 						contentManager.addContent(content);
 						break;
 					case ISSUES:
-						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
+						content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent(contentManager);
 						contentManager.addContent(content);
 						break;
 					default:
@@ -303,23 +309,28 @@ public class PluginToolWindow extends ContentManagerAdapter {
 				final CfgManager myCfgManager = IdeaHelper.getCfgManager();
 				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
-					Content content = tw.getContentManager().findContent(component.toString());
+					final ContentManager contentManager = tw.getContentManager();
+					Content content = contentManager.findContent(component.toString());
 					if (content == null) {
 
 						// doesn't exists so create and show tab
 						switch (component) {
 							case BAMBOO:
-								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
 								break;
 							case CRUCIBLE:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
+										contentManager);
 								break;
 							//todo PL-947 
 							case CRUCIBLE_OLD:
-								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld();
+								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentOld(
+										contentManager);
 								break;
 							case ISSUES:
-								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent();
+								content = project.getComponent(ThePluginProjectComponent.class).createIssuesContent(
+										contentManager);
 								break;
 							default:
 								break;
@@ -327,8 +338,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 
 						tw.getContentManager().addContent(content);
 					} else { //tab exists so close it, hide
-
-
 						if (content.isSelected() && tw.isVisible()) {
 							tw.getContentManager().removeContent(content, true);
 						} else {
