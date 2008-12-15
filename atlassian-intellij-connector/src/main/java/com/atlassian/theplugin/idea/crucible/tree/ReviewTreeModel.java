@@ -252,6 +252,11 @@ public class ReviewTreeModel extends DefaultTreeModel {
 			}
 		}
 
+		@Override
+		public void modelChanged() {
+			fireTreeChanged(getRoot());
+		}
+
 		private void fireTreeChanged(DefaultMutableTreeNode node) {
 			node.removeAllChildren();
 			nodeStructureChanged(node);
