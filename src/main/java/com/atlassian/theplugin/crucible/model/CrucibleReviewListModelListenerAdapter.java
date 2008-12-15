@@ -40,4 +40,7 @@ public class CrucibleReviewListModelListenerAdapter implements CrucibleReviewLis
 
 	public void reviewChangedWithoutFiles(ReviewAdapter review) {
 	}
+
+	public void modelChanged() {
+	}
 }

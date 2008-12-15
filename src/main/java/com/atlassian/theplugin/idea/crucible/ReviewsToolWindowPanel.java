@@ -24,6 +24,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -46,11 +47,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 
@@ -62,7 +66,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
-	private final CrucibleReviewListModel reviewListModel;
 	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
@@ -72,6 +75,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 	private FilterTree filterTree;
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
+	private SearchingCrucibleReviewListModel searchingReviewListModel;
 
 
 	public ReviewsToolWindowPanel(@NotNull final Project project,
@@ -80,19 +84,15 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			@NotNull final CrucibleReviewListModel reviewListModel) {
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
-		this.reviewListModel = reviewListModel;
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 
+		searchingReviewListModel = new SearchingCrucibleReviewListModel(reviewListModel);
+
 		init();
 		filterTree.addSelectionListener(new LocalCrucibleFilterListModelLisener());
-
-
-		// todo remove disabling searchbox when search implemented
-		getSearchField().setEnabled(false);
-		getSearchField().setVisible(false);
 	}
 
 	@Override
@@ -121,6 +121,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		} else {
 			showManualFilterPanel(false);
 		}
+
+		addSearchBoxListener();
 	}
 
 	private void setupReviewTree() {
@@ -200,12 +202,37 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public void addSearchBoxListener() {
+		getSearchField().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
 
+			public void removeUpdate(DocumentEvent e) {
+				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+		});
+		getSearchField().addKeyboardListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {
+			}
+
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					getSearchField().addCurrentTextToHistory();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 	}
 
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTreeModel = new ReviewTreeModel(reviewListModel);
+			reviewTreeModel = new ReviewTreeModel(searchingReviewListModel);
 			reviewTree = new ReviewTree(reviewTreeModel);
 
 		}
