@@ -34,9 +34,11 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public void setIssue(JIRAIssue issue) {
-		issues.put(issue.getKey(), issue);
-		if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
-			selectedIssue  = issue;
+		if (issue != null) {
+			issues.put(issue.getKey(), issue);
+			if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
+				selectedIssue  = issue;
+			}
 		}
 	}
 
