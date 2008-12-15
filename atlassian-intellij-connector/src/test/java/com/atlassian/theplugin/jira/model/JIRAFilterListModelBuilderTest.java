@@ -88,6 +88,9 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
 		}
 
+		public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
+		}
+
 		public ServerType getServerType() {
 			return null;
 		}

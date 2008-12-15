@@ -18,8 +18,11 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.JIRASessionImpl;
 
@@ -31,7 +34,11 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public final class JIRAServerFacadeImpl implements JIRAServerFacade {
+
+	private HttpSessionCallback callback;
+
 	private JIRAServerFacadeImpl() {
+		this.callback = new HttpSessionCallbackImpl();
 	}
 
 	public static synchronized JIRAServerFacade getInstance() {
@@ -72,10 +79,14 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		String key = server.getUsername() + server.getUrl() + server.getPassword();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
-			session = new JIRARssClient(server.getUrl(), server.getUsername(), server.getPassword());
+			session = new JIRARssClient(server, callback);
 			rssSessions.put(key, session);
 		}
 		return session;
+	}
+
+	public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
+		testServerConnection(serverCfg.getUrl(), serverCfg.getUsername(), serverCfg.getPassword());
 	}
 
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {

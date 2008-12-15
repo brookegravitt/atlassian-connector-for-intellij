@@ -4,11 +4,13 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -652,6 +654,12 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		public void testServerConnection(String url, String userName, String password)
 				throws RemoteApiException {
+		}
+
+		public void setCallback(final HttpSessionCallback callback) {
+		}
+
+		public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
 		}
 
 		public ServerType getServerType() {
