@@ -128,7 +128,8 @@
     <project-components>
         <component>
             <implementation-class>com.atlassian.theplugin.idea.ThePluginProjectComponent</implementation-class>
-        </component>
+			<headless-implementation-class/>
+		</component>
         <component>
             <implementation-class>com.atlassian.theplugin.idea.ProjectConfigurationComponent</implementation-class>
         </component>
