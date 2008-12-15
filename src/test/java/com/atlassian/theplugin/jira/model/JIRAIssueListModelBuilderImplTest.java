@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.*;
@@ -159,6 +160,9 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		}
 
 		public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
+		}
+
+		public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
 		}
 
 		public ServerType getServerType() {
