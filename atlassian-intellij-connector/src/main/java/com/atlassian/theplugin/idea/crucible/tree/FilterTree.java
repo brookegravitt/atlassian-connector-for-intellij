@@ -92,33 +92,43 @@ public class FilterTree extends JTree {
 	}
 
 	private void fireSelectedCustomFilter(@NotNull CustomFilter filter) {
-		crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
-		for (CrucibleFilterSelectionListener listener : listeners) {
+		if (crucibleConfiguration.getCrucibleFilters() != null
+				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null) {
+			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(true);
+			for (CrucibleFilterSelectionListener listener : listeners) {
 				listener.selectedCustomFilter(filter);
+			}
 		}
 	}
 
 	private void fireUnselectedCustomFilter() {
-		crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
-		for (CrucibleFilterSelectionListener listener : listeners) {
-			listener.unselectedCustomFilter();
+		if (crucibleConfiguration.getCrucibleFilters() != null
+				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null) {
+			crucibleConfiguration.getCrucibleFilters().getManualFilter().setEnabled(false);
+			for (CrucibleFilterSelectionListener listener : listeners) {
+				listener.unselectedCustomFilter();
+			}
 		}
 	}
 
 	private void restoreSelection() {
-		Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
-		Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
+		if (crucibleConfiguration.getCrucibleFilters() != null
+				&& crucibleConfiguration.getCrucibleFilters().getPredefinedFilters() != null) {
 
-		// find selection
-		for (int i = 0; i < confFilters.length; ++i) {
-			if (confFilters[i]) {
-				// remember node
-				selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
+			Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
+			Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
+
+			// find selection
+			for (int i = 0; i < confFilters.length; ++i) {
+				if (confFilters[i]) {
+					// remember node
+					selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
+				}
 			}
-		}
 
-		// select nodes
-		selectNodes(selectedPredefinedFilters);
+			// select nodes
+			selectNodes(selectedPredefinedFilters);
+		}
 	}
 
 	private void selectNodes(Collection<PredefinedFilter> predefinedFilters) {
@@ -160,4 +170,5 @@ public class FilterTree extends JTree {
 
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
+	
 }
