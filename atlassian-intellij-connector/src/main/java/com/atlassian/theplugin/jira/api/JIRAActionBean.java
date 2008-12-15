@@ -33,6 +33,7 @@ public class JIRAActionBean extends AbstractJIRAConstantBean implements JIRAActi
 		return new JIRAActionBean(this);
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
