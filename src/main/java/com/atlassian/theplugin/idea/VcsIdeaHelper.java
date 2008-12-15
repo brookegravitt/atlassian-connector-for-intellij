@@ -31,6 +31,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextFactory;
 import com.intellij.openapi.vcs.changes.ContentRevision;
+import com.intellij.openapi.vcs.changes.BinaryContentRevision;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
@@ -198,13 +199,18 @@ public final class VcsIdeaHelper {
 		if (contentRevision == null) {
 			return null;
 		}
-
-		// this operation is typically quite costly
-		final String content = contentRevision.getContent();
+		final byte[] content;
+		if (contentRevision instanceof BinaryContentRevision) {
+			content = ((BinaryContentRevision) contentRevision).getBinaryContent();
+		} else {
+			// this operation is typically quite costly
+			final String strContent = contentRevision.getContent();
+			content = (strContent != null) ? strContent.getBytes() : null;
+		}
 		if (content == null) {
 			return null;
 		}
-		return new VcsVirtualFile(contentRevision.getFile().getPath(), content.getBytes(),
+		return new VcsVirtualFile(contentRevision.getFile().getPath(), content,
 				vcsRevisionNumber.asString(), virtualFile.getFileSystem());
 	}
 
