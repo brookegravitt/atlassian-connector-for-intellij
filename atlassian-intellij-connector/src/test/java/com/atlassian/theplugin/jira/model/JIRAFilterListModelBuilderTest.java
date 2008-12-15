@@ -1,42 +1,15 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationCredentialsListener;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.GlobalConfiguration;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAComment;
-import com.atlassian.theplugin.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.jira.api.JIRAUserBean;
-import com.atlassian.theplugin.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.jira.api.*;
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -319,6 +292,10 @@ class CfgManagerTest implements CfgManager {
 
 	public boolean hasProject(final ProjectId projectId) {
 		return false;
+	}
+
+	public Collection<CrucibleServerCfg> getAllCrucibleServers(ProjectId projectId) {
+		return null;
 	}
 
 	public Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId) {

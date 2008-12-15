@@ -114,10 +114,12 @@ private void doRunCrucible() {
 
 		CustomFilterBean manualFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
 
-		for (final CrucibleServerCfg server : retrieveEnabledCrucibleServers()) {
+		for (final CrucibleServerCfg server :  retrieveAllCrucibleServers()) {
 
 			final List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
 			boolean communicationFailed = false;
+
+			if (server.isEnabled()) {
 
 			// retrieve reviews for predefined filters
 			for (int i = 0;
@@ -221,6 +223,7 @@ private void doRunCrucible() {
 					}
 				}
 			}
+			}
 
 			// update global list model for processed server (and notify model listeners)
 			if (!communicationFailed) {
@@ -263,6 +266,10 @@ private void doRunCrucible() {
 
 	private Collection<CrucibleServerCfg> retrieveEnabledCrucibleServers() {
 		return cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+	}
+
+	private Collection<CrucibleServerCfg> retrieveAllCrucibleServers() {
+		return cfgManager.getAllCrucibleServers(CfgUtil.getProjectId(project));
 	}
 
 
