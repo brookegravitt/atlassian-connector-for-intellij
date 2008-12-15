@@ -62,7 +62,7 @@ public class FilterTree extends JTree {
 						}
 					}
 				}
-				
+
 				fireSelectedPredefinedFilter(predefinedFilters);
 
 				if (customFilter != null) {
@@ -155,7 +155,7 @@ public class FilterTree extends JTree {
 		}
 
 		// create selected TreePath for CustomFilter (single custom filter support)
-		if (crucibleConfiguration != null 
+		if (crucibleConfiguration != null
 				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
 				&& crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
 			for (int i = rootNode.getChildCount() - 1; i >= 0; --i) {
@@ -169,5 +169,5 @@ public class FilterTree extends JTree {
 
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
-	
+
 }
