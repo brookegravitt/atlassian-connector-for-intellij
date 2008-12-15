@@ -33,12 +33,12 @@ import com.intellij.openapi.util.Key;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -117,26 +117,28 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 			contentManager.removeContent(content, true);
 		}
 
-		PeerFactory peerFactory = PeerFactory.getInstance();
-		content = peerFactory.getContentFactory().createContent(this, crucibleReview.getPermId().getId(), false);
+		content = contentManager.getFactory().createContent(this, crucibleReview.getPermId().getId(), false);
 		content.setIcon(PluginToolWindow.ICON_CRUCIBLE);
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		toolWindow.getContentManager().addContent(content);
+		contentManager.addContent(content);
 
-		toolWindow.getContentManager().setSelectedContent(content);
+		contentManager.setSelectedContent(content);
 		toolWindow.show(null);
 
 		progressAnimation.startProgressAnimation();
 
 		Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving Crucible Data", false) {
-			public void run(final ProgressIndicator indicator) {
+			@Override
+			public void run(@NotNull final ProgressIndicator indicator) {
 				reviewItemTreePanel.showReview(crucibleReview);
 			}
 
+			@Override
 			public void onCancel() {
 				progressAnimation.stopProgressAnimation();
 			}
 
+			@Override
 			public void onSuccess() {
 				progressAnimation.stopProgressAnimation();
 			}
