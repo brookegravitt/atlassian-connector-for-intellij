@@ -49,8 +49,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.peer.PeerFactory;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
 
@@ -302,53 +302,38 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 	}
 
-	public Content createBambooContent() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
-
-		Content content = peerFactory.getContentFactory().createContent(
-				bambooToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(),
-				false);
-
+	public Content createBambooContent(@NotNull final ContentManager contentManager) {
+		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
+				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-
 		return content;
 	}
 
 
-	public Content createCrucibleContentNew() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
-
-		Content content = peerFactory.getContentFactory().createContent(
+	public Content createCrucibleContentNew(@NotNull final ContentManager contentManager) {
+		final Content content = contentManager.getFactory().createContent(
 				reviewsToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-
 		return content;
 	}
 
 	//todo PL-947
-	public Content createCrucibleContentOld() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
-
-		Content content = peerFactory.getContentFactory().createContent(
+	public Content createCrucibleContentOld(@NotNull final ContentManager contentManager) {
+		Content content = contentManager.getFactory().createContent(
 				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-
 		return content;
 	}
 
 
-	public Content createIssuesContent() {
-		PeerFactory peerFactory = PeerFactory.getInstance();
-
-		Content content = peerFactory.getContentFactory().createContent(
+	public Content createIssuesContent(@NotNull final ContentManager contentManager) {
+		final Content content = contentManager.getFactory().createContent(
 				issuesToolWindowPanel, PluginToolWindow.ToolWindowPanels.ISSUES.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-
 		return content;
 	}
 
