@@ -18,6 +18,9 @@ package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.JDOMException;
@@ -55,7 +58,10 @@ public class JIRARssClientTest extends TestCase
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		JIRARssClient c = new JIRARssClient("file://test") {
+		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
+		server.setUrl("file://test");
+		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
+			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
 				SAXBuilder builder = new SAXBuilder();
@@ -71,12 +77,16 @@ public class JIRARssClientTest extends TestCase
 		try {
 			c.getIssues(l, "ASC", "prio", 0, 1);
 		} catch (JIRAException e) {
+			// I think it should stay here like this, as this is really unsolved on client side!
 			System.out.println("PL-863 not fixed: " + e.getMessage());
 		}
 	}
 
 	public void testBugPl941() throws Exception {
-		JIRARssClient c = new JIRARssClient("file://test") {
+		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
+		server.setUrl("file://test");
+		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
+			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
 				SAXBuilder builder = new SAXBuilder();
@@ -86,22 +96,24 @@ public class JIRARssClientTest extends TestCase
 				return doc;
 			}
 		};
-		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
-		l. add(new JIRAProjectBean());
 
 		try {
 			//if something wron with xml structure getIssue return null so code has to be aware of that
 			JIRAIssue issue = c.getIssue("PL-941");
 			assertNull(issue);
 		} catch (JIRAException e) {
-			System.out.println("PL-941 not fixed: " + e.getMessage());
+			fail("PL-941 not fixed: " + e.getMessage());
 		}
 
 	}
 
 	// make a simple mock rss client that overrides URL loading with loading from a file
     private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file) throws RemoteApiMalformedUrlException {
-        return new JIRARssClient(url, userName, password) {
+		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
+		server.setUrl(url);
+		server.setUsername(userName);
+		server.setPassword(password);
+		return new JIRARssClient(server, new HttpSessionCallbackImpl()) {
             // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
             protected InputStream getUrlAsStream(String url) throws IOException {
                 mostRecentUrl = url;
