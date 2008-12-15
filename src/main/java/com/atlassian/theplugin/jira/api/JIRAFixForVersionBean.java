@@ -35,10 +35,12 @@ public class JIRAFixForVersionBean extends JIRAVersionBean {
 		super(other.getId(), other.getName());
 	}
 
+	@Override
 	public String getQueryStringFragment() {
 		return "fixfor=" + getId();
 	}
 
+	@Override
 	public JIRAFixForVersionBean getClone() {
 		return new JIRAFixForVersionBean(this);
 	}
