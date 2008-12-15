@@ -66,7 +66,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
-	private CrucibleProjectConfiguration crucibleProjectConfiguration;
+	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
 	private ReviewTreeModel reviewTreeModel;
 	private CrucibleFilterListModel filterListModel;
@@ -198,9 +198,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			return reviewTree.getSelectedReview();
 		}
 		return null;
-		
 	}
 
+	@Override
 	public void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
@@ -230,6 +230,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		});
 	}
 
+	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
 			reviewTreeModel = new ReviewTreeModel(searchingReviewListModel);
@@ -239,6 +240,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return reviewTree;
 	}
 
+	@Override
 	public JTree createLeftTree() {
 		if (filterTree == null && filterTreeModel != null) {
 			filterTree = new FilterTree(filterTreeModel, crucibleProjectConfiguration);
@@ -247,9 +249,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return filterTree;
 	}
 
+	@Override
 	public void onEditButtonClickAction() {
 	}
 
+	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
 	}
@@ -286,7 +290,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		if (checker != null) {
 			if (checker.canSchedule()) {
 				Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
-							public void run(final ProgressIndicator indicator) {
+							@Override
+							public void run(@NotNull final ProgressIndicator indicator) {
 								checker.newTimerTask().run();
 							}
 						};
