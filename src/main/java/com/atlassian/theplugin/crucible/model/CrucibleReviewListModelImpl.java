@@ -99,7 +99,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		removed.removeAll(reviewSet);
 
 		for (ReviewAdapter r : removed) {
-			if (r.getServer().equals(serverCfg)) {
+			if (r.getServer().getServerId().equals(serverCfg.getServerId())) {
 				removeReview(r);
 			}
 		}
