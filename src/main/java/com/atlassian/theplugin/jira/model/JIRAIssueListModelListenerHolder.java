@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListener, FrozenModelListener {
 	private List<JIRAIssueListModelListener> listeners = new ArrayList<JIRAIssueListModelListener>();
-	protected List<FrozenModelListener> frozenListeners = new ArrayList<FrozenModelListener>();
+	private List<FrozenModelListener> frozenListeners = new ArrayList<FrozenModelListener>();
 	
 
 	protected void addListener(JIRAIssueListModelListener l) {
@@ -34,8 +34,16 @@ public class JIRAIssueListModelListenerHolder implements JIRAIssueListModelListe
 	}
 
 	public void modelFrozen(FrozenModel model, boolean frozen) {
-	for (FrozenModelListener l : frozenListeners) {
+		for (FrozenModelListener l : frozenListeners) {
 			l.modelFrozen(model, frozen);
 		}
+	}
+
+	public void addFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.add(listener);
+	}
+
+	public void removeFrozenModelListener(FrozenModelListener listener) {
+		frozenListeners.remove(listener);
 	}
 }
