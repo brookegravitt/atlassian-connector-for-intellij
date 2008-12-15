@@ -22,7 +22,6 @@ import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import org.xml.sax.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,6 +73,30 @@ public class JIRARssClientTest extends TestCase
 		} catch (JIRAException e) {
 			System.out.println("PL-863 not fixed: " + e.getMessage());
 		}
+	}
+
+	public void testBugPl941() throws Exception {
+		JIRARssClient c = new JIRARssClient("file://test") {
+			protected Document retrieveGetResponse(String urlString)
+					throws IOException, JDOMException, RemoteApiSessionExpiredException {
+				SAXBuilder builder = new SAXBuilder();
+				InputStream is = JIRARssClientTest.class.getResourceAsStream("/jira/api/PL-941.xml");
+				Document doc = builder.build(is);
+				preprocessResult(doc);
+				return doc;
+			}
+		};
+		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
+		l. add(new JIRAProjectBean());
+
+		try {
+			//if something wron with xml structure getIssue return null so code has to be aware of that
+			JIRAIssue issue = c.getIssue("PL-941");
+			assertNull(issue);
+		} catch (JIRAException e) {
+			System.out.println("PL-941 not fixed: " + e.getMessage());
+		}
+
 	}
 
 	// make a simple mock rss client that overrides URL loading with loading from a file
