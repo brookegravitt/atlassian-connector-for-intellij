@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.jira.StatusBarIssuesPane;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.SearchTextField;
@@ -154,7 +155,9 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		ActionManager actionManager = ActionManager.getInstance();
 		ActionGroup toolbar = (ActionGroup) actionManager.getAction(toolbarName);
 		if (toolbar != null) {
-			component = actionManager.createActionToolbar(toolbarPalce, toolbar, true).getComponent();
+			final ActionToolbar actionToolbar = actionManager.createActionToolbar(toolbarPalce, toolbar, true);
+			actionToolbar.setTargetComponent(this);
+			component = actionToolbar.getComponent();
 		}
 		return component;
 	}
