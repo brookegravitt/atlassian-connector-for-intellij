@@ -21,10 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -77,7 +74,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
 
-
 	public ReviewsToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final CfgManager cfgManager,
@@ -88,8 +84,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
-
-		searchingReviewListModel = new SearchingCrucibleReviewListModel(reviewListModel);
+		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(reviewListModel);
+		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
 
 		init();
 		filterTree.addSelectionListener(new LocalCrucibleFilterListModelLisener());
