@@ -22,27 +22,25 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import java.io.Serializable;
 import java.util.Comparator;
 
-public class ReviewKeyComparator implements Comparator, Serializable {
+public class ReviewKeyComparator implements Comparator<ReviewAdapter>, Serializable {
     static final long serialVersionUID = 903490105978352608L;
 
-    public int compare(Object o, Object o1) {
-        if (o == null || o1 == null) {
+    public int compare(ReviewAdapter review1, ReviewAdapter review2) {
+        if (review1 == null || review2 == null) {
             return 0;
         }
-        ReviewAdapter review = (ReviewAdapter) o;
-        String key = review.getPermId().getId();
-        ReviewAdapter review1 = (ReviewAdapter) o1;
-        String key1 = review1.getPermId().getId();
+        String key = review1.getPermId().getId();
+        String key1 = review2.getPermId().getId();
 
         // first, try to compare on projects
-        if (review.getProjectKey() == null || review1.getProjectKey() == null) {
+        if (review1.getProjectKey() == null || review2.getProjectKey() == null) {
             return 0;
         }
-        if (!review.getProjectKey().equals(review1.getProjectKey())) {
-            return review.getProjectKey().compareTo(review1.getProjectKey());
+        if (!review1.getProjectKey().equals(review2.getProjectKey())) {
+            return review1.getProjectKey().compareTo(review2.getProjectKey());
         }
 
-        // otherwise, if the same project - sort on review ID
+        // otherwise, if the same project - sort on review1 ID
         Integer count;
         try {
             count = new Integer(key.substring(key.lastIndexOf("-") + 1));
