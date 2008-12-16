@@ -539,9 +539,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void addCommentToIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
-		final IssueComment issueComment = new IssueComment(issue.getKey());
-		issueComment.show();
-		if (issueComment.isOK()) {
+		final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issue.getKey());
+		issueCommentDialog.show();
+		if (issueCommentDialog.isOK()) {
 			Task.Backgroundable comment = new Task.Backgroundable(getProject(), "Commenting Issue", false) {
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
@@ -553,7 +553,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					try {
 						JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
 						if (jiraServer != null) {
-							jiraServerFacade.addComment(jiraServer, issue, issueComment.getComment());
+							jiraServerFacade.addComment(jiraServer, issue, issueCommentDialog.getComment());
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
 									setStatusMessage("Commented issue " + issue.getKey());

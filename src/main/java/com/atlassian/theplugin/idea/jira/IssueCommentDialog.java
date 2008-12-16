@@ -30,11 +30,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 
-public class IssueComment extends DialogWrapper {
+public class IssueCommentDialog extends DialogWrapper {
 	private JPanel mainPanel;
-	private JTextArea comment;
+	private JTextArea commentTextArea;
 
-	public IssueComment(String issueKey) {
+	public IssueCommentDialog(String issueKey) {
 		super(false);
 		init();
 		setTitle("Add Comment for " + issueKey);
@@ -43,13 +43,15 @@ public class IssueComment extends DialogWrapper {
 	}
 
 	public String getComment() {
-		return comment.getText();
+		return commentTextArea.getText();
 	}
 
+	@Override
 	public JComponent getPreferredFocusedComponent() {
-		return comment;
+		return commentTextArea;
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return mainPanel;
@@ -73,14 +75,15 @@ public class IssueComment extends DialogWrapper {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridLayoutManager(1, 1, new Insets(5, 5, 5, 5), -1, -1));
 		mainPanel.setMinimumSize(new Dimension(400, 100));
+		mainPanel.setPreferredSize(new Dimension(500, 150));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		mainPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-		comment = new JTextArea();
-		comment.setLineWrap(true);
-		comment.setMinimumSize(new Dimension(439, 120));
-		comment.setPreferredSize(new Dimension(439, 120));
-		comment.setWrapStyleWord(true);
-		scrollPane1.setViewportView(comment);
+		mainPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		commentTextArea = new JTextArea();
+		commentTextArea.setLineWrap(true);
+		commentTextArea.setWrapStyleWord(false);
+		scrollPane1.setViewportView(commentTextArea);
 	}
 
 	/**
