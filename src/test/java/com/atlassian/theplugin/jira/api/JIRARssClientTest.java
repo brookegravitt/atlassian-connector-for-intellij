@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.JDOMException;
@@ -98,11 +98,11 @@ public class JIRARssClientTest extends TestCase
 		};
 
 		try {
-			//if something wron with xml structure getIssue return null so code has to be aware of that
+			//if something wron with xml structure getIssue throws an exception so code has to be aware of that
 			JIRAIssue issue = c.getIssue("PL-941");
-			assertNull(issue);
+			fail("PL-941 not fixed");
 		} catch (JIRAException e) {
-			fail("PL-941 not fixed: " + e.getMessage());
+			assertTrue(e.getMessage().startsWith("Cannot parse response from JIRA:"));
 		}
 
 	}
