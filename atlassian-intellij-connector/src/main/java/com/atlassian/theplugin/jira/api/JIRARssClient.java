@@ -22,12 +22,12 @@
  */
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
-import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
@@ -184,7 +184,7 @@ public class JIRARssClient extends AbstractHttpSession {
 			if (channel != null && !channel.getChildren("item").isEmpty()) {
 				return makeIssues(channel.getChildren("item")).get(0);
 			}
-			return null;
+			throw new JIRAException("Cannot parse response from JIRA:" + doc.toString());
 		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (JDOMException e) {
