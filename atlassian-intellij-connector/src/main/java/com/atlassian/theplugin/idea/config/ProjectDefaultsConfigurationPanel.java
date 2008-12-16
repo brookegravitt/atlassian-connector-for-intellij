@@ -80,8 +80,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
 
 	private final MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg> crucProjectModel
-			= new MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg>
-			(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE, "projects", "Crucible") {
+			= new MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg> (
+			CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE, "projects", "Crucible") {
 
 		@Override
 		protected CrucibleProjectWrapper toT(final CrucibleProject element) {
