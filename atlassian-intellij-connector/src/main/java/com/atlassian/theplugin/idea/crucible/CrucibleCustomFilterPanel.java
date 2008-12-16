@@ -27,6 +27,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -64,10 +65,10 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	private ProjectBean anyProject;
 
 	private UserBean anyUser;
-	private final com.intellij.openapi.project.Project project;
+	private final Project project;
 	private final CfgManager cfgManager;
 
-	CrucibleCustomFilterPanel(final com.intellij.openapi.project.Project project, final CfgManager cfgManager) {
+	CrucibleCustomFilterPanel(final Project project, final CfgManager cfgManager) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		$$$setupUI$$$();
@@ -208,7 +209,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 
 			new Thread(new Runnable() {
 				public void run() {
-					List<Project> projects = new ArrayList<Project>();
+					List<CrucibleProject> projects = new ArrayList<CrucibleProject>();
 					List<User> users = new ArrayList<User>();
 					try {
 						projects = crucibleServerFacade.getProjects(crucibleServerCfg);
@@ -218,7 +219,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 					} catch (ServerPasswordNotProvidedException e) {
 						// nothing can be done here
 					}
-					final List<Project> finalProjects = projects;
+					final List<CrucibleProject> finalProjects = projects;
 					final List<User> finalUsers = users;
 
 					EventQueue.invokeLater(new Runnable() {
@@ -231,7 +232,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 		}
 	}
 
-	private void updateServerRelatedCombos(List<Project> projects, List<User> users) {
+	private void updateServerRelatedCombos(List<CrucibleProject> projects, List<User> users) {
 		projectComboBox.removeAllItems();
 		projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
 		authorComboBox.removeAllItems();
@@ -248,7 +249,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 			projectComboBox.addItem("No projects");
 			setEnabledApplyButton(false);
 		} else {
-			for (Project project : projects) {
+			for (CrucibleProject project : projects) {
 				projectComboBox.addItem(new ProjectComboBoxItem(project));
 			}
 			projectComboBox.setEnabled(true);
@@ -471,9 +472,9 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	}
 
 	private static final class ProjectComboBoxItem {
-		private final Project project;
+		private final CrucibleProject project;
 
-		private ProjectComboBoxItem(Project project) {
+		private ProjectComboBoxItem(CrucibleProject project) {
 			this.project = project;
 		}
 
@@ -481,7 +482,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 			return project.getName();
 		}
 
-		public Project getProject() {
+		public CrucibleProject getProject() {
 			return project;
 		}
 	}

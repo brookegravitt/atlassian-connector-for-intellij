@@ -3,8 +3,8 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -640,7 +640,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			return null;
 		}
 
-		public List<Project> getProjects(CrucibleServerCfg server)
+		public List<CrucibleProject> getProjects(CrucibleServerCfg server)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}

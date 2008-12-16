@@ -27,7 +27,7 @@ public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
 		this.project = project;
 	}
 
-	public String getProject() {
+	public String getProjectKey() {
 		return project;
 	}
 }

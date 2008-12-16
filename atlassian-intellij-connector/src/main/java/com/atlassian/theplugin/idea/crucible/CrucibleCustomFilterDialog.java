@@ -266,7 +266,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 			new Thread(new Runnable() {
 				public void run() {
-					List<com.atlassian.theplugin.commons.crucible.api.model.Project> projects = new ArrayList<com.atlassian.theplugin.commons.crucible.api.model.Project>();
+					List<CrucibleProject> projects = new ArrayList<CrucibleProject>();
 					List<User> users = new ArrayList<User>();
 					try {
 						projects = crucibleServerFacade.getProjects(crucibleServerCfg);
@@ -276,7 +276,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 					} catch (ServerPasswordNotProvidedException e) {
 						// nothing can be done here
 					}
-					final List<com.atlassian.theplugin.commons.crucible.api.model.Project> finalProjects = projects;
+					final List<CrucibleProject> finalProjects = projects;
 					final List<User> finalUsers = users;
 
 					EventQueue.invokeLater(new Runnable() {
@@ -301,7 +301,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		return server;
 	}
 
-	private void updateServerRelatedCombos(List<com.atlassian.theplugin.commons.crucible.api.model.Project> projects, List<User> users) {
+	private void updateServerRelatedCombos(List<CrucibleProject> projects, List<User> users) {
 
 		draftCheckBox.setSelected(false);
 		pendingApprovalCheckBox.setSelected(false);
@@ -357,7 +357,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			projectComboBox.addItem("No projects");
 			setOKActionEnabled(false);
 		} else {
-			for (com.atlassian.theplugin.commons.crucible.api.model.Project project : projects) {
+			for (CrucibleProject project : projects) {
 				projectComboBox.addItem(new ProjectComboBoxItem(project));
 			}
 			projectComboBox.setEnabled(true);
@@ -515,9 +515,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private static final class ProjectComboBoxItem {
-		private final com.atlassian.theplugin.commons.crucible.api.model.Project project;
+		private final CrucibleProject project;
 
-		private ProjectComboBoxItem(com.atlassian.theplugin.commons.crucible.api.model.Project project) {
+		private ProjectComboBoxItem(CrucibleProject project) {
 			this.project = project;
 		}
 
@@ -525,7 +525,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			return project.getName();
 		}
 
-		public com.atlassian.theplugin.commons.crucible.api.model.Project getProject() {
+		public CrucibleProject getProject() {
 			return project;
 		}
 	}
