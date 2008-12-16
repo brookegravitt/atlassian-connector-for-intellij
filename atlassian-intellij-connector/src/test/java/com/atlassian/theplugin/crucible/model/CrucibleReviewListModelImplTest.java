@@ -24,6 +24,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private Date date = new Date();
 
 	///CLOVER:OFF
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		model = new CrucibleReviewListModelImpl();
@@ -34,6 +35,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		removedReviews = 0;
 	}
 
+	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}
@@ -141,7 +143,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	public void testRemoveAllReviews() throws Exception {
-		CrucibleReviewListModel model = new CrucibleReviewListModelImpl();
+		CrucibleReviewListModel listModel = new CrucibleReviewListModelImpl();
 
 
 		ServerId id = new ServerId();
@@ -150,15 +152,15 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
 
-		model.addReview(ra1);
+		listModel.addReview(ra1);
 		ReviewBean r2 = new ReviewBean("test");
 		r2.setPermId(new PermIdBean("test2"));
 		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
 
-		model.addReview(ra2);
-		assertEquals(2, model.getReviews().size());
-		model.removeAll();
-		assertEquals(0, model.getReviews().size());
+		listModel.addReview(ra2);
+		assertEquals(2, listModel.getReviews().size());
+		listModel.removeAll();
+		assertEquals(0, listModel.getReviews().size());
 	}
 
 	public void testListeners() throws Exception {
@@ -302,7 +304,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		listener.reviewListUpdateFinished(cfg.getServerId());
 
 		EasyMock.replay(listener);
-		model.updateReviews(cfg, Collections.EMPTY_LIST);
+		model.updateReviews(cfg, Collections.<ReviewAdapter>emptyList());
 	}
 
 	public void testUpdateNonIntersectingList() {
@@ -325,14 +327,17 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		updatedServer2Reviews.add(ra23);
 
 		CrucibleReviewListModelListener l = new CrucibleReviewListModelListenerAdapter() {
+			@Override
 			public void reviewAdded(ReviewAdapter review) {
 				addedReviews++;
 			}
 
+			@Override
 			public void reviewRemoved(ReviewAdapter review) {
 				removedReviews++;
 			}
 
+			@Override
 			public void reviewChanged(ReviewAdapter review) {
 				changedReviews++;
 			}
@@ -385,14 +390,17 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		CrucibleReviewListModelListener l = new CrucibleReviewListModelListenerAdapter() {
+			@Override
 			public void reviewAdded(ReviewAdapter review) {
 				addedReviews++;
 			}
 
+			@Override
 			public void reviewRemoved(ReviewAdapter review) {
 				removedReviews++;
 			}
 
+			@Override
 			public void reviewChanged(ReviewAdapter review) {
 				changedReviews++;
 			}
