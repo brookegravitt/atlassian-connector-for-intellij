@@ -402,35 +402,11 @@
                 text="Show/Hide Crucible Tab" description="Shows or hides Crucuble tab in main plugin window">
             <keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
         </action>
-        <action id="ThePlugin.Crucible.RefreshStatus"
-                class="com.atlassian.theplugin.idea.action.crucible.RefreshCruciblePanelAction" text="Refresh"
-                description="Refresh" icon="/actions/sync.png"/>
         <action id="ThePlugin.Crucible.ViewReview" class="com.atlassian.theplugin.idea.action.crucible.ViewReviewAction"
                 text="View Review in Browser" icon="/general/web.png"/>
-        <action id="ThePlugin.Crucible.GetComments"
-                class="com.atlassian.theplugin.idea.action.crucible.OpenReviewAction" text="Open Review"
-                icon="/actions/editSource.png"/>
         <action id="ThePlugin.Crucible.GetGeneralCommentReplies"
                 class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"
                 icon="/icons/inspector/sortByCategory.png"/>
-        <action id="ThePlugin.Crucible.ShowFilter"
-                class="com.atlassian.theplugin.idea.action.crucible.CrucibleShowCustomFilterAction"
-                text="Edit Custom Filter" icon="/general/toolWindowFavorites.png"/>
-        <action id="ThePlugin.Crucible.ApplyFilter"
-                class="com.atlassian.theplugin.idea.action.crucible.ApplyFilterAction" text="Apply Filter"
-                icon="/actions/er-state.png"/>
-        <action id="ThePlugin.Crucible.CancelFilter"
-                class="com.atlassian.theplugin.idea.action.crucible.CancelFilterChangeAction" text="Cancel"
-                icon="/actions/cancel.png"/>
-        <action id="ThePlugin.Crucible.ClearFilter"
-                class="com.atlassian.theplugin.idea.action.crucible.ClearFilterAction" text="Clear Filter"
-                icon="/general/reset.png"/>
-
-        <action id="ThePlugin.Crucible.ExpandAll" class="com.atlassian.theplugin.idea.action.crucible.ExpandAllAction"
-                text="Expand All" icon="/actions/expandall.png"/>
-        <action id="ThePlugin.Crucible.CollapseAll"
-                class="com.atlassian.theplugin.idea.action.crucible.CollapseAllAction" text="Collapse All"
-                icon="/actions/collapseall.png"/>
 
         <action id="ThePlugin.Crucible.PostCommitReview"
                 class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
@@ -447,30 +423,6 @@
         <action id="ThePlugin.Crucible.AddPatchToReview"
                 class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add Patch to Review"
                 icon="/icons/fisheye-16-plus.png"/>
-
-        <action id="ThePlugin.Crucible.CompleteReview"
-                class="com.atlassian.theplugin.idea.action.crucible.CompleteReviewAction" text="Complete Review"/>
-        <action id="ThePlugin.Crucible.UncompleteReview"
-                class="com.atlassian.theplugin.idea.action.crucible.UncompleteReviewAction" text="Uncomplete Review"/>
-        <action id="ThePlugin.Crucible.ApproveReview"
-                class="com.atlassian.theplugin.idea.action.crucible.ApproveReviewAction" text="Approve Review"/>
-        <action id="ThePlugin.Crucible.SubmitReview"
-                class="com.atlassian.theplugin.idea.action.crucible.SubmitReviewAction" text="Submit Review"/>
-        <action id="ThePlugin.Crucible.CloseReview"
-                class="com.atlassian.theplugin.idea.action.crucible.CloseReviewAction" text="Close Review"/>
-        <action id="ThePlugin.Crucible.ReopenReview"
-                class="com.atlassian.theplugin.idea.action.crucible.ReopenReviewAction" text="Reopen Review"/>
-        <action id="ThePlugin.Crucible.SummarizeReview"
-                class="com.atlassian.theplugin.idea.action.crucible.SummarizeReviewAction" text="Summarize Review"/>
-        <action id="ThePlugin.Crucible.AbandonReview"
-                class="com.atlassian.theplugin.idea.action.crucible.AbandonReviewAction" text="Abandon Review"/>
-        <action id="ThePlugin.Crucible.RecoverReview"
-                class="com.atlassian.theplugin.idea.action.crucible.RecoverReviewAction"
-                text="Recover Abandoned Review"/>
-        <action id="ThePlugin.Crucible.JoinReview"
-                class="com.atlassian.theplugin.idea.action.crucible.JoinReviewAction" text="Join Review"/>
-        <action id="ThePlugin.Crucible.SetReviewers"
-                class="com.atlassian.theplugin.idea.action.crucible.SetReviewersAction" text="Set Reviewers"/>
 
         <action id="ThePlugin.Crucible.Comment.NextComment"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
@@ -504,61 +456,10 @@
             <add-to-group anchor="last" group-id="ChangesViewToolbar"/>
         </group>
 
-        <action id="ThePlugin.Crucible.SelectFilters" text="Select Filters"
-                class="com.atlassian.theplugin.idea.crucible.filters.SelectFiltersAction" icon="/ant/filter.png"/>
-
-        <group id="ThePlugin.CrucibleToolWindowToolBar" popup="false" text="">
-
-            <reference id="ThePlugin.ShowSettings"/>
-            <reference id="ThePlugin.HelpCrucible"/>
-            <reference id="ThePlugin.Crucible.RefreshStatus"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.ExpandAll"/>
-            <reference id="ThePlugin.Crucible.CollapseAll"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.ShowFilter"/>
-            <reference id="ThePlugin.Crucible.SelectFilters"/>
-        </group>
-
         <group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
-
-        <group id="ThePlugin.CrucibleReviewToolBar" popup="false" text="">
-            <separator/>
-            <reference id="ThePlugin.Crucible.ViewReview"/>
-            <reference id="ThePlugin.Crucible.GetComments"/>
-            <separator/>
-
-            <add-to-group anchor="last" group-id="ThePlugin.CrucibleToolWindowToolBar"/>
-        </group>
 
         <group id="ThePlugin.CrucibleGeneralCommentToolBar" popup="false" text="">
             <reference id="ThePlugin.Crucible.GetGeneralCommentReplies"/>
-        </group>
-
-        <group id="ThePlugin.CrucibleRevisionCommentToolBar" popup="false" text="">
-            <reference id="ThePlugin.Crucible.ViewReview"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.GetComments"/>
-        </group>
-
-        <group id="ThePlugin.Crucible.ReviewPopupMenu" popup="true">
-            <reference id="ThePlugin.Crucible.ViewReview"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.GetComments"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.CompleteReview"/>
-            <reference id="ThePlugin.Crucible.UncompleteReview"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.ApproveReview"/>
-            <reference id="ThePlugin.Crucible.SubmitReview"/>
-            <reference id="ThePlugin.Crucible.CloseReview"/>
-            <reference id="ThePlugin.Crucible.ReopenReview"/>
-            <reference id="ThePlugin.Crucible.SummarizeReview"/>
-            <reference id="ThePlugin.Crucible.AbandonReview"/>
-            <reference id="ThePlugin.Crucible.RecoverReview"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.JoinReview"/>
-            <reference id="ThePlugin.Crucible.SetReviewers"/>
         </group>
 
         <group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
@@ -570,13 +471,6 @@
             <reference id="ThePlugin.Crucible.Comment.NextComment"/>
 
         </group>
-
-        <group id="ThePlugin.Crucible.FilterEditToolBar" popup="false">
-            <reference id="ThePlugin.Crucible.ApplyFilter"/>
-            <reference id="ThePlugin.Crucible.CancelFilter"/>
-            <!--			<reference id="ThePlugin.Crucible.ClearFilter"/> -->
-        </group>
-
 
         <!-- [START] Issues window related actions -->
 
