@@ -148,8 +148,7 @@ public class AtlassianTree extends JTree {
 	public Rectangle getPathBounds(TreePath path) {
 		Rectangle rect = super.getPathBounds(path);
 		Container parent = getParent();
-		Rectangle newRect;
-		if (parent != null && !(parent instanceof CellRendererPane)) {
+		if (parent != null && rect != null && !(parent instanceof CellRendererPane)) {
 			// redefined to show as many childen as possible
 			rect = new Rectangle(rect.getBounds().x,
 					rect.getBounds().y, rect.getBounds().width, parent.getHeight());
