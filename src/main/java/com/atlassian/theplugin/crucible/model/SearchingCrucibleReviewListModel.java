@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,16 +12,12 @@ import java.util.List;
  * Date: Dec 15, 2008
  * Time: 4:05:54 PM
  */
-public class SearchingCrucibleReviewListModel 
-		extends CrucibleReviewListModelListenerHolder implements CrucibleReviewListModel {
-
+public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelListenerHolder {
 
 	private String searchTerm;
-	private CrucibleReviewListModel parent;
 
 	public SearchingCrucibleReviewListModel(CrucibleReviewListModel parent) {
-		this.parent = parent;
-		parent.addListener(this);
+		super(parent);
 		searchTerm = "";
 	}
 
@@ -52,29 +47,5 @@ public class SearchingCrucibleReviewListModel
 
 	public Collection<ReviewAdapter> getReviews() {
 		return search(parent.getReviews());
-	}
-
-	public void addReview(ReviewAdapter review) {
-		parent.addReview(review);
-	}
-
-	public void removeReview(ReviewAdapter review) {
-		parent.removeReview(review);
-	}
-
-	public void removeAll() {
-		parent.removeAll();
-	}
-
-	public void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
-		parent.updateReviews(serverCfg, updatedReviews);
-	}
-
-	public ReviewAdapter getSelectedReview() {
-		return parent.getSelectedReview();
-	}
-
-	public void setSelectedReview(ReviewAdapter review) {
-		parent.setSelectedReview(review);
 	}
 }

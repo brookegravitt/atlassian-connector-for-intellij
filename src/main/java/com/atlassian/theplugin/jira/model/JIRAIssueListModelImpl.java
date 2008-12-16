@@ -12,6 +12,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	private boolean modelFrozen = false;
 
 	private JIRAIssueListModelImpl() {
+		super(null);
 		issues = new HashMap<String, JIRAIssue>();
 	}
 
