@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.idea.jira.IssueComment;
+import com.atlassian.theplugin.idea.jira.IssueCommentDialog;
 import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -823,14 +823,14 @@ public class ThePluginJIRAEditorComponent implements ApplicationComponent, FileE
 		}
 
 		public void addComment() {
-			final IssueComment issueComment = new IssueComment(issue.getKey());
-			issueComment.show();
-			if (issueComment.isOK()) {
+			final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issue.getKey());
+			issueCommentDialog.show();
+			if (issueCommentDialog.isOK()) {
 				Runnable runnable = new Runnable() {
 					public void run() {
 						try {
 							if (server != null) {
-								facade.addComment(server, issue, issueComment.getComment());
+								facade.addComment(server, issue, issueCommentDialog.getComment());
 								EventQueue.invokeLater(new Runnable() {
 									public void run() {
 										refreshComments();
