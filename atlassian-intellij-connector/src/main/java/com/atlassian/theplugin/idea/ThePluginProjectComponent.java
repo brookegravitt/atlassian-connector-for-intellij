@@ -86,7 +86,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
 	private BambooTableToolWindowPanel bambooToolWindowPanel;
-	private CrucibleTableToolWindowPanel crucibleToolWindowPanel;
 	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
@@ -199,9 +198,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// DependencyValidationManager.getHolder(project, "", )
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
-			//todo PL-947
-			this.crucibleToolWindowPanel = new CrucibleTableToolWindowPanel(project,
-					projectConfigurationBean, crucibleStatusChecker);
 
 			issuesToolWindowPanel.refreshModels();
 
@@ -216,13 +212,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooToolWindowPanel.getTable());
 
-
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 
-//			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
-
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
-			//@todo add configuration restore here
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
@@ -247,8 +239,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// setup Crucible status checker and listeners
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(crucibleStatusChecker);
-			//todo PL-947
-			crucibleStatusChecker.registerListener(crucibleToolWindowPanel);
 			// create crucible status bar icon
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
 
@@ -319,16 +309,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return content;
 	}
 
-	//todo PL-947
-	public Content createCrucibleContentOld(@NotNull final ContentManager contentManager) {
-		Content content = contentManager.getFactory().createContent(
-				crucibleToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-
 	public Content createIssuesContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(
 				issuesToolWindowPanel, PluginToolWindow.ToolWindowPanels.ISSUES.toString(), false);
@@ -374,8 +354,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
-			//todo PL-947
-			crucibleStatusChecker.unregisterListener(crucibleToolWindowPanel);
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 			configurationListener = null;

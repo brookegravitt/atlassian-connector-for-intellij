@@ -29,7 +29,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ShowHideCrucibleTabAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		PluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
-
+		PluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 	}
 }

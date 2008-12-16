@@ -130,7 +130,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					content.addMouseListener(new MouseAdapter() {
 						public void mouseClicked(MouseEvent e) {
 							display.resetIcon();
-							PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
+							PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header

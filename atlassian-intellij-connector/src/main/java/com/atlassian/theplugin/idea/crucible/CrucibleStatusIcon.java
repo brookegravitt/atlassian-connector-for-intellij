@@ -50,7 +50,7 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 		addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-                PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE_OLD);
+                PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 				resetIcon();
 			}
 		});
