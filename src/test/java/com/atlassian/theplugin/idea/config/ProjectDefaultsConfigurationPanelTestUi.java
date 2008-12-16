@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
@@ -61,25 +61,25 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		projectConfiguration.setDefaultFishEyeRepo("studio");
 		projectConfiguration.setFishEyeProjectPath("trunk/thePlugin");
 
-		List<Project> projects1 = MiscUtil.buildArrayList(makeProject("id1", "PR-1", "Crucible Project 1"),
+		List<CrucibleProject> projects1 = MiscUtil.buildArrayList(makeProject("id1", "PR-1", "Crucible Project 1"),
 				makeProject("id2", "PR-2", "Crucible Project 2"));
 		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
 
 
-		final List<Project> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"),
+		final List<CrucibleProject> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"),
 				makeProject("id7", "LPR-5", "Crucible The Last Project"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg)).andReturn(projects1).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg2)).andAnswer(new IAnswer<List<Project>>() {
+		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg2)).andAnswer(new IAnswer<List<CrucibleProject>>() {
 
-			public List<Project> answer() throws Throwable {
+			public List<CrucibleProject> answer() throws Throwable {
 				Thread.sleep(2000);
 				return projects2;
 			}
 		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg3)).andAnswer(new IAnswer<List<Project>>() {
-			public List<Project> answer() throws Throwable {
+		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg3)).andAnswer(new IAnswer<List<CrucibleProject>>() {
+			public List<CrucibleProject> answer() throws Throwable {
 				Thread.sleep(2000);
 				throw new RuntimeException("fake RE");
 			}
@@ -136,7 +136,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 	}
 
-	private static Project makeProject(String id, String key, String name) {
+	private static CrucibleProject makeProject(String id, String key, String name) {
 		ProjectBean res = new ProjectBean();
 		res.setId(id);
 		res.setKey(key);

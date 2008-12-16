@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.Project;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
@@ -79,17 +79,17 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
 
-	private final MyModel<CrucibleProjectWrapper, Project, CrucibleServerCfg> crucProjectModel
-			= new MyModel<CrucibleProjectWrapper, Project, CrucibleServerCfg>(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE,
+	private final MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg> crucProjectModel
+			= new MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg>(CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE,
 			"projects", "Crucible") {
 
 		@Override
-		protected CrucibleProjectWrapper toT(final Project element) {
+		protected CrucibleProjectWrapper toT(final CrucibleProject element) {
 			return new CrucibleProjectWrapper(element);
 		}
 
 		@Override
-		protected List<Project> getR(final CrucibleServerCfg serverCfg)
+		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return crucibleServerFacade.getProjects(serverCfg);
 		}
@@ -105,7 +105,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				projectConfiguration.setDefaultCrucibleProject(null);
 				return;
 			}
-			final Project wrapped = newSelection.getWrapped();
+			final CrucibleProject wrapped = newSelection.getWrapped();
 			if (wrapped != null) {
 				projectConfiguration.setDefaultCrucibleProject(wrapped.getKey());
 			} else {
@@ -372,8 +372,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	}
 
 
-	private static class CrucibleProjectWrapper extends GenericWrapper<Project> {
-		public CrucibleProjectWrapper(final Project crucibleProject) {
+	private static class CrucibleProjectWrapper extends GenericWrapper<CrucibleProject> {
+		public CrucibleProjectWrapper(final CrucibleProject crucibleProject) {
 			super(crucibleProject);
 		}
 
