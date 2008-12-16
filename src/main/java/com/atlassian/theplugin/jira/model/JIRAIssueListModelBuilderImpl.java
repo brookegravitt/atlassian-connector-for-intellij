@@ -103,18 +103,17 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		if (model == null || server == null) {
 			return;
 		}
-		
-		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
-		if (updatedIssue != null) {
-			try {
-				model.setModelFrozen(true);
-				model.setIssue(updatedIssue);
-			} finally {
-				model.setModelFrozen(false);
-			}
 
-			model.fireModelChanged();
+		JIRAIssue updatedIssue = facade.getIssueUpdate(server, issue);
+		try {
+			model.setModelFrozen(true);
+			model.setIssue(updatedIssue);
+		} finally {
+			model.setModelFrozen(false);
 		}
+
+		model.fireModelChanged();
+
 	}
 
 	public synchronized void reset() {
