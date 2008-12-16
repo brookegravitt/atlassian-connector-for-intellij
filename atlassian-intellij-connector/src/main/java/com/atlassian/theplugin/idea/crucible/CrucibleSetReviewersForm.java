@@ -69,8 +69,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 	private List<Reviewer> actualReviewers;
 
 
-	public CrucibleSetReviewersForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			ReviewAdapter reviewData) {
+	public CrucibleSetReviewersForm(Project project, CrucibleServerFacade crucibleServerFacade, ReviewAdapter reviewData) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -156,16 +155,12 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 	}
 
-	private void updateServerRelatedData(
-			CrucibleServerCfg server,
-			List<User> users,
-			List<Reviewer> reviewers) {
+	private void updateServerRelatedData(CrucibleServerCfg server, List<User> users, List<Reviewer> reviewers) {
 		actualReviewers = reviewers;
 		if (!users.isEmpty()) {
 			for (User user : users) {
-				if (!user.getUserName().equals(server.getUsername())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName())
-						&& !user.getUserName().equals(reviewData.getModerator().getUserName())) {
+				if (!user.getUserName().equals(server.getUsername()) && !user.getUserName().equals(reviewData.getAuthor().getUserName()) &&
+						!user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
 						if (reviewer.getUserName().equals(user.getUserName())) {
@@ -234,11 +229,9 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				}
 			}
 		} catch (RemoteApiException e) {
-			Messages.showErrorDialog(project, e.getMessage() +
-					"Error creating review: " + reviewData.getServer().getUrl(), "");
+			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
 		} catch (ServerPasswordNotProvidedException e) {
-			Messages.showErrorDialog(project, e.getMessage() +
-					"Error creating review: " + reviewData.getServer().getUrl(), "");
+			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
 		}
 
 
@@ -247,8 +240,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 	}
 
 
-	private void createUIComponents
-			() {
+	private void createUIComponents() {
 		model = new DefaultListModel();
 		reviewersList = new JList(model);
 		reviewersList.setCellRenderer(new UserListCellRenderer());
@@ -274,8 +266,9 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1,
-				null, null, null, 0, false));
+		panel1.add(scrollPane1,
+				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null,
+						null, 0, false));
 		scrollPane1.setViewportView(reviewersList);
 	}
 
