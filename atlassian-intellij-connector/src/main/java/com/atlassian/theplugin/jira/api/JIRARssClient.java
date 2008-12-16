@@ -34,11 +34,11 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class JIRARssClient extends AbstractHttpSession {
@@ -56,17 +56,12 @@ public class JIRARssClient extends AbstractHttpSession {
 	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
-//	public JIRARssClient(String url, String userName, String password) throws RemoteApiMalformedUrlException {
-//		super(url);
-//        this.userName = userName;
-//        this.password = password;
-//    }
 
     public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
 						  String sortBy,
 						  String sortOrder, int start, int max) throws JIRAException {
 
-        StringBuffer url = new StringBuffer(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
+        StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
 
 
 	    List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
@@ -82,10 +77,10 @@ public class JIRARssClient extends AbstractHttpSession {
             }
         }
 
-        url.append("&sorter/field=" + sortBy);
-		url.append("&sorter/order=" + sortOrder);
-		url.append("&pager/start=" + start);
-		url.append("&tempMax=" + max);
+		url.append("&sorter/field=").append(sortBy);
+		url.append("&sorter/order=").append(sortOrder);
+		url.append("&pager/start=").append(start);
+		url.append("&tempMax=").append(max);
         url.append(appendAuthentication(false));
 
 		try {
@@ -136,7 +131,7 @@ public class JIRARssClient extends AbstractHttpSession {
 									 int start, 
 									 int max) throws JIRAException {
 
-		StringBuffer url = new StringBuffer(baseUrl + "/sr/jira.issueviews:searchrequest-xml/");
+		StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/");
 
 		if (fragment.getQueryStringFragment() != null) {
 			url.append(fragment.getQueryStringFragment())
@@ -145,10 +140,10 @@ public class JIRARssClient extends AbstractHttpSession {
 					.append(".xml");
 		}
 
-		url.append("?sorter/field=" + sortBy);
-		url.append("&sorter/order=" + sortOrder);
-		url.append("&pager/start=" + start);
-		url.append("&tempMax=" + max);
+		url.append("?sorter/field=").append(sortBy);
+		url.append("&sorter/order=").append(sortOrder);
+		url.append("&pager/start=").append(start);
+		url.append("&tempMax=").append(max);
 			
 		url.append(appendAuthentication(false));
 
@@ -181,8 +176,12 @@ public class JIRARssClient extends AbstractHttpSession {
 			Document doc = retrieveGetResponse(url.toString());
 			Element root = doc.getRootElement();
 			Element channel = root.getChild("channel");
-			if (channel != null && !channel.getChildren("item").isEmpty()) {
-				return makeIssues(channel.getChildren("item")).get(0);
+			if (channel != null) {
+				@SuppressWarnings("unchecked")
+				final List<Element> items = channel.getChildren("item");
+				if (!items.isEmpty()) {
+					return makeIssues(items).get(0);
+				}
 			}
 			throw new JIRAException("Cannot parse response from JIRA:" + doc.toString());
 		} catch (IOException e) {
@@ -194,18 +193,19 @@ public class JIRARssClient extends AbstractHttpSession {
 		}
 	}
 
-	private List<JIRAIssue> makeIssues(List issueElements) {
+	private List<JIRAIssue> makeIssues(@NotNull List<Element> issueElements) {
         List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
-        for (Iterator iterator = issueElements.iterator(); iterator.hasNext();) {
-            result.add(new JIRAIssueBean(baseUrl, (Element) iterator.next()));
-        }
+		for (final Element issueElement : issueElements) {
+			result.add(new JIRAIssueBean(baseUrl, issueElement));
+		}
         return result;
     }
 
     private String appendAuthentication(boolean firstItem) {
-        if (userName != null) {
-            return (firstItem ? "?" : "&") + "os_username=" + encodeUrl(userName)
-                    + "&os_password=" + encodeUrl(password);
+		final String username = getUsername();
+		if (username != null) {
+            return (firstItem ? "?" : "&") + "os_username=" + encodeUrl(username)
+                    + "&os_password=" + encodeUrl(getPassword());
         }
         return "";
     }
