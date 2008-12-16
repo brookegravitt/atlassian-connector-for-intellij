@@ -98,9 +98,10 @@ public class JIRARssClientTest extends TestCase
 		};
 
 		try {
-			fail("PL-941 not fixed");
+
 			//if something wron with xml structure getIssue throws an exception so code has to be aware of that
 			JIRAIssue issue = c.getIssue("PL-941");
+			fail("PL-941 not fixed");
 
 		} catch (JIRAException e) {
 			assertTrue(e.getMessage().startsWith("Cannot parse response from JIRA:"));
