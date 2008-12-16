@@ -19,7 +19,7 @@ import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.ProjectBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProjectBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -137,7 +137,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	}
 
 	private static CrucibleProject makeProject(String id, String key, String name) {
-		ProjectBean res = new ProjectBean();
+		CrucibleProjectBean res = new CrucibleProjectBean();
 		res.setId(id);
 		res.setKey(key);
 		res.setName(name);

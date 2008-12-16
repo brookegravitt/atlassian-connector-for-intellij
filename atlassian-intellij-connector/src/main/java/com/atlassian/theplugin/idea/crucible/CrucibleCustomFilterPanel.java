@@ -62,7 +62,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	private CrucibleServerFacade crucibleServerFacade;
 	private transient CustomFilterBean filter;
 
-	private ProjectBean anyProject;
+	private CrucibleProjectBean anyProject;
 
 	private UserBean anyUser;
 	private final Project project;
@@ -73,7 +73,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 		this.cfgManager = cfgManager;
 		$$$setupUI$$$();
 
-		anyProject = new ProjectBean();
+		anyProject = new CrucibleProjectBean();
 		anyProject.setName("Any");
 		anyUser = new UserBean();
 		anyUser.setDisplayName("Any");
