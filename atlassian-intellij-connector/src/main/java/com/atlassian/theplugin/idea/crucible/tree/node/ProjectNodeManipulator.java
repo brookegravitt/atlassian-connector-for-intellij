@@ -35,10 +35,10 @@ public class ProjectNodeManipulator extends NodeManipulator {
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == rootNode) {
-			return getDistinctProjects().size();
+			return getDistinctProjectKeys().size();
 		} else if (parent instanceof CrucibleReviewProjectTreeNode) {
 			CrucibleReviewProjectTreeNode serverNode = (CrucibleReviewProjectTreeNode) parent;
-			return gentNumOfReviewsForProject(serverNode.getProject());
+			return gentNumOfReviewsForProject(serverNode.getProjectKey());
 		}
 
 		return 0;
@@ -54,9 +54,9 @@ public class ProjectNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			String project = getDistinctProjects().get(index);
+			String projectKey = getDistinctProjectKeys().get(index);
 
-			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(project);
+			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(projectKey);
 			p.add(serverNode);
 
 			return serverNode;
@@ -68,7 +68,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			ReviewAdapter review = getReviewForProject(p.getProject(), index);
+			ReviewAdapter review = getReviewForProject(p.getProjectKey(), index);
 			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
@@ -78,20 +78,20 @@ public class ProjectNodeManipulator extends NodeManipulator {
 		return null;
 	}
 
-	private List<String> getDistinctProjects() {
-		Set<String> servers = new LinkedHashSet<String>();	// ordered set
+	private List<String> getDistinctProjectKeys() {
+		Set<String> projects = new LinkedHashSet<String>();	// ordered set
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(review.getProjectKey());
+			projects.add(review.getProjectKey());
 		}
 
-		return new ArrayList<String>(servers);
+		return new ArrayList<String>(projects);
 	}
 
-	private int gentNumOfReviewsForProject(String project) {
+	private int gentNumOfReviewsForProject(String projectKey) {
 		int ret = 0;
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getProjectKey().equals(project)) {
+			if (review.getProjectKey().equals(projectKey)) {
 				++ret;
 			}
 		}
@@ -99,12 +99,12 @@ public class ProjectNodeManipulator extends NodeManipulator {
 		return ret;
 	}
 
-	private ReviewAdapter getReviewForProject(String project, int index) {
+	private ReviewAdapter getReviewForProject(String projectKey, int index) {
 		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
 
 		// get all reviews in state
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getProjectKey().equals(project)) {
+			if (review.getProjectKey().equals(projectKey)) {
 				array.add(review);
 			}
 		}
