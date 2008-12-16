@@ -10,7 +10,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -341,13 +340,13 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		if (projects.isEmpty()) {
 			projectComboBox.setEnabled(false);
 			projectComboBox.addItem("No projects");
-			setEnabledApplyButton(false);
+			setOKActionEnabled(false);
 		} else {
 			for (com.atlassian.theplugin.commons.crucible.api.model.Project project : projects) {
 				projectComboBox.addItem(new ProjectComboBoxItem(project));
 			}
 			projectComboBox.setEnabled(true);
-			setEnabledApplyButton(true);
+			setOKActionEnabled(true);
 		}
 
 		if (!users.isEmpty()) {
@@ -390,10 +389,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 				}
 			}
 		}
-	}
-
-	private void setEnabledApplyButton(Boolean enabled) {
-		ActionManager.getInstance().getAction("ThePlugin.Crucible.ShowFilter").getTemplatePresentation().setEnabled(enabled);
 	}
 
 	@Nullable
