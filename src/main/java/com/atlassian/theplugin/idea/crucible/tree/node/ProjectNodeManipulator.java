@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
@@ -35,10 +36,10 @@ public class ProjectNodeManipulator extends NodeManipulator {
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == rootNode) {
-			return getDistinctProjectKeys().size();
+			return getDistinctProjects().size();
 		} else if (parent instanceof CrucibleReviewProjectTreeNode) {
 			CrucibleReviewProjectTreeNode serverNode = (CrucibleReviewProjectTreeNode) parent;
-			return gentNumOfReviewsForProject(serverNode.getProjectKey());
+			return gentNumOfReviewsForProject(serverNode.getProject().getKey());
 		}
 
 		return 0;
@@ -54,9 +55,9 @@ public class ProjectNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			String projectKey = getDistinctProjectKeys().get(index);
+			CrucibleProject crucibleProject = getDistinctProjects().get(index);
 
-			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(projectKey);
+			CrucibleReviewProjectTreeNode serverNode = new CrucibleReviewProjectTreeNode(crucibleProject);
 			p.add(serverNode);
 
 			return serverNode;
@@ -68,7 +69,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			ReviewAdapter review = getReviewForProject(p.getProjectKey(), index);
+			ReviewAdapter review = getReviewForProject(p.getProject().getKey(), index);
 			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
 			p.add(node);
 
@@ -78,14 +79,14 @@ public class ProjectNodeManipulator extends NodeManipulator {
 		return null;
 	}
 
-	private List<String> getDistinctProjectKeys() {
-		Set<String> projects = new LinkedHashSet<String>();	// ordered set
+	private List<CrucibleProject> getDistinctProjects() {
+		Set<CrucibleProject> projects = new LinkedHashSet<CrucibleProject>();	// ordered set
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			projects.add(review.getProjectKey());
+			projects.add(review.getCrucibleProject());
 		}
 
-		return new ArrayList<String>(projects);
+		return new ArrayList<CrucibleProject>(projects);
 	}
 
 	private int gentNumOfReviewsForProject(String projectKey) {
