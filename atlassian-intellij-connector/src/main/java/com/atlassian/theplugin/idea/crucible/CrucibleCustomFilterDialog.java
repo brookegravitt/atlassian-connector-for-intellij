@@ -64,7 +64,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private JCheckBox reviewNeedsFixingCheckBox;
 	private JComboBox serverComboBox;
 
-	private ProjectBean anyProject;
+	private CrucibleProjectBean anyProject;
 
 	private UserBean anyUser;
 
@@ -87,7 +87,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 					.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 		}
 
-		anyProject = new ProjectBean();
+		anyProject = new CrucibleProjectBean();
 		anyProject.setName("Any");
 		anyUser = new UserBean();
 		anyUser.setDisplayName("Any");

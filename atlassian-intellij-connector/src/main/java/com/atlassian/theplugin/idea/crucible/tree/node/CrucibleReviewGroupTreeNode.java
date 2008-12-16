@@ -12,8 +12,8 @@ import javax.swing.*;
  */
 public class CrucibleReviewGroupTreeNode extends ReviewTreeNode {
 
-	public CrucibleReviewGroupTreeNode(String name, Icon icon, Icon disabledIcon) {
-		super(name, icon,  disabledIcon);
+	public CrucibleReviewGroupTreeNode(String displayName, Icon icon, Icon disabledIcon) {
+		super(displayName, icon,  disabledIcon);
 	}
 
 	public String toString() {
