@@ -15,19 +15,21 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+
 /**
  * @author Jacek Jaroczynski
  */
 public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
-	private String project;
+	private CrucibleProject project;
 
-	public CrucibleReviewProjectTreeNode(String project) {
-		super(project, null, null);
+	public CrucibleReviewProjectTreeNode(CrucibleProject project) {
+		super(project.getName(), null, null);
 
 		this.project = project;
 	}
 
-	public String getProjectKey() {
+	public CrucibleProject getProject() {
 		return project;
 	}
 }
