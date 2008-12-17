@@ -56,6 +56,8 @@
     <change-notes>
         <![CDATA[
 		<ul>
+			<li>2.0.0-beta-10: More work new Crucible panel</li>
+			<li>2.0.0-beta-9: New Crucible panel</li>
 			<li>2.0.0-beta-8: More work on new JIRA issues panel</li>
 			<li>2.0.0-beta-7: New layout of the JIRA issues panel</li>
 			<li>2.0.0-beta-6: Bug fixes. Support for IDEA 8. Opening fisheye links in IDEA</li>
