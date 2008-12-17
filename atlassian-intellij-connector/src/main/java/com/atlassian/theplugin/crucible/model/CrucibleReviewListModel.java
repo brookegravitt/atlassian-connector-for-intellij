@@ -34,7 +34,8 @@ public interface CrucibleReviewListModel {
 	void removeAll();
 	void addListener(CrucibleReviewListModelListener listener);
 	void removeListener(CrucibleReviewListModelListener listener);
-	void updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews, final boolean sendNotifications);
+	void updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews, 
+					   final boolean sendNotifications);
 	ReviewAdapter getSelectedReview();
 	void setSelectedReview(ReviewAdapter review);
 	long getEpoch();
