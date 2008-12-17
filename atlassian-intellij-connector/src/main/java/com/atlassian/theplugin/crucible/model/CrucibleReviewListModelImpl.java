@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * User: jgorycki
@@ -15,41 +16,71 @@ import java.util.*;
  */
 public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
-	private List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	private ReviewAdapter selectedReview;
+
+	private AtomicLong epoch = new AtomicLong(0);
 
 	private CrucibleReviewListener reviewListener = new LocalCrucibleReviewListener(modelListeners);
 
 	public synchronized Collection<ReviewAdapter> getReviews() {
-		return reviews;
+		Set<ReviewAdapter> plainReviews = new HashSet<ReviewAdapter>();
+		for (Set<ReviewAdapter> reviewAdapters : reviews.values()) {
+			plainReviews.addAll(reviewAdapters);
+		}
+		return plainReviews;
 	}
 
-	public synchronized void addReview(ReviewAdapter review) {
+	public synchronized void addReview(long epoch, CrucibleFilter crucibleFilter, ReviewAdapter review) {
+		ReviewAdapter a = null;
 
-//		review.getActions().
+		if (epoch != this.epoch.get()) {
+			return;
+		}
+		Collection<ReviewAdapter> reviews = getReviews();
+		if (reviews.contains(review)) {
+			for (ReviewAdapter reviewAdapter : reviews) {
+				if (reviewAdapter.equals(review)) {
+					a = reviewAdapter;
+					break;
+				}
+			}
+		}
 
-		int idx = reviews.indexOf(review);
-		if (idx != -1) {
-			ReviewAdapter a = reviews.get(idx);
+		if (a != null) {
 			a.fillReview(review);
 		} else {
-			reviews.add(review);
+			if (!this.reviews.containsKey(crucibleFilter)) {
+				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+			}
+			this.reviews.get(crucibleFilter).add(review);
 			review.addReviewListener(reviewListener);
 			notifyReviewAdded(review);
 		}
+
 	}
 
+	public long getEpoch() {
+		return epoch.addAndGet(1);
+
+	}
+
+
 	public synchronized void removeReview(ReviewAdapter review) {
-		if (reviews.contains(review)) {
-			review.removeReviewListener(reviewListener);
-			reviews.remove(review);
-			notifyReviewRemoved(review);
+
+		for (CrucibleFilter filter : reviews.keySet()) {
+
+			if (reviews.get(filter).contains(review)) {
+				review.removeReviewListener(reviewListener);
+				reviews.get(filter).remove(review);
+				notifyReviewRemoved(review);
+			}
 		}
 	}
 
 	public synchronized void removeAll() {
-		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
-		removed.addAll(reviews);
+		Set<ReviewAdapter> removed = new HashSet<ReviewAdapter>();
+		removed.addAll(getReviews());
 		reviews.clear();
 		for (ReviewAdapter r : removed) {
 			notifyReviewRemoved(r);
@@ -57,13 +88,13 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	}
 
 	public synchronized void setSelectedReview(ReviewAdapter review) {
-		if (review == null || reviews.contains(review)) {
+		if (review == null || getReviews().contains(review)) {
 			selectedReview = review;
 		}
 	}
 
 	public synchronized ReviewAdapter getSelectedReview() {
-		if (reviews.contains(selectedReview)) {
+		if (getReviews().contains(selectedReview)) {
 			return selectedReview;
 		}
 		return null;
@@ -79,32 +110,45 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
+	public synchronized void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
 
-		notifyReviewListUpdateStarted(serverCfg.getServerId());
+		if (epoch != this.epoch.get()) {
+			return;
+		}
+
+		notifyReviewListUpdateStarted();
+
+		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
+			for (ReviewAdapter reviewAdapter : r) {
+				addReview(epoch, crucibleFilter, reviewAdapter);
+			}
+		}
 
 		///create set in order to remove duplicates
 		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
-		reviewSet.addAll(updatedReviews);
+		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+			reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
+		}
 
 		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
 
-		for (ReviewAdapter adapter : reviewSet) {
-			if (adapter.getServer().equals(serverCfg)) {
-				addReview(adapter);
-			}
-		}
-
-		removed.addAll(reviews);
+		removed.addAll(getReviews());
 		removed.removeAll(reviewSet);
 
 		for (ReviewAdapter r : removed) {
-			if (r.getServer().getServerId().equals(serverCfg.getServerId())) {
-				removeReview(r);
+			removeReview(r);
+		}
+
+		// remove categories
+		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
+			if (!updatedReviews.containsKey(crucibleFilter)) {
+				reviews.remove(crucibleFilter);
 			}
 		}
 
-		notifyReviewListUpdateFinished(serverCfg.getServerId());
+		notifyReviewListUpdateFinished();
+
 	}
 
 	private void notifyReviewChanged(ReviewAdapter review) {
@@ -125,15 +169,15 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 	}
 
-	private void notifyReviewListUpdateStarted(ServerId serverId) {
+	private void notifyReviewListUpdateStarted() {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewListUpdateStarted(serverId);
+			listener.reviewListUpdateStarted();
 		}
 	}
 
-	private void notifyReviewListUpdateFinished(ServerId serverId) {
+	private void notifyReviewListUpdateFinished() {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewListUpdateFinished(serverId);
+			listener.reviewListUpdateFinished();
 		}
 	}
 

@@ -73,14 +73,17 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private FilterTree filterTree;
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
-
+	private final ReviewListModelBuilder reviewListModelBuilder;
 	public ReviewsToolWindowPanel(@NotNull final Project project,
-			@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final CfgManager cfgManager,
-			@NotNull final CrucibleReviewListModel reviewListModel) {
+								  @NotNull final ProjectConfigurationBean projectConfiguration,
+								  @NotNull final CfgManager cfgManager,
+								  @NotNull final CrucibleReviewListModel reviewListModel,
+								  @NotNull final ReviewListModelBuilder reviewListModelBuilder) {
 		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
+		this.reviewListModelBuilder = reviewListModelBuilder;
+
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
@@ -283,17 +286,13 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public void refresh() {
 		final CrucibleStatusChecker checker = IdeaHelper.getCrucibleStatusChecker(getProject());
 
-		if (checker != null) {
-			if (checker.canSchedule()) {
-				Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
-							@Override
-							public void run(@NotNull final ProgressIndicator indicator) {
-								checker.newTimerTask().run();
-							}
-						};
-				ProgressManager.getInstance().run(refresh);
+		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
+			@Override
+			public void run(@NotNull final ProgressIndicator indicator) {
+				reviewListModelBuilder.getReviewsFromServer(0);
 			}
-		}
+		};
+		ProgressManager.getInstance().run(refresh);
 	}
 
 	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterSelectionListener {
