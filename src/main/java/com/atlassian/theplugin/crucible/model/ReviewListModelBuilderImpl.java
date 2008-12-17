@@ -42,7 +42,8 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 
 		try {
 			final CrucibleQueryExecutor crucibleQueryExecutor =
-					new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler, crucibleReviewListModel, epoch);
+					new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler,
+										crucibleReviewListModel, epoch);
 			final Map<CrucibleFilter, ReviewNotificationBean> reviews =
 					crucibleQueryExecutor.runQuery(predefinedFilters, customFilter);
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -52,7 +53,6 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 			});
 		} catch (InterruptedException ex) {
 			PluginUtil.getLogger().info(ex);
-
 		}
 	}
 
