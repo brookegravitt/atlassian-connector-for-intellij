@@ -17,8 +17,6 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.tree.node.*;
 
@@ -34,7 +32,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	private CrucibleReviewListModel reviewListModel;
 
-	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
+
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 
 	private NodeManipulator generalNodeManipulator;
@@ -53,8 +51,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
-
-		reviewListModel.addListener(localModelListener);
 	}
 
 	/**
@@ -155,112 +151,65 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		return -1;
 	}
 
-	/*
-	Listen to the review list model changes
-	 */
-	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+	public DefaultMutableTreeNode findParentNode(ReviewAdapter review) {
+		DefaultMutableTreeNode root = getRoot();
 
-		private boolean treeChanged = false;
-		private boolean treeInitialized = false;
+		switch (groupBy) {
 
-		@Override
-		public void reviewAdded(ReviewAdapter review) {
-//			System.out.println("review added: " + review.getPermId().getId());
-
-//			fireTreeChanged(getRoot());
-			treeChanged = true;
-
-//			if (treeInitialized) {
-//				DefaultMutableTreeNode parentNode = findParentNode(review);
-//				fireTreeChanged(parentNode);
-//			}
-		}
-
-		private DefaultMutableTreeNode findParentNode(ReviewAdapter review) {
-			DefaultMutableTreeNode root = getRoot();
-
-			switch (groupBy) {
-
-				case AUTHOR:
-					for (int i = 0; i < getChildCount(root); ++i) {
-						Object node = getChild(root, i);
-						if (node instanceof CrucibleReviewAuthorTreeNode) {
-							CrucibleReviewAuthorTreeNode parent = (CrucibleReviewAuthorTreeNode) node;
-							if (parent.getAuthor().equals(review.getAuthor())) {
-								return parent;
-							}
+			case AUTHOR:
+				// todo move that code to node manipulator and make it generic if worth
+				for (int i = 0; i < getChildCount(root); ++i) {
+					Object node = getChild(root, i);
+					if (node instanceof CrucibleReviewAuthorTreeNode) {
+						CrucibleReviewAuthorTreeNode parent = (CrucibleReviewAuthorTreeNode) node;
+						if (parent.getAuthor().equals(review.getAuthor())) {
+							return parent;
 						}
 					}
-					break;
-				case PROJECT:
-					break;
-				case SERVER:
-					break;
-				case STATE:
-					for (int i = 0; i < getChildCount(root); ++i) {
-						Object node = getChild(root, i);
-						if (node instanceof CrucibleReviewStateTreeNode) {
-							CrucibleReviewStateTreeNode parent = (CrucibleReviewStateTreeNode) node;
-							if (parent.getCrucibleState().equals(review.getState())) {
-								return parent;
-							}
+				}
+				break;
+			case PROJECT:
+				for (int i = 0; i < getChildCount(root); ++i) {
+					Object node = getChild(root, i);
+					if (node instanceof CrucibleReviewProjectTreeNode) {
+						CrucibleReviewProjectTreeNode parent = (CrucibleReviewProjectTreeNode) node;
+						if (parent.getProject().getKey().equals(review.getProjectKey())) {
+							return parent;
 						}
 					}
-					break;
-				case NONE:
-				default:
-					break;
-			}
-
-			return root;
+				}
+				break;
+			case SERVER:
+				for (int i = 0; i < getChildCount(root); ++i) {
+					Object node = getChild(root, i);
+					if (node instanceof CrucibleReviewServerTreeNode) {
+						CrucibleReviewServerTreeNode parent = (CrucibleReviewServerTreeNode) node;
+						if (parent.getCrucibleServer().getServerId().equals(review.getServer().getServerId())) {
+							return parent;
+						}
+					}
+				}
+				break;
+			case STATE:
+				for (int i = 0; i < getChildCount(root); ++i) {
+					Object node = getChild(root, i);
+					if (node instanceof CrucibleReviewStateTreeNode) {
+						CrucibleReviewStateTreeNode parent = (CrucibleReviewStateTreeNode) node;
+						if (parent.getCrucibleState().equals(review.getState())) {
+							return parent;
+						}
+					}
+				}
+				break;
+			case NONE:
+			default:
+				break;
 		}
 
-		@Override
-		public void reviewRemoved(ReviewAdapter review) {
-//			System.out.println("review removed: " + review.getPermId().getId());
-
-//			fireTreeChanged(getRoot());
-			treeChanged = true;
-		}
-
-		@Override
-		public void reviewChangedWithoutFiles(ReviewAdapter review) {
-//			System.out.println("review changed without files: " + review.getPermId().getId());
-
-//			fireTreeChanged(getRoot());
-			treeChanged = true;
-		}
-
-		@Override
-		public void reviewListUpdateStarted() {
-//			System.out.println("reviews update started");
-
-			// reset tree state
-			treeChanged = false;
-		}
-
-		@Override
-		public void reviewListUpdateFinished() {
-//			System.out.println("reviews updated finished");
-
-			if (treeChanged || !treeInitialized) {
-				// draw entire tree
-				fireTreeChanged(getRoot());
-				treeChanged = false;
-				treeInitialized = true;
-			}
-		}
-
-		@Override
-		public void modelChanged() {
-			fireTreeChanged(getRoot());
-		}
-
-		private void fireTreeChanged(DefaultMutableTreeNode node) {
-			node.removeAllChildren();
-			nodeStructureChanged(node);
-		}
-
+		return root;
 	}
 
+	public CrucibleReviewListModel getReviewListModel() {
+		return reviewListModel;
+	}
 }
