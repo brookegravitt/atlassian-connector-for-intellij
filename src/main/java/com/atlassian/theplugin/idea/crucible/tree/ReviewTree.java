@@ -16,10 +16,13 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -27,17 +30,23 @@ import javax.swing.tree.TreeSelectionModel;
  * @author Jacek Jaroczynski
  */
 public class ReviewTree extends JTree implements TreeModelListener {
+	private ReviewTreeModel model;
+	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
 
 	public ReviewTree(ReviewTreeModel reviewTreeModel) {
 		super(reviewTreeModel);
 
+		this.model = reviewTreeModel;
+
+		// listen to the review tree model changes
 		reviewTreeModel.addTreeModelListener(this);
+		// listen to the global review list changes
+		reviewTreeModel.getReviewListModel().addListener(localModelListener);
 
 		init();
 	}
 
 	private void init() {
-
 		setRootVisible(false);
 		setShowsRootHandles(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -75,5 +84,75 @@ public class ReviewTree extends JTree implements TreeModelListener {
 			// nothing selected
 			return null;
 		}
+	}
+
+
+	/*
+	Listen to the review list model changes
+	 */
+	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+
+		private boolean treeChanged = false;
+		private boolean treeInitialized = false;
+
+		@Override
+		public void reviewAdded(ReviewAdapter review) {
+//			System.out.println("review added: " + review.getPermId().getId());
+
+//			treeChanged = true;
+
+			if (treeInitialized) {
+				fireTreeChanged(model.findParentNode(review));
+			}
+		}
+
+		@Override
+		public void reviewRemoved(ReviewAdapter review) {
+//			System.out.println("review removed: " + review.getPermId().getId());
+
+//			treeChanged = true;
+
+			if (treeInitialized) {
+				fireTreeChanged(model.findParentNode(review));
+			}
+		}
+
+		@Override
+		public void reviewChangedWithoutFiles(ReviewAdapter review) {
+//			System.out.println("review changed without files: " + review.getPermId().getId());
+
+			treeChanged = true;
+		}
+
+		@Override
+		public void reviewListUpdateStarted() {
+//			System.out.println("reviews update started");
+
+			// reset tree state
+			treeChanged = false;
+		}
+
+		@Override
+		public void reviewListUpdateFinished() {
+//			System.out.println("reviews updated finished");
+
+			if (treeChanged || !treeInitialized) {
+				// draw entire tree
+				fireTreeChanged(model.getRoot());
+				treeChanged = false;
+				treeInitialized = true;
+			}
+		}
+
+		@Override
+		public void modelChanged() {
+			fireTreeChanged(model.getRoot());
+		}
+
+		private void fireTreeChanged(DefaultMutableTreeNode node) {
+			node.removeAllChildren();
+			model.nodeStructureChanged(node);
+		}
+
 	}
 }
