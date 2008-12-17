@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
@@ -233,7 +232,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		}
 
 		@Override
-		public void reviewListUpdateStarted(ServerId serverId) {
+		public void reviewListUpdateStarted() {
 //			System.out.println("reviews update started");
 
 			// reset tree state
@@ -241,7 +240,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 		}
 
 		@Override
-		public void reviewListUpdateFinished(ServerId serverId) {
+		public void reviewListUpdateFinished() {
 //			System.out.println("reviews updated finished");
 
 			if (treeChanged || !treeInitialized) {

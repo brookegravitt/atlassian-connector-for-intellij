@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -32,10 +31,12 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.*;
-import com.atlassian.theplugin.idea.crucible.*;
+import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
+import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
-import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -114,7 +115,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
 									 BuildChangesToolWindow buildChangesToolWindow,
-									 @NotNull final CrucibleReviewListModel reviewListModel) {
+									 @NotNull final CrucibleReviewListModel reviewListModel,
+									 @NotNull final CrucibleStatusChecker crucibleStatusChecker) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -124,6 +126,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.reviewListModel = reviewListModel;
+		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
@@ -191,10 +194,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					cfgManager, pluginConfiguration,
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
 					PluginUtil.getLogger());
-
-			this.crucibleStatusChecker = new CrucibleStatusChecker(cfgManager, project,
-					pluginConfiguration.getCrucibleConfigurationData(), projectConfigurationBean.getCrucibleConfiguration(),
-					new MissingPasswordHandler(crucibleServerFacade, cfgManager, project), reviewListModel);
 
 			// DependencyValidationManager.getHolder(project, "", )
 			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
@@ -276,6 +275,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier = new CrucibleReviewNotifier(project);
 		}
 
+// mwent - should be changed to register on model instead of status checker		
+/*
 		if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
 				!= CrucibleTooltipOption.NEVER) {
 
@@ -290,6 +291,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		} else {
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 		}
+*/
 	}
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
@@ -354,7 +356,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//bambooStatusChecker.unregisterListener(iconBambooStatusListener);
 			//bambooStatusChecker.unregisterListener(toolWindowBambooListener);
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
-			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
+			//unregister form model
+			//crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 			configurationListener = null;
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project),

@@ -115,7 +115,8 @@
 		<!--serviceImplementation="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration"/>-->
 
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
-                serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>		
+                serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
+
 	</extensions>
 
     <application-components>
