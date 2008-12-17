@@ -23,7 +23,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private int addedReviews, changedReviews, removedReviews;
 	private Date date = new Date();
 
-	///CLOVER:OFF
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
@@ -33,11 +32,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		addedReviews = 0;
 		changedReviews = 0;
 		removedReviews = 0;
-	}
-
-	@Override
-	public void tearDown() throws Exception {
-		super.tearDown();
 	}
 
 	public void testAddingReviewOnce() throws Exception {
