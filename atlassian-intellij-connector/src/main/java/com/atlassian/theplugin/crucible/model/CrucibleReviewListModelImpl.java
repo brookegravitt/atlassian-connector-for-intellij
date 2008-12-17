@@ -31,15 +31,15 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return plainReviews;
 	}
 
-	public synchronized void addReview(long epoch, CrucibleFilter crucibleFilter, ReviewAdapter review) {
+	public synchronized void addReview(long anEpoch, CrucibleFilter crucibleFilter, ReviewAdapter review) {
 		ReviewAdapter a = null;
 
-		if (epoch != this.epoch.get()) {
+		if (anEpoch != this.epoch.get()) {
 			return;
 		}
-		Collection<ReviewAdapter> reviews = getReviews();
-		if (reviews.contains(review)) {
-			for (ReviewAdapter reviewAdapter : reviews) {
+		Collection<ReviewAdapter> localReviews = getReviews();
+		if (localReviews.contains(review)) {
+			for (ReviewAdapter reviewAdapter : localReviews) {
 				if (reviewAdapter.equals(review)) {
 					a = reviewAdapter;
 					break;
@@ -114,9 +114,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
+	public synchronized void updateReviews(long anEpoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
 
-		if (epoch != this.epoch.get()) {
+		if (anEpoch != this.epoch.get()) {
 			return;
 		}
 
@@ -125,7 +125,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
 			for (ReviewAdapter reviewAdapter : r) {
-				addReview(epoch, crucibleFilter, reviewAdapter);
+				addReview(anEpoch, crucibleFilter, reviewAdapter);
 			}
 		}
 
