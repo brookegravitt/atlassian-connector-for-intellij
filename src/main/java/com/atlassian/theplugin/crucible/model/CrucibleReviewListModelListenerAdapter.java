@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 
 /**
  * @author Jacek Jaroczynski
