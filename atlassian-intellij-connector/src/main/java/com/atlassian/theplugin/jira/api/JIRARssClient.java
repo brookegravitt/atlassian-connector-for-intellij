@@ -183,7 +183,7 @@ public class JIRARssClient extends AbstractHttpSession {
 					return makeIssues(items).get(0);
 				}
 			}
-			throw new JIRAException("Cannot parse response from JIRA:" + doc.toString());
+			throw new JIRAException("Cannot parse response from JIRA: " + doc.toString());
 		} catch (IOException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (JDOMException e) {
