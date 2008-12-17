@@ -22,7 +22,7 @@
             <constraints/>
             <properties>
               <lineWrap value="true"/>
-              <wrapStyleWord value="false"/>
+              <wrapStyleWord value="true"/>
             </properties>
           </component>
         </children>
