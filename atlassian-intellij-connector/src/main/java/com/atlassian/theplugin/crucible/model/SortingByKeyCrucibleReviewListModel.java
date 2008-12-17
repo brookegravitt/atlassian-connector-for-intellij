@@ -36,4 +36,14 @@ public class SortingByKeyCrucibleReviewListModel extends AbstractSortingCrucible
 	protected Comparator<ReviewAdapter> getComparator() {
 		return COMPARATOR;
 	}
+
+	public long getEpoch() {
+		//here epoch is not neccessary
+		return 0;
+	}
+
+	public long getCurrentEpoch() {
+		//here epoch is not neccessary
+		return 0;
+	}
 }

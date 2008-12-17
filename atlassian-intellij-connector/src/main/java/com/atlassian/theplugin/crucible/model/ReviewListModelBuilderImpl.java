@@ -47,4 +47,13 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 			}
 		});
 	}
+
+	public long getCurrentEpoch() {
+		return crucibleReviewListModel.getCurrentEpoch();
+	}
+
+	public long getEpoch() {
+		return crucibleReviewListModel.getEpoch();
+	}
+
 }
