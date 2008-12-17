@@ -15,10 +15,12 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -27,12 +29,12 @@ import java.util.Collection;
  */
 public interface CrucibleReviewListModel {
 	Collection<ReviewAdapter> getReviews();
-	void addReview(ReviewAdapter review);
-	void removeReview(ReviewAdapter review);
+//	void addReview(ReviewAdapter review);
+	//void removeReview(ReviewAdapter review);
 	void removeAll();
 	void addListener(CrucibleReviewListModelListener listener);
 	void removeListener(CrucibleReviewListModelListener listener);
-	void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews);
+	void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews);
 	ReviewAdapter getSelectedReview();
 	void setSelectedReview(ReviewAdapter review);
 }

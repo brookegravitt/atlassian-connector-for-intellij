@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -65,15 +65,15 @@ public abstract class CrucibleReviewListModelListenerHolder
 		}
 	}
 
-	public void reviewListUpdateStarted(ServerId serverId) {
+	public void reviewListUpdateStarted() {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewListUpdateStarted(serverId);
+			l.reviewListUpdateStarted();
 		}
 	}
 
-	public void reviewListUpdateFinished(ServerId serverId) {
+	public void reviewListUpdateFinished() {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewListUpdateFinished(serverId);
+			l.reviewListUpdateFinished();
 		}
 	}
 
@@ -89,20 +89,12 @@ public abstract class CrucibleReviewListModelListenerHolder
 		}
 	}
 
-	public void addReview(ReviewAdapter review) {
-		parent.addReview(review);
-	}
-
-	public void removeReview(ReviewAdapter review) {
-		parent.removeReview(review);
-	}
-
 	public void removeAll() {
 		parent.removeAll();
 	}
 
-	public void updateReviews(CrucibleServerCfg serverCfg, Collection<ReviewAdapter> updatedReviews) {
-		parent.updateReviews(serverCfg, updatedReviews);
+	public void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
+		parent.updateReviews(epoch, updatedReviews);
 	}
 
 	public ReviewAdapter getSelectedReview() {
