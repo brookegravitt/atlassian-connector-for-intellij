@@ -29,6 +29,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private JiraIssueGroupBy groupBy;
 	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
-	private JIRAManualFilterDetailsPanel manualFilterEditDetailsPanel;
+	@NotNull
+	private final JiraManualFilterDetailsPanel manualFilterEditDetailsPanel;
 	private JIRAFilterTree jiraFilterTree;
 
 
@@ -155,6 +157,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 
+		manualFilterEditDetailsPanel = new JiraManualFilterDetailsPanel(jiraFilterListModel, jiraProjectCfg,
+																			getProject(), jiraServerModel);
+
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}
@@ -193,8 +198,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				}
 			});
 
-		manualFilterEditDetailsPanel = new JIRAManualFilterDetailsPanel(jiraFilterListModel, jiraProjectCfg,
-																			getProject(), jiraServerModel);
 		addIssuesTreeListeners();
 		addSearchBoxListener();
 		freezeSynchronizator.setIssueModel(currentIssueListModel);
@@ -208,9 +211,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		getSplitLeftPane().setOrientation(true);
 
 		if (visible) {
-			if (manualFilterEditDetailsPanel != null) {
-				manualFilterEditDetailsPanel.setText(jiraFilterListModel.getJiraSelectedManualFilter().toHTML());
-			}
+			manualFilterEditDetailsPanel.setFilter(jiraFilterListModel.getJiraSelectedManualFilter());
 			getSplitLeftPane().setSecondComponent(manualFilterEditDetailsPanel);
 			getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_VISIBLE);
 
@@ -220,6 +221,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
+	@Override
 	public void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
@@ -885,15 +887,19 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	}
 
+	@Override
 	public JTree createRightTree() {
 		if (issueTree == null) {
 			issueTree = new JTree();
 		}
 
+		TreeSpeedSearch treeSpeedSearch = new TreeSpeedSearch(issueTree);
+
 		issueTreeBuilder.rebuild(issueTree, getRightPanel());
 		return issueTree;
 	}
 
+	@Override
 	public JTree createLeftTree() {
 		if (jiraFilterTree == null) {
 			jiraFilterTree = new JIRAFilterTree(getJIRAFilterListModel());
@@ -902,10 +908,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		return jiraFilterTree;
 	}
 
+	@Override
 	public void onEditButtonClickAction() {
 		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
+	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
 	}
