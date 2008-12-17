@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * User: pmaruszak
  */
-public class JIRAManualFilterDetailsPanel extends JPanel {
+public class JiraManualFilterDetailsPanel extends JPanel {
 	private JIRAFilterListModel listModel;
 	private final JPanel manualFilterDetailsPanel = new JPanel();
 	private final Project project;
@@ -43,7 +43,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 	private final JButton editButton = new JButton("Edit");
 	private JScrollPane scrollPane;
 
-	JIRAManualFilterDetailsPanel(JIRAFilterListModel listModel, JiraProjectConfiguration jiraProjectCfg, Project project,
+	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel, JiraProjectConfiguration jiraProjectCfg, Project project,
 						  JIRAServerModel jiraServerModel) {
 		super(new BorderLayout());
 		this.jiraProjectCfg = jiraProjectCfg;
@@ -55,7 +55,7 @@ public class JIRAManualFilterDetailsPanel extends JPanel {
 		listModel.addModelListener(new JIRAFilterListModelListener() {
 
 			public void modelChanged(JIRAFilterListModel aListModel) {
-				JIRAManualFilterDetailsPanel.this.listModel = aListModel;
+				JiraManualFilterDetailsPanel.this.listModel = aListModel;
 			}
 
 			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter, boolean isChanged) {
