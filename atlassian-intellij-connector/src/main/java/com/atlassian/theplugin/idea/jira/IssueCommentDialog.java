@@ -82,7 +82,7 @@ public class IssueCommentDialog extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		commentTextArea = new JTextArea();
 		commentTextArea.setLineWrap(true);
-		commentTextArea.setWrapStyleWord(false);
+		commentTextArea.setWrapStyleWord(true);
 		scrollPane1.setViewportView(commentTextArea);
 	}
 
