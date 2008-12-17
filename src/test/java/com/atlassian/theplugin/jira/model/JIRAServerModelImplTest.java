@@ -299,7 +299,6 @@ public class JIRAServerModelImplTest extends TestCase {
 		assertEquals(0, resolutions.size());
 	}
 
-	///CLOVER:OFF
 	private class JIRATestServerFacade implements JIRAServerFacade {
 		public int counter = 0;
 		public boolean throwException = false;
