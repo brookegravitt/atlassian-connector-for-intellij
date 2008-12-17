@@ -37,4 +37,6 @@ public interface CrucibleReviewListModel {
 	void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews);
 	ReviewAdapter getSelectedReview();
 	void setSelectedReview(ReviewAdapter review);
+	long getEpoch();
+	long getCurrentEpoch();
 }

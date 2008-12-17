@@ -65,6 +65,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	}
 
+	public long getCurrentEpoch() {
+		return epoch.get();
+	}
+
 
 	public synchronized void removeReview(ReviewAdapter review) {
 
