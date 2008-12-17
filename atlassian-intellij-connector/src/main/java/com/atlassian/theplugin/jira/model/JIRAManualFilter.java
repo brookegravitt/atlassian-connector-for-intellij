@@ -5,6 +5,7 @@ import com.atlassian.theplugin.jira.api.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.Map;
 
 /**
  * User: pmaruszak
@@ -12,7 +13,7 @@ import java.util.TreeMap;
 public final class JIRAManualFilter {
 	private static final int HASH_NUMBER = 31;
 
-	private enum QueryElement {
+	public enum QueryElement {
 		PROJECT("Project"),
 		ISSUE_TYPE("Issue Type"),
 		FIX_FOR("Fix For"),
@@ -63,24 +64,7 @@ public final class JIRAManualFilter {
 
 	}
 
-	public String toHTML() {
-		String html = "<html><table>";
-		TreeMap<QueryElement, ArrayList<String>> map = groupBy();
-
-		for (QueryElement element : map.keySet()) {
-			html += "<tr>&nbsp;<td align='right'>" + element.getName() + ":</td>&nbsp;<td align='left'>";
-			for (String value : map.get(element)) {
-				html += value + ", ";
-			}
-			html = html.substring(0, html.length() - 2);
-			html += "</td></tr>";
-		}
-
-		html += "</table></html>";
-		return html;
-	}
-
-	private TreeMap<QueryElement, ArrayList<String>> groupBy() {
+	public Map<QueryElement, ArrayList<String>> groupBy() {
 		TreeMap<QueryElement, ArrayList<String>> map = new TreeMap<QueryElement, ArrayList<String>>();
 
 		for (JIRAQueryFragment fragment : queryFragment) {
@@ -122,6 +106,7 @@ public final class JIRAManualFilter {
 		}
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -137,6 +122,7 @@ public final class JIRAManualFilter {
 
 	}
 
+	@Override
 	public int hashCode() {
 		int result;
 		result = (queryFragment != null ? queryFragment.hashCode() : 0);
