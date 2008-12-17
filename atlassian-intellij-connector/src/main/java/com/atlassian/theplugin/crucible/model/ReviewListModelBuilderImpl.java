@@ -9,6 +9,7 @@ import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
@@ -34,26 +35,32 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, cfgManager, project);
 	}
 
-	public void getReviewsFromServer(final long epoch) {
+	public void getReviewsFromServer(final boolean sendNotifications) {
+		final long epoch = getEpoch();
 		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
 
-		final CrucibleQueryExecutor crucibleQueryExecutor =
-				new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler, 0);
-		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
-				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter);
-		ApplicationManager.getApplication().invokeLater(new Runnable() {
-			public void run() {
-				crucibleReviewListModel.updateReviews(epoch, reviews);
-			}
-		});
+		try {
+			final CrucibleQueryExecutor crucibleQueryExecutor =
+					new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler, crucibleReviewListModel, epoch);
+			final Map<CrucibleFilter, ReviewNotificationBean> reviews =
+					crucibleQueryExecutor.runQuery(predefinedFilters, customFilter);
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					crucibleReviewListModel.updateReviews(epoch, reviews, sendNotifications);
+				}
+			});
+		} catch (InterruptedException ex) {
+			PluginUtil.getLogger().info(ex);
+
+		}
 	}
 
 	public long getCurrentEpoch() {
 		return crucibleReviewListModel.getCurrentEpoch();
 	}
 
-	public long getEpoch() {
+	private long getEpoch() {
 		return crucibleReviewListModel.getEpoch();
 	}
 

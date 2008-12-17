@@ -289,8 +289,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-				long epoch = reviewListModelBuilder.getEpoch();
-				reviewListModelBuilder.getReviewsFromServer(epoch);
+				reviewListModelBuilder.getReviewsFromServer(false);
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
