@@ -55,7 +55,6 @@ public final class PluginUtil {
 
     ///CLOVER:OFF
 	private PluginUtil() {
-		super();
 	}
 	///CLOVER:ON
 
