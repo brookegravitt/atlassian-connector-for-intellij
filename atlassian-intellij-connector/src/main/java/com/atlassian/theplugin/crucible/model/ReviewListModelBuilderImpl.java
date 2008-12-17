@@ -40,7 +40,8 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 
 		final CrucibleQueryExecutor crucibleQueryExecutor =
 				new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler, 0);
-		final Map<CrucibleFilter, ReviewNotificationBean> reviews = crucibleQueryExecutor.runQuery(predefinedFilters, customFilter);
+		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
+				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter);
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				crucibleReviewListModel.updateReviews(epoch, reviews);

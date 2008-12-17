@@ -36,7 +36,8 @@ public class CrucibleQueryExecutor {
 		this.generation = generation;
 	}
 
-	public Map<CrucibleFilter, ReviewNotificationBean> runQuery(final Boolean[] predefinedFilters, final CustomFilter manualFilter) {
+	public Map<CrucibleFilter, ReviewNotificationBean> runQuery(final Boolean[] predefinedFilters,
+																final CustomFilter manualFilter) {
 		try {
 			// collect review info from each server and each required filter
 			final Map<CrucibleFilter, ReviewNotificationBean> reviews
