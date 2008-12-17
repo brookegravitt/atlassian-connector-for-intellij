@@ -35,7 +35,7 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, cfgManager, project);
 	}
 
-	public void getReviewsFromServer(final boolean sendNotifications) {
+	public synchronized void getReviewsFromServer(final boolean sendNotifications) {
 		final long epoch = getEpoch();
 		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
