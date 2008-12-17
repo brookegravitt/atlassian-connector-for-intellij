@@ -42,6 +42,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	private final JIRAServerModel jiraServerModel;
 	private final JButton editButton = new JButton("Edit");
 	private JScrollPane scrollPane;
+	private static final int VAL_COL = 4;
 
 	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel, JiraProjectConfiguration jiraProjectCfg, Project project,
 						  JIRAServerModel jiraServerModel) {
@@ -158,13 +159,13 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 			builder.addLabel(element.getName() + ":", cc);
 			StringBuilder right = new StringBuilder();
 
-			for (Iterator<String> it = map.get(element).iterator(); it.hasNext(); ) {
+			for (Iterator<String> it = map.get(element).iterator(); it.hasNext();) {
 				right.append(it.next());
 				if (it.hasNext()) {
 					right.append(", ");
 				}
 			}
-			builder.addLabel("<html>" + right.toString(), cc.xy(4, row * 2));
+			builder.addLabel("<html>" + right.toString(), cc.xy(VAL_COL, row * 2));
 			row++;
 		}
 		// this two line (simulating JScrollPane resize)
@@ -184,7 +185,9 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	}
 
 
-	private static class MyNewPanel extends JPanel {
+	private static final class MyNewPanel extends JPanel {
+		private static final int VAL_COLUMN = 4;
+
 		private MyNewPanel() {
 			setBorder(new BevelBorder(BevelBorder.RAISED, Color.RED, Color.CYAN));
 			FormLayout layout = new FormLayout("12dlu, right:p, 14dlu, left:d, 12dlu");
@@ -197,13 +200,13 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 //			final JTextArea wrapLabel = new JTextArea("Very long text which should be wraaaaaaped wrap!");
 //			wrapLabel.setWrapStyleWord(false);
 //			wrapLabel.setLineWrap(true);
-			builder.add(wrapLabel, cc.xy(4, 1));
+			builder.add(wrapLabel, cc.xy(VAL_COLUMN, 1));
 			builder.appendRow("p");
 			cc.xy(2, 2).vAlign = CellConstraints.TOP;
 			builder.addLabel("My Label:", cc);
 			final Component wrapLabel2 = new JLabel("<html>Very long text fds kdsfkl kdsfh kl ldsfjlkjdfs"
 					+ " ljdfs lksjdjfkldsjfklsd lfjwhich should be wraaaaaaped wrap!");
-			builder.add(wrapLabel2, cc.xy(4, 2));
+			builder.add(wrapLabel2, cc.xy(VAL_COLUMN, 2));
 			add(wrapLabel);
 		}
 	}

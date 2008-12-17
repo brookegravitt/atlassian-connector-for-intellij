@@ -22,11 +22,17 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
 
-public class SwingAppRunner {
+public final class SwingAppRunner {
+	private static final int WIDTH = 500;
+	private static final int HEIGHT = 180;
+
+	private SwingAppRunner() {
+	}
+
 	public static void run(@NotNull JComponent component) {
 		JFrame frame = new JFrame("ServerConfigPanel test");
 		//Finish setting up the frame, and show it.
-		frame.setSize(500, 180);
+		frame.setSize(WIDTH, HEIGHT);
 		frame.getContentPane().add(component, BorderLayout.CENTER);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
