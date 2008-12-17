@@ -114,7 +114,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized void updateReviews(long anEpoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
+	public synchronized void updateReviews(final long anEpoch,
+							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
+							  final boolean sendNotifications) {
 
 		if (anEpoch != this.epoch.get()) {
 			return;

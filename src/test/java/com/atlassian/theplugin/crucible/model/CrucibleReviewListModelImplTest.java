@@ -691,7 +691,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		public void updateReviews(Collection<ReviewAdapter> reviews) {
 			updatedReviews.get(PredefinedFilter.Open).getReviews().clear();
 			updatedReviews.get(PredefinedFilter.Open).getReviews().addAll(reviews);
-			super.updateReviews(0, updatedReviews);
+			super.updateReviews(0, updatedReviews, false);
 		}
 	}
 }

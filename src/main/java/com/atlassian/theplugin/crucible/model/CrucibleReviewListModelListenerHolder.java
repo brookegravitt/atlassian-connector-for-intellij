@@ -28,7 +28,7 @@ import java.util.Map;
  * Date: Dec 15, 2008
  * Time: 4:07:35 PM
  */
-public abstract class CrucibleReviewListModelListenerHolder 
+public abstract class CrucibleReviewListModelListenerHolder
 		implements CrucibleReviewListModelListener, CrucibleReviewListModel {
 
 	private List<CrucibleReviewListModelListener> listeners = new ArrayList<CrucibleReviewListModelListener>();
@@ -93,8 +93,10 @@ public abstract class CrucibleReviewListModelListenerHolder
 		parent.removeAll();
 	}
 
-	public void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> updatedReviews) {
-		parent.updateReviews(epoch, updatedReviews);
+	public void updateReviews(final long epoch,
+							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
+							  final boolean sendNotifications) {
+		parent.updateReviews(epoch, updatedReviews, sendNotifications);
 	}
 
 	public ReviewAdapter getSelectedReview() {
