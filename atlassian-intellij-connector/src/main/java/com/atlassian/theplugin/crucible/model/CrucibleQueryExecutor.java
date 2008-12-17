@@ -22,143 +22,145 @@ public class CrucibleQueryExecutor {
 	private final CfgManager cfgManager;
 	private final Project project;
 	private final MissingPasswordHandler missingPasswordHandler;
-	private final long generation;
+	private final CrucibleReviewListModel crucibleReviewListModel;
+	private final long epoch;
 
 	public CrucibleQueryExecutor(final CrucibleServerFacade crucibleServerFacade,
 								 final CfgManager cfgManager,
 								 final Project project,
 								 final MissingPasswordHandler missingPasswordHandler,
-								 final long generation) {
+								 final CrucibleReviewListModel crucibleReviewListModel,
+								 final long epoch) {
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.missingPasswordHandler = missingPasswordHandler;
-		this.generation = generation;
+		this.crucibleReviewListModel = crucibleReviewListModel;
+		this.epoch = epoch;
 	}
 
-	public Map<CrucibleFilter, ReviewNotificationBean> runQuery(final Boolean[] predefinedFilters,
-																final CustomFilter manualFilter) {
-		try {
-			// collect review info from each server and each required filter
-			final Map<CrucibleFilter, ReviewNotificationBean> reviews
-					= new HashMap<CrucibleFilter, ReviewNotificationBean>();
+	public Map<CrucibleFilter, ReviewNotificationBean> runQuery(
+			final Boolean[] predefinedFilters, final CustomFilter manualFilter) throws InterruptedException {
+		// collect review info from each server and each required filter
+		final Map<CrucibleFilter, ReviewNotificationBean> reviews
+				= new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
-			for (final CrucibleServerCfg server : retrieveAllCrucibleServers()) {
+		for (final CrucibleServerCfg server : retrieveAllCrucibleServers()) {
 
-				final List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
-				boolean communicationFailed = false;
+			final List<ReviewAdapter> allServerReviews = new ArrayList<ReviewAdapter>();
+			boolean communicationFailed = false;
 
-				if (server.isEnabled()) {
+			if (server.isEnabled()) {
 
-					// retrieve reviews for predefined filters
-					for (int i = 0;
-						 i < predefinedFilters.length
-								 && i < PredefinedFilter.values().length; i++) {
+				// retrieve reviews for predefined filters
+				for (int i = 0;
+					 i < predefinedFilters.length
+							 && i < PredefinedFilter.values().length; i++) {
 
-						// if predefined filter is enabled
-						if (predefinedFilters[i]) {
-							PredefinedFilter filter = PredefinedFilter.values()[i];
-
-							// create notification bean for the filter if not exist
-							if (!reviews.containsKey(filter)) {
-								ReviewNotificationBean predefinedFiterNofificationbean = new ReviewNotificationBean();
-								List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
-								predefinedFiterNofificationbean.setReviews(list);
-								reviews.put(filter, predefinedFiterNofificationbean);
-							}
-
-							ReviewNotificationBean predefinedFiterNofificationbean = reviews.get(filter);
-
-							// get reviews for filter from the server
-							try {
-								PluginUtil.getLogger().debug("Crucible: updating status for server: "
-										+ server.getUrl() + ", filter type: " + filter);
-
-								List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
-								List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
-								for (Review r : review) {
-									final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
-									reviewData.add(reviewAdapter);
-									allServerReviews.add(reviewAdapter);
-								}
-
-								predefinedFiterNofificationbean.getReviews().addAll(reviewData);
-
-							} catch (ServerPasswordNotProvidedException exception) {
-								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-										ModalityState.defaultModalityState());
-								predefinedFiterNofificationbean.setException(exception);
-								communicationFailed = true;
-								break;
-							} catch (RemoteApiLoginFailedException exception) {
-								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-										ModalityState.defaultModalityState());
-								predefinedFiterNofificationbean.setException(exception);
-								communicationFailed = true;
-								break;
-							} catch (RemoteApiException e) {
-								PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-										+ " server", e);
-								predefinedFiterNofificationbean.setException(e);
-								communicationFailed = true;
-								break;
-							}
-						}
-					}
-
-					// retrieve reviews for custom filter
-					if (manualFilter != null && manualFilter.isEnabled()) {
+					// if predefined filter is enabled
+					if (predefinedFilters[i]) {
+						PredefinedFilter filter = PredefinedFilter.values()[i];
 
 						// create notification bean for the filter if not exist
-						if (!reviews.containsKey(manualFilter.getFilterName())) {
+						if (!reviews.containsKey(filter)) {
+							ReviewNotificationBean predefinedFiterNofificationbean = new ReviewNotificationBean();
 							List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
-							ReviewNotificationBean bean = new ReviewNotificationBean();
-							bean.setReviews(list);
-							reviews.put(manualFilter, bean);
+							predefinedFiterNofificationbean.setReviews(list);
+							reviews.put(filter, predefinedFiterNofificationbean);
 						}
 
-						ReviewNotificationBean customFilterNotificationBean = reviews.get(manualFilter.getFilterName());
+						ReviewNotificationBean predefinedFiterNofificationbean = reviews.get(filter);
 
-						if (server.getServerId().toString().equals(manualFilter.getServerUid())) {
+						// get reviews for filter from the server
+						try {
+							PluginUtil.getLogger().debug("Crucible: updating status for server: "
+									+ server.getUrl() + ", filter type: " + filter);
 
-							// get reviews for filter from the server
-							try {
-								PluginUtil.getLogger().debug("Crucible: updating status for server: "
-										+ server.getUrl() + ", custom filter");
-								List<Review> customFilter
-										= crucibleServerFacade.getReviewsForCustomFilter(server, manualFilter);
-
-
-								List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(customFilter.size());
-								for (Review r : customFilter) {
-									final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
-									reviewData.add(reviewAdapter);
-									allServerReviews.add(reviewAdapter);
-								}
-
-								customFilterNotificationBean.getReviews().addAll(reviewData);
-
-							} catch (ServerPasswordNotProvidedException exception) {
-								ApplicationManager.getApplication().invokeLater(
-										new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
-										ModalityState.defaultModalityState());
-								customFilterNotificationBean.setException(exception);
-								communicationFailed = true;
-							} catch (RemoteApiException e) {
-								PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
-										+ " server", e);
-								customFilterNotificationBean.setException(e);
-								communicationFailed = true;
+							if (crucibleReviewListModel.getCurrentEpoch() != epoch) {
+								throw new InterruptedException();
 							}
+
+							List<Review> review = crucibleServerFacade.getReviewsForFilter(server, filter);
+							List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
+							for (Review r : review) {
+								final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
+								reviewData.add(reviewAdapter);
+								allServerReviews.add(reviewAdapter);
+							}
+
+							predefinedFiterNofificationbean.getReviews().addAll(reviewData);
+
+						} catch (ServerPasswordNotProvidedException exception) {
+							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+									ModalityState.defaultModalityState());
+							predefinedFiterNofificationbean.setException(exception);
+							communicationFailed = true;
+							break;
+						} catch (RemoteApiLoginFailedException exception) {
+							ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+									ModalityState.defaultModalityState());
+							predefinedFiterNofificationbean.setException(exception);
+							communicationFailed = true;
+							break;
+						} catch (RemoteApiException e) {
+							PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
+									+ " server", e);
+							predefinedFiterNofificationbean.setException(e);
+							communicationFailed = true;
+							break;
+						}
+					}
+				}
+
+				// retrieve reviews for custom filter
+				if (manualFilter != null && manualFilter.isEnabled()) {
+
+					// create notification bean for the filter if not exist
+					if (!reviews.containsKey(manualFilter.getFilterName())) {
+						List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
+						ReviewNotificationBean bean = new ReviewNotificationBean();
+						bean.setReviews(list);
+						reviews.put(manualFilter, bean);
+					}
+
+					ReviewNotificationBean customFilterNotificationBean = reviews.get(manualFilter.getFilterName());
+
+					if (server.getServerId().toString().equals(manualFilter.getServerUid())) {
+
+						// get reviews for filter from the server
+						try {
+							PluginUtil.getLogger().debug("Crucible: updating status for server: "
+									+ server.getUrl() + ", custom filter");
+							List<Review> customFilter
+									= crucibleServerFacade.getReviewsForCustomFilter(server, manualFilter);
+
+
+							List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(customFilter.size());
+							for (Review r : customFilter) {
+								final ReviewAdapter reviewAdapter = new ReviewAdapter(r, server);
+								reviewData.add(reviewAdapter);
+								allServerReviews.add(reviewAdapter);
+							}
+
+							customFilterNotificationBean.getReviews().addAll(reviewData);
+
+						} catch (ServerPasswordNotProvidedException exception) {
+							ApplicationManager.getApplication().invokeLater(
+									new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
+									ModalityState.defaultModalityState());
+							customFilterNotificationBean.setException(exception);
+							communicationFailed = true;
+						} catch (RemoteApiException e) {
+							PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
+									+ " server", e);
+							customFilterNotificationBean.setException(e);
+							communicationFailed = true;
 						}
 					}
 				}
 			}
-			return reviews;
-		} catch (Throwable t) {
-			PluginUtil.getLogger().error(t);
 		}
-		return null;
+		return reviews;
 	}
 
 	private Collection<CrucibleServerCfg> retrieveAllCrucibleServers() {

@@ -62,8 +62,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	 */
 	private void doRun() {
 		try {
-			long epoch = reviewListModelBuilder.getEpoch();
-			reviewListModelBuilder.getReviewsFromServer(epoch);
+			reviewListModelBuilder.getReviewsFromServer(true);
 		} catch (Throwable t) {
 			PluginUtil.getLogger().error(t);
 		}
