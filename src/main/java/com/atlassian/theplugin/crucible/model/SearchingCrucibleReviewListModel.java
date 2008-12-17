@@ -63,4 +63,14 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 	public Collection<ReviewAdapter> getReviews() {
 		return search(parent.getReviews());
 	}
+
+	public long getEpoch() {
+		//here epoch is not needed
+		return 0;
+	}
+
+	public long getCurrentEpoch() {
+		//here epoch is not needed
+		return 0;
+	}
 }
