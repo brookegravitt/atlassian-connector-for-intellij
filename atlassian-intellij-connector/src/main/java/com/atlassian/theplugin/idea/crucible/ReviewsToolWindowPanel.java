@@ -78,7 +78,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private final CrucibleReviewListModel reviewListModel;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
-								  @NotNull final ProjectCfgManager projectCfgManager, @NotNull final CrucibleReviewListModel reviewListModel,
+								  @NotNull final ProjectCfgManager projectCfgManager,
+								  @NotNull final CrucibleReviewListModel reviewListModel,
 								  @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 		this.projectCfgManager = projectCfgManager;
