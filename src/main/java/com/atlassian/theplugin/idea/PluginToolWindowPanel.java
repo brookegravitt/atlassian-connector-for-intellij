@@ -67,12 +67,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 			}
 		});
 
-
 		add(splitPane, BorderLayout.CENTER);
-
-
-
-
 	}
 
 	public CfgManager getCfgManager() {
@@ -112,8 +107,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		leftUpperScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-
-
 		leftUpperScrollPane.setWheelScrollingEnabled(true);
 		splitLeftPane = new Splitter(false, MANUAL_FILTER_PROPORTION_HIDDEN);
 		splitLeftPane.setOrientation(true);
@@ -136,7 +129,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		return leftPanel;
 
 	}
-
 
 	public JScrollPane getRightScrollPane() {
 		return rightScrollPane;
