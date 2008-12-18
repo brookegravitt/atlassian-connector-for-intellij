@@ -89,9 +89,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(reviewListModel);
 		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
-
 		init();
-		filterTree.addSelectionListener(new LocalCrucibleFilterListModelLisener());
+		reviewListModel.addListener(new LocalCrucibleReviewListModelListener());
+		filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
 	}
 
 	@Override
@@ -190,11 +190,27 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 	}
 
+	private void setPanelEnabled(boolean enabled) {
+		if (reviewTree != null) {
+			reviewTree.setEnabled(enabled);
+		}
+		if (filterTree != null) {
+			filterTree.setEnabled(enabled);
+		}
+		if (getSearchField() != null) {
+			getSearchField().setEnabled(enabled);
+		}
+		if (getStatusBarPane() != null) {
+			getStatusBarPane().setEnabled(enabled);
+		}
+	}
+
 	@Nullable
 	public Object getData(@NonNls String dataId) {
 		if (dataId.equals(Constants.REVIEW)) {
-//			return reviewListModel.getSelectedReview();
 			return reviewTree.getSelectedReview();
+		} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
+			return reviewTree.isEnabled();
 		}
 		return null;
 	}
@@ -295,7 +311,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		ProgressManager.getInstance().run(refresh);
 	}
 
-	private class LocalCrucibleFilterListModelLisener implements CrucibleFilterSelectionListener {
+	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
 		public void filterChanged() {
 
 		}
@@ -303,7 +319,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		public void selectedCustomFilter(CustomFilter customFilter) {
 			showManualFilterPanel(true);
 		}
-
 
 		public void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters) {
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
@@ -325,6 +340,15 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		public void unselectedCustomFilter() {
 			showManualFilterPanel(false);
 		}
+	}
 
+	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+		public void reviewListUpdateStarted() {
+			setPanelEnabled(false);
+		}
+
+		public void reviewListUpdateFinished() {
+			setPanelEnabled(true);
+		}
 	}
 }
