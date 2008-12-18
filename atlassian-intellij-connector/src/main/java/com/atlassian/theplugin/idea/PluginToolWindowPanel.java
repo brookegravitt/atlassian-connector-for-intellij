@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.jira.StatusBarIssuesPane;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -26,7 +25,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	private Project project;
-	private CfgManager cfgManager;
 	private StatusBarIssuesPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, ISSUES_PANEL_SPLIT_RATIO);
 	private Splitter splitLeftPane;
@@ -39,11 +37,9 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	private String rightToolbarName;
 	private String leftToolbarName;
 
-	public PluginToolWindowPanel(@NotNull final Project project, @NotNull final CfgManager cfgManager,
-			String leftToolbarName, String rightToolbarName) {
+	public PluginToolWindowPanel(@NotNull final Project project, String leftToolbarName, String rightToolbarName) {
 
 		this.project = project;
-		this.cfgManager = cfgManager;
 		setLayout(new BorderLayout());
 		this.leftToolbarName = leftToolbarName;
 		this.rightToolbarName = rightToolbarName;
@@ -67,11 +63,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		});
 
 		add(splitPane, BorderLayout.CENTER);
-	}
-
-	@NotNull
-	public CfgManager getCfgManager() {
-		return cfgManager;
 	}
 
 	public void init() {

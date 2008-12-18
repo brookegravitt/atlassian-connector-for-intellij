@@ -1,18 +1,22 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
@@ -33,18 +37,22 @@ import java.util.Collection;
 public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CustomFilterBean filter;
 	private final ScrollableTwoColumnPanel panel;
+	private final ProjectCfgManager projectCfgManager;
 	private final CrucibleProjectConfiguration projectCrucibleCfg;
 	private final Project project;
-	private final CfgManager cfgManager;
+	private final CrucibleServerFacade crucibleFacade;
+	private final UiTaskExecutor uiTaskExecutor;
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
-	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final CfgManager cfgManager,
-			@NotNull final CrucibleServerFacade crucibleServerFacade, final CrucibleProjectConfiguration crucibleCfg,
-			final FilterTree tree) {
+	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final ProjectCfgManager projectCfgManager,
+			final CrucibleProjectConfiguration crucibleCfg, final FilterTree tree,
+			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(new BorderLayout());
+		this.projectCfgManager = projectCfgManager;
 		this.projectCrucibleCfg = crucibleCfg;
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.crucibleFacade = crucibleFacade;
+		this.uiTaskExecutor = uiTaskExecutor;
 		panel = new ScrollableTwoColumnPanel();
 
 		filter = crucibleCfg.getCrucibleFilters().getManualFilter();
@@ -78,8 +86,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 			public void actionPerformed(ActionEvent event) {
 
-				CrucibleCustomFilterDialog dialog = new CrucibleCustomFilterDialog(
-						project, cfgManager, projectCrucibleCfg.getCrucibleFilters().getManualFilter());
+				final CrucibleCustomFilterDialog dialog = new CrucibleCustomFilterDialog(
+						project, projectCfgManager.getCfgManager(), projectCrucibleCfg.getCrucibleFilters().getManualFilter());
 
 				dialog.show();
 
@@ -98,16 +106,34 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	}
 
 	private void updateDetails() {
-		final Collection<ScrollableTwoColumnPanel.Entry> entries = (filter != null)
-				? getEntries(filter) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
-		panel.updateContent(entries);
+		uiTaskExecutor.execute(new UiTask() {
+
+			Collection<ScrollableTwoColumnPanel.Entry> entries;
+			public void run() throws Exception {
+				entries = (filter != null) ? getEntries(filter) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
+			}
+
+			public void onSuccess() {
+				panel.updateContent(entries);
+			}
+
+			public void onError() {
+			}
+
+			public String getLastAction() {
+				return "resolving Crucible dictionary data";
+			}
+
+			public Component getComponent() {
+				return CrucibleCustomFilterDetailsPanel.this;
+			}
+		});
 	}
 
-	private static void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entries,
+	private void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entries,
 			CrucibleServerCfg serverCfg) {
 		if (username.length() > 0) {
-			CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
-			final String displayName = serverCfg != null ? facade.getDisplayName(serverCfg, username) : null;
+			final String displayName = serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null;
 			entries.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
 		}
 
@@ -119,11 +145,27 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		final String serverId = customFilter.getServerUid();
 		// server is null when component is initialized by the PICO for the first time
 		// todo force cfgManager to read configuration earlier
-		final ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), new ServerId(serverId));
+		final ServerCfg server = projectCfgManager.getCfgManager().getServer(CfgUtil.getProjectId(project), new ServerId(serverId));
 		final CrucibleServerCfg crucibleServerCfg = (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
 		entries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
-		entries.add(new ScrollableTwoColumnPanel.Entry("Project key", customFilter.getProjectKey()));
+		String projectName = customFilter.getProjectKey();
+		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
+			try {
+				CrucibleProject crucibleProject = crucibleServerCfg != null
+						? crucibleFacade.getProject(crucibleServerCfg, customFilter.getProjectKey())
+						: null;
+				if (crucibleProject != null) {
+					projectName = crucibleProject.getName();
+				}
+			} catch (RemoteApiException e) {
+				// nothing here
+			} catch (ServerPasswordNotProvidedException e) {
+				// nothing here
+			}
+
+		}
+		entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 		entries.add(new ScrollableTwoColumnPanel.Entry("State", states));
 		addIfNotEmpty(customFilter.getAuthor(), "Author", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getModerator(), "Moderator", entries, crucibleServerCfg);

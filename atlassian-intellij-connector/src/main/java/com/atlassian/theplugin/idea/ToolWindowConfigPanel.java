@@ -47,10 +47,7 @@ public class ToolWindowConfigPanel extends JPanel {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 
 				Configurable component = project.getComponent(ProjectConfigurationComponent.class);
-				ShowSettingsUtil.getInstance().editConfigurable(
-                        IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(ToolWindowConfigPanel.this)),
-						component
-						);
+				ShowSettingsUtil.getInstance().editConfigurable(project, component);
 			}
 		});
 

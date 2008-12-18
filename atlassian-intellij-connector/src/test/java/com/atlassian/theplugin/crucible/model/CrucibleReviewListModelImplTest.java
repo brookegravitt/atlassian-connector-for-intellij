@@ -15,6 +15,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -480,6 +481,12 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public String getDisplayName(@NotNull final CrucibleServerCfg server, @NotNull final String username) {
+			return null;
+		}
+
+		@Nullable
+		public CrucibleProject getProject(@NotNull final CrucibleServerCfg server, @NotNull final String projectKey)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
 
