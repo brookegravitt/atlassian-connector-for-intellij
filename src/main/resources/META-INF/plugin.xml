@@ -116,6 +116,8 @@
 
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
                 serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManager"
+						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManager"/>
 
 	</extensions>
 
