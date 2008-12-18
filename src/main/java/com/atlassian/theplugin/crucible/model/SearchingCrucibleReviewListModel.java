@@ -16,11 +16,14 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: jgorycki
@@ -43,7 +46,7 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 		}
 		this.searchTerm = searchTerm.toLowerCase();
 
-		modelChanged();
+		modelChanged(new UpdateContext(UpdateReason.SEARCH, null));
 	}
 
 	private Collection<ReviewAdapter> search(Collection<ReviewAdapter> col) {
@@ -64,13 +67,13 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 		return search(parent.getReviews());
 	}
 
-	public long getEpoch() {
-		//here epoch is not needed
-		return 0;
+	public void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews, UpdateReason updateReason) {
 	}
 
-	public long getCurrentEpoch() {
-		//here epoch is not needed
-		return 0;
+	public void rebuildModel(UpdateReason updateReason) {
+	}
+
+	public boolean isRequestObsolete(long epoch) {
+		return false;
 	}
 }

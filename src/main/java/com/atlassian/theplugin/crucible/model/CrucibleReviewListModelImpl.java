@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,6 +23,11 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private AtomicLong epoch = new AtomicLong(0);
 
 	private CrucibleReviewListener reviewListener = new LocalCrucibleReviewListener(modelListeners);
+	private final ReviewListModelBuilder reviewListModelBuilder;
+
+	public CrucibleReviewListModelImpl(@NotNull final ReviewListModelBuilder reviewListModelBuilder) {
+		this.reviewListModelBuilder = reviewListModelBuilder;
+	}
 
 	public synchronized Collection<ReviewAdapter> getReviews() {
 		Set<ReviewAdapter> plainReviews = new HashSet<ReviewAdapter>();
@@ -31,12 +37,24 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return plainReviews;
 	}
 
-	public synchronized void addReview(long anEpoch, CrucibleFilter crucibleFilter, ReviewAdapter review) {
+	private synchronized long startNewRequest() {
+		return epoch.incrementAndGet();
+	}
+
+	public boolean isRequestObsolete(long currentEpoch) {
+		return epoch.get() > currentEpoch;
+	}
+
+	public void rebuildModel(UpdateReason updateReason) {
+		long newRequest = startNewRequest();
+		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null));
+		reviewListModelBuilder.getReviewsFromServer(this, updateReason, newRequest);
+	}
+
+	private synchronized void addReview(CrucibleFilter crucibleFilter,
+									   ReviewAdapter review, UpdateReason updateReason) {
 		ReviewAdapter a = null;
 
-		if (anEpoch != this.epoch.get()) {
-			return;
-		}
 		Collection<ReviewAdapter> localReviews = getReviews();
 		if (localReviews.contains(review)) {
 			for (ReviewAdapter reviewAdapter : localReviews) {
@@ -49,45 +67,30 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		if (a != null) {
 			a.fillReview(review);
+			if (!this.reviews.containsKey(crucibleFilter)) {
+				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+			}
+			this.reviews.get(crucibleFilter).add(review);
 		} else {
 			if (!this.reviews.containsKey(crucibleFilter)) {
 				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
 			}
 			this.reviews.get(crucibleFilter).add(review);
 			review.addReviewListener(reviewListener);
-			notifyReviewAdded(review);
+			notifyReviewAdded(new UpdateContext(updateReason, review));
 		}
 
 	}
 
-	public long getEpoch() {
-		return epoch.addAndGet(1);
-
-	}
-
-	public long getCurrentEpoch() {
-		return epoch.get();
-	}
-
-
-	public synchronized void removeReview(ReviewAdapter review) {
-
+	private synchronized void removeReview(ReviewAdapter review, UpdateReason updateReason) {
 		for (CrucibleFilter filter : reviews.keySet()) {
 
 			if (reviews.get(filter).contains(review)) {
 				review.removeReviewListener(reviewListener);
 				reviews.get(filter).remove(review);
-				notifyReviewRemoved(review);
+				UpdateContext updateContext = new UpdateContext(updateReason, review);
+				notifyReviewRemoved(updateContext);
 			}
-		}
-	}
-
-	public synchronized void removeAll() {
-		Set<ReviewAdapter> removed = new HashSet<ReviewAdapter>();
-		removed.addAll(getReviews());
-		reviews.clear();
-		for (ReviewAdapter r : removed) {
-			notifyReviewRemoved(r);
 		}
 	}
 
@@ -114,15 +117,12 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized void updateReviews(final long anEpoch,
+	public synchronized void updateReviews(final long executedEpoch,
 										   final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
-										   final boolean sendNotifications) {
-
-		if (anEpoch != this.epoch.get()) {
+										   final UpdateReason updateReason) {
+		if (executedEpoch != this.epoch.get()) {
 			return;
 		}
-
-		notifyReviewListUpdateStarted();
 
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
@@ -130,7 +130,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
 			}
 			for (ReviewAdapter reviewAdapter : r) {
-				addReview(anEpoch, crucibleFilter, reviewAdapter);
+				addReview(crucibleFilter, reviewAdapter, updateReason);
 			}
 		}
 
@@ -146,7 +146,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		removed.removeAll(reviewSet);
 
 		for (ReviewAdapter r : removed) {
-			removeReview(r);
+			removeReview(r, updateReason);
 		}
 
 		// remove categories
@@ -157,37 +157,30 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				crucibleFilterIterator.remove();
 			}
 		}
-
-		notifyReviewListUpdateFinished();
+		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 	}
 
-	private void notifyReviewChanged(ReviewAdapter review) {
+	private void notifyReviewAdded(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewChanged(review);
+			listener.reviewAdded(updateContext);
 		}
 	}
 
-	private void notifyReviewAdded(ReviewAdapter review) {
+	private void notifyReviewRemoved(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewAdded(review);
+			listener.reviewRemoved(updateContext);
 		}
 	}
 
-	private void notifyReviewRemoved(ReviewAdapter review) {
+	private void notifyReviewListUpdateStarted(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewRemoved(review);
+			listener.reviewListUpdateStarted(updateContext);
 		}
 	}
 
-	private void notifyReviewListUpdateStarted() {
+	private void notifyReviewListUpdateFinished(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewListUpdateStarted();
-		}
-	}
-
-	private void notifyReviewListUpdateFinished() {
-		for (CrucibleReviewListModelListener listener : modelListeners) {
-			listener.reviewListUpdateFinished();
+			listener.reviewListUpdateFinished(updateContext);
 		}
 	}
 
@@ -231,7 +224,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		@Override
 		public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
 			for (CrucibleReviewListModelListener listener : modelListeners) {
-				listener.reviewChangedWithoutFiles(newReview);
+				listener.reviewChangedWithoutFiles(new UpdateContext(null, newReview));
 			}
 		}
 

@@ -29,15 +29,19 @@ import java.util.Map;
  */
 public interface CrucibleReviewListModel {
 	Collection<ReviewAdapter> getReviews();
-//	void addReview(ReviewAdapter review);
-	//void removeReview(ReviewAdapter review);
-	void removeAll();
+
 	void addListener(CrucibleReviewListModelListener listener);
+
 	void removeListener(CrucibleReviewListModelListener listener);
-	void updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews, 
-					   final boolean sendNotifications);
+
+	void updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews,
+					   final UpdateReason updateReason);
+
 	ReviewAdapter getSelectedReview();
+
 	void setSelectedReview(ReviewAdapter review);
-	long getEpoch();
-	long getCurrentEpoch();
+
+	void rebuildModel(UpdateReason updateReason);
+
+	boolean isRequestObsolete(long epoch);
 }
