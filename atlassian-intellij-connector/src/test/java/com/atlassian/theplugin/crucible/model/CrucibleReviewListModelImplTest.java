@@ -14,6 +14,7 @@ import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -475,6 +476,10 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private class MyFacade implements CrucibleServerFacade {
 		public Review createReview(CrucibleServerCfg server, Review review)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public String getDisplayName(@NotNull final CrucibleServerCfg server, @NotNull final String username) {
 			return null;
 		}
 

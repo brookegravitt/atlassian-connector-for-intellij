@@ -19,6 +19,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -60,8 +61,8 @@ public class NewVersionInfoForm extends DialogWrapper {
 		$$$setupUI$$$();
 		createUIComponents();
 		Version aVersion = versionInfo.getVersion();
-		String versionInfoUpgrade = "<html>Do you want to upgrade from <b>" + PluginUtil.getInstance().getVersion()
-				+ " to <i>" + aVersion + "</i></b>?<br></html>";
+		String versionInfoUpgrade = "<html>Do you want to upgrade from <b>" + PluginUtil.getInstance().getVersion() + " to <i>"
+				+ aVersion + "</i></b>?<br></html>";
 
 		setTitle("New Atlassian Connector version " + aVersion + " is available.");
 
@@ -86,7 +87,7 @@ public class NewVersionInfoForm extends DialogWrapper {
 	protected void doOKAction() {
 		Task.Backgroundable downloader = new Task.Backgroundable(project, DOWNLOAD_TITLE, false) {
 			@Override
-			public void run(ProgressIndicator indicator) {
+			public void run(@NotNull ProgressIndicator indicator) {
 				new PluginDownloader(versionInfo, updateConfiguration).run();
 			}
 		};
@@ -97,10 +98,8 @@ public class NewVersionInfoForm extends DialogWrapper {
 
 	@Override
 	public void doCancelAction() {
-		Messages.showMessageDialog("You can always install " + versionInfo.getVersion()
-				+ " version through " + PluginUtil.getInstance().getName()
-				+ " configuration panel (Preferences | IDE Settings | "
-				+ PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
+		Messages.showMessageDialog("You can always install " + versionInfo.getVersion() + " version through " + PluginUtil.getInstance().getName()
+				+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
 				Messages.getInformationIcon());
 
 

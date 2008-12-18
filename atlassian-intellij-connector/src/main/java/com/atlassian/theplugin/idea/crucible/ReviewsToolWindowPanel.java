@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.*;
@@ -103,7 +104,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		initToolBar();
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
-				getProject(), getCfgManager(), crucibleProjectConfiguration, filterTree);
+				getProject(), getCfgManager(), CrucibleServerFacadeImpl.getInstance(), crucibleProjectConfiguration, filterTree);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh();
