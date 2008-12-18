@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -9,8 +9,15 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Date: Dec 5, 2008
  * Time: 2:26:34 PM
  */
-public class CollapseAllAction extends AnAction {
+public class CollapseAllAction extends AbstractCrucibleToolbarAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getReviewsToolWindowPanel(e).collapseAllRightTreeNodes();
+		ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
+		if (panel != null) {
+			panel.collapseAllRightTreeNodes();
+		}
+	}
+
+	protected boolean onUpdate(AnActionEvent e) {
+		return true;
 	}
 }
