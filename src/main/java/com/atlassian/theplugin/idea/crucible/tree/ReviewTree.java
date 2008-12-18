@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
@@ -68,6 +69,25 @@ public class ReviewTree extends JTree {
 		} else {
 			// nothing selected
 			return null;
+		}
+	}
+
+	private void restoreSelection(ReviewAdapter review) {
+		if (review == null) {
+			clearSelection();
+			return;
+		}
+		
+		for (int i = 0; i < getRowCount(); i++) {
+			TreePath path = getPathForRow(i);
+			Object object = path.getLastPathComponent();
+			if (object instanceof CrucibleReviewTreeNode) {
+				CrucibleReviewTreeNode node = (CrucibleReviewTreeNode) object;
+				if (node.getReview().getPermId().equals(review.getPermId())) {
+					setSelectionPath(path);
+					break;
+				}
+			}
 		}
 	}
 
@@ -154,9 +174,7 @@ public class ReviewTree extends JTree {
 
 	}
 
-	private void restoreSelection(ReviewAdapter review) {
-		
-	}
+
 
 	private class LocalTreeModelListener implements TreeModelListener {
 
