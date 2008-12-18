@@ -25,13 +25,16 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewTree extends JTree implements TreeModelListener {
+public class ReviewTree extends JTree {
 	private ReviewTreeModel model;
-	private CrucibleReviewListModelListener localModelListener = new LocalCrucibeReviewListModelListener();
+	private CrucibleReviewListModelListener localReviewModelListener = new LocalCrucibeReviewListModelListener();
+	private TreeModelListener localTreeModelListener = new LocalTreeModelListener();
 
 	public ReviewTree(ReviewTreeModel reviewTreeModel) {
 		super(reviewTreeModel);
@@ -39,9 +42,9 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		this.model = reviewTreeModel;
 
 		// listen to the review tree model changes
-		reviewTreeModel.addTreeModelListener(this);
+		reviewTreeModel.addTreeModelListener(localTreeModelListener);
 		// listen to the global review list changes
-		reviewTreeModel.getReviewListModel().addListener(localModelListener);
+		reviewTreeModel.getReviewListModel().addListener(localReviewModelListener);
 
 		init();
 	}
@@ -50,24 +53,6 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		setRootVisible(false);
 		setShowsRootHandles(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	}
-
-	public void treeNodesChanged(TreeModelEvent e) {
-//		System.out.println("tree nodes changed");
-	}
-
-	public void treeNodesInserted(TreeModelEvent e) {
-//		System.out.println("tree nodes inserted");
-	}
-
-	public void treeNodesRemoved(TreeModelEvent e) {
-//		System.out.println("tree nodes remmoved");
-	}
-
-	public void treeStructureChanged(TreeModelEvent e) {
-//		System.out.println("tree structure changed");
-
-		expandTree();
 	}
 
 	private void expandTree() {
@@ -94,27 +79,30 @@ public class ReviewTree extends JTree implements TreeModelListener {
 
 		private boolean treeChanged = false;
 		private boolean treeInitialized = false;
+		private Set<DefaultMutableTreeNode> changedNodes = new HashSet<DefaultMutableTreeNode>();
 
 		@Override
 		public void reviewAdded(ReviewAdapter review) {
 //			System.out.println("review added: " + review.getPermId().getId());
 
-//			treeChanged = true;
+			treeChanged = true;
 
-			if (treeInitialized) {
-				fireTreeChanged(model.findParentNode(review));
-			}
+//			if (treeInitialized) {
+//				changedNodes.add(model.findParentNode(review));
+////				fireTreeChanged(model.findParentNode(review));
+//			}
 		}
 
 		@Override
 		public void reviewRemoved(ReviewAdapter review) {
 //			System.out.println("review removed: " + review.getPermId().getId());
 
-//			treeChanged = true;
+			treeChanged = true;
 
-			if (treeInitialized) {
-				fireTreeChanged(model.findParentNode(review));
-			}
+//			if (treeInitialized) {
+//				changedNodes.add(model.findParentNode(review));
+////				fireTreeChanged(model.findParentNode(review));
+//			}
 		}
 
 		@Override
@@ -142,6 +130,12 @@ public class ReviewTree extends JTree implements TreeModelListener {
 				treeChanged = false;
 				treeInitialized = true;
 			}
+//			else if (changedNodes.size() > 0) {
+//				for (DefaultMutableTreeNode node : changedNodes) {
+//					fireTreeChanged(node);
+//				}
+//				changedNodes.clear();
+//			}
 		}
 
 		@Override
@@ -150,9 +144,38 @@ public class ReviewTree extends JTree implements TreeModelListener {
 		}
 
 		private void fireTreeChanged(DefaultMutableTreeNode node) {
+			ReviewAdapter review = getSelectedReview();
+
 			node.removeAllChildren();
 			model.nodeStructureChanged(node);
+
+			restoreSelection(review);
 		}
 
+	}
+
+	private void restoreSelection(ReviewAdapter review) {
+		
+	}
+
+	private class LocalTreeModelListener implements TreeModelListener {
+
+		public void treeNodesChanged(TreeModelEvent e) {
+//		System.out.println("tree nodes changed");
+		}
+
+		public void treeNodesInserted(TreeModelEvent e) {
+//		System.out.println("tree nodes inserted");
+		}
+
+		public void treeNodesRemoved(TreeModelEvent e) {
+//		System.out.println("tree nodes remmoved");
+		}
+
+		public void treeStructureChanged(TreeModelEvent e) {
+//		System.out.println("tree structure changed");
+
+			expandTree();
+		}
 	}
 }
