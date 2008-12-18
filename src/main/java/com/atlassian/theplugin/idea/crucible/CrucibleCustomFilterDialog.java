@@ -69,23 +69,21 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private UserBean anyUser;
 
 	CrucibleCustomFilterPanel panel;
-	private CfgManager cfgManager;
-	private Project project;
-	private CustomFilterBean filter;
-	private CrucibleServerFacade crucibleServerFacade;
+	private final CfgManager cfgManager;
+	private final Project project;
+	private final CustomFilterBean filter;
+	private final CrucibleServerFacade crucibleServerFacade;
 	private CrucibleServerCfg serverCfg;
 
-	CrucibleCustomFilterDialog(final Project project, final CfgManager cfgManager, @NotNull CustomFilterBean filter) {
+	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
+			@NotNull CustomFilterBean filter) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.filter = filter;
 		$$$setupUI$$$();
 
-		if (filter != null) {
-			this.serverCfg = (CrucibleServerCfg) cfgManager
-					.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
-		}
+		this.serverCfg = (CrucibleServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
 		anyProject = new CrucibleProjectBean();
 		anyProject.setName("Any");
@@ -121,9 +119,13 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
-		setFilter(filter);
+//		setFilter(filter);
+		fillInCrucibleServers();
+		if (serverComboBox.getItemCount() > 0) {
+			serverComboBox.setSelectedIndex(0);
+		}
 
-
+		fillServerRelatedCombos(getSelectedServer());
 
 
 		serverComboBox.addActionListener(new ActionListener() {
@@ -139,25 +141,19 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	}
 
-	public void setFilter(CustomFilterBean filter) {
-		ServerCfg server = null;
-
-		if (filter == null) {
-			this.filter = new CustomFilterBean();
-		} else {
-			this.filter = filter;
-			//final ServerId serverId = new ServerId(filter.getServerUid());
-			//server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-			//filterTitle.setText((filter.getTitle()));
-		}
-
-		fillInCrucibleServers();
-		if (server == null && serverComboBox.getItemCount() > 0) {
-			serverComboBox.setSelectedIndex(0);
-		}
-
-		fillServerRelatedCombos(getSelectedServer());
-	}
+//	public void setFilter(CustomFilterBean filter) {
+//		ServerCfg server = null;
+//
+//		if (filter == null) {
+//			this.filter = new CustomFilterBean();
+//		} else {
+//			this.filter = filter;
+//			//final ServerId serverId = new ServerId(filter.getServerUid());
+//			//server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+//			//filterTitle.setText((filter.getTitle()));
+//		}
+//
+//	}
 
 
 	public CustomFilterBean getFilter() {
@@ -232,8 +228,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	public void setSelectedServer(CrucibleServerCfg serverCfg) {
 		ServerComboBoxItem item = new ServerComboBoxItem(serverCfg);
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
-			if (serverComboBox.getItemAt(i) instanceof ServerComboBoxItem
-					&& ((ServerComboBoxItem) serverComboBox.getItemAt(i)).getServer().equals(serverCfg)) {
+			if (serverComboBox.getItemAt(i) instanceof ServerComboBoxItem && ((ServerComboBoxItem) serverComboBox.getItemAt(i)).getServer().equals(serverCfg)) {
 				serverComboBox.setSelectedItem(serverComboBox.getItemAt(i));
 			}
 
@@ -241,8 +236,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(
-				CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {
@@ -292,9 +286,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private CrucibleServerCfg getSelectedServer() {
 		CrucibleServerCfg server = null;
 
-		if (serverComboBox.getItemCount() > 0 &&
-				serverComboBox.getSelectedItem() != null &&
-				serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+		if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null && serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 			server = ((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer();
 		}
 
@@ -340,7 +332,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 				}
 			}
 		}
-		
+
 		projectComboBox.removeAllItems();
 		projectComboBox.addItem(new ProjectComboBoxItem(anyProject));
 		authorComboBox.removeAllItems();
@@ -379,7 +371,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setActiveUser(filter.getReviewer(), reviewerComboBox);
 
 
-
 	}
 
 	private void setProject(String projectName, JComboBox combo) {
@@ -406,6 +397,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return $$$getRootComponent$$$();
@@ -420,10 +412,13 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new FormLayout("fill:16px:noGrow,fill:319px:noGrow,fill:max(d;4px):noGrow,left:10dlu:noGrow,fill:160px:noGrow,left:4dlu:noGrow,fill:max(d;16px):noGrow", "center:max(d;8px):noGrow,top:3dlu:noGrow,center:15px:noGrow,top:3dlu:noGrow,center:222px:noGrow,center:max(d;16px):noGrow"));
+		rootPanel.setLayout(new FormLayout(
+				"fill:16px:noGrow,fill:319px:noGrow,fill:max(d;4px):noGrow,left:10dlu:noGrow,fill:160px:noGrow,left:4dlu:noGrow,fill:max(d;16px):noGrow",
+				"center:max(d;8px):noGrow,top:3dlu:noGrow,center:15px:noGrow,top:3dlu:noGrow,center:222px:noGrow,center:max(d;16px):noGrow"));
 		rootPanel.setMaximumSize(new Dimension(543, 271));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+		panel1.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow",
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		panel1.setEnabled(true);
 		CellConstraints cc = new CellConstraints();
 		rootPanel.add(panel1, cc.xy(2, 5, CellConstraints.DEFAULT, CellConstraints.TOP));
@@ -471,11 +466,14 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		serverComboBox = new JComboBox();
 		panel1.add(serverComboBox, cc.xy(3, 1));
 		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new FormLayout("fill:p:noGrow", "center:max(p;4px):grow,top:p:grow,center:p:grow,top:p:grow,center:max(p;4px):grow,top:p:grow,center:p:grow,top:p:grow"));
+		panel2.setLayout(new FormLayout("fill:p:noGrow",
+				"center:max(p;4px):grow,top:p:grow,center:p:grow,top:p:grow,center:max(p;4px):grow,top:p:grow,center:p:grow,top:p:grow"));
 		panel2.setMinimumSize(new Dimension(-1, -1));
 		panel2.setPreferredSize(new Dimension(-1, -1));
 		rootPanel.add(panel2, cc.xy(5, 5, CellConstraints.DEFAULT, CellConstraints.FILL));
-		panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-16777216)), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, new Font(panel2.getFont().getName(), panel2.getFont().getStyle(), panel2.getFont().getSize())));
+		panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(-16777216)), null,
+				TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+				new Font(panel2.getFont().getName(), panel2.getFont().getStyle(), panel2.getFont().getSize())));
 		draftCheckBox = new JCheckBox();
 		draftCheckBox.setText("Draft");
 		panel2.add(draftCheckBox, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
@@ -521,6 +519,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			this.project = project;
 		}
 
+		@Override
 		public String toString() {
 			return project.getName();
 		}
@@ -538,6 +537,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			this.user = user;
 		}
 
+		@Override
 		public String toString() {
 			return user.getDisplayName();
 		}
@@ -554,6 +554,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			this.server = server;
 		}
 
+		@Override
 		public String toString() {
 			return server.getName();
 		}
