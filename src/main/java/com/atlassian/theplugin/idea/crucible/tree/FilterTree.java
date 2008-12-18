@@ -41,7 +41,7 @@ public class FilterTree extends JTree {
 		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent e) {
 				Collection<PredefinedFilter> predefinedFilters =
-						new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1);
+						new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
 
 				CustomFilter customFilter = null;
 
