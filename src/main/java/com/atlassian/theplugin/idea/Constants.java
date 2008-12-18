@@ -69,6 +69,8 @@ public final class Constants {
 	public static final DataKey<JIRAIssue> ISSUE_KEY = DataKey.create(ISSUE);
 	public static final String REVIEW = "com.atlassian.connector.review";
 	public static final DataKey<ReviewAdapter> REVIEW_KEY = DataKey.create(REVIEW);
+	public static final String REVIEW_WINDOW_ENABLED = "com.atlassian.connector.review_window_enabled";
+	public static final DataKey<Boolean> REVIEW_WINDOW_ENABLED_KEY = DataKey.create(REVIEW_WINDOW_ENABLED);
 
 	private Constants() { }
 

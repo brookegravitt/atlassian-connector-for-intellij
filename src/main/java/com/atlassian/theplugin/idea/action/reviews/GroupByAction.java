@@ -6,7 +6,6 @@ import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
@@ -21,7 +20,7 @@ import java.awt.event.ActionListener;
  * Date: Dec 5, 2008
  * Time: 2:26:25 PM
  */
-public class GroupByAction extends AnAction implements CustomComponentAction {
+public class GroupByAction extends AbstractCrucibleToolbarAction implements CustomComponentAction {
 	private static final String COMBOBOX_KEY = GroupByAction.class.getName() + ".combo";
 
 	@Override
@@ -57,7 +56,7 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 	}
 
 	@Override
-	public final void update(AnActionEvent event) {
+	public boolean onUpdate(AnActionEvent event) {
 		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
@@ -66,6 +65,6 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 				jComboBox.setSelectedItem(panel.getGroupBy());
 			}
 		}
+		return true;
 	}
-
 }
