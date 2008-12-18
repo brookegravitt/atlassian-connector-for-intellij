@@ -55,6 +55,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	/**
 	 * Sets groupBy field used to group the tree and triggers tree to rebuild
+	 * Only tree should use that method.
 	 * @param aGroupBy
 	 */
 	public void groupBy(CrucibleReviewGroupBy aGroupBy) {

@@ -18,6 +18,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewGroupTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 
 import javax.swing.*;
@@ -58,6 +60,7 @@ public class ReviewTree extends JTree {
 
 	private void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
+			// expands row but the row/path is not marked as expanded
 			expandRow(i);
 		}
 	}
@@ -72,12 +75,12 @@ public class ReviewTree extends JTree {
 		}
 	}
 
-	private void restoreSelection(ReviewAdapter review) {
+	private void selectReviewNode(ReviewAdapter review) {
 		if (review == null) {
 			clearSelection();
 			return;
 		}
-		
+
 		for (int i = 0; i < getRowCount(); i++) {
 			TreePath path = getPathForRow(i);
 			Object object = path.getLastPathComponent();
@@ -92,13 +95,62 @@ public class ReviewTree extends JTree {
 	}
 
 
+	private Set<TreePath> getCollapsedPaths() {
+		Set<TreePath> collapsedNodes = new HashSet<TreePath>();
+
+		for (int i = 0; i < getRowCount(); ++i) {
+			TreePath path = getPathForRow(i);
+
+			if (path.getLastPathComponent() instanceof CrucibleReviewGroupTreeNode && isCollapsed(path)) {
+				collapsedNodes.add(path);
+			}
+		}
+
+//		String out = "";
+//
+//		for (TreePath path : collapsedNodes) {
+//			out += path.getLastPathComponent() + " ";
+//		}
+//
+//		System.out.println(out);
+
+		return collapsedNodes;
+	}
+
+
+
+	private void collapsePaths(Set<TreePath> collapsedPaths) {
+		for (TreePath path : collapsedPaths) {
+			for (int i = 0; i < getRowCount(); ++i) {
+				TreePath treePath = getPathForRow(i);
+
+				if (treePath.toString().equals(path.toString())) {
+					collapsePath(treePath);
+					break;
+				}
+			}
+		}
+
+	}
+
+	public void groupBy(CrucibleReviewGroupBy groupBy) {
+		model.groupBy(groupBy);
+		expandTree();
+	}
+
+	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
+		model.setGroupBy(groupBy);
+	}
+
 	/*
-	Listen to the review list model changes
-	 */
+	Listen to the review list changes
+	*/
 	private class LocalCrucibeReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
 
 		private boolean treeChanged = false;
+
 		private boolean treeInitialized = false;
+
 		private Set<DefaultMutableTreeNode> changedNodes = new HashSet<DefaultMutableTreeNode>();
 
 		@Override
@@ -164,16 +216,22 @@ public class ReviewTree extends JTree {
 		}
 
 		private void fireTreeChanged(DefaultMutableTreeNode node) {
+			// remember selection and collapse state
+			Set<TreePath> collapsedPaths = getCollapsedPaths();
 			ReviewAdapter review = getSelectedReview();
 
+			// rebuild the tree
 			node.removeAllChildren();
 			model.nodeStructureChanged(node);
+			// expand entire tree
+			expandTree();
 
-			restoreSelection(review);
+			// restore selection and collapse state
+			collapsePaths(collapsedPaths);
+			selectReviewNode(review);
 		}
 
 	}
-
 
 
 	private class LocalTreeModelListener implements TreeModelListener {
@@ -193,7 +251,9 @@ public class ReviewTree extends JTree {
 		public void treeStructureChanged(TreeModelEvent e) {
 //		System.out.println("tree structure changed");
 
-			expandTree();
+			// DO NOT EXPAND TREE HERE as the tree is modyfied later on by Swing and nodes loose expand state
+			// (there are expanded but isExpand returns false)
+//			expandTree();
 		}
 	}
 }

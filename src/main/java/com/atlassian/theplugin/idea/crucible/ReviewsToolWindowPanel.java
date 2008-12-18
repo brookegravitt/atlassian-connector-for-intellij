@@ -65,7 +65,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
-	private ReviewTreeModel reviewTreeModel;
 	private CrucibleFilterListModel filterListModel;
 	private CrucibleFilterTreeModel filterTreeModel;
 
@@ -134,7 +133,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		if (crucibleProjectConfiguration.getView() != null && crucibleProjectConfiguration.getView().getGroupBy() != null) {
 			groupBy = crucibleProjectConfiguration.getView().getGroupBy();
 		}
-		reviewTreeModel.setGroupBy(groupBy);
+		reviewTree.setGroupBy(groupBy);
 	}
 
 	public void openReview(final ReviewAdapter review) {
@@ -248,8 +247,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTreeModel = new ReviewTreeModel(searchingReviewListModel);
-			reviewTree = new ReviewTree(reviewTreeModel);
+			reviewTree = new ReviewTree(new ReviewTreeModel(searchingReviewListModel));
 
 		}
 		return reviewTree;
@@ -276,7 +274,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
 		this.groupBy = groupBy;
-		reviewTreeModel.groupBy(groupBy);
+		reviewTree.groupBy(groupBy);
 //		expandAllRightTreeNodes();
 
 		crucibleProjectConfiguration.getView().setGroupBy(groupBy);
