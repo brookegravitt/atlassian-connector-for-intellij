@@ -11,17 +11,19 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public abstract class AbstractCrucibleToolbarAction extends AnAction {
 
-	protected abstract boolean onUpdate(AnActionEvent e);
+	protected boolean onUpdate(AnActionEvent e) { return true; }
+	protected void onUpdateFinished(AnActionEvent e, boolean enabled) { }
 
 	@Override
 	public final void update(AnActionEvent e) {
 		super.update(e);
 		Boolean windowEnabled = e.getData(Constants.REVIEW_WINDOW_ENABLED_KEY);
-		boolean actionEnabled = onUpdate(e);
+		boolean result = false;
 		if (windowEnabled != null && windowEnabled) {
-			e.getPresentation().setEnabled(actionEnabled);
-		} else {
-			e.getPresentation().setEnabled(false);
+			result = onUpdate(e);
 		}
+
+		e.getPresentation().setEnabled(result);
+		onUpdateFinished(e, result);
 	}
 }

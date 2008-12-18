@@ -16,8 +16,4 @@ public class RefreshReviewsFromServersAction extends AbstractCrucibleToolbarActi
 			panel.refresh();
 		}
 	}
-
-	protected boolean onUpdate(AnActionEvent e) {
-		return true;
-	}
 }
