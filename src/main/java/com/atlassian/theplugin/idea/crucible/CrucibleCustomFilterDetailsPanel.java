@@ -108,7 +108,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private void updateDetails() {
 		uiTaskExecutor.execute(new UiTask() {
 
-			Collection<ScrollableTwoColumnPanel.Entry> entries;
+			private Collection<ScrollableTwoColumnPanel.Entry> entries;
 			public void run() throws Exception {
 				entries = (filter != null) ? getEntries(filter) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
 			}
@@ -143,9 +143,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		final Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
 		final String states = StringUtils.join(customFilter.getState(), ", ");
 		final String serverId = customFilter.getServerUid();
-		// server is null when component is initialized by the PICO for the first time
-		// todo force cfgManager to read configuration earlier
-		final ServerCfg server = projectCfgManager.getCfgManager().getServer(CfgUtil.getProjectId(project), new ServerId(serverId));
+		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
+				CfgUtil.getProjectId(project), new ServerId(serverId));
 		final CrucibleServerCfg crucibleServerCfg = (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
 		entries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
