@@ -129,9 +129,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	private CrucibleServerCfg getSelectedServer() {
 		CrucibleServerCfg server = null;
 
-		if (serverComboBox.getItemCount() > 0 &&
-				serverComboBox.getSelectedItem() != null &&
-				serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+		if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null
+				&& serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 			server = ((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer();
 		}
 
@@ -335,8 +334,7 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(
-				CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {
@@ -361,7 +359,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow", "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,top:4dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
+		rootPanel.setLayout(new FormLayout("fill:p:grow,fill:max(d;4px):noGrow",
+				"top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:19px:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:33px:noGrow,center:18px:noGrow,center:31px:noGrow,center:19px:noGrow,center:30px:noGrow,center:19px:noGrow,center:30px:noGrow,center:17px:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,top:4dlu:noGrow,center:24px:noGrow,center:23px:noGrow,center:25px:noGrow,center:max(d;4px):noGrow,center:25px:noGrow,center:24px:noGrow,center:24px:noGrow,center:max(d;4px):noGrow"));
 		filterTitle = new JTextField();
 		CellConstraints cc = new CellConstraints();
 		rootPanel.add(filterTitle, cc.xyw(1, 7, 2, CellConstraints.FILL, CellConstraints.DEFAULT));

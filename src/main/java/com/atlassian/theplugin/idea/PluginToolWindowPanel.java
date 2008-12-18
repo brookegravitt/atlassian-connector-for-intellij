@@ -39,9 +39,8 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	private String rightToolbarName;
 	private String leftToolbarName;
 
-	public PluginToolWindowPanel(@NotNull final Project project,
-								 @NotNull final CfgManager cfgManager,
-								 String leftToolbarName, String rightToolbarName) {
+	public PluginToolWindowPanel(@NotNull final Project project, @NotNull final CfgManager cfgManager,
+			String leftToolbarName, String rightToolbarName) {
 
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -70,6 +69,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 	}
 
+	@NotNull
 	public CfgManager getCfgManager() {
 		return cfgManager;
 	}
@@ -85,6 +85,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		statusBarPane.enableGetMoreIssues(enable);
 	}
 
+	@NotNull
 	public Project getProject() {
 		return project;
 	}
