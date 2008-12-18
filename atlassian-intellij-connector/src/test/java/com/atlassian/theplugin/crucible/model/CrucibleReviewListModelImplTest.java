@@ -1,99 +1,95 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
-import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
-import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Set;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
-	private CrucibleReviewListModelImplAdapter model;
-	private CrucibleServerCfg server1;
-	private CrucibleServerCfg server2;
-	private int addedReviews, changedReviews, removedReviews;
-	private Date date = new Date();
-
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		model = new CrucibleReviewListModelImplAdapter();
-		server1 = createServer(1);
-		server2 = createServer(2);
-		addedReviews = 0;
-		changedReviews = 0;
-		removedReviews = 0;
-	}
-
-	public void testAddingReviewOnce() throws Exception {
-		model = new CrucibleReviewListModelImplAdapter();
-
-		model.addReview(new ReviewAdapter(null, null));
-
-		assertEquals(1, model.getReviews().size());
-	}
-
-	public void testAddingReviewTwice() throws Exception {
-		model = new CrucibleReviewListModelImplAdapter();
-
-
-		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
-		ReviewBean r = new ReviewBean("test");
-		r.setPermId(new PermIdBean("test"));
-		ReviewAdapter ra = new ReviewAdapter(r, cfg);
-		model.addReview(ra);
-		model.addReview(ra);
-
-		assertEquals(1, model.getReviews().size());
-	}
-
-	public void testAddingReviewWithDifferentPermId() throws Exception {
-		model = new CrucibleReviewListModelImplAdapter();
-
-
-		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
-		ReviewBean r1 = new ReviewBean("test");
-		r1.setPermId(new PermIdBean("test1"));
-		ReviewBean r2 = new ReviewBean("test");
-		r2.setPermId(new PermIdBean("test2"));
-		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
-		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
-		model.addReview(ra1);
-		model.addReview(ra2);
-
-		assertEquals(2, model.getReviews().size());
-	}
-
-	public void testAddingTwoReviewsWithTheSamePermId() throws Exception {
-		model = new CrucibleReviewListModelImplAdapter();
-
-
-		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
-		ReviewBean r = new ReviewBean("test");
-		r.setPermId(new PermIdBean("test1"));
-		ReviewAdapter ra1 = new ReviewAdapter(r, cfg);
-		ReviewAdapter ra2 = new ReviewAdapter(r, cfg);
-		model.addReview(ra1);
-		model.addReview(ra2);
-
-		assertEquals(1, model.getReviews().size());
-	}
-
+//	private CrucibleReviewListModelImplAdapter model;
+//	private CrucibleServerCfg server1;
+//	private CrucibleServerCfg server2;
+//	private int addedReviews, changedReviews, removedReviews;
+//	private Date date = new Date();
+//
+//	@Override
+//	public void setUp() throws Exception {
+//		super.setUp();
+//		model = new CrucibleReviewListModelImplAdapter();
+////		server1 = createServer(1);
+////		server2 = createServer(2);
+//		addedReviews = 0;
+//		changedReviews = 0;
+//		removedReviews = 0;
+//	}
+//
+//	public void testAddingReviewOnce() throws Exception {
+//		model = new CrucibleReviewListModelImplAdapter();
+//
+//		model.addReview(new ReviewAdapter(null, null));
+//
+//		assertEquals(1, model.getReviews().size());
+//	}
+//
+//	public void testAddingReviewTwice() throws Exception {
+//		model = new CrucibleReviewListModelImplAdapter();
+//
+//
+//		ServerId id = new ServerId();
+//		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+//		ReviewBean r = new ReviewBean("test");
+//		r.setPermId(new PermIdBean("test"));
+//		ReviewAdapter ra = new ReviewAdapter(r, cfg);
+//		model.addReview(ra);
+//		model.addReview(ra);
+//
+//		assertEquals(1, model.getReviews().size());
+//	}
+//
+//	public void testAddingReviewWithDifferentPermId() throws Exception {
+//		model = new CrucibleReviewListModelImplAdapter();
+//
+//
+//		ServerId id = new ServerId();
+//		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+//		ReviewBean r1 = new ReviewBean("test");
+//		r1.setPermId(new PermIdBean("test1"));
+//		ReviewBean r2 = new ReviewBean("test");
+//		r2.setPermId(new PermIdBean("test2"));
+//		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
+//		ReviewAdapter ra2 = new ReviewAdapter(r2, cfg);
+//		model.addReview(ra1);
+//		model.addReview(ra2);
+//
+//		assertEquals(2, model.getReviews().size());
+//	}
+//
+//	public void testAddingTwoReviewsWithTheSamePermId() throws Exception {
+//		model = new CrucibleReviewListModelImplAdapter();
+//
+//
+//		ServerId id = new ServerId();
+//		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+//		ReviewBean r = new ReviewBean("test");
+//		r.setPermId(new PermIdBean("test1"));
+//		ReviewAdapter ra1 = new ReviewAdapter(r, cfg);
+//		ReviewAdapter ra2 = new ReviewAdapter(r, cfg);
+//		model.addReview(ra1);
+//		model.addReview(ra2);
+//
+//		assertEquals(1, model.getReviews().size());
+//	}
+/*
 	public void testRemoveExistingReview() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
@@ -473,7 +469,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		return adapter;
 	}
-
+*/
 	private class MyFacade implements CrucibleServerFacade {
 		public Review createReview(CrucibleServerCfg server, Review review)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
@@ -681,7 +677,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			return null;
 		}
 	}
-
+/*
 	private class CrucibleReviewListModelImplAdapter extends CrucibleReviewListModelImpl {
 		Map<CrucibleFilter, ReviewNotificationBean> updatedReviews = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
@@ -706,4 +702,5 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			super.updateReviews(0, updatedReviews, false);
 		}
 	}
+*/	
 }

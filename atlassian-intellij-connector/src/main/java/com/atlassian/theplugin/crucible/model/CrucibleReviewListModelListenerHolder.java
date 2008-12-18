@@ -47,56 +47,56 @@ public abstract class CrucibleReviewListModelListenerHolder
 		listeners.remove(l);
 	}
 
-	public void reviewAdded(ReviewAdapter review) {
+	public void reviewAdded(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewAdded(review);
+			l.reviewAdded(updateContext);
 		}
 	}
 
-	public void reviewRemoved(ReviewAdapter review) {
+	public void reviewRemoved(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewRemoved(review);
+			l.reviewRemoved(updateContext);
 		}
 	}
 
-	public void reviewChanged(ReviewAdapter review) {
+	public void reviewChanged(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewChanged(review);
+			l.reviewChanged(updateContext);
 		}
 	}
 
-	public void reviewListUpdateStarted() {
+	public void reviewListUpdateStarted(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewListUpdateStarted();
+			l.reviewListUpdateStarted(updateContext);
 		}
 	}
 
-	public void reviewListUpdateFinished() {
+	public void reviewListUpdateFinished(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewListUpdateFinished();
+			l.reviewListUpdateFinished(updateContext);
 		}
 	}
 
-	public void reviewChangedWithoutFiles(ReviewAdapter review) {
+	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewChangedWithoutFiles(review);
+			l.reviewChangedWithoutFiles(updateContext);
 		}
 	}
 
-	public void modelChanged() {
+	public void modelChanged(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
-			l.modelChanged();
+			l.modelChanged(updateContext);
 		}
 	}
-
+/*
 	public void removeAll() {
 		parent.removeAll();
 	}
-
+*/
 	public void updateReviews(final long epoch,
 							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
-							  final boolean sendNotifications) {
-		parent.updateReviews(epoch, updatedReviews, sendNotifications);
+							  final UpdateReason updateReason) {
+		parent.updateReviews(epoch, updatedReviews, updateReason);
 	}
 
 	public ReviewAdapter getSelectedReview() {

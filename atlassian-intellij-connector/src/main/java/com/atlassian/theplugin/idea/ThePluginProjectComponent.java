@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.*;
@@ -65,8 +64,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
 	private final ProjectConfigurationBean projectConfigurationBean;
-	private final CrucibleReviewListModel reviewListModel;
-
 	private final Project project;
 
 	public CfgManager getCfgManager() {
@@ -115,7 +112,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
 									 BuildChangesToolWindow buildChangesToolWindow,
-									 @NotNull final CrucibleReviewListModel reviewListModel,
 									 @NotNull final CrucibleStatusChecker crucibleStatusChecker) {
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -125,7 +121,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
-		this.reviewListModel = reviewListModel;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;

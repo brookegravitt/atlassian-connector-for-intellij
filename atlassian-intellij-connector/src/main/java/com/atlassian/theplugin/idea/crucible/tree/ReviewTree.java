@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewGroupTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
@@ -154,7 +155,7 @@ public class ReviewTree extends JTree {
 		private Set<DefaultMutableTreeNode> changedNodes = new HashSet<DefaultMutableTreeNode>();
 
 		@Override
-		public void reviewAdded(ReviewAdapter review) {
+		public void reviewAdded(UpdateContext updateContext) {
 //			System.out.println("review added: " + review.getPermId().getId());
 
 			treeChanged = true;
@@ -166,7 +167,7 @@ public class ReviewTree extends JTree {
 		}
 
 		@Override
-		public void reviewRemoved(ReviewAdapter review) {
+		public void reviewRemoved(UpdateContext updateContext) {
 //			System.out.println("review removed: " + review.getPermId().getId());
 
 			treeChanged = true;
@@ -178,14 +179,14 @@ public class ReviewTree extends JTree {
 		}
 
 		@Override
-		public void reviewChangedWithoutFiles(ReviewAdapter review) {
+		public void reviewChangedWithoutFiles(UpdateContext updateContext) {
 //			System.out.println("review changed without files: " + review.getPermId().getId());
 
 			treeChanged = true;
 		}
 
 		@Override
-		public void reviewListUpdateStarted() {
+		public void reviewListUpdateStarted(UpdateContext updateContext) {
 //			System.out.println("reviews update started");
 
 			// reset tree state
@@ -193,7 +194,7 @@ public class ReviewTree extends JTree {
 		}
 
 		@Override
-		public void reviewListUpdateFinished() {
+		public void reviewListUpdateFinished(UpdateContext updateContext) {
 //			System.out.println("reviews updated finished");
 
 			if (treeChanged || !treeInitialized) {
@@ -211,7 +212,7 @@ public class ReviewTree extends JTree {
 		}
 
 		@Override
-		public void modelChanged() {
+		public void modelChanged(UpdateContext updateContext) {
 			fireTreeChanged(model.getRoot());
 		}
 
@@ -251,9 +252,7 @@ public class ReviewTree extends JTree {
 		public void treeStructureChanged(TreeModelEvent e) {
 //		System.out.println("tree structure changed");
 
-			// DO NOT EXPAND TREE HERE as the tree is modyfied later on by Swing and nodes loose expand state
-			// (there are expanded but isExpand returns false)
-//			expandTree();
+			expandTree();
 		}
 	}
 }
