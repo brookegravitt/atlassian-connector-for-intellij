@@ -56,15 +56,15 @@ public class GroupByAction extends AbstractCrucibleToolbarAction implements Cust
 	}
 
 	@Override
-	public boolean onUpdate(AnActionEvent event) {
-		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
+	protected void onUpdateFinished(AnActionEvent e, boolean enabled) {
+		Object myProperty = e.getPresentation().getClientProperty(COMBOBOX_KEY);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
-			ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(event);
+			jComboBox.setEnabled(enabled);
+			ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
 			if (panel != null && !panel.getGroupBy().equals(jComboBox.getSelectedItem())) {
 				jComboBox.setSelectedItem(panel.getGroupBy());
 			}
 		}
-		return true;
 	}
 }

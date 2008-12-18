@@ -16,8 +16,4 @@ public class ExpandAllAction extends AbstractCrucibleToolbarAction {
 			panel.expandAllRightTreeNodes();
 		}
 	}
-
-	protected boolean onUpdate(AnActionEvent e) {
-		return true;
-	}
 }
