@@ -21,6 +21,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -31,12 +32,21 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 	private static final int VAL_COL = 4;
 
 	public static class Entry {
-		public final String label;
-		public final String value;
+		private final String label;
+
+		private final String value;
 
 		public Entry(final String label,  final String value) {
 			this.value = value;
 			this.label = label;
+		}
+
+		public String getLabel() {
+			return label;
+		}
+
+		public String getValue() {
+			return value;
 		}
 	}
 
@@ -74,9 +84,9 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 			builder.appendRow("2dlu");
 			builder.appendRow("p");
 			cc.xy(2, row * 2).vAlign = CellConstraints.TOP;
-			builder.addLabel(entry.label + ":", cc);
+			builder.addLabel(entry.getLabel() + ":", cc);
 			cc.xy(VAL_COL, row * 2).vAlign = CellConstraints.TOP;
-			builder.addLabel("<html>" + entry.value, cc);
+			builder.addLabel("<html>" + entry.getValue(), cc);
 			row++;
 		}
 		// this two line (simulating JScrollPane resize)
@@ -88,10 +98,68 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 
 
 	public static void main(String[] args) {
-		final ScrollableTwoColumnPanel panel = new ScrollableTwoColumnPanel();
+		final ScrollableTwoColumnPanel testPanel = new ScrollableTwoColumnPanel();
 		Collection<Entry> entires = Arrays.asList(new Entry("some label", "very long value of the first lable - left"),
 				new Entry("short l", "another very long value for the second lable - THE END"));
-		panel.updateContent(entires);
-		SwingAppRunner.run(panel);
+		testPanel.updateContent(entires);
+		SwingAppRunner.run(testPanel);
 	}
+
+	// ------------------------------------------------------------------------
+	// just for playing with Swing - it was quite hard to figure out how to deal with that. And current solution is still
+	// far from perfect
+
+	private static final class MyNewPanel extends JPanel {
+		private static final int VAL_COLUMN = 4;
+
+		private MyNewPanel() {
+			setBorder(new BevelBorder(BevelBorder.RAISED, Color.RED, Color.CYAN));
+			FormLayout layout = new FormLayout("12dlu, right:p, 14dlu, left:d, 12dlu");
+			PanelBuilder builder = new PanelBuilder(layout, this);
+			CellConstraints cc = new CellConstraints();
+			builder.appendRow("p");
+			cc.xy(2, 1).vAlign = CellConstraints.TOP;
+			builder.addLabel("My Label:", cc);
+			final Component wrapLabel = new JLabel("<html>Very long text which should be wraaaaaaped wrap!");
+//			final JTextArea wrapLabel = new JTextArea("Very long text which should be wraaaaaaped wrap!");
+//			wrapLabel.setWrapStyleWord(false);
+//			wrapLabel.setLineWrap(true);
+			builder.add(wrapLabel, cc.xy(VAL_COLUMN, 1));
+			builder.appendRow("p");
+			cc.xy(2, 2).vAlign = CellConstraints.TOP;
+			builder.addLabel("My Label:", cc);
+			final Component wrapLabel2 = new JLabel("<html>Very long text fds kdsfkl kdsfh kl ldsfjlkjdfs"
+					+ " ljdfs lksjdjfkldsjfklsd lfjwhich should be wraaaaaaped wrap!");
+			builder.add(wrapLabel2, cc.xy(VAL_COLUMN, 2));
+			add(wrapLabel);
+		}
+	}
+
+//	private static class MyOuterPanel extends JPanel {
+//		private MyOuterPanel() {
+//			super(new BorderLayout());
+//			add(new MyNewPanel());
+//		}
+//	}
+
+
+
+	// just for testing bloody Swing layouts with JScrollPane
+	public static void main2(String[] args) {
+		//SwingAppRunner.run(new MyNewPanel());
+//		SwingAppRunner.run(new JScrollPane(new MyNewPanel()));
+//		SwingAppRunner.run(new JScrollnew MyOuterPanel());
+		final MyNewPanel panel = new MyNewPanel();
+		final JScrollPane jScrollPane = new JScrollPane(panel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		jScrollPane.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(final ComponentEvent e) {
+				panel.setPreferredSize(null);
+				panel.setPreferredSize(new Dimension(e.getComponent().getWidth(), panel.getPreferredSize().height));
+			}
+		});
+		SwingAppRunner.run(jScrollPane);
+	}
+
 }
