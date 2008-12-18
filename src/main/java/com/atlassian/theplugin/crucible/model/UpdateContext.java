@@ -13,34 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
 
-import java.util.Collections;
-import java.util.Comparator;
+public class UpdateContext {
+	private UpdateReason updateReason;
+	private ReviewAdapter reviewAdapter;
 
-/**
- * User: jgorycki
- * Date: Dec 16, 2008
- * Time: 2:03:27 PM
- */
-public class SortingByKeyCrucibleReviewListModel extends AbstractSortingCrucibleReviewListModel {
-	private static final Comparator<ReviewAdapter> COMPARATOR = Collections.reverseOrder(new ReviewKeyComparator());
 
-	public SortingByKeyCrucibleReviewListModel(CrucibleReviewListModel parent) {
-		super(parent);
+	public UpdateContext(final UpdateReason updateReason, final ReviewAdapter reviewAdapter) {
+		this.updateReason = updateReason;
+		this.reviewAdapter = reviewAdapter;
 	}
 
-	protected Comparator<ReviewAdapter> getComparator() {
-		return COMPARATOR;
+	public UpdateReason getUpdateReason() {
+		return updateReason;
 	}
 
-	public void rebuildModel(UpdateReason updateReason) {
-	}
-
-	public boolean isRequestObsolete(long epoch) {
-		return false;
+	public ReviewAdapter getReviewAdapter() {
+		if (reviewAdapter == null) {
+			throw new IllegalStateException();
+		}
+		return reviewAdapter;
 	}
 }
