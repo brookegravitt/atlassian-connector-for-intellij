@@ -116,14 +116,14 @@ public class CrucibleQueryExecutor {
 				if (manualFilter != null && manualFilter.isEnabled()) {
 
 					// create notification bean for the filter if not exist
-					if (!reviews.containsKey(manualFilter.getFilterName())) {
+					if (!reviews.containsKey(manualFilter)) {
 						List<ReviewAdapter> list = new ArrayList<ReviewAdapter>();
 						ReviewNotificationBean bean = new ReviewNotificationBean();
 						bean.setReviews(list);
 						reviews.put(manualFilter, bean);
 					}
 
-					ReviewNotificationBean customFilterNotificationBean = reviews.get(manualFilter.getFilterName());
+					ReviewNotificationBean customFilterNotificationBean = reviews.get(manualFilter);
 
 					if (server.getServerId().toString().equals(manualFilter.getServerUid())) {
 
