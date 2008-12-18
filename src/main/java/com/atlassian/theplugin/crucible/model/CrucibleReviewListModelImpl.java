@@ -124,15 +124,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		notifyReviewListUpdateStarted();
 
-		// remove categories
-		Collection<CrucibleFilter> filters = reviews.keySet();
-		for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
-			CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
-			if (!updatedReviews.containsKey(crucibleFilter)) {
-				crucibleFilterIterator.remove();
-			}
-		}
-
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
 			if (!this.reviews.containsKey(crucibleFilter)) {
@@ -156,6 +147,15 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		for (ReviewAdapter r : removed) {
 			removeReview(r);
+		}
+
+		// remove categories
+		Collection<CrucibleFilter> filters = reviews.keySet();
+		for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
+			CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
+			if (!updatedReviews.containsKey(crucibleFilter)) {
+				crucibleFilterIterator.remove();
+			}
 		}
 
 		notifyReviewListUpdateFinished();
