@@ -65,6 +65,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
+		load();
 	}
 
 

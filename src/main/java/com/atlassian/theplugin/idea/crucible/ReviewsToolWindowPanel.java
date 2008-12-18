@@ -15,18 +15,25 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.*;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.crucible.model.ReviewListModelBuilder;
+import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
@@ -35,7 +42,11 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -74,12 +85,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
 	private final ReviewListModelBuilder reviewListModelBuilder;
-	public ReviewsToolWindowPanel(@NotNull final Project project,
-								  @NotNull final ProjectConfigurationBean projectConfiguration,
-								  @NotNull final CfgManager cfgManager,
-								  @NotNull final CrucibleReviewListModel reviewListModel,
-								  @NotNull final ReviewListModelBuilder reviewListModelBuilder) {
-		super(project, cfgManager, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
+	private final ProjectCfgManager projectCfgManager;
+	private final UiTaskExecutor uiTaskExecutor;
+
+	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
+			@NotNull final ProjectCfgManager projectCfgManager, @NotNull final CrucibleReviewListModel reviewListModel,
+			@NotNull final ReviewListModelBuilder reviewListModelBuilder,
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
+		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
+		this.projectCfgManager = projectCfgManager;
+		this.uiTaskExecutor = uiTaskExecutor;
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 		this.reviewListModelBuilder = reviewListModelBuilder;
@@ -104,8 +119,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		initToolBar();
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
-				getProject(), getCfgManager(), CrucibleServerFacadeImpl.getInstance(), crucibleProjectConfiguration,
-				filterTree);
+				getProject(), projectCfgManager, crucibleProjectConfiguration,
+				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh();
@@ -343,10 +358,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+		@Override
 		public void reviewListUpdateStarted() {
 			setPanelEnabled(false);
 		}
 
+		@Override
 		public void reviewListUpdateFinished() {
 			setPanelEnabled(true);
 		}

@@ -58,7 +58,6 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 
 			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter,
 											 boolean isChanged) {
-			
 			}
 
 		});
