@@ -16,8 +16,4 @@ public class CollapseAllAction extends AbstractCrucibleToolbarAction {
 			panel.collapseAllRightTreeNodes();
 		}
 	}
-
-	protected boolean onUpdate(AnActionEvent e) {
-		return true;
-	}
 }
