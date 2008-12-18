@@ -5,7 +5,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -25,7 +24,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private CrucibleReviewListener reviewListener = new LocalCrucibleReviewListener(modelListeners);
 	private final ReviewListModelBuilder reviewListModelBuilder;
 
-	public CrucibleReviewListModelImpl(@NotNull final ReviewListModelBuilder reviewListModelBuilder) {
+	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder) {
 		this.reviewListModelBuilder = reviewListModelBuilder;
 	}
 
@@ -51,7 +50,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		reviewListModelBuilder.getReviewsFromServer(this, updateReason, newRequest);
 	}
 
-	private synchronized void addReview(CrucibleFilter crucibleFilter,
+	public synchronized void addReview(CrucibleFilter crucibleFilter,
 									   ReviewAdapter review, UpdateReason updateReason) {
 		ReviewAdapter a = null;
 
@@ -82,7 +81,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	}
 
-	private synchronized void removeReview(ReviewAdapter review, UpdateReason updateReason) {
+	public synchronized void removeReview(ReviewAdapter review, UpdateReason updateReason) {
 		for (CrucibleFilter filter : reviews.keySet()) {
 
 			if (reviews.get(filter).contains(review)) {
