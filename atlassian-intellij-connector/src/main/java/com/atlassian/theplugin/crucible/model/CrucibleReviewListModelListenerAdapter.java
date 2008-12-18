@@ -15,31 +15,28 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-
 /**
  * @author Jacek Jaroczynski
  */
 public class CrucibleReviewListModelListenerAdapter implements CrucibleReviewListModelListener {
-
-	public void reviewAdded(ReviewAdapter review) {
+	public void reviewAdded(UpdateContext updateContext) {
 	}
 
-	public void reviewRemoved(ReviewAdapter review) {
+	public void reviewRemoved(UpdateContext updateContext) {
 	}
 
-	public void reviewChanged(ReviewAdapter review) {
+	public void reviewChanged(UpdateContext updateContext) {
 	}
 
-	public void reviewListUpdateStarted() {
+	public void modelChanged(UpdateContext updateContext) {
 	}
 
-	public void reviewListUpdateFinished() {
+	public void reviewListUpdateStarted(UpdateContext updateContext) {
 	}
 
-	public void reviewChangedWithoutFiles(ReviewAdapter review) {
+	public void reviewListUpdateFinished(UpdateContext updateContext) {
 	}
 
-	public void modelChanged() {
+	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
 	}
 }

@@ -13,20 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.atlassian.theplugin.crucible.model;
 
-/**
- * User: jgorycki
- * Date: Dec 2, 2008
- * Time: 10:48:02 AM
- */
-public interface CrucibleReviewListModelListener {
-	void reviewAdded(UpdateContext updateContext);
-	void reviewRemoved(UpdateContext updateContext);
-	void reviewChanged(UpdateContext updateContext);
-	void modelChanged(UpdateContext updateContext);
-
-	void reviewListUpdateStarted(UpdateContext updateContext);
-	void reviewListUpdateFinished(UpdateContext updateContext);
-	void reviewChangedWithoutFiles(UpdateContext updateContext);
+public enum UpdateReason {
+	TIMER_FIRED, REFRESH, FILTER_CHANGED, SEARCH
 }

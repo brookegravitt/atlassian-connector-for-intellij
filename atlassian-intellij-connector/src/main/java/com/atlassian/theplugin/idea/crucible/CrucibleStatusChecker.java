@@ -23,7 +23,8 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.crucible.model.ReviewListModelBuilder;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 
@@ -44,17 +45,17 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	private static final String NAME = "Atlassian Crucible checker";
 	private final CfgManager cfgManager;
 	private final Project project;
+	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final CrucibleConfigurationBean crucibleConfiguration;
-	private final ReviewListModelBuilder reviewListModelBuilder;
 
 	public CrucibleStatusChecker(CfgManager cfgManager,
 								 Project project,
 								 PluginConfiguration pluginConfiguration,
-								 ReviewListModelBuilder reviewListModelBuilder) {
+								 CrucibleReviewListModel crucibleReviewListModel) {
 		this.cfgManager = cfgManager;
 		this.project = project;
+		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.crucibleConfiguration = pluginConfiguration.getCrucibleConfigurationData();
-		this.reviewListModelBuilder = reviewListModelBuilder;
 	}
 
 	/**
@@ -62,7 +63,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	 */
 	private void doRun() {
 		try {
-			reviewListModelBuilder.getReviewsFromServer(true);
+			crucibleReviewListModel.rebuildModel(UpdateReason.TIMER_FIRED);
 		} catch (Throwable t) {
 			PluginUtil.getLogger().error(t);
 		}
