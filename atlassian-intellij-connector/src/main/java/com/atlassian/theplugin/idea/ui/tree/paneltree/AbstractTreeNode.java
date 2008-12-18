@@ -16,7 +16,6 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	protected static final int ICON_WIDTH = 16;
     protected static final int ICON_HEIGHT = 16;
     protected static final int RIGHT_PADDING = 24;
-	protected static final double FIXED_DATE_COLUMN_WIDTH = 180.0;
 	protected String name;
 	protected Icon iconOpen;
 	protected Icon iconClosed;

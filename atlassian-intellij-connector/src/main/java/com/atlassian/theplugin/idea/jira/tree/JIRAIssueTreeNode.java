@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -82,11 +83,14 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			t = "Invalid";
 		}
 		gbc.gridx++;
-        gbc.weightx = 0.0;		
+        gbc.weightx = 0.0;
+
 		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING, ICON_HEIGHT);
 		updated.setHorizontalAlignment(SwingConstants.RIGHT);
 		Dimension minDimension = updated.getPreferredSize();
-		minDimension.setSize(Math.max(FIXED_DATE_COLUMN_WIDTH, minDimension.getWidth()), minDimension.getHeight());
+
+		minDimension.setSize(
+				Math.max(PluginUtil.getDateWidth(updated, dfo), minDimension.getWidth()), minDimension.getHeight());
 		
 		updated.setPreferredSize(minDimension);
 		updated.setMinimumSize(minDimension);
