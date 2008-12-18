@@ -115,8 +115,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	}
 
 	public synchronized void updateReviews(final long anEpoch,
-							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
-							  final boolean sendNotifications) {
+										   final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
+										   final boolean sendNotifications) {
 
 		if (anEpoch != this.epoch.get()) {
 			return;
@@ -124,8 +124,20 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		notifyReviewListUpdateStarted();
 
+		// remove categories
+		Collection<CrucibleFilter> filters = reviews.keySet();
+		for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
+			CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
+			if (!updatedReviews.containsKey(crucibleFilter)) {
+				crucibleFilterIterator.remove();
+			}
+		}
+
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
+			if (!this.reviews.containsKey(crucibleFilter)) {
+				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+			}
 			for (ReviewAdapter reviewAdapter : r) {
 				addReview(anEpoch, crucibleFilter, reviewAdapter);
 			}
@@ -146,15 +158,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			removeReview(r);
 		}
 
-		// remove categories
-		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
-			if (!updatedReviews.containsKey(crucibleFilter)) {
-				reviews.remove(crucibleFilter);
-			}
-		}
-
 		notifyReviewListUpdateFinished();
-
 	}
 
 	private void notifyReviewChanged(ReviewAdapter review) {
