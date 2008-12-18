@@ -25,10 +25,15 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.zip.ZipFile;
 
 
@@ -49,7 +54,9 @@ public final class PluginUtil {
 			"http://docs.atlassian.com/atlassian-idea-plugin/latestPossibleVersion.xml";
 	private static PluginUtil instance;
 
-    static {
+	private static int dateWidth = -1;
+
+	static {
         doc = setDoc();
     }
 
@@ -145,5 +152,21 @@ public final class PluginUtil {
 		return result;
 	}
 
+	private static final int FALLBACK_DATE_WIDTH = 180;
+
+	public static int getDateWidth(JLabel label, DateFormat dfo) {
+		if (dateWidth == -1) {
+			try {
+				DateFormat dfi = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
+				String t = dfo.format(dfi.parse("22 Dec 2008 11:22:22"));
+				dateWidth = SwingUtilities.computeStringWidth(label.getFontMetrics(label.getFont()), t);
+//				System.out.println("date: " + t + " len: " + dateWidth);
+			} catch (ParseException e) {
+				dateWidth = FALLBACK_DATE_WIDTH;
+				e.printStackTrace();
+			}
+		}
+		return dateWidth;
+	}
 }
 
