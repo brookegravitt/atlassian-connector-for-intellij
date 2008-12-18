@@ -67,11 +67,19 @@ public abstract class JIRAIssueListModelListenerHolder
 	}
 
 	public void addFrozenModelListener(FrozenModelListener listener) {
-		frozenListeners.add(listener);
+		if (parent != null) {
+			parent.addFrozenModelListener(listener);
+		} else {
+			frozenListeners.add(listener);
+		}
 	}
 
 	public void removeFrozenModelListener(FrozenModelListener listener) {
-		frozenListeners.remove(listener);
+		if (parent != null) {
+			parent.addFrozenModelListener(listener);
+		} else {
+			frozenListeners.remove(listener);
+		}
 	}
 
 	public void addModelListener(JIRAIssueListModelListener listener) {
