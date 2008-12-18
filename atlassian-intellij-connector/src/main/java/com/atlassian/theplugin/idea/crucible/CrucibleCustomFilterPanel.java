@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//todo PL-947
 public class CrucibleCustomFilterPanel extends JPanel {
 	private JPanel rootPanel;
 	private JTextField filterTitle;

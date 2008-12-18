@@ -79,9 +79,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
-			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, @NotNull final CfgManager cfgManager,
+			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, 
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator) {
-		super(project, cfgManager, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
+		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 		
 		this.jiraProjectCfg = jiraProjectConfiguration;
 
