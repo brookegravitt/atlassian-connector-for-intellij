@@ -104,7 +104,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		initToolBar();
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
-				getProject(), getCfgManager(), CrucibleServerFacadeImpl.getInstance(), crucibleProjectConfiguration, filterTree);
+				getProject(), getCfgManager(), CrucibleServerFacadeImpl.getInstance(), crucibleProjectConfiguration,
+				filterTree);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh();
