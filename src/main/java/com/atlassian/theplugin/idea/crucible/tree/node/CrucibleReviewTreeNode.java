@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.crucible.tree.node;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -78,7 +79,8 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		JLabel created = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING, ICON_HEIGHT);
 		created.setHorizontalAlignment(SwingConstants.RIGHT);
 		Dimension minDimension = created.getPreferredSize();
-		minDimension.setSize(Math.max(FIXED_DATE_COLUMN_WIDTH, minDimension.getWidth()), minDimension.getHeight());
+		minDimension.setSize(
+				Math.max(PluginUtil.getDateWidth(created, dfo), minDimension.getWidth()), minDimension.getHeight());
 		setFixedComponentSize(created, minDimension.width, ICON_HEIGHT);
 		p.add(created, gbc);
 
