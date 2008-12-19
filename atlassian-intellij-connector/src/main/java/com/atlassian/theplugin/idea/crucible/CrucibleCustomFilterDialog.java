@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.UiTask;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -27,8 +29,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.intellij.openapi.project.Project;
@@ -45,10 +45,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * User: pmaruszak
+ * @author pmaruszak
  */
 public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private JPanel rootPanel;
@@ -76,15 +77,17 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private final CfgManager cfgManager;
 	private final Project project;
 	private final CustomFilterBean filter;
+	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private CrucibleServerCfg serverCfg;
 
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
-			@NotNull CustomFilterBean filter) {
+			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.filter = filter;
+		this.uiTaskExecutor = uiTaskExecutor;
 		setupUi();
 
 		this.serverCfg = (CrucibleServerCfg) cfgManager
@@ -229,7 +232,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {
 			serverComboBox.setEnabled(false);
-			serverComboBox.addItem("Enable a Crucible server first!");
+			serverComboBox.addItem(new CrucibleServerCfgWrapper(null));
 			//@todo disable apply filter button in toolbar
 		} else {
 			for (CrucibleServerCfg server : enabledServers) {
@@ -246,28 +249,33 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		if (crucibleServerCfg != null) {
 			projectComboBox.setEnabled(false);
 
-			new Thread(new Runnable() {
-				public void run() {
-					List<CrucibleProject> projects = new ArrayList<CrucibleProject>();
-					List<User> users = new ArrayList<User>();
-					try {
-						projects = crucibleServerFacade.getProjects(crucibleServerCfg);
-						users = crucibleServerFacade.getUsers(crucibleServerCfg);
-					} catch (RemoteApiException e) {
-						// nothing can be done here
-					} catch (ServerPasswordNotProvidedException e) {
-						// nothing can be done here
-					}
-					final List<CrucibleProject> finalProjects = projects;
-					final List<User> finalUsers = users;
-
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							updateServerRelatedCombos(finalProjects, finalUsers);
-						}
-					});
+			uiTaskExecutor.execute(new UiTask() {
+				private List<CrucibleProject> projects = Collections.emptyList();
+				private List<User> users = Collections.emptyList();
+				private String currentAction;
+				public void run() throws Exception {
+					currentAction = "fetching crucible projects";
+					projects = crucibleServerFacade.getProjects(crucibleServerCfg);
+					currentAction = "fetching crucible users";
+					users = crucibleServerFacade.getUsers(crucibleServerCfg);
 				}
-			}, "atlassian-idea-plugin crucible custom filter upload combos refresh").start();
+
+				public void onSuccess() {
+					updateServerRelatedCombos(projects, users);
+				}
+
+				public void onError() {
+					updateServerRelatedCombos(projects, users);
+				}
+
+				public String getLastAction() {
+					return currentAction;
+				}
+
+				public Component getComponent() {
+					return CrucibleCustomFilterDialog.this.getRootPane();
+				}
+			});
 		}
 	}
 
@@ -317,6 +325,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 					case ABANDONED:
 						abandonedCheckBox.setSelected(true);
 						break;
+					default:
+						break;
 				}
 			}
 		}
@@ -334,7 +344,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		if (projects.isEmpty()) {
 			projectComboBox.setEnabled(false);
-			projectComboBox.addItem("No projects");
+			projectComboBox.addItem(new CrucibleProjectWrapper(null));
 			setOKActionEnabled(false);
 		} else {
 			for (CrucibleProject crucibleProject : projects) {
@@ -357,7 +367,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setActiveUser(filter.getCreator(), creatorComboBox);
 		setActiveUser(filter.getModerator(), moderatorComboBox);
 		setActiveUser(filter.getReviewer(), reviewerComboBox);
-
+		pack();
 
 	}
 
