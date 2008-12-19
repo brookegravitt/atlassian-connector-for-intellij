@@ -4,14 +4,13 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,9 +37,25 @@ public class FilterTree extends JTree {
 		setRootVisible(false);
 		expandTree();
 
+		setCellRenderer(new TreeRenderer());
+
 		restoreSelection();
 
 		getSelectionModel().addTreeSelectionListener(new LocalTreeSelectionListener());
+	}
+
+	// lame Swing JTree API causes this silliness, don't blame me
+	public void redrawNodes() {
+		DefaultTreeModel model = (DefaultTreeModel) getModel();
+		redrawChildren(model, (TreeNode) model.getRoot());
+	}
+
+	private void redrawChildren(DefaultTreeModel model, TreeNode node) {
+		for (int i = 0; i < model.getChildCount(node); ++i) {
+			TreeNode child = (TreeNode) model.getChild(node, i);
+			redrawChildren(model, child);
+			model.nodeChanged(child);
+		}
 	}
 
 	public void addSelectionListener(CrucibleFilterSelectionListener listener) {
@@ -197,6 +212,8 @@ public class FilterTree extends JTree {
 			} else {
 				fireUnselectedCustomFilter();
 			}
+
+			redrawNodes();
 		}
 
 	}

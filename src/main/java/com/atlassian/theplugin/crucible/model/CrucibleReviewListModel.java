@@ -30,6 +30,10 @@ import java.util.Map;
 public interface CrucibleReviewListModel {
 	Collection<ReviewAdapter> getReviews();
 
+	int getReviewCount(CrucibleFilter filter);
+
+	int getPredefinedFiltersReviewCount();
+	
 	void addListener(CrucibleReviewListModelListener listener);
 
 	void removeListener(CrucibleReviewListModelListener listener);
