@@ -143,19 +143,27 @@ public class FilterTree extends JTree {
 		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
 
 		for (PredefinedFilter predefinedFilter : predefinedFilters) {
-			for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; i++) {
-				if (rootNode.getChildAt(i) instanceof CruciblePredefinedFilterTreeNode) {
-					CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) rootNode.getChildAt(i);
+			for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; ++i) {
+				if (rootNode.getChildAt(i) instanceof CrucibleMyReviewsTreeNode) {
+					CrucibleMyReviewsTreeNode myReviewsNode = (CrucibleMyReviewsTreeNode) rootNode.getChildAt(i);
+					for (int j = 0; j < myReviewsNode.getChildCount(); ++j) {
 
-					if (node.getFilter().equals(predefinedFilter)) {
-						selectedPaths.add(new TreePath(node.getPath()));
-						break;
+						if (myReviewsNode.getChildAt(j) instanceof CruciblePredefinedFilterTreeNode) {
+							CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) myReviewsNode
+									.getChildAt(j);
+
+							if (node.getFilter().equals(predefinedFilter)) {
+								selectedPaths.add(new TreePath(node.getPath()));
+								break;
+							}
+						}
 					}
+					break;
 				}
 			}
 		}
 
-		// create selected TreePath for CustomFilter (single custom filter support)
+		// create selected TreePath for CustomFilter (single custom filter support here)
 		if (crucibleConfiguration != null
 				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
 				&& crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
