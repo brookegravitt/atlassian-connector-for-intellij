@@ -22,6 +22,7 @@ import java.util.HashSet;
 public class FilterTree extends JTree {
 	private CrucibleProjectConfiguration crucibleConfiguration;
 	private Collection<CrucibleFilterSelectionListener> listeners = new ArrayList<CrucibleFilterSelectionListener>();
+	private FilterTree.LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
 
 	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleProjectConfiguration crucibleConfiguration) {
 		super(filterTreeModel);
@@ -41,7 +42,15 @@ public class FilterTree extends JTree {
 
 		restoreSelection();
 
-		getSelectionModel().addTreeSelectionListener(new LocalTreeSelectionListener());
+		addSelectionListener();
+	}
+
+	private void addSelectionListener() {
+		getSelectionModel().addTreeSelectionListener(localSelectionListener);
+	}
+
+	private void removeSelectionListener() {
+		getSelectionModel().removeTreeSelectionListener(localSelectionListener);
 	}
 
 	// lame Swing JTree API causes this silliness, don't blame me
@@ -163,6 +172,24 @@ public class FilterTree extends JTree {
 	}
 
 	private void clearPredefinedFiltersSelection() {
+
+		removeSelectionListener();
+
+		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (getModel().getRoot()));
+		if (rootNode == null) {
+			return;
+		}
+
+		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
+
+		for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; ++i) {
+			if (rootNode.getChildAt(i) instanceof CrucibleMyReviewsTreeNode) {
+				CrucibleMyReviewsTreeNode node = (CrucibleMyReviewsTreeNode) rootNode.getChildAt(i);
+				removeDescendantSelectedPaths(new TreePath(node.getPath()), false);
+			}
+		}
+
+		addSelectionListener();
 	}
 
 	private void expandTree() {
