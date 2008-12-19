@@ -74,11 +74,16 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			newReviews = reviewListModelBuilder.getReviewsFromServer(this, updateReason, requestId);
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
-					updateReviews(requestId, newReviews, updateReason);
+					try {
+						updateReviews(requestId, newReviews, updateReason);
+					} finally {
+						notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
+					}
 				}
 			});
 		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
+			// this exception is just to notify that query was interrupted and
+			// new request is performed
 		}
 	}
 
@@ -155,42 +160,38 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			return;
 		}
 
-		try {
-			for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-				Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
-				if (!this.reviews.containsKey(crucibleFilter)) {
-					this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
-				}
-				for (ReviewAdapter reviewAdapter : r) {
-					addReview(crucibleFilter, reviewAdapter, updateReason);
-				}
+		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
+			if (!this.reviews.containsKey(crucibleFilter)) {
+				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
 			}
-
-			///create set in order to remove duplicates
-			Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
-			for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-				reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
+			for (ReviewAdapter reviewAdapter : r) {
+				addReview(crucibleFilter, reviewAdapter, updateReason);
 			}
+		}
 
-			List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
+		///create set in order to remove duplicates
+		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
+		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+			reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
+		}
 
-			removed.addAll(getReviews());
-			removed.removeAll(reviewSet);
+		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
 
-			for (ReviewAdapter r : removed) {
-				removeReview(r, updateReason);
+		removed.addAll(getReviews());
+		removed.removeAll(reviewSet);
+
+		for (ReviewAdapter r : removed) {
+			removeReview(r, updateReason);
+		}
+
+		// remove categories
+		Collection<CrucibleFilter> filters = reviews.keySet();
+		for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
+			CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
+			if (!updatedReviews.containsKey(crucibleFilter)) {
+				crucibleFilterIterator.remove();
 			}
-
-			// remove categories
-			Collection<CrucibleFilter> filters = reviews.keySet();
-			for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
-				CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
-				if (!updatedReviews.containsKey(crucibleFilter)) {
-					crucibleFilterIterator.remove();
-				}
-			}
-		} finally {
-			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 		}
 	}
 
