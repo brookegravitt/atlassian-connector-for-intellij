@@ -67,6 +67,14 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 		return search(parent.getReviews());
 	}
 
+	public int getReviewCount(CrucibleFilter filter) {
+		return parent.getReviewCount(filter);
+	}
+
+	public int getPredefinedFiltersReviewCount() {
+		return parent.getPredefinedFiltersReviewCount();
+	}
+
 	public void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews, UpdateReason updateReason) {
 	}
 

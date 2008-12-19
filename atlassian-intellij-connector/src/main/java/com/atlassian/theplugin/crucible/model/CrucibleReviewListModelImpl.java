@@ -3,6 +3,7 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
@@ -35,6 +36,26 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			plainReviews.addAll(reviewAdapters);
 		}
 		return plainReviews;
+	}
+
+	public int getReviewCount(CrucibleFilter filter) {
+		if (reviews.containsKey(filter)) {
+			return reviews.get(filter).size();
+		}
+		return -1;
+	}
+
+	public int getPredefinedFiltersReviewCount() {
+		Set<ReviewAdapter> combined = new HashSet<ReviewAdapter>();
+		if (reviews.keySet().size() == 0) {
+			return -1;
+		}
+		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
+			if (crucibleFilter instanceof PredefinedFilter) {
+				combined.addAll(reviews.get(crucibleFilter));
+			}
+		}
+		return combined.size();
 	}
 
 	private synchronized long startNewRequest() {
