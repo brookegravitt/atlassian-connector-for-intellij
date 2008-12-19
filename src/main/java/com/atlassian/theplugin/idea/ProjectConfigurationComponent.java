@@ -104,7 +104,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final SAXBuilder builder = new SAXBuilder(false);
 		try {
 			final String path = getCfgFilePath();
-			if (new File(path).exists() == false) {
+			if (path == null || new File(path).exists() == false) {
 				setDefaultProjectConfiguration();
 				return;
 			}
@@ -119,7 +119,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		Document privateRoot = null; // null means that there is no private cfg available
 		try {
 			final String privateCfgFile = getPrivateCfgFilePath();
-			if (new File(privateCfgFile).exists()) {
+			if (privateCfgFile != null && new File(privateCfgFile).exists()) {
 				privateRoot = builder.build(privateCfgFile);
 			}
 		} catch (Exception e) {
@@ -165,6 +165,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return configuration;
 	}
 
+	@Nullable
 	private String getCfgFilePath() {
 		final VirtualFile baseDir = project.getBaseDir();
 		if (baseDir == null) {
