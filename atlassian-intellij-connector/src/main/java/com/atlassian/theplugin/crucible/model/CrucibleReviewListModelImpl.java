@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
+import com.intellij.openapi.application.ApplicationManager;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
@@ -44,10 +45,20 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return epoch.get() > currentEpoch;
 	}
 
-	public void rebuildModel(UpdateReason updateReason) {
-		long newRequest = startNewRequest();
+	public void rebuildModel(final UpdateReason updateReason) {
+		final long requestId = startNewRequest();
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null));
-		reviewListModelBuilder.getReviewsFromServer(this, updateReason, newRequest);
+		final Map<CrucibleFilter, ReviewNotificationBean> newReviews;
+		try {
+			newReviews = reviewListModelBuilder.getReviewsFromServer(this, updateReason, requestId);
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					updateReviews(requestId, newReviews, updateReason);
+				}
+			});
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public synchronized void addReview(CrucibleFilter crucibleFilter,
