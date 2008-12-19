@@ -87,7 +87,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			public void actionPerformed(ActionEvent event) {
 
 				final CrucibleCustomFilterDialog dialog = new CrucibleCustomFilterDialog(
-						project, projectCfgManager.getCfgManager(), projectCrucibleCfg.getCrucibleFilters().getManualFilter());
+						project, projectCfgManager.getCfgManager(), projectCrucibleCfg.getCrucibleFilters().getManualFilter(),
+						uiTaskExecutor);
 
 				dialog.show();
 

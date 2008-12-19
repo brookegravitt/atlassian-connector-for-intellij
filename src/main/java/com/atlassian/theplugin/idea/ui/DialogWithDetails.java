@@ -53,6 +53,20 @@ public class DialogWithDetails extends DialogWrapper {
 		init();
 	}
 
+	protected DialogWithDetails(Component parent, String description, String question, Throwable exception, String title,
+			boolean showExceptionTitle) {
+		super(parent, false);
+		this.description = description;
+		this.question = question;
+		this.showExceptionTitle = showExceptionTitle;
+		this.exceptionStr = getExceptionString(exception);
+		this.exceptionTitle = exception.getLocalizedMessage();
+
+		setTitle(title);
+
+		init();
+	}
+
 	public static int showYesNoDialog(Project project, String description,
 			String question, Throwable exception, String title) {
 		DialogWithDetails dialog = new DialogWithDetails(project, description, question, exception, title, true);
@@ -77,7 +91,22 @@ public class DialogWithDetails extends DialogWrapper {
 		return dialog.getExitCode();
 	}
 
+	public static int showExceptionDialog(Component parent, String description,
+			Throwable exception, String title) {
+		final DialogWithDetails dialog = new DialogWithDetails(parent, description, null, exception, title, false) {
+			@Override
+			protected Action[] createActions() {
+				return new Action[]{getOKAction(), getDetailsAction()};
+			}
 
+			@Override
+			protected Icon getIcon() {
+				return Messages.getErrorIcon();
+			}
+		};
+		dialog.show();
+		return dialog.getExitCode();
+	}
 
 
 	@Override

@@ -26,14 +26,17 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		this.review = review;
 	}
 
+	@Override
 	public ReviewAdapter getReview() {
 		return review;
 	}
 
+	@Override
 	public String toString() {
 		return review.getPermId().getId() + ": " + review.getName();
 	}
 
+	@Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
@@ -99,6 +102,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
         return p;
 	}
 
+	@Override
 	public void onSelect() {
 //		model.setSelectedReview(review); <- selection is stored inside the tree instead of global plugin review model
 	}
