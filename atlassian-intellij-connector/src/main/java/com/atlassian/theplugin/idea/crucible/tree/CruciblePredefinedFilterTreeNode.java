@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 
 import javax.swing.*;
 
@@ -10,18 +12,25 @@ import javax.swing.*;
  */
 public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 	private PredefinedFilter filter;
+	private final CrucibleReviewListModel reviewListModel;
 
-	CruciblePredefinedFilterTreeNode(PredefinedFilter filter) {
+	CruciblePredefinedFilterTreeNode(PredefinedFilter filter, CrucibleReviewListModel reviewListModel) {
 		super(filter.getFilterName(), null, null);
 		this.filter = filter;
+		this.reviewListModel = reviewListModel;
 	}
 
 	public String toString() {
-		return filter.getFilterName();
+		int cnt = reviewListModel.getReviewCount(filter);
+		String txt = filter.getFilterName();
+		if (cnt > -1) {
+			txt += " <b>(" + cnt + ")</b>";
+		}
+		return txt;
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		return new JLabel(filter.getFilterName());
+		return new SelectableLabel(selected, c.isEnabled(), "<html>" + toString(), ICON_HEIGHT);
 	}
 
 	public void onSelect() {

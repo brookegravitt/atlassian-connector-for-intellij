@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 
 import java.util.*;
 
@@ -42,5 +43,13 @@ public abstract class AbstractSortingCrucibleReviewListModel extends CrucibleRev
 
 	public Collection<ReviewAdapter> getReviews() {
 		return sort(parent.getReviews());
+	}
+
+	public int getReviewCount(CrucibleFilter filter) {
+		return parent.getReviewCount(filter);
+	}
+
+	public int getPredefinedFiltersReviewCount() {
+		return parent.getPredefinedFiltersReviewCount();
 	}
 }
