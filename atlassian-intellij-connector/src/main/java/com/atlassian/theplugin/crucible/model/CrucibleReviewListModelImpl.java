@@ -134,40 +134,43 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			return;
 		}
 
-		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
-			if (!this.reviews.containsKey(crucibleFilter)) {
-				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+		try {
+			for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+				Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
+				if (!this.reviews.containsKey(crucibleFilter)) {
+					this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+				}
+				for (ReviewAdapter reviewAdapter : r) {
+					addReview(crucibleFilter, reviewAdapter, updateReason);
+				}
 			}
-			for (ReviewAdapter reviewAdapter : r) {
-				addReview(crucibleFilter, reviewAdapter, updateReason);
+
+			///create set in order to remove duplicates
+			Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
+			for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+				reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
 			}
-		}
 
-		///create set in order to remove duplicates
-		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
-		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-			reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
-		}
+			List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
 
-		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
+			removed.addAll(getReviews());
+			removed.removeAll(reviewSet);
 
-		removed.addAll(getReviews());
-		removed.removeAll(reviewSet);
-
-		for (ReviewAdapter r : removed) {
-			removeReview(r, updateReason);
-		}
-
-		// remove categories
-		Collection<CrucibleFilter> filters = reviews.keySet();
-		for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
-			CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
-			if (!updatedReviews.containsKey(crucibleFilter)) {
-				crucibleFilterIterator.remove();
+			for (ReviewAdapter r : removed) {
+				removeReview(r, updateReason);
 			}
+
+			// remove categories
+			Collection<CrucibleFilter> filters = reviews.keySet();
+			for (Iterator<CrucibleFilter> crucibleFilterIterator = filters.iterator(); crucibleFilterIterator.hasNext();) {
+				CrucibleFilter crucibleFilter = crucibleFilterIterator.next();
+				if (!updatedReviews.containsKey(crucibleFilter)) {
+					crucibleFilterIterator.remove();
+				}
+			}
+		} finally {
+			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 		}
-		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 	}
 
 	private void notifyReviewAdded(UpdateContext updateContext) {
