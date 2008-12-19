@@ -13,6 +13,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -39,40 +40,7 @@ public class FilterTree extends JTree {
 
 		restoreSelection();
 
-		getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				Collection<PredefinedFilter> predefinedFilters =
-						new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
-
-				CustomFilter customFilter = null;
-
-				TreePath[] selectionPaths = getSelectionPaths();
-
-				if (selectionPaths != null) {
-					for (TreePath selectionPath : selectionPaths) {
-						if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-							if (selectionPath.getLastPathComponent() instanceof CruciblePredefinedFilterTreeNode) {
-								PredefinedFilter filter = ((CruciblePredefinedFilterTreeNode)
-										selectionPath.getLastPathComponent()).getFilter();
-//								System.out.println(filter);
-								predefinedFilters.add(filter);
-							} else if (selectionPath.getLastPathComponent() instanceof CrucibleCustomFilterTreeNode) {
-								customFilter = ((CrucibleCustomFilterTreeNode)
-										selectionPath.getLastPathComponent()).getFilter();
-							}
-						}
-					}
-				}
-
-				fireSelectedPredefinedFilter(predefinedFilters);
-
-				if (customFilter != null) {
-	 					fireSelectedCustomFilter(customFilter);
-					} else {
-						fireUnselectedCustomFilter();
-				}
-			}
-		});
+		getSelectionModel().addTreeSelectionListener(new LocalTreeSelectionListener());
 	}
 
 	public void addSelectionListener(CrucibleFilterSelectionListener listener) {
@@ -179,10 +147,58 @@ public class FilterTree extends JTree {
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
 
+	private void clearPredefinedFiltersSelection() {
+	}
+
 	private void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
 		}
+	}
+
+	private class LocalTreeSelectionListener implements TreeSelectionListener {
+
+		public void valueChanged(TreeSelectionEvent e) {
+			Collection<PredefinedFilter> predefinedFilters =
+					new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
+
+			CustomFilter customFilter = null;
+			boolean allMyReviews = false;
+
+			TreePath[] selectionPaths = getSelectionPaths();
+
+			if (selectionPaths != null) {
+				for (TreePath selectionPath : selectionPaths) {
+					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+						if (selectionPath.getLastPathComponent() instanceof CruciblePredefinedFilterTreeNode) {
+							PredefinedFilter filter = ((CruciblePredefinedFilterTreeNode)
+									selectionPath.getLastPathComponent()).getFilter();
+							predefinedFilters.add(filter);
+						} else if (selectionPath.getLastPathComponent() instanceof CrucibleCustomFilterTreeNode) {
+							customFilter = ((CrucibleCustomFilterTreeNode)
+									selectionPath.getLastPathComponent()).getFilter();
+						} else if (selectionPath.getLastPathComponent() instanceof CrucibleMyReviewsTreeNode) {
+							allMyReviews = true;
+						}
+
+					}
+				}
+			}
+
+			if (allMyReviews) {
+				clearPredefinedFiltersSelection();
+				predefinedFilters.addAll(Arrays.asList(PredefinedFilter.values()));
+			}
+
+			fireSelectedPredefinedFilter(predefinedFilters);
+
+			if (customFilter != null) {
+				fireSelectedCustomFilter(customFilter);
+			} else {
+				fireUnselectedCustomFilter();
+			}
+		}
+
 	}
 
 }
