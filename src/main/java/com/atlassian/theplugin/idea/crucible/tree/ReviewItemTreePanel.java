@@ -53,6 +53,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Set;
 
 public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
@@ -254,7 +255,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
 		buffer.append(">MOD</font>");
 		int i = 0;
-		List<Reviewer> reviewers;
+		Set<Reviewer> reviewers;
 		try {
 			reviewers = reviewItem.getReviewers();
 			if (reviewers != null) {

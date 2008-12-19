@@ -54,7 +54,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
 		Review review = new ReviewBean(null) {
 
-			public List<Reviewer> getReviewers() {
+			public Set<Reviewer> getReviewers() {
 				return null;
 			}
 
