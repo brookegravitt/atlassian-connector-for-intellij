@@ -23,12 +23,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProjectBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.intellij.openapi.project.Project;
@@ -39,6 +34,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -82,7 +78,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private CrucibleServerCfg serverCfg;
 
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
-			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
+							   @NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -210,7 +206,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		filter.setOrRoles("Any".equals(role));
 
 		String complete = (String) reviewerStatusComboBox.getSelectedItem();
-		filter.setComplete("Complete".equals(complete));
+		filter.setComplete("Any".equals(complete) ? null : "Complete".equals(complete));
 
 
 		return filter;
@@ -253,6 +249,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 				private List<CrucibleProject> projects = Collections.emptyList();
 				private List<User> users = Collections.emptyList();
 				private String currentAction;
+
 				public void run() throws Exception {
 					currentAction = "fetching crucible projects";
 					projects = crucibleServerFacade.getProjects(crucibleServerCfg);
@@ -488,7 +485,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		reviewNeedsFixingCheckBox.setText("Review needs fixing");
 		panel2.add(reviewNeedsFixingCheckBox);
 	}
-
 
 
 	private class UserComboBoxItem {
