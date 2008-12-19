@@ -154,16 +154,19 @@ public final class PluginUtil {
 
 	private static final int FALLBACK_DATE_WIDTH = 180;
 
+	/**
+	 * This is crazy routine by jgorycki :)
+	 */
 	public static int getDateWidth(JLabel label, DateFormat dfo) {
 		if (dateWidth == -1) {
 			try {
 				DateFormat dfi = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
 				String t = dfo.format(dfi.parse("22 Dec 2008 11:22:22"));
-				dateWidth = SwingUtilities.computeStringWidth(label.getFontMetrics(label.getFont()), t);
-//				System.out.println("date: " + t + " len: " + dateWidth);
+				final JLabel jLabel = new JLabel(t);
+				jLabel.setFont(label.getFont());
+				dateWidth = jLabel.getPreferredSize().width;
 			} catch (ParseException e) {
 				dateWidth = FALLBACK_DATE_WIDTH;
-				e.printStackTrace();
 			}
 		}
 		return dateWidth;
