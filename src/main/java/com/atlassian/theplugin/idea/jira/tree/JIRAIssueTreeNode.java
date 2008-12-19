@@ -24,6 +24,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		this.issue = issue;
 	}
 
+	@Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
@@ -73,7 +74,6 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 		p.add(prio, gbc);
 
-
 		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
 		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);		
 		String t;
@@ -95,15 +95,15 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		updated.setPreferredSize(minDimension);
 		updated.setMinimumSize(minDimension);
 		updated.setMaximumSize(minDimension);
-		
-		p.add(updated, gbc);		
+		updated.setSize(minDimension);
+		p.add(updated, gbc);
 		JPanel padding = new JPanel();
         gbc.gridx++;
         gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
         padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-        padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
-        padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+        padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
         padding.setOpaque(true);
@@ -112,10 +112,12 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
         return p;
 	}
 
+	@Override
 	public void onSelect() {
 		model.setSeletedIssue(issue);	
 	}
 
+	@Override
 	public String toString() {
 		return name;
 	}
