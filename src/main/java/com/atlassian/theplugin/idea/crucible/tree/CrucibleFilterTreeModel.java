@@ -84,8 +84,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 
 		@Override
 	public boolean isLeaf(Object node) {
-		if (node == super.getRoot() ||
-				node instanceof CrucibleMyReviewsTreeNode) {
+		if (node == super.getRoot()
+				|| node instanceof CrucibleMyReviewsTreeNode) {
 			return false;
 		}
 
