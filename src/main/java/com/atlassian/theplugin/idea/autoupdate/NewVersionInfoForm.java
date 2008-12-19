@@ -18,8 +18,8 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -98,8 +98,10 @@ public class NewVersionInfoForm extends DialogWrapper {
 
 	@Override
 	public void doCancelAction() {
-		Messages.showMessageDialog("You can always install " + versionInfo.getVersion() + " version through " + PluginUtil.getInstance().getName()
-				+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
+		Messages.showMessageDialog(
+				"You can always install " + versionInfo.getVersion() + " version through " + PluginUtil.getInstance().getName()
+						+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() +
+						" | General | Auto update | Check now)", "Information",
 				Messages.getInformationIcon());
 
 
