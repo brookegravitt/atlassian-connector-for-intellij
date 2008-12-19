@@ -9,8 +9,6 @@ import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 
 import java.util.Map;
@@ -32,25 +30,19 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, cfgManager, project);
 	}
 
-	public void getReviewsFromServer(final CrucibleReviewListModel crucibleReviewListModel,
-									 final UpdateReason updateReason,
-									 final long epoch) {
-		try {
-			final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
-			final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
+	public Map<CrucibleFilter, ReviewNotificationBean> getReviewsFromServer(final CrucibleReviewListModel crucibleReviewListModel,
+																			final UpdateReason updateReason,
+																			final long epoch) throws InterruptedException {
 
-			final CrucibleQueryExecutor crucibleQueryExecutor =
-					new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler,
-										crucibleReviewListModel);
-			final Map<CrucibleFilter, ReviewNotificationBean> reviews =
-					crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, epoch);
-			ApplicationManager.getApplication().invokeLater(new Runnable() {
-				public void run() {
-					crucibleReviewListModel.updateReviews(epoch, reviews, updateReason);
-				}
-			});
-		} catch (InterruptedException ex) {
-			PluginUtil.getLogger().info(ex);
-		}
+		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
+		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
+
+		final CrucibleQueryExecutor crucibleQueryExecutor =
+				new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler,
+						crucibleReviewListModel);
+		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
+				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, epoch);
+		return reviews;
+
 	}
 }
