@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -13,16 +14,17 @@ import java.util.ArrayList;
  */
 public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	private CrucibleFilterListModel filterModel;
+	private final CrucibleReviewListModel reviewListModel;
 
 
-	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel) {
+	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel, CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode(), false);
 		this.filterModel = filterModel;
+		this.reviewListModel = reviewListModel;
 	}
 
 	@Override
 	public Object getChild(Object parent, int index) {
-
 		if (parent == root) {
 			DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
 
@@ -32,7 +34,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 						return p.getChildAt(index);
 				}
 
-				CrucibleMyReviewsTreeNode node = new CrucibleMyReviewsTreeNode();
+				CrucibleMyReviewsTreeNode node = new CrucibleMyReviewsTreeNode(reviewListModel);
 				p.add(node);
 				return node;
 
@@ -42,7 +44,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 					return p.getChildAt(index);
 				}
 
-				CrucibleCustomFilterTreeNode node = new CrucibleCustomFilterTreeNode(filterModel.getCustomFilter());
+				CrucibleCustomFilterTreeNode node =
+						new CrucibleCustomFilterTreeNode(filterModel.getCustomFilter(), reviewListModel);
 				p.add(node);
 				return node;
 			}
@@ -58,7 +61,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 						return p.getChildAt(index);
 					}
 
-					CruciblePredefinedFilterTreeNode n = new CruciblePredefinedFilterTreeNode(predefinedFilter);
+					CruciblePredefinedFilterTreeNode n =
+							new CruciblePredefinedFilterTreeNode(predefinedFilter, reviewListModel);
 					p.add(n);
 					return n;
 				}

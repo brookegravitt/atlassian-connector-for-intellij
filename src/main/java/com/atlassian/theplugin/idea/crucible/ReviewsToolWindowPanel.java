@@ -89,7 +89,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
-		filterTreeModel = new CrucibleFilterTreeModel(filterListModel);
+		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, reviewListModel);
 		this.reviewListModel = reviewListModel;
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
 		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
@@ -208,6 +208,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		if (getStatusBarPane() != null) {
 			getStatusBarPane().setEnabled(enabled);
 		}
+		filterTree.redrawNodes();
 	}
 
 	@Nullable

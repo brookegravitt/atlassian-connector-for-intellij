@@ -15,17 +15,37 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import javax.swing.tree.DefaultMutableTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+
+import javax.swing.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class CrucibleMyReviewsTreeNode extends DefaultMutableTreeNode {
-	public CrucibleMyReviewsTreeNode() {
-		super();
+public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
+	private static final String NAME = "My Reviews";
+	private final CrucibleReviewListModel reviewListModel;
+
+	public CrucibleMyReviewsTreeNode(CrucibleReviewListModel reviewListModel) {
+		super(NAME, null, null);
+		this.reviewListModel = reviewListModel;
 	}
 
 	public String toString() {
-		return "My Reviews";
+		int cnt = reviewListModel.getPredefinedFiltersReviewCount();
+		String txt = NAME;
+		if (cnt > -1) {
+			txt += " <b>(" + cnt + ")</b>";
+		}
+		return txt;
 	}
+
+	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
+		String txt = selected ? "<html>" + toString() : NAME;
+		return new SelectableLabel(selected, c.isEnabled(), txt, ICON_HEIGHT);
+	}
+
+	public void onSelect() { }
 }
