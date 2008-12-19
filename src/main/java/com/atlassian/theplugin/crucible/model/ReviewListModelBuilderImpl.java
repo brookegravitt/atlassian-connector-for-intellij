@@ -30,9 +30,10 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, cfgManager, project);
 	}
 
-	public Map<CrucibleFilter, ReviewNotificationBean> getReviewsFromServer(final CrucibleReviewListModel crucibleReviewListModel,
-																			final UpdateReason updateReason,
-																			final long epoch) throws InterruptedException {
+	public Map<CrucibleFilter, ReviewNotificationBean> getReviewsFromServer(
+			final CrucibleReviewListModel crucibleReviewListModel,
+			final UpdateReason updateReason,
+			final long epoch) throws InterruptedException {
 
 		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
