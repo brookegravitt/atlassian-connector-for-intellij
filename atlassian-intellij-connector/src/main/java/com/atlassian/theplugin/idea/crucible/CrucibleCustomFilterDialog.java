@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -83,7 +82,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		this.filter = filter;
 		$$$setupUI$$$();
 
-		this.serverCfg = (CrucibleServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
+		this.serverCfg = (CrucibleServerCfg) cfgManager
+				.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
 		anyProject = new CrucibleProjectBean();
 		anyProject.setName("Any");
@@ -228,7 +228,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	public void setSelectedServer(CrucibleServerCfg serverCfg) {
 		ServerComboBoxItem item = new ServerComboBoxItem(serverCfg);
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
-			if (serverComboBox.getItemAt(i) instanceof ServerComboBoxItem && ((ServerComboBoxItem) serverComboBox.getItemAt(i)).getServer().equals(serverCfg)) {
+			if (serverComboBox.getItemAt(i) instanceof ServerComboBoxItem &&
+					((ServerComboBoxItem) serverComboBox.getItemAt(i)).getServer().equals(serverCfg)) {
 				serverComboBox.setSelectedItem(serverComboBox.getItemAt(i));
 			}
 
@@ -236,7 +237,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = cfgManager
+				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {
@@ -286,7 +288,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private CrucibleServerCfg getSelectedServer() {
 		CrucibleServerCfg server = null;
 
-		if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null && serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+		if (serverComboBox.getItemCount() > 0 && serverComboBox.getSelectedItem() != null &&
+				serverComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 			server = ((ServerComboBoxItem) serverComboBox.getSelectedItem()).getServer();
 		}
 
