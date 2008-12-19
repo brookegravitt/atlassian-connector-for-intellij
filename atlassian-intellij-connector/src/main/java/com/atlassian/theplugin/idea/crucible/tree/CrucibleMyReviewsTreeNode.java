@@ -25,7 +25,7 @@ import javax.swing.*;
  * @author Jacek Jaroczynski
  */
 public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
-	private static final String NAME = "My Reviews";
+	private static final String NAME = "All My Reviews";
 	private final CrucibleReviewListModel reviewListModel;
 
 	public CrucibleMyReviewsTreeNode(CrucibleReviewListModel reviewListModel) {

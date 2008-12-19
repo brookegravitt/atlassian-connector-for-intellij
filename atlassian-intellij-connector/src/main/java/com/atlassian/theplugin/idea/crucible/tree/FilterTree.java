@@ -104,61 +104,85 @@ public class FilterTree extends JTree {
 	}
 
 	private void restoreSelection() {
-		if (crucibleConfiguration.getCrucibleFilters() != null
-				&& crucibleConfiguration.getCrucibleFilters().getPredefinedFilters() != null) {
+
+		if (crucibleConfiguration == null || crucibleConfiguration.getCrucibleFilters() == null) {
+			return;
+		}
+
+		boolean customFilter = false;
+		Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
+
+		if (crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
+				&& crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
+
+			customFilter = true;
+		}
+
+
+		if (crucibleConfiguration.getCrucibleFilters().getPredefinedFilters() != null) {
 
 			Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
-			Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
 
-			// find selection
+			// find stored filters
 			for (int i = 0; i < confFilters.length; ++i) {
 				if (confFilters[i]) {
 					// remember node
 					selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
 				}
 			}
-
-			// select nodes
-			selectNodes(selectedPredefinedFilters);
 		}
+
+		// select nodes
+		selectNodes(selectedPredefinedFilters, customFilter);
 	}
 
-	private void selectNodes(Collection<PredefinedFilter> predefinedFilters) {
+	private void selectNodes(Collection<PredefinedFilter> predefinedFilters, final boolean customFilter) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (getModel().getRoot()));
 		if (rootNode == null) {
 			return;
 		}
 
-		// create selected TreePath-s for PredefinedFilters
 		Collection<TreePath> selectedPaths = new ArrayList<TreePath>();
 
 		int noOfCustomFilters = ((CrucibleFilterTreeModel) getModel()).getNumberOfCustomFilters();
 
-		for (PredefinedFilter predefinedFilter : predefinedFilters) {
+		if (predefinedFilters.size() == PredefinedFilter.values().length) {
+			// all predefines filters selected
+			// create path for CrucibleMyReviewsTreeNode
 			for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; ++i) {
 				if (rootNode.getChildAt(i) instanceof CrucibleMyReviewsTreeNode) {
 					CrucibleMyReviewsTreeNode myReviewsNode = (CrucibleMyReviewsTreeNode) rootNode.getChildAt(i);
-					for (int j = 0; j < myReviewsNode.getChildCount(); ++j) {
+					selectedPaths.add(new TreePath(myReviewsNode.getPath()));
+				}
+			}
+		} else {
 
-						if (myReviewsNode.getChildAt(j) instanceof CruciblePredefinedFilterTreeNode) {
-							CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) myReviewsNode
-									.getChildAt(j);
+			// not all predefined filtes selected
+			// create paths for predefined filters
+			for (PredefinedFilter predefinedFilter : predefinedFilters) {
+				for (int i = 0; i < rootNode.getChildCount() - noOfCustomFilters; ++i) {
+					if (rootNode.getChildAt(i) instanceof CrucibleMyReviewsTreeNode) {
+						CrucibleMyReviewsTreeNode myReviewsNode = (CrucibleMyReviewsTreeNode) rootNode.getChildAt(i);
+						for (int j = 0; j < myReviewsNode.getChildCount(); ++j) {
 
-							if (node.getFilter().equals(predefinedFilter)) {
-								selectedPaths.add(new TreePath(node.getPath()));
-								break;
+							if (myReviewsNode.getChildAt(j) instanceof CruciblePredefinedFilterTreeNode) {
+								CruciblePredefinedFilterTreeNode node = (CruciblePredefinedFilterTreeNode) myReviewsNode
+										.getChildAt(j);
+
+								if (node.getFilter().equals(predefinedFilter)) {
+									selectedPaths.add(new TreePath(node.getPath()));
+									break;
+								}
 							}
 						}
+						break;
 					}
-					break;
 				}
 			}
 		}
 
-		// create selected TreePath for CustomFilter (single custom filter support here)
-		if (crucibleConfiguration != null
-				&& crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
-				&& crucibleConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
+		// create path for CustomFilter (single custom filter support here)
+		if (customFilter) {
 			for (int i = rootNode.getChildCount() - 1; i >= 0; --i) {
 				if (rootNode.getChildAt(i) instanceof CrucibleCustomFilterTreeNode) {
 					CrucibleCustomFilterTreeNode node = (CrucibleCustomFilterTreeNode) rootNode.getChildAt(i);
@@ -171,6 +195,10 @@ public class FilterTree extends JTree {
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
 
+	/**
+	 * Takes current selection and removes predefined filters nodes from that selection
+	 * It doesn't notify tree about changed selection (selection listener is removed and then restored)
+	 */
 	private void clearPredefinedFiltersSelection() {
 
 		removeSelectionListener();
