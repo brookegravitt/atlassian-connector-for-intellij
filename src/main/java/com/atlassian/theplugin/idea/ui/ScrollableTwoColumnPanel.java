@@ -89,11 +89,12 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 			builder.addLabel("<html>" + entry.getValue(), cc);
 			row++;
 		}
-		// this two line (simulating JScrollPane resize)
+		// this three lines (simulating JScrollPane resize)
 		// are needed to more or less workaround the problem of revalidating whole scrollpane when more or fewer
 		// rows could have been added. Without them you may end up with JScrollPane not completely showing its viewport
 		panel.setPreferredSize(null);
 		panel.setPreferredSize(new Dimension(getWidth(), panel.getPreferredSize().height));
+		panel.repaint();
 	}
 
 
