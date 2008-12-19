@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.*;
 
@@ -37,7 +37,7 @@ public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
 		int cnt = reviewListModel.getPredefinedFiltersReviewCount();
 		String txt = NAME;
 		if (cnt > -1) {
-			txt += " <b>(" + cnt + ")</b>";
+			txt += " (" + cnt + ")";
 		}
 		return txt;
 	}

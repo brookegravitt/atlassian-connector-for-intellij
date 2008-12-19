@@ -24,7 +24,7 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 		int cnt = reviewListModel.getReviewCount(filter);
 		String txt = filter.getFilterName();
 		if (cnt > -1) {
-			txt += " <b>(" + cnt + ")</b>";
+			txt += " (" + cnt + ")";
 		}
 		return txt;
 	}
