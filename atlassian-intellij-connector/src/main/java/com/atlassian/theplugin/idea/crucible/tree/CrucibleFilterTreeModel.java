@@ -47,6 +47,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 				return node;
 			}
 		} else if (parent instanceof CrucibleMyReviewsTreeNode && index < filterModel.getPredefinedFilters().size()) {
+			// Predefined Filter node
 			CrucibleMyReviewsTreeNode p = (CrucibleMyReviewsTreeNode) parent;
 
 			PredefinedFilter predefinedFilter = (PredefinedFilter) (filterModel.getPredefinedFilters()).toArray()[index];
