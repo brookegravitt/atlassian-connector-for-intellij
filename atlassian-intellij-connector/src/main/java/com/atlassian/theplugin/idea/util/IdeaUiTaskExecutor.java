@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.util;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.ui.Messages;
 
 public class IdeaUiTaskExecutor implements UiTaskExecutor {
 	public void execute(final UiTask uiTask) {
@@ -28,14 +28,14 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 			public void run() {
 				try {
 					uiTask.run();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					LoggerImpl.getInstance().warn(e);
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
 						public void run() {
 							uiTask.onError();
 							if (uiTask.getComponent().isShowing()) {
-								Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
-										"Error");
+								DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
+										"Error while " + uiTask.getLastAction(), e, "Error");
 							}
 						}
 					}, ModalityState.stateForComponent(uiTask.getComponent()));
@@ -47,8 +47,8 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 							uiTask.onSuccess();
 						} catch (Exception e) {
 							LoggerImpl.getInstance().warn(e);
-							Messages.showErrorDialog(uiTask.getComponent(), "Error while " + uiTask.getLastAction(),
-									"Error");
+							DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
+									"Error while " + uiTask.getLastAction(), e, "Error");
 						}
 					}
 				}, ModalityState.stateForComponent(uiTask.getComponent()));

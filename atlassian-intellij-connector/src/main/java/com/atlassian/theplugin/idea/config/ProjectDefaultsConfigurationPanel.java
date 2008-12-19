@@ -57,7 +57,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_NONE = new CrucibleProjectWrapper(null);
 	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_NONE = new GenericComboBoxItemWrapper<String>(null);
-	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_FETCHING = new GenericComboBoxItemWrapper<String>(null) {
+	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_FETCHING
+			= new GenericComboBoxItemWrapper<String>(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
