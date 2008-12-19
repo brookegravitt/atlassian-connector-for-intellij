@@ -26,7 +26,7 @@ import static com.atlassian.theplugin.util.ReviewInfoUtil.getNumOfCompletedRevie
 import javax.swing.*;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 
 public class ReviewReviewersColumn extends TableColumnInfo {
@@ -57,8 +57,8 @@ public class ReviewReviewersColumn extends TableColumnInfo {
             public int compare(Object o, Object o1) {
 				ReviewAdapter review1 = (ReviewAdapter) o;
 				ReviewAdapter review2 = (ReviewAdapter) o1;
-				List<Reviewer> r1 = null;
-				List<Reviewer> r2 = null;
+				Set<Reviewer> r1 = null;
+				Set<Reviewer> r2 = null;
 				int r1s = 0;
 				int r2s = 0;
 				try {
