@@ -333,7 +333,8 @@ public class CrucibleCustomFilterPanel extends JPanel {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = cfgManager
+				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {

@@ -61,7 +61,6 @@ public class ReviewTree extends JTree {
 
 	private void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
-			// expands row but the row/path is not marked as expanded
 			expandRow(i);
 		}
 	}

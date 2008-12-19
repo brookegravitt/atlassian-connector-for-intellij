@@ -32,9 +32,10 @@ public class FilterTree extends JTree {
 	}
 
 	public void init() {
-		setShowsRootHandles(true);
+		setShowsRootHandles(false);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 		setRootVisible(false);
+		expandTree();
 
 		restoreSelection();
 
@@ -168,6 +169,12 @@ public class FilterTree extends JTree {
 		}
 
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
+	}
+
+	private void expandTree() {
+		for (int i = 0; i < getRowCount(); i++) {
+			expandRow(i);
+		}
 	}
 
 }
