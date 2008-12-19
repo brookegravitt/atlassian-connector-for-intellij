@@ -56,8 +56,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_NONE = new CrucibleProjectWrapper(null);
-	private static final GenericWrapper<String> FISHEYE_REPO_NONE = new GenericWrapper<String>(null);
-	private static final GenericWrapper<String> FISHEYE_REPO_FETCHING = new GenericWrapper<String>(null) {
+	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_NONE = new GenericComboBoxItemWrapper<String>(null);
+	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_FETCHING = new GenericComboBoxItemWrapper<String>(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
@@ -168,14 +168,14 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 
 
-	private final MyModel<GenericWrapper<String>, String, FishEyeServer> fishRepositoryModel
-			= new MyModel<GenericWrapper<String>, String, FishEyeServer>(FISHEYE_REPO_FETCHING, FISHEYE_REPO_NONE,
+	private final MyModel<GenericComboBoxItemWrapper<String>, String, FishEyeServer> fishRepositoryModel
+			= new MyModel<GenericComboBoxItemWrapper<String>, String, FishEyeServer>(FISHEYE_REPO_FETCHING, FISHEYE_REPO_NONE,
 			"repositories", "FishEye") {
 
 
 		@Override
-		protected GenericWrapper<String> toT(final String element) {
-			return new GenericWrapper<String>(element);
+		protected GenericComboBoxItemWrapper<String> toT(final String element) {
+			return new GenericComboBoxItemWrapper<String>(element);
 		}
 
 		@Override
@@ -184,7 +184,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		@Override
-		protected boolean isEqual(final GenericWrapper<String> element) {
+		protected boolean isEqual(final GenericComboBoxItemWrapper<String> element) {
 			return element.getWrapped().equals(projectConfiguration.getDefaultFishEyeRepo());
 		}
 
@@ -197,7 +197,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		@Override
-		protected void setOption(final GenericWrapper<String> newSelection) {
+		protected void setOption(final GenericComboBoxItemWrapper<String> newSelection) {
 			if (newSelection != null) {
 				projectConfiguration.setDefaultFishEyeRepo(newSelection.getWrapped());
 			} else {
@@ -297,67 +297,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	}
 
 
-	private static class GenericWrapper<T> {
-		protected final T wrapped;
-
-		public GenericWrapper(final T wrapped) {
-			this.wrapped = wrapped;
-		}
-
-		@Override
-		public boolean equals(final Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (!(o instanceof GenericWrapper)) {
-				return false;
-			}
-
-			final GenericWrapper<?> that = (GenericWrapper<?>) o;
-
-			if (wrapped != null ? !wrapped.equals(that.wrapped) : that.wrapped != null) {
-				return false;
-			}
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			return (wrapped != null ? wrapped.hashCode() : 0);
-		}
-
-		@Override
-		public String toString() {
-			if (wrapped != null) {
-				return wrapped.toString();
-			} else {
-				return "None";
-			}
-		}
-
-		public T getWrapped() {
-			return wrapped;
-		}
-	}
-
-
-
-	private static class CrucibleServerCfgWrapper extends GenericWrapper<CrucibleServerCfg> {
-		public CrucibleServerCfgWrapper(final CrucibleServerCfg crucibleProject) {
-			super(crucibleProject);
-		}
-
-		@Override
-		public String toString() {
-			if (wrapped != null) {
-				return wrapped.getName();
-			}
-			return "None";
-		}
-	}
-
-	private static class FishEyeServerWrapper extends GenericWrapper<FishEyeServer> {
+	private static class FishEyeServerWrapper extends GenericComboBoxItemWrapper<FishEyeServer> {
 		public FishEyeServerWrapper(final FishEyeServer fishEyeProject) {
 			super(fishEyeProject);
 		}
@@ -372,21 +312,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	}
 
 
-	private static class CrucibleProjectWrapper extends GenericWrapper<CrucibleProject> {
-		public CrucibleProjectWrapper(final CrucibleProject crucibleProject) {
-			super(crucibleProject);
-		}
-
-		@Override
-		public String toString() {
-			if (wrapped != null) {
-				return wrapped.getName();
-			}
-			return "None";
-		}
-	}
-
-	private static class CrucibleRepoWrapper extends GenericWrapper<Repository> {
+	private static class CrucibleRepoWrapper extends GenericComboBoxItemWrapper<Repository> {
 		public CrucibleRepoWrapper(final Repository repository) {
 			super(repository);
 		}
@@ -533,7 +459,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 
-	abstract class MyModel<T extends GenericWrapper<?>, R, S extends Server>
+	abstract class MyModel<T extends GenericComboBoxItemWrapper<?>, R, S extends Server>
 			extends AbstractListModel implements ComboBoxModel {
 		private Map<ServerId, Collection<T>> data;
 		private static final int INITIAL_CAPACITY = 10;

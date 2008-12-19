@@ -13,21 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Copyright (C) 2008 Atlassian
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.atlassian.theplugin.idea.crucible;
 
@@ -79,6 +64,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Set reviewers...");
 
 		reviewersList.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				int index = reviewersList.locationToIndex(e.getPoint());
 				setCheckboxState(index);
@@ -86,6 +72,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		});
 
 		reviewersList.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 					int index = reviewersList.getSelectedIndex();
@@ -160,8 +147,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		if (!users.isEmpty()) {
 			for (User user : users) {
 				if (!user.getUserName().equals(server.getUsername())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName())
-						&& !user.getUserName().equals(reviewData.getModerator().getUserName())) {
+						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) && !user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
 						if (reviewer.getUserName().equals(user.getUserName())) {
@@ -176,6 +162,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 	}
 
 
+	@Override
 	public JComponent getPreferredFocusedComponent() {
 		return reviewersList;
 	}
@@ -184,11 +171,13 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		return rootComponent;
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return getRootComponent();
 	}
 
+	@Override
 	protected void doOKAction() {
 
 		Set<String> reviewersForAdd = new HashSet<String>();
