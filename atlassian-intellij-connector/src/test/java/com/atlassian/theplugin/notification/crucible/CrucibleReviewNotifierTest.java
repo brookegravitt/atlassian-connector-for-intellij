@@ -298,7 +298,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 //		((ReviewBean) review1).setVersionedComments(new ArrayList<VersionedComment>());
 		((ReviewBean) review1).setPermId(reviewId1);
 		((ReviewBean) review1).setState(state);
-		((ReviewBean) review1).setReviewers(Arrays.asList(reviewer1, reviewer2));
+		((ReviewBean) review1).setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
 
 
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
@@ -317,7 +317,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 //		((ReviewBean) review2).setVersionedComments(new ArrayList<VersionedComment>());
 		((ReviewBean) review2).setPermId(reviewId2);
 		((ReviewBean) review2).setState(state);
-		((ReviewBean) review2).setReviewers(Arrays.asList(reviewer3, reviewer4));
+		((ReviewBean) review2).setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
 
 		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
@@ -418,7 +418,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
 		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
+		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(true);
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
@@ -426,7 +426,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 
 		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(false);
+		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(false);
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
@@ -434,8 +434,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 
 		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().get(0)).setCompleted(true);
-		((ReviewerBean) reviews.get(0).getReviewers().get(1)).setCompleted(true);
+		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(true);
+		((ReviewerBean) reviews.get(0).getReviewers().toArray()[1]).setCompleted(true);
 		bean.setReviews(reviews);
 		map.put(PredefinedFilter.ToReview, bean);
 		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
