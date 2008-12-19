@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.util.ui.UIUtil;
 
-import java.util.List;
+import java.util.Set;
 
 public class ReviewDecoratorImpl implements ReviewDecorator {
 	private String text;
@@ -96,7 +96,7 @@ public class ReviewDecoratorImpl implements ReviewDecorator {
 	 * @param me current user userName
 	 * @return reviewer reference if user me is one of reviewers or null otherwise
 	 */
-	private Reviewer findReviewer(List<Reviewer> reviewers, String me) {
+	private Reviewer findReviewer(Set<Reviewer> reviewers, String me) {
 		for (Reviewer reviewer : reviewers) {
 			if (reviewer.getUserName().equals(me)) {
 				return reviewer;
