@@ -92,8 +92,8 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
         gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
         padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-        padding.setMinimumSize(new Dimension(RIGHT_PADDING, 1));
-        padding.setMaximumSize(new Dimension(RIGHT_PADDING, 1));
+        padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+        padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
         padding.setOpaque(true);

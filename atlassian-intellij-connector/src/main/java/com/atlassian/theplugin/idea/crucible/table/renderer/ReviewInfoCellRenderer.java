@@ -35,7 +35,7 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-		
+
 		String summary = review.getName();
 		if (summary.length() > MAX_LINE_LENGTH) {
 			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
@@ -91,10 +91,12 @@ public class ReviewInfoCellRenderer extends ReviewCellRenderer {
 	}
 
 
+	@Override
 	protected String getCellText(ReviewAdapter review) {
 		return review.getName();
 	}
 
+	@Override
 	protected String getCellToolTipText(ReviewAdapter review) {
 		return buildTolltip(review);
 	}
