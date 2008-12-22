@@ -56,6 +56,7 @@ public class ReviewTree extends JTree {
 	private void init() {
 		setRootVisible(false);
 		setShowsRootHandles(true);
+		setExpandsSelectedPaths(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 
@@ -87,6 +88,8 @@ public class ReviewTree extends JTree {
 			if (object instanceof CrucibleReviewTreeNode) {
 				CrucibleReviewTreeNode node = (CrucibleReviewTreeNode) object;
 				if (node.getReview().getPermId().equals(review.getPermId())) {
+					expandPath(path);
+					makeVisible(path);
 					setSelectionPath(path);
 					break;
 				}
