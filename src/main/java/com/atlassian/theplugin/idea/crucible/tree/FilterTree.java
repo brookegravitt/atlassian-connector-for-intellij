@@ -52,8 +52,12 @@ public class FilterTree extends JTree {
 
 	// lame Swing JTree API causes this silliness, don't blame me
 	public void redrawNodes() {
-		DefaultTreeModel model = (DefaultTreeModel) getModel();
-		redrawChildren(model, (TreeNode) model.getRoot());
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				DefaultTreeModel model = (DefaultTreeModel) getModel();
+				redrawChildren(model, (TreeNode) model.getRoot());
+			}
+		});
 	}
 
 	private void redrawChildren(DefaultTreeModel model, TreeNode node) {
