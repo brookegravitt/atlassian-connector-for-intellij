@@ -16,31 +16,11 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import com.intellij.openapi.components.BaseComponent;
-import com.intellij.openapi.components.ComponentConfig;
-import com.intellij.openapi.extensions.ExtensionPointName;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Condition;
-import com.intellij.openapi.util.UserDataHolderBase;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.pom.PomModel;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.util.messages.MessageBus;
 import junit.framework.TestCase;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.picocontainer.PicoContainer;
-
-import java.util.*;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
-
+/*
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -795,4 +775,5 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		}
 	}
+	*/
 }

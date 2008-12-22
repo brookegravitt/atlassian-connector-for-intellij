@@ -80,7 +80,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private CrucibleStatusChecker crucibleStatusChecker;
+	private CrucibleStatusChecker crucibleStatusChecker;	
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
 	private BambooTableToolWindowPanel bambooToolWindowPanel;
@@ -236,7 +236,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// create crucible status bar icon
 			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
 
-			registerCrucibleNotifier();
+			//registerCrucibleNotifier();
 
 			// add crucible icon to status bar
 			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
@@ -265,10 +265,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return crucibleReviewNotifier;
 	}
 
-	public void registerCrucibleNotifier() {
-		if (crucibleReviewNotifier == null) {
-			crucibleReviewNotifier = new CrucibleReviewNotifier(project);
-		}
+//	public void registerCrucibleNotifier() {
+//		if (crucibleReviewNotifier == null) {
+//			crucibleReviewNotifier = new CrucibleReviewNotifier(project, crucibleReviewListModel);
+//		}
 
 // mwent - should be changed to register on model instead of status checker		
 /*
@@ -287,7 +287,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
 		}
 */
-	}
+//	}
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
