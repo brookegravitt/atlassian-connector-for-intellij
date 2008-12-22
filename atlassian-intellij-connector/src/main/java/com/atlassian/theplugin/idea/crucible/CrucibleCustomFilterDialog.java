@@ -94,6 +94,11 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	};
 	private JComponent statesPanel;
 	private JPanel comboPanel;
+	private static final String MATCH_ROLE_ANY = "Any";
+	private static final String MATCH_ROLE_ALL = "All";
+	private static final String REVIEWER_STATUS_ANY = "Any";
+	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
+	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
 
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
 							   @NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
@@ -108,25 +113,22 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		this.serverCfg = (CrucibleServerCfg) cfgManager
 				.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
-		projectComboBox.addItem(CRUC_PROJECT_ANY);
-		projectComboBox.setSelectedIndex(0);
-//		authorComboBox.addItem(new UserComboBoxItem(anyUser));
-//		authorComboBox.setSelectedIndex(0);
-//		moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
-//		moderatorComboBox.setSelectedIndex(0);
-//		creatorComboBox.addItem(new UserComboBoxItem(anyUser));
-//		creatorComboBox.setSelectedIndex(0);
-//		reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
-//		reviewerComboBox.setSelectedIndex(0);
+		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
+		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
+		reviewerStatusComboBox.addItem(REVIEWER_STATUS_COMPLETE);
+		final Boolean isComplete = filter.isComplete();
+		if (isComplete == null) {
+			reviewerStatusComboBox.setSelectedIndex(0);
+		} else if (isComplete == false) {
+			reviewerStatusComboBox.setSelectedIndex(1);
+		} else {
+			reviewerStatusComboBox.setSelectedIndex(2);
+		}
 
-		reviewerStatusComboBox.addItem("Any");
-		reviewerStatusComboBox.addItem("Incomplete");
-		reviewerStatusComboBox.addItem("Complete");
-		reviewerStatusComboBox.setSelectedIndex(0);
-
-		matchRoleComboBox.addItem("Any");
-		matchRoleComboBox.addItem("All");
-		matchRoleComboBox.setSelectedIndex(0);
+		matchRoleComboBox.addItem(MATCH_ROLE_ANY);
+		matchRoleComboBox.addItem(MATCH_ROLE_ALL);
+		final Boolean orRoles = filter.isOrRoles();
+		matchRoleComboBox.setSelectedIndex((orRoles == null || orRoles == true) ? 0 : 1);
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
@@ -135,12 +137,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
-//		setFilter(filter);
-
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				fillServerRelatedCombos(getSelectedServer());
-
 			}
 		});
 
@@ -211,10 +210,10 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		filter.setState(states.toArray(new String[states.size()]));
 
 		String role = (String) matchRoleComboBox.getSelectedItem();
-		filter.setOrRoles("Any".equals(role));
+		filter.setOrRoles(MATCH_ROLE_ANY.equals(role));
 
 		String complete = (String) reviewerStatusComboBox.getSelectedItem();
-		filter.setComplete("Any".equals(complete) ? null : "Complete".equals(complete));
+		filter.setComplete(REVIEWER_STATUS_ANY.equals(complete) ? null : REVIEWER_STATUS_COMPLETE.equals(complete));
 
 
 		return filter;
