@@ -17,12 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.StatusListener;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-
-import java.util.Map;
 
 public interface CrucibleStatusListener extends StatusListener {
-	void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> reviews,
-			Map<String, ReviewNotificationBean> customFilterReviews);
+	//void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> reviews,
+	//		Map<String, ReviewNotificationBean> customFilterReviews);
 	void showError(String errorString);
 }
