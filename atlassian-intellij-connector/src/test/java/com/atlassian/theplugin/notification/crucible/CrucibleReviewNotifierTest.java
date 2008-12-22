@@ -776,4 +776,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		}
 	}
 	*/
+public void testUncommentTests() {
+	assertTrue(true);
+}
 }
