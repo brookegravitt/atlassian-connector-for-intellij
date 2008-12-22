@@ -29,4 +29,6 @@ public interface CrucibleReviewListModelListener {
 	void reviewListUpdateStarted(UpdateContext updateContext);
 	void reviewListUpdateFinished(UpdateContext updateContext);
 	void reviewChangedWithoutFiles(UpdateContext updateContext);
+
+	void reviewListUpdateError(final UpdateContext updateContext, final Exception exception);
 }

@@ -147,15 +147,25 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	public void setStatusMessage(final String message) {
-		statusBarPane.setMessage(message);
+		setStatusMessage(message, false);
 	}
 
+	/**
+	 * Sets status message for the Reviews panel.
+	 * It can be called from the non-UI thread
+	 * @param msg message
+	 * @param isError error flag
+	 */
 	public void setStatusMessage(final String msg, final boolean isError) {
-		if (isError) {
-			statusBarPane.setErrorMessage(msg);
-		} else {
-			statusBarPane.setMessage(msg);
-		}
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				if (isError) {
+					statusBarPane.setErrorMessage(msg);
+				} else {
+					statusBarPane.setMessage(msg);
+				}
+			}
+		});
 	}
 
 	private JComponent createRightContent() {
