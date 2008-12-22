@@ -70,8 +70,16 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		final long requestId = startNewRequest();
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null));
 		final Map<CrucibleFilter, ReviewNotificationBean> newReviews;
+
 		try {
 			newReviews = reviewListModelBuilder.getReviewsFromServer(this, updateReason, requestId);
+
+			for (ReviewNotificationBean bean : newReviews.values()) {
+				if (bean.getException() != null) {
+					notifyReviewListUpdateError(new UpdateContext(updateReason, null), bean.getException());
+				}
+			}
+
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					try {
@@ -88,6 +96,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 		}
 	}
+
 
 	public synchronized void addReview(CrucibleFilter crucibleFilter,
 									   ReviewAdapter review, UpdateReason updateReason) {
@@ -218,6 +227,13 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private void notifyReviewListUpdateFinished(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
 			listener.reviewListUpdateFinished(updateContext);
+		}
+	}
+
+
+	private void notifyReviewListUpdateError(final UpdateContext updateContext, final Exception exception) {
+		for (CrucibleReviewListModelListener listener : modelListeners) {
+			listener.reviewListUpdateError(updateContext, exception);
 		}
 	}
 
