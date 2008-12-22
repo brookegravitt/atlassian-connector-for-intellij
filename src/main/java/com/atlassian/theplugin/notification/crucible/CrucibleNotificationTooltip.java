@@ -17,10 +17,6 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
-import com.atlassian.theplugin.commons.crucible.api.model.notifications.CrucibleNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notifications.CrucibleNotificationListener;
-import com.atlassian.theplugin.commons.crucible.api.model.notifications.NewExceptionNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notifications.NewReviewNotification;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -58,7 +54,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 				if (notification instanceof NewExceptionNotification) {
 					newExceptionCount++;
 					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
-							.append(notification.getReviewUrl()).append("\">")
+							.append(notification.getItemUrl()).append("\">")
 							.append("").append("</a></td><td>").append(notification.getPresentationMessage())
 							.append("</td></tr>");
 					exceptionRaised = true;
@@ -79,9 +75,9 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			for (CrucibleNotification notification : notifications) {
 				if (notification instanceof NewReviewNotification) {
 					newReviewCount++;
-					String id = notification.getPermId().getId();
+					String id = notification.getId().getId();
 					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
-							.append(notification.getReviewUrl()).append("\">")
+							.append(notification.getItemUrl()).append("\">")
 							.append(id).append("</a></td><td>").append(notification.getPresentationMessage())
 							.append("</td></tr>");
 				}
@@ -109,9 +105,9 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 				for (CrucibleNotification notification : notifications) {
 					if (!(notification instanceof NewReviewNotification)
 							&& !(notification instanceof NewExceptionNotification)) {
-						String id = notification.getPermId().getId();
+						String id = notification.getId().getId();
 						sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
-								.append(notification.getReviewUrl()).append("\">")
+								.append(notification.getItemUrl()).append("\">")
 								.append(id).append("</a></td><td>")
 								.append(notification.getPresentationMessage()).append("</td></tr>");
 					}
