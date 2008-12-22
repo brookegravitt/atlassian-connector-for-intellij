@@ -36,7 +36,7 @@ import java.awt.*;
 public class JiraGeneralForm extends JComponent implements ContentPanel {
 	private JPanel rootComponent;
 	private SpinnerModel model;
-	private JSpinner pollTimeSpinner;
+	private JSpinner issuePageSize;
 
 	private transient PluginConfiguration globalPluginConfiguration;
 
@@ -51,7 +51,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 		$$$setupUI$$$();
 		model = new SpinnerNumberModel(1, 1, 1000, 1);
-		pollTimeSpinner.setModel(model);
+		issuePageSize.setModel(model);
 
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
@@ -66,7 +66,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public boolean isModified() {
-		return (Integer) model.getValue() != jiraConfiguration.getPollTime();
+		return (Integer) model.getValue() != jiraConfiguration.getPageSize();
 	}
 
 	public String getTitle() {
@@ -74,8 +74,8 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public void saveData() {
-		getLocalPluginConfigurationCopy().getJIRAConfigurationData().setPollTime((Integer) model.getValue());
-		globalPluginConfiguration.getJIRAConfigurationData().setPollTime((Integer) model.getValue());
+		getLocalPluginConfigurationCopy().getJIRAConfigurationData().setPageSize((Integer) model.getValue());
+		globalPluginConfiguration.getJIRAConfigurationData().setPageSize((Integer) model.getValue());
 	}
 
 	public void setData(PluginConfiguration config) {
@@ -84,7 +84,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 		jiraConfiguration = localPluginConfigurationCopy.getJIRAConfigurationData();
 
-		model.setValue(jiraConfiguration.getPollTime());
+		model.setValue(jiraConfiguration.getPageSize());
 	}
 
 	private PluginConfiguration getLocalPluginConfigurationCopy() {
@@ -108,10 +108,10 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		rootComponent.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		pollTimeSpinner = new JSpinner();
-		pollTimeSpinner.setEnabled(false);
-		pollTimeSpinner.setToolTipText("Polling is not used for JIRA currently");
-		panel1.add(pollTimeSpinner,
+		issuePageSize = new JSpinner();
+		issuePageSize.setEnabled(false);
+		issuePageSize.setToolTipText("Polling is not used for JIRA currently");
+		panel1.add(issuePageSize,
 				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 						GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1),
 						null, 0, false));
