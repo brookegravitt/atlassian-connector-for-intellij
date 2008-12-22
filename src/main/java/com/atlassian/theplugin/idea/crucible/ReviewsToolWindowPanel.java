@@ -308,7 +308,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-				reviewListModel.rebuildModel(UpdateReason.REFRESH);
+					reviewListModel.rebuildModel(UpdateReason.REFRESH);
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
@@ -326,7 +326,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		public void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters) {
 			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 
-			// clear all predefined filters from configuration (single selection support temporarily)
+			// clear all predefined filters from configuration
 			for (int i = 0; i < confFilters.length; ++i) {
 				confFilters[i] = false;
 			}
@@ -346,16 +346,30 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
+		Exception exception = null;
+
 		@Override
 		public void reviewListUpdateStarted(UpdateContext updateContext) {
+			exception = null;
 			if (updateContext.getUpdateReason() != UpdateReason.TIMER_FIRED) {
 				setPanelEnabled(false);
+				setStatusMessage("Loading reviews...");
 			}
 		}
 
 		@Override
 		public void reviewListUpdateFinished(UpdateContext updateContext) {
 			setPanelEnabled(true);
+			if (exception != null) {
+				setStatusMessage(exception.getMessage(), true);
+			} else {
+				setStatusMessage("Loaded " + reviewListModel.getReviews().size() + " reviews");
+			}
+		}
+
+		@Override
+		public void reviewListUpdateError(final UpdateContext updateContext, final Exception exception) {
+			this.exception = exception;
 		}
 	}
 }
