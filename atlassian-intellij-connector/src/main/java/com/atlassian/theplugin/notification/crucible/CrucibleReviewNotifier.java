@@ -191,7 +191,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 
 	}
-	private void checkComments(final ReviewAdapter oldReview, final ReviewAdapter newReview, final boolean checkFiles) throws ValueNotYetInitialized {
+
+	private void checkComments(final ReviewAdapter oldReview, final ReviewAdapter newReview, final boolean checkFiles)
+			throws ValueNotYetInitialized {
 		for (GeneralComment comment : newReview.getGeneralComments()) {
 			GeneralComment existing = null;
 			for (GeneralComment oldComment : oldReview.getGeneralComments()) {
