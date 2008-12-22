@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -52,6 +53,7 @@ import java.util.Map;
 public final class IssuesToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = IssuesToolWindowPanel.class.getSimpleName();
+	private final PluginConfiguration pluginConfiguration;
 	private JiraProjectConfiguration jiraProjectCfg;
 
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
@@ -60,7 +62,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private JiraIssueGroupBy groupBy;
-	private static final int JIRA_ISSUE_PAGE_SIZE = 25;
 	@NotNull
 	private final JiraManualFilterDetailsPanel manualFilterEditDetailsPanel;
 	private JIRAFilterTree jiraFilterTree;
@@ -79,10 +80,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
+			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, 
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
-		
+
+		this.pluginConfiguration = pluginConfiguration;
 		this.jiraProjectCfg = jiraProjectConfiguration;
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -135,7 +138,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-				if (loadedIssues >= JIRA_ISSUE_PAGE_SIZE) {
+				if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
 					enableGetMoreIssues(true);
 				} else {
 					enableGetMoreIssues(false);
@@ -698,7 +701,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					getStatusBarPane().setMessage("Loading issues...");
-					jiraIssueListModelBuilder.addIssuesToModel(JIRA_ISSUE_PAGE_SIZE, reload);
+					jiraIssueListModelBuilder.addIssuesToModel(
+							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
