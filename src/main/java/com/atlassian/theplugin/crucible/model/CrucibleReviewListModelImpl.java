@@ -84,6 +84,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		} catch (InterruptedException e) {
 			// this exception is just to notify that query was interrupted and
 			// new request is performed
+		} catch (Exception e) {
+			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 		}
 	}
 
