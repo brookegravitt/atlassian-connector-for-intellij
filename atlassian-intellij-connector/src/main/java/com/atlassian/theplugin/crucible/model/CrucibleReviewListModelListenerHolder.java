@@ -88,11 +88,18 @@ public abstract class CrucibleReviewListModelListenerHolder
 			l.modelChanged(updateContext);
 		}
 	}
-/*
-	public void removeAll() {
-		parent.removeAll();
+
+	public void reviewListUpdateError(final UpdateContext updateContext, final Exception exception) {
+		for (CrucibleReviewListModelListener l : listeners) {
+			l.reviewListUpdateError(updateContext, exception);
+		}
 	}
-*/
+
+	/*
+	 public void removeAll() {
+		 parent.removeAll();
+	 }
+ */
 	public void updateReviews(final long epoch,
 							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
 							  final UpdateReason updateReason) {
