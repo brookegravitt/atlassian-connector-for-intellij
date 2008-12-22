@@ -22,11 +22,22 @@ public class UpdateContext {
 	private UpdateReason updateReason;
 	private ReviewAdapter reviewAdapter;
 
+	private ReviewAdapter oldReviewAdapter;
 
 	public UpdateContext(final UpdateReason updateReason, final ReviewAdapter reviewAdapter) {
 		this.updateReason = updateReason;
 		this.reviewAdapter = reviewAdapter;
 	}
+
+
+	public ReviewAdapter getOldReviewAdapter() {
+		return oldReviewAdapter;
+	}
+
+	public void setOldReviewAdapter(ReviewAdapter oldReviewAdapter) {
+		this.oldReviewAdapter = oldReviewAdapter;
+	}
+
 
 	public UpdateReason getUpdateReason() {
 		return updateReason;
