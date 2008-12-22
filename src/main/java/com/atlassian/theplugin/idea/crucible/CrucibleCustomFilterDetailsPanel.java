@@ -140,7 +140,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 	}
 
-	public Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull CustomFilter customFilter) {
+	public Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter) {
 		final Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
 		final String states = StringUtils.join(customFilter.getState(), ", ");
 		final String serverId = customFilter.getServerUid();
@@ -149,8 +149,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		final CrucibleServerCfg crucibleServerCfg = (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
 		entries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
-		String projectName = customFilter.getProjectKey();
 		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
+			String projectName = customFilter.getProjectKey();
 			try {
 				CrucibleProject crucibleProject = crucibleServerCfg != null
 						? crucibleFacade.getProject(crucibleServerCfg, customFilter.getProjectKey())
@@ -163,21 +163,23 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			} catch (ServerPasswordNotProvidedException e) {
 				// nothing here
 			}
+			entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 
 		}
-		entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 		entries.add(new ScrollableTwoColumnPanel.Entry("State", states));
 		addIfNotEmpty(customFilter.getAuthor(), "Author", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getModerator(), "Moderator", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getCreator(), "Creator", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", entries, crucibleServerCfg);
 
-//		if (orRoles) {
-//			map.put("Role", orRoles ? "true" : "false");
-//		}
-//		if (complete) {
-//			map.put("Complete", complete ? "true" : "false");
-//		}
+		final Boolean orRoles = customFilter.isOrRoles();
+		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == false) ? "Any" : "All"));
+
+		final Boolean reviewerStatus = customFilter.isComplete();
+		if (reviewerStatus != null) {
+			entries.add(new ScrollableTwoColumnPanel.Entry("Reviewer Status", reviewerStatus ? "Complete" : "Incomplete"));
+		}
+
 //		if (allReviewersComplete) {
 //			map.put("All revievers completed", allReviewersComplete ? "true" : "false");
 //		}

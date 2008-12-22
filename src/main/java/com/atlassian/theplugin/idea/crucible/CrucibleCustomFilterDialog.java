@@ -26,9 +26,12 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
+import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.components.panels.VerticalBox;
+import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +39,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Action;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -66,9 +71,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private JCheckBox reviewNeedsFixingCheckBox;
 	private JComboBox serverComboBox;
 
-	private CrucibleProjectBean anyProject;
-
-	private UserBean anyUser;
+	private UserComboBoxItem CRUC_USER_ANY = new UserComboBoxItem(null) {
+		@Override
+		public String toString() {
+			return "Any";
+		}
+	};
 
 	private final CfgManager cfgManager;
 	private final Project project;
@@ -76,6 +84,16 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private CrucibleServerCfg serverCfg;
+	private static final CrucibleProjectWrapper CRUC_PROJECT_NONE = new CrucibleProjectWrapper(null);
+	private static final UserComboBoxItem CRUC_USER_NONE = new UserComboBoxItem(null);
+	private static final CrucibleProjectWrapper CRUC_PROJECT_ANY = new CrucibleProjectWrapper(null) {
+		@Override
+		public String toString() {
+			return "Any";
+		}
+	};
+	private JComponent statesPanel;
+	private JPanel comboPanel;
 
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
 							   @NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
@@ -85,26 +103,21 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		this.filter = filter;
 		this.uiTaskExecutor = uiTaskExecutor;
 		setupUi();
+		setModal(true);
 
 		this.serverCfg = (CrucibleServerCfg) cfgManager
 				.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
-		anyProject = new CrucibleProjectBean();
-		anyProject.setName("Any");
-		anyUser = new UserBean();
-		anyUser.setDisplayName("Any");
-		anyUser.setUserName("_any_");
-
-		projectComboBox.addItem(new CrucibleProjectWrapper(anyProject));
+		projectComboBox.addItem(CRUC_PROJECT_ANY);
 		projectComboBox.setSelectedIndex(0);
-		authorComboBox.addItem(new UserComboBoxItem(anyUser));
-		authorComboBox.setSelectedIndex(0);
-		moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
-		moderatorComboBox.setSelectedIndex(0);
-		creatorComboBox.addItem(new UserComboBoxItem(anyUser));
-		creatorComboBox.setSelectedIndex(0);
-		reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
-		reviewerComboBox.setSelectedIndex(0);
+//		authorComboBox.addItem(new UserComboBoxItem(anyUser));
+//		authorComboBox.setSelectedIndex(0);
+//		moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
+//		moderatorComboBox.setSelectedIndex(0);
+//		creatorComboBox.addItem(new UserComboBoxItem(anyUser));
+//		creatorComboBox.setSelectedIndex(0);
+//		reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
+//		reviewerComboBox.setSelectedIndex(0);
 
 		reviewerStatusComboBox.addItem("Any");
 		reviewerStatusComboBox.addItem("Incomplete");
@@ -117,19 +130,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
+		setSelectedServer(serverCfg);
 		fillServerRelatedCombos(serverCfg);
-		setModal(true);
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
 //		setFilter(filter);
-		fillInCrucibleServers();
-		if (serverComboBox.getItemCount() > 0) {
-			serverComboBox.setSelectedIndex(0);
-		}
-
-		fillServerRelatedCombos(getSelectedServer());
-
 
 		serverComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -148,30 +154,32 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();
-		if (!o.getWrapped().equals(anyProject)) {
+		if (o != CRUC_PROJECT_ANY) {
 			filter.setProjectKey(o.getWrapped().getKey());
 		} else {
 			filter.setProjectKey("");
 		}
-		if (!((UserComboBoxItem) authorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
-			filter.setAuthor(((UserComboBoxItem) authorComboBox.getSelectedItem()).getUserData().getUserName());
+		final User author = ((UserComboBoxItem) authorComboBox.getSelectedItem()).getWrapped();
+		if (author != null) {
+			filter.setAuthor(author.getUserName());
 		} else {
 			filter.setAuthor("");
 		}
-		if (!((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName().equals(anyUser.getUserName())) {
-			filter.setCreator(((UserComboBoxItem) creatorComboBox.getSelectedItem()).getUserData().getUserName());
+		final User creator = ((UserComboBoxItem) creatorComboBox.getSelectedItem()).getWrapped();
+		if (creator != null) {
+			filter.setCreator(creator.getUserName());
 		} else {
 			filter.setCreator("");
 		}
-		if (!((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName()
-				.equals(anyUser.getUserName())) {
-			filter.setModerator(((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUserData().getUserName());
+		final User moderator = ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getWrapped();
+		if (moderator != null) {
+			filter.setModerator(moderator.getUserName());
 		} else {
 			filter.setModerator("");
 		}
-		if (!((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName()
-				.equals(anyUser.getUserName())) {
-			filter.setReviewer(((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getUserData().getUserName());
+		final User reviewer = ((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getWrapped();
+		if (reviewer != null) {
+			filter.setReviewer(reviewer.getUserName());
 		} else {
 			filter.setReviewer("");
 		}
@@ -212,7 +220,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		return filter;
 	}
 
-	public void setSelectedServer(CrucibleServerCfg serverCfg) {
+	private void setSelectedServer(CrucibleServerCfg serverCfg) {
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
 			if (serverComboBox.getItemAt(i) instanceof CrucibleServerCfgWrapper &&
 					((CrucibleServerCfgWrapper) serverComboBox.getItemAt(i)).getWrapped().equals(serverCfg)) {
@@ -244,6 +252,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		if (crucibleServerCfg != null) {
 			projectComboBox.setEnabled(false);
+			setStateForAllControls(false);
 
 			uiTaskExecutor.execute(new UiTask() {
 				private List<CrucibleProject> projects = Collections.emptyList();
@@ -259,10 +268,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 				public void onSuccess() {
 					updateServerRelatedCombos(projects, users);
+					setStateForAllControls(true);
 				}
 
 				public void onError() {
 					updateServerRelatedCombos(projects, users);
+					setStateForAllControls(true);
 				}
 
 				public String getLastAction() {
@@ -329,21 +340,17 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 
 		projectComboBox.removeAllItems();
-		projectComboBox.addItem(new CrucibleProjectWrapper(anyProject));
 		authorComboBox.removeAllItems();
-		authorComboBox.addItem(new UserComboBoxItem(anyUser));
 		moderatorComboBox.removeAllItems();
-		moderatorComboBox.addItem(new UserComboBoxItem(anyUser));
 		creatorComboBox.removeAllItems();
-		creatorComboBox.addItem(new UserComboBoxItem(anyUser));
 		reviewerComboBox.removeAllItems();
-		reviewerComboBox.addItem(new UserComboBoxItem(anyUser));
 
 		if (projects.isEmpty()) {
 			projectComboBox.setEnabled(false);
-			projectComboBox.addItem(new CrucibleProjectWrapper(null));
+			projectComboBox.addItem(CRUC_PROJECT_NONE);
 			setOKActionEnabled(false);
 		} else {
+			projectComboBox.addItem(CRUC_PROJECT_ANY);
 			for (CrucibleProject crucibleProject : projects) {
 				projectComboBox.addItem(new CrucibleProjectWrapper(crucibleProject));
 			}
@@ -352,42 +359,75 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 
 		if (!users.isEmpty()) {
+			authorComboBox.addItem(CRUC_USER_ANY);
+			moderatorComboBox.addItem(CRUC_USER_ANY);
+			creatorComboBox.addItem(CRUC_USER_ANY);
+			reviewerComboBox.addItem(CRUC_USER_ANY);
 			for (User user : users) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
 				creatorComboBox.addItem(new UserComboBoxItem(user));
 				reviewerComboBox.addItem(new UserComboBoxItem(user));
 			}
+		} else {
+			authorComboBox.addItem(CRUC_USER_NONE);
+			moderatorComboBox.addItem(CRUC_USER_NONE);
+			creatorComboBox.addItem(CRUC_USER_NONE);
+			reviewerComboBox.addItem(CRUC_USER_NONE);
 		}
+
 		setProject(filter.getProjectKey(), projectComboBox);
 		setActiveUser(filter.getAuthor(), authorComboBox);
 		setActiveUser(filter.getCreator(), creatorComboBox);
 		setActiveUser(filter.getModerator(), moderatorComboBox);
 		setActiveUser(filter.getReviewer(), reviewerComboBox);
-		pack();
+		if (rootPanel.getPreferredSize().getWidth() > rootPanel.getWidth()) {
+			pack();
+		}
+	}
 
+	private void setStateForAllControls(boolean isEnabled) {
+		ApplicationManager.getApplication().assertIsDispatchThread();
+		for (Component component : statesPanel.getComponents()) {
+			component.setEnabled(isEnabled);
+		}
+		for (Component component : comboPanel.getComponents()) {
+			component.setEnabled(isEnabled);
+		}
+		final Border border = statesPanel.getBorder();
+		if (border instanceof TitledBorder) {
+			TitledBorder titledBorder = (TitledBorder) border;
+			titledBorder.setTitleColor(isEnabled ? UIUtil.getActiveTextColor() : UIUtil.getTextInactiveTextColor());
+			// above call sucks!!! does not cause panel to be repainted, so do it manually
+			statesPanel.repaint();
+		}
 	}
 
 	private void setProject(String projectName, JComboBox combo) {
-		if (projectName != null) {
-			for (int i = 0; i < combo.getModel().getSize(); ++i) {
-				CrucibleProjectWrapper item = (CrucibleProjectWrapper) combo.getModel().getElementAt(i);
-				if (projectName.equals(item.getWrapped().getKey())) {
-					combo.setSelectedItem(item);
-					break;
-				}
+		if (projectName == null) {
+			projectName = "";
+		}
+		for (int i = 0; i < combo.getModel().getSize(); ++i) {
+			CrucibleProjectWrapper item = (CrucibleProjectWrapper) combo.getModel().getElementAt(i);
+			final CrucibleProject crucibleProject = item.getWrapped();
+			if ((crucibleProject != null && projectName.equals(crucibleProject.getKey())) || (projectName.length() == 0
+					&& crucibleProject == null)) {
+				combo.setSelectedItem(item);
+				break;
 			}
 		}
 	}
 
 	private void setActiveUser(String userName, JComboBox combo) {
-		if (userName != null) {
-			for (int i = 0; i < combo.getModel().getSize(); ++i) {
-				UserComboBoxItem item = (UserComboBoxItem) combo.getModel().getElementAt(i);
-				if (userName.equals(item.getUserData().getUserName())) {
-					combo.setSelectedItem(item);
-					break;
-				}
+		if (userName == null) {
+			userName = "";
+		}
+		for (int i = 0; i < combo.getModel().getSize(); ++i) {
+			final UserComboBoxItem item = (UserComboBoxItem) combo.getModel().getElementAt(i);
+			final User user = item.getWrapped();
+			if (user != null && userName.equals(user.getUserName()) || userName.length() == 0 && user == null) {
+				combo.setSelectedItem(item);
+				break;
 			}
 		}
 	}
@@ -403,104 +443,102 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		rootPanel.setLayout(new FormLayout(
 				"fill:10dlu:noGrow,fill:pref:grow,left:14dlu:noGrow,fill:pref:nogrow,left:10dlu:noGrow",
 				"10dlu:noGrow,pref:noGrow,3dlu:noGrow,fill:pref,10dlu:grow"));
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:min(d;200dlu):grow",
+		comboPanel = new JPanel();
+		comboPanel.setLayout(new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:min(d;200dlu):grow",
 				"center:max(d;4px):noGrow,top:3dlu:nogrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,"
 						+ "top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,"
 						+ "center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):"
 						+ "noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
-		panel1.setEnabled(true);
+		comboPanel.setEnabled(true);
 		CellConstraints cc = new CellConstraints();
-		rootPanel.add(panel1, cc.xy(2, 4));
+		rootPanel.add(comboPanel, cc.xy(2, 4));
 		projectComboBox = new JComboBox();
-		panel1.add(projectComboBox, cc.xy(3, 3));
+		comboPanel.add(projectComboBox, cc.xy(3, 3));
 		authorComboBox = new JComboBox();
-		panel1.add(authorComboBox, cc.xy(3, 5));
+		comboPanel.add(authorComboBox, cc.xy(3, 5));
 		moderatorComboBox = new JComboBox();
-		panel1.add(moderatorComboBox, cc.xy(3, 7));
+		comboPanel.add(moderatorComboBox, cc.xy(3, 7));
 		creatorComboBox = new JComboBox();
-		panel1.add(creatorComboBox, cc.xy(3, 9));
+		comboPanel.add(creatorComboBox, cc.xy(3, 9));
 		reviewerComboBox = new JComboBox();
-		panel1.add(reviewerComboBox, cc.xy(3, 11));
+		comboPanel.add(reviewerComboBox, cc.xy(3, 11));
 		reviewerStatusComboBox = new JComboBox();
-		panel1.add(reviewerStatusComboBox, cc.xy(3, 13));
+		comboPanel.add(reviewerStatusComboBox, cc.xy(3, 13));
 		matchRoleComboBox = new JComboBox();
-		panel1.add(matchRoleComboBox, cc.xy(3, 15));
+		comboPanel.add(matchRoleComboBox, cc.xy(3, 15));
 		final JLabel label1 = new JLabel();
 		label1.setText("Project:");
-		panel1.add(label1, cc.xy(1, 3));
+		comboPanel.add(label1, cc.xy(1, 3));
 		final JLabel label2 = new JLabel();
 		label2.setInheritsPopupMenu(true);
 		label2.setText("Author:");
-		panel1.add(label2, cc.xy(1, 5));
+		comboPanel.add(label2, cc.xy(1, 5));
 		final JLabel label3 = new JLabel();
 		label3.setText("Moderator:");
-		panel1.add(label3, cc.xy(1, 7));
+		comboPanel.add(label3, cc.xy(1, 7));
 		final JLabel label4 = new JLabel();
 		label4.setText("Creator:");
-		panel1.add(label4, cc.xy(1, 9));
+		comboPanel.add(label4, cc.xy(1, 9));
 		final JLabel label5 = new JLabel();
 		label5.setText("Reviewer:");
-		panel1.add(label5, cc.xy(1, 11));
+		comboPanel.add(label5, cc.xy(1, 11));
 		final JLabel label6 = new JLabel();
 		label6.setMinimumSize(new Dimension(10, 16));
 		label6.setText("Reviewer Status:");
-		panel1.add(label6, cc.xy(1, 13));
+		comboPanel.add(label6, cc.xy(1, 13));
 		final JLabel label7 = new JLabel();
 		label7.setText("Match role");
-		panel1.add(label7, cc.xy(1, 15));
+		comboPanel.add(label7, cc.xy(1, 15));
 		final JLabel label8 = new JLabel();
 		label8.setText("Crucible server:");
-		panel1.add(label8, cc.xy(1, 1));
+		comboPanel.add(label8, cc.xy(1, 1));
 		serverComboBox = new JComboBox();
-		panel1.add(serverComboBox, cc.xy(3, 1));
+		comboPanel.add(serverComboBox, cc.xy(3, 1));
 
-		final JComponent panel2 = new VerticalBox();
-		rootPanel.add(panel2, cc.xy(4, 4));
-		panel2.setBorder(BorderFactory.createTitledBorder("Review State"));
+		statesPanel = new VerticalBox();
+		rootPanel.add(statesPanel, cc.xy(4, 4));
+		statesPanel.setBorder(BorderFactory.createTitledBorder("Review State"));
 		draftCheckBox = new JCheckBox();
 		draftCheckBox.setText("Draft");
-		panel2.add(draftCheckBox);
+		statesPanel.add(draftCheckBox);
 		pendingApprovalCheckBox = new JCheckBox();
 		pendingApprovalCheckBox.setEnabled(false);
 		pendingApprovalCheckBox.setText("Pending Approval");
-		panel2.add(pendingApprovalCheckBox);
+		statesPanel.add(pendingApprovalCheckBox);
 		underReviewCheckBox = new JCheckBox();
 		underReviewCheckBox.setText("Under Review");
-		panel2.add(underReviewCheckBox);
+		statesPanel.add(underReviewCheckBox);
 		summarizeCheckBox = new JCheckBox();
 		summarizeCheckBox.setText("Summarize");
-		panel2.add(summarizeCheckBox);
+		statesPanel.add(summarizeCheckBox);
 		closedCheckBox = new JCheckBox();
 		closedCheckBox.setText("Closed");
-		panel2.add(closedCheckBox);
+		statesPanel.add(closedCheckBox);
 		abandonedCheckBox = new JCheckBox();
 		abandonedCheckBox.setText("Abandoned");
-		panel2.add(abandonedCheckBox);
+		statesPanel.add(abandonedCheckBox);
 		rejectedCheckBox = new JCheckBox();
 		rejectedCheckBox.setText("Rejected");
-		panel2.add(rejectedCheckBox);
+		statesPanel.add(rejectedCheckBox);
 		reviewNeedsFixingCheckBox = new JCheckBox();
 		reviewNeedsFixingCheckBox.setEnabled(false);
 		reviewNeedsFixingCheckBox.setText("Review needs fixing");
-		panel2.add(reviewNeedsFixingCheckBox);
+		statesPanel.add(reviewNeedsFixingCheckBox);
 	}
 
 
-	private class UserComboBoxItem {
-		private final User user;
+	private static class UserComboBoxItem extends GenericComboBoxItemWrapper<User> {
 
 		public UserComboBoxItem(User user) {
-			this.user = user;
+			super(user);
 		}
 
 		@Override
 		public String toString() {
-			return user.getDisplayName();
-		}
-
-		public User getUserData() {
-			return user;
+			if (wrapped != null) {
+				return wrapped.getDisplayName();
+			}
+			return "None";
 		}
 	}
 
