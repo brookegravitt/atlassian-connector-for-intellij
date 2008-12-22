@@ -225,7 +225,7 @@ public class FilterTree extends JTree {
 
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
 
-		Set<TreePath> prevSelection = new HashSet<TreePath>();
+		private Set<TreePath> prevSelection = new HashSet<TreePath>();
 
 		public void valueChanged(TreeSelectionEvent e) {
 			Collection<PredefinedFilter> predefinedFilters =
