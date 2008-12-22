@@ -11,10 +11,7 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -228,6 +225,8 @@ public class FilterTree extends JTree {
 
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
 
+		Set<TreePath> prevSelection = new HashSet<TreePath>();
+
 		public void valueChanged(TreeSelectionEvent e) {
 			Collection<PredefinedFilter> predefinedFilters =
 					new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
@@ -257,8 +256,17 @@ public class FilterTree extends JTree {
 
 			if (allMyReviews) {
 				clearPredefinedFiltersSelection();
+
+				if (prevSelection.equals(new HashSet<TreePath>(Arrays.asList(getSelectionPaths())))) {
+					// if current selection is the same as previous do nothing
+					return;
+				}
+
 				predefinedFilters.addAll(Arrays.asList(PredefinedFilter.values()));
 			}
+
+			// remember current selection
+			prevSelection = new HashSet<TreePath>(Arrays.asList(getSelectionPaths()));
 
 			fireSelectedPredefinedFilter(predefinedFilters);
 
