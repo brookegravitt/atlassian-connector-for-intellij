@@ -346,7 +346,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
-		Exception exception = null;
+		private Exception exception = null;
 
 		@Override
 		public void reviewListUpdateStarted(UpdateContext updateContext) {
@@ -368,8 +368,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 
 		@Override
-		public void reviewListUpdateError(final UpdateContext updateContext, final Exception exception) {
-			this.exception = exception;
+		public void reviewListUpdateError(final UpdateContext updateContext, final Exception e) {
+			this.exception = e;
 		}
 	}
 }
