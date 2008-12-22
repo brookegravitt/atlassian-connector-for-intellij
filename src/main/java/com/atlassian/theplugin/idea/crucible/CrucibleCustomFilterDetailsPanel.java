@@ -173,7 +173,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", entries, crucibleServerCfg);
 
 		final Boolean orRoles = customFilter.isOrRoles();
-		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == false) ? "Any" : "All"));
+		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
 
 		final Boolean reviewerStatus = customFilter.isComplete();
 		if (reviewerStatus != null) {
