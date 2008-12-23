@@ -138,7 +138,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	private void checkVersionedReplies(ReviewAdapter review, final PermId filePermId, VersionedComment oldComment,
-			VersionedComment newComment) {
+									   VersionedComment newComment) {
 		for (VersionedComment reply : newComment.getReplies()) {
 			VersionedComment existingReply = null;
 			if (oldComment != null) {
@@ -210,7 +210,6 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 					notifications.add(new UpdatedGeneralCommentNotification(newReview, comment));
 				}
 
-
 //				for (CrucibleReviewListener listener : reviewListenerList) {
 //					listener.reviewChangedWithoutFiles(newReview);
 //				}
@@ -249,9 +248,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 							notifications.add(new UpdatedVersionedCommentNotification(newReview, comment));
 						}
 //						if (project != null) {
-////							for (CrucibleReviewListener listener : reviewListenerList) {
-////								listener.reviewChangedWithoutFiles(newReview);
-////							}
+
+//							for (CrucibleReviewListener listener : reviewListenerList) {
+//								listener.reviewChangedWithoutFiles(newReview);
+//							}
 //						}
 					}
 					checkVersionedReplies(newReview, fileInfo.getPermId(), existing, comment);
@@ -306,7 +306,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	public void resetState() {
 		reviews.clear();
 		//exceptionNotifications.clear();
-		
+
 		for (CrucibleNotificationListener listener : listenerList) {
 			listener.resetState();
 		}
@@ -326,8 +326,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	public void reviewAdded(UpdateContext updateContext) {
 		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
 				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
-		notifications.add(new NewReviewItemNotification(updateContext.getReviewAdapter()));
-	}
+			notifications.add(new NewReviewItemNotification(updateContext.getReviewAdapter()));
+		}
 	}
 
 	public void reviewRemoved(UpdateContext updateContext) {
@@ -339,7 +339,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 
 		if ((oldReviewAdapter != null && newReviewAdapter != null)
 				&& (updateContext.getUpdateReason() == UpdateReason.REFRESH
-					|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
+				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
 			checkState(oldReviewAdapter, newReviewAdapter);
 			// check reviewers status
 			try {
@@ -362,7 +362,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 
 	public void reviewListUpdateStarted(UpdateContext updateContext) {
 
-			notifications.clear();
+		notifications.clear();
 	}
 
 	public void reviewListUpdateFinished(UpdateContext updateContext) {
@@ -381,8 +381,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 		final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
 		final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
 		if ((oldReviewAdapter != null && newReviewAdapter != null)
-			&& (updateContext.getUpdateReason() == UpdateReason.REFRESH
-					|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
+				&& (updateContext.getUpdateReason() == UpdateReason.REFRESH
+				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
 			checkState(oldReviewAdapter, newReviewAdapter);
 			// check reviewers status
 			try {
