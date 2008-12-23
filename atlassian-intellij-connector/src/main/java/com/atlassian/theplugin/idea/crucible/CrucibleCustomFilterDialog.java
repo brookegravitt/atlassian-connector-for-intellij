@@ -116,7 +116,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_COMPLETE);
-		final Boolean isComplete = filter.isComplete();
+
+		Boolean isComplete = (filter.getReviewer() != null && filter.getReviewer().length() > 0) ? filter.isComplete() : filter.isAllReviewersComplete();
 		if (isComplete == null) {
 			reviewerStatusComboBox.setSelectedIndex(0);
 		} else if (isComplete == false) {
@@ -208,12 +209,20 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 
 		filter.setState(states.toArray(new String[states.size()]));
+		// depending on whether reviewer is selected or not two flags below have will be set in a different manner
+		String completeSel = (String) reviewerStatusComboBox.getSelectedItem();
+		final Boolean complete = REVIEWER_STATUS_ANY.equals(completeSel) ? null : REVIEWER_STATUS_COMPLETE.equals(completeSel);
+		if (reviewer != null) {
+			filter.setComplete(complete);
+			filter.setAllReviewersComplete(null);
+		} else {
+			filter.setComplete(null);
+			filter.setAllReviewersComplete(complete);
+		}
 
 		String role = (String) matchRoleComboBox.getSelectedItem();
 		filter.setOrRoles(MATCH_ROLE_ANY.equals(role));
 
-		String complete = (String) reviewerStatusComboBox.getSelectedItem();
-		filter.setComplete(REVIEWER_STATUS_ANY.equals(complete) ? null : REVIEWER_STATUS_COMPLETE.equals(complete));
 
 
 		return filter;
