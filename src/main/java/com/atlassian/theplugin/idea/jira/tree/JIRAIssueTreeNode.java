@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.idea.jira.editor.Html2text;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -11,10 +12,15 @@ import com.intellij.util.ui.UIUtil;
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class JIRAIssueTreeNode extends AbstractTreeNode {
+	public static final String BODY_WITH_STYLE =
+			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+	private static final int MAX_LINE_LENGTH = 50;
+
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
@@ -109,7 +115,81 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
         padding.setOpaque(true);
         p.add(padding, gbc);
 
-        return p;
+		p.setToolTipText(buildTolltip());
+		return p;
+	}
+
+	private String buildTolltip() {
+		StringBuilder sb = new StringBuilder(
+                "<html>"
+                + BODY_WITH_STYLE);
+
+		sb.append("<table width=\"100%\">");
+		sb.append("<tr><td colspan=5><b><font color=blue>");
+        sb.append(issue.getKey());
+        sb.append("</font></b>");
+
+		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
+		String summary = issue.getSummary();
+		if (summary.length() > MAX_LINE_LENGTH) {
+			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(summary);
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
+		String description = Html2text.translate(issue.getDescription());
+		if (description.length() > MAX_LINE_LENGTH) {
+			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(description);
+		sb.append("");
+		sb.append("</td></tr>");
+
+        sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
+        sb.append(issue.getStatus());
+        sb.append("");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
+		sb.append(issue.getReporter());
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Assignee:</b></td><td valign=\"top\">");
+		sb.append(issue.getAssignee());
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Resolution:</b></td><td valign=\"top\">");
+		sb.append(issue.getResolution());
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		try {
+			sb.append(ds.format(df.parse(issue.getCreated())));
+		} catch (ParseException e) {
+			sb.append("Invalid");
+		}
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Updated:</b></td><td valign=\"top\">");
+		try {
+			sb.append(ds.format(df.parse(issue.getUpdated())));
+		} catch (ParseException e) {
+			sb.append("Invalid");
+		}
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("</table>");
+		sb.append("</body></html>");
+		return sb.toString();
 	}
 
 	@Override

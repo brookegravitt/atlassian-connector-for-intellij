@@ -24,6 +24,7 @@ public class TreeUISetup {
 	}
 
 	public void initializeUI(final JTree tree, final JComponent treeParent) {
+		ToolTipManager.sharedInstance().registerComponent(tree);
 		registerUI(tree);
 		treeParent.addComponentListener(new ComponentAdapter() {
 			@Override
