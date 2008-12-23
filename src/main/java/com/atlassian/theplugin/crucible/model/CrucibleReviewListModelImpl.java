@@ -92,7 +92,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		} catch (InterruptedException e) {
 			// this exception is just to notify that query was interrupted and
 			// new request is performed
-		} catch (Exception e) {
+		} catch (Throwable t) {
 			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null));
 		}
 	}
@@ -279,7 +279,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		public void reviewChangedWithoutFiles(ReviewAdapter oldReview, ReviewAdapter newReview) {
 			for (CrucibleReviewListModelListener listener : modelListeners) {
 				UpdateContext updateContext = new UpdateContext(null, newReview);
-				updateContext.setOldReviewAdapter(oldReview);				
+				updateContext.setOldReviewAdapter(oldReview);
 				listener.reviewChangedWithoutFiles(updateContext);
 			}
 		}
