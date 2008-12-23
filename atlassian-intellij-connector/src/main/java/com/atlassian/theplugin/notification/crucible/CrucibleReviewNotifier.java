@@ -358,7 +358,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 
 	public void reviewListUpdateStarted(UpdateContext updateContext) {
 		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
-				|| updateContext.getUpdateReason() == UpdateReason.REFRESH) {
+				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
 			notifications.clear();
 		}
 	}
@@ -366,7 +366,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	public void reviewListUpdateFinished(UpdateContext updateContext) {
 		if (!firstRun) {
 			if (updateContext.getUpdateReason() == UpdateReason.REFRESH
-					|| updateContext.getUpdateReason() == UpdateReason.REFRESH) {
+					|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
 				for (CrucibleNotificationListener listener : listenerList) {
 					listener.updateNotifications(notifications);
 				}
