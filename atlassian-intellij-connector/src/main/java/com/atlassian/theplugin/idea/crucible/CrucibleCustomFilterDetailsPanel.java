@@ -172,17 +172,15 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		addIfNotEmpty(customFilter.getCreator(), "Creator", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", entries, crucibleServerCfg);
 
-		final Boolean orRoles = customFilter.isOrRoles();
-		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
-
-		final Boolean reviewerStatus = customFilter.isComplete();
+		final Boolean reviewerStatus = (customFilter.getReviewer() != null && customFilter.getReviewer().length() > 0)
+				? customFilter.isComplete() : customFilter.isAllReviewersComplete();
 		if (reviewerStatus != null) {
 			entries.add(new ScrollableTwoColumnPanel.Entry("Reviewer Status", reviewerStatus ? "Complete" : "Incomplete"));
 		}
 
-//		if (allReviewersComplete) {
-//			map.put("All revievers completed", allReviewersComplete ? "true" : "false");
-//		}
+		final Boolean orRoles = customFilter.isOrRoles();
+		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
+
 		return entries;
 	}
 
