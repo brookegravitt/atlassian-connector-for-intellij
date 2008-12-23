@@ -113,6 +113,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 
 		if (a != null) {
+			review.addReviewListener(reviewListener);
 			a.fillReview(review);
 			if (!this.reviews.containsKey(crucibleFilter)) {
 				this.reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
@@ -275,9 +276,11 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 //		}
 
 		@Override
-		public void reviewChangedWithoutFiles(ReviewAdapter newReview) {
+		public void reviewChangedWithoutFiles(ReviewAdapter oldReview, ReviewAdapter newReview) {
 			for (CrucibleReviewListModelListener listener : modelListeners) {
-				listener.reviewChangedWithoutFiles(new UpdateContext(null, newReview));
+				UpdateContext updateContext = new UpdateContext(null, newReview);
+				updateContext.setOldReviewAdapter(oldReview);				
+				listener.reviewChangedWithoutFiles(updateContext);
 			}
 		}
 
