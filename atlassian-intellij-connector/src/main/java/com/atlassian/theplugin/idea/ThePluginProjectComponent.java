@@ -22,11 +22,13 @@ import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.*;
@@ -36,6 +38,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
+import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -90,6 +93,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
+	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
@@ -112,7 +116,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
 									 BuildChangesToolWindow buildChangesToolWindow,
-									 @NotNull final CrucibleStatusChecker crucibleStatusChecker) {
+									 @NotNull final CrucibleStatusChecker crucibleStatusChecker,
+									 @NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
+									 @NotNull final CrucibleReviewListModel crucibleReviewListModel) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -122,6 +128,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.crucibleStatusChecker = crucibleStatusChecker;
+		this.crucibleReviewNotifier = crucibleReviewNotifier;
+		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
@@ -258,36 +266,30 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					issuesToolWindowPanel.getConfigListener());
 
 			created = true;
+
+			registerCrucibleNotifier();
 		}
+
+
 	}
 
 	public CrucibleReviewNotifier getCrucibleReviewNotifier() {
 		return crucibleReviewNotifier;
 	}
 
-//	public void registerCrucibleNotifier() {
-//		if (crucibleReviewNotifier == null) {
-//			crucibleReviewNotifier = new CrucibleReviewNotifier(project, crucibleReviewListModel);
-//		}
-
-// mwent - should be changed to register on model instead of status checker		
-/*
+	public void registerCrucibleNotifier() {
 		if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
 				!= CrucibleTooltipOption.NEVER) {
 
-			if (!crucibleStatusChecker.getListenerList().contains(crucibleReviewNotifier)) {
-				final CrucibleNotificationTooltip crucibleNotificationTooltip = new CrucibleNotificationTooltip(
-						statusBarCrucibleIcon, project);
+			crucibleReviewListModel.addListener(crucibleReviewNotifier);
+			crucibleReviewNotifier.registerListener(new CrucibleNotificationTooltip(statusBarCrucibleIcon, project));
 
-				crucibleReviewNotifier.registerListener(crucibleNotificationTooltip);
-				crucibleStatusChecker.registerListener(crucibleReviewNotifier);
-			}
 
 		} else {
-			crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
+			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 		}
-*/
-//	}
+
+	}
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
