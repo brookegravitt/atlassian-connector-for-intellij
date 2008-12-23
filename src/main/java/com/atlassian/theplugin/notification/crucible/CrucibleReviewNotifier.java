@@ -248,12 +248,11 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 						} else {
 							notifications.add(new UpdatedVersionedCommentNotification(newReview, comment));
 						}
-						if (project != null) {
-
-//							for (CrucibleReviewListener listener : reviewListenerList) {
-//								listener.reviewChangedWithoutFiles(newReview);
-//							}
-						}
+//						if (project != null) {
+////							for (CrucibleReviewListener listener : reviewListenerList) {
+////								listener.reviewChangedWithoutFiles(newReview);
+////							}
+//						}
 					}
 					checkVersionedReplies(newReview, fileInfo.getPermId(), existing, comment);
 				}
