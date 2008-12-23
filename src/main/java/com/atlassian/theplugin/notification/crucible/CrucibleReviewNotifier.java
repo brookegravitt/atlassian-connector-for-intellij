@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -109,9 +110,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 						notifications.add(new UpdatedReplyCommentNotification(review, newComment, reply));
 					}
 
-					for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewChangedWithoutFiles(review);
-					}
+//					for (CrucibleReviewListener listener : reviewListenerList) {
+//						listener.reviewChangedWithoutFiles(review);
+//					}
 
 //					GeneralCommentReplyAddedOrEdited event = new GeneralCommentReplyAddedOrEdited(
 //							CrucibleReviewListenerImpl.ANONYMOUS,	review, newComment, reply);
@@ -126,9 +127,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 			for (GeneralComment gc : deletedGen) {
 				notifications.add(new RemovedReplyCommentNotification(review, gc));
 
-				for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewChangedWithoutFiles(review);
-				}
+//				for (CrucibleReviewListener listener : reviewListenerList) {
+//						listener.reviewChangedWithoutFiles(review);
+//				}
 
 //				CommentRemoved event = new CommentRemoved(CrucibleReviewListenerImpl.ANONYMOUS, review, gc);
 //				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
@@ -157,9 +158,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 //							CrucibleReviewListenerImpl.ANONYMOUS,	review, filePermId, newComment, reply);
 //					IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 
-					for (CrucibleReviewListener listener : reviewListenerList) {
-						listener.reviewChangedWithoutFiles(review);
-					}
+//					for (CrucibleReviewListener listener : reviewListenerList) {
+//						listener.reviewChangedWithoutFiles(review);
+//					}
 				}
 			}
 		}
@@ -172,9 +173,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 //				CommentRemoved event = new CommentRemoved(CrucibleReviewListenerImpl.ANONYMOUS, review, vc);
 //				IdeaHelper.getReviewActionEventBroker(project).trigger(event);
 
-				for (CrucibleReviewListener listener : reviewListenerList) {
-					listener.reviewChangedWithoutFiles(review);
-				}
+//				for (CrucibleReviewListener listener : reviewListenerList) {
+//					listener.reviewChangedWithoutFiles(review);
+//				}
 
 			}
 		}
@@ -210,9 +211,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 				}
 
 
-				for (CrucibleReviewListener listener : reviewListenerList) {
-					listener.reviewChangedWithoutFiles(newReview);
-				}
+//				for (CrucibleReviewListener listener : reviewListenerList) {
+//					listener.reviewChangedWithoutFiles(newReview);
+//				}
 
 			}
 			checkGeneralReplies(newReview, existing, comment);
@@ -222,9 +223,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 				oldReview.getGeneralComments(), newReview.getGeneralComments());
 		for (GeneralComment gc : deletedGen) {
 			notifications.add(new RemovedGeneralCommentNotification(newReview, gc));
-			for (CrucibleReviewListener listener : reviewListenerList) {
-				listener.reviewChangedWithoutFiles(newReview);
-			}
+//			for (CrucibleReviewListener listener : reviewListenerList) {
+//				listener.reviewChangedWithoutFiles(newReview);
+//			}
 		}
 
 		if (checkFiles) {
@@ -249,9 +250,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 						}
 						if (project != null) {
 
-							for (CrucibleReviewListener listener : reviewListenerList) {
-								listener.reviewChangedWithoutFiles(newReview);
-							}
+//							for (CrucibleReviewListener listener : reviewListenerList) {
+//								listener.reviewChangedWithoutFiles(newReview);
+//							}
 						}
 					}
 					checkVersionedReplies(newReview, fileInfo.getPermId(), existing, comment);
@@ -271,10 +272,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 					oldVersionedComments, newVersionedComments);
 			for (VersionedComment vc : deletedVcs) {
 				notifications.add(new RemovedVersionedCommentNotification(newReview, vc));
-
-				for (CrucibleReviewListener listener : reviewListenerList) {
-					listener.reviewChangedWithoutFiles(newReview);
-				}
+//
+//				for (CrucibleReviewListener listener : reviewListenerList) {
+//					listener.reviewChangedWithoutFiles(newReview);
+//				}
 
 			}
 		}
@@ -356,13 +357,19 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	public void reviewListUpdateStarted(UpdateContext updateContext) {
-		notifications.clear();
+		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
+				|| updateContext.getUpdateReason() == UpdateReason.REFRESH) {
+			notifications.clear();
+		}
 	}
 
 	public void reviewListUpdateFinished(UpdateContext updateContext) {
 		if (!firstRun) {
-			for (CrucibleNotificationListener listener : listenerList) {
-				listener.updateNotifications(notifications);
+			if (updateContext.getUpdateReason() == UpdateReason.REFRESH
+					|| updateContext.getUpdateReason() == UpdateReason.REFRESH) {
+				for (CrucibleNotificationListener listener : listenerList) {
+					listener.updateNotifications(notifications);
+				}
 			}
 		}
 		firstRun = false;
