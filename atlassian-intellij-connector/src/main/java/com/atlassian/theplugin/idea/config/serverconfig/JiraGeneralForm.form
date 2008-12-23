@@ -39,7 +39,7 @@
         </constraints>
         <properties>
           <text value="Number of Issues to Show:"/>
-          <toolTipText value="Polling is not used for JIRA currently"/>
+          <toolTipText value="Number of issues to load from the JIRA server in one remote call"/>
         </properties>
       </component>
       <hspacer id="a40c1">
