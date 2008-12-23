@@ -125,7 +125,7 @@ public class FilterTree extends JTree {
 			Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
 
 			// find stored filters
-			for (int i = 0; i < confFilters.length; ++i) {
+			for (int i = 0; i < confFilters.length && i < PredefinedFilter.values().length; ++i) {
 				if (confFilters[i]) {
 					// remember node
 					selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
@@ -270,7 +270,9 @@ public class FilterTree extends JTree {
 			}
 
 			// remember current selection
-			prevSelection = new HashSet<TreePath>(Arrays.asList(getSelectionPaths()));
+			if (getSelectionPaths() != null) {
+				prevSelection = new HashSet<TreePath>(Arrays.asList(getSelectionPaths()));
+			}
 
 			fireSelectedPredefinedFilter(predefinedFilters);
 
