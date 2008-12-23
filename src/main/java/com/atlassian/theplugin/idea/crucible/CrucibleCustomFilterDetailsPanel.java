@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.UiTask;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -9,11 +11,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
@@ -21,7 +22,6 @@ import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
 import com.intellij.openapi.project.Project;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -142,7 +142,15 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 	public Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter) {
 		final Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
-		final String states = StringUtils.join(customFilter.getState(), ", ");
+
+		final State[] selStates = customFilter.getState();
+		final StringBuilder states = new StringBuilder();
+		for (int i = 0; i < selStates.length; i++) {
+			states.append(selStates[i].getDisplayName());
+			if (i < selStates.length - 1) {
+				states.append(", ");
+			}
+		}
 		final String serverId = customFilter.getServerUid();
 		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
 				CfgUtil.getProjectId(project), new ServerId(serverId));
@@ -166,7 +174,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 
 		}
-		entries.add(new ScrollableTwoColumnPanel.Entry("State", states));
+		entries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
 		addIfNotEmpty(customFilter.getAuthor(), "Author", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getModerator(), "Moderator", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getCreator(), "Creator", entries, crucibleServerCfg);
