@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,4 +42,5 @@ public class SortingByKeyCrucibleReviewListModel extends AbstractSortingCrucible
 	public boolean isRequestObsolete(long epoch) {
 		return false;
 	}
+
 }

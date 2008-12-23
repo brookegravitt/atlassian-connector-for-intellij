@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.jira.table.renderers;
+package com.atlassian.theplugin.idea.jira.renderers;
 
-import com.atlassian.theplugin.idea.jira.JiraIcon;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 
+import javax.swing.*;
+import java.awt.*;
 
-public class IssuePriorityCellRenderer extends AbstractIssueCellRenderer {
-	protected JiraIcon getJiraIcon(JiraIssueAdapter adapter) {
-		return adapter.getPriorityInfo();
+public class JIRAQueryFragmentListRenderer extends DefaultListCellRenderer {
+	public Component getListCellRendererComponent(
+			JList jList, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, index, isSelected, cellHasFocus);
+		if (comp != null && value != null) {
+			comp.setText(((JIRAQueryFragment) value).getName());
+		}
+		return comp;
 	}
 }

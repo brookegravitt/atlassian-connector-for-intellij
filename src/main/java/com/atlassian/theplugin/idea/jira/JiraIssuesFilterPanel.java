@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.idea.jira.table.JIRAConstantListRenderer;
-import com.atlassian.theplugin.idea.jira.table.JIRAQueryFragmentListRenderer;
+import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
+import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;

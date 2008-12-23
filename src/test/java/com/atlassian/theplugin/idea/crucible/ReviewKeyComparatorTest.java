@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.VirtualFileSystem;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.table.column.ReviewKeyComparator;
+import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import junit.framework.TestCase;
 
 import java.util.Date;

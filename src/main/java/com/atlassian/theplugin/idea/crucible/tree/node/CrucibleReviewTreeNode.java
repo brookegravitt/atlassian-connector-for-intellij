@@ -19,6 +19,11 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private static final int STATUS_LABEL_WIDTH = 80;
 	private static final int AUTHOR_LABEL_WIDTH = 120;
 
+	public static final String BODY_WITH_STYLE =
+			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+	private static final int MAX_LINE_LENGTH = 50;
+
+
 	private final ReviewAdapter review;
 
 	public CrucibleReviewTreeNode(ReviewAdapter review) {
@@ -99,7 +104,66 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
         padding.setOpaque(true);
         p.add(padding, gbc);
 
-        return p;
+		p.setToolTipText(buildTolltip());
+
+		return p;
+	}
+
+	private String buildTolltip() {
+		StringBuilder sb = new StringBuilder(
+                "<html>"
+                + BODY_WITH_STYLE);
+
+		sb.append("<table width=\"100%\">");
+		sb.append("<tr><td colspan=5><b><font color=blue>");
+        sb.append(review.getPermId().getId());
+        sb.append("</font></b>");
+
+		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
+
+		String summary = review.getName();
+		if (summary.length() > MAX_LINE_LENGTH) {
+			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(summary);
+
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
+
+		String description = review.getDescription();
+		if (description.length() > MAX_LINE_LENGTH) {
+			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		}
+		sb.append(description);
+
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Author:</b></td><td valign=\"top\">");
+		sb.append(review.getAuthor().getDisplayName());
+		sb.append("");
+		sb.append("</td></tr>");
+
+        sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
+        sb.append(review.getModerator().getDisplayName());
+        sb.append("");
+        sb.append("</td></tr>");
+
+        sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
+		sb.append(review.getCreateDate());
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
+		sb.append(review.getState().value());
+		sb.append("");
+		sb.append("</td></tr>");
+
+		sb.append("</table>");
+		sb.append("</body></html>");
+		return sb.toString();
 	}
 
 	@Override
