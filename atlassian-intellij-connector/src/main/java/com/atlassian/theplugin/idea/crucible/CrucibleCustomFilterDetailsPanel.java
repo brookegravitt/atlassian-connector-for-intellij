@@ -143,14 +143,6 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	public Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter) {
 		final Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
 
-		final State[] selStates = customFilter.getState();
-		final StringBuilder states = new StringBuilder();
-		for (int i = 0; i < selStates.length; i++) {
-			states.append(selStates[i].getDisplayName());
-			if (i < selStates.length - 1) {
-				states.append(", ");
-			}
-		}
 		final String serverId = customFilter.getServerUid();
 		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
 				CfgUtil.getProjectId(project), new ServerId(serverId));
@@ -174,7 +166,17 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 
 		}
-		entries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
+		final State[] selStates = customFilter.getState();
+		if (selStates != null && selStates.length > 0) {
+			final StringBuilder states = new StringBuilder();
+			for (int i = 0; i < selStates.length; i++) {
+				states.append(selStates[i].getDisplayName());
+				if (i < selStates.length - 1) {
+					states.append(", ");
+				}
+			}
+			entries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
+		}
 		addIfNotEmpty(customFilter.getAuthor(), "Author", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getModerator(), "Moderator", entries, crucibleServerCfg);
 		addIfNotEmpty(customFilter.getCreator(), "Creator", entries, crucibleServerCfg);
