@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 
 public class CrucibleProjectConfiguration {
 
@@ -58,6 +60,16 @@ public class CrucibleProjectConfiguration {
 		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
 		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
 		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
+
+		final CustomFilterBean manualFilter = crucibleFilters.getManualFilter();
+		// support just for transition perdiod, as State used to be kept as String and now its normal domain object
+		if (manualFilter != null && manualFilter.getState() != null) {
+			for (State state : manualFilter.getState()) {
+				if (state == null) {
+					manualFilter.setState(new State[0]);
+				}
+			}
+		}
         crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
 		view.copyConfiguration(crucibleConfiguration.getView());
 	}
