@@ -22,6 +22,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private ReviewAdapter selectedReview;
 
 	private AtomicLong epoch = new AtomicLong(0);
+	private UpdateReason currentUpdateReason = UpdateReason.TIMER_FIRED;
 
 	private CrucibleReviewListener reviewListener = new LocalCrucibleReviewListener(modelListeners);
 	private final ReviewListModelBuilder reviewListModelBuilder;
@@ -101,6 +102,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	public synchronized void addReview(CrucibleFilter crucibleFilter,
 									   ReviewAdapter review, UpdateReason updateReason) {
 		ReviewAdapter a = null;
+		currentUpdateReason = updateReason;
 
 		Collection<ReviewAdapter> localReviews = getReviews();
 		if (localReviews.contains(review)) {
@@ -278,7 +280,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		@Override
 		public void reviewChangedWithoutFiles(ReviewAdapter oldReview, ReviewAdapter newReview) {
 			for (CrucibleReviewListModelListener listener : modelListeners) {
-				UpdateContext updateContext = new UpdateContext(null, newReview);
+				UpdateContext updateContext = new UpdateContext(currentUpdateReason, newReview);
+
 				updateContext.setOldReviewAdapter(oldReview);
 				listener.reviewChangedWithoutFiles(updateContext);
 			}
