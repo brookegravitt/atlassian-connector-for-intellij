@@ -23,13 +23,16 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.ui.components.panels.VerticalBox;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -37,10 +40,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Action;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -83,7 +85,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private final CustomFilterBean filter;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleServerFacade crucibleServerFacade;
-	private CrucibleServerCfg serverCfg;
 	private static final CrucibleProjectWrapper CRUC_PROJECT_NONE = new CrucibleProjectWrapper(null);
 	private static final UserComboBoxItem CRUC_USER_NONE = new UserComboBoxItem(null);
 	private static final CrucibleProjectWrapper CRUC_PROJECT_ANY = new CrucibleProjectWrapper(null) {
@@ -110,7 +111,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setupUi();
 		setModal(true);
 
-		this.serverCfg = (CrucibleServerCfg) cfgManager
+		final CrucibleServerCfg serverCfg = (CrucibleServerCfg) cfgManager
 				.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
@@ -184,31 +185,35 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			filter.setReviewer("");
 		}
 
-		List<String> states = new ArrayList<String>();
+		List<State> states = new ArrayList<State>();
 		if (draftCheckBox.isSelected()) {
-			states.add(State.DRAFT.value());
+			states.add(State.DRAFT);
 		}
 		if (pendingApprovalCheckBox.isSelected()) {
-			states.add(State.APPROVAL.value());
+			states.add(State.APPROVAL);
 		}
 		if (summarizeCheckBox.isSelected()) {
-			states.add(State.SUMMARIZE.value());
+			states.add(State.SUMMARIZE);
 		}
 		if (closedCheckBox.isSelected()) {
-			states.add(State.CLOSED.value());
+			states.add(State.CLOSED);
 		}
 		if (rejectedCheckBox.isSelected()) {
-			states.add(State.REJECTED.value());
+			states.add(State.REJECTED);
 		}
 		if (underReviewCheckBox.isSelected()) {
-			states.add(State.REVIEW.value());
+			states.add(State.REVIEW);
 		}
 		if (abandonedCheckBox.isSelected()) {
-			states.add(State.ABANDONED.value());
+			states.add(State.ABANDONED);
+		}
+
+		if (reviewNeedsFixingCheckBox.isSelected()) {
+			states.add(State.UNKNOWN);
 		}
 
 
-		filter.setState(states.toArray(new String[states.size()]));
+		filter.setState(states.toArray(new State[states.size()]));
 		// depending on whether reviewer is selected or not two flags below have will be set in a different manner
 		String completeSel = (String) reviewerStatusComboBox.getSelectedItem();
 		final Boolean complete = REVIEWER_STATUS_ANY.equals(completeSel) ? null : REVIEWER_STATUS_COMPLETE.equals(completeSel);
@@ -317,9 +322,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		reviewNeedsFixingCheckBox.setSelected(false);
 
 		if (filter.getState() != null) {
-			for (String state : filter.getState()) {
-				State value = State.fromValue(state);
-				switch (value) {
+			for (State state : filter.getState()) {
+				switch (state) {
 					case APPROVAL:
 						pendingApprovalCheckBox.setSelected(true);
 						break;
@@ -340,6 +344,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 						break;
 					case ABANDONED:
 						abandonedCheckBox.setSelected(true);
+						break;
+					case UNKNOWN:
+						reviewNeedsFixingCheckBox.setSelected(true);
 						break;
 					default:
 						break;
@@ -510,7 +517,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		draftCheckBox.setText("Draft");
 		statesPanel.add(draftCheckBox);
 		pendingApprovalCheckBox = new JCheckBox();
-		pendingApprovalCheckBox.setEnabled(false);
 		pendingApprovalCheckBox.setText("Pending Approval");
 		statesPanel.add(pendingApprovalCheckBox);
 		underReviewCheckBox = new JCheckBox();
@@ -529,7 +535,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		rejectedCheckBox.setText("Rejected");
 		statesPanel.add(rejectedCheckBox);
 		reviewNeedsFixingCheckBox = new JCheckBox();
-		reviewNeedsFixingCheckBox.setEnabled(false);
 		reviewNeedsFixingCheckBox.setText("Review needs fixing");
 		statesPanel.add(reviewNeedsFixingCheckBox);
 	}
