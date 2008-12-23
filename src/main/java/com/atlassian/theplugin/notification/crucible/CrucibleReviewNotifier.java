@@ -325,7 +325,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 
 
 	public void reviewAdded(UpdateContext updateContext) {
+		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
+				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
 		notifications.add(new NewReviewItemNotification(updateContext.getReviewAdapter()));
+	}
 	}
 
 	public void reviewRemoved(UpdateContext updateContext) {
@@ -335,7 +338,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 		final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
 		final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
 
-		if (oldReviewAdapter != null && newReviewAdapter != null) {
+		if ((oldReviewAdapter != null && newReviewAdapter != null)
+				&& (updateContext.getUpdateReason() == UpdateReason.REFRESH
+					|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
 			checkState(oldReviewAdapter, newReviewAdapter);
 			// check reviewers status
 			try {
@@ -357,10 +362,8 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	public void reviewListUpdateStarted(UpdateContext updateContext) {
-		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
-				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
+
 			notifications.clear();
-		}
 	}
 
 	public void reviewListUpdateFinished(UpdateContext updateContext) {
@@ -378,7 +381,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
 		final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
 		final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
-		if (oldReviewAdapter != null && newReviewAdapter != null) {
+		if ((oldReviewAdapter != null && newReviewAdapter != null)
+			&& (updateContext.getUpdateReason() == UpdateReason.REFRESH
+					|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED)) {
 			checkState(oldReviewAdapter, newReviewAdapter);
 			// check reviewers status
 			try {
@@ -398,7 +403,11 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
-		notifications.add(new NewExceptionNotification(exception));
+		if (updateContext.getUpdateReason() == UpdateReason.REFRESH
+				|| updateContext.getUpdateReason() == UpdateReason.TIMER_FIRED) {
+			notifications.add(new NewExceptionNotification(exception));
+		}
 	}
-
 }
+
+
