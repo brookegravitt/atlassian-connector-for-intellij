@@ -112,7 +112,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
-				refresh();
+				refresh(UpdateReason.FILTER_CHANGED);
 			}
 		});
 
@@ -304,11 +304,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 	}
 
-	public void refresh() {
+	public void refresh(final UpdateReason reason) {
 		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-					reviewListModel.rebuildModel(UpdateReason.REFRESH);
+					reviewListModel.rebuildModel(reason);
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
@@ -337,7 +337,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			}
 
 			// restart checker
-			refresh();
+			refresh(UpdateReason.FILTER_CHANGED);
 		}
 
 		public void unselectedCustomFilter() {
