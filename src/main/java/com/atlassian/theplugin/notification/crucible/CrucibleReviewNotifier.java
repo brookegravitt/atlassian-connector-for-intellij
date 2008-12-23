@@ -19,7 +19,6 @@ package com.atlassian.theplugin.notification.crucible;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusListener;
@@ -34,7 +33,7 @@ import java.util.Set;
 /**
  * This one is supposed to be per project.
  */
-public class CrucibleReviewNotifier implements CrucibleStatusListener {
+public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleReviewListModelListener {
 	private final List<CrucibleNotificationListener> listenerList = new ArrayList<CrucibleNotificationListener>();
 
 	private Set<ReviewAdapter> reviews = new HashSet<ReviewAdapter>();
@@ -44,14 +43,10 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
 	private boolean firstRun = true;
 	private Project project;
-	private final CrucibleReviewListModel reviewModel;
 	private List<CrucibleReviewListener> reviewListenerList = new ArrayList<CrucibleReviewListener>();
 
-	public CrucibleReviewNotifier(@NotNull final Project project, @NotNull final CrucibleReviewListModel reviewModel) {
+	public CrucibleReviewNotifier(@NotNull final Project project) {
 		this.project = project;
-		this.reviewModel = reviewModel;
-
-		reviewModel.addListener(new LocalCrucibleReviewListModelListener());
 	}
 
 	public Project getProject() {
@@ -64,7 +59,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 
 	public void registerListener(CrucibleNotificationListener listener) {
 		synchronized (listenerList) {
-			listenerList.add(listener);
+			if (!listenerList.contains(listener)) {
+				listenerList.add(listener);
+			}
 		}
 	}
 
@@ -306,92 +303,6 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		// ignore
 	}
 
-//	public void updateReviews(Map<PredefinedFilter, ReviewNotificationBean> incomingReviews,
-//			Map<String, ReviewNotificationBean> customIncomingReviews) {
-//
-//		notifications.clear();
-//		boolean exceptionFound = false;
-//
-//		Set<ReviewAdapter> processedReviews = new HashSet<ReviewAdapter>();
-//		if (!incomingReviews.isEmpty()) {
-//			for (PredefinedFilter predefinedFilter : incomingReviews.keySet()) {
-//				if (incomingReviews.get(predefinedFilter).getException() == null) {
-//					List<ReviewAdapter> incomingCategory = incomingReviews.get(predefinedFilter).getReviews();
-//
-//					for (ReviewAdapter reviewDataInfo : incomingCategory) {
-//						if (processedReviews.contains(reviewDataInfo)) {
-//							continue;
-//						}
-//						if (reviews.contains(reviewDataInfo)) {
-//							ReviewAdapter existing = null;
-//							for (ReviewAdapter review : reviews) {
-//								if (review.equals(reviewDataInfo)) {
-//									existing = review;
-//								}
-//							}
-//
-//							// check state change
-//							checkState(existing, reviewDataInfo);
-//
-//							// check reviewers status
-//							try {
-//								checkReviewersStatus(existing, reviewDataInfo);
-//							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-//								// TODO all is it correct
-//							}
-//
-//							// check comments status
-//							try {
-//								checkComments(existing, reviewDataInfo, true);
-//							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-//								// TODO all is it correct
-//							}
-//
-//							processedReviews.add(reviewDataInfo);
-//						} else {
-//							notifications.add(new NewReviewNotification(reviewDataInfo));
-//							processedReviews.add(reviewDataInfo);
-//						}
-//					}
-//
-//					exceptionNotifications.remove(predefinedFilter);
-//				} else {
-//					// do not analyze events when exception was raised.
-//					// maybe next time wil be better
-//					NewExceptionNotification prevNotificationException = exceptionNotifications.get(predefinedFilter);
-//					NewExceptionNotification newException =
-//							new NewExceptionNotification(incomingReviews.get(predefinedFilter).getException());
-//
-//					if ((prevNotificationException != null && !prevNotificationException.equals(newException))
-//							|| exceptionNotifications.size() <= 0 || prevNotificationException == null) {
-//
-//						exceptionNotifications.put(predefinedFilter, newException);
-//						//add exception only if differs in text
-//						// exceptions texts are defined as string server_url + exception message
-//						//so no excepion will be missed
-//						if (!notifications.contains(newException)) {
-//							notifications.add(newException);
-//						}
-//
-//						exceptionFound = true;
-//					}
-//				}
-//
-//			}
-//			if (!exceptionFound) {
-//				reviews.clear();
-//				reviews.addAll(processedReviews);
-//			}
-//		}
-//
-//		if (!firstRun) {
-//			for (CrucibleNotificationListener listener : listenerList) {
-//				listener.updateNotifications(notifications);
-//			}
-//		}
-//		firstRun = false;
-//	}
-
 	public void resetState() {
 		reviews.clear();
 		//exceptionNotifications.clear();
@@ -411,76 +322,76 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener {
 		}
 	}
 
-	class LocalCrucibleReviewListModelListener implements CrucibleReviewListModelListener {
 
-		public void reviewAdded(UpdateContext updateContext) {
-			notifications.add(new NewReviewItemNotification(updateContext.getReviewAdapter()));
-		}
+	public void reviewAdded(UpdateContext updateContext) {
+		notifications.add(new NewReviewItemNotification(updateContext.getReviewAdapter()));
+	}
 
-		public void reviewRemoved(UpdateContext updateContext) {
-		}
+	public void reviewRemoved(UpdateContext updateContext) {
+	}
 
-		public void reviewChanged(UpdateContext updateContext) {
-			final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
-			final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
+	public void reviewChanged(UpdateContext updateContext) {
+		final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
+		final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
 
-			if (oldReviewAdapter != null && newReviewAdapter != null) {
-				checkState(oldReviewAdapter, newReviewAdapter);
-				// check reviewers status
-				try {
-					checkReviewersStatus(oldReviewAdapter, newReviewAdapter);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					//all is it correct
-				}
-
-				// check comments status
-				try {
-					checkComments(oldReviewAdapter, newReviewAdapter, true);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					//all is it correct
-				}
-			}
-		}
-
-		public void modelChanged(UpdateContext updateContext) {
-		}
-
-		public void reviewListUpdateStarted(UpdateContext updateContext) {
-			notifications.clear();
-		}
-
-		public void reviewListUpdateFinished(UpdateContext updateContext) {
-			if (!firstRun) {
-				for (CrucibleNotificationListener listener : listenerList) {
-					listener.updateNotifications(notifications);
-				}
-			}
-			firstRun = false;
-		}
-
-		public void reviewChangedWithoutFiles(UpdateContext updateContext) {
-			final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
-			final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
-				if (oldReviewAdapter != null && newReviewAdapter != null) {
-				checkState(oldReviewAdapter, newReviewAdapter);
-				// check reviewers status
-				try {
-					checkReviewersStatus(oldReviewAdapter, newReviewAdapter);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					//all is it correct
-				}
-
-				// check comments status
-				try {
-					checkComments(oldReviewAdapter, newReviewAdapter, false);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					//all is it correct
-				}
+		if (oldReviewAdapter != null && newReviewAdapter != null) {
+			checkState(oldReviewAdapter, newReviewAdapter);
+			// check reviewers status
+			try {
+				checkReviewersStatus(oldReviewAdapter, newReviewAdapter);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				//all is it correct
 			}
 
-		}
-		public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
-			notifications.add(new NewExceptionNotification(exception));
+			// check comments status
+			try {
+				checkComments(oldReviewAdapter, newReviewAdapter, true);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				//all is it correct
+			}
 		}
 	}
+
+	public void modelChanged(UpdateContext updateContext) {
+	}
+
+	public void reviewListUpdateStarted(UpdateContext updateContext) {
+		notifications.clear();
+	}
+
+	public void reviewListUpdateFinished(UpdateContext updateContext) {
+		if (!firstRun) {
+			for (CrucibleNotificationListener listener : listenerList) {
+				listener.updateNotifications(notifications);
+			}
+		}
+		firstRun = false;
+	}
+
+	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
+		final ReviewAdapter oldReviewAdapter = updateContext.getOldReviewAdapter();
+		final ReviewAdapter newReviewAdapter = updateContext.getReviewAdapter();
+		if (oldReviewAdapter != null && newReviewAdapter != null) {
+			checkState(oldReviewAdapter, newReviewAdapter);
+			// check reviewers status
+			try {
+				checkReviewersStatus(oldReviewAdapter, newReviewAdapter);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				//all is it correct
+			}
+
+			// check comments status
+			try {
+				checkComments(oldReviewAdapter, newReviewAdapter, false);
+			} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				//all is it correct
+			}
+		}
+
+	}
+
+	public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
+		notifications.add(new NewExceptionNotification(exception));
+	}
+
 }
