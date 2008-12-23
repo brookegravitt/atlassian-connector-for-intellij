@@ -352,6 +352,7 @@
 						<private-constructor-noparam-nothrows>private +[a-zA-Z0-9_$]+ *\( *\)</private-constructor-noparam-nothrows>
 					</methodContexts>
 				</configuration>
+<!--
 				<executions>
 					<execution>
 						<phase>pre-site</phase>
@@ -361,6 +362,7 @@
 						</goals>
 					</execution>
 				</executions>
+-->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
