@@ -78,6 +78,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JiraServerCfg jiraServerCfg;
 	private FilterActionClear clearFilterAction = new FilterActionClear();
 	private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
+	private boolean windowClosed = false;
 
 	public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel,
 			final JIRAFilterListModel filterListModel, final JiraServerCfg jiraServerCfg) {
@@ -325,8 +326,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -550,6 +551,15 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		return this.$$$getRootComponent$$$();
 	}
 
+	public synchronized void doCancelAction() {
+		super.doCancelAction();
+		this.windowClosed = true;
+	}
+
+	private synchronized boolean isWindowClosed() {
+		return windowClosed;
+	}
+
 	private class SyncViewWithModelRunnable implements Runnable {
 		public void run() {
 			projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
@@ -577,24 +587,26 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
 			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
-			ApplicationManager.getApplication().invokeLater(new Runnable() {
-				public void run() {
-					setListValues(projectList, prjSel);
-					setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
-					setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
-					setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
-					setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
-					setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
-					setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
-					setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
-					setComboValue(assigneeComboBox, initialFilter);
-					setComboValue(reporterComboBox, initialFilter);
-					addProjectActionListener();
-					enableFields(true);
-				}
-			}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
-
+			if (!isWindowClosed()) {
+				ApplicationManager.getApplication().invokeLater(new Runnable() {
+					public void run() {
+						setListValues(projectList, prjSel);
+						setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
+						setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
+						setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
+						setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
+						setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
+						setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
+						setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
+						setComboValue(assigneeComboBox, initialFilter);
+						setComboValue(reporterComboBox, initialFilter);
+						addProjectActionListener();
+						enableFields(true);
+					}
+				}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
+			}
 		}
 	}
+
 }
 
