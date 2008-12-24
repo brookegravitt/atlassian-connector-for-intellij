@@ -14,6 +14,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 		private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
 	private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
 
+	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
 	                                              boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
