@@ -155,7 +155,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();
-		if (o != CRUC_PROJECT_ANY) {
+		if (o != null && o != CRUC_PROJECT_ANY && o.getWrapped() != null) {
 			filter.setProjectKey(o.getWrapped().getKey());
 		} else {
 			filter.setProjectKey("");
