@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,10 +22,11 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
-	private static final int MAX_LINE_LENGTH = 50;
+	private static final int MAX_TOOLTIP_WIDTH = 500;
 
 
 	private final ReviewAdapter review;
+	private static final int MAX_LENGTH = 1000;
 
 	public CrucibleReviewTreeNode(ReviewAdapter review) {
 		super(review.getPermId().getId(), null, null);
@@ -104,61 +106,56 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
         padding.setOpaque(true);
         p.add(padding, gbc);
 
-		p.setToolTipText(buildTolltip());
-
+		// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH  
+		final JToolTip jToolTip = p.createToolTip();
+		jToolTip.setTipText(buildTolltip(0));
+		final int prefWidth = jToolTip.getPreferredSize().width;
+		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+		p.setToolTipText(buildTolltip(width));
 		return p;
 	}
 
-	private String buildTolltip() {
+	private String buildTolltip(int width) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
-
-		sb.append("<table width=\"100%\">");
-		sb.append("<tr><td colspan=5><b><font color=blue>");
+		final String widthString = width > 0 ? "width='" + width + "px'" : "";
+		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
+		sb.append("<tr><td colspan='2'><b><font color='blue'>");
         sb.append(review.getPermId().getId());
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
 
 		String summary = review.getName();
-		if (summary.length() > MAX_LINE_LENGTH) {
-			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
-		}
-		sb.append(summary);
-
-		sb.append("");
+		sb.append(StringEscapeUtils.escapeHtml(summary));
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
 
 		String description = review.getDescription();
-		if (description.length() > MAX_LINE_LENGTH) {
-			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		if (description.length() > MAX_LENGTH) {
+			description = description.substring(0, MAX_LENGTH) + "\n...";
 		}
-		sb.append(description);
+		sb.append(StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>").replace(" ", "&nbsp;")
+				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 
-		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Author:</b></td><td valign=\"top\">");
 		sb.append(review.getAuthor().getDisplayName());
-		sb.append("");
 		sb.append("</td></tr>");
 
         sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
         sb.append(review.getModerator().getDisplayName());
-        sb.append("");
         sb.append("</td></tr>");
 
         sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
 		sb.append(review.getCreateDate());
-		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
 		sb.append(review.getState().value());
-		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("</table>");
