@@ -23,7 +23,11 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 
 public class IdeaUiTaskExecutor implements UiTaskExecutor {
+
+
 	public void execute(final UiTask uiTask) {
+		final ModalityState modalityState = ModalityState.stateForComponent(uiTask.getComponent());
+
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
 				try {
@@ -38,9 +42,10 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 										"Error while " + uiTask.getLastAction(), e, "Error");
 							}
 						}
-					}, ModalityState.stateForComponent(uiTask.getComponent()));
+					}, modalityState);
 					return;
 				}
+
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						try {
@@ -51,7 +56,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 									"Error while " + uiTask.getLastAction(), e, "Error");
 						}
 					}
-				}, ModalityState.stateForComponent(uiTask.getComponent()));
+				}, modalityState);
 			}
 		});
 	}
