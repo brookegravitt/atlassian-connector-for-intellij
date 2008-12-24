@@ -71,7 +71,8 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 	public void updateContent(@Nullable Collection<Entry> entries) {
 		panel.removeAll();
 		if (entries == null || entries.size() == 0) {
-			panel.add(new JLabel("no filter defined"));
+			panel.setLayout(new BorderLayout());
+			panel.add(new JLabel("No Custom Filter Defined", JLabel.CENTER));
 			return;
 		}
 
