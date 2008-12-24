@@ -121,7 +121,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		Boolean isComplete = (filter.getReviewer() != null && filter.getReviewer().length() > 0) ? filter.isComplete() : filter.isAllReviewersComplete();
 		if (isComplete == null) {
 			reviewerStatusComboBox.setSelectedIndex(0);
-		} else if (isComplete == false) {
+		} else if (!isComplete) {
 			reviewerStatusComboBox.setSelectedIndex(1);
 		} else {
 			reviewerStatusComboBox.setSelectedIndex(2);
@@ -130,7 +130,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		matchRoleComboBox.addItem(MATCH_ROLE_ANY);
 		matchRoleComboBox.addItem(MATCH_ROLE_ALL);
 		final Boolean orRoles = filter.isOrRoles();
-		matchRoleComboBox.setSelectedIndex((orRoles == null || orRoles == true) ? 0 : 1);
+		matchRoleComboBox.setSelectedIndex((orRoles == null || orRoles) ? 0 : 1);
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
@@ -403,6 +403,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	private void setStateForAllControls(boolean isEnabled) {
 		ApplicationManager.getApplication().assertIsDispatchThread();
+
+		setOKActionEnabled(isEnabled);
+
 		for (Component component : statesPanel.getComponents()) {
 			component.setEnabled(isEnabled);
 		}
@@ -416,6 +419,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			// above call sucks!!! does not cause panel to be repainted, so do it manually
 			statesPanel.repaint();
 		}
+
 	}
 
 	private void setProject(String projectName, JComboBox combo) {
