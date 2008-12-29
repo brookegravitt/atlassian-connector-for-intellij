@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
-import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -37,8 +36,8 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,12 +95,12 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 		crucibleReview.addReviewListener(reviewItemTreePanel.getReviewListener());
 
-		CrucibleReviewNotifier notifier =
-				IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCrucibleReviewNotifier();
-
-		if (notifier != null) {
-			notifier.registerReviewListener(reviewItemTreePanel.getReviewListener());
-		}
+//		CrucibleReviewNotifier notifier =
+//				IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCrucibleReviewNotifier();
+//
+//		if (notifier != null) {//??? not used any more
+//			notifier.registerReviewListener(reviewItemTreePanel.getReviewListener());
+//		}
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
