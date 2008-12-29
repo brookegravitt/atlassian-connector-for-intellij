@@ -113,4 +113,12 @@ public abstract class CrucibleReviewListModelListenerHolder
 	public void setSelectedReview(ReviewAdapter review) {
 		parent.setSelectedReview(review);
 	}
+
+	public ReviewAdapter getActiveReview() {
+		return parent.getActiveReview();
+	}
+
+	public void setActiveReview(ReviewAdapter review) {
+		parent.setActiveReview(review);
+	}
 }

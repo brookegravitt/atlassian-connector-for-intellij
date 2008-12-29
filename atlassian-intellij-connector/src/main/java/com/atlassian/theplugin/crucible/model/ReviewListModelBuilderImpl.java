@@ -5,6 +5,8 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.OpenInIdeFilterBean;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
@@ -43,7 +45,11 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 						crucibleReviewListModel);
 		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
 				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, epoch);
+		ReviewAdapter active = crucibleReviewListModel.getActiveReview();
+		if (active != null) {
+			ReviewNotificationBean bean = crucibleQueryExecutor.getSingleReviewQuery(active, epoch);
+			reviews.put(new OpenInIdeFilterBean(), bean);
+		}
 		return reviews;
-
 	}
 }

@@ -45,6 +45,10 @@ public interface CrucibleReviewListModel {
 
 	void setSelectedReview(ReviewAdapter review);
 
+	ReviewAdapter getActiveReview();
+
+	void setActiveReview(ReviewAdapter review);
+
 	void rebuildModel(UpdateReason updateReason);
 
 	boolean isRequestObsolete(long epoch);

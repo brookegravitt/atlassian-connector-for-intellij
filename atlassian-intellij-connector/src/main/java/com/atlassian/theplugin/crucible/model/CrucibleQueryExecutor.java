@@ -148,4 +148,39 @@ public class CrucibleQueryExecutor {
 		}
 		return reviews;
 	}
+
+	public ReviewNotificationBean getSingleReviewQuery(
+			final ReviewAdapter review, final long epoch) throws InterruptedException {
+		ReviewNotificationBean reviewNotificationBean = new ReviewNotificationBean();
+
+		if (review.getServer() != null && review.getServer().isEnabled()) {
+
+			try {
+				PluginUtil.getLogger().debug("Crucible: updating status for server: "
+						+ review.getServer().getUrl() + ", review: " + review.getPermId().getId());
+
+				if (crucibleReviewListModel.isRequestObsolete(epoch)) {
+					throw new InterruptedException();
+				}
+
+				Review r = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
+				List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+				reviews.add(new ReviewAdapter(r, review.getServer()));
+				reviewNotificationBean.setReviews(reviews);
+			} catch (ServerPasswordNotProvidedException exception) {
+				ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+						ModalityState.defaultModalityState());
+				reviewNotificationBean.setException(exception);
+			} catch (RemoteApiLoginFailedException exception) {
+				ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
+						ModalityState.defaultModalityState());
+				reviewNotificationBean.setException(exception);
+			} catch (RemoteApiException e) {
+				PluginUtil.getLogger().info("Error getting Crucible reviews for " + review.getServer().getName()
+						+ " server", e);
+				reviewNotificationBean.setException(e);
+			}
+		}
+		return reviewNotificationBean;
+	}
 }
