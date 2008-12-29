@@ -24,6 +24,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -64,17 +65,26 @@ public class CommentAction extends AnAction {
 				if (review == null || reviewItem == null) {
 					visible = false;
 				} else {
-					try {
-						if (!review.getActions().contains(Action.COMMENT)) {
+					final Project project = e.getData(DataKeys.PROJECT);
+					CrucibleReviewListModel crucibleReviewListModel
+							= IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
+					if (crucibleReviewListModel == null
+							|| !review.equals(crucibleReviewListModel.getActiveReview())) {
+						visible = false;
+					} else {
+						try {
+							if (!review.getActions().contains(Action.COMMENT)) {
+								visible = false;
+							}
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
 							visible = false;
 						}
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						visible = false;
 					}
 				}
 			}
 		}
 		e.getPresentation().setVisible(visible);
+		e.getPresentation().setEnabled(visible);
 	}
 
 	@Override
