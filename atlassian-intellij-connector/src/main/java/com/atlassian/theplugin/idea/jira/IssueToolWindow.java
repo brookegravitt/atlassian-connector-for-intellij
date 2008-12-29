@@ -61,7 +61,7 @@ public final class IssueToolWindow {
 
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 
-	private IssueToolWindow() {}
+	private IssueToolWindow() { }
 
 	public static void showIssue(Project project, JiraServerCfg server, JIRAIssue issue) {
 		String contentKey = issue.getKey();
