@@ -20,6 +20,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	private ReviewAdapter selectedReview;
+	private ReviewAdapter activeReview;
 
 	private AtomicLong epoch = new AtomicLong(0);
 	private UpdateReason currentUpdateReason = UpdateReason.TIMER_FIRED;
@@ -148,6 +149,14 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		if (review == null || getReviews().contains(review)) {
 			selectedReview = review;
 		}
+	}
+
+	public ReviewAdapter getActiveReview() {
+		return activeReview;
+	}
+
+	public void setActiveReview(ReviewAdapter review) {
+		activeReview = review;
 	}
 
 	public synchronized ReviewAdapter getSelectedReview() {

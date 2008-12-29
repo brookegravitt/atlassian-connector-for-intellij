@@ -143,6 +143,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public void openReview(final ReviewAdapter review) {
+		reviewListModel.setActiveReview(review);	
 		CrucibleReviewWindow.getInstance(getProject()).showCrucibleReviewWindow(review);
 	}
 
