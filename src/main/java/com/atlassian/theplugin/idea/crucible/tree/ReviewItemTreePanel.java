@@ -193,7 +193,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		setCrucibleReview(reviewItem);
 
-		List<CrucibleFileInfo> files;
+		Set<CrucibleFileInfo> files;
 		try {
 //			reviewItem.fillReview(
 //					CrucibleServerFacadeImpl.getInstance().getReview(reviewItem.getServer(), reviewItem.getPermId()));
