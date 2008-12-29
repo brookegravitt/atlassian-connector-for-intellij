@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
@@ -9,7 +12,6 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
-import com.atlassian.theplugin.idea.jira.editor.vfs.JiraIssueVirtualFile;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -22,14 +24,12 @@ import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,7 +76,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private boolean groupSubtasksUnderParent;
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
 	private JTree issueTree;
-
+	private JIRAIssueListModel baseIssueListModel;
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
@@ -98,7 +98,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			groupSubtasksUnderParent = false;
 		}
 		jiraFilterListModel = getJIRAFilterListModel();
-		JIRAIssueListModel baseIssueListModel = JIRAIssueListModelImpl.createInstance();
+		baseIssueListModel = JIRAIssueListModelImpl.createInstance();
 		JIRAIssueListModel sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
@@ -361,46 +361,21 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	public void openIssue(@Nullable JIRAIssue issue) {
+	public void openIssue(@NotNull JIRAIssue issue) {
+		IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue);
+	}
+
+	public void openIssue(@NotNull final String issueKey) {
+		JIRAIssue issue = null;
+		for (JIRAIssue i : baseIssueListModel.getIssues()) {
+			if (i.getKey().equals(issueKey)) {
+				issue = i;
+				break;
+			}
+		}
+
 		if (issue != null) {
-			FileEditorManager manager = FileEditorManager.getInstance(getProject());
-			VirtualFile vf = findOpenJiraIssues(issue.getKey(), manager);
-			if (vf == null) {
-				vf = new JiraIssueVirtualFile(issue);
-			}
-			// either opens a new editor, or focuses the already open one
-			manager.openFile(vf, true);
-		}
-	}
-
-	private JiraIssueVirtualFile findOpenJiraIssues(@NotNull String issueKey, @NotNull FileEditorManager manager) {
-		VirtualFile[] files = manager.getOpenFiles();
-		JiraIssueVirtualFile vf = null;
-		for (VirtualFile f : files) {
-			if (f instanceof JiraIssueVirtualFile) {
-				JiraIssueVirtualFile jivf = (JiraIssueVirtualFile) f;
-				if (jivf.getIssue().getKey().equals(issueKey)) {
-					vf = jivf;
-					break;
-				}
-			}
-		}
-		return vf;
-	}
-
-
-	public void openIssue(final String issueKey) {
-		final FileEditorManager manager = FileEditorManager.getInstance(getProject());
-		JiraIssueVirtualFile vf = findOpenJiraIssues(issueKey, manager);
-
-		if (vf != null) {
-			manager.openFile(vf, true);
-			try {
-				jiraIssueListModelBuilder.updateIssue(vf.getIssue());
-			} catch (JIRAException e) {
-				DialogWithDetails.showExceptionDialog(getProject(), "Cannot open JIRA issue in internal editor ["
-						+ issueKey + "]", e, "Error");
-			}
+			openIssue(issue);
 		} else {
 			Task.Backgroundable task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
 				private JIRAIssue issue;
@@ -415,13 +390,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						final String serverName = jiraIssueListModelBuilder.getServer() != null
 								? jiraIssueListModelBuilder.getServer().getName()
 								: "[UNDEFINED!]";
-						DialogWithDetails.showExceptionDialog(getProject(), "Cannot fetch issue " + issueKey + " from server "
-								+ serverName, exception, "Error");
+						DialogWithDetails.showExceptionDialog(getProject(),
+								"Cannot fetch issue " + issueKey + " from server " + serverName, exception, "Error");
 						return;
 					}
 					if (issue != null) {
-						final JiraIssueVirtualFile issueVirtualFile = new JiraIssueVirtualFile(issue);
-						manager.openFile(issueVirtualFile, true);
+						IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue);
 					}
 				}
 
@@ -443,12 +417,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			};
 			task.queue();
 		}
-
 	}
-
-
-
-
 
 	public void viewIssueInBrowser() {
 		JIRAIssue issue = currentIssueListModel.getSelectedIssue();
