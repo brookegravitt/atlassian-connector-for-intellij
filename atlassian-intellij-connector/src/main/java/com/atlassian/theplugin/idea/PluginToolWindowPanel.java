@@ -20,13 +20,13 @@ import java.awt.event.ComponentEvent;
  * User: pmaruszak
  */
 public abstract class PluginToolWindowPanel extends JPanel {
-	private static final float ISSUES_PANEL_SPLIT_RATIO = 0.3f;
+	public static final float PANEL_SPLIT_RATIO = 0.3f;
 	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	private Project project;
 	private StatusBarIssuesPane statusBarPane;
-	private final Splitter splitPane = new Splitter(true, ISSUES_PANEL_SPLIT_RATIO);
+	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
 	private Splitter splitLeftPane;
 	private JPanel rightPanel;
 	private JScrollPane rightScrollPane;
