@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,7 +48,7 @@ public class ReviewKeyComparatorTest extends TestCase {
 		assertEquals(1, comparator.compare(getReviewAdapter("CR", "CR-FE-3"), getReviewAdapter("CR", "CR-FE-1")));
 		assertTrue(comparator.compare(getReviewAdapter("CR", "CR-1"), getReviewAdapter("CR-FE", "CR-FE-1")) < 0);
 		assertTrue(comparator.compare(getReviewAdapter("CR-FE", "CR-FE-1"), getReviewAdapter("CR", "CR-1")) > 0);
-		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));		
+		assertEquals(0, comparator.compare(getReviewAdapter("CR", "-1"), getReviewAdapter("CR", "-1")));
 	}
 
 	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
@@ -62,11 +62,11 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-            public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-                return null;
-            }
+			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
+				return null;
+			}
 
-            public List<CrucibleFileInfo> getFiles() {
+			public Set<CrucibleFileInfo> getFiles() {
 				return null;
 			}
 
@@ -74,12 +74,12 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-            public Set<Action> getActions() throws ValueNotYetInitialized {
-                return null; 
-            }
+			public Set<Action> getActions() throws ValueNotYetInitialized {
+				return null;
+			}
 
-            public VirtualFileSystem getVirtualFileSystem() {
-				return null;  
+			public VirtualFileSystem getVirtualFileSystem() {
+				return null;
 			}
 
 			public CrucibleServerCfg getServer() {
@@ -155,25 +155,25 @@ public class ReviewKeyComparatorTest extends TestCase {
 				return null;
 			}
 
-            public boolean isAllowReviewerToJoin() {
-                return false;  
-            }
+			public boolean isAllowReviewerToJoin() {
+				return false;
+			}
 
-            public int getMetricsVersion() {
-                return 0;
-            }
+			public int getMetricsVersion() {
+				return 0;
+			}
 
-            public Date getCreateDate() {
-                return null;
-            }
+			public Date getCreateDate() {
+				return null;
+			}
 
-            public Date getCloseDate() {
-                return null;  
-            }
+			public Date getCloseDate() {
+				return null;
+			}
 
-            public String getSummary() {
-                return null; 
-            }
+			public String getSummary() {
+				return null;
+			}
 
 			public CrucibleFileInfo getFileByPermId(PermId id) {
 				return null;
