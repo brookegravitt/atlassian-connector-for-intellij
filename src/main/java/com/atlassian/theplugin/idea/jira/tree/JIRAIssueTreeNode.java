@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.idea.jira.editor.Html2text;
+import com.atlassian.theplugin.idea.jira.Html2text;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;

@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.action.jira.editor;
+package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.idea.jira.editor.ThePluginJIRAEditorComponent;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class CollapseCommentsAction extends AnAction {
-	public void actionPerformed(AnActionEvent event) {
-        ThePluginJIRAEditorComponent.JIRAFileEditor editor =
-                ThePluginJIRAEditorComponent.getEditorByKey(event.getPlace());
-        if (editor != null) {
-            editor.setCommentsExpanded(false);
-        }
+public final class StackTraceDetector {
+
+	private static final String STACK_LINE_PATTERN = "\\(.+\\.java:\\d+\\)";
+
+	private StackTraceDetector() {
+	}
+
+	public static boolean containsStackTrace(String txt) {
+		Pattern p = Pattern.compile(STACK_LINE_PATTERN);
+		Matcher m = p.matcher(txt);
+		return m.find();
 	}
 }
