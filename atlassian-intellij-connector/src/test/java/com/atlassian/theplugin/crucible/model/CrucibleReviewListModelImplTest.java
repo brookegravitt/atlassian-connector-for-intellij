@@ -155,7 +155,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 		listModel.addReview(ra2);
 		assertEquals(2, listModel.getReviews().size());
-		Map<CrucibleFilter,  ReviewNotificationBean> emptyResult = new HashMap<CrucibleFilter, ReviewNotificationBean>();
+		Map<CrucibleFilter, ReviewNotificationBean> emptyResult = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 		listModel.updateReviews((long) 0, emptyResult, UpdateReason.REFRESH);//.removeAll();
 		assertEquals(0, listModel.getReviews().size());
 	}
@@ -458,7 +458,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		adapter.addGeneralComment(generalComment);
 
 		// add files and versioned comments
-		List<CrucibleFileInfo> files = new ArrayList<CrucibleFileInfo>();
+		Set<CrucibleFileInfo> files = new HashSet<CrucibleFileInfo>();
 		CrucibleFileInfoImpl file = new CrucibleFileInfoImpl(
 				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
 				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
@@ -583,7 +583,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			return null;
 		}
 
-		public List<CrucibleFileInfo> getFiles(CrucibleServerCfg server, PermId permId)
+		public Set<CrucibleFileInfo> getFiles(CrucibleServerCfg server, PermId permId)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
@@ -692,11 +692,11 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 			bean.setReviews(new ArrayList<ReviewAdapter>());
 		}
 
-		public void addReview(long epoch, CrucibleFilter crucibleFilter, ReviewAdapter review){
+		public void addReview(long epoch, CrucibleFilter crucibleFilter, ReviewAdapter review) {
 			super.addReview(crucibleFilter, review, UpdateReason.REFRESH);
 		}
 
-		public void addReview(ReviewAdapter review){
+		public void addReview(ReviewAdapter review) {
 
 			super.addReview(PredefinedFilter.Open, review, UpdateReason.REFRESH);
 		}

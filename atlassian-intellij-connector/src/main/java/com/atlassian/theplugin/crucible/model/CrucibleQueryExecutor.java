@@ -15,7 +15,10 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CrucibleQueryExecutor {
 	private final CrucibleServerFacade crucibleServerFacade;
@@ -153,7 +156,7 @@ public class CrucibleQueryExecutor {
 			final ReviewAdapter review, final long epoch) throws InterruptedException {
 		ReviewNotificationBean reviewNotificationBean = new ReviewNotificationBean();
 
-		if (review.getServer() != null && review.getServer().isEnabled()) {
+		if (review != null && review.getServer() != null && review.getServer().isEnabled()) {
 
 			try {
 				PluginUtil.getLogger().debug("Crucible: updating status for server: "
