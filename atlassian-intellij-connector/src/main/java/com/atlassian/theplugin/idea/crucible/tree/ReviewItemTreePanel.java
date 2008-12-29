@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -79,6 +80,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private ReviewAdapter crucibleReview = null;
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	private final CrucibleReviewListener reviewListener = new LocalReviewListener();
+	private final CrucibleReviewListModel crucibleReviewListModel;
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -91,6 +93,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
 		initLayout();
 		this.filter = filter;
+		this.crucibleReviewListModel = IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
 	}
 
 	private void initLayout() {
@@ -186,7 +189,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 
-
 	public void showReview(ReviewAdapter reviewItem) {
 
 		setCrucibleReview(reviewItem);
@@ -219,17 +221,21 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 
 	private void refreshView(ReviewAdapter review) {
-		this.crucibleReview = review;
-		EventQueue.invokeLater(new MyRunnable(review));
+		if (crucibleReviewListModel != null && review != null) {
+			if (review.equals(crucibleReviewListModel.getActiveReview())) {
+				this.crucibleReview = review;
+				EventQueue.invokeLater(new MyRunnable(review));
+			}
+		}
 	}
-
+/*
 	public void reviewChangedWithoutFiles(final ReviewAdapter newReview) {
 		if (newReview.equals(crucibleReview)) {
 			this.crucibleReview.fillReview(newReview);
 			showReview(crucibleReview);
 		}
 	}
-
+*/
 //	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 //	}
 //
