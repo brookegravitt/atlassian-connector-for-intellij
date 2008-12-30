@@ -592,11 +592,29 @@
 				text="Add Comment"
 				icon="/general/add.png"/>
 		<action id="ThePlugin.JiraIssues.EditorViewIssue"
-				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorViewIssueAction" text="View in Browser"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorViewIssueAction"
+				text="View in Browser"
 				icon="/general/web.png"/>
 		<action id="ThePlugin.JiraIssues.EditorEditIssue"
-				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorEditIssueAction" text="Edit in Browser"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorEditIssueAction"
+				text="Edit in Browser"
 				icon="/actions/editSource.png"/>
+		<action id="ThePlugin.JiraIssues.EditorLogWork"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorLogWorkAction"
+				text="Log Work"
+				icon="/general/todoDefault.png"/>
+		<action id="ThePlugin.JiraIssues.EditorCreateChangeList"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorCreateChangeListAction"
+				text="Create Change List"
+				icon="/diff/Diff.png"/>
+		<action id="ThePlugin.JiraIssues.EditorRefresh"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
+				text="Refresh"
+				icon="/actions/sync.png"/>
+		<action id="ThePlugin.JiraIssues.EditorClose"
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorCloseAction"
+				text="Close Issue View"
+				icon="/actions/cross.png"/>
 
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
@@ -641,6 +659,10 @@
 		<group id="ThePlugin.JiraIssues.OneIssueToolBar" popup="false">
 			<reference id="ThePlugin.JiraIssues.EditorViewIssue"/>
 			<reference id="ThePlugin.JiraIssues.EditorEditIssue"/>
+			<reference id="ThePlugin.JiraIssues.EditorLogWork"/>
+			<reference id="ThePlugin.JiraIssues.EditorCreateChangeList"/>
+			<reference id="ThePlugin.JiraIssues.EditorRefresh"/>
+			<reference id="ThePlugin.JiraIssues.EditorClose"/>
 		</group>
 
 		<group id="ThePlugin.JiraIssues.CommentsToolBar" popup="false">

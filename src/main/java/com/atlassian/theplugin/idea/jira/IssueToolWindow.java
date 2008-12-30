@@ -2,11 +2,14 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
 import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
@@ -15,6 +18,7 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
@@ -64,7 +68,8 @@ public final class IssueToolWindow {
 
 	private IssueToolWindow() { }
 
-	public static void showIssue(final Project project, JiraServerCfg server, final JIRAIssue issue) {
+	public static void showIssue(final Project project, JiraServerCfg server,
+								 final JIRAIssue issue, JIRAIssueListModel model) {
 		String contentKey = getContentKey(server, issue);
 
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
@@ -82,7 +87,7 @@ public final class IssueToolWindow {
 		}
 
 		if (issuePanel == null) {
-			issuePanel = new IssuePanel(project, server, issue);
+			issuePanel = new IssuePanel(project, server, issue, model);
 			panelMap.put(contentKey, issuePanel);
 		}
 
@@ -101,7 +106,9 @@ public final class IssueToolWindow {
 			public void contentRemoved(ContentManagerEvent event) {
 				super.contentRemoved(event);
 				final String titleToRemove = getExistingToolWindowTitle();
-				panelMap.remove(event.getContent().getTabName());
+				String key = event.getContent().getTabName();
+				panelMap.get(key).unregister();
+				panelMap.remove(key);
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						if (panelMap.size() < 2) {
@@ -205,19 +212,55 @@ public final class IssueToolWindow {
 		}
 	}
 
-	private static class IssuePanel extends JPanel {
+	public static JIRAIssue getIssue(String key) {
+		IssuePanel ip = panelMap.get(key);
+		if (ip != null) {
+			return ip.issue;
+		}
+		return null;
+	}
+
+	public static void closeToolWindow(AnActionEvent e) {
+		Project project = IdeaHelper.getCurrentProject(e);
+
+		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
+		ToolWindow tw = twm.getToolWindow(getExistingToolWindowTitle());
+		if (tw != null) {
+			String key = e.getPlace();
+
+			for (Content c : tw.getContentManager().getContents()) {
+				if (c.getTabName().equals(key)) {
+					tw.getContentManager().removeContent(c, true);
+					break;
+				}
+			}
+		}
+	}
+
+	public static void refresh(String key) {
+		IssuePanel ip = panelMap.get(key);
+		if (ip != null) {
+			ip.refresh();
+		}
+	}
+
+	private static class IssuePanel extends JPanel implements JIRAIssueListModelListener {
 		private final Project project;
 		private final JiraServerCfg server;
-		private final JIRAIssue issue;
+		private JIRAIssue issue;
+		private final JIRAIssueListModel model;
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
+		private DetailsPanel detailsPanel;
+		private SummaryPanel summaryPanel;
 
-		public IssuePanel(Project project, JiraServerCfg server, JIRAIssue issue) {
+		public IssuePanel(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
 			this.project = project;
 			this.server = server;
 			this.issue = issue;
+			this.model = model;
 
 			JTabbedPane tabs = new JTabbedPane();
-			DetailsPanel detailsPanel = new DetailsPanel();
+			detailsPanel = new DetailsPanel();
 			tabs.addTab("Details", detailsPanel);
 			descriptionAndCommentsPanel = new DescriptionAndCommentsPanel(tabs, 1);
 			tabs.addTab("Comments(0)", descriptionAndCommentsPanel);
@@ -230,14 +273,43 @@ public final class IssueToolWindow {
 			gbc.weightx = 1.0;
 			gbc.weighty = 0.0;
 			gbc.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN, 0, 0);
-			add(new SummaryPanel(), gbc);
+			summaryPanel = new SummaryPanel();
+			add(summaryPanel, gbc);
 			gbc.gridy++;
 			gbc.weighty = 1.0;
 			gbc.insets = new Insets(0, 0, 0, 0);
 			add(tabs, gbc);
 
+			if (model != null) {
+				model.addModelListener(this);
+			}
+			refresh();
+		}
+
+		public void modelChanged(JIRAIssueListModel m) {
+			refresh();
+		}
+
+		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
+			refresh();
+		}
+
+		public void unregister() {
+			if (model != null) {
+				model.removeModelListener(this);
+			}
+		}
+
+		public void refresh() {
+			for (JIRAIssue i : model.getIssues()) {
+				if (i.getKey().equals(issue.getKey())) {
+					issue = i;
+					break;
+				}
+			}
 			descriptionAndCommentsPanel.refreshComments();
-			detailsPanel.getMoreIssueDetails();
+			detailsPanel.refresh();
+			summaryPanel.refresh();
 		}
 
 		private static class BoldLabel extends JLabel {
@@ -259,11 +331,32 @@ public final class IssueToolWindow {
 			private JLabel affectsVersionsLabel = new BoldLabel("Affects Version/s");
 			private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
 			private JLabel componentsLabel = new BoldLabel("Component/s");
+			private JScrollPane scroll;
 
 			public DetailsPanel() {
+				setLayout(new GridBagLayout());
+
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.weightx = 1.0;
+				gbc.weighty = 1.0;
+				gbc.fill = GridBagConstraints.BOTH;
+
+
+				scroll = new JScrollPane(createBody());
+				scroll.setBorder(BorderFactory.createEmptyBorder());
+				add(scroll, gbc);
+
+				Border b = BorderFactory.createTitledBorder("Details");
+				setBorder(b);
+				Insets i = b.getBorderInsets(this);
+				setMinimumSize(new Dimension(0, i.top + i.bottom));
+			}
+
+			private JPanel createBody() {
 				JPanel body = new JPanel();
 
-				setLayout(new GridBagLayout());
 				body.setLayout(new GridBagLayout());
 
 				GridBagConstraints gbc1 = new GridBagConstraints();
@@ -350,20 +443,7 @@ public final class IssueToolWindow {
 				gbc1.fill = GridBagConstraints.VERTICAL;
 				body.add(new JPanel(), gbc1);
 
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
-				JScrollPane scroll = new JScrollPane(body);
-				scroll.setBorder(BorderFactory.createEmptyBorder());
-				add(scroll, gbc);
-
-				Border b = BorderFactory.createTitledBorder("Details");
-				setBorder(b);
-				Insets i = b.getBorderInsets(this);
-				setMinimumSize(new Dimension(0, i.top + i.bottom));
+				return body;
 			}
 
 			public JLabel getAffectVersionsLabel() {
@@ -479,9 +559,17 @@ public final class IssueToolWindow {
 					setComponents(getStringArray(issue.getComponents()));
 				}
 			}
+
+			public void refresh() {
+				scroll.setViewportView(createBody());
+				getMoreIssueDetails();
+			}
 		}
 
 		private class SummaryPanel extends JPanel {
+
+			private JEditorPane summary;
+
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -491,12 +579,10 @@ public final class IssueToolWindow {
 				gbc.anchor = GridBagConstraints.LINE_START;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 				gbc.weightx = 1.0;
-				JEditorPane summary = new JEditorPane();
+				summary = new JEditorPane();
 				summary.setContentType("text/html");
 				summary.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				String txt = "<html><body><a href=\"" + issue.getIssueUrl() + "\">"
-						+ issue.getKey() + "</a> " + issue.getSummary() + "</body></html>";
-				summary.setText(txt);
+				refresh();
 				summary.setEditable(false);
 				summary.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -527,6 +613,12 @@ public final class IssueToolWindow {
 
 				JComponent comp = toolbar.getComponent();
 				add(comp, gbc);
+			}
+
+			public void refresh() {
+				String txt = "<html><body><a href=\"" + issue.getIssueUrl() + "\">"
+						+ issue.getKey() + "</a> " + issue.getSummary() + "</body></html>";
+				summary.setText(txt);
 			}
 		}
 
