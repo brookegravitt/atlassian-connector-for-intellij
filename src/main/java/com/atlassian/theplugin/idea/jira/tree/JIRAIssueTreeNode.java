@@ -64,19 +64,22 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		Icon statusIcon = enabled ? CachedIconLoader.getIcon(issue.getStatusTypeUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getStatusTypeUrl());
+		final String iconTypeUrl = issue.getStatusTypeUrl();
+		Icon statusIcon = enabled ? CachedIconLoader.getIcon(iconTypeUrl) : CachedIconLoader.getDisabledIcon(iconTypeUrl);
 		JLabel state = new SelectableLabel(selected, enabled, issue.getStatus(), statusIcon,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		p.add(state, gbc);
 
-        Icon prioIcon = enabled ? CachedIconLoader.getIcon(issue.getPriorityIconUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl());
+		final String iconUrl = issue.getPriorityIconUrl();
+
+		Icon prioIcon = enabled ? CachedIconLoader.getIcon(iconUrl) : CachedIconLoader.getDisabledIcon(iconUrl);
 
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.insets = new Insets(0, 0, 0, 0);
-		JLabel prio = new SelectableLabel(selected, enabled, "", prioIcon, SwingConstants.LEADING, ICON_HEIGHT);
+		JLabel prio = new SelectableLabel(selected, enabled, null, prioIcon, SwingConstants.LEADING, ICON_HEIGHT);
+		// setting minimum size is necessary as gridbag layout may ignore preffered size if some other lables do not fit!!!
+		prio.setMinimumSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 		prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 		p.add(prio, gbc);
 
