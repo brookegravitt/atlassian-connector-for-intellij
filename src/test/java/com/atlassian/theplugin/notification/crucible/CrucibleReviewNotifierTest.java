@@ -16,11 +16,32 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
+import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.crucible.model.UpdateContext;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.intellij.openapi.components.BaseComponent;
+import com.intellij.openapi.components.ComponentConfig;
+import com.intellij.openapi.extensions.ExtensionPointName;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.util.UserDataHolderBase;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.pom.PomModel;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.messages.MessageBus;
 import junit.framework.TestCase;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.picocontainer.PicoContainer;
+
+import java.util.*;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
-/*
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -284,7 +305,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
 		CrucibleFileInfo file1 = prepareReviewItem(newItem);
 		file1.getVersionedComments().add(prepareVersionedComment(newVCommentId, newItem, null));
-		ArrayList<CrucibleFileInfo> files1 = new ArrayList<CrucibleFileInfo>();
+		Set<CrucibleFileInfo> files1 = new HashSet<CrucibleFileInfo>();
 		files1.add(file1);
 
 		review1.setFilesAndVersionedComments(files1, null);
@@ -302,7 +323,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
 		file2.getVersionedComments().add(prepareVersionedComment(newVCommentId1, newItem1, null));
-		ArrayList<CrucibleFileInfo> files2 = new ArrayList<CrucibleFileInfo>();
+		Set<CrucibleFileInfo> files2 = new HashSet<CrucibleFileInfo>();
 		files2.add(file2);
 
 		review2.setFilesAndVersionedComments(files2, null);
@@ -316,325 +337,338 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	public void testNewReviews() throws ValueNotYetInitialized {
-		List<ReviewAdapter> emptyReviews = new ArrayList<ReviewAdapter>();
 		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
+		UpdateContext updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, null);
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		bean.setReviews(emptyReviews);
-		map.put(PredefinedFilter.ToReview, bean);
-
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		notifier.reviewListUpdateStarted(updateContext);
 		assertEquals(0, notifier.getNotifications().size());
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		for (ReviewAdapter review : reviews) {
+			updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, review);
+			notifier.reviewAdded(updateContext);
+		}
+
+		notifier.reviewListUpdateFinished(updateContext);
 		assertEquals(reviews.size(), notifier.getNotifications().size());
 
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		notifier.reviewListUpdateStarted(updateContext);
 		assertEquals(0, notifier.getNotifications().size());
 	}
 
 	public void testResetStateReviews() throws ValueNotYetInitialized {
-		List<ReviewAdapter> emptyReviews = new ArrayList<ReviewAdapter>();
+		UpdateContext updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, null);
 		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		bean.setReviews(emptyReviews);
-		map.put(PredefinedFilter.ToReview, bean);
-
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		notifier.reviewListUpdateStarted(updateContext);
 		assertEquals(0, notifier.getNotifications().size());
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		for (ReviewAdapter review : reviews) {
+			updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, review);
+			notifier.reviewAdded(updateContext);
+		}
 		assertEquals(2, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof NewReviewNotification);
+		notifier.reviewListUpdateFinished(updateContext);
 
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+
+		notifier.reviewListUpdateStarted(updateContext);
 		assertEquals(0, notifier.getNotifications().size());
-
-		notifier.resetState();
-
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(2, notifier.getNotifications().size());
-		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
-		assertTrue(notifier.getNotifications().get(1) instanceof NewReviewNotification);
+		notifier.reviewListUpdateFinished(updateContext);
 	}
 
 	public void testStatusChange() throws ValueNotYetInitialized {
-		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
+		UpdateContext updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, null);
+		List<ReviewAdapter> reviews_review = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews_closed = prepareReviewData(State.CLOSED);
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-		ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(reviews.size(), notifier.getNotifications().size());
+		notifier.reviewListUpdateStarted(updateContext);
 
-		reviews = prepareReviewData(State.CLOSED);
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_closed.get(0));
+		updateContext.setOldReviewAdapter(reviews_review.get(0));
+		notifier.reviewChanged(updateContext);
+
+		updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_closed.get(1));
+		updateContext.setOldReviewAdapter(reviews_review.get(1));
+		notifier.reviewChanged(updateContext);
+
+
 		assertEquals(2, notifier.getNotifications().size());
+
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewStateChangedNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof ReviewStateChangedNotification);
 	}
 
 	public void testReviewerStatus() throws ValueNotYetInitialized {
-		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
+		List<ReviewAdapter> reviews_review = prepareReviewData(State.REVIEW);
+		List<ReviewAdapter> reviews_review_final = prepareReviewData(State.REVIEW);
+		UpdateContext updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review_final.get(0));
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(reviews.size(), notifier.getNotifications().size());
+		notifier.reviewListUpdateStarted(updateContext);
+		assertEquals(0, notifier.getNotifications().size());
 
-		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(true);
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		for (ReviewAdapter review : reviews_review_final) {
+			updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, review);
+			notifier.reviewAdded(updateContext);
+		}
+
+		assertEquals(reviews_review.size(), notifier.getNotifications().size());
+		notifier.reviewListUpdateFinished(updateContext);
+
+
+		notifier.reviewListUpdateStarted(updateContext);
+		((ReviewerBean) reviews_review.get(0).getReviewers().toArray()[0]).setCompleted(true);
+		updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review.get(0));
+		updateContext.setOldReviewAdapter(reviews_review_final.get(0));
+
+		notifier.reviewChangedWithoutFiles(updateContext);
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
+		notifier.reviewListUpdateFinished(updateContext);
 
-		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(false);
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+
+		notifier.reviewListUpdateStarted(updateContext);
+		updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review.get(0));
+		updateContext.setOldReviewAdapter(reviews_review_final.get(0));
+		notifier.reviewChangedWithoutFiles(updateContext);
 		assertEquals(1, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
+		notifier.reviewListUpdateFinished(updateContext);
 
-		reviews = prepareReviewData(State.REVIEW);
-		((ReviewerBean) reviews.get(0).getReviewers().toArray()[0]).setCompleted(true);
-		((ReviewerBean) reviews.get(0).getReviewers().toArray()[1]).setCompleted(true);
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		notifier.reviewListUpdateStarted(updateContext);
+		reviews_review = prepareReviewData(State.REVIEW);
+		((ReviewerBean) reviews_review.get(0).getReviewers().toArray()[0]).setCompleted(true);
+		((ReviewerBean) reviews_review.get(0).getReviewers().toArray()[1]).setCompleted(true);
+
+		updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review.get(0));
+		updateContext.setOldReviewAdapter(reviews_review_final.get(0));
+		notifier.reviewChangedWithoutFiles(updateContext);
 		assertEquals(3, notifier.getNotifications().size());
 		assertTrue(notifier.getNotifications().get(0) instanceof ReviewerCompletedNotification);
 		assertTrue(notifier.getNotifications().get(1) instanceof ReviewerCompletedNotification);
 		assertTrue(notifier.getNotifications().get(2) instanceof ReviewCompletedNotification);
+		notifier.reviewListUpdateFinished(updateContext);
 	}
 
-	public void testNewItem() throws ValueNotYetInitialized {
-		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
+	/*
+	 public void testNewItem() throws ValueNotYetInitialized {
+		 List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
+		 ReviewNotificationBean bean = new ReviewNotificationBean();
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
+		 Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(reviews.size(), notifier.getNotifications().size());
-//
-//		reviews = prepareReviewData(State.REVIEW);
-//
-//		final PermId newItem = new PermId() {
-//
-//			public String getId() {
-//				return "CRF:2";
-//			}
-//		};
-//
-//		reviews.get(0).getInnerReviewObject().setPermId(newItem);
-//
-////		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
-//		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0).getInnerReviewObject()).add(new CrucibleFileInfo() {
-//
-//			public VersionedVirtualFile getOldFileDescriptor() {
-//				return null;
-//			}
-//
-//			public int getNumberOfComments() {
-//				return 0;
-//			}
-//
-//			public int getNumberOfComments(final String userName) {
-//				return 0;
-//			}
-//
-//			public int getNumberOfCommentsDefects() {
-//				return 0;
-//			}
-//
-//			public int getNumberOfCommentsDefects(final String userName) {
-//				return 0;
-//			}
-//
-//			public int getNumberOfCommentsDrafts() {
-//				return 0;
-//			}
-//
-//			public int getNumberOfCommentsDrafts(final String userName) {
-//				return 0;
-//			}
-//
-//			public PermId getPermId() {
-//				return newItem;
-//			}
-//
-//			public List<VersionedComment> getVersionedComments() {
-//				return new ArrayList<VersionedComment>();
-//			}
-//
-//			public void setVersionedComments(final List<VersionedComment> versionedComments) {
-//
-//			}
-//
-//			public String getRepositoryName() {
-//				return null;
-//			}
-//
-//			public FileType getFileType() {
-//				return null;
-//			}
-//
-//			public String getAuthorName() {
-//				return null;
-//			}
-//
-//			public Date getCommitDate() {
-//				return null;
-//			}
-//
-//			public CommitType getCommitType() {
-//				return null;
-//			}
-//
-//			public void addComment(final VersionedComment comment) {
-//
-//			}
-//
-//			public VersionedVirtualFile getFileDescriptor() {
-//				return null;
-//			}
-//		});
-//
-//		bean.setReviews(reviews);
-//		map.put(PredefinedFilter.ToReview, bean);
-//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-//		assertEquals(1, notifier.getNotifications().size());
-//		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
-	}
+		 bean.setReviews(reviews);
+		 map.put(PredefinedFilter.ToReview, bean);
+		 notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+		 assertEquals(reviews.size(), notifier.getNotifications().size());
+ //
+ //		reviews = prepareReviewData(State.REVIEW);
+ //
+ //		final PermId newItem = new PermId() {
+ //
+ //			public String getId() {
+ //				return "CRF:2";
+ //			}
+ //		};
+ //
+ //		reviews.get(0).getInnerReviewObject().setPermId(newItem);
+ //
+ ////		reviews.get(0).getReviewItems().add(new CrucibleReviewItemInfo(newItem));
+ //		CrucibleFileInfoManager.getInstance().getFiles(reviews.get(0).getInnerReviewObject()).add(new CrucibleFileInfo() {
+ //
+ //			public VersionedVirtualFile getOldFileDescriptor() {
+ //				return null;
+ //			}
+ //
+ //			public int getNumberOfComments() {
+ //				return 0;
+ //			}
+ //
+ //			public int getNumberOfComments(final String userName) {
+ //				return 0;
+ //			}
+ //
+ //			public int getNumberOfCommentsDefects() {
+ //				return 0;
+ //			}
+ //
+ //			public int getNumberOfCommentsDefects(final String userName) {
+ //				return 0;
+ //			}
+ //
+ //			public int getNumberOfCommentsDrafts() {
+ //				return 0;
+ //			}
+ //
+ //			public int getNumberOfCommentsDrafts(final String userName) {
+ //				return 0;
+ //			}
+ //
+ //			public PermId getPermId() {
+ //				return newItem;
+ //			}
+ //
+ //			public List<VersionedComment> getVersionedComments() {
+ //				return new ArrayList<VersionedComment>();
+ //			}
+ //
+ //			public void setVersionedComments(final List<VersionedComment> versionedComments) {
+ //
+ //			}
+ //
+ //			public String getRepositoryName() {
+ //				return null;
+ //			}
+ //
+ //			public FileType getFileType() {
+ //				return null;
+ //			}
+ //
+ //			public String getAuthorName() {
+ //				return null;
+ //			}
+ //
+ //			public Date getCommitDate() {
+ //				return null;
+ //			}
+ //
+ //			public CommitType getCommitType() {
+ //				return null;
+ //			}
+ //
+ //			public void addComment(final VersionedComment comment) {
+ //
+ //			}
+ //
+ //			public VersionedVirtualFile getFileDescriptor() {
+ //				return null;
+ //			}
+ //		});
+ //
+ //		bean.setReviews(reviews);
+ //		map.put(PredefinedFilter.ToReview, bean);
+ //		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+ //		assertEquals(1, notifier.getNotifications().size());
+ //		assertTrue(notifier.getNotifications().get(0) instanceof NewReviewNotification);
+	 }
 
-	public void testNewGeneralComment() throws ValueNotYetInitialized {
-		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-		ReviewNotificationBean bean = new ReviewNotificationBean();
+	 public void testNewGeneralComment() throws ValueNotYetInitialized {
+		 List<ReviewAdapter> reviews_review = prepareReviewData(State.REVIEW);
+	 List<ReviewAdapter> reviews_review_final = prepareReviewData(State.REVIEW);
+		 UpdateContext updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review_final.get(0));
 
-		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
 
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(reviews.size(), notifier.getNotifications().size());
+		 notifier.reviewListUpdateStarted(updateContext);
+		 assertEquals(0, notifier.getNotifications().size());
 
-		reviews = prepareReviewData(State.REVIEW);
+		 for (ReviewAdapter review : reviews_review_final) {
+			 updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, review);
+			 notifier.reviewAdded(updateContext);
+		 }
 
-		final PermId newCommentId = new PermId() {
+		 assertEquals(reviews_review_final.size(), notifier.getNotifications().size());
+		 notifier.reviewListUpdateFinished(updateContext);
 
-			public String getId() {
-				return "CMT:2";
-			}
-		};
-		reviews.get(0).getGeneralComments().add(new GeneralComment() {
+		 final PermId newCommentId = new PermId() {
 
-			public PermId getPermId() {
-				return newCommentId;
-			}
+			 public String getId() {
+				 return "CMT:2";
+			 }
+		 };
+		 reviews_review.get(0).getGeneralComments().add(new GeneralComment() {
 
-			public String getMessage() {
-				return "";
-			}
+			 public PermId getPermId() {
+				 return newCommentId;
+			 }
 
-			public boolean isDraft() {
-				return false;
-			}
+			 public String getMessage() {
+				 return "";
+			 }
 
-			public boolean isDeleted() {
-				return false;
-			}
+			 public boolean isDraft() {
+				 return false;
+			 }
 
-			public boolean isDefectRaised() {
-				return false;
-			}
+			 public boolean isDeleted() {
+				 return false;
+			 }
 
-			public boolean isDefectApproved() {
-				return false;
-			}
+			 public boolean isDefectRaised() {
+				 return false;
+			 }
 
-			public boolean isReply() {
-				return false;
-			}
+			 public boolean isDefectApproved() {
+				 return false;
+			 }
 
-			public User getAuthor() {
-				return null;
-			}
+			 public boolean isReply() {
+				 return false;
+			 }
 
-			public Date getCreateDate() {
-				return null;
-			}
+			 public User getAuthor() {
+				 return null;
+			 }
 
-			public List<GeneralComment> getReplies() {
-				return new ArrayList<GeneralComment>();
-			}
+			 public Date getCreateDate() {
+				 return null;
+			 }
 
-			public Map<String, CustomField> getCustomFields() {
-				return null;  
-			}
-		});
-		bean.setReviews(reviews);
-		map.put(PredefinedFilter.ToReview, bean);
-		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-		assertEquals(1, notifier.getNotifications().size());
-		assertTrue(notifier.getNotifications().get(0) instanceof NewGeneralCommentNotification);
-	}
+			 public List<GeneralComment> getReplies() {
+				 return new ArrayList<GeneralComment>();
+			 }
 
-	public void xtestNewVersionedComment() throws ValueNotYetInitialized {
-//		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
-//		ReviewNotificationBean bean = new ReviewNotificationBean();
-//
-//		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
-//
-//		bean.setReviews(reviews);
-//		map.put(PredefinedFilter.ToReview, bean);
-//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-//		assertEquals(reviews.size(), notifier.getNotifications().size());
-//
-//		reviews = prepareReviewData(State.REVIEW);
-//
-//		final PermId newCommentId = new PermId() {
-//
-//			public String getId() {
-//				return "CMT:3";
-//			}
-//		};
-//		final PermId newId = new PermId() {
-//
-//			public String getId() {
-//				return "CRF:2";
-//			}
-//		};
-//
-//		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
-//		PermIdBean newPermlId = new PermIdBean("CMT:100");
-//		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
-//				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
-//		bean.setReviews(reviews);
-//		map.put(PredefinedFilter.ToReview, bean);
-//		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
-//		assertEquals(1, notifier.getNotifications().size());
-//		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
-	}
+			 public Map<String, CustomField> getCustomFields() {
+				 return null;
+			 }
+		 });
 
+		 notifier.reviewListUpdateStarted(updateContext);
+		 updateContext = new UpdateContext(UpdateReason.TIMER_FIRED, reviews_review.get(0));
+		 updateContext.setOldReviewAdapter(reviews_review_final.get(0));
+		 notifier.reviewChangedWithoutFiles(updateContext);
+		 assertEquals(1, notifier.getNotifications().size());
+		 assertTrue(notifier.getNotifications().get(0) instanceof NewGeneralCommentNotification);
+	 }
+
+	 public void xtestNewVersionedComment() throws ValueNotYetInitialized {
+ //		List<ReviewAdapter> reviews = prepareReviewData(State.REVIEW);
+ //		ReviewNotificationBean bean = new ReviewNotificationBean();
+ //
+ //		Map<PredefinedFilter, ReviewNotificationBean> map = new HashMap<PredefinedFilter, ReviewNotificationBean>();
+ //
+ //		bean.setReviews(reviews);
+ //		map.put(PredefinedFilter.ToReview, bean);
+ //		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+ //		assertEquals(reviews.size(), notifier.getNotifications().size());
+ //
+ //		reviews = prepareReviewData(State.REVIEW);
+ //
+ //		final PermId newCommentId = new PermId() {
+ //
+ //			public String getId() {
+ //				return "CMT:3";
+ //			}
+ //		};
+ //		final PermId newId = new PermId() {
+ //
+ //			public String getId() {
+ //				return "CRF:2";
+ //			}
+ //		};
+ //
+ //		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
+ //		PermIdBean newPermlId = new PermIdBean("CMT:100");
+ //		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
+ //				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
+ //		bean.setReviews(reviews);
+ //		map.put(PredefinedFilter.ToReview, bean);
+ //		notifier.updateReviews(map, new HashMap<String, ReviewNotificationBean>());
+ //		assertEquals(1, notifier.getNotifications().size());
+ //		assertTrue(notifier.getNotifications().get(0) instanceof NewVersionedCommentNotification);
+	 }
+ */
 	@SuppressWarnings("deprecation")
 	private class DummysProject extends UserDataHolderBase implements Project {
 		@Nullable
@@ -729,6 +763,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			return new ComponentConfig[0];
 		}
 
+
 		@Nullable
 		public Object getComponent(final ComponentConfig componentConfig) {
 			return null;
@@ -775,8 +810,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		}
 	}
-	*/
-public void testUncommentTests() {
-	assertTrue(true);
-}
+
+	public void testUncommentTests() {
+		assertTrue(true);
+	}
 }
