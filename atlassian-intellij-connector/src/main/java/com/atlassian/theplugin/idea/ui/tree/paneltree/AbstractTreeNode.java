@@ -40,11 +40,14 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 		}
 	}
 
+	@Override
 	public abstract String toString();
 	public abstract JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus);
 	public abstract void onSelect();
 
-	public JComponent getDefaultRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
+	@SuppressWarnings("UnusedDeclaration")
+	public JComponent getDefaultRenderer(JComponent c, boolean selected, boolean expanded,
+			boolean hasFocus) {
 		JPanel panel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow"));
 		JPanel mainPanel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
 
