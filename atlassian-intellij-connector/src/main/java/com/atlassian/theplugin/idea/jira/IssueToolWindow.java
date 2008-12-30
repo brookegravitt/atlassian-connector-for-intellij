@@ -72,6 +72,7 @@ public final class IssueToolWindow {
 			issueToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
 			issueToolWindow.setIcon(Constants.JIRA_ISSUE_ICON);
 			issueToolWindow.getContentManager().addContentManagerListener(new ContentManagerAdapter() {
+				@Override
 				public void contentRemoved(ContentManagerEvent event) {
 					panelMap.remove(event.getContent().getDisplayName());
 					super.contentRemoved(event);
@@ -361,7 +362,7 @@ public final class IssueToolWindow {
 						|| (issue.getComponents() == null)) {
 
 					Runnable runnable = new Runnable() {
-						private String[] errorString = null;
+						private String[] errorString;
 
 						public void run() {
 
