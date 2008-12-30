@@ -301,10 +301,13 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 //			notifyReviewChanged(reviewAdapter);
 //		}
 
-//		@Override
-//		public void reviewChanged(ReviewAdapter reviewAdapter) {
-//			notifyReviewChanged(reviewAdapter);
-//		}
+		@Override
+		public void reviewChanged(ReviewAdapter reviewAdapter) {
+			for (CrucibleReviewListModelListener listener : modelListeners) {
+				UpdateContext updateContext = new UpdateContext(currentUpdateReason, reviewAdapter);
+				listener.reviewChanged(updateContext);
+			}
+		}
 	}
 
 }
