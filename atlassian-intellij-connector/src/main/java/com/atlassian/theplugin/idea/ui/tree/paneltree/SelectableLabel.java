@@ -20,11 +20,8 @@ public final class SelectableLabel extends JLabel {
 		super(text, SwingConstants.LEADING);
 
 		if (icon != null) {
-			if (enabled) {
-				setIcon(icon);
-			} else {
-				setDisabledIcon(icon);
-			}
+			setIcon(icon);
+			setDisabledIcon(icon);
 		}
 
 		setEnabled(enabled);
