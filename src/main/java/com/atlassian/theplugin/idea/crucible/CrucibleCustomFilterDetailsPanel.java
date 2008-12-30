@@ -23,6 +23,7 @@ import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +37,7 @@ import java.util.Collection;
  */
 public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CustomFilterBean filter;
-	private final ScrollableTwoColumnPanel panel;
+	private ScrollableTwoColumnPanel panel;
 	private final ProjectCfgManager projectCfgManager;
 	private final CrucibleProjectConfiguration projectCrucibleCfg;
 	private final Project project;
@@ -53,14 +54,11 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		this.project = project;
 		this.crucibleFacade = crucibleFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
-		panel = new ScrollableTwoColumnPanel();
 
-		filter = crucibleCfg.getCrucibleFilters().getManualFilter();
-		updateDetails();
+		updateDetails(crucibleCfg.getCrucibleFilters().getManualFilter());
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		final JButton editButton = new JButton("Edit");
 		buttonPanel.add(editButton);
-		add(panel, BorderLayout.CENTER);
 		this.setBorder(BorderFactory.createTitledBorder("Custom Filter"));
 		this.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -69,8 +67,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			}
 
 			public void selectedCustomFilter(CustomFilter customFilter) {
-				CrucibleCustomFilterDetailsPanel.this.filter = (CustomFilterBean) customFilter;
-				updateDetails();
+				updateDetails((CustomFilterBean) customFilter);
 			}
 
 			public void selectedPredefinedFilters(Collection<PredefinedFilter> selectedPredefinedFilter) {
@@ -93,9 +90,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 				dialog.show();
 
 				if (dialog.getExitCode() == 0 && dialog.getFilter() != null) {
-					filter = dialog.getFilter();
 					projectCrucibleCfg.getCrucibleFilters().setManualFilter(filter);
-					updateDetails();
+					updateDetails(dialog.getFilter());
 					// refresh reviews panel
 					for (CustomFilterChangeListener myListener : listeners) {
 						myListener.customFilterChanged(filter);
@@ -106,64 +102,98 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		});
 	}
 
-	private void updateDetails() {
-		uiTaskExecutor.execute(new UiTask() {
-
-			private Collection<ScrollableTwoColumnPanel.Entry> entries;
-			public void run() throws Exception {
-				entries = (filter != null) ? getEntries(filter) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
-			}
-
-			public void onSuccess() {
-				panel.updateContent(entries);
-			}
-
-			public void onError() {
-			}
-
-			public String getLastAction() {
-				return "resolving Crucible dictionary data";
-			}
-
-			public Component getComponent() {
-				return CrucibleCustomFilterDetailsPanel.this;
-			}
-		});
-	}
-
-	private void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entries,
-			CrucibleServerCfg serverCfg) {
-		if (username.length() > 0) {
-			final String displayName = serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null;
-			entries.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
+	private synchronized void updateDetails(final CustomFilterBean manualFilter) {
+		filter = manualFilter;
+		if (panel != null) {
+			remove(panel);
 		}
+		panel = new ScrollableTwoColumnPanel();
+		add(panel, BorderLayout.CENTER);
+		validate();
 
+		uiTaskExecutor.execute(new MyUiTask(filter, panel, projectCfgManager, crucibleFacade, project));
 	}
 
-	public Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter) {
-		final Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
+	public void addCustomFilterChangeListener(CustomFilterChangeListener listener) {
+		if (!listeners.contains(listener)) {
+			listeners.add(listener);
+		}
+	}
+
+	public void removeCustomFilterChangeListener(CustomFilterChangeListener listener) {
+		listeners.remove(listener);
+	}
+
+}
+
+class MyUiTask implements UiTask {
+
+	private Collection<ScrollableTwoColumnPanel.Entry> entries;
+	@Nullable private final CustomFilterBean filter;
+	@NotNull private final ScrollableTwoColumnPanel panel;
+	@NotNull private final ProjectCfgManager projectCfgManager;
+	@NotNull private final CrucibleServerFacade crucibleFacade;
+	private final Project project;
+
+	public MyUiTask(@Nullable CustomFilterBean filter, @NotNull final ScrollableTwoColumnPanel panel,
+			@NotNull ProjectCfgManager projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
+			@NotNull final Project project) {
+		this.filter = filter;
+		this.panel = panel;
+		this.projectCfgManager = projectCfgManager;
+		this.crucibleFacade = crucibleFacade;
+		this.project = project;
+		if (filter != null) {
+			panel.updateContent(getEntries(filter, false));
+		}
+	}
+
+	public void run() throws Exception {
+		entries = (filter != null) ? getEntries(filter, true) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
+	}
+
+	public void onSuccess() {
+		panel.updateContent(entries);
+	}
+
+	public void onError() {
+	}
+
+	public String getLastAction() {
+		return "resolving Crucible dictionary data";
+	}
+
+	public Component getComponent() {
+		return panel;
+	}
+
+	private Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter,
+			boolean fetchRemoteData) {
+		final Collection<ScrollableTwoColumnPanel.Entry> myEntries = MiscUtil.buildArrayList();
 
 		final String serverId = customFilter.getServerUid();
 		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
 				CfgUtil.getProjectId(project), new ServerId(serverId));
 		final CrucibleServerCfg crucibleServerCfg = (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
-		entries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
+		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
 		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
-			String projectName = customFilter.getProjectKey();
-			try {
-				CrucibleProject crucibleProject = crucibleServerCfg != null
-						? crucibleFacade.getProject(crucibleServerCfg, customFilter.getProjectKey())
-						: null;
-				if (crucibleProject != null) {
-					projectName = crucibleProject.getName();
+			String projectName = customFilter.getProjectKey() + " <i>(fetching full name...)</i>";
+			if (fetchRemoteData) {
+				try {
+					CrucibleProject crucibleProject = crucibleServerCfg != null
+							? crucibleFacade.getProject(crucibleServerCfg, customFilter.getProjectKey())
+							: null;
+					if (crucibleProject != null) {
+						projectName = crucibleProject.getName();
+					}
+				} catch (RemoteApiException e) {
+					// nothing here
+				} catch (ServerPasswordNotProvidedException e) {
+					// nothing here
 				}
-			} catch (RemoteApiException e) {
-				// nothing here
-			} catch (ServerPasswordNotProvidedException e) {
-				// nothing here
 			}
-			entries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
+			myEntries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
 
 		}
 		final State[] selStates = customFilter.getState();
@@ -175,33 +205,36 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 					states.append(", ");
 				}
 			}
-			entries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
+			myEntries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
 		}
-		addIfNotEmpty(customFilter.getAuthor(), "Author", entries, crucibleServerCfg);
-		addIfNotEmpty(customFilter.getModerator(), "Moderator", entries, crucibleServerCfg);
-		addIfNotEmpty(customFilter.getCreator(), "Creator", entries, crucibleServerCfg);
-		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", entries, crucibleServerCfg);
+		addIfNotEmpty(customFilter.getAuthor(), "Author", myEntries, crucibleServerCfg, fetchRemoteData);
+		addIfNotEmpty(customFilter.getModerator(), "Moderator", myEntries, crucibleServerCfg, fetchRemoteData);
+		addIfNotEmpty(customFilter.getCreator(), "Creator", myEntries, crucibleServerCfg, fetchRemoteData);
+		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", myEntries, crucibleServerCfg, fetchRemoteData);
 
 		final Boolean reviewerStatus = (customFilter.getReviewer() != null && customFilter.getReviewer().length() > 0)
 				? customFilter.isComplete() : customFilter.isAllReviewersComplete();
 		if (reviewerStatus != null) {
-			entries.add(new ScrollableTwoColumnPanel.Entry("Reviewer Status", reviewerStatus ? "Complete" : "Incomplete"));
+			myEntries.add(new ScrollableTwoColumnPanel.Entry("Reviewer Status", reviewerStatus ? "Complete" : "Incomplete"));
 		}
 
 		final Boolean orRoles = customFilter.isOrRoles();
-		entries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
+		myEntries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
 
-		return entries;
+		return myEntries;
 	}
 
+	private void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entriesToFill,
+			CrucibleServerCfg serverCfg, boolean fetchRemoteData) {
+		if (username.length() > 0) {
 
-	public void addCustomFilterChangeListener(CustomFilterChangeListener listener) {
-		if (!listeners.contains(listener)) {
-			listeners.add(listener);
+			final String displayName = fetchRemoteData
+					? serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null
+					: username;
+			entriesToFill.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
 		}
+
 	}
 
-	public void removeCustomFilterChangeListener(CustomFilterChangeListener listener) {
-		listeners.remove(listener);
-	}
 }
+
