@@ -362,7 +362,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	public void openIssue(@NotNull JIRAIssue issue) {
-		IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue);
+		IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 	}
 
 	public void openIssue(@NotNull final String issueKey) {
@@ -395,7 +395,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						return;
 					}
 					if (issue != null) {
-						IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue);
+						IssueToolWindow.showIssue(
+								getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 					}
 				}
 
@@ -548,8 +549,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void logWorkForIssue() {
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+	public void logWorkForIssue(final JIRAIssue issue) {
 		final JiraServerCfg jiraServer = jiraIssueListModelBuilder.getServer();
 		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, getProject());
 		workLogCreate.show();
