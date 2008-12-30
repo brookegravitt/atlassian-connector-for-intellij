@@ -30,21 +30,15 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.ui.content.ContentManagerAdapter;
-import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.containers.HashSet;
 
 import javax.swing.*;
 import java.util.Set;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Jacek
- * Date: 2008-03-20
- * Time: 11:22:10
- * To change this template use File | Settings | File Templates.
+ * @author Jacek Jaroczynski
  */
-public class PluginToolWindow extends ContentManagerAdapter {
+public class PluginToolWindow {
 
 	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
 
@@ -91,7 +85,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
 				TOOL_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
 		this.project = project;
-
 	}
 
 
@@ -264,7 +257,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 		ToolWindow tw = IdeaHelper.getToolWindow(project);
 
 		if (tw != null) {
-			//tw.activate(null);
 			ContentManager contentManager = tw.getContentManager();
 			Content content = contentManager.findContent(tabName);
 
@@ -360,26 +352,6 @@ public class PluginToolWindow extends ContentManagerAdapter {
 	 */
 	public static void focusPanelifExists(AnActionEvent e, ToolWindowPanels component) {
 		focusPanelIfExists(IdeaHelper.getCurrentProject(e.getDataContext()), component.toString());
-	}
-
-	@Override
-	public void contentAdded(ContentManagerEvent event) {
-		super.contentAdded(event);	//To change body of overridden methods use File | Settings | File Templates.
-	}
-
-	@Override
-	public void contentRemoved(ContentManagerEvent event) {
-		super.contentRemoved(event);	//To change body of overridden methods use File | Settings | File Templates.
-	}
-
-
-	@Override
-	public void selectionChanged(ContentManagerEvent event) {
-		//this.selectedContent = event.getContent().getDisplayName();
-
-		project.getComponent(ThePluginProjectComponent.class).getProjectConfigurationBean().
-				setActiveToolWindowTab(event.getContent().getDisplayName());
-
 	}
 
 	/**

@@ -54,6 +54,8 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
+import com.intellij.ui.content.ContentManagerAdapter;
+import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
 
@@ -98,8 +100,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
 	private ReviewsToolWindowPanel reviewsToolWindowPanel;
-
-	private JIRAServerCache currentJiraServerCache;
 
 	private PluginToolWindow toolWindow;
 
@@ -203,7 +203,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			issuesToolWindowPanel.refreshModels();
 
-			// create tool window on the right
+			// create Atlassian tool window
 			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
@@ -257,6 +257,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.showHidePanels();
 			// focus last active panel only if it exists (do not create panel)
 			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
+			toolWindow.getIdeaToolWindow().getContentManager().addContentManagerListener(new ContentManagerAdapter() {
+				@Override
+				public void selectionChanged(final ContentManagerEvent event) {
+					projectConfigurationBean.setActiveToolWindowTab(event.getContent().getDisplayName());
+				}
+			});
 
 			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
 
@@ -367,21 +373,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 	}
 
-
-
 	public ProjectConfigurationBean getProjectConfigurationBean() {
 		return projectConfigurationBean;
 	}
 
-//	public JIRAServerCache getCurrentJiraServer() {
-//		return currentJiraServer;
-//	}
-//
-//	public void setCurrentJiraServer(JIRAServerCache currentJiraServerCache) {
-//		this.currentJiraServer = currentJiraServer;
-//	}
-//
-//
 	public CrucibleStatusChecker getCrucibleStatusChecker() {
 		return crucibleStatusChecker;
 	}
