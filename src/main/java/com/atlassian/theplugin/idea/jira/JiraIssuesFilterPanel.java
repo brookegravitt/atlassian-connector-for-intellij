@@ -78,7 +78,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JiraServerCfg jiraServerCfg;
 	private FilterActionClear clearFilterAction = new FilterActionClear();
 	private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
-	private boolean windowClosed = false;
+	private boolean windowClosed;
 
 	public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel,
 			final JIRAFilterListModel filterListModel, final JiraServerCfg jiraServerCfg) {
@@ -561,6 +561,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		return this.$$$getRootComponent$$$();
 	}
 
+	@Override
 	public synchronized void doCancelAction() {
 		super.doCancelAction();
 		this.windowClosed = true;
