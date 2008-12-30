@@ -183,6 +183,9 @@ public class JIRASessionImpl implements JIRASession {
 	public JIRAIssue getIssueDetails(JIRAIssue issue) throws RemoteApiException {
 		try {
 			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
+			if (rIssue == null) {
+				throw new RemoteApiException("Unable to retrieve issue details");
+			}
 			JIRAIssueBean issueBean = new JIRAIssueBean(issue);
 
 			RemoteVersion[] aVers = rIssue.getAffectsVersions();
@@ -422,6 +425,9 @@ public class JIRASessionImpl implements JIRASession {
 	public List<JIRAComment> getComments(JIRAIssue issue) throws RemoteApiException {
 		try {
 			RemoteComment[] comments = service.getComments(token, issue.getKey());
+			if (comments == null) {
+				throw new RemoteApiException("Unable to retrieve comments");
+			}
 
 			List<JIRAComment> commentsList = new ArrayList<JIRAComment>(comments.length);
 			for (RemoteComment c : comments) {
