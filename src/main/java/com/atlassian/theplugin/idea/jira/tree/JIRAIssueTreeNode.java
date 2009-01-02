@@ -19,8 +19,10 @@ import java.util.Locale;
 public class JIRAIssueTreeNode extends AbstractTreeNode {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
-	private static final int MAX_LINE_LENGTH = 50;
 
+	private static final int MAX_TOOLTIP_WIDTH = 500;
+	private static final int MAX_DESCRIPTION_LENGTH = 540;
+	
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
@@ -118,33 +120,44 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
         padding.setOpaque(true);
         p.add(padding, gbc);
 
-		p.setToolTipText(buildTolltip());
+		p.setToolTipText(buildTolltip(0));
+
+		// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
+		final JToolTip jToolTip = p.createToolTip();
+		jToolTip.setTipText(buildTolltip(0));
+		final int prefWidth = jToolTip.getPreferredSize().width;
+		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+		p.setToolTipText(buildTolltip(width));
+
+
 		return p;
 	}
 
-	private String buildTolltip() {
+	private String buildTolltip(int width) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
 
-		sb.append("<table width=\"100%\">");
+		final String widthString = width > 0 ? "width='" + width + "px'" : "";
+
+		sb.append("<table ").append(widthString).append(">");
 		sb.append("<tr><td colspan=5><b><font color=blue>");
         sb.append(issue.getKey());
         sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
 		String summary = issue.getSummary();
-		if (summary.length() > MAX_LINE_LENGTH) {
-			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
-		}
+//		if (summary.length() > MAX_LINE_LENGTH) {
+//			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
+//		}
 		sb.append(summary);
 		sb.append("");
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
 		String description = Html2text.translate(issue.getDescription());
-		if (description.length() > MAX_LINE_LENGTH) {
-			description = description.substring(0, MAX_LINE_LENGTH) + "...";
+		if (description.length() > MAX_DESCRIPTION_LENGTH) {
+			description = description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
 		}
 		sb.append(description);
 		sb.append("");
