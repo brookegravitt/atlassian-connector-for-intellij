@@ -28,7 +28,7 @@
             </constraints>
             <properties>
               <enabled value="true"/>
-              <toolTipText value="Polling is not used for JIRA currently"/>
+              <toolTipText value=""/>
             </properties>
           </component>
         </children>

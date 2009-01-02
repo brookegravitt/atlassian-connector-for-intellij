@@ -109,25 +109,22 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		issuePageSize = new JSpinner();
-		issuePageSize.setEnabled(false);
-		issuePageSize.setToolTipText("Polling is not used for JIRA currently");
-		panel1.add(issuePageSize,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1),
-						null, 0, false));
+		issuePageSize.setEnabled(true);
+		issuePageSize.setToolTipText("");
+		panel1.add(issuePageSize, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0,
+				false));
 		final JLabel label1 = new JLabel();
-		label1.setText("Polling Time [minutes]:");
-		label1.setToolTipText("Polling is not used for JIRA currently");
+		label1.setText("Number of Issues to Show:");
+		label1.setToolTipText("Number of issues to load from the JIRA server in one remote call");
 		rootComponent.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		rootComponent.add(spacer1,
-				new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		rootComponent.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final Spacer spacer2 = new Spacer();
-		rootComponent.add(spacer2,
-				new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-						GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		rootComponent.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
+				1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 	}
 
 	/**
