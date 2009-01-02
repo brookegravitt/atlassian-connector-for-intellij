@@ -20,8 +20,8 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
-	private static final int MAX_TOOLTIP_WIDTH = 500;
-	private static final int MAX_DESCRIPTION_LENGTH = 540;
+	private static final int MAX_TOOLTIP_WIDTH = 400;
+	private static final int MAX_DESCRIPTION_LENGTH = 360;
 	
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
