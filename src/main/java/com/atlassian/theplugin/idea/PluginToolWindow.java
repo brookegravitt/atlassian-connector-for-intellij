@@ -83,7 +83,7 @@ public class PluginToolWindow {
 	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
 		this.cfgManager = cfgManager;
 		this.ideaToolWindow = toolWindowManager.registerToolWindow(
-				TOOL_WINDOW_NAME, true, ToolWindowAnchor.BOTTOM);
+				TOOL_WINDOW_NAME, false, ToolWindowAnchor.BOTTOM);
 		this.project = project;
 	}
 
