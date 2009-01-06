@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.action.jira;
+package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+public enum BambooGroupingType {
+	SERVER("Server"),
+	PROJECT("Project"),
+	DATE("Date"),
+	STATE("State");
 
-public class ShowHideJiraTabAction extends AnAction {
-	@Override
-	public void actionPerformed(AnActionEvent e) {
-		final PluginToolWindow pluginToolWindow = IdeaHelper.getProjectComponent(e, PluginToolWindow.class);
-		if (pluginToolWindow != null) {
-			pluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.ISSUES);
-		}
+	private String name;
+
+	BambooGroupingType(String name) {
+	    this.name = name;
 	}
-}
 
+	@Override
+	public String toString() {
+		return name;
+	}	
+}

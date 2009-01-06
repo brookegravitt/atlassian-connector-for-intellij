@@ -271,10 +271,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	@Override
-	public void onEditButtonClickAction() {
-	}
-
-	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
 	}

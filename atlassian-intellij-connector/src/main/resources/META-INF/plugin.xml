@@ -127,6 +127,14 @@
 
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"
                 serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"
+                serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooModel"
+                serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooModel"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
+				serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
+
+
 
 	</extensions>
 
@@ -173,7 +181,7 @@
                 class="com.atlassian.theplugin.idea.config.serverconfig.action.AddFishEyeServerAction"
                 text="Add FishEye Server" description="Add a new FishEye server" icon="/icons/fisheye-16.png"/>
 
-        <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
+		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
             <reference id="ThePlugin.AddServerAction"/>
             <reference id="ThePlugin.RemoveServerAction"/>
         </group>
@@ -205,7 +213,13 @@
         <action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help"
                 description="Help" icon="/actions/help.png"/>
 
-        <!-- Bamboo tool window panel related actions -->
+
+		<!-- Bamboo tool window panel related actions -->
+		<action id="ThePlugin.Bamboo.GroupBy" class="com.atlassian.theplugin.idea.bamboo.GroupByAction"
+				text="Group Bamboo Plans" description="Group Bamboo Plans"/>
+		<action id="ThePlugin.Bamboo.FilterBy" class="com.atlassian.theplugin.idea.bamboo.FilterByAction"
+				text="Filter Bamboo Plans" description="Filter Bamboo Plans"/>
+
         <action id="ThePlugin.Bamboo.RefreshStatus"
                 class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh"
                 description="Refresh" icon="/actions/sync.png"/>
@@ -593,7 +607,7 @@
 				text="Collapse All Aomments"
 				icon="/actions/collapseall.png"/>
 		<action id="ThePlugin.JiraIssues.AddEditorComment"
-				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction" 
+				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
 				text="Add Comment"
 				icon="/general/add.png"/>
 		<action id="ThePlugin.JiraIssues.EditorViewIssue"
@@ -799,18 +813,29 @@
 				text="Collapse All"
 				icon="/actions/collapseall.png"/>
 
-		<group id="ThePlugin.Builds.LeftToolBar" popup="false" text="">
+		<group id="ThePlugin.Bamboo.LeftToolBar" popup="true">
 			<reference id="ThePlugin.ShowSettings"/>
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<!-- @Jacek: old ThePlugin.Bamboo.RefreshStatus works fine for us. No need to create another Refresh action
 			<reference id="ThePlugin.Builds.Refresh"/>
+			-->
+			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
+			<action id="ThePlugin.Ui.LabelAction" class="com.atlassian.theplugin.idea.ui.LabelAction"
+					text="Filter By:" description="Filter By:"/>
+			<reference id="ThePlugin.Bamboo.FilterBy"/>
 		</group>
-
-		<group id="ThePlugin.Builds.RightToolBar" popup="false" text="">
+		<group id="ThePlugin.Bamboo.RightToolBar" popup="true">
 			<reference id="ThePlugin.Builds.GroupByCombo"/>
 			<reference id="ThePlugin.Builds.ExpandAll"/>
 			<reference id="ThePlugin.Builds.CollapseAll"/>
 			<separator/>
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+			<separator/>
+			<reference id="ThePlugin.HelpBamboo"/>
 		</group>
-
 
 	</actions>
 </idea-plugin>

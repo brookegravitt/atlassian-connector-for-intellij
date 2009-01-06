@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.atlassian.theplugin.idea.ui;
 
-package com.atlassian.theplugin.idea.action.jira;
-
-import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.ex.CustomComponentAction;
 
-public class ShowHideJiraTabAction extends AnAction {
+import javax.swing.*;
+
+public class LabelAction extends AnAction implements CustomComponentAction {
+	public JComponent createCustomComponent(final Presentation presentation) {
+		return new JLabel(presentation.getText());
+	}
+
 	@Override
-	public void actionPerformed(AnActionEvent e) {
-		final PluginToolWindow pluginToolWindow = IdeaHelper.getProjectComponent(e, PluginToolWindow.class);
-		if (pluginToolWindow != null) {
-			pluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.ISSUES);
-		}
+	public void actionPerformed(final AnActionEvent e) {
 	}
 }
-

@@ -59,6 +59,7 @@ import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.util.Collection;
 
 /**
  * Per-project plugin component.
@@ -85,10 +86,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private CrucibleStatusChecker crucibleStatusChecker;	
+	private final BambooToolWindowPanel bambooToolWindowPanel;
+	private final BambooModel bambooModel;
+	private CrucibleStatusChecker crucibleStatusChecker;
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-	private BambooTableToolWindowPanel bambooToolWindowPanel;
+	private BambooTableToolWindowPanel bambooTableToolWindowPanel;
 	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
@@ -106,20 +109,18 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
 
-	public ThePluginProjectComponent(Project project,
-									 ToolWindowManager toolWindowManager,
-									 PluginConfiguration pluginConfiguration,
-									 UIActionScheduler actionScheduler,
-									 ProjectConfigurationBean projectConfigurationBean,
-									 CfgManager cfgManager,
-									 TestResultsToolWindow testResultsToolWindow,
-									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-									 @NotNull BuildsToolWindowPanel buildToolWindowPanel,
-									 BuildChangesToolWindow buildChangesToolWindow,
-									 @NotNull final CrucibleStatusChecker crucibleStatusChecker,
-									 @NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
-									 @NotNull final CrucibleReviewListModel crucibleReviewListModel) {
+	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
+			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
+			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
+			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
+			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel, @NotNull BuildsToolWindowPanel buildToolWindowPanel,
+			@NotNull PluginToolWindow pluginToolWindow,
+			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
+			@NotNull BambooModel bambooModel,
+			@NotNull BuildChangesToolWindow buildChangesToolWindow,
+			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
+			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
+			@NotNull final CrucibleReviewListModel crucibleReviewListModel) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -128,6 +129,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
+		this.bambooToolWindowPanel = bambooToolWindowPanel;
+		this.bambooModel = bambooModel;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
@@ -137,6 +140,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.buildToolWindowPanel = buildToolWindowPanel;
 		this.buildChangesToolWindow = buildChangesToolWindow;
+		this.toolWindow = pluginToolWindow;
 		/*
 
 
@@ -187,10 +191,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 		if (!created) {
 
+			toolWindow.register(toolWindowManager);
+
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
 
-			this.bambooToolWindowPanel = new BambooTableToolWindowPanel(
+			this.bambooTableToolWindowPanel = new BambooTableToolWindowPanel(
 					project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
@@ -204,7 +210,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			issuesToolWindowPanel.refreshModels();
 
 			// create Atlassian tool window
-			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager);
+//			toolWindow = new PluginToolWindow(toolWindowManager, project, cfgManager, bambooToolWindowPanel);
 			Icon toolWindowIcon = IconLoader.getIcon(THE_PLUGIN_TOOL_WINDOW_ICON);
 			toolWindow.getIdeaToolWindow().setIcon(toolWindowIcon);
 
@@ -212,18 +218,26 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD);
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
-					bambooToolWindowPanel.getTable());
+					bambooTableToolWindowPanel.getTable());
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
-			bambooStatusChecker.registerListener(bambooToolWindowPanel);
+			bambooStatusChecker.registerListener(bambooTableToolWindowPanel);
+			bambooStatusChecker.registerListener(new BambooStatusListener() {
+				public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
+					bambooModel.update(buildStatuses);
+				}
+
+				public void resetState() {
+				}
+			});
 
 			// create Bamboo status bar icon
-			statusBarBambooIcon = new BambooStatusIcon(this.project, cfgManager);
+			statusBarBambooIcon = new BambooStatusIcon(this.project, cfgManager, toolWindow);
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
 
 			// add icon listener to bamboo checker thread
@@ -232,7 +246,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// add simple bamboo listener to bamboo checker thread
 			// this listener shows idea tooltip when buld failed
-			final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project);
+			final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project, toolWindow);
 			tooltipBambooStatusListener = new BambooStatusTooltipListener(bambooStatusDisplay, pluginConfiguration);
 			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
 
@@ -242,7 +256,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// setup Crucible status checker and listeners
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(crucibleStatusChecker);
 			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager);
+			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager, toolWindow);
 
 			//registerCrucibleNotifier();
 
@@ -284,14 +298,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return crucibleReviewNotifier;
 	}
 
-	public void registerCrucibleNotifier() {
+	private void registerCrucibleNotifier() {
 		if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
 				!= CrucibleTooltipOption.NEVER) {
 
 			crucibleReviewListModel.addListener(crucibleReviewNotifier);
-			crucibleReviewNotifier.registerListener(new CrucibleNotificationTooltip(statusBarCrucibleIcon, project));
-
-
+			crucibleReviewNotifier.registerListener(
+					new CrucibleNotificationTooltip(statusBarCrucibleIcon, project, toolWindow));
 		} else {
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 		}
@@ -299,20 +312,20 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	}
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
+		final Content content = contentManager.getFactory().createContent(bambooTableToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BAMBOO_OLD.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
 	}
 
-	public Content createBuildContent(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
+//	public Content createBuildContent(@NotNull final ContentManager contentManager) {
+//		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
+//				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
+//		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+//		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+//		return content;
+//	}
 
 
 	public Content createCrucibleContentNew(@NotNull final ContentManager contentManager) {
