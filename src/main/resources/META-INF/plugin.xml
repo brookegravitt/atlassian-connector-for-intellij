@@ -780,5 +780,34 @@
 			<reference id="ThePlugin.HelpCrucible"/>
 		</group>
 
+		<action id="ThePlugin.Builds.Refresh"
+                class="com.atlassian.theplugin.idea.action.builds.RefreshAction"
+				text="Refresh"
+                icon="/actions/sync.png"/>
+
+		<action id="ThePlugin.Builds.GroupByCombo"
+		        class="com.atlassian.theplugin.idea.action.builds.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.Builds.ExpandAll"
+				class="com.atlassian.theplugin.idea.action.builds.ExpandAllAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Builds.CollapseAll"
+				class="com.atlassian.theplugin.idea.action.builds.CollapseAllAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
+
+		<group id="ThePlugin.Builds.LeftToolBar" popup="false" text="">
+			<reference id="ThePlugin.ShowSettings"/>
+			<reference id="ThePlugin.Builds.Refresh"/>
+		</group>
+
+		<group id="ThePlugin.Builds.RightToolBar" popup="false" text="">
+			<reference id="ThePlugin.Builds.GroupByCombo"/>
+			<reference id="ThePlugin.Builds.ExpandAll"/>
+			<reference id="ThePlugin.Builds.CollapseAll"/>
+			<separator/>
+		</group>
+
+
 	</actions>
 </idea-plugin>
