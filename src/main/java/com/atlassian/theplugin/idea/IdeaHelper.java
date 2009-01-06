@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -81,6 +82,14 @@ public final class IdeaHelper {
 
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
 		return getProjectComponent(project, IssuesToolWindowPanel.class);
+	}
+
+	public static IssueToolWindow getIssueToolWindow(AnActionEvent event) {
+		return getProjectComponent(event, IssueToolWindow.class);
+	}
+
+	public static IssueToolWindow getIssueToolWindow(@NotNull final Project project) {
+		return getProjectComponent(project, IssueToolWindow.class);
 	}
 
 	@Nullable
