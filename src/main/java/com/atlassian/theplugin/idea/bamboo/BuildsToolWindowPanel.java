@@ -19,15 +19,10 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
@@ -57,12 +52,8 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	private final BambooProjectConfiguration bambooProjectConfiguration;
 	private BuildTree buildTree;
-	private CrucibleFilterListModel filterListModel;
-	private CrucibleFilterTreeModel filterTreeModel;
 
-	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
-//	private FilterTree filterTree;
-	private SearchingCrucibleReviewListModel searchingReviewListModel;
+	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 //	private final CrucibleReviewListModel reviewListModel;
@@ -95,7 +86,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 		super.init();
 
 		addBuildTreeListeners();
-		setupReviewTree();
+		setupBuildTree();
 
 		initToolBar();
 
@@ -113,7 +104,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 		addSearchBoxListener();
 	}
 
-	private void setupReviewTree() {
+	private void setupBuildTree() {
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		uiSetup.initializeUI(buildTree, getRightScrollPane());
 	}
@@ -197,11 +188,11 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	@Nullable
 	public Object getData(@NonNls String dataId) {
-		if (dataId.equals(Constants.REVIEW)) {
-			return buildTree.getSelectedBuild();
-		} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
-			return buildTree.isEnabled();
-		}
+//		if (dataId.equals(Constants.REVIEW)) {
+//			return buildTree.getSelectedBuild();
+//		} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
+//			return buildTree.isEnabled();
+//		}
 		return null;
 	}
 
@@ -220,6 +211,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 		});
+		
 		getSearchField().addKeyboardListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
@@ -272,7 +264,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //		bambooProjectConfiguration.getView().setGroupBy(groupBy);
 	}
 
-	public CrucibleReviewGroupBy getGroupBy() {
+	public BuildGroupBy getGroupBy() {
 		return groupBy;
 	}
 
