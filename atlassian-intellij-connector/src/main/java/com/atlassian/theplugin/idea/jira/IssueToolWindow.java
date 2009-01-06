@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -24,13 +24,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentManagerAdapter;
-import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
@@ -40,224 +34,124 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * User: jgorycki
  * Date: Dec 23, 2008
  * Time: 3:59:21 PM
  */
-public final class IssueToolWindow {
-	private static final String TOOL_WINDOW_TITLE = "JIRA Issues";
+public final class IssueToolWindow extends MultiTabToolWindow {
+	private static final String TOOL_WINDOW_TITLE = "Issues";
+	private static final String[] NONE = {"None"};
 
 	//CHECKSTYLE\:MAGIC\:OFF
 	private static final Color HEADER_BACKGROUND_COLOR = new Color(153, 153, 153);
 	//CHECKSTYLE\:MAGIC\:ON
 
-	private static final String[] NONE = {"None"};
-
-	private static Map<String, IssuePanel> panelMap = new HashMap<String, IssuePanel>();
-
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 
-	private IssueToolWindow() { }
+	public IssueToolWindow() {
+		super(new HashMap<String, ContentPanel>());
+	}
 
-	public static void showIssue(final Project project, JiraServerCfg server,
+	private class IssueContentParameters implements ContentParameters {
+		private final Project project;
+		private final JiraServerCfg server;
+		// mutable because model may update the issue and we want to know about it (we have listener in place)
+		private JIRAIssue issue;
+		private final JIRAIssueListModel model;
+
+		public IssueContentParameters(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
+			this.project = project;
+			this.server = server;
+			this.issue = issue;
+			this.model = model;
+		}
+	}
+
+	public void showIssue(final Project project, JiraServerCfg server,
 								 final JIRAIssue issue, JIRAIssueListModel model) {
-		String contentKey = getContentKey(server, issue);
-
-		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
-		ToolWindow itw = twm.getToolWindow(getExistingToolWindowTitle());
-		if (itw != null) {
-			twm.unregisterToolWindow(getExistingToolWindowTitle());
-		}
-
-		IssuePanel issuePanel = null;
-		for (String s : panelMap.keySet()) {
-			if (s.equals(contentKey)) {
-				issuePanel = panelMap.get(contentKey);
-				break;
-			}
-		}
-
-		if (issuePanel == null) {
-			issuePanel = new IssuePanel(project, server, issue, model);
-			panelMap.put(contentKey, issuePanel);
-		}
-
-		createNewToolWindow(project, issue);
+	   	showToolWindow(project, new IssueContentParameters(project, server, issue, model),
+				   TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_ICON);
 	}
 
-	private static void createNewToolWindow(final Project project, final JIRAIssue issue) {
-		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
-		String title = createNewToolWindowTitle();
-		twm.unregisterToolWindow(title);
-		final ToolWindow issueToolWindow = twm.registerToolWindow(title, true, ToolWindowAnchor.BOTTOM);
-
-		setToolWindowIconCargoCult(issueToolWindow, Constants.JIRA_ISSUE_ICON);
-
-		issueToolWindow.getContentManager().addContentManagerListener(new ContentManagerAdapter() {
-			public void contentRemoved(ContentManagerEvent event) {
-				super.contentRemoved(event);
-				final String titleToRemove = getExistingToolWindowTitle();
-				String key = event.getContent().getTabName();
-				panelMap.get(key).unregister();
-				panelMap.remove(key);
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						if (panelMap.size() < 2) {
-							twm.unregisterToolWindow(titleToRemove);
-						}
-						if (panelMap.size() == 1) {
-							createNewToolWindow(project, null);
-						}
-					}
-				});
-			}
-		});
-
-		fillToolWindowContents(issue, issueToolWindow);
+	protected ContentPanel createContentPanel(ContentParameters params) {
+		return new IssuePanel((IssueContentParameters) params);
 	}
 
-	private static void setToolWindowIconCargoCult(ToolWindow toolWindow, Icon icon) {
-		BufferedImage bi = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = bi.createGraphics();
-		icon.paintIcon(null, g, 0, 0);
-		g.dispose();
-		Icon i = new ImageIcon(bi);
-		toolWindow.setIcon(i);
+	protected String getContentKey(ContentParameters params) {
+		IssueContentParameters icp = (IssueContentParameters) params;
+		return icp.server.getUrl() + icp.server.getUsername() + icp.issue.getKey();
 	}
 
-	private static void fillToolWindowContents(JIRAIssue issue, ToolWindow issueToolWindow) {
-		boolean showTitle = panelMap.size() != 1;
-		Content selectedContent = null;
-		for (String s : panelMap.keySet()) {
-
-			Content content = issueToolWindow.getContentManager().getFactory().createContent(panelMap.get(s),
-					showTitle ? panelMap.get(s).issue.getKey() : "", true);
-
-			if (showTitle) {
-				content.setIcon(Constants.JIRA_ISSUE_ICON);
-				content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-			}
-			if (issue != null && issue.getKey().equals(panelMap.get(s).issue.getKey())) {
-				selectedContent = content;
-			} else if (selectedContent == null) {
-				selectedContent = content;
-			}
-			content.setTabName(s);
-			issueToolWindow.getContentManager().addContent(content);
-		}
-		if (selectedContent != null) {
-			issueToolWindow.getContentManager().setSelectedContent(selectedContent);
-		}
-		issueToolWindow.show(null);
-	}
-
-	private static String getExistingToolWindowTitle() {
-		String title = TOOL_WINDOW_TITLE;
-		if (panelMap.size() == 1) {
-			title = panelMap.values().iterator().next().issue.getKey();
-		}
-		return title;
-	}
-
-	private static String createNewToolWindowTitle() {
-		return panelMap.size() == 1 ? panelMap.values().iterator().next().issue.getKey() : TOOL_WINDOW_TITLE;
-	}
-
-	private static String getContentKey(JiraServerCfg server, JIRAIssue issue) {
-		return server.getUrl() + server.getUsername() + issue.getKey();
-	}
-
-	public static void setCommentsExpanded(String key, boolean expanded) {
-		IssuePanel ip = panelMap.get(key);
+	public void setCommentsExpanded(String key, boolean expanded) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.descriptionAndCommentsPanel.setAllVisible(expanded);
 		}
 	}
 
-	public static void refreshComments(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public void closeToolWindow(AnActionEvent e) {
+		closeToolWindow(TOOL_WINDOW_TITLE, e);
+	}
+
+	public void refreshComments(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.descriptionAndCommentsPanel.refreshComments();
 		}
 	}
 
-	public static void addComment(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public void addComment(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.descriptionAndCommentsPanel.addComment();
 		}
 	}
 
-	public static void viewIssueInBrowser(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public void viewIssueInBrowser(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			BrowserUtil.launchBrowser(ip.issue.getIssueUrl());
+			BrowserUtil.launchBrowser(ip.params.issue.getIssueUrl());
 		}
 	}
 
-	public static void editIssueInBrowser(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public void editIssueInBrowser(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			JIRAIssue issue = ip.issue;
+			JIRAIssue issue = ip.params.issue;
 			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
 		}
 	}
 
-	public static JIRAIssue getIssue(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public JIRAIssue getIssue(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			return ip.issue;
+			return ip.params.issue;
 		}
 		return null;
 	}
 
-	public static void closeToolWindow(AnActionEvent e) {
-		Project project = IdeaHelper.getCurrentProject(e);
-
-		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
-		ToolWindow tw = twm.getToolWindow(getExistingToolWindowTitle());
-		if (tw != null) {
-			String key = e.getPlace();
-
-			for (Content c : tw.getContentManager().getContents()) {
-				if (c.getTabName().equals(key)) {
-					tw.getContentManager().removeContent(c, true);
-					break;
-				}
-			}
-		}
-	}
-
-	public static void refresh(String key) {
-		IssuePanel ip = panelMap.get(key);
+	public void refresh(String key) {
+		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
 			ip.refresh();
 		}
 	}
 
-	private static class IssuePanel extends JPanel implements JIRAIssueListModelListener {
-		private final Project project;
-		private final JiraServerCfg server;
-		private JIRAIssue issue;
-		private final JIRAIssueListModel model;
+	private class IssuePanel extends ContentPanel implements JIRAIssueListModelListener {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
+		private final IssueContentParameters params;
 
-		public IssuePanel(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
-			this.project = project;
-			this.server = server;
-			this.issue = issue;
-			this.model = model;
+		public IssuePanel(IssueContentParameters params) {
+			this.params = params;
 
 			JTabbedPane tabs = new JTabbedPane();
 			detailsPanel = new DetailsPanel();
@@ -280,10 +174,14 @@ public final class IssueToolWindow {
 			gbc.insets = new Insets(0, 0, 0, 0);
 			add(tabs, gbc);
 
-			if (model != null) {
-				model.addModelListener(this);
+			if (params.model != null) {
+				params.model.addModelListener(this);
 			}
 			refresh();
+		}
+
+		public String getKey() {
+			return params.issue.getKey();
 		}
 
 		public void modelChanged(JIRAIssueListModel m) {
@@ -298,15 +196,15 @@ public final class IssueToolWindow {
 		}
 
 		public void unregister() {
-			if (model != null) {
-				model.removeModelListener(this);
+			if (params.model != null) {
+				params.model.removeModelListener(this);
 			}
 		}
 
 		public void refresh() {
-			for (JIRAIssue i : model.getIssues()) {
-				if (i.getKey().equals(issue.getKey())) {
-					issue = i;
+			for (JIRAIssue i : params.model.getIssues()) {
+				if (i.getKey().equals(params.issue.getKey())) {
+					params.issue = i;
 					break;
 				}
 			}
@@ -315,7 +213,7 @@ public final class IssueToolWindow {
 			summaryPanel.refresh();
 		}
 
-		private static class BoldLabel extends JLabel {
+		private class BoldLabel extends JLabel {
 			public BoldLabel(String text) {
 				super(text);
 				setFont(getFont().deriveFont(Font.BOLD));
@@ -376,35 +274,40 @@ public final class IssueToolWindow {
 				gbc2.gridy = 0;
 
 				body.add(new BoldLabel("Type"), gbc1);
-				body.add(new JLabel(issue.getType(), CachedIconLoader.getIcon(issue.getTypeIconUrl()),
+				body.add(new JLabel(params.issue.getType(),
+						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
 						SwingConstants.LEFT), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Status"), gbc1);
-				body.add(new JLabel(issue.getStatus(), CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
+				body.add(new JLabel(params.issue.getStatus(),
+						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
 						SwingConstants.LEFT), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Priority"), gbc1);
-				body.add(new JLabel(issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
+				body.add(new JLabel(params.issue.getPriority(),
+						CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
 						SwingConstants.LEFT), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Assignee"), gbc1);
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
-				if (!issue.getAssigneeId().equals("-1")) {
-					body.add(new UserLabel(issue.getServerUrl(), issue.getAssignee(), issue.getAssigneeId()), gbc2);
+				if (!params.issue.getAssigneeId().equals("-1")) {
+					body.add(new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
+							params.issue.getAssigneeId()), gbc2);
 				} else {
 					body.add(new JLabel("Unassigned"), gbc2);
 				}
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Reporter"), gbc1);
-				body.add(new UserLabel(issue.getServerUrl(), issue.getReporter(), issue.getReporterId()), gbc2);
+				body.add(new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
+						params.issue.getReporterId()), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Resolution"), gbc1);
-				body.add(new JLabel(issue.getResolution()), gbc2);
+				body.add(new JLabel(params.issue.getResolution()), gbc2);
 				gbc1.gridx = 2;
 				gbc2.gridx = gbc1.gridx + 1;
 				gbc1.gridy = 0;
@@ -414,7 +317,7 @@ public final class IssueToolWindow {
 				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 				String t;
 				try {
-					t = ds.format(df.parse(issue.getCreated()));
+					t = ds.format(df.parse(params.issue.getCreated()));
 				} catch (ParseException e) {
 					t = "Invalid";
 				}
@@ -423,7 +326,7 @@ public final class IssueToolWindow {
 				gbc2.gridy++;
 				body.add(new BoldLabel("Updated"), gbc1);
 				try {
-					t = ds.format(df.parse(issue.getUpdated()));
+					t = ds.format(df.parse(params.issue.getUpdated()));
 				} catch (ParseException e) {
 					t = "Invalid";
 				}
@@ -491,7 +394,7 @@ public final class IssueToolWindow {
 
 			private void setLabelText(JLabel label, String[] texts) {
 				if (texts.length == 0) {
-					label.setText("None");
+					label.setText(NONE[0]);
 				} else {
 
 					StringBuffer txt = new StringBuffer();
@@ -518,9 +421,9 @@ public final class IssueToolWindow {
 
 
 			public synchronized void getMoreIssueDetails() {
-				if ((issue.getAffectsVersions() == null)
-						|| (issue.getFixVersions() == null)
-						|| (issue.getComponents() == null)) {
+				if ((params.issue.getAffectsVersions() == null)
+						|| (params.issue.getFixVersions() == null)
+						|| (params.issue.getComponents() == null)) {
 
 					Runnable runnable = new Runnable() {
 						private String[] errorString = null;
@@ -528,11 +431,11 @@ public final class IssueToolWindow {
 						public void run() {
 
 							try {
-								if (server != null) {
-									final JIRAIssue issueDetails = facade.getIssueDetails(server, issue);
-									issue.setAffectsVersions(issueDetails.getAffectsVersions());
-									issue.setFixVersions(issueDetails.getFixVersions());
-									issue.setComponents(issueDetails.getComponents());
+								if (params.server != null) {
+									final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
+									params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
+									params.issue.setFixVersions(issueDetails.getFixVersions());
+									params.issue.setComponents(issueDetails.getComponents());
 								}
 							} catch (JIRAException e) {
 								errorString = new String[]{"Unable to retrieve"};
@@ -540,9 +443,9 @@ public final class IssueToolWindow {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
 									if (errorString == null) {
-										setAffectsVersions(getStringArray(issue.getAffectsVersions()));
-										setFixVersions(getStringArray(issue.getFixVersions()));
-										setComponents(getStringArray(issue.getComponents()));
+										setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
+										setFixVersions(getStringArray(params.issue.getFixVersions()));
+										setComponents(getStringArray(params.issue.getComponents()));
 									} else {
 										getAffectVersionsLabel().setForeground(Color.RED);
 										getFixVersionsLabel().setForeground(Color.RED);
@@ -557,9 +460,9 @@ public final class IssueToolWindow {
 					};
 					new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 				} else {
-					setAffectsVersions(getStringArray(issue.getAffectsVersions()));
-					setFixVersions(getStringArray(issue.getFixVersions()));
-					setComponents(getStringArray(issue.getComponents()));
+					setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
+					setFixVersions(getStringArray(params.issue.getFixVersions()));
+					setComponents(getStringArray(params.issue.getComponents()));
 				}
 			}
 
@@ -612,20 +515,20 @@ public final class IssueToolWindow {
 
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.OneIssueToolBar");
-				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(server, issue), group, true);
+				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
 
 				JComponent comp = toolbar.getComponent();
 				add(comp, gbc);
 			}
 
 			public void refresh() {
-				String txt = "<html><body><a href=\"" + issue.getIssueUrl() + "\">"
-						+ issue.getKey() + "</a> " + issue.getSummary() + "</body></html>";
+				String txt = "<html><body><a href=\"" + params.issue.getIssueUrl() + "\">"
+						+ params.issue.getKey() + "</a> " + params.issue.getSummary() + "</body></html>";
 				summary.setText(txt);
 			}
 		}
 
-		private static class ScrollablePanel extends JPanel implements Scrollable {
+		private class ScrollablePanel extends JPanel implements Scrollable {
 			private static final int A_LOT = 100000;
 
 			// cheating obviously but this seems to do the right thing, so whatever :)
@@ -676,7 +579,7 @@ public final class IssueToolWindow {
 
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.CommentsToolBar");
-				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(server, issue), group, true);
+				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
 
 				JComponent comp = toolbar.getComponent();
 				rightPanel.add(comp, gbc);
@@ -715,7 +618,7 @@ public final class IssueToolWindow {
 			}
 
 			public void addComment(JIRAComment c) {
-				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, server, tabs);
+				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, params.server, tabs);
 				comments.add(p);
 			}
 
@@ -738,14 +641,14 @@ public final class IssueToolWindow {
 			}
 
 			public void addComment() {
-				final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issue.getKey());
+				final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(params.issue.getKey());
 				issueCommentDialog.show();
 				if (issueCommentDialog.isOK()) {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							try {
-								if (server != null) {
-									facade.addComment(server, issue, issueCommentDialog.getComment());
+								if (params.server != null) {
+									facade.addComment(params.server, params.issue, issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
 											refreshComments();
@@ -757,7 +660,7 @@ public final class IssueToolWindow {
 								SwingUtilities.invokeLater(new Runnable() {
 									public void run() {
 										Messages.showMessageDialog(
-												"Failed to add comment to issue " + issue.getKey() + ": " + msg,
+												"Failed to add comment to issue " + params.issue.getKey() + ": " + msg,
 												"Error", Messages.getErrorIcon());
 									}
 								});
@@ -775,12 +678,14 @@ public final class IssueToolWindow {
 				final Runnable runnable = new Runnable() {
 					public void run() {
 						try {
-							if (server != null) {
-								final java.util.List<JIRAComment> cmts = facade.getComments(server, issue);
+							if (params.server != null) {
+								final java.util.List<JIRAComment> cmts =
+										facade.getComments(params.server, params.issue);
 
 								for (JIRAComment c : cmts) {
 									try {
-										JIRAUserBean u = JIRAUserNameCache.getInstance().getUser(server, c.getAuthor());
+										JIRAUserBean u = JIRAUserNameCache.getInstance()
+												.getUser(params.server, c.getAuthor());
 										c.setAuthorFullName(u.getName());
 									} catch (JiraUserNotFoundException e) {
 										c.setAuthorFullName(c.getAuthor());
@@ -812,14 +717,14 @@ public final class IssueToolWindow {
 					tabs.remove(2);
 				}
 
-				String stack = Html2text.translate(issue.getDescription());
+				String stack = Html2text.translate(params.issue.getDescription());
 				if (StackTraceDetector.containsStackTrace(stack)) {
 					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
 				}
 			}
 		}
 
-		private abstract static class AbstractShowHideButton extends JLabel {
+		private abstract class AbstractShowHideButton extends JLabel {
 
 			private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
 			private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
@@ -853,7 +758,7 @@ public final class IssueToolWindow {
 			protected abstract String getTooltip();
 		}
 
-		private static class ShowHideButton extends AbstractShowHideButton {
+		private class ShowHideButton extends AbstractShowHideButton {
 			private JComponent body;
 			private JComponent container;
 
@@ -875,7 +780,7 @@ public final class IssueToolWindow {
 			}
 		}
 
-		private static class UserLabel extends HyperlinkLabel {
+		private class UserLabel extends HyperlinkLabel {
 			UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
 				super(userName, color, HEADER_BACKGROUND_COLOR, color);
 				addListener(serverUrl, userNameId);
@@ -898,7 +803,7 @@ public final class IssueToolWindow {
 			}
 		}
 
-		private static class WhiteLabel extends JLabel {
+		private class WhiteLabel extends JLabel {
 			public WhiteLabel() {
 				setForeground(UIUtil.getTableSelectionForeground());
 			}
@@ -936,7 +841,7 @@ public final class IssueToolWindow {
 				body.setBorder(BorderFactory.createEmptyBorder());
 				body.setContentType("text/html");
 				body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				body.setText("<html><head></head><body>" + issue.getDescription() + "</body></html>");
+				body.setText("<html><head></head><body>" + params.issue.getDescription() + "</body></html>");
 				sp.getViewport().setOpaque(false);
 				body.setCaretPosition(0);
 				add(sp, gbc);
@@ -1024,7 +929,7 @@ public final class IssueToolWindow {
 			public StackTracePanel(String stack) {
 
 				TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-				TextConsoleBuilder builder = factory.createBuilder(project);
+				TextConsoleBuilder builder = factory.createBuilder(params.project);
 				ConsoleView console = builder.getConsole();
 				console.print(stack, ConsoleViewContentType.NORMAL_OUTPUT);
 

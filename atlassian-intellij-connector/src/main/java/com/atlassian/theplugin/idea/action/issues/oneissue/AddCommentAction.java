@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.issues.oneissue;
 
-import com.atlassian.theplugin.idea.jira.IssueToolWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -11,6 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class AddCommentAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IssueToolWindow.addComment(e.getPlace());
+		IdeaHelper.getIssueToolWindow(e).addComment(e.getPlace());
 	}
 }

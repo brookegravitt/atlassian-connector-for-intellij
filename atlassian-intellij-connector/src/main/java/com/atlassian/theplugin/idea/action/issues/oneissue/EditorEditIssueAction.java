@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.action.issues.oneissue;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 
 /**
  * User: jgorycki
@@ -11,6 +11,6 @@ import com.atlassian.theplugin.idea.jira.IssueToolWindow;
  */
 public class EditorEditIssueAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IssueToolWindow.editIssueInBrowser(e.getPlace());
+		IdeaHelper.getIssueToolWindow(e).editIssueInBrowser(e.getPlace());
 	}
 }
