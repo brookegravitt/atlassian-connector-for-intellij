@@ -29,7 +29,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ShowHideBambooTabAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		PluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.BAMBOO);
+		PluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.BUILDS);
 
 	}
 }

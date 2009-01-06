@@ -212,12 +212,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// create tool window content
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO);
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD);
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooToolWindowPanel.getTable());
 
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
-
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
@@ -301,7 +301,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(), false);
+				PluginToolWindow.ToolWindowPanels.BAMBOO_OLD.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
@@ -309,7 +309,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public Content createBuildContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(), false);
+				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
