@@ -30,17 +30,16 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.util.containers.HashSet;
 
 import javax.swing.*;
-import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class PluginToolWindow {
 
-	private Set<ToolWindowPanels> panels = new HashSet<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
+	private ArrayList<ToolWindowPanels> panels = new ArrayList<ToolWindowPanels>(INITIAL_NUMBER_OF_TABS);
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
@@ -102,7 +101,9 @@ public class PluginToolWindow {
 	 * @param toolWindowPanel ToolWindowPanels enum value
 	 */
 	public void registerPanel(ToolWindowPanels toolWindowPanel) {
-		panels.add(toolWindowPanel);
+		if (!panels.contains(toolWindowPanel)) {
+			panels.add(toolWindowPanel);
+		}
 	}
 
 //	public void registerBottomPanel(ToolWindowPanels toolWindowPanel) {
@@ -303,11 +304,11 @@ public class PluginToolWindow {
 						// doesn't exists so create and show tab
 						switch (component) {
 							case BAMBOO_OLD:
-									content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
 										contentManager);
 								break;
 							case BUILDS:
-									content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
+								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
 										contentManager);
 								break;
 							case CRUCIBLE:
@@ -375,7 +376,7 @@ public class PluginToolWindow {
 		BUILDS("Builds"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues");
-		
+
 		private final String title;
 
 		ToolWindowPanels(String title) {
