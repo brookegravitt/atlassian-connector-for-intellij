@@ -21,7 +21,6 @@ import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
@@ -72,7 +71,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 								  @NotNull final ProjectCfgManager projectCfgManager,
 								 // @NotNull final CrucibleReviewListModel reviewListModel,
 								  @NotNull final UiTaskExecutor uiTaskExecutor) {
-		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
+		super(project, "ThePlugin.Builds.LeftToolBar", "ThePlugin.Builds.RightToolBar");
 
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
@@ -210,15 +209,15 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 	public void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 		});
 		getSearchField().addKeyboardListener(new KeyListener() {
@@ -265,7 +264,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 	}
 
 
-	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
+	public void setGroupBy(BuildGroupBy groupBy) {
 //		this.groupBy = groupBy;
 //		buildTree.groupBy(groupBy);
 ////		expandAllRightTreeNodes();
@@ -277,7 +276,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 		return groupBy;
 	}
 
-	public void refresh(final UpdateReason reason) {
+	public void refresh() {
 //		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 //			@Override
 //			public void run(@NotNull final ProgressIndicator indicator) {
@@ -285,6 +284,14 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //			}
 //		};
 //		ProgressManager.getInstance().run(refresh);
+	}
+
+	public void expandRightTree() {
+
+	}
+
+	public void collapseRightTree() {
+		
 	}
 
 	private class LocalBuildFilterListModelListener /*implements BuildFilterSelectionListener*/ {
