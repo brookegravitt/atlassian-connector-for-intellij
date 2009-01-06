@@ -98,7 +98,7 @@ public final class IdeaHelper {
 		}
 
 		ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BAMBOO.toString());
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BUILDS.toString());
 		if (content == null) {
 			return null;
 		}

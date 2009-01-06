@@ -144,8 +144,12 @@ public class PluginToolWindow {
 						Content content = null;
 
 						switch (entry) {
-							case BAMBOO:
+							case BAMBOO_OLD:
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
+								break;
+							case BUILDS:
+								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
 										contentManager);
 								break;
 							case CRUCIBLE:
@@ -160,11 +164,7 @@ public class PluginToolWindow {
 								break;
 						}
 
-						Content content2 = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
-										contentManager);
-
 						ideaToolWindow.getContentManager().addContent(content);
-						ideaToolWindow.getContentManager().addContent(content2);
 					}
 					// servers are not defined
 				} else {
@@ -199,10 +199,12 @@ public class PluginToolWindow {
 
 			if (content == null) {
 				switch (component) {
-					case BAMBOO:
-						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
-						contentManager.addContent(content);
+					case BAMBOO_OLD:
 						content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(contentManager);
+						contentManager.addContent(content);
+						break;
+					case BUILDS:
+						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
 						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
@@ -231,8 +233,8 @@ public class PluginToolWindow {
 	 * @param tabName
 	 */
 	public static void focusPanel(Project project, String tabName) {
-		if (tabName.equals(ToolWindowPanels.BAMBOO.toString())) {
-			focusPanel(project, ToolWindowPanels.BAMBOO);
+		if (tabName.equals(ToolWindowPanels.BUILDS.toString())) {
+			focusPanel(project, ToolWindowPanels.BUILDS);
 		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE.toString())) {
 			focusPanel(project, ToolWindowPanels.CRUCIBLE);
 		} else if (tabName.equals(ToolWindowPanels.ISSUES.toString())) {
@@ -300,8 +302,12 @@ public class PluginToolWindow {
 
 						// doesn't exists so create and show tab
 						switch (component) {
-							case BAMBOO:
-								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+							case BAMBOO_OLD:
+									content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
+								break;
+							case BUILDS:
+									content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
 										contentManager);
 								break;
 							case CRUCIBLE:
@@ -318,11 +324,6 @@ public class PluginToolWindow {
 
 						tw.getContentManager().addContent(content);
 
-
-						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
-										contentManager);
-
-						tw.getContentManager().addContent(content);
 					} else { //tab exists so close it, hide
 						if (content.isSelected() && tw.isVisible()) {
 							tw.getContentManager().removeContent(content, true);
@@ -370,7 +371,8 @@ public class PluginToolWindow {
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-		BAMBOO("Builds"),
+		BAMBOO_OLD("Builds old"),
+		BUILDS("Builds"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues");
 		
