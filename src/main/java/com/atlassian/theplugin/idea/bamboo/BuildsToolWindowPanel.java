@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
@@ -101,7 +102,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 
 //		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
-		addSearchBoxListener();
+		addSearchBoxListener();		
 	}
 
 	private void setupBuildTree() {
@@ -284,6 +285,10 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	public void collapseRightTree() {
 		
+	}
+
+	public BambooStatusListener getStatusCheckerListener() {
+		return buildTree;
 	}
 
 	private class LocalBuildFilterListModelListener /*implements BuildFilterSelectionListener*/ {

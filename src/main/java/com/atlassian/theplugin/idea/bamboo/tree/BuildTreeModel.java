@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildModel;
@@ -158,5 +159,14 @@ public class BuildTreeModel extends DefaultTreeModel {
 		buildModel.setBuils(builds);
 
 		// todo refresh tree
+	}
+
+	public void update(final Collection<BambooBuild> buildStatuses) {
+		Collection<BambooBuildAdapterIdea> builds = new ArrayList<BambooBuildAdapterIdea>();
+		for (BambooBuild build : buildStatuses) {
+			builds.add(new BambooBuildAdapterIdea(build));
+		}
+		buildModel.setBuils(builds);
+		nodeStructureChanged(getRoot());
 	}
 }
