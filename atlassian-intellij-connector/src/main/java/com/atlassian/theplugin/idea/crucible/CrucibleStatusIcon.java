@@ -20,12 +20,15 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Defines crucible icon behaviour.
@@ -44,13 +47,14 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
 	private static final String ERROR_REVIEWS = "Some errors occured. Check connections to Crucible servers.";
 
-	public CrucibleStatusIcon(final Project project, CfgManager cfgManager) {
+	public CrucibleStatusIcon(final Project project, CfgManager cfgManager, @NotNull final PluginToolWindow pluginToolWindow) {
 		super(project, cfgManager);
 		resetIcon();
 
 		addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
-                PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
+				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 				resetIcon();
 			}
 		});

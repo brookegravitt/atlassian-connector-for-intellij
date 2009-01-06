@@ -23,6 +23,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
+import org.jetbrains.annotations.NotNull;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
@@ -34,11 +35,15 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	private final CrucibleStatusIcon display;
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 200);
 	private Project project;
-	private boolean exceptionRaised = false;
+	private final PluginToolWindow pluginToolWindow;
 
-	public CrucibleNotificationTooltip(CrucibleStatusIcon display, Project project) {
+	private boolean exceptionRaised;
+
+	public CrucibleNotificationTooltip(CrucibleStatusIcon display, Project project,
+			@NotNull final PluginToolWindow pluginToolWindow) {
 		this.display = display;
 		this.project = project;
+		this.pluginToolWindow = pluginToolWindow;
 	}
 
 
@@ -128,9 +133,10 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					content.addHyperlinkListener(new GenericHyperlinkListener());
 
 					content.addMouseListener(new MouseAdapter() {
+						@Override
 						public void mouseClicked(MouseEvent e) {
 							display.resetIcon();
-							PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.CRUCIBLE);
+							pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
