@@ -56,11 +56,11 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
-//	private final CrucibleReviewListModel reviewListModel;
+//	private final CrucibleReviewListModel buildModel;
 
 	public BuildsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 								  @NotNull final ProjectCfgManager projectCfgManager,
-								 // @NotNull final CrucibleReviewListModel reviewListModel,
+								 // @NotNull final CrucibleReviewListModel buildModel,
 								  @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Builds.LeftToolBar", "ThePlugin.Builds.RightToolBar");
 
@@ -71,9 +71,9 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 
 //		filterListModel = new CrucibleFilterListModel(
 //				bambooProjectConfiguration.getCrucibleFilters().getManualFilter());
-//		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, reviewListModel);
-//		this.reviewListModel = reviewListModel;
-//		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
+//		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, buildModel);
+//		this.buildModel = buildModel;
+//		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.buildModel);
 //		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
 
 		init();
@@ -272,7 +272,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 //			@Override
 //			public void run(@NotNull final ProgressIndicator indicator) {
-//					reviewListModel.rebuildModel(reason);
+//					buildModel.rebuildModel(reason);
 //			}
 //		};
 //		ProgressManager.getInstance().run(refresh);
