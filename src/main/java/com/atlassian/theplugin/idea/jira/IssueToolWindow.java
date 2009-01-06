@@ -287,11 +287,14 @@ public final class IssueToolWindow {
 		}
 
 		public void modelChanged(JIRAIssueListModel m) {
-			refresh();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					refresh();
+				}
+			});
 		}
 
 		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
-			refresh();
 		}
 
 		public void unregister() {
