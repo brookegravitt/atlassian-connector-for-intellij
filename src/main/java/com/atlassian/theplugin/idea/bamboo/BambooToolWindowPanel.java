@@ -261,8 +261,9 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 					return "Build Succeeded";
 				case UNKNOWN:
 					return "Unknown";
+				default:
+					return "???";
 			}
-			return "???";
 		}
 	}
 
