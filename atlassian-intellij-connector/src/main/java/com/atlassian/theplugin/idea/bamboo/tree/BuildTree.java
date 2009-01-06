@@ -15,19 +15,36 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 
 import javax.swing.*;
+import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class BuildTree extends JTree {
+public class BuildTree extends JTree implements BambooStatusListener {
+	private BuildTreeModel buildTreeModel;
+
 	public BuildTree(final BuildTreeModel buildTreeModel) {
+		super(buildTreeModel);
+
+		super.setRootVisible(false);
+
+		this.buildTreeModel = buildTreeModel;
 		
 	}
 
 	public BuildDetailsInfo getSelectedBuild() {
 		return null;
+	}
+
+	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
+		buildTreeModel.update(buildStatuses);
+	}
+
+	public void resetState() {
 	}
 }
