@@ -57,13 +57,15 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			gbc.fill = GridBagConstraints.NONE;
 
 			gbc.insets = new Insets(0, 0, 0, 0);
-			JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(), SwingConstants.LEADING, ICON_HEIGHT);
+			JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(),
+					SwingConstants.LEADING, ICON_HEIGHT);
 			p.add(icon, gbc);
 
 			gbc.gridx++;
 			gbc.weightx = 1.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			JLabel key = new SelectableLabel(selected, enabled, " " + build.getBuildKey(), ICON_HEIGHT);
+			JLabel key = new SelectableLabel(selected, enabled, " " + build.getBuildKey() + "-" + build.getBuildNumber(),
+					ICON_HEIGHT);
 			p.add(key, gbc);
 
 //			gbc.gridx++;
