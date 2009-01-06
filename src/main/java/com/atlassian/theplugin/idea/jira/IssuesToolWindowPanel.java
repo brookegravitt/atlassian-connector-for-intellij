@@ -883,10 +883,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	@Override
-	public void onEditButtonClickAction() {
-	}
-
-	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
 	}

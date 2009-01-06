@@ -17,19 +17,17 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.PluginToolWindow;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Mar 26, 2008
- * Time: 2:53:39 PM
- * To change this template use File | Settings | File Templates.
- */
 public class ShowHideBambooTabAction extends AnAction {
+	@Override
 	public void actionPerformed(AnActionEvent e) {
-		PluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.BUILDS);
+		final PluginToolWindow pluginToolWindow = IdeaHelper.getProjectComponent(e, PluginToolWindow.class);
+		if (pluginToolWindow != null) {
+			pluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
+		}
 
 	}
 }

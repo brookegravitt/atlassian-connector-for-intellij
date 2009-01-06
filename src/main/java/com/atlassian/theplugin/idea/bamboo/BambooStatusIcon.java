@@ -39,9 +39,11 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 //	private final PluginStatusBarToolTip tooltip;
 
 	/**
-	 * @param project reference to the project that owns this icon.
+	 * @param project reference to the project (frame) that owns this icon.
+	 * @param cfgManager
+	 * @param pluginToolWindow
 	 */
-    public BambooStatusIcon(final Project project, CfgManager cfgManager) {
+    public BambooStatusIcon(final Project project, CfgManager cfgManager, final PluginToolWindow pluginToolWindow) {
 
 		super(project, cfgManager);
 
@@ -59,8 +61,9 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 			*/
 
 			// show/hide toolbar on click
+			@Override
 			public void mouseClicked(MouseEvent e) {
-				PluginToolWindow.focusPanel(project, PluginToolWindow.ToolWindowPanels.BUILDS);
+				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
             }
 		});
 

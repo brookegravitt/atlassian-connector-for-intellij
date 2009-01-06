@@ -26,7 +26,7 @@ public final class Util {
 
 	public static ServerType toolWindowPanelsToServerType(PluginToolWindow.ToolWindowPanels panel) throws ThePluginException {
 		switch (panel) {
-			case BUILDS:
+			case BUILDS_WOJTEK:
 			case BAMBOO_OLD:
 				return ServerType.BAMBOO_SERVER;
 			case CRUCIBLE:

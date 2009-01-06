@@ -239,7 +239,6 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	public abstract void addSearchBoxListener();
 	public abstract JTree createRightTree();
 	public abstract JTree createLeftTree();
-	public abstract void onEditButtonClickAction();
 	public abstract String getActionPlaceName();
 	//public abstract JComponent createCustomFiltedPanel();
 
