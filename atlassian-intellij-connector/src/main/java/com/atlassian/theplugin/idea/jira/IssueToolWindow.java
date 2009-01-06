@@ -200,15 +200,15 @@ public final class IssueToolWindow {
 	public static void viewIssueInBrowser(String key) {
 		IssuePanel ip = panelMap.get(key);
 		if (ip != null) {
-			JIRAIssue issue = ip.issue;
-			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
+			BrowserUtil.launchBrowser(ip.issue.getIssueUrl());
 		}
 	}
 
 	public static void editIssueInBrowser(String key) {
 		IssuePanel ip = panelMap.get(key);
 		if (ip != null) {
-			BrowserUtil.launchBrowser(ip.issue.getIssueUrl());
+			JIRAIssue issue = ip.issue;
+			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
 		}
 	}
 
