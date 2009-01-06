@@ -160,7 +160,11 @@ public class PluginToolWindow {
 								break;
 						}
 
+						Content content2 = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
+										contentManager);
+
 						ideaToolWindow.getContentManager().addContent(content);
+						ideaToolWindow.getContentManager().addContent(content2);
 					}
 					// servers are not defined
 				} else {
@@ -197,6 +201,8 @@ public class PluginToolWindow {
 				switch (component) {
 					case BAMBOO:
 						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
+						contentManager.addContent(content);
+						content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(contentManager);
 						contentManager.addContent(content);
 						break;
 					case CRUCIBLE:
@@ -309,6 +315,12 @@ public class PluginToolWindow {
 							default:
 								break;
 						}
+
+						tw.getContentManager().addContent(content);
+
+
+						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
 
 						tw.getContentManager().addContent(content);
 					} else { //tab exists so close it, hide
