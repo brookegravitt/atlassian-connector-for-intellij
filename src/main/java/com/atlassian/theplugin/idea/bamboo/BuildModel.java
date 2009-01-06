@@ -15,13 +15,14 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class BuildModel {
-	private Collection<BambooBuildAdapterIdea> builds;
+	private Collection<BambooBuildAdapterIdea> builds = new ArrayList<BambooBuildAdapterIdea>();
 
 	public void setBuils(final Collection<BambooBuildAdapterIdea> buildsCollection) {
 		this.builds = buildsCollection;

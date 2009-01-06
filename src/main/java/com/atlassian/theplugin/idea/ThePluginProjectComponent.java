@@ -193,8 +193,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			this.bambooToolWindowPanel = new BambooTableToolWindowPanel(
 					project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
 
-			// wseliga: I don't know yet what do to with comment below
-			// todo remove that get instance as it can return null. it is better to get it from app component.
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
@@ -276,6 +274,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			created = true;
 
 			registerCrucibleNotifier();
+			bambooStatusChecker.registerListener(buildToolWindowPanel.getStatusCheckerListener());
 		}
 
 
