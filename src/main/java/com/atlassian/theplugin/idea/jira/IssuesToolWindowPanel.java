@@ -362,7 +362,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	public void openIssue(@NotNull JIRAIssue issue) {
-		IssueToolWindow.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
+		IdeaHelper.getIssueToolWindow(getProject())
+				.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 	}
 
 	public void openIssue(@NotNull final String issueKey) {
@@ -395,7 +396,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						return;
 					}
 					if (issue != null) {
-						IssueToolWindow.showIssue(
+						IdeaHelper.getIssueToolWindow(getProject()).showIssue(
 								getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 					}
 				}
@@ -883,7 +884,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	@Override
 	public void onEditButtonClickAction() {
-		//To change body of implemented methods use File | Settings | File Templates.
 	}
 
 	@Override
