@@ -69,6 +69,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private final ProjectConfigurationBean projectConfigurationBean;
 	private final Project project;
+	private BuildsToolWindowPanel buildToolWindowPanel;
 
 	public CfgManager getCfgManager() {
 		return cfgManager;
@@ -114,6 +115,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 									 TestResultsToolWindow testResultsToolWindow,
 									 @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 									 @NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
+									 @NotNull BuildsToolWindowPanel buildToolWindowPanel,
 									 BuildChangesToolWindow buildChangesToolWindow,
 									 @NotNull final CrucibleStatusChecker crucibleStatusChecker,
 									 @NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
@@ -133,6 +135,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
+		this.buildToolWindowPanel = buildToolWindowPanel;
 		this.buildChangesToolWindow = buildChangesToolWindow;
 		/*
 
@@ -298,6 +301,14 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public Content createBambooContent(@NotNull final ContentManager contentManager) {
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
+				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(), false);
+		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+		return content;
+	}
+
+	public Content createBuildContent(@NotNull final ContentManager contentManager) {
+		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BAMBOO.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);

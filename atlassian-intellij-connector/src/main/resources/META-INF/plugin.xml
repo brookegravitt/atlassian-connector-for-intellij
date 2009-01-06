@@ -122,7 +122,9 @@
 		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
 						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>
 
-		
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"
+                serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"/>
+
 	</extensions>
 
     <application-components>
