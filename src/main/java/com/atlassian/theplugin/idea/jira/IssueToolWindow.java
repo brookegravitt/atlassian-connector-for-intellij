@@ -59,14 +59,14 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		super(new HashMap<String, ContentPanel>());
 	}
 
-	private class IssueContentParameters implements ContentParameters {
+	private final class IssueContentParameters implements ContentParameters {
 		private final Project project;
 		private final JiraServerCfg server;
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
 		private JIRAIssue issue;
 		private final JIRAIssueListModel model;
 
-		public IssueContentParameters(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
+		private IssueContentParameters(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
 			this.project = project;
 			this.server = server;
 			this.issue = issue;
