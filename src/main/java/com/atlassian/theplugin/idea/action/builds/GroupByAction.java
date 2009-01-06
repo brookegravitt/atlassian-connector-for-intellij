@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
  */
 // todo add client property handling to all actions
 public class GroupByAction extends AnAction implements CustomComponentAction {
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
 	}
 

@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -33,6 +34,8 @@ import com.intellij.ui.content.ContentManager;
 
 import javax.swing.*;
 import java.util.ArrayList;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jacek Jaroczynski
@@ -50,6 +53,7 @@ public class PluginToolWindow {
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
 	private final CfgManager cfgManager;
+	private final BambooToolWindowPanel bambooToolWindowPanel;
 
 
 	public static void showHidePluginWindow(AnActionEvent event) {
@@ -58,14 +62,12 @@ public class PluginToolWindow {
 			if (tw.isVisible()) {
 				tw.hide(new Runnable() {
 					public void run() {
-						//To change body of implemented methods use File | Settings | File Templates.
 					}
 				});
 			} else {
 
 				tw.show(new Runnable() {
 					public void run() {
-						//To change body of implemented methods use File | Settings | File Templates.
 					}
 				});
 			}
@@ -74,18 +76,18 @@ public class PluginToolWindow {
 
 	}
 
-	/**
-	 * @param toolWindowManager ToolWindowManager object
-	 * @param project		   reference to the project
-	 * @param cfgManager
-	 */
-	public PluginToolWindow(ToolWindowManager toolWindowManager, Project project, CfgManager cfgManager) {
+	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
+			@NotNull BambooToolWindowPanel bambooToolWindowPanel) {
 		this.cfgManager = cfgManager;
-		this.ideaToolWindow = toolWindowManager.registerToolWindow(
-				TOOL_WINDOW_NAME, false, ToolWindowAnchor.BOTTOM);
+		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
 	}
 
+
+	public void register(@NotNull ToolWindowManager toolWindowManager) {
+		this.ideaToolWindow = toolWindowManager.registerToolWindow(
+				TOOL_WINDOW_NAME, false, ToolWindowAnchor.BOTTOM);
+	}
 
 	/**
 	 * @return {@link ToolWindow} objects wraped up by this class
@@ -149,9 +151,12 @@ public class PluginToolWindow {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
 										contentManager);
 								break;
-							case BUILDS:
-								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
-										contentManager);
+//							case BUILDS:
+//								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
+//										contentManager);
+//								break;
+							case BUILDS_WOJTEK:
+								content = createBamboo2Content();
 								break;
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
@@ -188,25 +193,22 @@ public class PluginToolWindow {
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is created
 	 *
-	 * @param project
 	 * @param component
 	 */
-	public static void focusPanel(Project project, ToolWindowPanels component) {
-		ToolWindow tw = IdeaHelper.getToolWindow(project);
-		if (tw != null) {
-			final ContentManager contentManager = tw.getContentManager();
-			tw.activate(null);
+	public void focusPanel(ToolWindowPanels component) {
+		if (ideaToolWindow != null) {
+			final ContentManager contentManager = ideaToolWindow.getContentManager();
+			ideaToolWindow.activate(null);
 			Content content = contentManager.findContent(component.toString());
 
 			if (content == null) {
 				switch (component) {
 					case BAMBOO_OLD:
-						content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(contentManager);
-						contentManager.addContent(content);
-						break;
-					case BUILDS:
 						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
 						contentManager.addContent(content);
+						break;
+					case BUILDS_WOJTEK:
+						content = createBamboo2Content();
 						break;
 					case CRUCIBLE:
 						content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
@@ -224,35 +226,6 @@ public class PluginToolWindow {
 
 			contentManager.setSelectedContent(content);
 		}
-	}
-
-	/**
-	 * Methods opens the ToolWindow and focuses on a particular component.
-	 * If component does not exists it is created
-	 *
-	 * @param project
-	 * @param tabName
-	 */
-	public static void focusPanel(Project project, String tabName) {
-		if (tabName.equals(ToolWindowPanels.BUILDS.toString())) {
-			focusPanel(project, ToolWindowPanels.BUILDS);
-		} else if (tabName.equals(ToolWindowPanels.CRUCIBLE.toString())) {
-			focusPanel(project, ToolWindowPanels.CRUCIBLE);
-		} else if (tabName.equals(ToolWindowPanels.ISSUES.toString())) {
-			focusPanel(project, ToolWindowPanels.ISSUES);
-		}
-	}
-
-	/**
-	 * Methods opens the ToolWindow and focuses on a particular component.
-	 * If component does not exists it is created
-	 *
-	 * @param e
-	 * @param component
-	 */
-	public static void focusPanel(AnActionEvent e, ToolWindowPanels component) {
-		Project project = IdeaHelper.getCurrentProject(e.getDataContext());
-		focusPanel(project, component);
 	}
 
 	/**
@@ -284,11 +257,8 @@ public class PluginToolWindow {
 	 * @param event
 	 * @param component
 	 */
-	public static void showHidePanelIfExists(AnActionEvent event, ToolWindowPanels component) {
-		Project project = IdeaHelper.getCurrentProject(event.getDataContext());
-		ToolWindow tw = IdeaHelper.getToolWindow(project);
-
-		if (tw != null) {
+	public void showHidePanelIfExists(AnActionEvent event, ToolWindowPanels component) {
+		if (ideaToolWindow != null) {
 
 
 			try {
@@ -297,19 +267,18 @@ public class PluginToolWindow {
 				final CfgManager myCfgManager = IdeaHelper.getCfgManager();
 				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
-					final ContentManager contentManager = tw.getContentManager();
+					final ContentManager contentManager = ideaToolWindow.getContentManager();
 					Content content = contentManager.findContent(component.toString());
 					if (content == null) {
 
 						// doesn't exists so create and show tab
 						switch (component) {
 							case BAMBOO_OLD:
-								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+									content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
 										contentManager);
 								break;
-							case BUILDS:
-								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
-										contentManager);
+							case BUILDS_WOJTEK:
+								content = createBamboo2Content();
 								break;
 							case CRUCIBLE:
 								content = project.getComponent(ThePluginProjectComponent.class).createCrucibleContentNew(
@@ -323,27 +292,27 @@ public class PluginToolWindow {
 								break;
 						}
 
-						tw.getContentManager().addContent(content);
+						ideaToolWindow.getContentManager().addContent(content);
 
 					} else { //tab exists so close it, hide
-						if (content.isSelected() && tw.isVisible()) {
-							tw.getContentManager().removeContent(content, true);
+						if (content.isSelected() && ideaToolWindow.isVisible()) {
+							ideaToolWindow.getContentManager().removeContent(content, true);
 						} else {
-							tw.getContentManager().setSelectedContent(content);
+							ideaToolWindow.getContentManager().setSelectedContent(content);
 						}
 					}
 					// servers are not defined
 				} else {
 					// tab is visible
-					Content content = tw.getContentManager().findContent(component.toString());
+					Content content = ideaToolWindow.getContentManager().findContent(component.toString());
 					if (content != null) {
 						// hide tab
 
 
-						if (content.isSelected() && tw.isVisible()) {
-							tw.getContentManager().removeContent(content, true);
+						if (content.isSelected() && ideaToolWindow.isVisible()) {
+							ideaToolWindow.getContentManager().removeContent(content, true);
 						} else {
-							tw.getContentManager().setSelectedContent(content);
+							ideaToolWindow.getContentManager().setSelectedContent(content);
 						}
 					}
 				}
@@ -351,11 +320,21 @@ public class PluginToolWindow {
 				PluginUtil.getLogger().error(e.getMessage(), e);
 			}
 
-			tw.activate(null);
+			ideaToolWindow.activate(null);
 
 			focusPanelIfExists(project, component.toString());
 		}
 	}
+
+	public Content createBamboo2Content() {
+		final ContentManager contentManager = ideaToolWindow.getContentManager();
+		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
+				PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK.toString(), false);
+		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+		return content;
+	}
+
 
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
@@ -373,7 +352,8 @@ public class PluginToolWindow {
 	 */
 	public enum ToolWindowPanels {
 		BAMBOO_OLD("Builds old"),
-		BUILDS("Builds"),
+//		BUILDS("Builds"),
+		BUILDS_WOJTEK("Builds"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues");
 

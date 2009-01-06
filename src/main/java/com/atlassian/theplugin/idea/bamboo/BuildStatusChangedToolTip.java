@@ -30,6 +30,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import org.jetbrains.annotations.NotNull;
+
 public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDisplay {
 
 	public static final Color BACKGROUND_COLOR_FAILED = new Color(255, 214, 214);
@@ -38,7 +40,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	private transient Project projectComponent;
 	private JEditorPane content;
 
-	public BuildStatusChangedToolTip(Project project) {
+	public BuildStatusChangedToolTip(Project project, @NotNull final PluginToolWindow pluginToolWindow) {
 
 		projectComponent = project;
 
@@ -48,8 +50,9 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		content.setEditorKit(new ClasspathHTMLEditorKit());
 
 		content.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
-                PluginToolWindow.focusPanel(projectComponent, PluginToolWindow.ToolWindowPanels.BUILDS);
+                pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 			}
 		});
 

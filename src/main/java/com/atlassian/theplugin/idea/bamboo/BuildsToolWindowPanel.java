@@ -115,7 +115,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //		if (bambooProjectConfiguration.getView() != null && bambooProjectConfiguration.getView().getGroupBy() != null) {
 //			groupBy = bambooProjectConfiguration.getView().getGroupBy();
 //		}
-//		buildTree.setGroupBy(groupBy);
+//		buildTree.setGroupingType(groupBy);
 	}
 
 	private void addBuildTreeListeners() {
@@ -247,9 +247,6 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 		return new JTree();
 	}
 
-	@Override
-	public void onEditButtonClickAction() {
-	}
 
 	@Override
 	public String getActionPlaceName() {
@@ -262,7 +259,7 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 //		buildTree.groupBy(groupBy);
 ////		expandAllRightTreeNodes();
 //
-//		bambooProjectConfiguration.getView().setGroupBy(groupBy);
+//		bambooProjectConfiguration.getView().setGroupingType(groupBy);
 	}
 
 	public BuildGroupBy getGroupBy() {
