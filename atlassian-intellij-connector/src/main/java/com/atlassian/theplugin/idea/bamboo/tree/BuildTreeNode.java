@@ -23,6 +23,7 @@ import javax.swing.*;
  * @author Jacek Jaroczynski
  */
 public class BuildTreeNode extends AbstractBuildTreeNode {
+
 	private BambooBuildAdapterIdea build;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {

@@ -21,7 +21,7 @@ import java.util.Collection;
  * @author Jacek Jaroczynski
  */
 public class BuildModel {
-	Collection<BambooBuildAdapterIdea> builds;
+	private Collection<BambooBuildAdapterIdea> builds;
 
 	public void setBuils(final Collection<BambooBuildAdapterIdea> buildsCollection) {
 		this.builds = buildsCollection;

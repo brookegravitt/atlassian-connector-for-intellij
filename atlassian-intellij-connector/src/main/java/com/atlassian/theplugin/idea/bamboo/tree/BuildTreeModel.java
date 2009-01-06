@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public class BuildTreeModel extends DefaultTreeModel {
 
-	BuildModel buildModel = new BuildModel();
+	private BuildModel buildModel = new BuildModel();
 
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
@@ -45,10 +45,14 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 		// todo add group by node manipulators
 		generalNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		stateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());//StateNodeManipulator(buildModel, getRoot());
-		serverNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());//new ServerNodeManipulator(buildModel, getRoot());
-		authorNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());//AuthorNodeManipulator(buildModel, getRoot());
-		projectNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());//ProjectNodeManipulator(buildModel, getRoot());
+		stateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		//StateNodeManipulator(buildModel, getRoot());
+		serverNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		//new ServerNodeManipulator(buildModel, getRoot());
+		authorNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		//AuthorNodeManipulator(buildModel, getRoot());
+		projectNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		//ProjectNodeManipulator(buildModel, getRoot());
 	}
 
 	/**
