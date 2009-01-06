@@ -138,7 +138,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 		final ListModel listModel = createListModel(bambooFilterType);
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		for (int i = 0; i < listModel.getSize() ; i++) {
+		for (int i = 0; i < listModel.getSize(); i++) {
 			root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
 		}
 		getLeftTree().setModel(new DefaultTreeModel(root));
@@ -162,8 +162,9 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				return bambooModel.createServerFilter(Collections.<ServerCfg>emptyList());
 			case STATE:
 				return bambooModel.createStateFilter(Collections.<BuildStatus>emptyList());
+			default:
+				throw new UnsupportedOperationException("Method not implemented for " + filterType);
 		}
-		throw new UnsupportedOperationException("Method not implemented for " + filterType);
 	}
 
 	@NotNull
@@ -219,8 +220,9 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 					}
 				}
 				return bambooModel.createStateFilter(buildStatuses);
+			default:
+				throw new UnsupportedOperationException("Method not implemented for " + filterType);
 		}
-		throw new UnsupportedOperationException("Method not implemented for " + filterType);
 	}
 
 
@@ -311,7 +313,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	private TreeModel toTreeModel(ListModel listModel) {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		for (int i = 0; i < listModel.getSize() ; i++) {
+		for (int i = 0; i < listModel.getSize(); i++) {
 			root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
 		}
 		return new DefaultTreeModel(root);
@@ -340,6 +342,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				for (BuildStatus buildStatus : BuildStatus.values()) {
 					listModel.addElement(new BuildStatusWrapper(buildStatus));
 				}
+				break;
+			default:
 				break;
 		}
 		return listModel;
