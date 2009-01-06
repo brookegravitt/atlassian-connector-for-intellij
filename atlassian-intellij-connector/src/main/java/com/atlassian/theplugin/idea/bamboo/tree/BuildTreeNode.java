@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.intellij.util.ui.UIUtil;
@@ -67,6 +68,16 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			JLabel key = new SelectableLabel(selected, enabled, " " + build.getBuildKey() + "-" + build.getBuildNumber(),
 					ICON_HEIGHT);
 			p.add(key, gbc);
+
+		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
+			gbc.gridx++;
+			gbc.weightx = 1.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			JLabel failedTests = new SelectableLabel(selected, enabled,
+					" " + build.getTestsFailed() + "/" + build.getTestsNumber() + " Tests Failed",
+					ICON_HEIGHT);
+			p.add(failedTests, gbc);
+		}
 
 //			gbc.gridx++;
 //			gbc.weightx = 0.0;
