@@ -17,22 +17,14 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
-import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
@@ -40,54 +32,63 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreePath;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
-import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
+import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
 
 /**
  * @author Wojciech Seliga
  */
-public class BambooToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
+public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
+	private final Project project;
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
+	private final BambooFilterPanel filterList;
 
 	public BambooFilterType getBambooFilterType() {
-		return bambooFilterType;
+		return filterList.getBambooFilterType();
 	}
-
-	private BambooFilterType bambooFilterType;
 
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BambooModel bambooModel,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final CrucibleReviewListModel reviewListModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
-		super(project, "ThePlugin.Bamboo.LeftToolBar", "ThePlugin.Bamboo.RightToolBar");
+		super("ThePlugin.Bamboo.LeftToolBar", "ThePlugin.Bamboo.RightToolBar", PLACE_PREFIX + project.getName());
+		this.project = project;
 		this.bambooModel = bambooModel;
+		filterList = new BambooFilterPanel(projectCfgManager, CfgUtil.getProjectId(project), bambooModel);
+//		filterList = new JList(createListModel(BambooFilterType.STATE));
+
+		filterList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(final ListSelectionEvent e) {
+
+//				final BambooBuildFilter filter = createBuildFilter(bambooFilterType, filterList.getSelectedValues());
+				final BambooBuildFilter filter = filterList.getSelection();
+				bambooModel.setFilter(filter);
+			}
+		});
+
 		bambooModel.addListener(new BambooModelListener() {
 			public void filterChanged() {
 				updateTree();
 			}
 
 			public void buildsChanged() {
+//				filterList.setModel(updateFilterModel(bambooModel.getAllBuilds()));
+				filterList.update();
 				updateTree();
 			}
 
@@ -97,7 +98,6 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 			}
 		});
 		this.projectCfgManager = projectCfgManager;
-		this.bambooFilterType = BambooFilterType.STATE;
 		buildTree = new BuildTree(new BuildTreeModel());
 		init();
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
@@ -105,12 +105,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 		addBuildTreeListeners();
 	}
 
-//	@Override
-//	public void init() {
-//		super.init();
-////		getSplitLeftPane().setSecondComponent(null);
-////		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
-//	}
+
 
 	private void addBuildTreeListeners() {
 		buildTree.addKeyListener(new KeyAdapter() {
@@ -203,31 +198,6 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	}
 
 
-	public BambooStatusListener getStatusCheckerListener() {
-		if (buildTree == null) {
-			createRightTree();
-		}
-		return null; //buildTree;
-	}
-
-	@Override
-	public JTree createLeftTree() {
-		final JTree tree = new JTree(toTreeModel(createListModel(BambooFilterType.STATE)));
-		tree.setRootVisible(false);
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(final TreeSelectionEvent e) {
-				final BambooBuildFilter filter = createBuildFilter(bambooFilterType, tree.getSelectionPaths());
-				bambooModel.setFilter(filter);
-			}
-		});
-		return tree;
-	}
-
-	@Override
-	public String getActionPlaceName() {
-		return PLACE_PREFIX + this.getProject().getName();
-	}
-
 	public Object getData(@NonNls final String dataId) {
 		return null;
 	}
@@ -236,91 +206,64 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
-		this.bambooFilterType = bambooFilterType;
-//		getLeftTree().setVisible(bambooFilterType != null);
-		if (bambooFilterType == null) {
-			getLeftTree().setModel(null);
-		} else {
-			final ListModel listModel = createListModel(bambooFilterType);
-
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-			for (int i = 0; i < listModel.getSize(); i++) {
-				root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
-			}
-			getLeftTree().setModel(new DefaultTreeModel(root));
-		}
-		// by default there should be "ALL", which means null filter
+//		this.bambooFilterType = bambooFilterType;
+		filterList.setBambooFilterType(bambooFilterType);
 		bambooModel.setFilter(null);
+		// by default there should be "ALL", which means null filter
 		buildTree.updateModel(bambooModel.getBuilds());
 
-//		DefaultMutableTreeNode root2 = new DefaultMutableTreeNode();
-//		for (BambooBuildAdapterIdea build : bambooModel.getBuilds()) {
-//			root2.add(new DefaultMutableTreeNode(build));
-//		}
-//		getRightTree().setModel(new DefaultTreeModel(root2));
 
 	}
 
-	@Nullable
-	private BambooBuildFilter createBuildFilter(@Nullable final BambooFilterType filterType,
-			@Nullable final TreePath[] selectedPaths) {
-		if (filterType == null) {
-			return null;
+/*
+	private DefaultListModel updateFilterModel(@NotNull final Collection<BambooBuildAdapterIdea> buildStatuses) {
+		final DefaultListModel listModel = new DefaultListModel();
+		if (bambooFilterType == null) {
+			return listModel;
 		}
-		switch (filterType) {
+		switch (bambooFilterType) {
 			case PROJECT:
-				Collection<String> projectKeys = MiscUtil.buildArrayList();
-				if (selectedPaths != null) {
-					for (TreePath selectedPath : selectedPaths) {
-						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
-									.getLastPathComponent();
-							if (defaultMutableTreeNode.getUserObject() instanceof BambooProjectBean) {
-								final BambooProjectBean projectBean
-										= (BambooProjectBean) defaultMutableTreeNode.getUserObject();
-								projectKeys.add(projectBean.name);
-							}
+				break;
+			case SERVER: {
+				Map<BambooServerCfg, Integer> hitMap = new LinkedHashMap<BambooServerCfg, Integer>();
+				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
+						.getAllEnabledBambooServers(CfgUtil.getProjectId(project));
 
-						}
-					}
+				for (BambooServerCfg bambooServer : bambooServers) {
+					hitMap.put(bambooServer, 0);
 				}
-				return bambooModel.createProjectFilter(projectKeys);
-			case SERVER:
-				Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList();
-				if (selectedPaths != null) {
-					for (TreePath selectedPath : selectedPaths) {
-						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
-									.getLastPathComponent();
-							if (defaultMutableTreeNode.getUserObject() instanceof BamboServerCfgWrapper) {
-								final BamboServerCfgWrapper bamboServerCfgWrapper
-										= (BamboServerCfgWrapper) defaultMutableTreeNode.getUserObject();
-								serverCfgs.add(bamboServerCfgWrapper.getWrapped());
-							}
-						}
-					}
+				for (BambooBuildAdapterIdea buildStatus : buildStatuses) {
+					final Integer integer = hitMap.get(buildStatus.getServer());
+					hitMap.put(buildStatus.getServer(), integer != null ? integer + 1 : 1);
 				}
-				return bambooModel.createServerFilter(serverCfgs);
-			case STATE:
-				Collection<BuildStatus> buildStatuses = MiscUtil.buildArrayList();
-				if (selectedPaths != null) {
-					for (TreePath selectedPath : selectedPaths) {
-						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
-									.getLastPathComponent();
-							if (defaultMutableTreeNode.getUserObject() instanceof BuildStatusWrapper) {
-								final BuildStatusWrapper buildStatusWrapper = (BuildStatusWrapper) defaultMutableTreeNode
-										.getUserObject();
-								buildStatuses.add(buildStatusWrapper.getWrapped());
-							}
-						}
-					}
+
+				for (Map.Entry<BambooServerCfg, Integer> entry : hitMap.entrySet()) {
+					listModel.addElement(new BamboServerCfgWrapper(entry.getKey(), entry.getValue()));
+
 				}
-				return bambooModel.createStateFilter(buildStatuses);
-			default:
-				throw new UnsupportedOperationException("Method not implemented for " + filterType);
+			}
+				break;
+			case STATE: {
+
+				Map<BuildStatus, Integer> hitMap = new LinkedHashMap<BuildStatus, Integer>();
+				for (BuildStatus buildStatus : BuildStatus.values()) {
+					hitMap.put(buildStatus, 0);
+				}
+				for (BambooBuildAdapterIdea buildAdapterIdea : buildStatuses) {
+					final Integer integer = hitMap.get(buildAdapterIdea.getStatus());
+					hitMap.put(buildAdapterIdea.getStatus(), integer != null ? integer + 1 : 1);
+				}
+
+				for (Map.Entry<BuildStatus, Integer> entry : hitMap.entrySet()) {
+					listModel.addElement(new BuildStatusWrapper(entry.getKey(), entry.getValue()));
+
+				}
+			}
 		}
+		return listModel;
 	}
+*/
+
 
 	public void refresh() {
 		// I doubt if it's really necessary as refreshing anyway comes now asynchrounsly from Bamboo Status Chekcker.
@@ -328,99 +271,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	}
 
 
-	private static class BamboServerCfgWrapper extends GenericComboBoxItemWrapper<BambooServerCfg> {
-		public BamboServerCfgWrapper(final BambooServerCfg wrapped) {
-			super(wrapped);
-		}
 
-		@Override
-		public String toString() {
-			if (wrapped != null) {
-				return wrapped.getName();
-			}
-			return "None";
-		}
-	}
-
-
-	private static class BuildStatusWrapper extends GenericComboBoxItemWrapper<BuildStatus> {
-
-		public BuildStatusWrapper(final BuildStatus wrapped) {
-			super(wrapped);
-		}
-
-		@Override
-		public String toString() {
-			if (wrapped == null) {
-				return "None";
-			}
-			switch (wrapped) {
-				case BUILD_DISABLED:
-					return "Build Disabled";
-				case BUILD_FAILED:
-					return "Build Failed";
-				case BUILD_SUCCEED:
-					return "Build Succeeded";
-				case UNKNOWN:
-					return "Unknown";
-				default:
-					return "???";
-			}
-		}
-	}
-
-	private static class BambooProjectBean implements Comparable<BambooProjectBean> {
-		@NotNull
-		private final String name;
-
-		public BambooProjectBean(@NotNull final String name) {
-			this.name = name;
-		}
-
-		@Override
-		public String toString() {
-			if (name.length() == 0) {
-				return "[No Project Data]";
-			}
-			return name;
-		}
-
-		@Override
-		public boolean equals(final Object o) {
-			if (this == o) {
-				return true;
-			}
-			if (o == null || getClass() != o.getClass()) {
-				return false;
-			}
-
-			final BambooProjectBean that = (BambooProjectBean) o;
-
-			if (!name.equals(that.name)) {
-				return false;
-			}
-
-			return true;
-		}
-
-		@Override
-		public int hashCode() {
-			return name.hashCode();
-		}
-
-		public int compareTo(final BambooProjectBean o) {
-			return name.compareTo(o.name);
-		}
-	}
-
-
-	private TreeModel toTreeModel(ListModel listModel) {
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		for (int i = 0; i < listModel.getSize(); i++) {
-			root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
-		}
-		return new DefaultTreeModel(root);
-	}
+/*
 
 	private ListModel createListModel(BambooFilterType filterType) {
 		final DefaultListModel listModel = new DefaultListModel();
@@ -430,26 +282,32 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				for (BambooBuildAdapterIdea build : bambooModel.getAllBuilds()) {
 					projects.add(new BambooProjectBean(build.getProjectName()));
 				}
-				for (BambooProjectBean project : projects) {
-					listModel.addElement(project);
+				for (BambooProjectBean bambooProject : projects) {
+					listModel.addElement(bambooProject);
 				}
 				break;
 			case SERVER:
 				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
-						.getAllEnabledBambooServers(CfgUtil.getProjectId(getProject()));
+						.getAllEnabledBambooServers(CfgUtil.getProjectId(project));
 				for (BambooServerCfg bambooServer : bambooServers) {
-					listModel.addElement(new BamboServerCfgWrapper(bambooServer));
+					listModel.addElement(new BamboServerCfgWrapper(bambooServer, 0));
 				}
 				break;
 			case STATE:
 				for (BuildStatus buildStatus : BuildStatus.values()) {
-					listModel.addElement(new BuildStatusWrapper(buildStatus));
+					listModel.addElement(new BuildStatusWrapper(buildStatus, 0));
 				}
 				break;
 			default:
 				break;
 		}
 		return listModel;
+	}
+*/
+
+	@Override
+	protected JComponent getLeftPanel() {
+		return filterList;
 	}
 
 }

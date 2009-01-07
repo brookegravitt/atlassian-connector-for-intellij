@@ -41,10 +41,30 @@ interface BambooModelListener {
 
 interface BambooBuildFilter {
 	boolean passes(BambooBuildAdapterIdea build);
-	BambooFilterType getFilterType();
+//	BambooFilterType getFilterType();
+}
+
+class BambooCompositeOrFilter implements BambooBuildFilter {
+	final Collection<BambooBuildFilter> filters;
+
+	public BambooCompositeOrFilter(final Collection<BambooBuildFilter> filters) {
+		this.filters = filters;
+	}
+
+	public boolean passes(final BambooBuildAdapterIdea build) {
+		for (BambooBuildFilter filter : filters) {
+			if (filter.passes(build)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 
 public class BambooModel {
+	/**
+	 * null means no filter - all builds matchs
+	 */
 	private BambooBuildFilter filter;
 
 	private Collection<BambooModelListener> listeners = new CopyOnWriteArrayList<BambooModelListener>();
@@ -60,22 +80,12 @@ public class BambooModel {
 		this.cfgManager = cfgManager;
 		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), new MyConfigurationListenerAdapter());
 
-		allBuilds.add(createBambooBuild("B1", "PR1", "Project One", true));
-		allBuilds.add(createBambooBuild("B2", "PR2", "Project Two", true));
-		allBuilds.add(createBambooBuild("B3", "PR3", "Project Three", false));
-		allBuilds.add(createBambooBuild("B4", "PR1", "Project One", false));
-		allBuilds.add(createBambooBuild("B5", "PR3", "Project Three", false));
-		allBuilds.add(createBambooBuild("B6", "PR1", "Project One", false));
-		allBuilds.add(createBambooBuild("B7", "PR4", "Project Four", true));
 	}
 
-	private BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, boolean isSuccessful) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo();
-		buildInfo.setBuildKey(buildKey);
-		buildInfo.setProjectKey(key);
-		buildInfo.setProjectName(name);
-		buildInfo.setBuildState(isSuccessful ? BambooBuildInfo.BUILD_SUCCESSFUL : BambooBuildInfo.BUILD_FAILED);
-		return new BambooBuildAdapterIdea(buildInfo);
+	// for unit tests only
+	void setBuilds(Collection<BambooBuildAdapterIdea> builds) {
+		allBuilds.clear();
+		allBuilds.addAll(builds);
 	}
 
 	public void update(Collection<BambooBuild> builds) {
