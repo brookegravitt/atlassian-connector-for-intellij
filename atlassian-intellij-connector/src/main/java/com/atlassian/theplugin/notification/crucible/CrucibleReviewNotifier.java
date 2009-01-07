@@ -74,9 +74,6 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	public void reviewAdded(UpdateContext updateContext) {
-		if (canAddNotifiaction(updateContext)) {
-			// add notifications ???
-		}
 	}
 
 	public void reviewRemoved(UpdateContext updateContext) {
@@ -109,9 +106,9 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 	}
 
 	public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
-		if (canAddNotifiaction(updateContext)) {
-			// error notifications ???
-		}
+//		if (canAddNotifiaction(updateContext)) {
+//			// error notifications ???
+//		}
 	}
 
 	private boolean canAddNotifiaction(UpdateContext updateContext) {

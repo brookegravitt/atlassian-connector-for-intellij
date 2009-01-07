@@ -43,7 +43,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -181,7 +180,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
 									.getLastPathComponent();
 							if (defaultMutableTreeNode.getUserObject() instanceof BambooProjectBean) {
-								final BambooProjectBean projectBean 
+								final BambooProjectBean projectBean
 										= (BambooProjectBean) defaultMutableTreeNode.getUserObject();
 								projectKeys.add(projectBean.name);
 							}
@@ -226,7 +225,6 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				throw new UnsupportedOperationException("Method not implemented for " + filterType);
 		}
 	}
-
 
 
 	private static class BamboServerCfgWrapper extends GenericComboBoxItemWrapper<BambooServerCfg> {
