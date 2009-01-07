@@ -18,8 +18,10 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -41,8 +43,18 @@ public class BuildTree extends JTree implements BambooStatusListener {
 		return null;
 	}
 
-	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
+	public void updateModel(final Collection<BambooBuildAdapterIdea> buildStatuses) {
 		buildTreeModel.update(buildStatuses);
+	}
+
+	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
+		final Collection<BambooBuildAdapterIdea> collection = new ArrayList<BambooBuildAdapterIdea>();
+		for (BambooBuild build : buildStatuses) {
+			BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
+			collection.add(buildAdapter);
+		}
+
+		updateModel(collection);
 	}
 
 	public void resetState() {
