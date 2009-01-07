@@ -273,23 +273,23 @@
 		<action id="ThePlugin.Build.View"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.ViewBuildAction"
 				text="View Build"
-				description="View build in teh browser" icon="/general/web.png"/>
+				description="View build in the browser" icon="/general/web.png"/>
 		<action id="ThePlugin.Build.Run"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.RunBuildAction"
-				text="View Build"
-				description="View build in teh browser" icon="/actions/execute.png"/>
+				text="Run Build"
+				description="Run build" icon="/actions/execute.png"/>
 		<action id="ThePlugin.Build.Comment"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CommentBuildAction"
-				text="View Build"
-				description="View build in teh browser" icon="/actions/editSource.png"/>
+				text="Comment Build"
+				description="Add comment to build" icon="/actions/editSource.png"/>
 		<action id="ThePlugin.Build.Label"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.LabelBuildAction"
-				text="View Build"
-				description="View build in teh browser" icon="/icons/icn_label.gif"/>
+				text="Label Build"
+				description="Add label to build" icon="/icons/icn_label.gif"/>
 		<action id="ThePlugin.Build.Close"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CloseBuildAction"
-				text="View Build"
-				description="View build in teh browser" icon="/actions/cross.png"/>
+				text="Close"
+				description="Close build panel" icon="/actions/cross.png"/>
 
         <action id="ThePlugin.Bamboo.Changes.GoToSource"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.GoToSourceAction" text="Jump to Source"

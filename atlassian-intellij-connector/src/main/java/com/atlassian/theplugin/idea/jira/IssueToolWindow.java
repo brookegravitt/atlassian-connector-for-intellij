@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
@@ -181,7 +182,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		public String getTitle() {
-			return params.issue.getKey();
+			return "Issue " + params.issue.getKey();
 		}
 
 		public void modelChanged(JIRAIssueListModel m) {
@@ -211,17 +212,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
-		}
-
-		private class BoldLabel extends JLabel {
-			public BoldLabel(String text) {
-				super(text);
-				setFont(getFont().deriveFont(Font.BOLD));
-			}
-
-			public BoldLabel() {
-				this("");
-			}
 		}
 
 		private class DetailsPanel extends JPanel {
@@ -262,10 +252,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				GridBagConstraints gbc1 = new GridBagConstraints();
 				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
+				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc2.fill = GridBagConstraints.HORIZONTAL;
 				gbc2.weightx = 1.0;
 				gbc1.gridx = 0;

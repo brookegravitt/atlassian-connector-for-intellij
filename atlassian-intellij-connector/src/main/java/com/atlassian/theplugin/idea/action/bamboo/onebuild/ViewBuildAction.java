@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.action.bamboo.onebuild;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -10,6 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ViewBuildAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		IdeaHelper.getBuildToolWindow(e).viewBuildInBrowser(e.getPlace());
 	}
 }
