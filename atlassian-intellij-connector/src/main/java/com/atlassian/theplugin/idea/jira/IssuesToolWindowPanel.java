@@ -225,7 +225,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	@Override
-	public void addSearchBoxListener() {
+	protected void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
 				searchingIssueListModel.setSearchTerm(getSearchField().getText());

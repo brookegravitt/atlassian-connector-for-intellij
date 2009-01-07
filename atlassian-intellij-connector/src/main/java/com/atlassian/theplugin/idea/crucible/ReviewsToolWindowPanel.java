@@ -223,7 +223,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	@Override
-	public void addSearchBoxListener() {
+	protected void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
 				searchingReviewListModel.setSearchTerm(getSearchField().getText());
