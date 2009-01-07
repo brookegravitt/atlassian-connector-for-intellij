@@ -48,59 +48,52 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
-			JPanel p = new JPanel();
-			p.setBackground(UIUtil.getTreeTextBackground());
-			p.setLayout(new GridBagLayout());
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
+		JPanel p = new JPanel();
+		p.setBackground(UIUtil.getTreeTextBackground());
+		p.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
 
 
+		// Icon
+		gbc.insets = new Insets(0, 0, 0, 0);
+		JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(),
+				SwingConstants.LEADING, ICON_HEIGHT);
+		p.add(icon, gbc);
 
-			gbc.insets = new Insets(0, 0, 0, 0);
-			JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(),
-					SwingConstants.LEADING, ICON_HEIGHT);
-			p.add(icon, gbc);
-
-			String title = " " + build.getBuildKey() + "-" + build.getBuildNumber();
+		// Title (name, number, failed tests)
+		String title = " " + build.getBuildKey() + "-" + build.getBuildNumber();
 
 		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
 			title += " " + build.getTestsFailed() + "/" + build.getTestsNumber() + " Tests Failed";
 		}
 
-			gbc.gridx++;
-			gbc.weightx = 1.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			JLabel key = new SelectableLabel(selected, enabled, title, ICON_HEIGHT);
-			p.add(key, gbc);
+		gbc.gridx++;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		JLabel key = new SelectableLabel(selected, enabled, title, ICON_HEIGHT);
+		p.add(key, gbc);
 
-//		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
-//			gbc.gridx++;
-//			gbc.weightx = 1.0;
-//			gbc.fill = GridBagConstraints.HORIZONTAL;
-//			JLabel failedTests = new SelectableLabel(selected, enabled,
-//					, null, SwingConstants.LEFT,
-//					ICON_HEIGHT);
-//			p.add(failedTests, gbc);
-//		}
 
-//			gbc.gridx++;
-//			gbc.weightx = 0.0;
-//			gbc.fill = GridBagConstraints.NONE;
-//			JLabel state = new SelectableLabel(selected, enabled, review.getState().value(), null,
-//					SwingConstants.LEADING, ICON_HEIGHT);
-//			setFixedComponentSize(state, STATUS_LABEL_WIDTH, ICON_HEIGHT);
-//			p.add(state, gbc);
+
+		// server
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		JLabel state = new SelectableLabel(selected, enabled, "(" + build.getServer().getName() + ")", null,
+				SwingConstants.LEADING, ICON_HEIGHT);
+		p.add(state, gbc);
 //
-//			gbc.gridx++;
-//			gbc.weightx = 0.0;
-//			gbc.insets = new Insets(0, 0, 0, 0);
-//			JLabel author = new SelectableLabel(selected, enabled, review.getAuthor().getDisplayName(), null,
-//					SwingConstants.LEADING, ICON_HEIGHT);
-//			setFixedComponentSize(author, AUTHOR_LABEL_WIDTH, ICON_HEIGHT);
-//			p.add(author, gbc);
+//		gbc.gridx++;
+//		gbc.weightx = 0.0;
+//		gbc.insets = new Insets(0, 0, 0, 0);
+//		JLabel author = new SelectableLabel(selected, enabled, review.getAuthor().getDisplayName(), null,
+//				SwingConstants.LEADING, ICON_HEIGHT);
+////		setFixedComponentSize(author, AUTHOR_LABEL_WIDTH, ICON_HEIGHT);
+//		p.add(author, gbc);
 //
 //			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 //			String t = dfo.format(review.getCreateDate());
@@ -185,5 +178,11 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 //	}
 
 	public void onSelect() {
+	}
+
+	private static void setFixedComponentSize(JComponent c, int width, int height) {
+		c.setPreferredSize(new Dimension(width, height));
+		c.setMinimumSize(new Dimension(width, height));
+		c.setMaximumSize(new Dimension(width, height));
 	}
 }
