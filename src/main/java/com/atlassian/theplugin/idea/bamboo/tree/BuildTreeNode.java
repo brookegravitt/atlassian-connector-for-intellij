@@ -57,27 +57,34 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			gbc.weightx = 0.0;
 			gbc.fill = GridBagConstraints.NONE;
 
+
+
 			gbc.insets = new Insets(0, 0, 0, 0);
 			JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(),
 					SwingConstants.LEADING, ICON_HEIGHT);
 			p.add(icon, gbc);
 
-			gbc.gridx++;
-			gbc.weightx = 1.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			JLabel key = new SelectableLabel(selected, enabled, " " + build.getBuildKey() + "-" + build.getBuildNumber(),
-					ICON_HEIGHT);
-			p.add(key, gbc);
+			String title = " " + build.getBuildKey() + "-" + build.getBuildNumber();
 
 		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
+			title += " " + build.getTestsFailed() + "/" + build.getTestsNumber() + " Tests Failed";
+		}
+
 			gbc.gridx++;
 			gbc.weightx = 1.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			JLabel failedTests = new SelectableLabel(selected, enabled,
-					" " + build.getTestsFailed() + "/" + build.getTestsNumber() + " Tests Failed",
-					ICON_HEIGHT);
-			p.add(failedTests, gbc);
-		}
+			JLabel key = new SelectableLabel(selected, enabled, title, ICON_HEIGHT);
+			p.add(key, gbc);
+
+//		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
+//			gbc.gridx++;
+//			gbc.weightx = 1.0;
+//			gbc.fill = GridBagConstraints.HORIZONTAL;
+//			JLabel failedTests = new SelectableLabel(selected, enabled,
+//					, null, SwingConstants.LEFT,
+//					ICON_HEIGHT);
+//			p.add(failedTests, gbc);
+//		}
 
 //			gbc.gridx++;
 //			gbc.weightx = 0.0;
