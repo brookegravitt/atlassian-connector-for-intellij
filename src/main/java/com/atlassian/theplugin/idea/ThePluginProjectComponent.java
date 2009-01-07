@@ -217,7 +217,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooTableToolWindowPanel.getTable());
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDSS);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
