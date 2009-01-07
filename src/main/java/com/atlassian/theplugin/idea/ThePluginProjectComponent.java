@@ -18,7 +18,15 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -31,11 +39,14 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.bamboo.*;
+import com.atlassian.theplugin.idea.bamboo.BambooModel;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
@@ -51,8 +62,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.table.TableView;
@@ -70,7 +79,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private final ProjectConfigurationBean projectConfigurationBean;
 	private final Project project;
-	private BuildsToolWindowPanel buildToolWindowPanel;
 
 	public CfgManager getCfgManager() {
 		return cfgManager;
@@ -85,12 +93,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private final BambooToolWindowPanel bambooToolWindowPanel;
 	private final BambooModel bambooModel;
 	private CrucibleStatusChecker crucibleStatusChecker;
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
-	private BambooTableToolWindowPanel bambooTableToolWindowPanel;
 	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
@@ -101,7 +107,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
-	private ReviewsToolWindowPanel reviewsToolWindowPanel;
 
 	private PluginToolWindow toolWindow;
 
@@ -112,9 +117,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
 			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel, @NotNull BuildsToolWindowPanel buildToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
-			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull BambooModel bambooModel,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
@@ -127,7 +130,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
-		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.bambooModel = bambooModel;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
@@ -135,8 +137,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
-		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
-		this.buildToolWindowPanel = buildToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 		/*
 
@@ -193,8 +193,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
 
-			this.bambooTableToolWindowPanel = new BambooTableToolWindowPanel(
-					project, projectConfigurationBean, testResultsToolWindow);
+			final BambooTableToolWindowPanel bambooTableToolWindowPanel = new BambooTableToolWindowPanel(project,
+					projectConfigurationBean, testResultsToolWindow);
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
@@ -268,7 +268,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			toolWindow.showHidePanels();
 			// focus last active panel only if it exists (do not create panel)
-			PluginToolWindow.focusPanelIfExists(project, projectConfigurationBean.getActiveToolWindowTab());
+			toolWindow.focusPanelIfExists(projectConfigurationBean.getActiveToolWindowTab());
 			toolWindow.getIdeaToolWindow().getContentManager().addContentManagerListener(new ContentManagerAdapter() {
 				@Override
 				public void selectionChanged(final ContentManagerEvent event) {
@@ -304,39 +304,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 		}
 
-	}
-
-	public Content createBambooContent(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(bambooTableToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO_OLD.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-	public Content createBuildContent(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BUILDSS.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-
-	public Content createCrucibleContentNew(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(
-				reviewsToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-	public Content createIssuesContent(@NotNull final ContentManager contentManager) {
-		final Content content = contentManager.getFactory().createContent(
-				issuesToolWindowPanel, PluginToolWindow.ToolWindowPanels.ISSUES.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
 	}
 
 	public void projectOpened() {
