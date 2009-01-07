@@ -181,8 +181,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
 									.getLastPathComponent();
 							if (defaultMutableTreeNode.getUserObject() instanceof BambooProjectBean) {
-								final BambooProjectBean projectBean = (BambooProjectBean) defaultMutableTreeNode.getUserObject()
-										;
+								final BambooProjectBean projectBean 
+										= (BambooProjectBean) defaultMutableTreeNode.getUserObject();
 								projectKeys.add(projectBean.name);
 							}
 
