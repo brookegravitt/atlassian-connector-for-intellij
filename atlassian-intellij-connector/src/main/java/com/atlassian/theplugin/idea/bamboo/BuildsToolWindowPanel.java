@@ -273,9 +273,9 @@ public class BuildsToolWindowPanel extends PluginToolWindowPanel implements Data
 		
 	}
 
-	public BambooStatusListener getStatusCheckerListener() {
-		return buildTree;
-	}
+//	public BambooStatusListener getStatusCheckerListener() {
+//		return buildTree;
+//	}
 
 	private class LocalBuildFilterListModelListener /*implements BuildFilterSelectionListener*/ {
 

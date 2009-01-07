@@ -25,6 +25,8 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -53,7 +55,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
-	private JTree buildTree;
+	private final BuildTree buildTree;
 
 	public BambooFilterType getBambooFilterType() {
 		return bambooFilterType;
@@ -80,12 +82,12 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 
 			private void updateTree() {
 				final Collection<BambooBuildAdapterIdea> ideas = bambooModel.getBuilds();
-				// todo uncomment when model is ready
-//				buildTree.updateModel(ideas);
+				buildTree.updateModel(ideas);
 			}
 		});
 		this.projectCfgManager = projectCfgManager;
 		this.bambooFilterType = BambooFilterType.STATE;
+		buildTree = new BuildTree(new BuildTreeModel());
 		init();
 	}
 
@@ -102,10 +104,6 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	@Override
 	public JTree createRightTree() {
-		if (buildTree == null) {
-			buildTree = new JTree();
-//			new BuildTree(new BuildTreeModel());
-		}
 		return buildTree;
 	}
 
@@ -142,54 +140,49 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	public void setGroupingType(final BambooGroupingType groupingType) {
 	}
 
-	public void setBambooFilterType(final BambooFilterType bambooFilterType) {
+	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
 		this.bambooFilterType = bambooFilterType;
-		final ListModel listModel = createListModel(bambooFilterType);
+//		getLeftTree().setVisible(bambooFilterType != null);
+		if (bambooFilterType == null) {
+			getLeftTree().setModel(null);
+		} else {
+			final ListModel listModel = createListModel(bambooFilterType);
 
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		for (int i = 0; i < listModel.getSize(); i++) {
-			root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode();
+			for (int i = 0; i < listModel.getSize(); i++) {
+				root.add(new DefaultMutableTreeNode(listModel.getElementAt(i)));
+			}
+			getLeftTree().setModel(new DefaultTreeModel(root));
 		}
-		getLeftTree().setModel(new DefaultTreeModel(root));
-		// by deafult there should be no selection
-		bambooModel.setFilter(createEmptyBuildFilter(bambooFilterType));
+		// by default there should be "ALL", which means null filter
+		bambooModel.setFilter(null);
+		buildTree.updateModel(bambooModel.getBuilds());
 
-		DefaultMutableTreeNode root2 = new DefaultMutableTreeNode();
-		for (BambooBuildAdapterIdea build : bambooModel.getBuilds()) {
-			root2.add(new DefaultMutableTreeNode(build));
-		}
-		getRightTree().setModel(new DefaultTreeModel(root2));
+//		DefaultMutableTreeNode root2 = new DefaultMutableTreeNode();
+//		for (BambooBuildAdapterIdea build : bambooModel.getBuilds()) {
+//			root2.add(new DefaultMutableTreeNode(build));
+//		}
+//		getRightTree().setModel(new DefaultTreeModel(root2));
 
 	}
 
-	@NotNull
-	private BambooBuildFilter createEmptyBuildFilter(@NotNull BambooFilterType filterType) {
-		switch (filterType) {
-			case PROJECT:
-				return bambooModel.createProjectFilter(Collections.<String>emptyList());
-			case SERVER:
-				return bambooModel.createServerFilter(Collections.<ServerCfg>emptyList());
-			case STATE:
-				return bambooModel.createStateFilter(Collections.<BuildStatus>emptyList());
-			default:
-				throw new UnsupportedOperationException("Method not implemented for " + filterType);
-		}
-	}
-
-	@NotNull
-	private BambooBuildFilter createBuildFilter(@NotNull BambooFilterType filterType,
+	@Nullable
+	private BambooBuildFilter createBuildFilter(@Nullable final BambooFilterType filterType,
 			@Nullable final TreePath[] selectedPaths) {
+		if (filterType == null) {
+			return null;
+		}
 		switch (filterType) {
 			case PROJECT:
 				Collection<String> projectKeys = MiscUtil.buildArrayList();
 				if (selectedPaths != null) {
 					for (TreePath selectedPath : selectedPaths) {
 						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode
-									= (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
+									.getLastPathComponent();
 							if (defaultMutableTreeNode.getUserObject() instanceof BambooProjectBean) {
-								final BambooProjectBean projectBean
-										= (BambooProjectBean) defaultMutableTreeNode.getUserObject();
+								final BambooProjectBean projectBean = (BambooProjectBean) defaultMutableTreeNode.getUserObject()
+										;
 								projectKeys.add(projectBean.name);
 							}
 
@@ -202,8 +195,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				if (selectedPaths != null) {
 					for (TreePath selectedPath : selectedPaths) {
 						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode
-									= (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
+									.getLastPathComponent();
 							if (defaultMutableTreeNode.getUserObject() instanceof BamboServerCfgWrapper) {
 								final BamboServerCfgWrapper bamboServerCfgWrapper
 										= (BamboServerCfgWrapper) defaultMutableTreeNode.getUserObject();
@@ -218,11 +211,11 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				if (selectedPaths != null) {
 					for (TreePath selectedPath : selectedPaths) {
 						if (selectedPath.getLastPathComponent() instanceof DefaultMutableTreeNode) {
-							DefaultMutableTreeNode defaultMutableTreeNode
-									= (DefaultMutableTreeNode) selectedPath.getLastPathComponent();
+							DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) selectedPath
+									.getLastPathComponent();
 							if (defaultMutableTreeNode.getUserObject() instanceof BuildStatusWrapper) {
-								final BuildStatusWrapper buildStatusWrapper
-										= (BuildStatusWrapper) defaultMutableTreeNode.getUserObject();
+								final BuildStatusWrapper buildStatusWrapper = (BuildStatusWrapper) defaultMutableTreeNode
+										.getUserObject();
 								buildStatuses.add(buildStatusWrapper.getWrapped());
 							}
 						}
