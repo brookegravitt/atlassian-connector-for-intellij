@@ -19,12 +19,16 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
@@ -38,13 +42,20 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeCellRenderer;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyListener;
 
 /**
  * @author Wojciech Seliga
@@ -52,6 +63,7 @@ import java.util.TreeSet;
 public class BambooToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
+	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
@@ -88,6 +100,9 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 		this.bambooFilterType = BambooFilterType.STATE;
 		buildTree = new BuildTree(new BuildTreeModel());
 		init();
+		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
+		uiSetup.initializeUI(buildTree, getRightScrollPane());
+		addBuildTreeListeners();
 	}
 
 //	@Override
@@ -97,8 +112,89 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 ////		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 //	}
 
+	private void addBuildTreeListeners() {
+		buildTree.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+				if (e.getKeyCode() == KeyEvent.VK_ENTER && buildDetailsInfo != null) {
+					openBuild(buildDetailsInfo);
+				}
+			}
+		});
+
+		buildTree.addMouseListener(new PopupAwareMouseAdapter() {
+
+			@Override
+			public void mouseClicked(final MouseEvent e) {
+				final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && buildDetailsInfo != null) {
+					openBuild(buildDetailsInfo);
+				}
+			}
+
+			@Override
+			protected void onPopup(MouseEvent e) {
+				int selRow = buildTree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = buildTree.getPathForLocation(e.getX(), e.getY());
+				if (selRow != -1 && selPath != null) {
+					buildTree.setSelectionPath(selPath);
+					final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+					if (buildDetailsInfo != null) {
+						launchContextMenu(e);
+					}
+				}
+			}
+		});
+	}
+
+	private void launchContextMenu(MouseEvent e) {
+//		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+//
+//		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+//				.getInstance().getAction("ThePlugin.Reviews.ReviewPopupMenu");
+//		actionGroup.addAll(configActionGroup);
+//
+//		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getActionPlaceName(), actionGroup);
+//
+//		final JPopupMenu jPopupMenu = popup.getComponent();
+//		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+	
+	private void openBuild(final BuildDetailsInfo buildDetailsInfo) {
+
+	}
+
+
 	@Override
-	public void addSearchBoxListener() {
+	protected void addSearchBoxListener() {
+		getSearchField().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(DocumentEvent e) {
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+
+			public void removeUpdate(DocumentEvent e) {
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+
+			public void changedUpdate(DocumentEvent e) {
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+		});
+
+		getSearchField().addKeyboardListener(new KeyListener() {
+			public void keyTyped(KeyEvent e) {
+			}
+
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					getSearchField().addCurrentTextToHistory();
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+		});
 	}
 
 	@Override
