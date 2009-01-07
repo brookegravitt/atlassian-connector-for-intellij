@@ -128,7 +128,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		}
 	}
 
-	private void openLabelDialog(BambooBuildAdapterIdea build) {
+	public void openLabelDialog(BambooBuildAdapterIdea build) {
 		BuildLabelForm buildLabelForm = new BuildLabelForm(build);
 		buildLabelForm.show();
 		if (buildLabelForm.getExitCode() == 0) {
@@ -164,7 +164,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		}
 	}
 
-	private void openCommentDialog(BambooBuildAdapterIdea build) {
+	public void openCommentDialog(BambooBuildAdapterIdea build) {
 		BuildCommentForm buildCommentForm = new BuildCommentForm(build);
 		buildCommentForm.show();
 		if (buildCommentForm.getExitCode() == 0) {
@@ -200,7 +200,7 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		}
 	}
 
-	private void executeBuild(final BambooBuildAdapterIdea build) {
+	public void executeBuild(final BambooBuildAdapterIdea build) {
 
 		Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
 			@Override

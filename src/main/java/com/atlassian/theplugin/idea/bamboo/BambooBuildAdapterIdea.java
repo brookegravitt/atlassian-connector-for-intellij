@@ -42,7 +42,22 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	}
 
 	public enum BuildState {
-		PASS, FAIL, UNKNOWN 
+		PASS("Passed", ICON_GREEN), FAIL("Failed", ICON_RED), UNKNOWN("Unknown", ICON_GREY);
+		private final String name;
+		private Icon icon;
+
+		private BuildState(String name, Icon icon) {
+			this.name = name;
+			this.icon = icon;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public Icon getIcon() {
+			return icon;
+		}
 	}
 
 	public BuildState getState() {
