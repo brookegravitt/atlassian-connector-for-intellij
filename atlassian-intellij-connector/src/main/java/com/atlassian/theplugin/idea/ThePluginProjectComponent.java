@@ -220,6 +220,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
 					bambooTableToolWindowPanel.getTable());
 
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDSS);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
@@ -288,8 +289,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			created = true;
 
 			registerCrucibleNotifier();
-//			bambooStatusChecker.registerListener(buildToolWindowPanel.getStatusCheckerListener());
-			bambooStatusChecker.registerListener(bambooToolWindowPanel.getStatusCheckerListener());
+			bambooStatusChecker.registerListener(buildToolWindowPanel.getStatusCheckerListener());
 		}
 	}
 
@@ -318,13 +318,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		return content;
 	}
 
-//	public Content createBuildContent(@NotNull final ContentManager contentManager) {
-//		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
-//				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
-//		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-//		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-//		return content;
-//	}
+	public Content createBuildContent(@NotNull final ContentManager contentManager) {
+		final Content content = contentManager.getFactory().createContent(buildToolWindowPanel,
+				PluginToolWindow.ToolWindowPanels.BUILDSS.toString(), false);
+		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
+		return content;
+	}
 
 
 	public Content createCrucibleContentNew(@NotNull final ContentManager contentManager) {

@@ -20,9 +20,9 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
-import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -31,11 +31,10 @@ import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.ArrayList;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jacek Jaroczynski
@@ -151,10 +150,10 @@ public class PluginToolWindow {
 								content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
 										contentManager);
 								break;
-//							case BUILDS:
-//								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
-//										contentManager);
-//								break;
+							case BUILDSS:
+								content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
+										contentManager);
+								break;
 							case BUILDS_WOJTEK:
 								content = createBamboo2Content();
 								break;
@@ -205,6 +204,10 @@ public class PluginToolWindow {
 				switch (component) {
 					case BAMBOO_OLD:
 						content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(contentManager);
+						contentManager.addContent(content);
+						break;
+					case BUILDSS:
+						content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(contentManager);
 						contentManager.addContent(content);
 						break;
 					case BUILDS_WOJTEK:
@@ -275,6 +278,10 @@ public class PluginToolWindow {
 						switch (component) {
 							case BAMBOO_OLD:
 									content = project.getComponent(ThePluginProjectComponent.class).createBambooContent(
+										contentManager);
+								break;
+							case BUILDSS:
+									content = project.getComponent(ThePluginProjectComponent.class).createBuildContent(
 										contentManager);
 								break;
 							case BUILDS_WOJTEK:
@@ -352,8 +359,8 @@ public class PluginToolWindow {
 	 */
 	public enum ToolWindowPanels {
 		BAMBOO_OLD("Builds old"),
-//		BUILDS("Builds"),
 		BUILDS_WOJTEK("Builds"),
+		BUILDSS("Buildss"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues");
 
