@@ -58,11 +58,11 @@ public abstract class AbstractBambooComboBoxAction extends AnAction implements C
 					if (panel != null) {
 						execute(panel, combo.getSelectedItem());
 					} else {
-						LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot find "
+						LoggerImpl.getInstance().error(getClass().getName() + ": cannot find "
 								+ BambooToolWindowPanel.class);
 					}
 				} else {
-					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current project");
+					LoggerImpl.getInstance().error(getClass().getName() + ": cannot determine current project");
 				}
 
 			}
