@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -53,7 +52,6 @@ public class PluginToolWindow {
 	private final ReviewsToolWindowPanel reviewsToolWindowPanel;
 	private final IssuesToolWindowPanel issuesToolWindowPanel;
 	private final BambooTableToolWindowPanel bambooTableToolWindowPanel;
-	private final BuildsToolWindowPanel buildsToolWindowPanel;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
 	public static final String TOOL_WINDOW_NAME = "Atlassian ";
@@ -88,15 +86,13 @@ public class PluginToolWindow {
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
 			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-			@NotNull BambooTableToolWindowPanel bambooTableToolWindowPanel,
-			@NotNull BuildsToolWindowPanel buildsToolWindowPanel) {
+			@NotNull BambooTableToolWindowPanel bambooTableToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
 		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.bambooTableToolWindowPanel = bambooTableToolWindowPanel;
-		this.buildsToolWindowPanel = buildsToolWindowPanel;
 	}
 
 
@@ -286,8 +282,6 @@ public class PluginToolWindow {
 		switch (component) {
 			case BAMBOO_OLD:
 					return createBambooContent();
-			case BUILDSS:
-					return createBuildContent();
 			case BUILDS_WOJTEK:
 				return createBamboo2Content();
 			case CRUCIBLE:
@@ -319,16 +313,6 @@ public class PluginToolWindow {
 		return content;
 	}
 
-	public Content createBuildContent() {
-		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		final Content content = contentManager.getFactory().createContent(buildsToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BUILDSS.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-
 	public Content createCrucibleContentNew() {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(
@@ -355,7 +339,6 @@ public class PluginToolWindow {
 	public enum ToolWindowPanels {
 		BAMBOO_OLD("Builds old"),
 		BUILDS_WOJTEK("Builds"),
-		BUILDSS("Buildss"),
 		CRUCIBLE("Reviews"),
 		ISSUES("Issues");
 
