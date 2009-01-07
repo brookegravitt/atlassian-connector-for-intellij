@@ -286,7 +286,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			created = true;
 
 			registerCrucibleNotifier();
-			bambooStatusChecker.registerListener(buildToolWindowPanel.getStatusCheckerListener());
 		}
 	}
 

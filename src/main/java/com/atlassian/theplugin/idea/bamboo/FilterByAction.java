@@ -22,13 +22,31 @@ import javax.swing.*;
 
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 
 public class FilterByAction extends AbstractBambooComboBoxAction {
+	private static class BambooFilterTypeWrapper extends GenericComboBoxItemWrapper<BambooFilterType> {
+		public BambooFilterTypeWrapper(final BambooFilterType wrapped) {
+			super(wrapped);
+		}
+
+		@Override
+		public String toString() {
+			if (wrapped != null) {
+				return wrapped.getName();
+			} else {
+				return "None";
+			}
+		}
+	}
+
+
+	public static final BambooFilterTypeWrapper NONE = new BambooFilterTypeWrapper(null);
 	@Override
 	protected void execute(@NotNull final BambooToolWindowPanel panel, @Nullable final Object selectedItem) {
-		if (selectedItem instanceof BambooFilterType) {
-			BambooFilterType bambooFilter = (BambooFilterType) selectedItem;
-			panel.setBambooFilterType(bambooFilter);
+		if (selectedItem instanceof BambooFilterTypeWrapper) {
+			BambooFilterTypeWrapper bambooFilterWrapper = (BambooFilterTypeWrapper) selectedItem;
+			panel.setBambooFilterType(bambooFilterWrapper.getWrapped());
 		}
 	}
 
@@ -40,16 +58,22 @@ public class FilterByAction extends AbstractBambooComboBoxAction {
 		}
 		final Object clientProperty = e.getPresentation().getClientProperty(getComboKey());
 		if (clientProperty instanceof JComboBox) {
-			JComboBox jComboBox = (JComboBox) clientProperty;
-			if (jComboBox.getSelectedItem() != panel.getBambooFilterType()) {
-				jComboBox.setSelectedItem(panel.getBambooFilterType());
+			final JComboBox jComboBox = (JComboBox) clientProperty;
+			if (((BambooFilterTypeWrapper) jComboBox.getSelectedItem()).getWrapped() != panel.getBambooFilterType()) {
+				jComboBox.setSelectedItem(new BambooFilterTypeWrapper(panel.getBambooFilterType()));
 			}
 		}
 	}
 
 	@Override
 	protected DefaultComboBoxModel createComboBoxModel() {
-		return new DefaultComboBoxModel(BambooFilterType.values());
+		final BambooFilterTypeWrapper[] model = new BambooFilterTypeWrapper[BambooFilterType.values().length + 1];
+		model[0] = NONE;
+		for (int i = 0; i < BambooFilterType.values().length; i++) {
+			BambooFilterType bambooFilterType = BambooFilterType.values()[i];
+			model[i + 1] = new BambooFilterTypeWrapper(bambooFilterType);
+		}
+		return new DefaultComboBoxModel(model);
 	}
 
 }
