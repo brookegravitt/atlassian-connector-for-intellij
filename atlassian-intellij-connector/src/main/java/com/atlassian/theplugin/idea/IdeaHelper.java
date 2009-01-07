@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
@@ -108,11 +109,19 @@ public final class IdeaHelper {
 		}
 
 		ToolWindow tw = getToolWindow(p);
-		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK.toString());
+		Content content = tw.getContentManager().findContent(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD.toString());
 		if (content == null) {
 			return null;
 		}
 		return (BambooTableToolWindowPanel) content.getComponent();
+	}
+
+	public static BuildToolWindow getBuildToolWindow(AnActionEvent event) {
+		return getProjectComponent(event, BuildToolWindow.class);
+	}
+
+	public static BuildToolWindow getBuildToolWindow(@NotNull final Project project) {
+		return getProjectComponent(project, BuildToolWindow.class);
 	}
 
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {

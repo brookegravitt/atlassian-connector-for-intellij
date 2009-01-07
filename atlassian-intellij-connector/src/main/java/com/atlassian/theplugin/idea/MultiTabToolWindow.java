@@ -25,7 +25,7 @@ public abstract class MultiTabToolWindow {
 
 	protected abstract class ContentPanel extends JPanel {
 		public abstract void unregister();
-		public abstract String getKey();
+		public abstract String getTitle();
 	}
 
 	protected interface ContentParameters { }
@@ -58,7 +58,7 @@ public abstract class MultiTabToolWindow {
 			panelMap.put(contentKey, contentPanel);
 		}
 
-		createNewToolWindow(project, baseTitle, icon, contentPanel.getKey());
+		createNewToolWindow(project, baseTitle, icon, contentPanel.getTitle());
 	}
 
 	protected void createNewToolWindow(final Project project, final String baseTitle, final Icon icon, String key) {
@@ -99,13 +99,13 @@ public abstract class MultiTabToolWindow {
 		for (String s : panelMap.keySet()) {
 
 			Content content = toolWindow.getContentManager().getFactory().createContent(panelMap.get(s),
-					showTitle ? panelMap.get(s).getKey() : "", true);
+					showTitle ? panelMap.get(s).getTitle() : "", true);
 
 			if (showTitle) {
 				content.setIcon(icon);
 				content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 			}
-			if (key != null && key.equals(panelMap.get(s).getKey())) {
+			if (key != null && key.equals(panelMap.get(s).getTitle())) {
 				selectedContent = content;
 			} else if (selectedContent == null) {
 				selectedContent = content;
@@ -135,13 +135,13 @@ public abstract class MultiTabToolWindow {
 	private String getExistingToolWindowTitle(String baseTitle) {
 		String title = baseTitle;
 		if (panelMap.size() == 1) {
-			title = panelMap.values().iterator().next().getKey();
+			title = panelMap.values().iterator().next().getTitle();
 		}
 		return title;
 	}
 
 	private String createNewToolWindowTitle(String title) {
-		return panelMap.size() == 1 ? panelMap.values().iterator().next().getKey() : title;
+		return panelMap.size() == 1 ? panelMap.values().iterator().next().getTitle() : title;
 	}
 
 	protected void closeToolWindow(String title, AnActionEvent e) {
