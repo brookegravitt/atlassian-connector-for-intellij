@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -24,6 +25,8 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -52,6 +55,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
+	private BuildTree buildTree;
 
 	public BambooFilterType getBambooFilterType() {
 		return bambooFilterType;
@@ -77,14 +81,9 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 			}
 
 			private void updateTree() {
-				// just temporary stuff
-				// here Jacek's tree will be used
 				final Collection<BambooBuildAdapterIdea> ideas = bambooModel.getBuilds();
-				DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-				for (BambooBuildAdapterIdea idea : ideas) {
-					root.add(new DefaultMutableTreeNode(idea.getBuild()));
-				}
-				getRightTree().setModel(new DefaultTreeModel(root));
+				// todo uncomment when model is ready
+//				buildTree.updateModel(ideas);
 			}
 		});
 		this.projectCfgManager = projectCfgManager;
@@ -105,7 +104,20 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 
 	@Override
 	public JTree createRightTree() {
-		return new JTree();
+		if (buildTree == null) {
+			buildTree = new BuildTree(new BuildTreeModel());
+
+		}
+		return buildTree;
+	}
+
+
+	public BambooStatusListener getStatusCheckerListener() {
+		if (buildTree == null) {
+			createRightTree();
+
+		}
+		return buildTree;
 	}
 
 	@Override
@@ -224,6 +236,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 				throw new UnsupportedOperationException("Method not implemented for " + filterType);
 		}
 	}
+
 
 
 	private static class BamboServerCfgWrapper extends GenericComboBoxItemWrapper<BambooServerCfg> {
