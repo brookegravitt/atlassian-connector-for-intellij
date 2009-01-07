@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.idea.action.bamboo.onebuild;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -10,6 +13,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class RunBuildAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		//To change body of implemented methods use File | Settings | File Templates.
+		BambooTableToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(e);
+		if (panel != null) {
+			BuildToolWindow btw = IdeaHelper.getBuildToolWindow(e);
+			if (btw != null) {
+				panel.executeBuild(btw.getBuild(e.getPlace()));
+			}
+		}
 	}
 }
