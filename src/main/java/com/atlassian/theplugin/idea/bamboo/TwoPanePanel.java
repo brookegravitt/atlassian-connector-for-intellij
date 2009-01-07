@@ -23,7 +23,6 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
