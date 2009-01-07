@@ -15,8 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildModel;
 
@@ -29,18 +27,18 @@ import java.util.Set;
 /**
  * @author Jacek Jaroczynski
  */
-public class ServerBuildNodeManipulator extends BuildNodeManipulator {
-	public ServerBuildNodeManipulator(final BuildModel buildModel, final DefaultMutableTreeNode root) {
+public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
+	public ProjectBuildNodeManipulator(final BuildModel buildModel, final DefaultMutableTreeNode root) {
 		super(buildModel, root);
 	}
 
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == rootNode) {
-			return getDistinctServers().size();
-		} else if (parent instanceof BuildServerTreeNode) {
-			BuildServerTreeNode serverNode = (BuildServerTreeNode) parent;
-			return gentNumOfBuildsForServer(serverNode.getServer().getServerId());
+			return getDistinctProjects().size();
+		} else if (parent instanceof BuildProjectTreeNode) {
+			BuildProjectTreeNode serverNode = (BuildProjectTreeNode) parent;
+			return gentNumOfBuildsForProject(serverNode.getProject());
 		}
 
 		return 0;
@@ -56,21 +54,21 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooServerCfg bambooServer = getDistinctServers().get(index);
+			String project = getDistinctProjects().get(index);
 
-			BuildServerTreeNode serverNode = new BuildServerTreeNode(bambooServer);
-			p.add(serverNode);
+			BuildProjectTreeNode projectNode = new BuildProjectTreeNode(project);
+			p.add(projectNode);
 
-			return serverNode;
+			return projectNode;
 
-		} else if (parent instanceof BuildServerTreeNode) {
-			BuildServerTreeNode p = (BuildServerTreeNode) parent;
+		} else if (parent instanceof BuildProjectTreeNode) {
+			BuildProjectTreeNode p = (BuildProjectTreeNode) parent;
 
 			if (index < p.getChildCount()) {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForServer(p.getServer().getServerId(), index);
+			BambooBuildAdapterIdea build = getBuildForProject(p.getProject(), index);
 			BuildTreeNode node = new BuildTreeNode(build);
 			p.add(node);
 
@@ -80,20 +78,20 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<BambooServerCfg> getDistinctServers() {
-		Set<BambooServerCfg> servers = new LinkedHashSet<BambooServerCfg>();	// ordered set
+	private List<String> getDistinctProjects() {
+		Set<String> projects = new LinkedHashSet<String>();	// ordered set
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			servers.add(build.getServer());
+			projects.add(build.getProjectName());
 		}
 
-		return new ArrayList<BambooServerCfg>(servers);
+		return new ArrayList<String>(projects);
 	}
 
-	private int gentNumOfBuildsForServer(ServerId serverId) {
+	private int gentNumOfBuildsForProject(String projectName) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea review : buildModel.getBuilds()) {
-			if (review.getServer().getServerId().equals(serverId)) {
+		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+			if (build.getProjectName().equals(projectName)) {
 				++ret;
 			}
 		}
@@ -101,12 +99,12 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForServer(ServerId serverId, int index) {
+	private BambooBuildAdapterIdea getBuildForProject(String projectName, int index) {
 		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
 
 		// get all builds for server
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (build.getServer().getServerId().equals(serverId)) {
+			if (build.getProjectName().equals(projectName)) {
 				array.add(build);
 			}
 		}
