@@ -16,9 +16,6 @@
 
 package com.atlassian.theplugin.idea;
 
-//import com.atlassian.theplugin.commons.bamboo.HtmlBambooStatusListenerNotUsed;
-
-import com.atlassian.theplugin.commons.crucible.CrucibleVersion;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
@@ -49,13 +46,11 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	private Project project;
 	protected static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	protected ProgressAnimationProvider progressAReviewActionEventBrokernimation = new ProgressAnimationProvider();
-	private CrucibleVersion crucibleVersion = CrucibleVersion.UNKNOWN;
 	private ReviewItemTreePanel reviewItemTreePanel;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 	private CrucibleFilteredModelProvider.Filter filter = CrucibleFilteredModelProvider.Filter.FILES_ALL;
 
 	protected String getInitialMessage() {
-
 		return "Waiting for Crucible review info.";
 	}
 
@@ -82,25 +77,12 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		reviewItemTreePanel = new ReviewItemTreePanel(project, filter);
 		reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
 		add(reviewItemTreePanel, BorderLayout.CENTER);
-
-//		ReviewActionEventBroker eventBroker = IdeaHelper.getReviewActionEventBroker(project);
-//		eventBroker.registerListener(new MyAgent(project));
-
-
 		progressAnimation.configure(this, reviewItemTreePanel, BorderLayout.CENTER);
 	}
 
 	public void showCrucibleReviewWindow(final ReviewAdapter crucibleReview) {
-
 		reviewItemTreePanel.startListeningForCredentialChanges(project, crucibleReview);
 		crucibleReview.addReviewListener(reviewItemTreePanel.getReviewListener());
-
-//		CrucibleReviewNotifier notifier =
-//				IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCrucibleReviewNotifier();
-//
-//		if (notifier != null) {//??? not used any more
-//			notifier.registerReviewListener(reviewItemTreePanel.getReviewListener());
-//		}
 
 		ToolWindowManager twm = ToolWindowManager.getInstance(this.project);
 		ToolWindow toolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
@@ -144,7 +126,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 		};
 
 		ProgressManager.getInstance().run(task);
-
 	}
 
 
@@ -159,11 +140,6 @@ public final class CrucibleReviewWindow extends JPanel implements DataProvider {
 	public ProgressAnimationProvider getProgressAnimation() {
 		return progressAnimation;
 	}
-
-	public CrucibleVersion getCrucibleVersion() {
-		return crucibleVersion;
-	}
-
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {

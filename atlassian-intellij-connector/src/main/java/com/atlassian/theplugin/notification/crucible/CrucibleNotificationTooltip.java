@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -56,7 +58,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			int newExceptionCount = 0;
 			StringBuilder nsb = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
-				if (notification instanceof NewExceptionNotification) {
+				if (notification.getType() == CrucibleNotificationType.EXCEPTION_RAISED) {
 					newExceptionCount++;
 					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
 							.append(notification.getItemUrl()).append("\">")
@@ -78,13 +80,20 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			nsb = new StringBuilder();
 			int newReviewCount = 0;
 			for (CrucibleNotification notification : notifications) {
-				if (notification instanceof NewReviewNotification) {
+				if (notification.getType() == CrucibleNotificationType.NEW_REVIEW) {
 					newReviewCount++;
 					String id = notification.getId().getId();
 					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
 							.append(notification.getItemUrl()).append("\">")
 							.append(id).append("</a></td><td>").append(notification.getPresentationMessage())
 							.append("</td></tr>");
+				}
+			}
+
+			int notVisibleReviewCount = 0;
+			for (CrucibleNotification notification : notifications) {
+				if (notification.getType() == CrucibleNotificationType.NOT_VISIBLE_REVIEW) {
+					notVisibleReviewCount++;
 				}
 			}
 
@@ -98,7 +107,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			int changesCount = notifications.size() - newReviewCount - newExceptionCount;
+			int changesCount = notifications.size() - newReviewCount - newExceptionCount - notVisibleReviewCount;
 			if (changesCount > 0) {
 				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
 						.append("<td colspan=2><b>")
@@ -108,8 +117,10 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						.append("</b></td></tr>");
 
 				for (CrucibleNotification notification : notifications) {
-					if (!(notification instanceof NewReviewNotification)
-							&& !(notification instanceof NewExceptionNotification)) {
+					CrucibleNotificationType type = notification.getType();
+					if (type != CrucibleNotificationType.EXCEPTION_RAISED
+							&& type != CrucibleNotificationType.NEW_REVIEW
+							&& type != CrucibleNotificationType.NOT_VISIBLE_REVIEW) {
 						String id = notification.getId().getId();
 						sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
 								.append(notification.getItemUrl()).append("\">")
@@ -121,7 +132,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 
 			sb.append("</table>");
 			if (project != null) {
-				if (notifications.size() > 0) {
+				if (notifications.size() - notVisibleReviewCount > 0) {
 					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
 
 					JEditorPane content = new JEditorPane();

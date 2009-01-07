@@ -130,7 +130,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
-					review.fillReview(crucibleServerFacade.getReview(review.getServer(), review.getPermId()));
+					review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(review.getServer(), review.getPermId()),
+							review.getServer()));
 //					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
@@ -145,12 +146,12 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 //					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
 //				} else {
 //					final ReviewAdapter finalReviewInfo = new ReviewAdapter(reviewInfo, review.getServer());
-					updateReviewInfo(review);
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							show();
-						}
-					});
+				updateReviewInfo(review);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						show();
+					}
+				});
 //				}
 			}
 		};

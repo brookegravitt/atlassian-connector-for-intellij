@@ -15,15 +15,13 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: jgorycki
@@ -46,7 +44,7 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 		}
 		this.searchTerm = searchTerm.toLowerCase();
 
-		modelChanged(new UpdateContext(UpdateReason.SEARCH, null));
+		modelChanged(new UpdateContext(UpdateReason.SEARCH, null, null));
 	}
 
 	private Collection<ReviewAdapter> search(Collection<ReviewAdapter> col) {
@@ -75,7 +73,13 @@ public class SearchingCrucibleReviewListModel extends CrucibleReviewListModelLis
 		return parent.getPredefinedFiltersReviewCount();
 	}
 
-	public void updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews, UpdateReason updateReason) {
+	public List<CrucibleNotification> updateReviews(long epoch, Map<CrucibleFilter, ReviewNotificationBean> reviews,
+			UpdateReason updateReason) {
+		return Collections.emptyList();
+	}
+
+	public Collection<ReviewAdapter> getOpenInIdeReviews() {
+		return super.getOpenInIdeReviews();
 	}
 
 	public void rebuildModel(UpdateReason updateReason) {

@@ -17,16 +17,22 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+
+import java.util.List;
 
 public class UpdateContext {
-	private UpdateReason updateReason;
-	private ReviewAdapter reviewAdapter;
+	private final UpdateReason updateReason;
 
+	private final ReviewAdapter reviewAdapter;
 	private ReviewAdapter oldReviewAdapter;
+	private final List<CrucibleNotification> notifications;
 
-	public UpdateContext(final UpdateReason updateReason, final ReviewAdapter reviewAdapter) {
+	public UpdateContext(final UpdateReason updateReason, final ReviewAdapter reviewAdapter,
+			final List<CrucibleNotification> notifications) {
 		this.updateReason = updateReason;
 		this.reviewAdapter = reviewAdapter;
+		this.notifications = notifications;
 	}
 
 
@@ -48,5 +54,9 @@ public class UpdateContext {
 			throw new IllegalStateException();
 		}
 		return reviewAdapter;
+	}
+
+	public List<CrucibleNotification> getNotifications() {
+		return notifications;
 	}
 }

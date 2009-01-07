@@ -78,9 +78,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private final CrucibleReviewListModel reviewListModel;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
-								  @NotNull final ProjectCfgManager projectCfgManager,
-								  @NotNull final CrucibleReviewListModel reviewListModel,
-								  @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final ProjectCfgManager projectCfgManager,
+			@NotNull final CrucibleReviewListModel reviewListModel,
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
@@ -143,7 +143,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public void openReview(final ReviewAdapter review) {
-		reviewListModel.setActiveReview(review);	
+		reviewListModel.getOpenInIdeReviews().add(review);
 		CrucibleReviewWindow.getInstance(getProject()).showCrucibleReviewWindow(review);
 	}
 
@@ -305,7 +305,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-					reviewListModel.rebuildModel(reason);
+				reviewListModel.rebuildModel(reason);
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
