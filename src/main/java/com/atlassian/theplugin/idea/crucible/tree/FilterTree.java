@@ -126,7 +126,7 @@ public class FilterTree extends JTree {
 
 			// find stored filters
 			for (int i = 0; i < confFilters.length && i < PredefinedFilter.values().length; ++i) {
-				if (confFilters[i]) {
+				if (confFilters[i] != null && confFilters[i]) {
 					// remember node
 					selectedPredefinedFilters.add(PredefinedFilter.values()[i]);
 				}

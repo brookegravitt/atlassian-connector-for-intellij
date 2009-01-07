@@ -17,9 +17,11 @@ package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,21 +35,23 @@ public interface CrucibleReviewListModel {
 	int getReviewCount(CrucibleFilter filter);
 
 	int getPredefinedFiltersReviewCount();
-	
+
 	void addListener(CrucibleReviewListModelListener listener);
 
 	void removeListener(CrucibleReviewListModelListener listener);
 
-	void updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews,
-					   final UpdateReason updateReason);
+	List<CrucibleNotification> updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews,
+			final UpdateReason updateReason);
 
 	ReviewAdapter getSelectedReview();
 
 	void setSelectedReview(ReviewAdapter review);
 
-	ReviewAdapter getActiveReview();
+	Collection<ReviewAdapter> getOpenInIdeReviews();
 
-	void setActiveReview(ReviewAdapter review);
+//	ReviewAdapter getActiveReview();
+
+//	void setActiveReview(ReviewAdapter review);
 
 	void rebuildModel(UpdateReason updateReason);
 

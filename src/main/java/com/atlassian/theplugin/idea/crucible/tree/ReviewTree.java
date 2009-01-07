@@ -121,7 +121,6 @@ public class ReviewTree extends JTree {
 	}
 
 
-
 	private void collapsePaths(Set<TreePath> collapsedPaths) {
 		for (TreePath path : collapsedPaths) {
 			for (int i = 0; i < getRowCount(); ++i) {
@@ -181,7 +180,7 @@ public class ReviewTree extends JTree {
 		}
 
 		@Override
-		public void reviewChangedWithoutFiles(UpdateContext updateContext) {
+		public void reviewChanged(UpdateContext updateContext) {
 //			System.out.println("review changed without files: " + review.getPermId().getId());
 
 			treeChanged = true;

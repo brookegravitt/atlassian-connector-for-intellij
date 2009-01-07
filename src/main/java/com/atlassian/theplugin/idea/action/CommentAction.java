@@ -20,11 +20,11 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -69,7 +69,7 @@ public class CommentAction extends AnAction {
 					CrucibleReviewListModel crucibleReviewListModel
 							= IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
 					if (crucibleReviewListModel == null
-							|| !review.equals(crucibleReviewListModel.getActiveReview())) {
+							|| !crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
 						visible = false;
 					} else {
 						try {

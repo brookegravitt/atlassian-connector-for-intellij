@@ -17,6 +17,7 @@ package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -34,6 +35,10 @@ public class SortingByKeyCrucibleReviewListModel extends AbstractSortingCrucible
 
 	protected Comparator<ReviewAdapter> getComparator() {
 		return COMPARATOR;
+	}
+
+	public Collection<ReviewAdapter> getOpenInIdeReviews() {
+		return super.getOpenInIdeReviews();
 	}
 
 	public void rebuildModel(UpdateReason updateReason) {
