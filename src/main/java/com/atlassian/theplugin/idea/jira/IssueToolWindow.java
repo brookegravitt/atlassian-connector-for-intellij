@@ -26,6 +26,7 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -54,30 +55,29 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	//CHECKSTYLE\:MAGIC\:ON
 
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+	private final Project project;
 
-	public IssueToolWindow() {
+	public IssueToolWindow(@NotNull final Project project) {
 		super(new HashMap<String, ContentPanel>());
+		this.project = project;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
-		private final Project project;
 		private final JiraServerCfg server;
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
 		private JIRAIssue issue;
 		private final JIRAIssueListModel model;
 
-		private IssueContentParameters(Project project, JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
-			this.project = project;
+		private IssueContentParameters(JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
 			this.server = server;
 			this.issue = issue;
 			this.model = model;
 		}
 	}
 
-	public void showIssue(final Project project, JiraServerCfg server,
-								 final JIRAIssue issue, JIRAIssueListModel model) {
-	   	showToolWindow(project, new IssueContentParameters(project, server, issue, model),
-				   TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_ICON);
+	public void showIssue(JiraServerCfg server, final JIRAIssue issue, JIRAIssueListModel model) {
+		showToolWindow(project, new IssueContentParameters(server, issue, model),
+				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_ICON);
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
@@ -180,7 +180,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			refresh();
 		}
 
-		public String getKey() {
+		public String getTitle() {
 			return params.issue.getKey();
 		}
 
@@ -929,7 +929,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			public StackTracePanel(String stack) {
 
 				TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-				TextConsoleBuilder builder = factory.createBuilder(params.project);
+				TextConsoleBuilder builder = factory.createBuilder(project);
 				ConsoleView console = builder.getConsole();
 				console.print(stack, ConsoleViewContentType.NORMAL_OUTPUT);
 

@@ -52,7 +52,6 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 	private TableColumnProvider columnProvider;
 	private final TestResultsToolWindow testResultsToolWindow;
-	private final BuildChangesToolWindow buildChangesToolWindow;
 	public static final String BAMBOO_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.bamboo.toolwindow";
 
 	@Override
@@ -101,16 +100,21 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 	}
 
 	public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
-			final TestResultsToolWindow testResultsToolWindow, final BuildChangesToolWindow buildChangesToolWindow) {
+			final TestResultsToolWindow testResultsToolWindow) {
 		super(project, projectConfigurationBean);
 		this.testResultsToolWindow = testResultsToolWindow;
-		this.buildChangesToolWindow = buildChangesToolWindow;
 		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		assert this.testResultsToolWindow != null;
 //		buildChangesToolWindow = project.getComponent(BuildChangesToolWindow.class);
-		assert this.buildChangesToolWindow != null;
 	}
 
+	public void openBuild() {
+		BambooBuildAdapterIdea build = table.getSelectedObject();
+		if (build != null) {
+			IdeaHelper.getBuildToolWindow(project).showBuild(build);
+		}
+
+	}
 
 	@Override
 	protected void handlePopupClick(Object selectedObject) {
@@ -118,17 +122,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	@Override
 	protected void handleDoubleClick(Object selectedObject) {
-		BambooBuildAdapter bambooBuildAdapter = (BambooBuildAdapter) selectedObject;
+		BambooBuildAdapterIdea bambooBuildAdapter = (BambooBuildAdapterIdea) selectedObject;
 		if (bambooBuildAdapter != null) {
-			BambooBuild build = bambooBuildAdapter.getBuild();
-			if (build != null) {
-				final BambooBuildToolWindow window = IdeaHelper.getProjectComponent(project, BambooBuildToolWindow.class);
-				if (window != null
-						&& build.getBuildKey() != null
-						&& build.getBuildNumber() != null) {
-					window.open(build);
-				}
-			}
+			IdeaHelper.getBuildToolWindow(project).showBuild(bambooBuildAdapter);
 		}
 	}
 
@@ -163,7 +159,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	public void addLabelToBuild() {
 		BambooBuildAdapterIdea build = table.getSelectedObject();
-		openLabelDialog(build);
+		if (build != null) {
+			openLabelDialog(build);
+		}
 	}
 
 	private void openCommentDialog(BambooBuildAdapterIdea build) {
@@ -197,7 +195,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	public void addCommentToBuild() {
 		BambooBuildAdapterIdea build = table.getSelectedObject();
-		openCommentDialog(build);
+		if (build != null) {
+			openCommentDialog(build);
+		}
 	}
 
 	private void executeBuild(final BambooBuildAdapterIdea build) {
@@ -222,7 +222,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	public void runBuild() {
 		BambooBuildAdapterIdea build = table.getSelectedObject();
-		executeBuild(build);
+		if (build != null) {
+			executeBuild(build);
+		}
 	}
 
 	private void setBuilds(Collection<BambooBuild> builds) {
@@ -290,61 +292,69 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 
 	public void showBuildStackTrace() {
 		final BambooBuildAdapterIdea build = table.getSelectedObject();
+		if (build != null) {
+			BuildToolWindow btw = IdeaHelper.getBuildToolWindow(project);
+			btw.showBuild(build);
+		}
 
-		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Build Stack Trace", false) {
-			@Override
-			public void run(final ProgressIndicator indicator) {
-				setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
-				try {
-					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getBuildKey(), build.getBuildNumber());
-					final List<TestDetails> failedTests = details.getFailedTestDetails();
-					final List<TestDetails> succeededTests = details.getSuccessfulTestDetails();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							testResultsToolWindow.showTestResults(
-									build.getBuildKey(), build.getBuildNumber(), failedTests, succeededTests);
-						}
-					});
-					setStatusMessage("Test results for build " + build.getBuildKey() + " received");
-				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessage("Failed to get test results: Password not provided for server");
-				} catch (RemoteApiException e) {
-					setStatusMessage("Failed to get test results: " + e.getMessage());
-				}
-			}
-		};
-
-		ProgressManager.getInstance().run(stackTraceTask);
+//		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Build Stack Trace", false) {
+//			@Override
+//			public void run(final ProgressIndicator indicator) {
+//				setStatusMessage("Getting test results for build " + build.getBuildKey() + "...");
+//				try {
+//					BuildDetails details = bambooFacade.getBuildDetails(
+//							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//					final List<TestDetails> failedTests = details.getFailedTestDetails();
+//					final List<TestDetails> succeededTests = details.getSuccessfulTestDetails();
+//					SwingUtilities.invokeLater(new Runnable() {
+//						public void run() {
+//							testResultsToolWindow.showTestResults(
+//									build.getBuildKey(), build.getBuildNumber(), failedTests, succeededTests);
+//						}
+//					});
+//					setStatusMessage("Test results for build " + build.getBuildKey() + " received");
+//				} catch (ServerPasswordNotProvidedException e) {
+//					setStatusMessage("Failed to get test results: Password not provided for server");
+//				} catch (RemoteApiException e) {
+//					setStatusMessage("Failed to get test results: " + e.getMessage());
+//				}
+//			}
+//		};
+//
+//		ProgressManager.getInstance().run(stackTraceTask);
 	}
 
 	public void showChanges() {
 		final BambooBuildAdapterIdea build = table.getSelectedObject();
+		if (build != null) {
+			BuildToolWindow btw = IdeaHelper.getBuildToolWindow(project);
+			btw.showBuild(build);
+		}
 
-		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving Build Changes", false) {
-			@Override
-			public void run(final ProgressIndicator indicator) {
-				setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
-				try {
-					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getBuildKey(), build.getBuildNumber());
-					final List<BambooChangeSet> commits = details.getCommitInfo();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							buildChangesToolWindow.showBuildChanges(
-									build.getBuildKey(), build.getBuildNumber(), commits);
-						}
-					});
-					setStatusMessage("Changes for build " + build.getBuildKey() + " received");
-				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessage("Failed to get changes: Password not provided for server");
-				} catch (RemoteApiException e) {
-					setStatusMessage("Failed to get changes: " + e.getMessage());
-				}
-			}
-		};
-
-		ProgressManager.getInstance().run(changesTask);
+//		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving Build Changes", false) {
+//			@Override
+//			public void run(final ProgressIndicator indicator) {
+//				setStatusMessage("Getting changes for build " + build.getBuildKey() + "...");
+//				try {
+//					BuildDetails details = bambooFacade.getBuildDetails(
+//							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+//					final List<BambooChangeSet> commits = details.getCommitInfo();
+//					SwingUtilities.invokeLater(new Runnable() {
+//						public void run() {
+//							buildChangesToolWindow.showBuildChanges(
+//									build.getBuildKey(), build.getBuildNumber(), commits);
+//						}
+//					});
+//					setStatusMessage("Changes for build " + build.getBuildKey() + " received");
+//				} catch (ServerPasswordNotProvidedException e) {
+//					setStatusMessage("Failed to get changes: Password not provided for server");
+//				} catch (RemoteApiException e) {
+//					setStatusMessage("Failed to get changes: " + e.getMessage());
+//				}
+//			}
+//		};
+//
+//		ProgressManager.getInstance().run(changesTask);
 	}
 
 

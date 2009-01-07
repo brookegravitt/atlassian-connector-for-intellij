@@ -79,7 +79,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final CfgManager cfgManager;
 
 	private final TestResultsToolWindow testResultsToolWindow;
-	private final BuildChangesToolWindow buildChangesToolWindow;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
@@ -117,7 +116,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull BambooModel bambooModel,
-			@NotNull BuildChangesToolWindow buildChangesToolWindow,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel) {
@@ -139,7 +137,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.buildToolWindowPanel = buildToolWindowPanel;
-		this.buildChangesToolWindow = buildChangesToolWindow;
 		this.toolWindow = pluginToolWindow;
 		/*
 
@@ -197,7 +194,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
 
 			this.bambooTableToolWindowPanel = new BambooTableToolWindowPanel(
-					project, projectConfigurationBean, testResultsToolWindow, buildChangesToolWindow);
+					project, projectConfigurationBean, testResultsToolWindow);
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
