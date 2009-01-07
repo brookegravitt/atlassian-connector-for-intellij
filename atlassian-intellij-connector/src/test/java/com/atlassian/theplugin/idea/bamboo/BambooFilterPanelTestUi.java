@@ -1,0 +1,126 @@
+/**
+ * Copyright (C) 2008 Atlassian
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.atlassian.theplugin.idea.bamboo;
+
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
+import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.intellij.openapi.project.Project;
+import org.easymock.EasyMock;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.util.*;
+
+public final class BambooFilterPanelTestUi {
+	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
+	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
+	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
+
+	private BambooFilterPanelTestUi() {
+	}
+
+	public static void main(String[] args) {
+		final ProjectId projectId1 = new ProjectId("projectId");
+		final Project mock = EasyMock.createNiceMock(Project.class);
+//		EasyMock.expect(mock.getName()).andReturn("My-test-Project");
+		EasyMock.expect(mock.getPresentableUrl()).andReturn("projectId").anyTimes();
+		EasyMock.replay(mock);
+		final CfgManagerImpl cfgManager = new CfgManagerImpl();
+		cfgManager.addProjectSpecificServer(projectId1, B1);
+		cfgManager.addProjectSpecificServer(projectId1, B2);
+		cfgManager.addProjectSpecificServer(projectId1, B3);
+		final BambooModel model = new BambooModel(mock, cfgManager);
+		model.setBuilds(getBuilds());
+		SwingAppRunner.run(new JPanel(new BorderLayout()) {
+			{
+				final BambooFilterPanel bambooFilterPanel = new BambooFilterPanel(new ProjectCfgManager(null, cfgManager),
+						projectId1, model);
+				add(bambooFilterPanel, BorderLayout.CENTER);
+				final JButton update = new JButton("Update");
+				update.addActionListener(new ActionListener() {
+					public void actionPerformed(final ActionEvent e) {
+						final java.util.List<BambooBuildAdapterIdea> ideas = MiscUtil.buildArrayList(getBuilds());
+						ideas.add(createBambooBuild("B7", "PR5", "Project Five", getState(), B3));
+						model.setBuilds(ideas);
+						bambooFilterPanel.update();
+					}
+				});
+				JPanel toolbar = new JPanel();
+				toolbar.add(update);
+				final JButton serversButton = new JButton("Servers");
+				serversButton.addActionListener(new ActionListener() {
+					public void actionPerformed(final ActionEvent e) {
+						bambooFilterPanel.setBambooFilterType(BambooFilterType.SERVER);
+					}
+				});
+				toolbar.add(serversButton);
+				final JButton statesButton = new JButton("States");
+				statesButton.addActionListener(new ActionListener() {
+					public void actionPerformed(final ActionEvent e) {
+						bambooFilterPanel.setBambooFilterType(BambooFilterType.STATE);
+					}
+				});
+				toolbar.add(statesButton);
+				final JButton prjButton = new JButton("Projects");
+				prjButton.addActionListener(new ActionListener() {
+					public void actionPerformed(final ActionEvent e) {
+						bambooFilterPanel.setBambooFilterType(BambooFilterType.PROJECT);
+					}
+				});
+				toolbar.add(prjButton);
+				add(toolbar, BorderLayout.NORTH);
+			}		});
+
+
+	}
+
+	private static String getState() {
+		boolean state = new Random().nextBoolean();
+		return state ? BambooBuildInfo.BUILD_SUCCESSFUL : BambooBuildInfo.BUILD_FAILED;
+	}
+
+	private static java.util.List<BambooBuildAdapterIdea> getBuilds() {
+		return Arrays.asList(createBambooBuild("B1", "PR1", "Project One", getState(), B1),
+				createBambooBuild("B2", "PR2", "Project Two", getState(), B2),
+				createBambooBuild("B3", "PR3", "Project Three", getState(), B3),
+				createBambooBuild("B4", "PR1", "Project One", getState(), B2),
+				createBambooBuild("B5", "PR3", "Project Three", getState(), B3),
+				createBambooBuild("B6", "PR1", "Project One", BuildStatus.UNKNOWN.toString(),
+						new Random().nextBoolean() ? B1 : B2), createBambooBuild("B7", "PR4", "Project Four", getState(), B2));
+	}
+
+	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, String state,
+			BambooServerCfg serverCfg) {
+		final BambooBuildInfo buildInfo = new BambooBuildInfo();
+		buildInfo.setBuildKey(buildKey);
+		buildInfo.setProjectKey(key);
+		buildInfo.setProjectName(name);
+		buildInfo.setBuildState(state);
+		buildInfo.setServer(serverCfg);
+		return new BambooBuildAdapterIdea(buildInfo);
+	}
+
+
+}
