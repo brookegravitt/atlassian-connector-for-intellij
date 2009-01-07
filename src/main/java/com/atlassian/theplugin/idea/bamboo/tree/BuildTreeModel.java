@@ -154,14 +154,12 @@ public class BuildTreeModel extends DefaultTreeModel {
 		return -1;
 	}
 
-	public void setBuilds(Collection<BambooBuildAdapterIdea> builds) {
-		buildModel.setBuils(builds);
-
-		// todo refresh tree
-	}
-
 	public void update(final Collection<BambooBuildAdapterIdea> buildStatuses) {
 		buildModel.setBuils(buildStatuses);
+		getRoot().removeAllChildren();
 		nodeStructureChanged(getRoot());
+		nodeChanged(getRoot());
+		nodeStructureChanged(root);
+		nodeChanged(root);
 	}
 }

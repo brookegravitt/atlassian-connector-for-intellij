@@ -25,8 +25,6 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
-import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -55,7 +53,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
-	private BuildTree buildTree;
+	private JTree buildTree;
 
 	public BambooFilterType getBambooFilterType() {
 		return bambooFilterType;
@@ -105,8 +103,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	@Override
 	public JTree createRightTree() {
 		if (buildTree == null) {
-			buildTree = new BuildTree(new BuildTreeModel());
-
+			buildTree = new JTree();
+//			new BuildTree(new BuildTreeModel());
 		}
 		return buildTree;
 	}
@@ -115,9 +113,8 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 	public BambooStatusListener getStatusCheckerListener() {
 		if (buildTree == null) {
 			createRightTree();
-
 		}
-		return buildTree;
+		return null; //buildTree;
 	}
 
 	@Override
