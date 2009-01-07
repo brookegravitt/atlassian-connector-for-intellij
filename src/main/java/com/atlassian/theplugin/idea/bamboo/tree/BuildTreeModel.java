@@ -32,12 +32,12 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	private BuildModel buildModel = new BuildModel();
 
-	private BuildGroupBy groupBy = BuildGroupBy.SERVER;
+	private BuildGroupBy groupBy = BuildGroupBy.PROJECT;
 
 	private BuildNodeManipulator generalNodeManipulator;
 	private BuildNodeManipulator stateNodeManipulator;
 	private BuildNodeManipulator serverNodeManipulator;
-	private BuildNodeManipulator authorNodeManipulator;
+	private BuildNodeManipulator dateNodeManipulator;
 	private BuildNodeManipulator projectNodeManipulator;
 
 	public BuildTreeModel() {
@@ -46,12 +46,9 @@ public class BuildTreeModel extends DefaultTreeModel {
 		// todo add group by node manipulators
 		generalNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
 		stateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		//StateNodeManipulator(buildModel, getRoot());
 		serverNodeManipulator = new ServerBuildNodeManipulator(buildModel, getRoot());
-		authorNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		//AuthorNodeManipulator(buildModel, getRoot());
-		projectNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		//ProjectNodeManipulator(buildModel, getRoot());
+		dateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		projectNodeManipulator = new ProjectBuildNodeManipulator(buildModel, getRoot());
 	}
 
 	/**
@@ -91,7 +88,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 		switch (groupBy) {
 			case AUTHOR:
-				return authorNodeManipulator.getChild(parent, index);
+				return dateNodeManipulator.getChild(parent, index);
 			case PROJECT:
 				return projectNodeManipulator.getChild(parent, index);
 			case SERVER:
@@ -109,7 +106,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 		switch (groupBy) {
 			case AUTHOR:
-				return authorNodeManipulator.getChildCount(parent);
+				return dateNodeManipulator.getChildCount(parent);
 			case PROJECT:
 				return projectNodeManipulator.getChildCount(parent);
 			case SERVER:
@@ -125,7 +122,8 @@ public class BuildTreeModel extends DefaultTreeModel {
 	@Override
 	public boolean isLeaf(Object node) {
 		if (node == getRoot()
-			|| node instanceof BuildServerTreeNode) {
+				|| node instanceof BuildProjectTreeNode
+				|| node instanceof BuildServerTreeNode) {
 			return false;
 		}
 
