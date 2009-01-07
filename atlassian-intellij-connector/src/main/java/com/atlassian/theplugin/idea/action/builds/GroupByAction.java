@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.action.builds;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
-import com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -44,14 +44,14 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 //		presentation.putClientProperty(COMBOBOX_KEY, combo);
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
-				if (currentProject != null) {
-					BuildsToolWindowPanel panel = IdeaHelper.getBuildsToolWindowPanel(currentProject);
+				final Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
+				if (project != null) {
+					final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
 					if (panel != null) {
-						panel.setGroupBy((BuildGroupBy) combo.getSelectedItem());
+						panel.setGroupingType((BuildGroupBy) combo.getSelectedItem());
 					} else {
 						LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot find "
-								+ BuildsToolWindowPanel.class);
+								+ BambooToolWindowPanel.class);
 					}
 				} else {
 					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current project");

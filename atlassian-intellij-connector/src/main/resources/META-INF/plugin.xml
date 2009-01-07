@@ -125,8 +125,6 @@
 		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
 						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"
-                serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel"/>
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildToolWindow"
                 serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildToolWindow"/>
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"
@@ -218,8 +216,6 @@
 
 
 		<!-- Bamboo tool window panel related actions -->
-		<action id="ThePlugin.Bamboo.GroupBy" class="com.atlassian.theplugin.idea.bamboo.GroupByAction"
-				text="Group Bamboo Plans" description="Group Bamboo Plans"/>
 		<action id="ThePlugin.Bamboo.FilterBy" class="com.atlassian.theplugin.idea.bamboo.FilterByAction"
 				text="Filter Bamboo Plans" description="Filter Bamboo Plans"/>
 

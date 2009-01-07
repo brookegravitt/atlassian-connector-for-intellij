@@ -232,7 +232,7 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 		return null;
 	}
 
-	public void setGroupingType(final BambooGroupingType groupingType) {
+	public void setGroupingType(final BuildGroupBy groupingType) {
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
@@ -320,6 +320,11 @@ public class BambooToolWindowPanel extends PluginToolWindowPanel implements Data
 			default:
 				throw new UnsupportedOperationException("Method not implemented for " + filterType);
 		}
+	}
+
+	public void refresh() {
+		// I doubt if it's really necessary as refreshing anyway comes now asynchrounsly from Bamboo Status Chekcker.
+		// However we could make it synchronous and show then error message if anything fails
 	}
 
 

@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.action.builds;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BuildsToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -25,10 +25,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ExpandAllAction extends AnAction {
 
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
-		final BuildsToolWindowPanel panel = IdeaHelper.getBuildsToolWindowPanel(e);
+		final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(e, BambooToolWindowPanel.class);
 		if (panel != null) {
-			panel.expandRightTree();
+			panel.expandAllRightTreeNodes();
 		}
 	}
 }
