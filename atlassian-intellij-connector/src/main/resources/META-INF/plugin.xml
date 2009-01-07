@@ -277,7 +277,7 @@
 		<action id="ThePlugin.Build.View"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.ViewBuildAction"
 				text="View Build"
-				description="View build in teh browser" icon="/general/web.gif"/>
+				description="View build in teh browser" icon="/general/web.png"/>
 		<action id="ThePlugin.Build.Run"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.RunBuildAction"
 				text="View Build"
