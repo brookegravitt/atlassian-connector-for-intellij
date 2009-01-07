@@ -17,9 +17,11 @@ package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -77,12 +79,6 @@ public abstract class CrucibleReviewListModelListenerHolder
 		}
 	}
 
-	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
-		for (CrucibleReviewListModelListener l : listeners) {
-			l.reviewChangedWithoutFiles(updateContext);
-		}
-	}
-
 	public void modelChanged(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener l : listeners) {
 			l.modelChanged(updateContext);
@@ -100,10 +96,10 @@ public abstract class CrucibleReviewListModelListenerHolder
 		 parent.removeAll();
 	 }
  */
-	public void updateReviews(final long epoch,
-							  final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
-							  final UpdateReason updateReason) {
-		parent.updateReviews(epoch, updatedReviews, updateReason);
+	public List<CrucibleNotification> updateReviews(final long epoch,
+			final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
+			final UpdateReason updateReason) {
+		return parent.updateReviews(epoch, updatedReviews, updateReason);
 	}
 
 	public ReviewAdapter getSelectedReview() {
@@ -114,11 +110,7 @@ public abstract class CrucibleReviewListModelListenerHolder
 		parent.setSelectedReview(review);
 	}
 
-	public ReviewAdapter getActiveReview() {
-		return parent.getActiveReview();
-	}
-
-	public void setActiveReview(ReviewAdapter review) {
-		parent.setActiveReview(review);
+	public Collection<ReviewAdapter> getOpenInIdeReviews() {
+		return parent.getOpenInIdeReviews();
 	}
 }

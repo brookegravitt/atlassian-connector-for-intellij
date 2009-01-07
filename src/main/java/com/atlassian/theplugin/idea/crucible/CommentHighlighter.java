@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -78,18 +79,25 @@ public final class CommentHighlighter {
 		}
 	}
 
-	public static void updateCommentsInEditors(Project project, ReviewAdapter review, CrucibleFileInfo fileInfo) {
+	public static void updateCommentsInEditors(Project project, ReviewAdapter review) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			if (editor.getUserData(COMMENT_DATA_KEY) != null) {
 				final ReviewAdapter data = editor.getUserData(REVIEW_DATA_KEY);
 				final CrucibleFileInfo file = editor.getUserData(REVIEWITEM_DATA_KEY);
 				if (data != null && file != null) {
-					if (data.getPermId().equals(review.getPermId())
-							&& file.getPermId().equals(fileInfo.getPermId())) {
-						applyHighlighters(project, editor, fileInfo);
-						editor.putUserData(REVIEW_DATA_KEY, review);
-						editor.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
-						editor.putUserData(COMMENT_DATA_KEY, true);
+					if (data.getPermId().equals(review.getPermId())) {
+						try {
+							for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
+								if (crucibleFileInfo.equals(file)) {
+									applyHighlighters(project, editor, crucibleFileInfo);
+									editor.putUserData(REVIEW_DATA_KEY, review);
+									editor.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+									editor.putUserData(COMMENT_DATA_KEY, true);
+								}
+							}
+						} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							throw new RuntimeException(valueNotYetInitialized);
+						}
 					}
 				}
 			}
@@ -104,16 +112,16 @@ public final class CommentHighlighter {
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
 		for (VersionedComment comment : fileInfo.getVersionedComments()) {
 			if (comment.getToStartLine() > 0) {
-				int endLine =  comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
+				int endLine = comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
 				try {
 					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
 					final int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
 							HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
-						rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
-								+ ":</b> " + comment.getMessage());
-						rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-						rh.putUserData(COMMENT_DATA_KEY, true);
+					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
+							+ ":</b> " + comment.getMessage());
+					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
+					rh.putUserData(COMMENT_DATA_KEY, true);
 				} catch (Exception e) {
 					PluginUtil.getLogger().error(e);
 				}

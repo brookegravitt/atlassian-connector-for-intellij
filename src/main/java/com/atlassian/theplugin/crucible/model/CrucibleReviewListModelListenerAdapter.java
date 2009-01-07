@@ -37,9 +37,6 @@ public class CrucibleReviewListModelListenerAdapter implements CrucibleReviewLis
 	public void reviewListUpdateFinished(UpdateContext updateContext) {
 	}
 
-	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
-	}
-
 	public void reviewListUpdateError(final UpdateContext updateContext, final Exception exception) {
 	}
 }

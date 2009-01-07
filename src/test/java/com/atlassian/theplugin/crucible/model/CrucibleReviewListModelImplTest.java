@@ -52,6 +52,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test"));
+		r.setState(State.REVIEW);
 		ReviewAdapter ra = new ReviewAdapter(r, cfg);
 		model.addReview(ra);
 		model.addReview(ra);
@@ -85,6 +86,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test1"));
+		r.setState(State.REVIEW);
 		ReviewAdapter ra1 = new ReviewAdapter(r, cfg);
 		ReviewAdapter ra2 = new ReviewAdapter(r, cfg);
 		model.addReview(ra1);
@@ -436,6 +438,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		ReviewBean rb = new ReviewBean("test_" + id);
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
+		rb.setState(State.REVIEW);
 		rb.setActions(new HashSet<Action>());
 
 		return new ReviewAdapter(rb, server);
@@ -460,8 +463,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		// add files and versioned comments
 		Set<CrucibleFileInfo> files = new HashSet<CrucibleFileInfo>();
 		CrucibleFileInfoImpl file = new CrucibleFileInfoImpl(
-				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
-				new VersionedVirtualFile("", "", rb.getVirtualFileSystem()),
+				new VersionedVirtualFile("", ""),
+				new VersionedVirtualFile("", ""),
 				new PermIdBean("file ID"));
 		files.add(file);
 		List<VersionedComment> versionedComments = new ArrayList<VersionedComment>();
@@ -496,7 +499,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public Review addRevisionsToReview(CrucibleServerCfg server, PermId permId,
-										   String repository, List<String> revisions)
+				String repository, List<String> revisions)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
@@ -609,7 +612,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public VersionedComment addVersionedComment(CrucibleServerCfg server, PermId permId,
-													PermId riId, VersionedComment comment)
+				PermId riId, VersionedComment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
@@ -627,13 +630,13 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public GeneralComment addGeneralCommentReply(CrucibleServerCfg server, PermId id,
-													 PermId cId, GeneralComment comment)
+				PermId cId, GeneralComment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
 
 		public VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id,
-														 PermId cId, VersionedComment comment)
+				PermId cId, VersionedComment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}

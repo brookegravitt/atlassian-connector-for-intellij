@@ -22,13 +22,16 @@ package com.atlassian.theplugin.crucible.model;
  */
 public interface CrucibleReviewListModelListener {
 	void reviewAdded(UpdateContext updateContext);
+
 	void reviewRemoved(UpdateContext updateContext);
+
 	void reviewChanged(UpdateContext updateContext);
+
 	void modelChanged(UpdateContext updateContext);
 
 	void reviewListUpdateStarted(UpdateContext updateContext);
+
 	void reviewListUpdateFinished(UpdateContext updateContext);
-	void reviewChangedWithoutFiles(UpdateContext updateContext);
 
 	void reviewListUpdateError(final UpdateContext updateContext, final Exception exception);
 }

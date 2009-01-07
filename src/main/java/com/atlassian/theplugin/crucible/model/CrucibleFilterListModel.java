@@ -4,7 +4,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -15,8 +14,11 @@ public class CrucibleFilterListModel {
 	private CustomFilter customFilter;
 
 	public CrucibleFilterListModel(CustomFilter customFilter) {
-
-		predefinedFilters.addAll(Arrays.asList(PredefinedFilter.values()));
+		for (PredefinedFilter predefinedFilter : PredefinedFilter.values()) {
+			if (predefinedFilter.isRemote()) {
+				predefinedFilters.add(predefinedFilter);
+			}
+		}
 		this.customFilter = customFilter;
 	}
 

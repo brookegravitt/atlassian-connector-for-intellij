@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -31,6 +32,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
@@ -53,6 +55,7 @@ import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -220,12 +223,22 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 
-	private void refreshView(ReviewAdapter review) {
+	private void refreshView(final ReviewAdapter review) {
 		if (crucibleReviewListModel != null && review != null) {
-			if (review.equals(crucibleReviewListModel.getActiveReview())) {
+			if (crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
 				this.crucibleReview = review;
-				EventQueue.invokeLater(new MyRunnable(review));
 			}
+			EventQueue.invokeLater(new MyRunnable(review));
+		}
+	}
+
+	private void refreshView(final ReviewAdapter oldReview, final ReviewAdapter review,
+			final List<CrucibleNotification> notifications) {
+		if (crucibleReviewListModel != null && review != null) {
+			if (crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
+				this.crucibleReview = review;
+			}
+			EventQueue.invokeLater(new MyRunnable(oldReview, review, notifications));
 		}
 	}
 /*
@@ -289,10 +302,21 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	private class MyRunnable implements Runnable {
 
+		private final ReviewAdapter oldReview;
 		private final ReviewAdapter review;
+		private final List<CrucibleNotification> notifications;
 
 		public MyRunnable(final ReviewAdapter review) {
+			this.oldReview = null;
 			this.review = review;
+			this.notifications = new ArrayList<CrucibleNotification>();
+		}
+
+		public MyRunnable(final ReviewAdapter oldReview, final ReviewAdapter review,
+				final List<CrucibleNotification> notifications) {
+			this.oldReview = oldReview;
+			this.review = review;
+			this.notifications = notifications;
 		}
 
 		public void run() {
@@ -319,6 +343,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			reviewFilesAndCommentsTree.setRootVisible(true);
 			reviewFilesAndCommentsTree.expandAll();
 			reviewFilesAndCommentsTree.requestFocus();
+			CommentHighlighter.updateCommentsInEditors(project, review);
 		}
 
 	}
@@ -389,20 +414,20 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		@Override
 		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-													   final GeneralComment comment) {
+				final GeneralComment comment) {
 			refreshView(review);
 		}
 
 		@Override
 		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
-													final VersionedComment comment) {
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
 		@Override
 		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
-														 final VersionedComment parentComment,
-														 final VersionedComment comment) {
+				final VersionedComment parentComment,
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
@@ -418,13 +443,14 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		@Override
 		public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
-											  final VersionedComment comment) {
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
 		@Override
-		public void reviewChanged(ReviewAdapter reviewAdapter) {
-			refreshView(reviewAdapter);
+		public void reviewChanged(final ReviewAdapter oldReview, final ReviewAdapter review,
+				final List<CrucibleNotification> notifications) {
+			refreshView(review);
 		}
 	}
 
