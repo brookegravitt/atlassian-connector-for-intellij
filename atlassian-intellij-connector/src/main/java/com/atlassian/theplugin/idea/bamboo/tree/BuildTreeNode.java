@@ -29,6 +29,8 @@ import java.awt.*;
 public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	private BambooBuildAdapterIdea build;
+	private static final int DATE_LABEL_WIDTH = 80;
+	private static final int REASON_LABEL_WIDTH = 160;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
 		super(build.getBuildKey(), null, null);
@@ -86,14 +88,45 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		JLabel state = new SelectableLabel(selected, enabled, "(" + build.getServer().getName() + ")", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		p.add(state, gbc);
-//
-//		gbc.gridx++;
-//		gbc.weightx = 0.0;
+
+		// reason
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;		
 //		gbc.insets = new Insets(0, 0, 0, 0);
-//		JLabel author = new SelectableLabel(selected, enabled, review.getAuthor().getDisplayName(), null,
-//				SwingConstants.LEADING, ICON_HEIGHT);
-////		setFixedComponentSize(author, AUTHOR_LABEL_WIDTH, ICON_HEIGHT);
-//		p.add(author, gbc);
+		JLabel reason = new SelectableLabel(selected, enabled, build.getBuildReason(), null,
+				SwingConstants.LEADING, ICON_HEIGHT);
+		setFixedComponentSize(reason, REASON_LABEL_WIDTH, ICON_HEIGHT);
+		p.add(reason, gbc);
+
+		String commiters  = "";
+		for (String commiter : build.getCommiters()) {
+			commiters += commiter + ", ";
+		}
+
+		if (commiters.length() > 0) {
+
+			// commiters
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+//		gbc.insets = new Insets(0, 0, 0, 0);
+			JLabel changes = new SelectableLabel(selected, enabled, "Changes made by: " + commiters, null,
+					SwingConstants.LEADING, ICON_HEIGHT);
+//		setFixedComponentSize(reason, REASON_LABEL_WIDTH, ICON_HEIGHT);
+			p.add(changes, gbc);
+
+		}
+
+		// date
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+//		gbc.insets = new Insets(0, 0, 0, 0);
+		JLabel changes = new SelectableLabel(selected, enabled, build.getBuildRelativeBuildDate(), null,
+				SwingConstants.LEADING, ICON_HEIGHT);
+		setFixedComponentSize(reason, DATE_LABEL_WIDTH, ICON_HEIGHT);
+		p.add(changes, gbc);
 //
 //			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 //			String t = dfo.format(review.getCreateDate());
@@ -107,17 +140,17 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 //			setFixedComponentSize(created, minDimension.width, ICON_HEIGHT);
 //			p.add(created, gbc);
 //
-//			JPanel padding = new JPanel();
-//			gbc.gridx++;
-//			gbc.weightx = 0.0;
-//			gbc.fill = GridBagConstraints.NONE;
-//			padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-//			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-//			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-//			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-//			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
-//			padding.setOpaque(true);
-//			p.add(padding, gbc);
+			JPanel padding = new JPanel();
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
+			padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+			padding.setOpaque(true);
+			p.add(padding, gbc);
 //
 //		final JToolTip jToolTip = p.createToolTip();
 //		jToolTip.setTipText(buildTolltip(0));

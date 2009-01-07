@@ -32,7 +32,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	private BuildModel buildModel = new BuildModel();
 
-	private BuildGroupBy groupBy = BuildGroupBy.NONE;
+	private BuildGroupBy groupBy = BuildGroupBy.SERVER;
 
 	private BuildNodeManipulator generalNodeManipulator;
 	private BuildNodeManipulator stateNodeManipulator;
@@ -47,8 +47,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 		generalNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
 		stateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
 		//StateNodeManipulator(buildModel, getRoot());
-		serverNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		//new ServerNodeManipulator(buildModel, getRoot());
+		serverNodeManipulator = new ServerBuildNodeManipulator(buildModel, getRoot());
 		authorNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
 		//AuthorNodeManipulator(buildModel, getRoot());
 		projectNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
@@ -125,11 +124,8 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	@Override
 	public boolean isLeaf(Object node) {
-		if (node == getRoot()) {
-//				|| node instanceof CrucibleReviewStateTreeNode
-//				|| node instanceof CrucibleReviewServerTreeNode
-//				|| node instanceof CrucibleReviewAuthorTreeNode
-//				|| node instanceof CrucibleReviewProjectTreeNode) {
+		if (node == getRoot()
+			|| node instanceof BuildServerTreeNode) {
 			return false;
 		}
 

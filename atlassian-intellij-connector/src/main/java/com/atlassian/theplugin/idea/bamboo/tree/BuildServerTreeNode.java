@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.crucible.tree.node;
+package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
-	
-	private CrucibleProject project;
+public class BuildServerTreeNode extends BuildGroupTreeNode {
+	private BambooServerCfg server;
 
-	public CrucibleReviewProjectTreeNode(CrucibleProject project) {
-		super(project.getName(), null, null);
+	public BuildServerTreeNode(BambooServerCfg server) {
+		super(server.getName());
 
-		this.project = project;
+		this.server = server;
 	}
 
-	public CrucibleProject getProject() {
-		return project;
+	public BambooServerCfg getServer() {
+		return server;
 	}
 }

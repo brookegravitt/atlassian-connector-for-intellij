@@ -13,24 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.crucible.tree.node;
+package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+
+import javax.swing.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class CrucibleReviewProjectTreeNode extends CrucibleReviewGroupTreeNode {
-	
-	private CrucibleProject project;
-
-	public CrucibleReviewProjectTreeNode(CrucibleProject project) {
-		super(project.getName(), null, null);
-
-		this.project = project;
+public class BuildGroupTreeNode extends AbstractTreeNode {
+	public BuildGroupTreeNode(String name) {
+		super(name, null, null);
 	}
 
-	public CrucibleProject getProject() {
-		return project;
+	@Override
+	public String toString() {
+		return name;
+	}
+
+	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
+		return getDefaultRenderer(c, selected, expanded, hasFocus);
+	}
+
+	public void onSelect() {
+
 	}
 }
