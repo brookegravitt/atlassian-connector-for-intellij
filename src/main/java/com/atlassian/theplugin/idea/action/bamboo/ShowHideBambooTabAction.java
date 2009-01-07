@@ -26,7 +26,7 @@ public class ShowHideBambooTabAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
 		final PluginToolWindow pluginToolWindow = IdeaHelper.getProjectComponent(e, PluginToolWindow.class);
 		if (pluginToolWindow != null) {
-			pluginToolWindow.showHidePanelIfExists(e, PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
+			pluginToolWindow.showHidePanelIfExists(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 		}
 
 	}
