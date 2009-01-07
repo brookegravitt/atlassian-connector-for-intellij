@@ -36,7 +36,6 @@ public class BuildTree extends JTree implements BambooStatusListener {
 		super.setRootVisible(false);
 
 		this.buildTreeModel = buildTreeModel;
-		
 	}
 
 	public BuildDetailsInfo getSelectedBuild() {
