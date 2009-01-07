@@ -21,9 +21,8 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindow;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindowOld;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.BuildChangesToolWindow;
 import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator;
@@ -45,27 +44,12 @@ public final class PicoUtil {
 			CfgManagerImpl.class,
 			NewVersionChecker.class,
 			IdeaUiTaskExecutor.class,
-//			BambooStatusChecker.class,
-//			CrucibleStatusChecker.class,
-//			NewVersionChecker.class,
-//			ConfigPanel.class,
-//			ServerConfigPanel.class,
-//			BambooGeneralForm.class,
-//			CrucibleGeneralForm.class,
-//			JiraGeneralForm.class,
-//			GeneralConfigPanel.class,
-//			ServerTreePanel.class,
-//			CrucibleServerFacadeImpl.class,
-//			BambooServerFacadeImpl.class,
-//			JIRAServerFacadeImpl.class,
 	};
 
 	private static final Class<?>[] PROJECT_COMPONENTS = {
 			BambooTableToolWindowPanel.class,
 			TestResultsToolWindow.class,
-			BuildChangesToolWindow.class,
-//			ProjectConfigurationBean.class,
-			BambooBuildToolWindow.class,
+			BambooBuildToolWindowOld.class,
 			JIRAServerModelImpl.class,			
 			JIRAIssueListModelBuilderImpl.class,
 			JIRAFilterListBuilder.class,

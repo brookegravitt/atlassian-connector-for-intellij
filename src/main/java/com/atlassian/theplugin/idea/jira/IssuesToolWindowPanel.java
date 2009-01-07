@@ -363,7 +363,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void openIssue(@NotNull JIRAIssue issue) {
 		IdeaHelper.getIssueToolWindow(getProject())
-				.showIssue(getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
+				.showIssue(jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 	}
 
 	public void openIssue(@NotNull final String issueKey) {
@@ -397,7 +397,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					}
 					if (issue != null) {
 						IdeaHelper.getIssueToolWindow(getProject()).showIssue(
-								getProject(), jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
+								jiraIssueListModelBuilder.getServer(), issue, baseIssueListModel);
 					}
 				}
 
