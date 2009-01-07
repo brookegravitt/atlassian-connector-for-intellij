@@ -4,17 +4,20 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 
 /**
@@ -46,7 +49,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(ContentParameters params) {
 		BuildContentParameters bcp = (BuildContentParameters) params;
-		return bcp.build.getBuildUrl();
+		return bcp.build.getBuildResultUrl();
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
@@ -54,16 +57,47 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		return new BuildPanel(bcp);
 	}
 
+	public void closeToolWindow(AnActionEvent e) {
+		closeToolWindow(TOOL_WINDOW_TITLE, e);
+	}
+
+	public void viewBuildInBrowser(String key) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			BrowserUtil.launchBrowser(bp.params.build.getBuildResultUrl());
+		}
+	}
+
+	public BambooBuildAdapterIdea getBuild(String key) {
+		BuildPanel p = getContentPanel(key);
+		if (p != null) {
+			return p.params.build;
+		}
+		return null;
+	}
+
 	private class BuildPanel extends ContentPanel {
+
+		private static final int ONE_MINUTE = 60000;
 
 		private JTabbedPane tabs = new JTabbedPane();
 		private final BuildContentParameters params;
 
+		private Timer timer;
+
 		public BuildPanel(BuildContentParameters params) {
 			this.params = params;
 
-			tabs.addTab("Details", new BuildDetailsPanel(params.build));
-			tabs.addTab("Changes", new CommitDetailsPanel(project, params.build));
+			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
+			final CommitDetailsPanel cdp = new CommitDetailsPanel(project, params.build);
+			timer = new Timer(ONE_MINUTE, new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					bdp.actionPerformed(e);
+					cdp.actionPerformed(e);
+				}
+			});
+			tabs.addTab("Details", bdp);
+			tabs.addTab("Changes", cdp);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -78,13 +112,18 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			gbc.weighty = 1.0;
 			gbc.insets = new Insets(0, 0, 0, 0);
 			add(tabs, gbc);
+
+			timer.setRepeats(true);
+			timer.setInitialDelay(ONE_MINUTE);
+			timer.start();
 		}
 
 		public void unregister() {
+			timer.stop();
 		}
 
 		public String getTitle() {
-			return params.build.getBuildKey() + "-" + params.build.getBuildNumber();
+			return "Build " + params.build.getBuildKey() + "-" + params.build.getBuildNumber();
 		}
 
 		private class SummaryPanel extends JPanel {
@@ -138,8 +177,8 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 			public void setSummaryText() {
 				String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
-						+ params.build.getBuildName() + "</a> "
-						+ params.build.getProjectName() + "</body></html>";
+						+ params.build.getBuildKey() + "</a> "
+						+ params.build.getProjectName() + " - " + params.build.getBuildName() + "</body></html>";
 				summary.setText(txt);
 			}
 

@@ -21,11 +21,11 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Splitter;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.NonNls;
@@ -34,9 +34,11 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +48,7 @@ import java.util.List;
  * Date: Jan 7, 2009
  * Time: 12:36:28 PM
  */
-public class CommitDetailsPanel extends JPanel implements DataProvider {
+public class CommitDetailsPanel extends JPanel implements DataProvider, ActionListener {
 
 	private static final float SPLIT_RATIO = 0.6f;
 	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME);
@@ -82,6 +84,10 @@ public class CommitDetailsPanel extends JPanel implements DataProvider {
 			}
 		};
 		ProgressManager.getInstance().run(changesTask);
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		// ignore
 	}
 
 	private void showError(final Exception e) {
