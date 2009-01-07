@@ -90,6 +90,7 @@ public final class Constants {
 	public static final String HELP_TEST_CONNECTION = "theplugin.testconnection";
 	public static final Icon HELP_ICON = IconLoader.getIcon("/actions/help.png");
 	public static final Icon JIRA_ISSUE_ICON = IconLoader.getIcon("/icons/tab_jira.png");
+	public static final Icon BAMBOO_BUILD_ICON = IconLoader.getIcon("/icons/tab_bamboo.png");
 	public static final Icon BAMBOO_TRACE_ICON = IconLoader.getIcon("/icons/bamboo-traces.png");
 	public static final Icon BAMBOO_COMMITS_ICON = IconLoader.getIcon("/icons/bamboo-commits.png");
 }
