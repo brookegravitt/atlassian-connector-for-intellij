@@ -73,7 +73,7 @@ public class BambooFilterPanel extends JList {
 
 		final DefaultListModel listModel = (DefaultListModel) getModel();
 		if (bambooFilterType == null) {
-			return ;
+			return;
 		}
 		switch (bambooFilterType) {
 			case PROJECT:
@@ -91,7 +91,7 @@ public class BambooFilterPanel extends JList {
 					}
 				}
 				break;
-			case SERVER: {
+			case SERVER:
 				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
 						.getAllEnabledBambooServers(projectId);
 
@@ -102,7 +102,7 @@ public class BambooFilterPanel extends JList {
 						listModel.addElement(obj);
 					}
 				}
-			}
+
 			break;
 			case STATE:
 				for (BuildStatus buildStatus : BuildStatus.values()) {
@@ -112,6 +112,8 @@ public class BambooFilterPanel extends JList {
 						listModel.addElement(obj);
 					}
 				}
+				break;
+			default:
 				break;
 		}
 //		return listModel;
