@@ -132,12 +132,12 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return notifications;
 	}
 
-	private Set<ReviewAdapter> getCollectionForFilter(final Map<CrucibleFilter, Set<ReviewAdapter>> reviews,
+	private Set<ReviewAdapter> getCollectionForFilter(final Map<CrucibleFilter, Set<ReviewAdapter>> r,
 			final CrucibleFilter crucibleFilter) {
-		if (!reviews.containsKey(crucibleFilter)) {
-			reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+		if (!r.containsKey(crucibleFilter)) {
+			r.put(crucibleFilter, new HashSet<ReviewAdapter>());
 		}
-		return reviews.get(crucibleFilter);
+		return r.get(crucibleFilter);
 	}
 
 	public synchronized void addReviewToCategory(CrucibleFilter crucibleFilter,
