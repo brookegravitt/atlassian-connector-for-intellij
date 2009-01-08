@@ -232,7 +232,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	public void setGroupingType(final BuildGroupBy groupingType) {
-		buildTree.setGroupBy(groupingType);
+		buildTree.groupBy(groupingType);
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
