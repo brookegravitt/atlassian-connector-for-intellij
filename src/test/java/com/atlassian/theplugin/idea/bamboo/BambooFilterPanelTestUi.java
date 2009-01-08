@@ -51,20 +51,20 @@ public final class BambooFilterPanelTestUi {
 		cfgManager.addProjectSpecificServer(projectId1, B1);
 		cfgManager.addProjectSpecificServer(projectId1, B2);
 		cfgManager.addProjectSpecificServer(projectId1, B3);
-		final BambooModel model = new BambooModel(mock, cfgManager);
+		final BambooModel model = new BambooModel();
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
-				final BambooFilterPanel bambooFilterPanel = new BambooFilterPanel(new ProjectCfgManager(null, cfgManager),
+				final BambooFilterList bambooFilterList = new BambooFilterList(new ProjectCfgManager(null, cfgManager),
 						projectId1, model);
-				add(bambooFilterPanel, BorderLayout.CENTER);
+				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
 				update.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
 						final java.util.List<BambooBuildAdapterIdea> ideas = MiscUtil.buildArrayList(getBuilds());
 						ideas.add(createBambooBuild("B7", "PR5", "Project Five", getState(), B3));
 						model.setBuilds(ideas);
-						bambooFilterPanel.update();
+						bambooFilterList.update();
 					}
 				});
 				JPanel toolbar = new JPanel();
@@ -72,21 +72,21 @@ public final class BambooFilterPanelTestUi {
 				final JButton serversButton = new JButton("Servers");
 				serversButton.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
-						bambooFilterPanel.setBambooFilterType(BambooFilterType.SERVER);
+						bambooFilterList.setBambooFilterType(BambooFilterType.SERVER);
 					}
 				});
 				toolbar.add(serversButton);
 				final JButton statesButton = new JButton("States");
 				statesButton.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
-						bambooFilterPanel.setBambooFilterType(BambooFilterType.STATE);
+						bambooFilterList.setBambooFilterType(BambooFilterType.STATE);
 					}
 				});
 				toolbar.add(statesButton);
 				final JButton prjButton = new JButton("Projects");
 				prjButton.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
-						bambooFilterPanel.setBambooFilterType(BambooFilterType.PROJECT);
+						bambooFilterList.setBambooFilterType(BambooFilterType.PROJECT);
 					}
 				});
 				toolbar.add(prjButton);
