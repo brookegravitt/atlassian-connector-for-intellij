@@ -15,31 +15,45 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+
 import java.util.Date;
 
 /**
  * @author Jacek Jaroczynski
  */
-public enum BuildDate {
+public enum DatePeriod {
 	TODAY("Today"),
 	YESTERDAY("Yesterday"),
 	LAST_WEEK("Last Week"),
 	LAST_MONTH("Last Month"),
-	LAST_YEAR("Last Year"),
-	OLDER("Older"),
-	UNKNOWN("Unknown");
+	OLDER("Older");
 
 	private String name;
+	private static final int DAYS_IN_WEEK = 7;
 
-	BuildDate(String name) {
+	DatePeriod(String name) {
 		this.name = name;
 	}
 
-	public static BuildDate getBuilDate(Date date) {
+	public static DatePeriod getBuilDate(Date aDate) {
 
-		
+		DateTime date = new DateTime(aDate);
 
-		return TODAY;
+		DateMidnight midnight = new DateMidnight();
+
+		if (date.isAfter(midnight)) {
+			return TODAY;
+		} else if (date.isAfter(midnight.minusDays(1))) {
+			return YESTERDAY;
+		} else if (date.isAfter(midnight.minusDays(DAYS_IN_WEEK))) {
+			return LAST_WEEK;
+		} else if (date.isAfter(midnight.minusMonths(1))) {
+			return LAST_MONTH;
+		} else {
+			return OLDER;
+		}
 	}
 
 	public String toString() {

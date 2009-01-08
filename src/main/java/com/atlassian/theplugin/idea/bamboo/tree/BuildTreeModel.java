@@ -32,7 +32,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	private BuildModel buildModel = new BuildModel();
 
-	private BuildGroupBy groupBy = BuildGroupBy.STATE;
+	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
 	private BuildNodeManipulator generalNodeManipulator;
 	private BuildNodeManipulator stateNodeManipulator;
@@ -87,7 +87,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	public Object getChild(Object parent, int index) {
 
 		switch (groupBy) {
-			case AUTHOR:
+			case DATE:
 				return dateNodeManipulator.getChild(parent, index);
 			case PROJECT:
 				return projectNodeManipulator.getChild(parent, index);
@@ -105,7 +105,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	public int getChildCount(Object parent) {
 
 		switch (groupBy) {
-			case AUTHOR:
+			case DATE:
 				return dateNodeManipulator.getChildCount(parent);
 			case PROJECT:
 				return projectNodeManipulator.getChildCount(parent);
@@ -124,6 +124,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 		if (node == getRoot()
 				|| node instanceof BuildProjectTreeNode
 				|| node instanceof BuildStateTreeNode
+				|| node instanceof BuildDateTreeNode
 				|| node instanceof BuildServerTreeNode) {
 			return false;
 		}
