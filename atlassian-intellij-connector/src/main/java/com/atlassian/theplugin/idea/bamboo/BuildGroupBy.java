@@ -16,15 +16,16 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 
+
 /**
  * @author Jacek Jaroczynski
  */
 public enum BuildGroupBy {
 	NONE("None"),
-	SERVER("Server"),
+	STATE("State"),
 	PROJECT("Project"),
-	DATE("Date"),
-	STATE("State");
+	SERVER("Server"),
+	DATE("Date");
 
 	private String name;
 
