@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
+import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SingleTabToolWindow;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -37,7 +38,6 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.components.labels.BoldLabel;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -110,8 +110,10 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 
 		private ReviewPanel(ReviewContentParameters params) {
 			this.params = params;
+
 			JTabbedPane tabs = new JTabbedPane();
 			detailsPanel = new DetailsPanel();
+
 			tabs.addTab("Details", detailsPanel);
 			commentsPanel = new CommentsPanel();
 			tabs.addTab("Comments", commentsPanel);
@@ -210,7 +212,6 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				gbc.weighty = 1.0;
 				gbc.fill = GridBagConstraints.BOTH;
 
-
 				scroll = new JScrollPane(createBody());
 				scroll.setBorder(BorderFactory.createEmptyBorder());
 				add(scroll, gbc);
@@ -228,10 +229,10 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 
 				GridBagConstraints gbc1 = new GridBagConstraints();
 				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
+				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc2.fill = GridBagConstraints.HORIZONTAL;
 				gbc2.weightx = 1.0;
 				gbc1.gridx = 0;
@@ -395,7 +396,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 			}
 
 			public void refresh() {
-				String txt = "<html><body><a href=\"" + params.reviewAdapter.getServer().getUrl() + "\">"
+				String txt = "<html><body><a href=\"" + params.reviewAdapter.getReviewUrl() + "\">"
 						+ params.reviewAdapter.getPermId().getId() + "</a> "
 						+ params.reviewAdapter.getName() + "</body></html>";
 				summary.setText(txt);
