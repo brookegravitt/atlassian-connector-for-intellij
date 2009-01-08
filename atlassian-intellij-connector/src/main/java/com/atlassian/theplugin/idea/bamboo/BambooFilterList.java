@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.intellij.ui.ListSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +44,7 @@ public class BambooFilterList extends JList {
 		this.projectId = projectId;
 		bambooModel = model;
 		allFilterWrapper = new BamboAllFilterWrapper(model);
+		new ListSpeedSearch(this);
 		updateModel(model.getAllBuilds());
 	}
 

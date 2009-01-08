@@ -33,12 +33,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.*;
 
-public final class BambooFilterPanelTestUi {
+public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
 	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
 	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
 
-	private BambooFilterPanelTestUi() {
+	private BambooFilterListTestUi() {
 	}
 
 	public static void main(String[] args) {
