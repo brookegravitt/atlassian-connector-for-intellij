@@ -15,9 +15,14 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
@@ -27,91 +32,84 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		super(buildModel, root);
 	}
 
-	public int getChildCount(final Object parent) {
+
+	@Override
+	public int getChildCount(Object parent) {
+		if (parent == rootNode) {
+			return getDistinctDates().size();
+		} else if (parent instanceof BuildDateTreeNode) {
+			BuildDateTreeNode stateNode = (BuildDateTreeNode) parent;
+			return gentNumOfBuildsForDate(stateNode.getDate());
+		}
+
 		return 0;
 	}
 
-	public Object getChild(final Object parent, final int index) {
+	@Override
+	public Object getChild(Object parent, int index) {
+		if (parent == rootNode) {
+
+			DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
+
+			if (index < p.getChildCount()) {
+				return p.getChildAt(index);
+			}
+
+			BuildDate date = getDistinctDates().get(index);
+
+			BuildDateTreeNode dateNode = new BuildDateTreeNode(date);
+			p.add(dateNode);
+
+			return dateNode;
+
+		} else if (parent instanceof BuildDateTreeNode) {
+			BuildDateTreeNode p = (BuildDateTreeNode) parent;
+
+			if (index < p.getChildCount()) {
+				return p.getChildAt(index);
+			}
+
+			BambooBuildAdapterIdea build = getBuildForDate(p.getDate(), index);
+			BuildTreeNode node = new BuildTreeNode(build);
+			p.add(node);
+
+			return node;
+		}
+
 		return null;
 	}
 
-//	@Override
-//	public int getChildCount(Object parent) {
-//		if (parent == rootNode) {
-//			return getDistinctDates().size();
-//		} else if (parent instanceof BuildDateTreeNode) {
-//			BuildDateTreeNode stateNode = (BuildDateTreeNode) parent;
-//			return gentNumOfBuildsForDate(stateNode.getDate());
-//		}
-//
-//		return 0;
-//	}
-//
-//	@Override
-//	public Object getChild(Object parent, int index) {
-//		if (parent == rootNode) {
-//
-//			DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
-//
-//			if (index < p.getChildCount()) {
-//				return p.getChildAt(index);
-//			}
-//
-//			String project = getDistinctDates().get(index);
-//
-//			BuildProjectTreeNode projectNode = new BuildProjectTreeNode(project);
-//			p.add(projectNode);
-//
-//			return projectNode;
-//
-//		} else if (parent instanceof BuildProjectTreeNode) {
-//			BuildProjectTreeNode p = (BuildProjectTreeNode) parent;
-//
-//			if (index < p.getChildCount()) {
-//				return p.getChildAt(index);
-//			}
-//
-//			BambooBuildAdapterIdea build = getBuildForProject(p.getProject(), index);
-//			BuildTreeNode node = new BuildTreeNode(build);
-//			p.add(node);
-//
-//			return node;
-//		}
-//
-//		return null;
-//	}
-//
-//	private List<String> getDistinctDates() {
-//		Set<String> projects = new LinkedHashSet<String>();	// ordered set
-//
-//		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-//			projects.add(build.getProjectName());
-//		}
-//
-//		return new ArrayList<String>(projects);
-//	}
-//
-//	private int gentNumOfBuildsForDate(BuildDate projectName) {
-//		int ret = 0;
-//		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-//			if (build.getBuildTime()) {
-//				++ret;
-//			}
-//		}
-//
-//		return ret;
-//	}
-//
-//	private BambooBuildAdapterIdea getBuildForProject(String projectName, int index) {
-//		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
-//
-//		// get all builds for server
-//		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-//			if (build.getProjectName().equals(projectName)) {
-//				array.add(build);
-//			}
-//		}
-//
-//		return array.get(index);
-//	}
+	private List<BuildDate> getDistinctDates() {
+		Set<BuildDate> dates = new LinkedHashSet<BuildDate>();	// ordered set
+
+		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+			dates.add(BuildDate.getBuilDate(build.getBuildTime()));
+		}
+
+		return new ArrayList<BuildDate>(dates);
+	}
+
+	private int gentNumOfBuildsForDate(BuildDate date) {
+		int ret = 0;
+		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+			if (BuildDate.getBuilDate(build.getBuildTime()) == date) {
+				++ret;
+			}
+		}
+
+		return ret;
+	}
+
+	private BambooBuildAdapterIdea getBuildForDate(BuildDate date, int index) {
+		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
+
+		// get all builds for date
+		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+			if (BuildDate.getBuilDate(build.getBuildTime()) == date) {
+				array.add(build);
+			}
+		}
+
+		return array.get(index);
+	}
 }
