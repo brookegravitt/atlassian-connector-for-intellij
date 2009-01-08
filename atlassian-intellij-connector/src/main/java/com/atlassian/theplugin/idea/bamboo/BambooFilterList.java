@@ -29,18 +29,20 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class BambooFilterPanel extends JList {
+public class BambooFilterList extends JList {
 	private final ProjectCfgManager projectCfgManager;
 	private final ProjectId projectId;
 	private final BambooModel bambooModel;
 	private BambooFilterType bambooFilterType; // = BambooFilterType.NONE;
+	private final BamboAllFilterWrapper allFilterWrapper;
 
 
-	public BambooFilterPanel(final ProjectCfgManager projectCfgManager, final ProjectId projectId, final BambooModel model) {
+	public BambooFilterList(final ProjectCfgManager projectCfgManager, final ProjectId projectId, final BambooModel model) {
 		super(new DefaultListModel());
 		this.projectCfgManager = projectCfgManager;
 		this.projectId = projectId;
 		bambooModel = model;
+		allFilterWrapper = new BamboAllFilterWrapper(model);
 		updateModel(model.getAllBuilds());
 	}
 
@@ -72,6 +74,9 @@ public class BambooFilterPanel extends JList {
 	private void updateModel(@NotNull final Collection<BambooBuildAdapterIdea> buildStatuses) {
 
 		final DefaultListModel listModel = (DefaultListModel) getModel();
+		if (!listModel.contains(allFilterWrapper)) {
+			listModel.addElement(allFilterWrapper);
+		}
 		if (bambooFilterType == null) {
 			return;
 		}
@@ -119,53 +124,6 @@ public class BambooFilterPanel extends JList {
 //		return listModel;
 	}
 
-
-//	private DefaultListModel updateFilterModel(@NotNull final Collection<BambooBuildAdapterIdea> buildStatuses) {
-//		final DefaultListModel listModel = new DefaultListModel();
-//		if (bambooFilterType == null) {
-//			return listModel;
-//		}
-//		switch (bambooFilterType) {
-//			case PROJECT:
-//				break;
-//			case SERVER: {
-//				Map<BambooServerCfg, Integer> hitMap = new LinkedHashMap<BambooServerCfg, Integer>();
-//				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
-//						.getAllEnabledBambooServers(projectId);
-//
-//				for (BambooServerCfg bambooServer : bambooServers) {
-//					hitMap.put(bambooServer, 0);
-//				}
-//				for (BambooBuildAdapterIdea buildStatus : buildStatuses) {
-//					final Integer integer = hitMap.get(buildStatus.getServer());
-//					hitMap.put(buildStatus.getServer(), integer != null ? integer + 1 : 1);
-//				}
-//
-//				for (Map.Entry<BambooServerCfg, Integer> entry : hitMap.entrySet()) {
-//					listModel.addElement(new BamboServerCfgWrapper(entry.getKey(), entry.getValue()));
-//				}
-//			}
-//			break;
-//			case STATE: {
-//
-//				Map<BuildStatus, Integer> hitMap = new LinkedHashMap<BuildStatus, Integer>();
-//				for (BuildStatus buildStatus : BuildStatus.values()) {
-//					hitMap.put(buildStatus, 0);
-//				}
-//				for (BambooBuildAdapterIdea buildAdapterIdea : buildStatuses) {
-//					final Integer integer = hitMap.get(buildAdapterIdea.getStatus());
-//					hitMap.put(buildAdapterIdea.getStatus(), integer != null ? integer + 1 : 1);
-//				}
-//
-//				for (Map.Entry<BuildStatus, Integer> entry : hitMap.entrySet()) {
-//					listModel.addElement(new BuildStatusWrapper(entry.getKey(), entry.getValue()));
-//
-//				}
-//			}
-//		}
-//		return listModel;
-//	}
-
 	private static class BambooServerFilter implements BambooBuildFilter {
 		private final BambooServerCfg bambooServerCfg;
 
@@ -173,7 +131,7 @@ public class BambooFilterPanel extends JList {
 			this.bambooServerCfg = bambooServerCfg;
 		}
 
-		public boolean passes(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapterIdea build) {
 			return bambooServerCfg.equals(build.getServer());
 		}
 
@@ -202,6 +160,12 @@ public class BambooFilterPanel extends JList {
 		}
 	}
 
+	private static final BambooBuildFilter ALL_FILTER = new BambooBuildFilter() {
+		public boolean doesMatch(final BambooBuildAdapterIdea build) {
+			return true;
+		}
+	};
+
 
 	private static class BambooProjectFilter implements BambooBuildFilter {
 		private final String projectName;
@@ -210,7 +174,7 @@ public class BambooFilterPanel extends JList {
 			this.projectName = projectName;
 		}
 
-		public boolean passes(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapterIdea build) {
 			return projectName.equals(build.getProjectName());
 		}
 
@@ -249,7 +213,7 @@ public class BambooFilterPanel extends JList {
 		}
 
 
-		public boolean passes(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapterIdea build) {
 			return status == build.getStatus();
 		}
 
@@ -290,13 +254,24 @@ public class BambooFilterPanel extends JList {
 		protected int getCount() {
 			int i = 0;
 			for (BambooBuildAdapterIdea build : model.getAllBuilds()) {
-				if (wrapped.passes(build)) {
+				if (wrapped.doesMatch(build)) {
 					i++;
 				}
 			}
 			return i;
 		}
 
+	}
+
+	private static class BamboAllFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooBuildFilter> {
+		public BamboAllFilterWrapper(final BambooModel model) {
+			super(ALL_FILTER, model);
+		}
+
+		@Override
+		public String toString() {
+				return "All (" + getCount() + ")";
+		}
 	}
 
 	private static class BamboServerFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooServerFilter> {
@@ -377,43 +352,6 @@ public class BambooFilterPanel extends JList {
 		}
 
 		return new BambooCompositeOrFilter(filters);
-/*		switch (filterType) {
-			case PROJECT:
-				if (selectedPaths != null) {
-					for (Object selectedPath : selectedPaths) {
-						if (selectedPath instanceof BamboProjectFilterWrapper) {
-							final BamboProjectFilterWrapper projectBean = (BamboProjectFilterWrapper) selectedPath;
-							filters.add(projectBean.getWrapped());
-						}
-
-					}
-				}
-				return bambooModel.createProjectFilter(projectKeys);
-			case SERVER:
-				Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList();
-				if (selectedPaths != null) {
-					for (Object selectedPath : selectedPaths) {
-						if (selectedPath instanceof BamboServerCfgWrapper) {
-							final BamboServerCfgWrapper bamboServerCfgWrapper = (BamboServerCfgWrapper) selectedPath;
-							serverCfgs.add(bamboServerCfgWrapper.getWrapped());
-						}
-					}
-				}
-				return bambooModel.createServerFilter(serverCfgs);
-			case STATE:
-				Collection<BuildStatus> buildStatuses = MiscUtil.buildArrayList();
-				if (selectedPaths != null) {
-					for (Object selectedPath : selectedPaths) {
-						if (selectedPath instanceof BuildStatusWrapper) {
-							final BuildStatusWrapper buildStatusWrapper = (BuildStatusWrapper) selectedPath;
-							buildStatuses.add(buildStatusWrapper.getWrapped());
-						}
-					}
-				}
-				return bambooModel.createStateFilter(buildStatuses);
-			default:
-				throw new UnsupportedOperationException("Method not implemented for " + filterType);
-		}*/
 	}
 
 }

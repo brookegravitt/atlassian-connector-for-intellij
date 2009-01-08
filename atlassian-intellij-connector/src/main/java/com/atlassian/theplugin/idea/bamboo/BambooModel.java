@@ -15,50 +15,19 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-interface BambooModelListener {
-	void filterChanged();
-	void buildsChanged();
-}
-
-interface BambooBuildFilter {
-	boolean passes(BambooBuildAdapterIdea build);
-//	BambooFilterType getFilterType();
-}
-
-class BambooCompositeOrFilter implements BambooBuildFilter {
-	private final Collection<BambooBuildFilter> filters;
-
-	public BambooCompositeOrFilter(final Collection<BambooBuildFilter> filters) {
-		this.filters = filters;
-	}
-
-	public boolean passes(final BambooBuildAdapterIdea build) {
-		for (BambooBuildFilter filter : filters) {
-			if (filter.passes(build)) {
-				return true;
-			}
-		}
-		return false;
-	}
-}
 
 public class BambooModel {
 	/**
@@ -66,20 +35,12 @@ public class BambooModel {
 	 */
 	private BambooBuildFilter filter;
 
-	private Collection<BambooModelListener> listeners = new CopyOnWriteArrayList<BambooModelListener>();
-
-	private final Project project;
-
-	private final CfgManager cfgManager;
+	private final Collection<BambooModelListener> listeners = new CopyOnWriteArrayList<BambooModelListener>();
 
 	private final Collection<BambooBuildAdapterIdea> allBuilds = MiscUtil.buildArrayList();
 
-	public BambooModel(@NotNull Project project, @NotNull CfgManager cfgManager) {
-		this.project = project;
-		this.cfgManager = cfgManager;
-		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), new MyConfigurationListenerAdapter());
+	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 
-	}
 
 	// for unit tests only
 	void setBuilds(Collection<BambooBuildAdapterIdea> builds) {
@@ -92,10 +53,11 @@ public class BambooModel {
 		boolean haveErrors = false;
 		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
 		Date lastPollingTime = null;
+		final Collection<String> errors = MiscUtil.buildArrayList();
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN) {
-//					setStatusMessage(build.getMessage(), true);
+					errors.add(build.getMessage());
 					haveErrors = true;
 				}
 			}
@@ -107,64 +69,23 @@ public class BambooModel {
 		allBuilds.clear();
 		allBuilds.addAll(buildAdapters);
 
-//		if (!haveErrors) {
-//			StringBuffer sb = new StringBuffer();
-//			sb.append("Loaded <b>");
-//			sb.append(builds.size());
-//			sb.append("</b> builds");
-//			if (lastPollingTime != null) {
-//				sb.append(" at  <b>");
-//				sb.append(TIME_DF.print(lastPollingTime.getTime()));
-//				sb.append("</b>");
-//			}
-//			sb.append(".");
-//			setStatusMessage((sb.toString()));
-//		}
+		final StringBuilder info = new StringBuilder();
+		info.append("Loaded <b>");
+		info.append(builds.size());
+		info.append("</b> builds");
+		if (lastPollingTime != null) {
+			info.append(" at  <b>");
+			info.append(TIME_DF.print(lastPollingTime.getTime()));
+			info.append("</b>");
+		}
+		info.append(".");
 
 		//setBuilds(buildStatuses);
 		notifyListeners(new Notifier() {
 			public void notify(final BambooModelListener listener) {
-				listener.buildsChanged();
+				listener.buildsChanged(Collections.singleton(info.toString()), errors);
 			}
 		});
-	}
-
-	public BambooBuildFilter createProjectFilter(final Collection<String> aProjects) {
-		return new BambooBuildFilter() {
-			private Set<String> projects = MiscUtil.buildHashSet(aProjects);
-			public boolean passes(final BambooBuildAdapterIdea build) {
-				return projects.contains(build.getProjectName());
-			}
-
-			public BambooFilterType getFilterType() {
-				return BambooFilterType.PROJECT;
-			}
-		};
-	}
-
-	public BambooBuildFilter createServerFilter(final Collection<ServerCfg> aServers) {
-		return new BambooBuildFilter() {
-			private Set<ServerCfg> servers = MiscUtil.buildHashSet(aServers);
-			public boolean passes(final BambooBuildAdapterIdea build) {
-				return servers.contains(build.getServer());
-			}
-			public BambooFilterType getFilterType() {
-				return BambooFilterType.SERVER;
-			}
-		};
-	}
-
-	public BambooBuildFilter createStateFilter(final Collection<BuildStatus> aStatuses) {
-		return new BambooBuildFilter() {
-			private Set<BuildStatus> statuses = MiscUtil.buildHashSet(aStatuses);
-			public boolean passes(final BambooBuildAdapterIdea build) {
-				return statuses.contains(build.getStatus());
-			}
-
-			public BambooFilterType getFilterType() {
-				return BambooFilterType.STATE;
-			}
-		};
 	}
 
 	public Collection<BambooBuildAdapterIdea> getAllBuilds() {
@@ -179,7 +100,7 @@ public class BambooModel {
 		}
 		Collection<BambooBuildAdapterIdea> res = MiscUtil.buildArrayList();
 		for (BambooBuildAdapterIdea build : allBuilds) {
-			if (filter.passes(build)) {
+			if (filter.doesMatch(build)) {
 				res.add(build);
 			}
 		}
@@ -216,15 +137,4 @@ public class BambooModel {
 
 	}
 
-	private class MyConfigurationListenerAdapter extends ConfigurationListenerAdapter {
-
-		@Override
-		public void projectUnregistered() {
-			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(BambooModel.this.project), this);
-		}
-
-		@Override
-		public void bambooServersChanged(final ProjectConfiguration newConfiguration) {
-		}
-	}
 }
