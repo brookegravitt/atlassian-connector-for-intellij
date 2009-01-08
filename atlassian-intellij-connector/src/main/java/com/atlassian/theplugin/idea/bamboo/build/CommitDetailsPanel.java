@@ -7,16 +7,13 @@ import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.TableColumnInfo;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ModelProvider;
-import com.atlassian.theplugin.idea.ui.AtlassianTableView;
-import com.atlassian.theplugin.idea.ui.TableColumnProvider;
-import com.atlassian.theplugin.idea.ui.TableItemSelectedListener;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -27,21 +24,20 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.psi.PsiFile;
-import com.intellij.util.ui.ListTableModel;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.table.TableCellRenderer;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
+import java.text.DateFormat;
 
 /**
  * User: jgorycki
@@ -51,6 +47,8 @@ import java.util.List;
 public class CommitDetailsPanel extends JPanel implements DataProvider, ActionListener {
 
 	private static final float SPLIT_RATIO = 0.6f;
+	protected static final int ROW_HEIGHT = 16;
+
 	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME);
 	private final Project project;
 	private final BambooBuildAdapterIdea build;
@@ -63,7 +61,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		this.project = project;
 		this.build = build;
 
-		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving Build Stack Trace", false) {
+		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving changed files", false) {
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
@@ -93,14 +91,23 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 	private void showError(final Exception e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				add(new JLabel("Failed to retrieve build changes: " + e.getMessage()));
+				add(new JLabel("Failed to retrieve changed files: " + e.getMessage()));
 			}
 		});
 	}
 
+	private class ChangeSetListModel extends DefaultListModel {
+		public ChangeSetListModel(List<BambooChangeSet> commits) {
+			int i = 0;
+			for (BambooChangeSet cs : commits) {
+				add(i++, cs);
+			}
+		}
+	}
+
 	private void fillContent(List<BambooChangeSet> commits) {
 		if (commits == null || commits.size() == 0) {
-			add(new JLabel("No build in " + build.getBuildKey()));
+			add(new JLabel("No changes in " + build.getBuildKey() + "-" + build.getBuildNumber()));
 			return;
 		}
 
@@ -108,30 +115,70 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		split.setShowDividerControls(true);
 
 
-		JPanel tablePanel = new JPanel();
-		tablePanel.setLayout(new BorderLayout());
-		final AtlassianTableView<BambooChangeSet> commitsTable = createCommitsTable(commits);
-		tablePanel.add(new JScrollPane(commitsTable), BorderLayout.CENTER);
+		JPanel listPanel = new JPanel();
+		listPanel.setLayout(new BorderLayout());
+		listPanel.setBorder(BorderFactory.createTitledBorder("Change Sets"));
 
-		split.setFirstComponent(tablePanel);
+		final JList changesList = new JList();
+		changesList.setModel(new ChangeSetListModel(commits));
+		changesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		changesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				if (e.getValueIsAdjusting()) {
+					return;
+				}
+				fillFileTree((BambooChangeSet) changesList.getSelectedValue());
+			}
+		});
+		changesList.setCellRenderer(new ListCellRenderer() {
+			public Component getListCellRendererComponent(JList list, Object value, int index,
+														  boolean isSelected, boolean cellHasFocus) {
+				BambooChangeSet cs = (BambooChangeSet) value;
+				JPanel p = new JPanel();
+				p.setLayout(new GridBagLayout());
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.weightx = 1.0;
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+				p.add(new SelectableLabel(isSelected, true, " " + cs.getComment(), ROW_HEIGHT), gbc);
+				gbc.gridx++;
+				gbc.weightx = 0.0;
+				gbc.anchor = GridBagConstraints.LINE_END;
+				gbc.fill = GridBagConstraints.NONE;
+				JLabel author = new SelectableLabel(isSelected, true, cs.getAuthor(), ROW_HEIGHT, true);
+				author.setHorizontalAlignment(SwingConstants.RIGHT);
+				p.add(author, gbc);
+				gbc.gridx++;
+				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				String commitDate = dfo.format(cs.getCommitDate());
+				JLabel date = new SelectableLabel(isSelected, true, ", " + commitDate + " ", ROW_HEIGHT);
+				p.add(date, gbc);
+
+				return p;
+			}
+		});
+		listPanel.add(new JScrollPane(changesList), BorderLayout.CENTER);
+
+		split.setFirstComponent(listPanel);
 
 		JPanel fileTreePanel = new JPanel();
 		fileTreePanel.setLayout(new BorderLayout());
 
-		JLabel label = new JLabel("Changed Files");
-		fileTreePanel.add(label, BorderLayout.NORTH);
+		fileTreePanel.setBorder(BorderFactory.createTitledBorder("Changed Files"));
 
 		fileTree.setRootVisible(false);
 		fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(build.getBuildKey()));
 		fileTreePanel.add(fileTree, BorderLayout.CENTER);
 
 		split.setSecondComponent(fileTreePanel);
+		split.setShowDividerControls(false);
 
 		setLayout(new BorderLayout());
 		add(split, BorderLayout.CENTER);
 
 		if (commits.size() == 1) {
-			commitsTable.getSelectionModel().setSelectionInterval(0, 0);
+			changesList.getSelectionModel().setSelectionInterval(0, 0);
 		}
 		validate();
 	}
@@ -146,149 +193,31 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		return null;
 	}
 
+	private void fillFileTree(final BambooChangeSet changeSet) {
+		if (changeSet == null) {
+			fileTree.setModelProvider(ModelProvider.EMPTY_MODEL_PROVIDER);
+		} else {
+			fileTree.setModelProvider(new ModelProvider() {
+				private AtlassianTreeModel diredModel =
+						FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, changeSet);
+				private AtlassianTreeModel flatModel =
+						FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, changeSet);
 
-	private static class AuthorColumn extends TableColumnInfo<BambooChangeSet, String> {
-		private static final int PREFERRED_WIDTH = 100;
-
-		@Override
-		public String getColumnName() {
-			return "Author";
-		}
-
-		@Override
-		public Class getColumnClass() {
-			return String.class;
-		}
-
-		@Override
-		public int getPrefferedWidth() {
-			return PREFERRED_WIDTH;
-		}
-
-		@Override
-		public String valueOf(final BambooChangeSet obj) {
-			return obj.getAuthor();
-		}
-
-		@Override
-		public Comparator<BambooChangeSet> getComparator() {
-			return new Comparator<BambooChangeSet>() {
-				public int compare(BambooChangeSet o, BambooChangeSet o1) {
-					return o.getAuthor().compareTo(o1.getAuthor());
+				@Override
+				public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
+					switch (state) {
+						case DIRED:
+							return diredModel;
+						case FLAT:
+							return flatModel;
+						default:
+							throw new IllegalStateException("Unknown model requested");
+					}
 				}
-			};
+			});
 		}
-
-	}
-
-	private static class DateColumn extends TableColumnInfo<BambooChangeSet, Date> {
-		private static final int PREFERRED_WIDTH = 100;
-
-		@Override
-		public String getColumnName() {
-			return "Date";
-		}
-
-		@Override
-		public Class getColumnClass() {
-			return Date.class;
-		}
-
-		@Override
-		public int getPrefferedWidth() {
-			return PREFERRED_WIDTH;
-		}
-
-		@Override
-		public Date valueOf(BambooChangeSet o) {
-			return o.getCommitDate();
-		}
-
-		@Override
-		public Comparator<BambooChangeSet> getComparator() {
-			return new Comparator<BambooChangeSet>() {
-				public int compare(BambooChangeSet o, BambooChangeSet o1) {
-					return o1.getCommitDate().compareTo(o.getCommitDate());
-				}
-			};
-		}
-	}
-
-	private static class CommentColumn extends TableColumnInfo<BambooChangeSet, String> {
-		private static final int PREFERRED_WIDTH = 600;
-
-		@Override
-		public String getColumnName() {
-			return "Comment";
-		}
-
-		@Override
-		public Class getColumnClass() {
-			return String.class;
-		}
-
-		@Override
-		public int getPrefferedWidth() {
-			return PREFERRED_WIDTH;
-		}
-
-		@Override
-		public String valueOf(BambooChangeSet o) {
-			return o.getComment();
-		}
-
-		@Override
-		public Comparator<BambooChangeSet> getComparator() {
-			return new Comparator<BambooChangeSet>() {
-				public int compare(BambooChangeSet o, BambooChangeSet o1) {
-					return o.getComment().compareTo(o1.getComment());
-				}
-			};
-		}
-	}
-
-	private AtlassianTableView<BambooChangeSet> createCommitsTable(final List<BambooChangeSet> commits) {
-		TableColumnProvider prov = new TableColumnProvider() {
-			public TableColumnInfo[] makeColumnInfo() {
-				return new TableColumnInfo[]{ new AuthorColumn(), new DateColumn(), new CommentColumn() };
-			}
-
-			public TableCellRenderer[] makeRendererInfo() {
-				return new TableCellRenderer[]{ null, null, null };
-			}
-		};
-		final AtlassianTableView<BambooChangeSet> atv = new AtlassianTableView<BambooChangeSet>(prov,
-				new ListTableModel<BambooChangeSet>(prov.makeColumnInfo(), commits, 0), null);
-		atv.addItemSelectedListener(new TableItemSelectedListener<BambooChangeSet>() {
-			public void itemSelected(AtlassianTableView<BambooChangeSet> table) {
-				final BambooChangeSet c = table.getSelectedObject();
-				if (c == null) {
-					fileTree.setModelProvider(ModelProvider.EMPTY_MODEL_PROVIDER);
-				} else {
-					fileTree.setModelProvider(new ModelProvider() {
-						private AtlassianTreeModel diredModel =
-								FileTreeModelBuilder.buildTreeModelFromBambooChangeSet(project, c);
-						private AtlassianTreeModel flatModel =
-								FileTreeModelBuilder.buildFlatTreeModelFromBambooChangeSet(project, c);
-
-						@Override
-						public AtlassianTreeModel getModel(final AtlassianTreeWithToolbar.State state) {
-							switch (state) {
-								case DIRED:
-									return diredModel;
-								case FLAT:
-									return flatModel;
-								default:
-									throw new IllegalStateException("Unknown model requested");
-							}
-						}
-					});
-				}
-				fileTree.setRootVisible(false);
-				fileTree.expandAll();
-			}
-		});
-		return atv;
+		fileTree.setRootVisible(false);
+		fileTree.expandAll();
 	}
 
 	private static final class NavigateToCodeHandler extends MouseAdapter {

@@ -16,9 +16,22 @@ public final class SelectableLabel extends JLabel {
 		this(selected, enabled, text, null, SwingConstants.LEADING, height);
 	}
 
+	public SelectableLabel(boolean selected, boolean enabled, String text, int height, boolean bold) {
+		this(selected, enabled, text, null, SwingConstants.LEADING, height, bold);
+	}
+
 	public SelectableLabel(boolean selected, boolean enabled, String text, Icon icon, int alignment, int height) {
+		this(selected, enabled, text, icon, alignment, height, false);
+	}
+
+	public SelectableLabel(boolean selected, boolean enabled, String text,
+						   Icon icon, int alignment, int height, boolean bold) {
 		super(text, SwingConstants.LEADING);
 
+		if (bold) {
+			setFont(getFont().deriveFont(Font.BOLD));
+		}
+		
 		if (icon != null) {
 			setIcon(icon);
 			setDisabledIcon(icon);
