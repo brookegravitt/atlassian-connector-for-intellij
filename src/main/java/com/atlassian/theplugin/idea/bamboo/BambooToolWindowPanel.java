@@ -17,6 +17,9 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
@@ -61,7 +64,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private final BambooModel bambooModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
-	private final BambooFilterPanel filterList;
+	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
 	private JComponent toolBar;
 
@@ -77,13 +80,17 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		this.project = project;
 		this.bambooModel = bambooModel;
-		filterList = new BambooFilterPanel(projectCfgManager, CfgUtil.getProjectId(project), bambooModel);
-//		filterList = new JList(createListModel(BambooFilterType.STATE));
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		filterList = new BambooFilterList(projectCfgManager, projectId, bambooModel);
+		projectCfgManager.getCfgManager().addProjectConfigurationListener(projectId, new ConfigurationListenerAdapter() {
+			@Override
+			public void bambooServersChanged(final ProjectConfiguration newConfiguration) {
+				filterList.update();
+			}
+		});
 
 		filterList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(final ListSelectionEvent e) {
-
-//				final BambooBuildFilter filter = createBuildFilter(bambooFilterType, filterList.getSelectedValues());
 				final BambooBuildFilter filter = filterList.getSelection();
 				bambooModel.setFilter(filter);
 			}
@@ -94,7 +101,20 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				updateTree();
 			}
 
-			public void buildsChanged() {
+			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
+					@Nullable final Collection<String> errors) {
+				StringBuilder sb = new StringBuilder();
+				if (additionalInfo != null) {
+					for (String s : additionalInfo) {
+						sb.append(s).append("<br/>");
+					}
+				}
+				if (errors != null) {
+					for (String s : errors) {
+						sb.append(s).append("<br/>");
+					}
+				}
+				setStatusMessage(sb.toString(), errors != null && errors.size() > 0);
 				filterList.update();
 				updateTree();
 			}

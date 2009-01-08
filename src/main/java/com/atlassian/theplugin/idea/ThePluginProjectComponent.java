@@ -81,6 +81,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
+	private final BambooTableToolWindowPanel bambooTableToolWindowPanel;
 	private final BambooModel bambooModel;
 	private CrucibleStatusChecker crucibleStatusChecker;
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
@@ -104,6 +105,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
+			@NotNull final BambooTableToolWindowPanel bambooTableToolWindowPanel,
 			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BambooModel bambooModel,
@@ -118,6 +120,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
+		this.bambooTableToolWindowPanel = bambooTableToolWindowPanel;
 		this.bambooModel = bambooModel;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
@@ -180,9 +183,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
-
-			final BambooTableToolWindowPanel bambooTableToolWindowPanel = new BambooTableToolWindowPanel(project,
-					projectConfigurationBean, testResultsToolWindow);
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
