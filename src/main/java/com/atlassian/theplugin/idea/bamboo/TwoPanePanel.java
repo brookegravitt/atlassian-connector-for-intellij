@@ -49,7 +49,8 @@ public abstract class TwoPanePanel extends JPanel {
 				return dim; 
 			}
 		};
-		statusBarPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+		// empty border is not transparent on Mac, so I need to use line border
+		statusBarPane.setBorder(BorderFactory.createLineBorder(oldColor, 2));
 		statusBar.setOpaque(true);
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
