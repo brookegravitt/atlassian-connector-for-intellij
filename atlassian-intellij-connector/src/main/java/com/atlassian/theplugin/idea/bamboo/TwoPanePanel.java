@@ -16,13 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.jira.StatusBarIssuesPane;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.ui.SearchTextField;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,29 +31,16 @@ public abstract class TwoPanePanel extends JPanel {
 
 	private StatusBarIssuesPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
-	private Splitter splitLeftPane;
-	private JPanel rightPanel;
 	private JScrollPane rightScrollPane;
-	private SearchTextField searchField = new SearchTextField();
-	private JTree rightTree;
 	private JScrollPane leftUpperScrollPane;
-	private String rightToolbarName;
-	private String leftToolbarName;
-	private final String actionPlaceName;
 
-	public TwoPanePanel(String leftToolbarName, String rightToolbarName, final String actionPlaceName) {
-		this.actionPlaceName = actionPlaceName;
-
-		setLayout(new BorderLayout());
-		this.leftToolbarName = leftToolbarName;
-		this.rightToolbarName = rightToolbarName;
-
+	public TwoPanePanel() {
+		super(new BorderLayout());
 		this.statusBarPane = new StatusBarIssuesPane("");
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
 		splitPane.setSecondComponent(createRightContent());
 		splitPane.setHonorComponentsMinimumSize(true);
-
 		addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
@@ -75,78 +56,32 @@ public abstract class TwoPanePanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 	}
 
+	public void setLeftPaneVisible(boolean isVisible) {
+		splitPane.getFirstComponent().setVisible(isVisible);
+		splitPane.validate();
+	}
+
 	public void init() {
+
 		splitPane.setFirstComponent(createLeftContent());
 		leftUpperScrollPane.setViewportView(getLeftPanel());
 		rightScrollPane.setViewportView(getRightTree());
-		addSearchBoxListener();
-	}
-
-	protected abstract JComponent getLeftPanel();
-
-	public Splitter getSplitLeftPane() {
-		return splitLeftPane;
-	}
-
-	public StatusBarIssuesPane getStatusBarPane() {
-		return statusBarPane;
-	}
-
-	public void setStatusBarPane(StatusBarIssuesPane statusBarPane) {
-		this.statusBarPane = statusBarPane;
+		add(getToolBar(), BorderLayout.NORTH);
 	}
 
 	public JComponent createLeftContent() {
-		JPanel panel = new JPanel(new BorderLayout());
 
 		leftUpperScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
 		leftUpperScrollPane.setWheelScrollingEnabled(true);
-		splitLeftPane = new Splitter(false, MANUAL_FILTER_PROPORTION_HIDDEN);
-		splitLeftPane.setOrientation(true);
-		splitLeftPane.setShowDividerControls(true);
-		splitLeftPane.setHonorComponentsMinimumSize(true);
 
-//		JScrollPane leftDownScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-//				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		panel.add(splitLeftPane, BorderLayout.CENTER);
-
-		final JComponent toolBar = createToolBar(leftToolbarName, actionPlaceName);
-
-		if (toolBar != null) {
-			panel.add(toolBar, BorderLayout.NORTH);
-		}
-
-		splitLeftPane.setFirstComponent(leftUpperScrollPane);
-
-		return panel;
+		return leftUpperScrollPane;
 
 	}
 
 	public JScrollPane getRightScrollPane() {
 		return rightScrollPane;
-	}
-
-	public void setRightScrollPane(JScrollPane rightScrollPane) {
-		this.rightScrollPane = rightScrollPane;
-	}
-
-	public SearchTextField getSearchField() {
-		return searchField;
-	}
-
-	private JComponent createToolBar(String toolbarName, String toolbarPalce) {
-		JComponent component = null;
-		ActionManager actionManager = ActionManager.getInstance();
-		ActionGroup toolbar = (ActionGroup) actionManager.getAction(toolbarName);
-		if (toolbar != null) {
-			final ActionToolbar actionToolbar = actionManager.createActionToolbar(toolbarPalce, toolbar, true);
-			actionToolbar.setTargetComponent(this);
-			component = actionToolbar.getComponent();
-		}
-		return component;
 	}
 
 	public void setStatusMessage(final String message) {
@@ -172,40 +107,12 @@ public abstract class TwoPanePanel extends JPanel {
 	}
 
 	private JComponent createRightContent() {
-		rightPanel = new JPanel(new BorderLayout());
 
 		rightScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		rightScrollPane.setWheelScrollingEnabled(true);
+		return rightScrollPane;
 
-		rightPanel.add(rightScrollPane, BorderLayout.CENTER);
-
-		CellConstraints cc = new CellConstraints();
-		JComponent rightToolbar = createToolBar(rightToolbarName, actionPlaceName);
-
-		final JPanel toolBarPanel = new JPanel(
-				new FormLayout("left:pref, left:pref:grow, right:pref:grow", "pref:grow"));
-		toolBarPanel.add(new JLabel("Group By "), cc.xy(1, 1));
-
-		if (rightToolbar != null) {
-			toolBarPanel.add(rightToolbar, cc.xy(1 + 1, 1));
-		}
-		toolBarPanel.add(searchField, cc.xy(1 + 2, 1));
-
-		rightPanel.add(toolBarPanel, BorderLayout.NORTH);
-
-		return rightPanel;
-	}
-
-	public JPanel getRightPanel() {
-		return rightPanel;
-	}
-
-	public JTree getRightTree() {
-		if (rightTree == null) {
-			rightTree = createRightTree();
-		}
-		return rightTree;
 	}
 
 	public void expandAllRightTreeNodes() {
@@ -220,8 +127,14 @@ public abstract class TwoPanePanel extends JPanel {
 		}
 	}
 
+	public JScrollPane getLeftScrollPane() {
+		return leftUpperScrollPane;
+	}
 
-	protected abstract void addSearchBoxListener();
-	public abstract JTree createRightTree();
+
+	protected abstract JTree getRightTree();
+	protected abstract JComponent getToolBar();
+	protected abstract JComponent getLeftPanel();
+
 
 }
