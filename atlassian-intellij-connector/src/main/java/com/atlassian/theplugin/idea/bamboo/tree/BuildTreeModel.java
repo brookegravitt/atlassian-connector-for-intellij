@@ -32,7 +32,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	private BuildModel buildModel = new BuildModel();
 
-	private BuildGroupBy groupBy = BuildGroupBy.PROJECT;
+	private BuildGroupBy groupBy = BuildGroupBy.STATE;
 
 	private BuildNodeManipulator generalNodeManipulator;
 	private BuildNodeManipulator stateNodeManipulator;
@@ -45,9 +45,9 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 		// todo add group by node manipulators
 		generalNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		stateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		stateNodeManipulator = new StateBuildNodeManipulator(buildModel, getRoot());
 		serverNodeManipulator = new ServerBuildNodeManipulator(buildModel, getRoot());
-		dateNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
+		dateNodeManipulator = new DateBuildNodeManipulator(buildModel, getRoot());
 		projectNodeManipulator = new ProjectBuildNodeManipulator(buildModel, getRoot());
 	}
 
@@ -123,6 +123,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	public boolean isLeaf(Object node) {
 		if (node == getRoot()
 				|| node instanceof BuildProjectTreeNode
+				|| node instanceof BuildStateTreeNode
 				|| node instanceof BuildServerTreeNode) {
 			return false;
 		}

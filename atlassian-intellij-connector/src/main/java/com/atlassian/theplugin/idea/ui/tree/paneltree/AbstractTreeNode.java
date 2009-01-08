@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
-import com.intellij.util.Icons;
-import com.intellij.util.ui.UIUtil;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
-import com.jgoodies.forms.layout.FormLayout;
+import com.intellij.util.Icons;
+import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -15,7 +15,7 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	protected static final int GAP = 6;
 	protected static final int ICON_WIDTH = 16;
     protected static final int ICON_HEIGHT = 16;
-    protected static final int RIGHT_PADDING = 24;
+    protected static final int RIGHT_PADDING = 10;
 	protected String name;
 	protected Icon iconOpen;
 	protected Icon iconClosed;
