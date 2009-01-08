@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.idea.jira.StatusBarIssuesPane;
 import com.intellij.openapi.ui.Splitter;
 
 import javax.swing.*;
@@ -29,14 +28,30 @@ public abstract class TwoPanePanel extends JPanel {
 	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
-	private StatusBarIssuesPane statusBarPane;
+	private JScrollPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
 	private JScrollPane rightScrollPane;
 	private JScrollPane leftUpperScrollPane;
+	private JLabel statusBar;
+
+	private static final Color FAIL_COLOR = new Color(255, 100, 100);
+
 
 	public TwoPanePanel() {
 		super(new BorderLayout());
-		this.statusBarPane = new StatusBarIssuesPane("");
+		statusBar = new JLabel();
+		statusBarPane = new JScrollPane(statusBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER) {
+			@Override
+			public Dimension getPreferredSize() {
+				Dimension dim = super.getPreferredSize();
+				dim.height = getToolBar().getPreferredSize().height;
+				return dim; 
+			}
+		};
+		statusBarPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+//		statusBarPane.setBorder(BorderFactory.createEmptyBorder());
+		statusBar.setOpaque(true);
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
 		splitPane.setSecondComponent(createRightContent());
@@ -45,6 +60,10 @@ public abstract class TwoPanePanel extends JPanel {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				final Dimension dimension = e.getComponent().getSize();
+//				statusBarContainer.revalidate();
+//				statusBarContainer.validate();
+
+				statusBarPane.validate();
 				final boolean doVertical = dimension.getWidth() < dimension.getHeight();
 				if (doVertical != splitPane.getOrientation()) {
 					splitPane.setOrientation(doVertical);
@@ -88,8 +107,9 @@ public abstract class TwoPanePanel extends JPanel {
 		setStatusMessage(message, false);
 	}
 
+	private Color oldColor = new JLabel().getBackground();
+
 	/**
-	 * Sets status message for the Reviews panel.
 	 * It can be called from the non-UI thread
 	 * @param msg message
 	 * @param isError error flag
@@ -97,11 +117,15 @@ public abstract class TwoPanePanel extends JPanel {
 	public void setStatusMessage(final String msg, final boolean isError) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				statusBar.setText("<html>" + msg);
+				statusBarPane.revalidate();
+				statusBar.scrollRectToVisible(new Rectangle(1, statusBar.getPreferredSize().height, 1, 1));
 				if (isError) {
-					statusBarPane.setErrorMessage(msg);
+					statusBar.setBackground(FAIL_COLOR);
 				} else {
-					statusBarPane.setMessage(msg);
+					statusBar.setBackground(oldColor);
 				}
+				repaint();
 			}
 		});
 	}
@@ -135,6 +159,5 @@ public abstract class TwoPanePanel extends JPanel {
 	protected abstract JTree getRightTree();
 	protected abstract JComponent getToolBar();
 	protected abstract JComponent getLeftPanel();
-
 
 }
