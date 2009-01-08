@@ -21,6 +21,8 @@ import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 
 public final class Util {
+	public static final String HTML_NEW_LINE = "<br />";
+
 	private Util() {
 	}
 

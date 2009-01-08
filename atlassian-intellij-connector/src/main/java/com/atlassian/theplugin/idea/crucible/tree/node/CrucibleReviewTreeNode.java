@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -137,7 +138,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		if (description.length() > MAX_LENGTH) {
 			description = description.substring(0, MAX_LENGTH) + "\n...";
 		}
-		sb.append(StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>").replace(" ", "&nbsp;")
+		sb.append(StringEscapeUtils.escapeHtml(description).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
 				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 
 		sb.append("</td></tr>");
