@@ -24,6 +24,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	private final BambooBuildAdapterIdea build;
 
 	private JLabel relativeBuildTime = new JLabel();
+	private static final int MAX_NR_OF_COMMITTERS_TO_LIST_IN_A_DETAILED_WAY = 3;
 
 	public BuildDetailsPanel(BambooBuildAdapterIdea build) {
 		this.build = build;
@@ -89,7 +90,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		// bleeeee, ugly ugly
 		if (committers.size() > 0 && reason.toString().equals(BuildTreeNode.CODE_HAS_CHANGED)) {
 		 	reason.append(" by ");
-			if (committers.size() > 3) {
+			if (committers.size() > MAX_NR_OF_COMMITTERS_TO_LIST_IN_A_DETAILED_WAY) {
 				reason.append(committers.size()).append(" people");
 			} else {
 				int i = 0;
