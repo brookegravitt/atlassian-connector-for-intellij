@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import java.util.Date;
+
 /**
  * @author Jacek Jaroczynski
  */
@@ -31,6 +33,13 @@ public enum BuildDate {
 
 	BuildDate(String name) {
 		this.name = name;
+	}
+
+	public static BuildDate getBuilDate(Date date) {
+
+		
+
+		return TODAY;
 	}
 
 	public String toString() {

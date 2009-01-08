@@ -34,7 +34,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
 	private BambooBuildAdapterIdea build;
-	private static final int DATE_LABEL_WIDTH = 78;
+	private static final int DATE_LABEL_WIDTH = 85;
 	private static final String CODE_HAS_CHANGED = "Code has changed";
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
@@ -141,7 +141,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty2, GAP + GAP, ICON_HEIGHT);
+		setFixedComponentSize(empty2, GAP + GAP + GAP, ICON_HEIGHT);
 		p.add(empty1, gbc);
 
 		// server
