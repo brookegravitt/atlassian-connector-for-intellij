@@ -247,7 +247,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		final JComponent rightPart = loadToolBar("ThePlugin.Bamboo.RightToolBar");
 
 
-		final JPanel toolBarPanel = new JPanel(new FormLayout("left:pref, left:pref, left:pref, left:pref, left:pref, right:pref:grow", "pref:grow"));
+		final JPanel toolBarPanel = new JPanel(
+				new FormLayout("left:pref, left:pref, left:pref, left:pref, left:pref, right:pref:grow", "pref:grow"));
 		CellConstraints cc = new CellConstraints();
 		int col = 1;
 		if (leftPart != null) {
@@ -273,7 +274,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		ActionManager actionManager = ActionManager.getInstance();
 		ActionGroup toolbar = (ActionGroup) actionManager.getAction(toolbarName);
 		if (toolbar != null) {
-			final ActionToolbar actionToolbar = actionManager.createActionToolbar(PLACE_PREFIX + project.getName(), toolbar, true);
+			final ActionToolbar actionToolbar =
+					actionManager.createActionToolbar(PLACE_PREFIX + project.getName(), toolbar, true);
 			actionToolbar.setTargetComponent(this);
 			return actionToolbar.getComponent();
 		}
