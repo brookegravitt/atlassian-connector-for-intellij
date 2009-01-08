@@ -22,9 +22,9 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.intellij.openapi.project.Project;
 
-import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.Collection;
 /**
  * @author Jacek Jaroczynski
  */
-public class BuildTree extends JTree implements BambooStatusListener {
+public class BuildTree extends AbstractTree implements BambooStatusListener {
 	private BuildTreeModel buildTreeModel;
 
 	public BuildTree(final Project project, final BuildTreeModel buildTreeModel) {
@@ -79,7 +79,8 @@ public class BuildTree extends JTree implements BambooStatusListener {
 	public void resetState() {
 	}
 
-	public void setGroupBy(final BuildGroupBy groupingType) {
+	public void groupBy(final BuildGroupBy groupingType) {
 		buildTreeModel.groupBy(groupingType);
+		expandTree();
 	}
 }
