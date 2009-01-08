@@ -50,7 +50,6 @@ public abstract class TwoPanePanel extends JPanel {
 			}
 		};
 		statusBarPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-//		statusBarPane.setBorder(BorderFactory.createEmptyBorder());
 		statusBar.setOpaque(true);
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
@@ -60,8 +59,6 @@ public abstract class TwoPanePanel extends JPanel {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				final Dimension dimension = e.getComponent().getSize();
-//				statusBarContainer.revalidate();
-//				statusBarContainer.validate();
 
 				statusBarPane.validate();
 				final boolean doVertical = dimension.getWidth() < dimension.getHeight();
