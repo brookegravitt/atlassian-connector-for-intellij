@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.project.Project;
 
@@ -76,5 +77,9 @@ public class BuildTree extends JTree implements BambooStatusListener {
 	}
 
 	public void resetState() {
+	}
+
+	public void setGroupBy(final BuildGroupBy groupingType) {
+		buildTreeModel.groupBy(groupingType);
 	}
 }
