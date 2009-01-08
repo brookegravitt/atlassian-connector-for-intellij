@@ -16,8 +16,6 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -82,11 +80,11 @@ public abstract class SingleTabToolWindow {
 		}
 
 		contentPanel = createContentPanel(params);
-		createNewToolWindow(project, baseTitle, icon, contentPanel.getKey());
+		createNewToolWindow(baseTitle, icon, contentPanel.getKey());
 
 	}
 
-	protected void createNewToolWindow(final Project project, final String baseTitle, final Icon icon, String key) {
+	protected void createNewToolWindow(final String baseTitle, final Icon icon, String key) {
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		twm.unregisterToolWindow(baseTitle);
 		final ToolWindow toolWindow = twm.registerToolWindow(getExistingToolWindowTitle(baseTitle), true, ToolWindowAnchor.BOTTOM);
@@ -103,7 +101,7 @@ public abstract class SingleTabToolWindow {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						twm.unregisterToolWindow(titleToRemove);
-						createNewToolWindow(project, getExistingToolWindowTitle(baseTitle), icon, null);
+						createNewToolWindow(getExistingToolWindowTitle(baseTitle), icon, null);
 
 					}
 				});
@@ -114,7 +112,9 @@ public abstract class SingleTabToolWindow {
 	}
 
 	private void createToolWindowContent(String key, Icon icon, ToolWindow toolWindow) {
-		Content content = (toolWindow.getContentManager().getContents().length > 0) ? toolWindow.getContentManager().getContents()[0] : null;
+		Content content =
+				(toolWindow.getContentManager().getContents().length > 0)
+						? toolWindow.getContentManager().getContents()[0] : null;
 
 		if (content != null) {
 			toolWindow.getContentManager().removeContent(content, true);
@@ -146,23 +146,5 @@ public abstract class SingleTabToolWindow {
 		}
 		return title;
 	}
-
-	protected void closeToolWindow(String title, AnActionEvent e) {
-		Project project = IdeaHelper.getCurrentProject(e);
-
-		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
-		ToolWindow tw = twm.getToolWindow(getExistingToolWindowTitle(title));
-		if (tw != null) {
-			String key = e.getPlace();
-
-			for (Content c : tw.getContentManager().getContents()) {
-				if (c.getTabName().equals(key)) {
-					tw.getContentManager().removeContent(c, true);
-					break;
-				}
-			}
-		}
-	}
-
 
 }

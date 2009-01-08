@@ -102,7 +102,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 		}
 	}
 
-	private class ReviewPanel extends SingleTabToolWindow.ContentPanel implements CrucibleReviewListModelListener {
+	private final class ReviewPanel extends SingleTabToolWindow.ContentPanel implements CrucibleReviewListModelListener {
 		private final ReviewContentParameters params;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -281,7 +281,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 
 					body.add(reviewers, gbc2);
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-
+					//do not care
 				}
 
 
@@ -290,7 +290,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 
 		}
 
-		private class CommentsPanel extends JPanel {
+		private final class CommentsPanel extends JPanel {
 			private ReviewItemTreePanel reviewItemTreePanel;
 			private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
@@ -298,7 +298,8 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				super(new BorderLayout());
 				setBackground(UIUtil.getTreeTextBackground());
 				reviewItemTreePanel = new ReviewItemTreePanel(project, CrucibleFilteredModelProvider.Filter.FILES_ALL);
-				reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel, reviewItemTreePanel, BorderLayout.CENTER);
+				reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel,
+						reviewItemTreePanel, BorderLayout.CENTER);
 				add(reviewItemTreePanel, BorderLayout.CENTER);
 
 				registerListeners();
@@ -395,7 +396,8 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 
 			public void refresh() {
 				String txt = "<html><body><a href=\"" + params.reviewAdapter.getServer().getUrl() + "\">"
-						+ params.reviewAdapter.getPermId().getId() + "</a> " + params.reviewAdapter.getName() + "</body></html>";
+						+ params.reviewAdapter.getPermId().getId() + "</a> "
+						+ params.reviewAdapter.getName() + "</body></html>";
 				summary.setText(txt);
 			}
 
