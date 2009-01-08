@@ -35,13 +35,14 @@ import java.util.Collection;
 public class BuildTree extends AbstractTree implements BambooStatusListener {
 	private BuildTreeModel buildTreeModel;
 
-	public BuildTree(final Project project, final BuildTreeModel buildTreeModel) {
+	public BuildTree(final Project project, final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
 		super(buildTreeModel);
 
 		super.setShowsRootHandles(true);
 		super.setRootVisible(false);
 
 		this.buildTreeModel = buildTreeModel;
+		this.buildTreeModel.setGroupBy(groupBy);
 
 		addMouseListener(new PopupAwareMouseAdapter() {
 			protected void onPopup(MouseEvent e) {

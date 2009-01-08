@@ -84,6 +84,7 @@ public abstract class TwoPanePanel extends JPanel {
 		leftUpperScrollPane.setViewportView(getLeftPanel());
 		rightScrollPane.setViewportView(getRightTree());
 		add(getToolBar(), BorderLayout.NORTH);
+
 	}
 
 	public JComponent createLeftContent() {
