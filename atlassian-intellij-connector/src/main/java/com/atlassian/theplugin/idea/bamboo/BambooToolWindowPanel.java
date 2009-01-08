@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
@@ -68,7 +69,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
 	private JComponent toolBar;
-
+	private BambooProjectConfiguration bambooConfiguration;
+	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
 	public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
@@ -79,8 +81,12 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
+
 		this.project = project;
 		this.bambooModel = bambooModel;
+		this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
+		this.projectCfgManager = projectCfgManager;
+
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		filterList = new BambooFilterList(projectCfgManager, projectId, bambooModel);
 		projectCfgManager.getCfgManager().addProjectConfigurationListener(projectId, new ConfigurationListenerAdapter() {
@@ -125,8 +131,13 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				buildTree.updateModel(ideas);
 			}
 		});
-		this.projectCfgManager = projectCfgManager;
-		buildTree = new BuildTree(project, new BuildTreeModel());
+
+		// restore GroupBy setting
+		if (bambooConfiguration != null && bambooConfiguration.getView() != null) {
+			groupBy = bambooConfiguration.getView().getGroupBy();
+		}
+
+		buildTree = new BuildTree(project, groupBy, new BuildTreeModel());
 		toolBar = createToolBar();
 		init();
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
@@ -134,6 +145,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		addBuildTreeListeners();
 		addSearchBoxListener();
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
+
 	}
 
 
@@ -232,8 +244,10 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		return null;
 	}
 
-	public void setGroupingType(final BuildGroupBy groupingType) {
+	public void setGroupingType(@NonNls final BuildGroupBy groupingType) {
+		this.groupBy = groupingType;
 		buildTree.groupBy(groupingType);
+		bambooConfiguration.getView().setGroupBy(groupingType);
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
@@ -305,4 +319,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 
+	public BuildGroupBy getGroupBy() {
+		return groupBy;
+	}
 }
