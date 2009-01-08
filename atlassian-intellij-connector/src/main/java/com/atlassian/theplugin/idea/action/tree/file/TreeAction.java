@@ -57,7 +57,7 @@ public abstract class TreeAction extends AnAction {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
 		Project project = DataKeys.PROJECT.getData(e.getDataContext());
 //		if (tree != null) {
-			executeTreeAction(project, tree);
+		executeTreeAction(project, tree);
 //		}
 	}
 
@@ -116,18 +116,6 @@ public abstract class TreeAction extends AnAction {
 		return (AtlassianTreeWithToolbar) parent;
 	}
 
-//	private AtlassianTreeWithToolbar findTreeM4(final AnActionEvent e) {
-//		if (IdeaHelper.getCurrentProject(e) != null) {
-//			CrucibleReviewWindow window = CrucibleReviewWindow.getInstance(IdeaHelper.getCurrentProject(e));
-//			if (window != null) {
-//				return window.getAtlassianTreeWithToolbar();
-//			} else {
-//				return null;
-//			}
-//		} else {
-//			return null;
-//		}
-//	}
 
 	protected abstract void executeTreeAction(@Nullable final Project project, AtlassianTreeWithToolbar tree);
 

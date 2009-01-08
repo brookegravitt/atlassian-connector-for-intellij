@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.CrucibleReviewWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
@@ -28,7 +27,7 @@ public class OpenReviewAction extends AbstractCrucibleToolbarAction {
 			} else {
 				ReviewAdapter review = e.getData(Constants.REVIEW_KEY);
 				if (review != null) {
-					CrucibleReviewWindow.getInstance(project).showCrucibleReviewWindow(review);
+					IdeaHelper.getCrucibleToolWindow(project).showReview(review);
 				}
 			}
 		}
@@ -36,6 +35,6 @@ public class OpenReviewAction extends AbstractCrucibleToolbarAction {
 
 	@Override
 	public boolean onUpdate(AnActionEvent e) {
-		return e.getData(Constants.REVIEW_KEY) != null;
+		return (e.getData(Constants.REVIEW_KEY) != null);
 	}
 }
