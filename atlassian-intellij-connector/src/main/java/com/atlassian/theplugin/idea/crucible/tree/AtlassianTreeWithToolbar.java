@@ -40,14 +40,24 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 
 
 	private ViewState viewState = ViewState.EXPANDED;
+	private final boolean installUi;
 
 	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider) {
-		this(toolbar);
+		this(toolbar, modelProvider, true);
+	}
+
+	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider, boolean installUi) {
+		this(toolbar, installUi);
 		setModelProvider(modelProvider);
 	}
 
 	public AtlassianTreeWithToolbar(final String toolbarName) {
+		this(toolbarName, true);
+	}
+
+	public AtlassianTreeWithToolbar(final String toolbarName, boolean installUi) {
 		super(toolbarName);
+		this.installUi = installUi;
 	}
 
 	@Override
@@ -55,7 +65,11 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 		if (tree == null) {
 			tree = new AtlassianTree();
 			tree.setRowHeight(0);
-			initializeUI();
+			if (installUi) {
+				initializeUI();
+			} else {
+				tree.setCellRenderer(AtlassianTree.DISPATCHING_RENDERER);
+			}
 		}
 		return tree;
 	}

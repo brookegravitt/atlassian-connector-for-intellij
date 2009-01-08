@@ -51,7 +51,6 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 	private final transient BambooServerFacade bambooFacade;
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 	private TableColumnProvider columnProvider;
-	private final TestResultsToolWindow testResultsToolWindow;
 	public static final String BAMBOO_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR = "atlassian.bamboo.toolwindow";
 
 	@Override
@@ -99,12 +98,9 @@ public class BambooTableToolWindowPanel extends AbstractTableToolWindowPanel<Bam
 		return BAMBOO_ATLASSIAN_TOOLWINDOW_SERVER_TOOL_BAR + project.getName();
 	}
 
-	public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean,
-			final TestResultsToolWindow testResultsToolWindow) {
+	public BambooTableToolWindowPanel(Project project, ProjectConfigurationBean projectConfigurationBean) {
 		super(project, projectConfigurationBean);
-		this.testResultsToolWindow = testResultsToolWindow;
 		bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-		assert this.testResultsToolWindow != null;
 //		buildChangesToolWindow = project.getComponent(BuildChangesToolWindow.class);
 	}
 
