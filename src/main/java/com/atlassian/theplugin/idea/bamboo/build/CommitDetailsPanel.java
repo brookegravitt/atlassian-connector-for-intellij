@@ -49,7 +49,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 	private static final float SPLIT_RATIO = 0.6f;
 	protected static final int ROW_HEIGHT = 16;
 
-	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME);
+	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, false);
 	private final Project project;
 	private final BambooBuildAdapterIdea build;
 
@@ -117,7 +117,6 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 		JPanel listPanel = new JPanel();
 		listPanel.setLayout(new BorderLayout());
-		listPanel.setBorder(BorderFactory.createTitledBorder("Change Sets"));
 
 		final JList changesList = new JList();
 		changesList.setModel(new ChangeSetListModel(commits));
@@ -164,8 +163,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 		JPanel fileTreePanel = new JPanel();
 		fileTreePanel.setLayout(new BorderLayout());
-
-		fileTreePanel.setBorder(BorderFactory.createTitledBorder("Changed Files"));
+		fileTreePanel.add(new JLabel("Changed Files"), BorderLayout.NORTH);
 
 		fileTree.setRootVisible(false);
 		fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(build.getBuildKey()));
