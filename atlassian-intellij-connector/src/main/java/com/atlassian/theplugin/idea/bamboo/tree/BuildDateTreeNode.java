@@ -19,15 +19,15 @@ package com.atlassian.theplugin.idea.bamboo.tree;
  * @author Jacek Jaroczynski
  */
 public class BuildDateTreeNode extends BuildGroupTreeNode {
-	private BuildDate buildDate;
+	private DatePeriod buildDate;
 
-	public BuildDateTreeNode(final BuildDate buildDate) {
+	public BuildDateTreeNode(final DatePeriod buildDate) {
 		super(buildDate.toString());
 
 		this.buildDate = buildDate;
 	}
 
-	public BuildDate getDate() {
+	public DatePeriod getDate() {
 		return buildDate;
 	}
 }
