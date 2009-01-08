@@ -74,7 +74,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private final CfgManager cfgManager;
 
-	private final TestResultsToolWindow testResultsToolWindow;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
@@ -106,7 +105,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
 			@NotNull final BambooTableToolWindowPanel bambooTableToolWindowPanel,
-			TestResultsToolWindow testResultsToolWindow, @NotNull IssuesToolWindowPanel issuesToolWindowPanel,
+			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BambooModel bambooModel,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
@@ -126,7 +125,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		this.testResultsToolWindow = testResultsToolWindow;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 		/*
