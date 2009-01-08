@@ -87,7 +87,8 @@ public abstract class SingleTabToolWindow {
 	protected void createNewToolWindow(final String baseTitle, final Icon icon, String key) {
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		twm.unregisterToolWindow(baseTitle);
-		final ToolWindow toolWindow = twm.registerToolWindow(getExistingToolWindowTitle(baseTitle), true, ToolWindowAnchor.BOTTOM);
+		final ToolWindow toolWindow = twm.registerToolWindow(getExistingToolWindowTitle(baseTitle),
+				true, ToolWindowAnchor.BOTTOM);
 
 		setToolWindowIconCargoCult(toolWindow, icon);
 
