@@ -321,7 +321,9 @@ public class BambooFilterPanel extends JList {
 		@Override
 		public String toString() {
 			if (wrapped != null) {
-				return wrapped.projectName + " (" + getCount() + ")";
+				final String name = (wrapped.projectName == null || wrapped.projectName.length() == 0)
+						? "Unknown Project" : wrapped.projectName;
+				return name + " (" + getCount() + ")";
 			}
 			return "None";
 		}

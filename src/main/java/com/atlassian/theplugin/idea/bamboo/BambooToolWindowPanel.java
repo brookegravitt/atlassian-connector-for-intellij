@@ -26,7 +26,13 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.SearchTextField;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,6 +62,9 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
 	private final BambooFilterPanel filterList;
+	private SearchTextField searchField = new SearchTextField();
+	private JComponent toolBar;
+
 
 	public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
@@ -66,7 +75,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
-		super("ThePlugin.Bamboo.LeftToolBar", "ThePlugin.Bamboo.RightToolBar", PLACE_PREFIX + project.getName());
 		this.project = project;
 		this.bambooModel = bambooModel;
 		filterList = new BambooFilterPanel(projectCfgManager, CfgUtil.getProjectId(project), bambooModel);
@@ -87,7 +95,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 
 			public void buildsChanged() {
-//				filterList.setModel(updateFilterModel(bambooModel.getAllBuilds()));
 				filterList.update();
 				updateTree();
 			}
@@ -99,10 +106,13 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		});
 		this.projectCfgManager = projectCfgManager;
 		buildTree = new BuildTree(new BuildTreeModel());
+		toolBar = createToolBar();
 		init();
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		uiSetup.initializeUI(buildTree, getRightScrollPane());
 		addBuildTreeListeners();
+		addSearchBoxListener();
+		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 	}
 
 
@@ -161,9 +171,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 
-	@Override
 	protected void addSearchBoxListener() {
-		getSearchField().addDocumentListener(new DocumentListener() {
+		searchField.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
 //				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
@@ -177,13 +186,13 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 		});
 
-		getSearchField().addKeyboardListener(new KeyListener() {
+		searchField.addKeyboardListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
 
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					getSearchField().addCurrentTextToHistory();
+					searchField.addCurrentTextToHistory();
 				}
 			}
 
@@ -193,7 +202,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	@Override
-	public JTree createRightTree() {
+	public JTree getRightTree() {
 		return buildTree;
 	}
 
@@ -208,6 +217,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
 //		this.bambooFilterType = bambooFilterType;
 		filterList.setBambooFilterType(bambooFilterType);
+		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 		bambooModel.setFilter(null);
 		// by default there should be "ALL", which means null filter
 		buildTree.updateModel(bambooModel.getBuilds());
@@ -215,99 +225,60 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	}
 
-/*
-	private DefaultListModel updateFilterModel(@NotNull final Collection<BambooBuildAdapterIdea> buildStatuses) {
-		final DefaultListModel listModel = new DefaultListModel();
-		if (bambooFilterType == null) {
-			return listModel;
-		}
-		switch (bambooFilterType) {
-			case PROJECT:
-				break;
-			case SERVER: {
-				Map<BambooServerCfg, Integer> hitMap = new LinkedHashMap<BambooServerCfg, Integer>();
-				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
-						.getAllEnabledBambooServers(CfgUtil.getProjectId(project));
-
-				for (BambooServerCfg bambooServer : bambooServers) {
-					hitMap.put(bambooServer, 0);
-				}
-				for (BambooBuildAdapterIdea buildStatus : buildStatuses) {
-					final Integer integer = hitMap.get(buildStatus.getServer());
-					hitMap.put(buildStatus.getServer(), integer != null ? integer + 1 : 1);
-				}
-
-				for (Map.Entry<BambooServerCfg, Integer> entry : hitMap.entrySet()) {
-					listModel.addElement(new BamboServerCfgWrapper(entry.getKey(), entry.getValue()));
-
-				}
-			}
-				break;
-			case STATE: {
-
-				Map<BuildStatus, Integer> hitMap = new LinkedHashMap<BuildStatus, Integer>();
-				for (BuildStatus buildStatus : BuildStatus.values()) {
-					hitMap.put(buildStatus, 0);
-				}
-				for (BambooBuildAdapterIdea buildAdapterIdea : buildStatuses) {
-					final Integer integer = hitMap.get(buildAdapterIdea.getStatus());
-					hitMap.put(buildAdapterIdea.getStatus(), integer != null ? integer + 1 : 1);
-				}
-
-				for (Map.Entry<BuildStatus, Integer> entry : hitMap.entrySet()) {
-					listModel.addElement(new BuildStatusWrapper(entry.getKey(), entry.getValue()));
-
-				}
-			}
-		}
-		return listModel;
-	}
-*/
-
-
 	public void refresh() {
 		// I doubt if it's really necessary as refreshing anyway comes now asynchrounsly from Bamboo Status Chekcker.
 		// However we could make it synchronous and show then error message if anything fails
 	}
 
 
-
-/*
-
-	private ListModel createListModel(BambooFilterType filterType) {
-		final DefaultListModel listModel = new DefaultListModel();
-		switch (filterType) {
-			case PROJECT:
-				Set<BambooProjectBean> projects = new TreeSet<BambooProjectBean>();
-				for (BambooBuildAdapterIdea build : bambooModel.getAllBuilds()) {
-					projects.add(new BambooProjectBean(build.getProjectName()));
-				}
-				for (BambooProjectBean bambooProject : projects) {
-					listModel.addElement(bambooProject);
-				}
-				break;
-			case SERVER:
-				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
-						.getAllEnabledBambooServers(CfgUtil.getProjectId(project));
-				for (BambooServerCfg bambooServer : bambooServers) {
-					listModel.addElement(new BamboServerCfgWrapper(bambooServer, 0));
-				}
-				break;
-			case STATE:
-				for (BuildStatus buildStatus : BuildStatus.values()) {
-					listModel.addElement(new BuildStatusWrapper(buildStatus, 0));
-				}
-				break;
-			default:
-				break;
-		}
-		return listModel;
-	}
-*/
-
 	@Override
 	protected JComponent getLeftPanel() {
 		return filterList;
 	}
+
+	@Override
+	protected JComponent getToolBar() {
+		return toolBar;
+	}
+
+	private JComponent createToolBar() {
+		final JComponent leftPart = loadToolBar("ThePlugin.Bamboo.LeftToolBar");
+		final JComponent middlePart = loadToolBar("ThePlugin.Bamboo.MiddleToolBar");
+		final JComponent rightPart = loadToolBar("ThePlugin.Bamboo.RightToolBar");
+
+
+		final JPanel toolBarPanel = new JPanel(new FormLayout("left:pref, left:pref, left:pref, left:pref, left:pref, right:pref:grow", "pref:grow"));
+		CellConstraints cc = new CellConstraints();
+		int col = 1;
+		if (leftPart != null) {
+			toolBarPanel.add(leftPart, cc.xy(col++, 1));
+		}
+
+		if (middlePart != null) {
+			toolBarPanel.add(new JLabel("Filter By "), cc.xy(col++, 1));
+			toolBarPanel.add(middlePart, cc.xy(col++, 1));
+		}
+
+		if (rightPart != null) {
+			toolBarPanel.add(new JLabel("Group By "), cc.xy(col++, 1));
+			toolBarPanel.add(rightPart, cc.xy(col++, 1));
+		}
+
+		toolBarPanel.add(searchField, cc.xy(col, 1));
+		return toolBarPanel;
+	}
+
+	@Nullable
+	private JComponent loadToolBar(final String toolbarName) {
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup toolbar = (ActionGroup) actionManager.getAction(toolbarName);
+		if (toolbar != null) {
+			final ActionToolbar actionToolbar = actionManager.createActionToolbar(PLACE_PREFIX + project.getName(), toolbar, true);
+			actionToolbar.setTargetComponent(this);
+			return actionToolbar.getComponent();
+		}
+		return null;
+	}
+
 
 }
