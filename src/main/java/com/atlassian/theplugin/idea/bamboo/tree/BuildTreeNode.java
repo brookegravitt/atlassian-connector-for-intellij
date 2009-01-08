@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.intellij.util.ui.UIUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +29,12 @@ import java.awt.*;
  */
 public class BuildTreeNode extends AbstractBuildTreeNode {
 
+	private static final int MAX_TOOLTIP_WIDTH = 500;
+	private static final String BODY_WITH_STYLE =
+			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
+
 	private BambooBuildAdapterIdea build;
-	private static final int DATE_LABEL_WIDTH = 75;
+	private static final int DATE_LABEL_WIDTH = 78;
 	private static final String CODE_HAS_CHANGED = "Code has changed";
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
@@ -101,10 +106,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		setFixedComponentSize(empty1, GAP, ICON_HEIGHT);
 		p.add(empty1, gbc);
 
-		String commiters = "";
-		for (String commiter : build.getCommiters()) {
-			commiters += commiter + ", ";
-		}
+		String commiters = getCommiters();
 
 		// reason
 		if (!build.getBuildReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
@@ -176,64 +178,73 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
 		padding.setOpaque(true);
 		p.add(padding, gbc);
-//
-//		final JToolTip jToolTip = p.createToolTip();
-//		jToolTip.setTipText(buildTolltip(0));
-//		final int prefWidth = jToolTip.getPreferredSize().width;
-//		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-//		p.setToolTipText(buildTolltip(width));
+
+		final JToolTip jToolTip = p.createToolTip();
+		jToolTip.setTipText(buildTolltip(0));
+		final int prefWidth = jToolTip.getPreferredSize().width;
+		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+		p.setToolTipText(buildTolltip(width));
 
 		return p;
 
 	}
 
-//	private String buildTolltip(int width) {
-//		StringBuilder sb = new StringBuilder(
-//				"<html>"
-//						+ BODY_WITH_STYLE);
-//		final String widthString = width > 0 ? "width='" + width + "px'" : "";
-//		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
-//		sb.append("<tr><td colspan='2'><b><font color='blue'>");
-//		sb.append(review.getPermId().getId());
-//		sb.append("</font></b>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-//
-//		String summary = review.getName();
-//		sb.append(StringEscapeUtils.escapeHtml(summary));
-//		sb.append("</td></tr>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
-//
-//		String description = review.getDescription();
-//		if (description.length() > MAX_LENGTH) {
-//			description = description.substring(0, MAX_LENGTH) + "\n...";
-//		}
-//		sb.append(StringEscapeUtils.escapeHtml(description).replace("\n", "<br/>").replace(" ", "&nbsp;")
-//				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
-//
-//		sb.append("</td></tr>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Author:</b></td><td valign=\"top\">");
-//		sb.append(review.getAuthor().getDisplayName());
-//		sb.append("</td></tr>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
-//		sb.append(review.getModerator().getDisplayName());
-//		sb.append("</td></tr>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
-//		sb.append(review.getCreateDate());
-//		sb.append("</td></tr>");
-//
-//		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
-//		sb.append(review.getState().value());
-//		sb.append("</td></tr>");
-//
-//		sb.append("</table>");
-//		sb.append("</body></html>");
-//		return sb.toString();
-//	}
+	private String getCommiters() {
+		String commiters = "";
+		for (String commiter : build.getCommiters()) {
+			commiters += commiter + ", ";
+		}
+		return commiters;
+//		return "Jacek, Zenek, Rysiek";
+	}
+
+	private String buildTolltip(int width) {
+		StringBuilder sb = new StringBuilder(
+				"<html>"
+						+ BODY_WITH_STYLE);
+		final String widthString = width > 0 ? "width='" + width + "px'" : "";
+		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
+		sb.append("<tr><td colspan='2'><b><font color='blue'>");
+		sb.append(build.getBuildKey() + "-" + build.getBuildNumber());
+		sb.append("</font></b>");
+
+		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
+
+		String name = build.getBuildName();
+		sb.append(StringEscapeUtils.escapeHtml(name));
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Project:</b></td><td valign=\"top\">");
+
+		String project = build.getProjectName();
+		sb.append(StringEscapeUtils.escapeHtml(project));
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Reason:</b></td><td valign=\"top\">");
+		sb.append(build.getBuildReason());
+		sb.append("</td></tr>");
+
+		if (getCommiters().length() > 0) {
+			sb.append("<tr><td valign=\"top\"><b>Commiters:</b></td><td valign=\"top\">");
+			sb.append(getCommiters());
+			sb.append("</td></tr>");
+		}
+
+		sb.append("<tr><td valign=\"top\"><b>Server:</b></td><td valign=\"top\">");
+		sb.append(build.getServerName());
+		sb.append("</td></tr>");
+
+		sb.append("<tr><td valign=\"top\"><b>Build Date:</b></td><td valign=\"top\">");
+		String date = build.getBuildRelativeBuildDate();
+		sb.append(StringEscapeUtils.escapeHtml(date).replace("\n", "<br/>").replace(" ", "&nbsp;")
+				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
+
+		sb.append("</td></tr>");
+
+		sb.append("</table>");
+		sb.append("</body></html>");
+		return sb.toString();
+	}
 
 	public void onSelect() {
 	}
