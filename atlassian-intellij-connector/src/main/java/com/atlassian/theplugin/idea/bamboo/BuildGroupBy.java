@@ -23,7 +23,7 @@ public enum BuildGroupBy {
 	NONE("None"),
 	SERVER("Server"),
 	PROJECT("Project"),
-	AUTHOR("Date"),
+	DATE("Date"),
 	STATE("State");
 
 	private String name;

@@ -55,7 +55,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BuildDate date = getDistinctDates().get(index);
+			DatePeriod date = getDistinctDates().get(index);
 
 			BuildDateTreeNode dateNode = new BuildDateTreeNode(date);
 			p.add(dateNode);
@@ -79,20 +79,20 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<BuildDate> getDistinctDates() {
-		Set<BuildDate> dates = new LinkedHashSet<BuildDate>();	// ordered set
+	private List<DatePeriod> getDistinctDates() {
+		Set<DatePeriod> dates = new LinkedHashSet<DatePeriod>();	// ordered set
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			dates.add(BuildDate.getBuilDate(build.getBuildTime()));
+			dates.add(DatePeriod.getBuilDate(build.getBuildTime()));
 		}
 
-		return new ArrayList<BuildDate>(dates);
+		return new ArrayList<DatePeriod>(dates);
 	}
 
-	private int gentNumOfBuildsForDate(BuildDate date) {
+	private int gentNumOfBuildsForDate(DatePeriod date) {
 		int ret = 0;
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (BuildDate.getBuilDate(build.getBuildTime()) == date) {
+			if (DatePeriod.getBuilDate(build.getBuildTime()) == date) {
 				++ret;
 			}
 		}
@@ -100,12 +100,12 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForDate(BuildDate date, int index) {
+	private BambooBuildAdapterIdea getBuildForDate(DatePeriod date, int index) {
 		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
 
 		// get all builds for date
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (BuildDate.getBuilDate(build.getBuildTime()) == date) {
+			if (DatePeriod.getBuilDate(build.getBuildTime()) == date) {
 				array.add(build);
 			}
 		}
