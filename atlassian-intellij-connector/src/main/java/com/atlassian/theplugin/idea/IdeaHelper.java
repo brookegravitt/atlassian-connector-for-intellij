@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
+import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
@@ -92,6 +93,19 @@ public final class IdeaHelper {
 		return getProjectComponent(project, IssueToolWindow.class);
 	}
 
+	public static CrucibleToolWindow getCrucibleToolWindow(@NotNull final Project project) {
+		return getProjectComponent(project, CrucibleToolWindow.class);
+	}
+
+	@Nullable
+	public static CrucibleToolWindow getCrucibleToolWindow(@NotNull final AnActionEvent event) {
+		Project project = getCurrentProject(event);
+		if (project == null) {
+			return null;
+		}
+		return getProjectComponent(project, CrucibleToolWindow.class);
+	}
+
 	@Nullable
 	public static ReviewsToolWindowPanel getReviewsToolWindowPanel(AnActionEvent event) {
 		return getProjectComponent(event, ReviewsToolWindowPanel.class);
@@ -101,7 +115,7 @@ public final class IdeaHelper {
 		return getProjectComponent(project, ReviewsToolWindowPanel.class);
 	}
 
-	 public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+	public static BambooTableToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
 		Project p = getCurrentProject(event);
 		if (p == null) {
 			return null;
