@@ -57,7 +57,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	 * @param aGroupBy
 	 */
 	public void groupBy(BuildGroupBy aGroupBy) {
-		this.groupBy = aGroupBy;
+		setGroupBy(aGroupBy);
 
 		// clear entire tree
 		getRoot().removeAllChildren();
@@ -68,10 +68,13 @@ public class BuildTreeModel extends DefaultTreeModel {
 
 	/**
 	 * Simple setter (does not trigger tree to rebuild)
+	 * Used when initializig tree (before first load of builds status)
 	 * @param groupBy
 	 */
 	public void setGroupBy(BuildGroupBy groupBy) {
-		this.groupBy = groupBy;
+		if (groupBy != null) {
+			this.groupBy = groupBy;
+		}
 	}
 
 	/*

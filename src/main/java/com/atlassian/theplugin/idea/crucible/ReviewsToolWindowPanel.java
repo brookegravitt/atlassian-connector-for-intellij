@@ -279,7 +279,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
 		this.groupBy = groupBy;
 		reviewTree.groupBy(groupBy);
-//		expandAllRightTreeNodes();
 
 		crucibleProjectConfiguration.getView().setGroupBy(groupBy);
 	}
