@@ -105,7 +105,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 		});
 		this.projectCfgManager = projectCfgManager;
-		buildTree = new BuildTree(new BuildTreeModel());
+		buildTree = new BuildTree(project, new BuildTreeModel());
 		toolBar = createToolBar();
 		init();
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
