@@ -882,6 +882,7 @@
 			<!-- @Jacek: old ThePlugin.Bamboo.RefreshStatus works fine for us. No need to create another Refresh action
 			<reference id="ThePlugin.Builds.Refresh"/>
 			-->
+			<!-- @Wojtek: thanks for the hint in this place. Yupiii!!! -->
 			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
 			<separator/>
 			<!--

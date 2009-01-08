@@ -17,8 +17,8 @@ package com.atlassian.theplugin.idea.action.builds;
 
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -35,13 +35,15 @@ import java.awt.event.ActionListener;
  */
 // todo add client property handling to all actions
 public class GroupByAction extends AnAction implements CustomComponentAction {
+	private static final String COMBOBOX_KEY = GroupByAction.class.getName() + ".builds.combo";
+	
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
 	}
 
 	public JComponent createCustomComponent(Presentation presentation) {
 		final JComboBox combo = new JComboBox(createModel());
-//		presentation.putClientProperty(COMBOBOX_KEY, combo);
+		presentation.putClientProperty(COMBOBOX_KEY, combo);
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
@@ -60,10 +62,24 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 			}
 		});
 		return combo;
-}
+	}
+
+	public void update(final AnActionEvent e) {
+		Object myProperty = e.getPresentation().getClientProperty(COMBOBOX_KEY);
+		if (myProperty instanceof JComboBox) {
+			final JComboBox combo = (JComboBox) myProperty;
+			final Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
+			if (project != null) {
+				final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+				if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
+					combo.setSelectedItem(panel.getGroupBy());
+				}
+			}
+		}
+	}
 
 	private ComboBoxModel createModel() {
 		return new DefaultComboBoxModel(BuildGroupBy.values());
 	}
 
-	}
+}

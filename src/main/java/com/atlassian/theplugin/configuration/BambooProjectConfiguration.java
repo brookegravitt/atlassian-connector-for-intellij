@@ -26,6 +26,7 @@ package com.atlassian.theplugin.configuration;
 public class BambooProjectConfiguration {
 	private ProjectToolWindowTableConfiguration tableConfiguration =
 			new ProjectToolWindowTableConfiguration();
+	private BambooViewConfigurationBean view = new BambooViewConfigurationBean();
 
 	public BambooProjectConfiguration() {
 
@@ -41,5 +42,14 @@ public class BambooProjectConfiguration {
 
 	public void copyConfiguration(BambooProjectConfiguration bambooConfiguration) {
 		tableConfiguration.copyConfiguration(bambooConfiguration.getTableConfiguration());
+		view.copyConfiguration(bambooConfiguration.getView());
+	}
+
+	public BambooViewConfigurationBean getView() {
+		return view;
+	}
+
+	public void setView(BambooViewConfigurationBean view) {
+		this.view = view;
 	}
 }
