@@ -205,7 +205,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
 		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
 		sb.append("<tr><td colspan='2'><b><font color='blue'>");
-		sb.append(build.getBuildKey() + "-" + build.getBuildNumber());
+		sb.append(build.getBuildKey()).append("-").append(build.getBuildNumber());
 		sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
