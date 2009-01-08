@@ -4,6 +4,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
+import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -16,8 +17,8 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 /**
@@ -33,6 +34,47 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	public BuildToolWindow(@NotNull final Project project) {
 		super(new HashMap<String, ContentPanel>());
 		this.project = project;
+	}
+
+	public void runFailedTests(AnActionEvent ev, boolean debug) {
+		BuildPanel bp = getContentPanel(ev.getPlace());
+		if (bp != null) {
+			bp.getTestDetailsPanel().runFailedTests(ev, debug);
+		}
+	}
+
+	public boolean canRunFailedTests(String key) {
+		BuildPanel bp = getContentPanel(key);
+		return bp != null && bp.getTestDetailsPanel().canRunFailedTests();
+	}
+
+	public void setPassedTestsVisible(String key, boolean visible) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			bp.getTestDetailsPanel().setPassedTestsVisible(visible);
+		}
+	}
+
+	public boolean isPassedTestsVisible(String key) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			return bp.getTestDetailsPanel().isPassedTestsVisible();
+		}
+		return false;
+	}
+
+	public void expandTests(String key) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			bp.getTestDetailsPanel().expand();
+		}
+	}
+
+	public void collapseTestTree(String key) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			bp.getTestDetailsPanel().collapse();
+		}
 	}
 
 	private final class BuildContentParameters implements ContentParameters {
@@ -80,6 +122,8 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private static final int ONE_MINUTE = 60000;
 
+		private TestDetailsPanel tdp;
+
 		private JTabbedPane tabs = new JTabbedPane();
 		private final BuildContentParameters params;
 
@@ -90,14 +134,17 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
 			final CommitDetailsPanel cdp = new CommitDetailsPanel(project, params.build);
+			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
 			timer = new Timer(ONE_MINUTE, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					bdp.actionPerformed(e);
 					cdp.actionPerformed(e);
+					tdp.actionPerformed(e);
 				}
 			});
 			tabs.addTab("Details", bdp);
 			tabs.addTab("Changes", cdp);
+			tabs.addTab("Tests", tdp); 
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -116,6 +163,10 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			timer.setRepeats(true);
 			timer.setInitialDelay(ONE_MINUTE);
 			timer.start();
+		}
+
+		public TestDetailsPanel getTestDetailsPanel() {
+			return tdp;
 		}
 
 		public void unregister() {

@@ -1,17 +1,18 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
-import com.atlassian.theplugin.commons.util.DateUtil;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.Date;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * User: jgorycki
@@ -42,11 +43,6 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		JScrollPane scroll = new JScrollPane(createBody());
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		add(scroll, gbc);
-
-		Border b = BorderFactory.createTitledBorder("Details");
-		setBorder(b);
-		Insets i = b.getBorderInsets(this);
-		setMinimumSize(new Dimension(0, i.top + i.bottom));
 	}
 
 	public JPanel createBody() {
@@ -87,8 +83,26 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 //		p.add(HGW???, gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
+
+		StringBuilder reason = new StringBuilder(build.getBuildReason());
+		Collection<String> committers = build.getCommiters();
+		// bleeeee, ugly ugly
+		if (committers.size() > 0 && reason.toString().equals(BuildTreeNode.CODE_HAS_CHANGED)) {
+		 	reason.append(" by ");
+			if (committers.size() > 3) {
+				reason.append(committers.size()).append(" people");
+			} else {
+				int i = 0;
+				for (String committer : committers) {
+					reason.append(committer);
+					if (++i < committers.size()) {
+						reason.append(", ");
+					}
+				}
+			}
+		}
 		p.add(new BoldLabel("Build Reason"), gbc1);
-		p.add(new JLabel(build.getBuildReason()), gbc2);
+		p.add(new JLabel(reason.toString()), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		p.add(new BoldLabel("Tests"), gbc1);

@@ -17,14 +17,14 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
+import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class ExpandTestsAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		TestResultsToolWindow window = IdeaHelper.getProjectComponent(event, TestResultsToolWindow.class);
-		window.getTestTree(event.getPlace()).expand();
+		BuildToolWindow window = IdeaHelper.getBuildToolWindow(event);
+		window.expandTests(event.getPlace());
 	}
 }

@@ -35,7 +35,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	private BambooBuildAdapterIdea build;
 	private static final int DATE_LABEL_WIDTH = 85;
-	private static final String CODE_HAS_CHANGED = "Code has changed";
+	public static final String CODE_HAS_CHANGED = "Code has changed";
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
 		super(build.getBuildKey(), null, null);
