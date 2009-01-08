@@ -18,15 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -39,11 +31,7 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooModel;
-import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
-import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.bamboo.TestResultsToolWindow;
+import com.atlassian.theplugin.idea.bamboo.*;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -246,6 +234,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			final BambooStatusDisplay bambooStatusDisplay = new BuildStatusChangedToolTip(project, toolWindow);
 			tooltipBambooStatusListener = new BambooStatusTooltipListener(bambooStatusDisplay, pluginConfiguration);
 			bambooStatusChecker.registerListener(tooltipBambooStatusListener);
+//			bambooStatusChecker.registerListener(buildToolWindowPanel.getBuildTree());
 
 			// add bamboo icon to status bar
 			statusBarBambooIcon.showOrHideIcon();
@@ -285,6 +274,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			created = true;
 
 			registerCrucibleNotifier();
+
 		}
 	}
 
