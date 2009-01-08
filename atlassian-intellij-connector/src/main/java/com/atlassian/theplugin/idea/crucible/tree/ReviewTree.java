@@ -20,10 +20,9 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
-import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewGroupTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 
-import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -35,7 +34,7 @@ import java.util.Set;
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewTree extends JTree {
+public class ReviewTree extends AbstractTree {
 	private ReviewTreeModel model;
 	private CrucibleReviewListModelListener localReviewModelListener = new LocalCrucibeReviewListModelListener();
 	private TreeModelListener localTreeModelListener = new LocalTreeModelListener();
@@ -58,12 +57,6 @@ public class ReviewTree extends JTree {
 		setShowsRootHandles(true);
 		setExpandsSelectedPaths(true);
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-	}
-
-	private void expandTree() {
-		for (int i = 0; i < getRowCount(); i++) {
-			expandRow(i);
-		}
 	}
 
 	public ReviewAdapter getSelectedReview() {
@@ -97,43 +90,6 @@ public class ReviewTree extends JTree {
 		}
 	}
 
-
-	private Set<TreePath> getCollapsedPaths() {
-		Set<TreePath> collapsedNodes = new HashSet<TreePath>();
-
-		for (int i = 0; i < getRowCount(); ++i) {
-			TreePath path = getPathForRow(i);
-
-			if (path.getLastPathComponent() instanceof CrucibleReviewGroupTreeNode && isCollapsed(path)) {
-				collapsedNodes.add(path);
-			}
-		}
-
-//		String out = "";
-//
-//		for (TreePath path : collapsedNodes) {
-//			out += path.getLastPathComponent() + " ";
-//		}
-//
-//		System.out.println(out);
-
-		return collapsedNodes;
-	}
-
-
-	private void collapsePaths(Set<TreePath> collapsedPaths) {
-		for (TreePath path : collapsedPaths) {
-			for (int i = 0; i < getRowCount(); ++i) {
-				TreePath treePath = getPathForRow(i);
-
-				if (treePath.toString().equals(path.toString())) {
-					collapsePath(treePath);
-					break;
-				}
-			}
-		}
-
-	}
 
 	public void groupBy(CrucibleReviewGroupBy groupBy) {
 		model.groupBy(groupBy);
