@@ -15,10 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
-import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.intellij.openapi.project.Project;
 
@@ -26,7 +24,6 @@ import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Set;
 
@@ -47,20 +44,6 @@ public class BuildTree extends AbstractTree {
 		init();
 
 		buildTreeModel.addTreeModelListener(localTreeModelListener);
-
-		addMouseListener(new PopupAwareMouseAdapter() {
-			protected void onPopup(MouseEvent e) {
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2 && getSelectionModel().getSelectionCount() == 1) {
-					Object o = getSelectionPath().getLastPathComponent();
-					if (o instanceof BuildTreeNode) {
-						IdeaHelper.getBuildToolWindow(project).showBuild(((BuildTreeNode) o).getBuild());
-					}
-				}
-			}
-		});
 	}
 
 	private void init() {
