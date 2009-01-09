@@ -16,11 +16,20 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class CommentBuildAction extends AbstractBamboo2BuildAction {
+public class CommentBuildAction extends AbstractBuildListAction {
+
+	@Override
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).addCommentToBuild();
+		commentBuild(event);
+	}
+
+	@Override
+	public void update(final AnActionEvent event) {
+		super.update(event);
+		if (getBuild(event) != null && !getBuild(event).isBamboo2()) {
+			event.getPresentation().setEnabled(false);
+		}
 	}
 }
