@@ -8,8 +8,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Date: Jan 7, 2009
  * Time: 1:54:36 PM
  */
-public class OpenBuildActionNew extends AbstractBamboo2BuildAction {
+public class OpenBuildActionNew extends AbstractBuildListAction {
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).openBuild();
+		IdeaHelper.getBuildToolWindow(event).showBuild(getBuild(event));
+	}
+
+	@Override
+	public void update(final AnActionEvent event) {
+		super.update(event);
+		if (getBuild(event) != null && !getBuild(event).isBamboo2()) {
+			event.getPresentation().setEnabled(false);
+		}
 	}
 }
