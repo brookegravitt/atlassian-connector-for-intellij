@@ -15,8 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
@@ -27,13 +25,12 @@ import com.intellij.openapi.project.Project;
 
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class BuildTree extends AbstractTree implements BambooStatusListener {
+public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
 
 	public BuildTree(final Project project, final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
@@ -72,18 +69,18 @@ public class BuildTree extends AbstractTree implements BambooStatusListener {
 
 	public void updateModel(final Collection<BambooBuildAdapterIdea> buildStatuses) {
 		buildTreeModel.update(buildStatuses);
-	}
-
-	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
-		final Collection<BambooBuildAdapterIdea> collection = new ArrayList<BambooBuildAdapterIdea>();
-		for (BambooBuild build : buildStatuses) {
-			BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
-			collection.add(buildAdapter);
-		}
-
-		updateModel(collection);
 		expandTree();
 	}
+
+//	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
+//		final Collection<BambooBuildAdapterIdea> collection = new ArrayList<BambooBuildAdapterIdea>();
+//		for (BambooBuild build : buildStatuses) {
+//			BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
+//			collection.add(buildAdapter);
+//		}
+//
+//		updateModel(collection);
+//	}
 
 	public void resetState() {
 	}
