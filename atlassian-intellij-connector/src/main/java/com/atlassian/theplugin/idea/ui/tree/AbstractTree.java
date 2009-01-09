@@ -15,8 +15,6 @@
  */
 package com.atlassian.theplugin.idea.ui.tree;
 
-import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewGroupTreeNode;
-
 import javax.swing.*;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -44,11 +42,10 @@ public abstract class AbstractTree extends JTree {
 		for (int i = 0; i < getRowCount(); ++i) {
 			TreePath path = getPathForRow(i);
 
-			if (path.getLastPathComponent() instanceof CrucibleReviewGroupTreeNode && isCollapsed(path)) {
+			if (isCollapsed(path)) {
 				collapsedNodes.add(path);
 			}
 		}
-
 		return collapsedNodes;
 	}
 
@@ -63,6 +60,5 @@ public abstract class AbstractTree extends JTree {
 				}
 			}
 		}
-
 	}
 }

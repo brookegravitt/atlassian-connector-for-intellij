@@ -22,6 +22,8 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.intellij.openapi.project.Project;
 
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.MouseEvent;
@@ -34,6 +36,8 @@ import java.util.Set;
 public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
 
+	private TreeModelListener localTreeModelListener = new LocalTreeModelListener();
+
 	public BuildTree(final Project project, final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
 		super(buildTreeModel);
 
@@ -41,6 +45,8 @@ public class BuildTree extends AbstractTree {
 		this.buildTreeModel.setGroupBy(groupBy);
 
 		init();
+
+		buildTreeModel.addTreeModelListener(localTreeModelListener);
 
 		addMouseListener(new PopupAwareMouseAdapter() {
 			protected void onPopup(MouseEvent e) {
@@ -125,5 +131,23 @@ public class BuildTree extends AbstractTree {
 	public void groupBy(final BuildGroupBy groupingType) {
 		buildTreeModel.groupBy(groupingType);
 		expandTree();
+	}
+
+	private class LocalTreeModelListener implements TreeModelListener {
+		public void treeNodesChanged(final TreeModelEvent e) {
+
+		}
+
+		public void treeNodesInserted(final TreeModelEvent e) {
+
+		}
+
+		public void treeNodesRemoved(final TreeModelEvent e) {
+
+		}
+
+		public void treeStructureChanged(final TreeModelEvent e) {
+			expandTree();
+		}
 	}
 }
