@@ -42,14 +42,14 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * User: pmaruszak
@@ -57,7 +57,7 @@ import java.text.SimpleDateFormat;
 public class CrucibleToolWindow extends SingleTabToolWindow {
 
 	protected CrucibleToolWindow(@NotNull final Project project,
-			@NotNull final CrucibleReviewListModel reviewListModel) {
+								 @NotNull final CrucibleReviewListModel reviewListModel) {
 		super(project, reviewListModel);
 	}
 
@@ -245,11 +245,21 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				body.add(new JLabel(ra.getState().getDisplayName()), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
-				body.add(new BoldLabel("Open since"), gbc1);
-				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)");
-				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				body.add(new BoldLabel("Open"), gbc1);
 
-				body.add(new JLabel(ds.format(ra.getCreateDate())), gbc2);
+				DateTime now = new DateTime();
+				Period period = new Period(ra.getCreateDate().getTime(), now.getMillis());
+
+				String years = getFormattedPeriod(period.getYears(), "year");
+				String months = getFormattedPeriod(period.getMonths(), "month");
+				String days = getFormattedPeriod(period.getDays(), "day");
+
+				String text = years;
+				text += years.length() > 0 ? " and " : "";
+				text += months;
+				text += months.length() > 0 ? " and " : "";
+				text += days;
+				body.add(new JLabel(text), gbc2);
 
 				gbc1.gridx = 2;
 				gbc2.gridx = gbc1.gridx + 1;
@@ -267,13 +277,24 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				gbc2.gridy++;
 				body.add(new BoldLabel("Reviewers"), gbc1);
 
-				JPanel reviewers = new JPanel(new VerticalFlowLayout());
+				JPanel reviewers = new JPanel();
+				VerticalFlowLayout layout = new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 0, true, false);
+				layout.setHgap(0);
+				layout.setVgap(0);
+				Container container = new Container();
+				layout.layoutContainer(container);
+
+				reviewers.setLayout(layout);
+
 				Icon reviewCompletedIcon = IconLoader.getIcon("/actions/check.png");
 				try {
 					for (Reviewer reviewer : ra.getReviewers()) {
-						reviewers.add(new JLabel(reviewer.getDisplayName(),
+						JLabel label = new JLabel(reviewer.getDisplayName(),
 								reviewer.isCompleted() ? reviewCompletedIcon : null,
-								SwingConstants.LEFT));
+								SwingConstants.LEFT);
+						label.setHorizontalTextPosition(SwingUtilities.LEFT);
+						label.setHorizontalAlignment(SwingUtilities.LEFT);
+						reviewers.add(label);
 					}
 
 					body.add(reviewers, gbc2);
@@ -281,10 +302,27 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 					//do not care
 				}
 
+				gbc1.gridy++;
+				gbc1.weighty = 1.0;
+				gbc1.fill = GridBagConstraints.VERTICAL;
+				body.add(new JPanel(), gbc1);
+
 
 				return body;
 			}
 
+		}
+
+		private String getFormattedPeriod(int value, String singName) {
+			String text = "";
+			if (value > 0) {
+				text = value + " " + singName;
+				if (value > 1) {
+					text += "s";
+				}
+			}
+
+			return text;
 		}
 
 		private final class CommentsPanel extends JPanel {
