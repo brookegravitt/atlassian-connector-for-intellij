@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
@@ -23,9 +22,11 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.intellij.openapi.project.Project;
 
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
@@ -63,13 +64,52 @@ public class BuildTree extends AbstractTree {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 
-	public BuildDetailsInfo getSelectedBuild() {
-		return null;
+	public BambooBuildAdapterIdea getSelectedBuild() {
+		final TreePath selectionPath = getSelectionPath();
+		if (selectionPath != null && selectionPath.getLastPathComponent() != null
+				&& selectionPath.getLastPathComponent() instanceof BuildTreeNode) {
+			return ((BuildTreeNode) selectionPath.getLastPathComponent()).getBuild();
+		} else {
+			// nothing selected
+			return null;
+		}
+	}
+
+	private void selectBuildNode(BambooBuildAdapterIdea build) {
+		if (build == null) {
+			clearSelection();
+			return;
+		}
+
+		for (int i = 0; i < getRowCount(); i++) {
+			TreePath path = getPathForRow(i);
+			Object object = path.getLastPathComponent();
+			if (object instanceof BuildTreeNode) {
+				BuildTreeNode node = (BuildTreeNode) object;
+				if (node.getBuild().getBuildKey().equals(build.getBuildKey())) {
+					expandPath(path);
+					makeVisible(path);
+					setSelectionPath(path);
+					break;
+				}
+			}
+		}
 	}
 
 	public void updateModel(final Collection<BambooBuildAdapterIdea> buildStatuses) {
+
+		Set<TreePath> collapsedPaths = getCollapsedPaths();
+		BambooBuildAdapterIdea build = getSelectedBuild();
+
+		// rebuild the tree
 		buildTreeModel.update(buildStatuses);
+
+		// expand entire tree
 		expandTree();
+
+		// restore selection and collapse state
+		collapsePaths(collapsedPaths);
+		selectBuildNode(build);	
 	}
 
 //	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
@@ -81,9 +121,6 @@ public class BuildTree extends AbstractTree {
 //
 //		updateModel(collection);
 //	}
-
-	public void resetState() {
-	}
 
 	public void groupBy(final BuildGroupBy groupingType) {
 		buildTreeModel.groupBy(groupingType);
