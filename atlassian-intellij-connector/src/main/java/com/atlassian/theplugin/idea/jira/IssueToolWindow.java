@@ -238,11 +238,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				scroll = new JScrollPane(createBody());
 				scroll.setBorder(BorderFactory.createEmptyBorder());
 				add(scroll, gbc);
-
-				Border b = BorderFactory.createTitledBorder("Details");
-				setBorder(b);
-				Insets i = b.getBorderInsets(this);
-				setMinimumSize(new Dimension(0, i.top + i.bottom));
 			}
 
 			private JPanel createBody() {
@@ -254,7 +249,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				GridBagConstraints gbc2 = new GridBagConstraints();
 				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
 				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				gbc2.fill = GridBagConstraints.HORIZONTAL;
 				gbc2.weightx = 1.0;
@@ -269,6 +266,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						SwingConstants.LEFT), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
+				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("Status"), gbc1);
 				body.add(new JLabel(params.issue.getStatus(),
 						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
@@ -302,6 +303,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc2.gridx = gbc1.gridx + 1;
 				gbc1.gridy = 0;
 				gbc2.gridy = 0;
+				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("Created"), gbc1);
 				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)");
 				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -314,6 +319,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				body.add(new JLabel(t), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
+				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("Updated"), gbc1);
 				try {
 					t = ds.format(df.parse(params.issue.getUpdated()));
