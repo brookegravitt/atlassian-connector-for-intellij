@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
+import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.intellij.ide.BrowserUtil;
@@ -135,16 +136,19 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
 			final CommitDetailsPanel cdp = new CommitDetailsPanel(project, params.build);
 			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
+			final BuildLogPanel blp = new BuildLogPanel(project, params.build);
 			timer = new Timer(ONE_MINUTE, new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					bdp.actionPerformed(e);
 					cdp.actionPerformed(e);
 					tdp.actionPerformed(e);
+					blp.actionPerformed(e);
 				}
 			});
 			tabs.addTab("Details", bdp);
 			tabs.addTab("Changes", cdp);
-			tabs.addTab("Tests", tdp); 
+			tabs.addTab("Tests", tdp);
+			tabs.addTab("Build Log", blp);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();

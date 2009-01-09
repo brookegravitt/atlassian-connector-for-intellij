@@ -114,7 +114,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private void fillContent() {
-		if (failedTests.size() > 0) {
+		if (failedTests.size() > 0 || succeededTests.size() > 0) {
 
 			Splitter split = new Splitter(false, SPLIT_RATIO);
 			split.setShowDividerControls(true);
@@ -187,7 +187,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 			add(split, gbc);
 		} else {
-			add(new JLabel("No failed failedTests in build " + build.getBuildKey() + "-" + build.getBuildNumber()));
+			add(new JLabel("No tests in build " + build.getBuildKey() + "-" + build.getBuildNumber()));
 		}
 	}
 

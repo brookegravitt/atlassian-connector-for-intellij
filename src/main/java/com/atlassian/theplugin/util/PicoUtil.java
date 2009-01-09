@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildToolWindowOld;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator;
@@ -47,7 +46,6 @@ public final class PicoUtil {
 
 	private static final Class<?>[] PROJECT_COMPONENTS = {
 			BambooTableToolWindowPanel.class,
-			BambooBuildToolWindowOld.class,
 			JIRAServerModelImpl.class,			
 			JIRAIssueListModelBuilderImpl.class,
 			JIRAFilterListBuilder.class,
