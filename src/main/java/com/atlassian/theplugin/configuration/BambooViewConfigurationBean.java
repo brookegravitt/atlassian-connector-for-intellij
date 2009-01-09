@@ -21,7 +21,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
  * @author Jacek Jaroczynski
  */
 public class BambooViewConfigurationBean {
-	private BuildGroupBy groupBy;
+	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
 	public BuildGroupBy getGroupBy() {
 		return groupBy;
