@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.intellij.openapi.project.Project;
 
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,11 +39,10 @@ public class BuildTree extends AbstractTree implements BambooStatusListener {
 	public BuildTree(final Project project, final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
 		super(buildTreeModel);
 
-		super.setShowsRootHandles(true);
-		super.setRootVisible(false);
-
 		this.buildTreeModel = buildTreeModel;
 		this.buildTreeModel.setGroupBy(groupBy);
+
+		init();
 
 		addMouseListener(new PopupAwareMouseAdapter() {
 			protected void onPopup(MouseEvent e) {
@@ -57,6 +57,13 @@ public class BuildTree extends AbstractTree implements BambooStatusListener {
 				}
 			}
 		});
+	}
+
+	private void init() {
+		setRootVisible(false);
+		setShowsRootHandles(true);
+		setExpandsSelectedPaths(true);
+		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 
 	public BuildDetailsInfo getSelectedBuild() {
@@ -75,6 +82,7 @@ public class BuildTree extends AbstractTree implements BambooStatusListener {
 		}
 
 		updateModel(collection);
+		expandTree();
 	}
 
 	public void resetState() {

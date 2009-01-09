@@ -133,7 +133,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		});
 
 		// restore GroupBy setting
-		if (bambooConfiguration != null && bambooConfiguration.getView() != null) {
+		if (bambooConfiguration != null && bambooConfiguration.getView() != null &&
+				bambooConfiguration.getView().getGroupBy() != null) {
 			groupBy = bambooConfiguration.getView().getGroupBy();
 		}
 
@@ -245,9 +246,11 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	public void setGroupingType(@NonNls final BuildGroupBy groupingType) {
-		this.groupBy = groupingType;
-		buildTree.groupBy(groupingType);
-		bambooConfiguration.getView().setGroupBy(groupingType);
+		if (groupingType != null) {
+			this.groupBy = groupingType;
+			buildTree.groupBy(groupingType);
+			bambooConfiguration.getView().setGroupBy(groupingType);
+		}
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
