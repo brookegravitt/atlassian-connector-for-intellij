@@ -57,7 +57,7 @@ import java.text.SimpleDateFormat;
 public class CrucibleToolWindow extends SingleTabToolWindow {
 
 	protected CrucibleToolWindow(@NotNull final Project project,
-								 @NotNull final CrucibleReviewListModel reviewListModel) {
+			@NotNull final CrucibleReviewListModel reviewListModel) {
 		super(project, reviewListModel);
 	}
 
@@ -188,10 +188,6 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 		}
 
 		public void reviewListUpdateFinished(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
-		}
-
-		public void reviewChangedWithoutFiles(UpdateContext updateContext) {
 			//To change body of implemented methods use File | Settings | File Templates.
 		}
 

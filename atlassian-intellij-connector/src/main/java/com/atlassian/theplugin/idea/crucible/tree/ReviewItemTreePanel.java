@@ -237,7 +237,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 	private void refreshView(final ReviewAdapter oldReview, final ReviewAdapter review,
-							 final List<CrucibleNotification> notifications) {
+			final List<CrucibleNotification> notifications) {
 		if (crucibleReviewListModel != null && review != null) {
 			if (crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
 				this.crucibleReview = review;
@@ -245,14 +245,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			EventQueue.invokeLater(new MyRunnable(oldReview, review, notifications));
 		}
 	}
-/*
-	public void reviewChangedWithoutFiles(final ReviewAdapter newReview) {
-		if (newReview.equals(crucibleReview)) {
-			this.crucibleReview.fillReview(newReview);
-			showReview(crucibleReview);
-		}
-	}
-*/
+
 //	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
 //	}
 //
@@ -317,7 +310,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 
 		public MyRunnable(final ReviewAdapter oldReview, final ReviewAdapter review,
-						  final List<CrucibleNotification> notifications) {
+				final List<CrucibleNotification> notifications) {
 			this.oldReview = oldReview;
 			this.review = review;
 			this.notifications = notifications;
@@ -418,20 +411,20 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		@Override
 		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
-													   final GeneralComment comment) {
+				final GeneralComment comment) {
 			refreshView(review);
 		}
 
 		@Override
 		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId filePermId,
-													final VersionedComment comment) {
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
 		@Override
 		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId filePermId,
-														 final VersionedComment parentComment,
-														 final VersionedComment comment) {
+				final VersionedComment parentComment,
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
@@ -447,13 +440,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		@Override
 		public void publishedVersionedComment(final ReviewAdapter review, final PermId permId,
-											  final VersionedComment comment) {
+				final VersionedComment comment) {
 			refreshView(review);
 		}
 
 		@Override
-		public void reviewChanged(final ReviewAdapter oldReview, final ReviewAdapter review,
-								  final List<CrucibleNotification> notifications) {
+		public void reviewChanged(final ReviewAdapter review,
+				final List<CrucibleNotification> notifications) {
 			refreshView(review);
 		}
 	}
