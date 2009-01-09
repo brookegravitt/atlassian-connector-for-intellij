@@ -1,25 +1,10 @@
-/**
- * Copyright (C) 2008 Atlassian
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.atlassian.theplugin.idea.bamboo;
+package com.atlassian.theplugin.idea.bamboo.build;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.util.ClassMatcher;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -36,41 +21,50 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowAnchor;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import com.intellij.ui.content.Content;
-import com.intellij.ui.content.ContentManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BambooBuildToolWindowOld {
-	private static final String TOOL_WINDOW_TITLE = "Bamboo Build";
-
+/**
+ * User: jgorycki
+ * Date: Jan 9, 2009
+ * Time: 12:59:25 PM
+ */
+public class BuildLogPanel extends JPanel implements ActionListener {
 	private final Project project;
 
-	private Map<String, ConsoleView> consoleMap = new HashMap<String, ConsoleView>();
-
-	public BambooBuildToolWindowOld(final Project project) {
+	public BuildLogPanel(Project project, BambooBuildAdapterIdea build) {
 		this.project = project;
+		setLayout(new BorderLayout());
+		final ConsoleView console = setupConsole();
+		add(console.getComponent(), BorderLayout.CENTER);
+		console.clear();
+		fetchAndShowBuildLog(build, console);
 	}
 
-	public void fetchAndShowBuildLog(@NotNull final BambooBuild bambooBuild,
-			@NotNull final ConsoleView consoleView) {
+	private ConsoleView setupConsole() {
+		ConsoleView console;
+		TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
+		TextConsoleBuilder builder = factory.createBuilder(project);
+		builder.addFilter(new JavaFileFilter(project));
+		builder.addFilter(new UnitTestFilter(project));
+		builder.addFilter(new LoggerFilter());
+		console = builder.getConsole();
+		return console;
+	}
+
+	public void fetchAndShowBuildLog(final BambooBuildAdapterIdea build, final ConsoleView consoleView) {
 
 		consoleView.clear();
 		consoleView.print("Fetching Bamboo Build Log from the server...", ConsoleViewContentType.NORMAL_OUTPUT);
@@ -78,14 +72,9 @@ public class BambooBuildToolWindowOld {
 		Task.Backgroundable buildLogTask = new Task.Backgroundable(project, "Retrieving Build Log", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-//				ApplicationManager.getApplication().invokeAndWait(new Runnable() {
-//					public void run() {
-//
-//					}
-//				}, ModalityState.defaultModalityState());
 				try {
 					final byte[] log = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
-							.getBuildLogs(bambooBuild.getServer(), bambooBuild.getBuildKey(), bambooBuild.getBuildNumber());
+							.getBuildLogs(build.getServer(), build.getBuildKey(), build.getBuildNumber());
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							consoleView.clear();
@@ -93,70 +82,25 @@ public class BambooBuildToolWindowOld {
 						}
 					});
 				} catch (ServerPasswordNotProvidedException e) {
-//					setStatusMessage("Failed to get changes: Password not provided for server");
+					showError(e);
 				} catch (RemoteApiException e) {
-//					setStatusMessage("Failed to get changes: " + e.getMessage());
+					showError(e);
 				}
-
 			}
 		};
 		buildLogTask.queue();
 	}
 
-
-	public void open(@NotNull final BambooBuild bambooBuild) {
-		final ConsoleView console = setupConsole(bambooBuild.getBuildKey(), bambooBuild.getBuildNumber());
-		if (console != null) {
-			console.clear();
-			fetchAndShowBuildLog(bambooBuild, console);
-//			try {
-//				console.print(StringUtil.slurp(getClass().getResourceAsStream("/properties/bamboo.properties")),
-//						ConsoleViewContentType.NORMAL_OUTPUT);
-//			} catch (IOException e) {
-//
-//				throw new RuntimeException(e);
-//			}
-		} else {
-			Messages.showErrorDialog(project, "Cannot open Bamboo build window", "Error");
-		}
+	private void showError(final Exception e) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				add(new JLabel("Failed to retrieve build log: " + e.getMessage()));
+			}
+		});
 	}
 
-
-	private ConsoleView setupConsole(String buildKey, String buildNumber) {
-		final String contentKey = buildKey + "-" + buildNumber;
-
-		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
-		ToolWindow consoleToolWindow = twm.getToolWindow(TOOL_WINDOW_TITLE);
-		if (consoleToolWindow == null) {
-			consoleToolWindow = twm.registerToolWindow(TOOL_WINDOW_TITLE, true, ToolWindowAnchor.BOTTOM);
-			consoleToolWindow.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		}
-
-		final ContentManager contentManager = consoleToolWindow.getContentManager();
-		Content content = contentManager.findContent(contentKey);
-
-		ConsoleView console;
-		if (content != null) {
-			console = consoleMap.get(contentKey);
-		} else {
-			TextConsoleBuilderFactory factory = TextConsoleBuilderFactory.getInstance();
-			TextConsoleBuilder builder = factory.createBuilder(project);
-			builder.addFilter(new JavaFileFilter(project));
-			builder.addFilter(new UnitTestFilter(project));
-//			builder.addFilter(new RegexpFilter(project, "$FILE_PATH$"));
-			builder.addFilter(new LoggerFilter());
-			console = builder.getConsole();
-			consoleMap.put(contentKey, console);
-
-			content = contentManager.getFactory().createContent(console.getComponent(), contentKey, true);
-			content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-			content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-			contentManager.addContent(content);
-		}
-		contentManager.setSelectedContent(content);
-
-		consoleToolWindow.show(null);
-		return console;
+	public void actionPerformed(ActionEvent e) {
+		// ignore
 	}
 
 	public static class JavaFileFilter implements Filter {
@@ -165,10 +109,10 @@ public class BambooBuildToolWindowOld {
 				.getAttributes(CodeInsightColors.HYPERLINK_ATTRIBUTES);
 
 		private final Project project;
-		static final int ROW_GROUP = 4;
-		static final int COLUMN_GROUP = 6;
-		static final int FILENAME_GROUP = 2;
-		static final int FULLPATH_GROUP = 1;
+		public static final int ROW_GROUP = 4;
+		public static final int COLUMN_GROUP = 6;
+		public static final int FILENAME_GROUP = 2;
+		public static final int FULLPATH_GROUP = 1;
 
 		public JavaFileFilter(final Project project) {
 			this.project = project;
@@ -192,10 +136,10 @@ public class BambooBuildToolWindowOld {
 				final String matchedString = m.group();
 				final String filename = m.group(FILENAME_GROUP);
 
-//			final String filename = FilenameUtils.getName(matchedString);
 				if (filename != null && filename.length() > 0) {
-//
-					final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, m.group(FULLPATH_GROUP));
+
+					final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(
+							project, m.group(FULLPATH_GROUP));
 					if (psiFile != null) {
 						VirtualFile virtualFile = psiFile.getVirtualFile();
 						if (virtualFile != null) {
@@ -217,12 +161,12 @@ public class BambooBuildToolWindowOld {
 							}
 							final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(project, virtualFile,
 									focusLine, focusColumn);
-//						int startMatchingFileIndex = matchedString.lastIndexOf(filename);
 							final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
 							final int startMatchingFileIndex = relativePath != null
 									? matchedString.replace('\\', '/').indexOf(relativePath)
 									: matchedString.lastIndexOf(filename);
-							final int highlightStartOffset = textEndOffset - line.length() + m.start() + startMatchingFileIndex;
+							final int highlightStartOffset =
+									textEndOffset - line.length() + m.start() + startMatchingFileIndex;
 							final int highlightEndOffset = textEndOffset - line.length() + m.end();
 							return new Result(highlightStartOffset, highlightEndOffset, info, hyperlinkAttributes);
 						}
@@ -234,7 +178,7 @@ public class BambooBuildToolWindowOld {
 			return null;
 		}
 
-		static Matcher findMatchings(final String line) {
+		public static Matcher findMatchings(final String line) {
 			return JAVA_FILE_PATTERN.matcher(line);
 		}
 	}
@@ -251,10 +195,6 @@ public class BambooBuildToolWindowOld {
 
 		@Nullable
 		public Result applyFilter(final String line, final int textEndOffset) {
-//	  if (!line.startsWith("Running")) {
-//		  return null;
-//	  }
-
 			for (ClassMatcher.MatchInfo match : ClassMatcher.find(line)) {
 				final Result res = handleMatch(line, textEndOffset, match);
 				if (res != null) {
@@ -337,12 +277,6 @@ public class BambooBuildToolWindowOld {
 		public Result applyFilter(final String line, final int textEndOffset) {
 
 			if (line.indexOf("\t[INFO]") != -1 || line.indexOf("\tINFO") != -1) {
-//		  final int highlightStartOffset = textEndOffset - line.length();
-//		  final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(myProject, myProject.getBaseDir(), 0);
-//		  TextAttributes attributes = HYPERLINK_ATTRIBUTES.clone();
-//		  attributes.setForegroundColor(Color.PINK);
-//		  attributes.setEffectColor(Color.PINK);
-//		  return new Result(highlightStartOffset, textEndOffset, info, attributes);
 				final int highlightStartOffset = textEndOffset - line.length();
 				return new Result(highlightStartOffset, textEndOffset, null, INFO_TEXT_ATTRIBUTES);
 			} else if (line.indexOf("\t[ERROR]") != -1 || line.indexOf("\tERROR") != -1) {
