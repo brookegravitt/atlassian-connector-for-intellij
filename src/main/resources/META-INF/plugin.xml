@@ -257,7 +257,8 @@
 				text="Open Build Details" description="Open Build Details" icon="/icons/bamboo-blue-16.png">
 			<keyboard-shortcut first-keystroke="control B" keymap="$default"/>
 		</action>
-openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
+		openbui
+		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
 				text="Expand All" icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Bamboo.CollapseTests"
 				class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction" text="Collapse All"
@@ -742,6 +743,11 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 			<reference id="ThePlugin.HelpJIRA"/>
 		</group>
 
+		<action id="ThePlugin.Reviews.EditorClose"
+				class="com.atlassian.theplugin.idea.action.reviews.EditorCloseAction"
+				text="Close Review View"
+				icon="/actions/cancel.png"/>
+
 		<action id="ThePlugin.Reviews.ViewReview"
 				class="com.atlassian.theplugin.idea.action.reviews.ViewReviewAction"
 				text="View Review in Browser"
@@ -763,8 +769,8 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 				class="com.atlassian.theplugin.idea.action.reviews.SubmitReviewAction"
 				text="Submit Review" icon="/actions/exit.png"/>
 		<!--<action id="ThePlugin.Reviews.CloseReview"-->
-				<!--class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction"-->
-				<!--text="Close Review" icon="/actions/moveDown.png"/>-->
+		<!--class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction"-->
+		<!--text="Close Review" icon="/actions/moveDown.png"/>-->
 		<action id="ThePlugin.Reviews.ReopenReview"
 				class="com.atlassian.theplugin.idea.action.reviews.ReopenReviewAction"
 				text="Reopen Review" icon="/actions/rollback.png"/>
@@ -836,7 +842,8 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 			<separator/>
 			<reference id="ThePlugin.Reviews.JoinReview"/>
 			<reference id="ThePlugin.Reviews.SetReviewers"/>
-
+			<separator/>
+			<reference id="ThePlugin.Reviews.EditorClose"/>
 		</group>
 
 		<group id="ThePlugin.Reviews.LeftToolBar" popup="false" text="">

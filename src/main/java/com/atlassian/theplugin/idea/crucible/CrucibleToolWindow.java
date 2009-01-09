@@ -28,10 +28,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SingleTabToolWindow;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -46,7 +43,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Period;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
@@ -55,6 +51,7 @@ import java.awt.*;
  * User: pmaruszak
  */
 public class CrucibleToolWindow extends SingleTabToolWindow {
+	private static final String TOOL_WINDOW_NAME_PREFIX = "Review";
 
 	protected CrucibleToolWindow(@NotNull final Project project,
 								 @NotNull final CrucibleReviewListModel reviewListModel) {
@@ -77,6 +74,10 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 	}
 
 
+	public void closeToolWindow(AnActionEvent e) {
+		super.closeToolWindow(TOOL_WINDOW_NAME_PREFIX, e);
+	}
+
 	private final class ReviewContentParameters implements SingleTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
 
@@ -86,7 +87,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 	}
 
 	public void showReview(ReviewAdapter reviewAdapter) {
-		showToolWindow(new ReviewContentParameters(reviewAdapter), "Review", Constants.CRUCIBLE_ICON);
+		showToolWindow(new ReviewContentParameters(reviewAdapter), TOOL_WINDOW_NAME_PREFIX, Constants.CRUCIBLE_ICON);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
@@ -154,7 +155,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 		public String getKey() {
 			if (params != null && params.reviewAdapter != null) {
 				ReviewAdapter ra = params.reviewAdapter;
-				return ra.getPermId().getId() + "(" + ra.getServer().getName() + ")";
+				return ra.getPermId().getId();
 			}
 			return "";
 		}
@@ -211,11 +212,6 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				scroll = new JScrollPane(createBody());
 				scroll.setBorder(BorderFactory.createEmptyBorder());
 				add(scroll, gbc);
-
-				Border b = BorderFactory.createTitledBorder("Details");
-				setBorder(b);
-				Insets i = b.getBorderInsets(this);
-				setMinimumSize(new Dimension(0, i.top + i.bottom));
 			}
 
 			private JPanel createBody() {
@@ -227,7 +223,9 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				GridBagConstraints gbc2 = new GridBagConstraints();
 				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
 				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				gbc2.fill = GridBagConstraints.HORIZONTAL;
 				gbc2.weightx = 1.0;
@@ -257,7 +255,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 				String text = years;
 				text += years.length() > 0 ? " and " : "";
 				text += months;
-				text += months.length() > 0 ? " and " : "";
+				text += months.length() > 0 && days.length() > 0 ? " and " : "";
 				text += days;
 				body.add(new JLabel(text), gbc2);
 
