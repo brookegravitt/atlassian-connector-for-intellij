@@ -20,6 +20,8 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.idea.bamboo.BuildCommentForm;
+import com.atlassian.theplugin.idea.bamboo.BuildLabelForm;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -28,6 +30,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -35,17 +38,6 @@ import java.awt.*;
  * @author Jacek Jaroczynski
  */
 public abstract class AbstractBuildAction extends AnAction {
-
-	@Override
-	public void update(AnActionEvent event) {
-		super.update(event);
-		BambooBuildAdapterIdea build = getBuild(event);
-		if (build != null && build.getEnabled() && build.getBuildKey() != null && build.getBuildNumber() != null) {
-			event.getPresentation().setEnabled(true);
-		} else {
-			event.getPresentation().setEnabled(false);
-		}
-	}
 
 	protected void setStatusMessageUIThread(final Project project, final String message) {
 		EventQueue.invokeLater(new Runnable() {
@@ -94,4 +86,75 @@ public abstract class AbstractBuildAction extends AnAction {
 			BrowserUtil.launchBrowser(build.getBuildResultUrl());
 		}
 	}
+
+	protected void labelBuild(final AnActionEvent e) {
+		final Project project = IdeaHelper.getCurrentProject(e);
+		final BambooBuildAdapterIdea build = getBuild(e);
+
+		if (project != null && build != null) {
+			BuildLabelForm buildLabelForm = new BuildLabelForm(build);
+			buildLabelForm.show();
+			if (buildLabelForm.getExitCode() == 0) {
+				labelBuild(project, build, buildLabelForm.getLabel());
+			}
+		}
+	}
+
+	private void labelBuild(@NotNull final Project project, @NotNull final BambooBuildAdapterIdea build, final String label) {
+
+		Task.Backgroundable labelTask = new Task.Backgroundable(project, "Labeling Build", false) {
+			@Override
+			public void run(final ProgressIndicator indicator) {
+				setStatusMessageUIThread(project, "Applying label on build...");
+				try {
+					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+							addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
+					setStatusMessageUIThread(project, "Label applied on build");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusMessageUIThread(project, "Label not applied: Password on provided for server");
+				} catch (RemoteApiException e) {
+					setStatusMessageUIThread(project, "Label not applied: " + e.getMessage());
+				}
+			}
+		};
+
+		ProgressManager.getInstance().run(labelTask);
+	}
+
+
+	protected void commentBuild(AnActionEvent e) {
+		final Project project = IdeaHelper.getCurrentProject(e);
+		final BambooBuildAdapterIdea build = getBuild(e);
+
+		if (project != null && build != null) {
+			BuildCommentForm buildCommentForm = new BuildCommentForm(build);
+			buildCommentForm.show();
+			if (buildCommentForm.getExitCode() == 0) {
+				commentBuild(project, build, buildCommentForm.getCommentText());
+			}
+		}
+	}
+
+		private void commentBuild(@NotNull final Project project,
+				@NotNull final BambooBuildAdapterIdea build, final String commentText) {
+
+			Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
+				@Override
+				public void run(final ProgressIndicator indicator) {
+					setStatusMessageUIThread(project, "Adding comment label on build...");
+					try {
+						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+								addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentText);
+						setStatusMessageUIThread(project, "Comment added to build");
+					} catch (ServerPasswordNotProvidedException e) {
+						setStatusMessageUIThread(project, "Comment not added: Password not provided for server");
+					} catch (RemoteApiException e) {
+						setStatusMessageUIThread(project, "Comment not added: " + e.getMessage());
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(commentTask);
+		}
+
 }

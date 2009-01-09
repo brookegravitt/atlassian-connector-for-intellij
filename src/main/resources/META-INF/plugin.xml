@@ -257,7 +257,6 @@
 				text="Open Build Details" description="Open Build Details" icon="/icons/bamboo-blue-16.png">
 			<keyboard-shortcut first-keystroke="control B" keymap="$default"/>
 		</action>
-		openbui
 		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
 				text="Expand All" icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Bamboo.CollapseTests"
@@ -406,8 +405,8 @@
 		<group id="ThePlugin.BuildToolWindowToolBar" popup="false">
 			<reference id="ThePlugin.Build.View"/>
 			<reference id="ThePlugin.Build.Run"/>
-			<reference id="ThePlugin.Build.Comment"/>
 			<reference id="ThePlugin.Build.Label"/>
+			<reference id="ThePlugin.Build.Comment"/>
 			<reference id="ThePlugin.Build.Close"/>
 		</group>
 

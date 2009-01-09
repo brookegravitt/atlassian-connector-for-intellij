@@ -44,4 +44,8 @@ public abstract class AbstractBuildDetailsAction extends AbstractBuildAction {
 		// no status bar in the build details panel at the moment
 	}
 
+	@Override
+	public void update(final AnActionEvent event) {
+		// enabled all the time
+	}
 }

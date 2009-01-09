@@ -16,11 +16,21 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class LabelBuildAction extends AbstractBamboo2BuildAction {
+public class LabelBuildAction extends AbstractBuildListAction {
+
+	@Override
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).addLabelToBuild();
+		labelBuild(event);
 	}
+
+	@Override
+	public void update(final AnActionEvent event) {
+		super.update(event);
+		if (getBuild(event) != null && !getBuild(event).isBamboo2()) {
+			event.getPresentation().setEnabled(false);
+		}
+	}
+
 }
