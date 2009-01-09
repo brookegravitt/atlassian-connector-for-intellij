@@ -16,29 +16,14 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 
-/**
- * Used in the panel with builds list
- */
-public class RunBuildAction extends AbstractRunBuildAction {
+public class RunBuildAction extends AbstractBuildListAction {
 
-	protected BambooBuildAdapterIdea getBuild(final AnActionEvent event) {
-		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(event, BambooToolWindowPanel.class);
-		if (panel != null) {
-			return panel.getSelectedBuild();
-		}
-		return null;
+	@Override
+	public void actionPerformed(AnActionEvent event) {
+
+		runBuild(event);
 	}
 
-	protected void setStatusMessage(final Project project, final String message) {
-		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
-		if (panel != null) {
-			panel.setStatusMessage(message);
-		}
-	}
 }

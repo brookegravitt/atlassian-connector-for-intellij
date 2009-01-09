@@ -21,31 +21,20 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class AbstractRunBuildAction extends AnAction {
-
-	@Override
-	public void actionPerformed(AnActionEvent event) {
-
-		BambooBuildAdapterIdea build = getBuild(event);
-		Project project = IdeaHelper.getCurrentProject(event);
-
-		if (build != null && project != null) {
-			executeBuild(project, build);
-		}
-	}
+public abstract class AbstractBuildAction extends AnAction {
 
 	@Override
 	public void update(AnActionEvent event) {
@@ -58,29 +47,7 @@ public abstract class AbstractRunBuildAction extends AnAction {
 		}
 	}
 
-	protected void executeBuild(final Project project, @NotNull final BambooBuildAdapterIdea build) {
-
-		Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
-			@Override
-			public void run(final ProgressIndicator indicator) {
-
-				try {
-					setStatusMessageUIThread(project, "Starting build on plan: " + build.getBuildKey());
-					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-							executeBuild(build.getServer(), build.getBuildKey());
-					setStatusMessageUIThread(project, "Build executed on plan: " + build.getBuildKey());
-				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessageUIThread(project, "Build not executed: Password not provided for server");
-				} catch (RemoteApiException e) {
-					setStatusMessageUIThread(project, "Build not executed: " + e.getMessage());
-				}
-			}
-		};
-
-		ProgressManager.getInstance().run(executeTask);
-	}
-
-	private void setStatusMessageUIThread(final Project project, final String message) {
+	protected void setStatusMessageUIThread(final Project project, final String message) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				setStatusMessage(project, message);
@@ -88,8 +55,43 @@ public abstract class AbstractRunBuildAction extends AnAction {
 		});
 	}
 
+	protected abstract void setStatusMessage(final Project project, final String message);
+
 	protected abstract BambooBuildAdapterIdea getBuild(final AnActionEvent event);
 
-	protected abstract void setStatusMessage(final Project project, final String message);
-}
 
+	protected void runBuild(AnActionEvent e) {
+		final Project project = IdeaHelper.getCurrentProject(e);
+		final BambooBuildAdapterIdea build = getBuild(e);
+
+		if (project != null && build != null && build.getBuildKey() != null) {
+
+			Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
+				@Override
+				public void run(final ProgressIndicator indicator) {
+
+					try {
+						setStatusMessageUIThread(project, "Starting build on plan: " + build.getBuildKey());
+						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+								executeBuild(build.getServer(), build.getBuildKey());
+						setStatusMessageUIThread(project, "Build executed on plan: " + build.getBuildKey());
+					} catch (ServerPasswordNotProvidedException e) {
+						setStatusMessageUIThread(project, "Build not executed: Password not provided for server");
+					} catch (RemoteApiException e) {
+						setStatusMessageUIThread(project, "Build not executed: " + e.getMessage());
+					}
+				}
+			};
+
+			ProgressManager.getInstance().run(executeTask);
+		}
+	}
+
+	protected void openBuildInBrowser(final AnActionEvent e) {
+		final BambooBuildAdapterIdea build = getBuild(e);
+
+		if (build != null) {
+			BrowserUtil.launchBrowser(build.getBuildResultUrl());
+		}
+	}
+}
