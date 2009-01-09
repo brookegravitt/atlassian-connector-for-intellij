@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
@@ -77,12 +78,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		try {
 			newReviews = reviewListModelBuilder.getReviewsFromServer(this, updateReason, requestId);
-
-			for (ReviewNotificationBean bean : newReviews.values()) {
-				if (bean.getException() != null) {
-					notifyReviewListUpdateError(new UpdateContext(updateReason, null, null), bean.getException());
-				}
-			}
 
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
@@ -277,6 +272,14 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				crucibleFilterIterator.remove();
 			}
 		}
+
+		for (ReviewNotificationBean bean : updatedReviews.values()) {
+			if (bean.getException() != null) {
+				notifications.add(new NewExceptionNotification(bean.getException(), bean.getServer()));
+				notifyReviewListUpdateError(new UpdateContext(updateReason, null, notifications), bean.getException());
+			}
+		}
+
 		return notifications;
 	}
 
