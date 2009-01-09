@@ -324,4 +324,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public BuildGroupBy getGroupBy() {
 		return groupBy;
 	}
+
+	public BambooBuildAdapterIdea getSelectedBuild() {
+		return buildTree.getSelectedBuild();
+	}
 }

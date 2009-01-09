@@ -397,7 +397,7 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 			<reference id="ThePlugin.Bamboo.ShowStackTrace"/>
 			<reference id="ThePlugin.Bamboo.ShowChanges"/>
 			<separator/>
-			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<!--<reference id="ThePlugin.Bamboo.RunBuild"/>-->
 			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
 		</group>
