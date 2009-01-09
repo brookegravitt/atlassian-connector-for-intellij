@@ -21,7 +21,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	private ReviewAdapter selectedReview;
-	private ReviewAdapter activeReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
 
 	private AtomicLong epoch = new AtomicLong(0);
@@ -174,14 +173,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return reviews.get(PredefinedFilter.OpenInIde);
-	}
-
-	public synchronized ReviewAdapter getActiveReview() {
-		return activeReview;
-	}
-
-	public synchronized void setActiveReview(ReviewAdapter review) {
-		activeReview = review;
 	}
 
 	public synchronized ReviewAdapter getSelectedReview() {
