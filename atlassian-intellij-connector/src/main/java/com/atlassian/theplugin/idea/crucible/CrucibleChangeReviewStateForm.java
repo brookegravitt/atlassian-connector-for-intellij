@@ -98,8 +98,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				getOKAction().putValue(javax.swing.Action.NAME, "Abandon Review");
 				break;
 			case SUMMARIZE:
-				setTitle("Summarize Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Summarize Review");
+				setTitle("Summarize and Close Review");
+				getOKAction().putValue(javax.swing.Action.NAME, "Summarize and Close Review");
 				break;
 			case REOPEN:
 				setTitle("Reopen Review");
@@ -118,6 +118,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				setTitle("Uncomplete Review");
 				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete Review");
 				break;
+			default:
+				break;
 		}
 
 	}
@@ -130,9 +132,9 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			@Override
 			public void run(final ProgressIndicator indicator) {
 				try {
-					review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(review.getServer(), review.getPermId()),
-							review.getServer()));
-//					reviewInfo = crucibleServerFacade.getReview(review.getServer(), review.getPermId());
+					review.fillReview(
+							new ReviewAdapter(crucibleServerFacade.getReview(
+									review.getServer(), review.getPermId()), review.getServer()));
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
@@ -142,17 +144,12 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
-//				if (reviewInfo == null) {
-//					Messages.showErrorDialog(project, "Cannot fetch review data from the server", "Error");
-//				} else {
-//					final ReviewAdapter finalReviewInfo = new ReviewAdapter(reviewInfo, review.getServer());
 				updateReviewInfo(review);
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						show();
 					}
 				});
-//				}
 			}
 		};
 
@@ -161,8 +158,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	public void updateReviewInfo(final ReviewAdapter reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
-		if (Action.CLOSE.equals(action) || !"".equals(reviewInfo.getSummary())) {
-			boolean isEditable = Action.CLOSE.equals(action);
+		if (Action.CLOSE.equals(action) || Action.SUMMARIZE.equals(action) || !"".equals(reviewInfo.getSummary())) {
+			boolean isEditable = Action.CLOSE.equals(action) || Action.SUMMARIZE.equals(action);
 			descriptionPanel = new DescriptionPanel(review, isEditable);
 			summaryPanel.add(descriptionPanel, BorderLayout.CENTER);
 		} else {
@@ -185,49 +182,73 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
-		try {
-			switch (action) {
-				case APPROVE:
-					crucibleServerFacade.approveReview(review.getServer(), review.getPermId());
-					break;
-				case SUBMIT:
-					crucibleServerFacade.submitReview(review.getServer(), review.getPermId());
-					break;
-				case ABANDON:
-					crucibleServerFacade.abandonReview(review.getServer(), review.getPermId());
-					break;
-				case SUMMARIZE:
-					crucibleServerFacade.summarizeReview(review.getServer(), review.getPermId());
-					break;
-				case CLOSE:
-					crucibleServerFacade.closeReview(review.getServer(), review.getPermId(), descriptionPanel.getText());
-					break;
-				case REOPEN:
-					crucibleServerFacade.reopenReview(review.getServer(), review.getPermId());
-					break;
-				case RECOVER:
-					crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
-					break;
-				case COMPLETE:
-					if (this.publishDraftsCheckBox.isSelected()) {
-						crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
-					}
-					crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
-					break;
-				case UNCOMPLETE:
-					crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), false);
-					break;
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					runTransition(descriptionPanel != null ? descriptionPanel.getText() : null);
+				} catch (RemoteApiException e) {
+					showErrorMessage(e.getMessage());
+				} catch (ServerPasswordNotProvidedException e) {
+					showErrorMessage(e.getMessage());
+				}
 			}
-			IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
-		} catch (RemoteApiException e) {
-			showMessageDialog(e.getMessage(),
-					"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
-		} catch (ServerPasswordNotProvidedException e) {
-			showMessageDialog(e.getMessage(), "Error changing review state: " + review.getServer().getUrl(),
-					Messages.getErrorIcon());
-		}
+		}).start();
 
 		super.doOKAction();
+	}
+
+	private void runTransition(String description) throws ServerPasswordNotProvidedException, RemoteApiException {
+		if (description == null) {
+			description = "";
+		}
+		switch (action) {
+			case APPROVE:
+				crucibleServerFacade.approveReview(review.getServer(), review.getPermId());
+				break;
+			case SUBMIT:
+				crucibleServerFacade.submitReview(review.getServer(), review.getPermId());
+				break;
+			case ABANDON:
+				crucibleServerFacade.abandonReview(review.getServer(), review.getPermId());
+				break;
+			case SUMMARIZE:
+				crucibleServerFacade.summarizeReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.closeReview(review.getServer(), review.getPermId(), description);
+				break;
+			case CLOSE:
+				crucibleServerFacade.closeReview(review.getServer(), review.getPermId(), description);
+				break;
+			case REOPEN:
+				crucibleServerFacade.reopenReview(review.getServer(), review.getPermId());
+				break;
+			case RECOVER:
+				crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
+				break;
+			case COMPLETE:
+				if (CrucibleChangeReviewStateForm.this.publishDraftsCheckBox.isSelected()) {
+					crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
+				}
+				crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
+				break;
+			case UNCOMPLETE:
+				crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), false);
+				break;
+		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				IdeaHelper.getAppComponent().rescheduleStatusCheckers(true);
+			}
+		});
+	}
+
+	private void showErrorMessage(final String message) {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				showMessageDialog(message,
+						"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
+			}
+		});
+
 	}
 
 	private void createUIComponents() {

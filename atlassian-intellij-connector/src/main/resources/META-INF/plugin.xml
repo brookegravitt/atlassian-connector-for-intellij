@@ -762,15 +762,15 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 		<action id="ThePlugin.Reviews.SubmitReview"
 				class="com.atlassian.theplugin.idea.action.reviews.SubmitReviewAction"
 				text="Submit Review" icon="/actions/exit.png"/>
-		<action id="ThePlugin.Reviews.CloseReview"
-				class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction"
-				text="Close Review" icon="/actions/moveDown.png"/>
+		<!--<action id="ThePlugin.Reviews.CloseReview"-->
+				<!--class="com.atlassian.theplugin.idea.action.reviews.CloseReviewAction"-->
+				<!--text="Close Review" icon="/actions/moveDown.png"/>-->
 		<action id="ThePlugin.Reviews.ReopenReview"
 				class="com.atlassian.theplugin.idea.action.reviews.ReopenReviewAction"
 				text="Reopen Review" icon="/actions/rollback.png"/>
 		<action id="ThePlugin.Reviews.SummarizeReview"
 				class="com.atlassian.theplugin.idea.action.reviews.SummarizeReviewAction"
-				text="Summarize Review" icon="/actions/er-state.png"/>
+				text="Summarize and Close Review" icon="/actions/er-state.png"/>
 		<action id="ThePlugin.Reviews.AbandonReview"
 				class="com.atlassian.theplugin.idea.action.reviews.AbandonReviewAction"
 				text="Abandon Review" icon="/actions/gc.png"/>
@@ -810,7 +810,7 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 			<separator/>
 			<reference id="ThePlugin.Reviews.ApproveReview"/>
 			<reference id="ThePlugin.Reviews.SubmitReview"/>
-			<reference id="ThePlugin.Reviews.CloseReview"/>
+			<!--<reference id="ThePlugin.Reviews.CloseReview"/>-->
 			<reference id="ThePlugin.Reviews.ReopenReview"/>
 			<reference id="ThePlugin.Reviews.SummarizeReview"/>
 			<reference id="ThePlugin.Reviews.AbandonReview"/>
@@ -828,7 +828,7 @@ openbui		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugi
 			<separator/>
 			<reference id="ThePlugin.Reviews.ApproveReview"/>
 			<reference id="ThePlugin.Reviews.SubmitReview"/>
-			<reference id="ThePlugin.Reviews.CloseReview"/>
+			<!--<reference id="ThePlugin.Reviews.CloseReview"/>-->
 			<reference id="ThePlugin.Reviews.ReopenReview"/>
 			<reference id="ThePlugin.Reviews.SummarizeReview"/>
 			<reference id="ThePlugin.Reviews.AbandonReview"/>
