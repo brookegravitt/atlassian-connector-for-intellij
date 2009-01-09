@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.bamboo.BuildDetailsInfo;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
@@ -155,7 +154,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		buildTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && buildDetailsInfo != null) {
 					openBuild(buildDetailsInfo);
 				}
@@ -166,7 +165,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && buildDetailsInfo != null) {
 					openBuild(buildDetailsInfo);
 				}
@@ -178,7 +177,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				TreePath selPath = buildTree.getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
 					buildTree.setSelectionPath(selPath);
-					final BuildDetailsInfo buildDetailsInfo = buildTree.getSelectedBuild();
+					final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 					if (buildDetailsInfo != null) {
 						launchContextMenu(e);
 					}
@@ -200,7 +199,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 //		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 	}
 
-	private void openBuild(final BuildDetailsInfo buildDetailsInfo) {
+	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
 
 	}
 
