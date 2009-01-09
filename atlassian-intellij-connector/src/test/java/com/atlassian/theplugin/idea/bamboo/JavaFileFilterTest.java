@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import junit.framework.TestCase;
 
 import java.util.regex.Matcher;
@@ -27,63 +28,63 @@ import java.util.regex.Matcher;
 public class JavaFileFilterTest extends TestCase {
 
     public void testApplyFilterNoRowColumn() {
-		Matcher match = BambooBuildToolWindowOld.JavaFileFilter.findMatchings(
+		Matcher match = BuildLogPanel.JavaFileFilter.findMatchings(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com" +
 				"/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java blablabla");
 		assertTrue(match.find());
 		assertEquals(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java",
-				match.group(BambooBuildToolWindowOld.JavaFileFilter.FULLPATH_GROUP));
-		assertNull(match.group(BambooBuildToolWindowOld.JavaFileFilter.COLUMN_GROUP));
-		assertNull(match.group(BambooBuildToolWindowOld.JavaFileFilter.ROW_GROUP));
+				match.group(BuildLogPanel.JavaFileFilter.FULLPATH_GROUP));
+		assertNull(match.group(BuildLogPanel.JavaFileFilter.COLUMN_GROUP));
+		assertNull(match.group(BuildLogPanel.JavaFileFilter.ROW_GROUP));
 	}
 
 	public void testApplyFilterRowOnly() {
-		Matcher match = BambooBuildToolWindowOld.JavaFileFilter.findMatchings(
+		Matcher match = BuildLogPanel.JavaFileFilter.findMatchings(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com"
 				+ "/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java:456x blablabla");
 		assertTrue(match.find());
 		assertEquals(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java",
-				match.group(BambooBuildToolWindowOld.JavaFileFilter.FULLPATH_GROUP));
-		assertNull(match.group(BambooBuildToolWindowOld.JavaFileFilter.COLUMN_GROUP));
-		assertEquals("456", match.group(BambooBuildToolWindowOld.JavaFileFilter.ROW_GROUP));
+				match.group(BuildLogPanel.JavaFileFilter.FULLPATH_GROUP));
+		assertNull(match.group(BuildLogPanel.JavaFileFilter.COLUMN_GROUP));
+		assertEquals("456", match.group(BuildLogPanel.JavaFileFilter.ROW_GROUP));
 	}
 
 	public void testApplyFilterRowAndColumn() {
-		Matcher match = BambooBuildToolWindowOld.JavaFileFilter.findMatchings(
+		Matcher match = BuildLogPanel.JavaFileFilter.findMatchings(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com"
 				+ "/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java:456:12x blablabla");
 		assertTrue(match.find());
 		assertEquals(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java",
-				match.group(BambooBuildToolWindowOld.JavaFileFilter.FULLPATH_GROUP));
-		assertEquals("12", match.group(BambooBuildToolWindowOld.JavaFileFilter.COLUMN_GROUP));
-		assertEquals("456", match.group(BambooBuildToolWindowOld.JavaFileFilter.ROW_GROUP));
+				match.group(BuildLogPanel.JavaFileFilter.FULLPATH_GROUP));
+		assertEquals("12", match.group(BuildLogPanel.JavaFileFilter.COLUMN_GROUP));
+		assertEquals("456", match.group(BuildLogPanel.JavaFileFilter.ROW_GROUP));
 	}
 
 	public void testApplyFilterRowAndColumn2() {
-		Matcher match = BambooBuildToolWindowOld.JavaFileFilter.findMatchings(
+		Matcher match = BuildLogPanel.JavaFileFilter.findMatchings(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com"
 				+ "/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java:[456,13] blablabla");
 		assertTrue(match.find());
 		assertEquals(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java",
-				match.group(BambooBuildToolWindowOld.JavaFileFilter.FULLPATH_GROUP));
-		assertEquals("13", match.group(BambooBuildToolWindowOld.JavaFileFilter.COLUMN_GROUP));
-		assertEquals("456", match.group(BambooBuildToolWindowOld.JavaFileFilter.ROW_GROUP));
+				match.group(BuildLogPanel.JavaFileFilter.FULLPATH_GROUP));
+		assertEquals("13", match.group(BuildLogPanel.JavaFileFilter.COLUMN_GROUP));
+		assertEquals("456", match.group(BuildLogPanel.JavaFileFilter.ROW_GROUP));
 	}
 
 	public void testApplyFilterMissingColon() {
-		Matcher match = BambooBuildToolWindowOld.JavaFileFilter.findMatchings(
+		Matcher match = BuildLogPanel.JavaFileFilter.findMatchings(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com"
 				+ "/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java[456,13] blablabla");
 		assertTrue(match.find());
 		assertEquals(
 				"/fdasf/abc/ddd /lab/pazu/idea/src/test/java/com/atlassian/theplugin/idea/bamboo/JavaFileFilterTest.java",
-				match.group(BambooBuildToolWindowOld.JavaFileFilter.FULLPATH_GROUP));
-		assertNull(match.group(BambooBuildToolWindowOld.JavaFileFilter.COLUMN_GROUP));
-		assertNull(match.group(BambooBuildToolWindowOld.JavaFileFilter.ROW_GROUP));
+				match.group(BuildLogPanel.JavaFileFilter.FULLPATH_GROUP));
+		assertNull(match.group(BuildLogPanel.JavaFileFilter.COLUMN_GROUP));
+		assertNull(match.group(BuildLogPanel.JavaFileFilter.ROW_GROUP));
 	}
 
 }
