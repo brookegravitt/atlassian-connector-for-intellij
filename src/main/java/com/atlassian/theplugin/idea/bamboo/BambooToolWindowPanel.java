@@ -133,8 +133,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		});
 
 		// restore GroupBy setting
-		if (bambooConfiguration != null && bambooConfiguration.getView() != null &&
-				bambooConfiguration.getView().getGroupBy() != null) {
+		if (bambooConfiguration != null && bambooConfiguration.getView() != null
+				&& bambooConfiguration.getView().getGroupBy() != null) {
 			groupBy = bambooConfiguration.getView().getGroupBy();
 		}
 
