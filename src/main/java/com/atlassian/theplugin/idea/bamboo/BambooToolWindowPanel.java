@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
@@ -200,7 +201,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
-
+		IdeaHelper.getBuildToolWindow(project).showBuild(getSelectedBuild());
 	}
 
 
