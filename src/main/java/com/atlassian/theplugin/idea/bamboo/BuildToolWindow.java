@@ -86,8 +86,10 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	}
 
 	public void showBuild(BambooBuildAdapterIdea build) {
-	   	showToolWindow(project, new BuildContentParameters(build),
+		if (build != null) {
+		   showToolWindow(project, new BuildContentParameters(build),
 				   TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_ICON);
+		}
 	}
 
 	protected String getContentKey(ContentParameters params) {
