@@ -294,7 +294,7 @@
 		<action id="ThePlugin.Build.Close"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CloseBuildAction"
 				text="Close"
-				description="Close build panel" icon="/actions/cross.png"/>
+				description="Close build panel" icon="/actions/cancel.png"/>
 
 		<action id="ThePlugin.Bamboo.Changes.GoToSource"
 				class="com.atlassian.theplugin.idea.action.bamboo.changes.GoToSourceAction" text="Jump to Source"
@@ -676,7 +676,7 @@
 		<action id="ThePlugin.JiraIssues.EditorClose"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorCloseAction"
 				text="Close Issue View"
-				icon="/actions/cross.png"/>
+				icon="/actions/cancel.png"/>
 
 
 		<group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">

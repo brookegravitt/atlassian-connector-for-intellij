@@ -62,7 +62,10 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc2.weightx = 1.0;
 		gbc1.fill = GridBagConstraints.NONE;
 		gbc2.fill = GridBagConstraints.HORIZONTAL;
-		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
 		gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 
@@ -71,6 +74,8 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		p.add(new JLabel(build.getState().getName(), build.getState().getIcon(), SwingConstants.LEFT), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
+		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		p.add(new BoldLabel("Last Build"), gbc1);
 		p.add(new JLabel(build.getBuildNumber()), gbc2);
 		gbc1.gridy++;
@@ -89,7 +94,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		Collection<String> committers = build.getCommiters();
 		// bleeeee, ugly ugly
 		if (committers.size() > 0 && reason.toString().equals(BuildTreeNode.CODE_HAS_CHANGED)) {
-		 	reason.append(" by ");
+			reason = new StringBuilder("Code was changed by ");
 			if (committers.size() > MAX_NR_OF_COMMITTERS_TO_LIST_IN_A_DETAILED_WAY) {
 				reason.append(committers.size()).append(" people");
 			} else {
@@ -108,6 +113,12 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc2.gridy++;
 		p.add(new BoldLabel("Tests"), gbc1);
 		p.add(new JLabel(build.getTestsPassedSummary() + " failed"), gbc2);
+
+		gbc1.gridy++;
+		gbc1.gridwidth = 2;
+		gbc1.weighty = 1.0;
+		gbc1.fill = GridBagConstraints.VERTICAL;
+		p.add(new JPanel(), gbc1);
 
 		return p;
 	}
