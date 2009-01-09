@@ -25,7 +25,7 @@ public class UpdateContext {
 	private final UpdateReason updateReason;
 
 	private final ReviewAdapter reviewAdapter;
-	private ReviewAdapter oldReviewAdapter;
+
 	private final List<CrucibleNotification> notifications;
 
 	public UpdateContext(final UpdateReason updateReason, final ReviewAdapter reviewAdapter,
@@ -34,16 +34,6 @@ public class UpdateContext {
 		this.reviewAdapter = reviewAdapter;
 		this.notifications = notifications;
 	}
-
-
-	public ReviewAdapter getOldReviewAdapter() {
-		return oldReviewAdapter;
-	}
-
-	public void setOldReviewAdapter(ReviewAdapter oldReviewAdapter) {
-		this.oldReviewAdapter = oldReviewAdapter;
-	}
-
 
 	public UpdateReason getUpdateReason() {
 		return updateReason;

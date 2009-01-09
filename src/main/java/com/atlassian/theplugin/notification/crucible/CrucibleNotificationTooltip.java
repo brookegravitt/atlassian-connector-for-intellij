@@ -17,8 +17,10 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -32,16 +34,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CrucibleNotificationTooltip implements CrucibleNotificationListener {
-	private final CrucibleStatusIcon display;
 	private static final Color BACKGROUND_COLOR = new Color(255, 255, 200);
-	private Project project;
+
+	private final CrucibleStatusIcon display;
+	private final Project project;
 	private final PluginToolWindow pluginToolWindow;
 
-	private boolean exceptionRaised;
+	private final Map<Server, NewExceptionNotification> exceptions = new HashMap<Server, NewExceptionNotification>();
 
-	public CrucibleNotificationTooltip(CrucibleStatusIcon display, Project project,
+	public CrucibleNotificationTooltip(@NotNull final CrucibleStatusIcon display, @NotNull final Project project,
 			@NotNull final PluginToolWindow pluginToolWindow) {
 		this.display = display;
 		this.project = project;
@@ -51,20 +56,34 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 
 	//private List<CrucibleNotification>
 	public void updateNotifications(java.util.List<CrucibleNotification> notifications) {
-		exceptionRaised = false;
+		boolean exceptionRaised = false;
 		if (!notifications.isEmpty()) {
 			StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 
 			int newExceptionCount = 0;
+			int exceptionCount = 0;
 			StringBuilder nsb = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
 				if (notification.getType() == CrucibleNotificationType.EXCEPTION_RAISED) {
-					newExceptionCount++;
-					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
-							.append(notification.getItemUrl()).append("\">")
-							.append("").append("</a></td><td>").append(notification.getPresentationMessage())
-							.append("</td></tr>");
-					exceptionRaised = true;
+					exceptionCount++;
+					NewExceptionNotification newNotification = (NewExceptionNotification) notification;
+					NewExceptionNotification oldNotification = exceptions.get(newNotification.getServer());
+					if (oldNotification == null
+							|| !newNotification.equals(oldNotification)) {
+						newExceptionCount++;
+						nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
+								.append(notification.getItemUrl()).append("\">")
+								.append("").append("</a></td><td>").append(notification.getPresentationMessage())
+								.append("</td></tr>");
+						exceptionRaised = true;
+					}
+				}
+			}
+			exceptions.clear();
+			for (CrucibleNotification notification : notifications) {
+				if (notification.getType() == CrucibleNotificationType.EXCEPTION_RAISED) {
+					NewExceptionNotification newNotification = (NewExceptionNotification) notification;
+					exceptions.put(newNotification.getServer(), newNotification);
 				}
 			}
 
@@ -107,7 +126,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			int changesCount = notifications.size() - newReviewCount - newExceptionCount - notVisibleReviewCount;
+			int changesCount = notifications.size() - newReviewCount - exceptionCount - notVisibleReviewCount;
 			if (changesCount > 0) {
 				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
 						.append("<td colspan=2><b>")
@@ -132,7 +151,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 
 			sb.append("</table>");
 			if (project != null) {
-				if (notifications.size() - notVisibleReviewCount > 0) {
+				if (notifications.size() - notVisibleReviewCount - (exceptionCount - newExceptionCount) > 0) {
 					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
 
 					JEditorPane content = new JEditorPane();

@@ -63,7 +63,7 @@ public class CrucibleQueryExecutor {
 								reviews.put(filter, predefinedFiterNofificationbean);
 							}
 
-							ReviewNotificationBean predefinedFiterNofificationbean = reviews.get(filter);
+							ReviewNotificationBean predefinedFiterNotificationBean = reviews.get(filter);
 
 							// get reviews for filter from the server
 							try {
@@ -81,22 +81,25 @@ public class CrucibleQueryExecutor {
 									reviewData.add(reviewAdapter);
 								}
 
-								predefinedFiterNofificationbean.getReviews().addAll(reviewData);
+								predefinedFiterNotificationBean.getReviews().addAll(reviewData);
 
 							} catch (ServerPasswordNotProvidedException exception) {
 								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 										ModalityState.defaultModalityState());
-								predefinedFiterNofificationbean.setException(exception);
+								predefinedFiterNotificationBean.setException(exception);
+								predefinedFiterNotificationBean.setServer(server);
 								break;
 							} catch (RemoteApiLoginFailedException exception) {
 								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 										ModalityState.defaultModalityState());
-								predefinedFiterNofificationbean.setException(exception);
+								predefinedFiterNotificationBean.setException(exception);
+								predefinedFiterNotificationBean.setServer(server);
 								break;
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 										+ " server", e);
-								predefinedFiterNofificationbean.setException(e);
+								predefinedFiterNotificationBean.setException(e);
+								predefinedFiterNotificationBean.setServer(server);
 								break;
 							}
 						}
@@ -139,10 +142,12 @@ public class CrucibleQueryExecutor {
 									new MissingPasswordHandler(crucibleServerFacade, cfgManager, project),
 									ModalityState.defaultModalityState());
 							customFilterNotificationBean.setException(exception);
+							customFilterNotificationBean.setServer(server);
 						} catch (RemoteApiException e) {
 							PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 									+ " server", e);
 							customFilterNotificationBean.setException(e);
+							customFilterNotificationBean.setServer(server);
 						}
 					}
 				}
@@ -174,14 +179,17 @@ public class CrucibleQueryExecutor {
 					ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 							ModalityState.defaultModalityState());
 					reviewNotificationBean.setException(exception);
+					reviewNotificationBean.setServer(review.getServer());
 				} catch (RemoteApiLoginFailedException exception) {
 					ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
 							ModalityState.defaultModalityState());
 					reviewNotificationBean.setException(exception);
+					reviewNotificationBean.setServer(review.getServer());
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().info("Error getting Crucible reviews for " + review.getServer().getName()
 							+ " server", e);
 					reviewNotificationBean.setException(e);
+					reviewNotificationBean.setServer(review.getServer());
 				}
 			}
 		}
