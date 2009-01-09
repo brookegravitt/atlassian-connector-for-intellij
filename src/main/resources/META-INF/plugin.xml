@@ -392,14 +392,14 @@
 			<reference id="ThePlugin.ShowSettings"/>
 			<reference id="ThePlugin.HelpBamboo"/>
 			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
-			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<!--<reference id="ThePlugin.Bamboo.OpenBuild"/>-->
 			<separator/>
 			<reference id="ThePlugin.Bamboo.ShowStackTrace"/>
 			<reference id="ThePlugin.Bamboo.ShowChanges"/>
 			<separator/>
 			<!--<reference id="ThePlugin.Bamboo.RunBuild"/>-->
-			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
-			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+			<!--<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>-->
+			<!--<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>-->
 		</group>
 
 		<group id="ThePlugin.BuildToolWindowToolBar" popup="false">
