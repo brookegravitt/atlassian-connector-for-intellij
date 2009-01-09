@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -95,15 +97,13 @@ public abstract class SingleTabToolWindow {
 		toolWindow.getContentManager().addContentManagerListener(new ContentManagerAdapter() {
 			public void contentRemoved(ContentManagerEvent event) {
 				super.contentRemoved(event);
-				final String titleToRemove = getExistingToolWindowTitle(getExistingToolWindowTitle(baseTitle));
+				final String titleToRemove = getExistingToolWindowTitle(baseTitle);
 
 				contentPanel.unregister();
 				contentPanel = null;
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						twm.unregisterToolWindow(titleToRemove);
-						createNewToolWindow(getExistingToolWindowTitle(baseTitle), icon, null);
-
 					}
 				});
 			}
@@ -143,9 +143,19 @@ public abstract class SingleTabToolWindow {
 	private String getExistingToolWindowTitle(String baseTitle) {
 		String title = baseTitle;
 		if (contentPanel != null) {
-			title = baseTitle + ": " + contentPanel.getKey();
+			title = baseTitle + " " + contentPanel.getKey();
 		}
 		return title;
+	}
+
+	protected void closeToolWindow(String title, AnActionEvent e) {
+		Project project = IdeaHelper.getCurrentProject(e);
+
+		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
+		ToolWindow tw = twm.getToolWindow(getExistingToolWindowTitle(title));
+		if (tw != null) {
+			tw.getContentManager().removeAllContents(true);
+		}
 	}
 
 }
