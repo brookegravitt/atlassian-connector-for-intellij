@@ -102,13 +102,7 @@ public class CrucibleReviewNotifier implements CrucibleStatusListener, CrucibleR
 		firstRun = false;
 	}
 
-	public void reviewChangedWithoutFiles(UpdateContext updateContext) {
-	}
-
 	public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
-//		if (canAddNotifiaction(updateContext)) {
-//			// error notifications ???
-//		}
 	}
 
 	private boolean canAddNotifiaction(UpdateContext updateContext) {
