@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.action.bamboo.onebuild;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.action.bamboo.AbstractBuildListAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -9,8 +8,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * Date: Jan 7, 2009
  * Time: 2:23:11 PM
  */
-public class ViewBuildAction extends AnAction {
+public class ViewBuildAction extends AbstractBuildListAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getBuildToolWindow(e).viewBuildInBrowser(e.getPlace());
+		openBuildInBrowser(e);
 	}
 }

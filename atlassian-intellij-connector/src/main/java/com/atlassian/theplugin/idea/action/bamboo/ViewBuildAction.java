@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class ViewBuildAction extends AbstractBambooBuildAction {
+public class ViewBuildAction extends AbstractBuildListAction {
+
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getBambooToolWindowPanel(event).viewBuild();
+		openBuildInBrowser(event);
 	}
 }
