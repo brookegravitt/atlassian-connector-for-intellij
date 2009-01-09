@@ -29,6 +29,17 @@ import com.intellij.openapi.project.Project;
 public abstract class AbstractBuildListAction extends AbstractBuildAction {
 
 	@Override
+	public void update(AnActionEvent event) {
+		super.update(event);
+		BambooBuildAdapterIdea build = getBuild(event);
+		if (build != null && build.getEnabled() && build.getBuildKey() != null && build.getBuildNumber() != null) {
+			event.getPresentation().setEnabled(true);
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
+	}
+
+	@Override
 	protected BambooBuildAdapterIdea getBuild(final AnActionEvent event) {
 		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(event, BambooToolWindowPanel.class);
 		if (panel != null) {
