@@ -91,11 +91,6 @@ public abstract class CrucibleReviewListModelListenerHolder
 		}
 	}
 
-	/*
-	 public void removeAll() {
-		 parent.removeAll();
-	 }
- */
 	public List<CrucibleNotification> updateReviews(final long epoch,
 			final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
 			final UpdateReason updateReason) {
