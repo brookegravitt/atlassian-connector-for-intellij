@@ -28,7 +28,10 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SingleTabToolWindow;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -74,8 +77,8 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 	}
 
 
-	public void closeToolWindow(AnActionEvent e) {
-		super.closeToolWindow(TOOL_WINDOW_NAME_PREFIX, e);
+	public void closeToolWindow() {
+		super.closeToolWindow(TOOL_WINDOW_NAME_PREFIX);
 	}
 
 	private final class ReviewContentParameters implements SingleTabToolWindow.ContentParameters {
