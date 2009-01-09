@@ -16,8 +16,6 @@
 package com.atlassian.theplugin.idea.ui;
 
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -148,8 +146,7 @@ public abstract class SingleTabToolWindow {
 		return title;
 	}
 
-	protected void closeToolWindow(String title, AnActionEvent e) {
-		Project project = IdeaHelper.getCurrentProject(e);
+	protected void closeToolWindow(String title) {
 
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow tw = twm.getToolWindow(getExistingToolWindowTitle(title));
