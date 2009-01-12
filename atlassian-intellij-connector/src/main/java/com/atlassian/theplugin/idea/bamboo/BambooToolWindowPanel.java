@@ -30,10 +30,7 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.Util;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -188,20 +185,26 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	private void launchContextMenu(MouseEvent e) {
-//		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+		final DefaultActionGroup actionGroup = new DefaultActionGroup();
 //
-//		final ActionGroup configActionGroup = (ActionGroup) ActionManager
-//				.getInstance().getAction("ThePlugin.Reviews.ReviewPopupMenu");
-//		actionGroup.addAll(configActionGroup);
-//
-//		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getActionPlaceName(), actionGroup);
-//
-//		final JPopupMenu jPopupMenu = popup.getComponent();
-//		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+				.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenuNew");
+		actionGroup.addAll(configActionGroup);
+
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(getActionPlaceName(), actionGroup);
+
+		final JPopupMenu jPopupMenu = popup.getComponent();
+		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+	}
+
+	private String getActionPlaceName() {
+		return PLACE_PREFIX + project.getName();
 	}
 
 	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
-		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()) {
+		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
+				&& (buildDetailsInfo.getState() != BambooBuildAdapterIdea.BuildState.UNKNOWN
+				|| buildDetailsInfo.getBuildKey() != null)) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
 		}
 	}
