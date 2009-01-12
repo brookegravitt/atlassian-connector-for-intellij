@@ -137,7 +137,7 @@ public class PluginToolWindow {
 				final Content content = contentManager.getFactory().createContent(
 						new ToolWindowConfigPanel(project), CONFIGURE_TAB_NAME, false);
 				content.setCloseable(false);
-				addContentSorted(ideaToolWindow, content);
+				addContentSorted(content);
 			}
 		} else {
 			// servers defined, find config panel, hide config panel
@@ -159,7 +159,7 @@ public class PluginToolWindow {
 						// show tab
 						final Content content = createContent(entry);
 						if (content != null) {
-							addContentSorted(ideaToolWindow, content);
+							addContentSorted(content);
 
 						}
 
@@ -196,7 +196,7 @@ public class PluginToolWindow {
 			if (content == null) {
 				content = createContent(component);
 				if (content != null) {
-					addContentSorted(ideaToolWindow, content);
+					addContentSorted(content);
 				}
 			}
 			if (content != null) {
@@ -244,7 +244,7 @@ public class PluginToolWindow {
 					if (content == null) {
 						content = createContent(component);
 						if (content != null) {
-							addContentSorted(ideaToolWindow, content);
+							addContentSorted(content);
 						}
 
 					} else { //tab exists so close it, hide
@@ -279,7 +279,7 @@ public class PluginToolWindow {
 		}
 	}
 
-	private void addContentSorted(ToolWindow ideaToolWindow, Content content) {
+	private void addContentSorted(Content content) {
 		ArrayList<Content> newContents = new ArrayList<Content>();
 
 		ideaToolWindow.getContentManager().addContent(content);
@@ -289,7 +289,6 @@ public class PluginToolWindow {
 		}
 
 		Collections.sort(newContents, new PanelsComparator());
-		Collections.reverse(newContents);
 
 		ideaToolWindow.getContentManager().removeAllContents(false);
 		for (Content c : newContents) {
@@ -382,16 +381,26 @@ public class PluginToolWindow {
 		public String toString() {
 			return title;
 		}
+
+		public static ToolWindowPanels valueOfTitle(final String title) {
+			for (ToolWindowPanels value : values()) {
+				if (value.getTitle().equals(title)) {
+					return value;
+				}
+			}
+
+			return null;
+		}
 	}
 
 	private class PanelsComparator implements Comparator {
 
 		public int compare(Object o, Object o1) {
-			if (o instanceof ToolWindowPanels && o1 instanceof ToolWindowPanels) {
-				ToolWindowPanels left = (ToolWindowPanels) o;
-				ToolWindowPanels right = (ToolWindowPanels) o1;
+			if (o instanceof Content && o1 instanceof Content) {
+				ToolWindowPanels left = ToolWindowPanels.valueOfTitle(((Content) o).getDisplayName());
+				ToolWindowPanels right = ToolWindowPanels.valueOfTitle(((Content) o1).getDisplayName());
 
-				return right.getTabOrder() - left.getTabOrder();
+				return left.getTabOrder() - right.getTabOrder();
 			}
 			return 0;
 		}
