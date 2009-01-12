@@ -215,10 +215,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	@Nullable
 	public Object getData(@NonNls String dataId) {
-		if (dataId.equals(Constants.REVIEW)) {
-			return reviewTree.getSelectedReview();
-		} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
-			return reviewTree.isEnabled();
+		if (reviewTree != null) {
+			if (dataId.equals(Constants.REVIEW)) {
+				return reviewTree.getSelectedReview();
+			} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
+				return reviewTree.isEnabled();
+			}
 		}
 		return null;
 	}
