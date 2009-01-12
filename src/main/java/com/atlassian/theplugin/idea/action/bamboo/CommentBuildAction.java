@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class CommentBuildAction extends AbstractBuildListAction {
@@ -28,7 +29,8 @@ public class CommentBuildAction extends AbstractBuildListAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (getBuild(event) != null && !getBuild(event).isBamboo2()) {
+		if (getBuild(event) != null && !getBuild(event).isBamboo2()
+				&& getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
 			event.getPresentation().setEnabled(false);
 		}
 	}
