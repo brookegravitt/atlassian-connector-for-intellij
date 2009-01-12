@@ -36,8 +36,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.text.DateFormat;
+import java.util.List;
 
 /**
  * User: jgorycki
@@ -105,6 +105,47 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		}
 	}
 
+	private static final class ChangeSetRendererPanel extends JPanel {
+
+		private SelectableLabel comment = new SelectableLabel(true, true, "NOTHING YET", ROW_HEIGHT, false, false);
+		private SelectableLabel author = new SelectableLabel(true, true, "NOTHING HERE ALSO", ROW_HEIGHT, true, false);
+		private SelectableLabel date = new SelectableLabel(true, true, "NEITHER HERE", ROW_HEIGHT, false, false);
+
+		private ChangeSetRendererPanel() {
+			setLayout(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.weightx = 1.0;
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			add(comment, gbc);
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.anchor = GridBagConstraints.LINE_END;
+			gbc.fill = GridBagConstraints.NONE;
+			author.setHorizontalAlignment(SwingConstants.RIGHT);
+			add(author, gbc);
+			gbc.gridx++;
+			add(date, gbc);
+		}
+
+		void setChangeSet(BambooChangeSet cs) {
+			comment.setText(" " + cs.getComment());
+			author.setText(cs.getAuthor());
+			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+			String commitDate = dfo.format(cs.getCommitDate());
+			date.setText(", " + commitDate + " ");
+		}
+
+		void setSelected(boolean selected) {
+			comment.setSelected(selected);
+			author.setSelected(selected);
+			date.setSelected(selected);
+		}
+	}
+
+	private static final ChangeSetRendererPanel CHANGEST_RENDERER_PANEL = new ChangeSetRendererPanel();
+
 	private void fillContent(List<BambooChangeSet> commits) {
 		if (commits == null || commits.size() == 0) {
 			add(new JLabel("No changes in " + build.getBuildKey() + "-" + build.getBuildNumber()));
@@ -118,7 +159,11 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		JPanel listPanel = new JPanel();
 		listPanel.setLayout(new BorderLayout());
 
-		final JList changesList = new JList();
+		final JList changesList = new JList() {
+			public boolean getScrollableTracksViewportWidth() {
+				return true;
+			}
+		};
 		changesList.setModel(new ChangeSetListModel(commits));
 		changesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		changesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -132,32 +177,15 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		changesList.setCellRenderer(new ListCellRenderer() {
 			public Component getListCellRendererComponent(JList list, Object value, int index,
 														  boolean isSelected, boolean cellHasFocus) {
-				BambooChangeSet cs = (BambooChangeSet) value;
-				JPanel p = new JPanel();
-				p.setLayout(new GridBagLayout());
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.weightx = 1.0;
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				p.add(new SelectableLabel(isSelected, true, " " + cs.getComment(), ROW_HEIGHT), gbc);
-				gbc.gridx++;
-				gbc.weightx = 0.0;
-				gbc.anchor = GridBagConstraints.LINE_END;
-				gbc.fill = GridBagConstraints.NONE;
-				JLabel author = new SelectableLabel(isSelected, true, cs.getAuthor(), ROW_HEIGHT, true);
-				author.setHorizontalAlignment(SwingConstants.RIGHT);
-				p.add(author, gbc);
-				gbc.gridx++;
-				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				String commitDate = dfo.format(cs.getCommitDate());
-				JLabel date = new SelectableLabel(isSelected, true, ", " + commitDate + " ", ROW_HEIGHT);
-				p.add(date, gbc);
-
-				return p;
+				CHANGEST_RENDERER_PANEL.setChangeSet((BambooChangeSet) value);
+				CHANGEST_RENDERER_PANEL.setSelected(isSelected);
+				CHANGEST_RENDERER_PANEL.validate();
+				return CHANGEST_RENDERER_PANEL;
 			}
 		});
-		listPanel.add(new JScrollPane(changesList), BorderLayout.CENTER);
+		final JScrollPane scroll = new JScrollPane(changesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		listPanel.add(scroll, BorderLayout.CENTER);
 
 		split.setFirstComponent(listPanel);
 
