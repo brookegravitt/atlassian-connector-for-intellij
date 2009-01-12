@@ -671,8 +671,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			public void refreshComments() {
-				clearComments();
-				resetStackTraces();
+
 				tabs.setTitleAt(tabIndex, "Refreshing comments...");
 				final Runnable runnable = new Runnable() {
 					public void run() {
@@ -693,6 +692,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 								SwingUtilities.invokeLater(new Runnable() {
 									public void run() {
+										clearComments();
+										resetStackTraces();
 										int size = cmts.size();
 										if (size > 0) {
 											for (JIRAComment c : cmts) {
