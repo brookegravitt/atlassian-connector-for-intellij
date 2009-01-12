@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.idea.bamboo.BambooFilterType;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 
 /**
@@ -22,6 +23,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
  */
 public class BambooViewConfigurationBean {
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
+	private BambooFilterType filterType;
 
 	public BuildGroupBy getGroupBy() {
 		return groupBy;
@@ -33,5 +35,14 @@ public class BambooViewConfigurationBean {
 
 	public void copyConfiguration(final BambooViewConfigurationBean view) {
 		this.groupBy = view.getGroupBy();
+		this.filterType = view.getFilterType();
+	}
+
+	public BambooFilterType getFilterType() {
+	return filterType;
+}
+
+	public void setFilterType(final BambooFilterType filterType) {
+		this.filterType = filterType;
 	}
 }
