@@ -39,6 +39,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @author Jacek Jaroczynski
@@ -83,10 +85,10 @@ public class PluginToolWindow {
 	}
 
 	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
-			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
-			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-			@NotNull BambooTableToolWindowPanel bambooTableToolWindowPanel) {
+							@NotNull BambooToolWindowPanel bambooToolWindowPanel,
+							@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
+							@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
+							@NotNull BambooTableToolWindowPanel bambooTableToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
@@ -135,7 +137,7 @@ public class PluginToolWindow {
 				final Content content = contentManager.getFactory().createContent(
 						new ToolWindowConfigPanel(project), CONFIGURE_TAB_NAME, false);
 				content.setCloseable(false);
-				ideaToolWindow.getContentManager().addContent(content);
+				addContentSorted(ideaToolWindow, content);
 			}
 		} else {
 			// servers defined, find config panel, hide config panel
@@ -157,7 +159,8 @@ public class PluginToolWindow {
 						// show tab
 						final Content content = createContent(entry);
 						if (content != null) {
-							ideaToolWindow.getContentManager().addContent(content);
+							addContentSorted(ideaToolWindow, content);
+
 						}
 
 					}
@@ -193,7 +196,7 @@ public class PluginToolWindow {
 			if (content == null) {
 				content = createContent(component);
 				if (content != null) {
-					contentManager.addContent(content);
+					addContentSorted(ideaToolWindow, content);
 				}
 			}
 			if (content != null) {
@@ -205,7 +208,6 @@ public class PluginToolWindow {
 	/**
 	 * Methods opens the ToolWindow and focuses on a particular component.
 	 * If component does not exists it is not created and focused
-	 *
 	 */
 	public void focusPanelIfExists(String tabName) {
 
@@ -242,7 +244,7 @@ public class PluginToolWindow {
 					if (content == null) {
 						content = createContent(component);
 						if (content != null) {
-							ideaToolWindow.getContentManager().addContent(content);
+							addContentSorted(ideaToolWindow, content);
 						}
 
 					} else { //tab exists so close it, hide
@@ -277,11 +279,29 @@ public class PluginToolWindow {
 		}
 	}
 
+	private void addContentSorted(ToolWindow ideaToolWindow, Content content) {
+		ArrayList<Content> newContents = new ArrayList<Content>();
+
+		ideaToolWindow.getContentManager().addContent(content);
+
+		for (Content c : ideaToolWindow.getContentManager().getContents()) {
+			newContents.add(c);
+		}
+
+		Collections.sort(newContents, new PanelsComparator());
+		Collections.reverse(newContents);
+
+		ideaToolWindow.getContentManager().removeAllContents(false);
+		for (Content c : newContents) {
+			ideaToolWindow.getContentManager().addContent(c);
+		}
+	}
+
 	@Nullable
 	private Content createContent(final ToolWindowPanels component) {
 		switch (component) {
 			case BAMBOO_OLD:
-					return createBambooContent();
+				return createBambooContent();
 			case BUILDS_WOJTEK:
 				return createBamboo2Content();
 			case CRUCIBLE:
@@ -331,26 +351,49 @@ public class PluginToolWindow {
 		return content;
 	}
 
-	
 
 	/**
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-		BAMBOO_OLD("Builds old"),
-		BUILDS_WOJTEK("Builds"),
-		CRUCIBLE("Reviews"),
-		ISSUES("Issues");
+		ISSUES("Issues", 1),
+		BUILDS_WOJTEK("Builds", 2),
+		CRUCIBLE("Reviews", 3),
+		BAMBOO_OLD("Builds old", 4);
 
 		private final String title;
 
-		ToolWindowPanels(String title) {
+		private final int tabOrder;
+
+		public String getTitle() {
+			return title;
+		}
+
+		ToolWindowPanels(String title, int tabOrder) {
 			this.title = title;
+			this.tabOrder = tabOrder;
+		}
+
+		public int getTabOrder() {
+			return tabOrder;
 		}
 
 		@Override
 		public String toString() {
 			return title;
+		}
+	}
+
+	private class PanelsComparator implements Comparator {
+
+		public int compare(Object o, Object o1) {
+			if (o instanceof ToolWindowPanels && o1 instanceof ToolWindowPanels) {
+				ToolWindowPanels left = (ToolWindowPanels) o;
+				ToolWindowPanels right = (ToolWindowPanels) o1;
+
+				return right.getTabOrder() - left.getTabOrder();
+			}
+			return 0;
 		}
 	}
 }
