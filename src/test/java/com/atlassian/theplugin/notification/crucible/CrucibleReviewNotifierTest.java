@@ -257,6 +257,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return 0;
 			}
 
+			public int getNumberOfLineComments() {
+				return 0;
+			}
+
 			public int getNumberOfComments() {
 				return 0;
 			}

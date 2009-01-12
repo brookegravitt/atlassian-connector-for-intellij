@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
@@ -30,8 +30,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextFactory;
-import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.changes.BinaryContentRevision;
+import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
@@ -160,7 +160,7 @@ public final class VcsIdeaHelper {
 				return null;
 			}
 
-	}
+		}
 		return vcvf;
 	}
 
@@ -240,13 +240,14 @@ public final class VcsIdeaHelper {
 	 * @param virtualFile  file to fetch from VCS
 	 * @param line		 line to go to
 	 * @param column	   column to go to
-	 * @param action action to execute upon sucsessful completion of the fetching 
+	 * @param action	   action to execute upon sucsessful completion of the fetching
 	 */
 	// CHECKSTYLE:OFF
-	public static void fetchAndOpenFileWithDiffs(final Project project, final String fromRevision, final String toRevision,
+	public static void fetchAndOpenFileWithDiffs(final Project project, final boolean modal, final String fromRevision,
+			final String toRevision,
 			@NotNull final CommitType commitType, @NotNull final VirtualFile virtualFile,
 			final int line, final int column, @Nullable final OpenDiffAction action) {
-	// CHECKSTYLE:ON
+		// CHECKSTYLE:ON
 
 		final String niceFileMessage;
 		switch (commitType) {
@@ -268,7 +269,7 @@ public final class VcsIdeaHelper {
 				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 		}
 
-		new FetchingTwoFilesTask(project, niceFileMessage, commitType, virtualFile, fromRevision,
+		new FetchingTwoFilesTask(project, modal, niceFileMessage, commitType, virtualFile, fromRevision,
 				toRevision, line, column, action).queue();
 	}
 
@@ -301,10 +302,11 @@ public final class VcsIdeaHelper {
 	}
 
 	// CHECKSTYLE:OFF
-	public static void openFileWithDiffs(final Project project, final String filePath, @NotNull final String fileRevision,
-										 final String toRevision, @NotNull final CommitType commitType,
-										 final int line, final int col, @Nullable final OpenDiffAction action) {
-	// CHECKSTYLE:ON
+	public static void openFileWithDiffs(final Project project, final boolean modal, final String filePath,
+			@NotNull final String fileRevision, final String toRevision,
+			@NotNull final CommitType commitType,
+			final int line, final int col, @Nullable final OpenDiffAction action) {
+		// CHECKSTYLE:ON
 
 		final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
 		if (psiFile != null) {
@@ -313,7 +315,7 @@ public final class VcsIdeaHelper {
 			if (vfl != null) {
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						fetchAndOpenFileWithDiffs(project, fileRevision, toRevision, commitType, vfl, line, col, action);
+						fetchAndOpenFileWithDiffs(project, modal, fileRevision, toRevision, commitType, vfl, line, col, action);
 					}
 				});
 				return;
@@ -364,6 +366,7 @@ public final class VcsIdeaHelper {
 		 * @param ofd description which will be passed to this action
 		 */
 		void run(OpenFileDescriptor ofd);
+
 		boolean shouldNavigate();
 	}
 
@@ -372,7 +375,7 @@ public final class VcsIdeaHelper {
 		 * Open file view based on two file revisions
 		 * Will be always invoked in UI thread
 		 *
-		 * @param displayFile descriptor of the main file to display
+		 * @param displayFile   descriptor of the main file to display
 		 * @param referenceFile reference file (e.g. "from file" in diff)
 		 */
 		void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType);
@@ -392,10 +395,11 @@ public final class VcsIdeaHelper {
 		private final int line;
 		private final int column;
 		private final OpenDiffAction action;
+		private final boolean modal;
 
-		public FetchingTwoFilesTask(final Project project, final String niceFileMessage, final CommitType commitType,
-				final VirtualFile virtualFile, final String fromRevision, final String toRevision, final int line,
-				final int column,
+		public FetchingTwoFilesTask(final Project project, final boolean modal, final String niceFileMessage,
+				final CommitType commitType, final VirtualFile virtualFile, final String fromRevision,
+				final String toRevision, final int line, final int column,
 				final OpenDiffAction action) {
 			super(project, "Fetching file" + niceFileMessage, false);
 			this.project = project;
@@ -407,13 +411,14 @@ public final class VcsIdeaHelper {
 			this.line = line;
 			this.column = column;
 			this.action = action;
+			this.modal = modal;
 			displayDescriptor = null;
 			referenceVirtualFile = null;
 		}
 
 		@Override
 		public boolean shouldStartInBackground() {
-			return false;
+			return !modal;
 		}
 
 		@Override
@@ -439,7 +444,7 @@ public final class VcsIdeaHelper {
 						break;
 				}
 				if (displayVirtualFile != null) {
-					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line, column);
+					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line - 1, column - 1);
 				} else {
 					// we cannot open such file (just for clarity as by default displayDescriptor = null)
 					displayDescriptor = null;

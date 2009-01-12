@@ -31,7 +31,11 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.bamboo.*;
+import com.atlassian.theplugin.idea.bamboo.BambooModel;
+import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
+import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.crucible.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -43,6 +47,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -270,6 +275,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					issuesToolWindowPanel.getConfigListener());
 
 			created = true;
+
+			EditorFactory.getInstance()
+					.addEditorFactoryListener(new CrucibleEditorFactoryListener(project, crucibleReviewListModel));
 
 			registerCrucibleNotifier();
 
