@@ -129,11 +129,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 		});
 
-		// restore GroupBy setting
-		if (bambooConfiguration != null && bambooConfiguration.getView() != null
-				&& bambooConfiguration.getView().getGroupBy() != null) {
-			groupBy = bambooConfiguration.getView().getGroupBy();
-		}
 
 		buildTree = new BuildTree(project, groupBy, new BuildTreeModel());
 		toolBar = createToolBar();
@@ -142,6 +137,17 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		uiSetup.initializeUI(buildTree, getRightScrollPane());
 		addBuildTreeListeners();
 		addSearchBoxListener();
+
+		// restore GroupBy and FilterBy setting
+		if (bambooConfiguration != null && bambooConfiguration.getView() != null) {
+			if (bambooConfiguration.getView().getGroupBy() != null) {
+				groupBy = bambooConfiguration.getView().getGroupBy();
+			}
+			if (bambooConfiguration.getView().getFilterType() != null) {
+				setBambooFilterType(bambooConfiguration.getView().getFilterType());
+			}
+		}
+
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 
 	}
@@ -266,6 +272,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		// by default there should be "ALL", which means null filter
 		buildTree.updateModel(bambooModel.getBuilds());
 
+		bambooConfiguration.getView().setFilterType(bambooFilterType);
 
 	}
 
