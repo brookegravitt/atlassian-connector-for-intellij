@@ -222,7 +222,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			IdeaHelper.handleMissingPassword(e);
 			return;
 		}
-//		final List<CrucibleFileInfo> files1 = files;
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
 	}
 
@@ -235,23 +234,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			EventQueue.invokeLater(new MyRunnable(review));
 		}
 	}
-
-	private void refreshView(final ReviewAdapter oldReview, final ReviewAdapter review,
-			final List<CrucibleNotification> notifications) {
-		if (crucibleReviewListModel != null && review != null) {
-			if (crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
-				this.crucibleReview = review;
-			}
-			EventQueue.invokeLater(new MyRunnable(oldReview, review, notifications));
-		}
-	}
-
-//	public void showFile(final ReviewAdapter review, final CrucibleFileInfo file) {
-//	}
-//
-//
-//	public void showDiff(final CrucibleFileInfo file) {
-//	}
 
 	private String createGeneralInfoText(final ReviewAdapter reviewItem) {
 		final StringBuilder buffer = new StringBuilder();
