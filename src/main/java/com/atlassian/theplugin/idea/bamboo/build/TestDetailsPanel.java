@@ -244,6 +244,15 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return createTestConfiguration(null);
 	}
 
+	private static JUnitConfiguration getJunitConfiguration(RunConfiguration config) {
+		try {
+			return (JUnitConfiguration) config;
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	private abstract class NonLeafNode extends AbstractTreeNode {
 		protected int totalTests;
 		protected int failedTests;
@@ -299,9 +308,13 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
 			if (configuration != null) {
-				JUnitConfiguration conf = (JUnitConfiguration) configuration;
-				conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-				conf.getPersistentData().PACKAGE_NAME = toString();
+				JUnitConfiguration conf = getJunitConfiguration(configuration);
+				if (conf != null) {
+					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+					conf.getPersistentData().PACKAGE_NAME = toString();
+				} else {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -315,9 +328,13 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		@Override
 		public boolean createTestConfiguration(RunConfiguration configuration) {
 			if (configuration != null) {
-				JUnitConfiguration conf = (JUnitConfiguration) configuration;
-				conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
-				conf.getPersistentData().PACKAGE_NAME = "";
+				JUnitConfiguration conf = getJunitConfiguration(configuration);
+				if (conf != null) {
+					conf.getPersistentData().TEST_OBJECT = JUnitConfiguration.TEST_PACKAGE;
+					conf.getPersistentData().PACKAGE_NAME = "";
+				} else {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -346,8 +363,12 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				return false;
 			}
 			if (configuration != null) {
-				JUnitConfiguration conf = (JUnitConfiguration) configuration;
-				conf.beClassConfiguration(cls);
+				JUnitConfiguration conf = getJunitConfiguration(configuration);
+				if (conf != null) {
+					conf.beClassConfiguration(cls);
+				} else {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -388,8 +409,12 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 			if (m != null) {
 				if (configuration != null) {
-					JUnitConfiguration conf = (JUnitConfiguration) configuration;
-					conf.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
+					JUnitConfiguration conf = getJunitConfiguration(configuration);
+					if (conf != null) {
+						conf.beMethodConfiguration(PsiLocation.fromPsiElement(project, m));
+					} else {
+						return false;
+					}
 				}
 				return true;
 			}
