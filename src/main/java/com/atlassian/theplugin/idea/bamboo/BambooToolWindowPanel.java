@@ -192,7 +192,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	private void launchContextMenu(MouseEvent e) {
 		final DefaultActionGroup actionGroup = new DefaultActionGroup();
-//
 		final ActionGroup configActionGroup = (ActionGroup) ActionManager
 				.getInstance().getAction("ThePlugin.Bamboo.BuildPopupMenuNew");
 		actionGroup.addAll(configActionGroup);
