@@ -20,17 +20,24 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiFile;
 
 import java.awt.*;
+import java.util.Set;
 
 public final class CommentHighlighter {
 	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
@@ -44,20 +51,28 @@ public final class CommentHighlighter {
 
 	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	private static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
+
+	private static final String VERSIONED_COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
+	public static final Key<VersionedComment> VERSIONED_COMMENT_DATA_KEY = Key.create(VERSIONED_COMMENT_DATA_KEY_NAME);
+
 	private static final Key<DocumentListener> LISTENER_KEY = Key.create("CRUCIBLE_COMMENT_DOCUMENT_LISTENER");
 
 
 	private CommentHighlighter() {
 	}
 
-	public static void highlightCommentsInEditor(final Project project, final Editor editor, ReviewAdapter review,
-			CrucibleFileInfo reviewItem) {
+	public static void highlightCommentsInEditor(final Project project,
+			final Editor editor,
+			final ReviewAdapter review,
+			final CrucibleFileInfo reviewItem,
+			final OpenFileDescriptor displayFile) {
 		if (editor != null) {
-
 			applyHighlighters(project, editor, reviewItem);
-			editor.putUserData(REVIEW_DATA_KEY, review);
-			editor.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
-			editor.putUserData(COMMENT_DATA_KEY, true);
+			Document doc = editor.getDocument();
+			VirtualFile vf = FileDocumentManager.getInstance().getFile(doc);
+			vf.putUserData(REVIEW_DATA_KEY, review);
+			vf.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
+			vf.putUserData(COMMENT_DATA_KEY, true);
 			DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
 			if (documentListener == null) {
 				documentListener = new DocumentListener() {
@@ -72,33 +87,59 @@ public final class CommentHighlighter {
 						});
 					}
 				};
-				editor.getDocument().addDocumentListener(documentListener);
-				editor.putUserData(LISTENER_KEY, documentListener);
+				doc.addDocumentListener(documentListener);
+				vf.putUserData(LISTENER_KEY, documentListener);
 			}
-
+			if (displayFile.canNavigateToSource()) {
+				displayFile.navigateIn(editor);
+			}
 		}
 	}
 
 	public static void updateCommentsInEditors(Project project, ReviewAdapter review) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
-			if (editor.getUserData(COMMENT_DATA_KEY) != null) {
-				final ReviewAdapter data = editor.getUserData(REVIEW_DATA_KEY);
-				final CrucibleFileInfo file = editor.getUserData(REVIEWITEM_DATA_KEY);
+			Document document = editor.getDocument();
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
+				final ReviewAdapter data = virtualFile.getUserData(REVIEW_DATA_KEY);
+				final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
 				if (data != null && file != null) {
 					if (data.getPermId().equals(review.getPermId())) {
 						try {
 							for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
 								if (crucibleFileInfo.equals(file)) {
 									applyHighlighters(project, editor, crucibleFileInfo);
-									editor.putUserData(REVIEW_DATA_KEY, review);
-									editor.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
-									editor.putUserData(COMMENT_DATA_KEY, true);
+									virtualFile.putUserData(REVIEW_DATA_KEY, review);
+									virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+									virtualFile.putUserData(COMMENT_DATA_KEY, true);
 								}
 							}
 						} catch (ValueNotYetInitialized valueNotYetInitialized) {
 							throw new RuntimeException(valueNotYetInitialized);
 						}
+					} else {
+						removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
 					}
+				}
+			} else {
+				try {
+					Set<CrucibleFileInfo> files = review.getFiles();
+					for (CrucibleFileInfo fileInfo : files) {
+						PsiFile f = CodeNavigationUtil
+								.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
+						if (f != null) {
+							VirtualFile virtualFile2 = FileDocumentManager.getInstance().getFile(document);
+							if (virtualFile2.equals(f.getVirtualFile())) {
+								applyHighlighters(project, editor, fileInfo);
+								virtualFile.putUserData(REVIEW_DATA_KEY, review);
+								virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
+								virtualFile.putUserData(COMMENT_DATA_KEY, true);
+							}
+							break;
+						}
+					}
+				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+					// don't do anything - should not happen, but even if happens - we don't want to break file opening
 				}
 			}
 		}
@@ -135,5 +176,12 @@ public final class CommentHighlighter {
 				markupModel.removeHighlighter(rh);
 			}
 		}
+	}
+
+	private static void removeHighlightersAndContextData(final MarkupModel markupModel, VirtualFile virtualFile) {
+		removeHighlighters(markupModel);
+		virtualFile.putUserData(REVIEW_DATA_KEY, null);
+		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
+		virtualFile.putUserData(COMMENT_DATA_KEY, null);
 	}
 }

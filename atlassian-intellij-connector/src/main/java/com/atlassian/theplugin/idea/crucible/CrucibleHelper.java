@@ -28,18 +28,19 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.impl.DocumentImpl;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.fileTypes.FileTypeManager;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 public final class CrucibleHelper {
 	static final Document EMPTY_DOCUMENT = new DocumentImpl("");
@@ -72,6 +73,7 @@ public final class CrucibleHelper {
 		}
 
 		VcsIdeaHelper.openFileWithDiffs(project
+				, true
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
 				, reviewItem.getOldFileDescriptor().getRevision()
 				, reviewItem.getFileDescriptor().getRevision()
@@ -80,42 +82,20 @@ public final class CrucibleHelper {
 				, 1
 				, new VcsIdeaHelper.OpenDiffAction() {
 
-			public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-				if (referenceFile == null) {
-					Messages.showErrorDialog(project, "Cannot fetch " + reviewItem.getOldFileDescriptor().getAbsoluteUrl()
-							+ ".\nAnnotated file cannot be displayed.", "Error");
-					return;
-				}
-				FileEditorManager fem = FileEditorManager.getInstance(project);
-				Editor editor = fem.openTextEditor(displayFile, true);
-				if (editor == null) {
-					return;
-				}
-
-				switch (commitType) {
-					case Moved:
-					case Copied:
-					case Modified:
-						final Document displayDocument = new FileContent(project, displayFile.getFile())
-								.getDocument();
-						final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-						ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
-								, reviewItem.getOldFileDescriptor().getRevision()
-								, reviewItem.getFileDescriptor().getRevision());
-						break;
-					case Added:
-						break;
-					case Deleted:
-						break;
-					default:
-						break;
-				}
-				CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem);
-				if (displayFile.canNavigateToSource()) {
-					displayFile.navigate(false);
-				}
-			}
-		});
+					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+						if (referenceFile == null) {
+							Messages.showErrorDialog(project,
+									"Cannot fetch " + reviewItem.getOldFileDescriptor().getAbsoluteUrl()
+											+ ".\nAnnotated file cannot be displayed.", "Error");
+							return;
+						}
+						FileEditorManager fem = FileEditorManager.getInstance(project);
+						Editor editor = fem.openTextEditor(displayFile, true);
+						if (editor == null) {
+							return;
+						}
+					}
+				});
 	}
 
 	@NotNull
@@ -136,6 +116,7 @@ public final class CrucibleHelper {
 	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
 
 		VcsIdeaHelper.openFileWithDiffs(project
+				, true
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
 				, reviewItem.getOldFileDescriptor().getRevision()
 				, reviewItem.getFileDescriptor().getRevision()
@@ -162,8 +143,10 @@ public final class CrucibleHelper {
 	public static Editor getEditorForCrucibleFile(ReviewAdapter review, CrucibleFileInfo file) {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
-			final ReviewAdapter mr = editor.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-			final CrucibleFileInfo mf = editor.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+			final Document document = editor.getDocument();
+			final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			final ReviewAdapter mr = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+			final CrucibleFileInfo mf = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 			if (mr != null && mf != null) {
 				if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
 					return editor;
@@ -179,6 +162,7 @@ public final class CrucibleHelper {
 		ApplicationManager.getApplication().runReadAction(new Runnable() {
 			public void run() {
 				VcsIdeaHelper.openFileWithDiffs(project
+						, true
 						, file.getFileDescriptor().getAbsoluteUrl()
 						, file.getOldFileDescriptor().getRevision()
 						, file.getFileDescriptor().getRevision()
@@ -187,20 +171,18 @@ public final class CrucibleHelper {
 						, 0
 						, new VcsIdeaHelper.OpenDiffAction() {
 
-					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-						FileEditorManager fem = FileEditorManager.getInstance(project);
-						// @todo temporary - should be handled when opening file
-						if (displayFile != null) {
-							Editor editor = fem.openTextEditor(displayFile, false);
-							if (editor == null) {
-								return;
+							public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+								FileEditorManager fem = FileEditorManager.getInstance(project);
+								// @todo temporary - should be handled when opening file
+								if (displayFile != null) {
+									displayFile.getFile().putUserData(CommentHighlighter.VERSIONED_COMMENT_DATA_KEY, comment);
+									Editor editor = fem.openTextEditor(displayFile, false);
+									if (editor == null) {
+										return;
+									}
+								}
 							}
-							CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
-							// @todo all is it needed here?
-							displayFile.navigate(false);
-						}
-					}
-				});
+						});
 			}
 		});
 
@@ -247,6 +229,7 @@ public final class CrucibleHelper {
 							displayDocumentContentFinal
 					});
 				}
+
 				@Override
 				public String[] getContentTitles() {
 					return (new String[]{
@@ -256,6 +239,7 @@ public final class CrucibleHelper {
 									reviewItem.getFileDescriptor().getRevision())
 					});
 				}
+
 				@Override
 				public String getWindowTitle() {
 					return reviewItem.getFileDescriptor().getAbsoluteUrl();
