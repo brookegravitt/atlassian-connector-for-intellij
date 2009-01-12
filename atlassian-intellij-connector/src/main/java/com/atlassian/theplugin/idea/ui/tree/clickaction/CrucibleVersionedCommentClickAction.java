@@ -25,9 +25,18 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 		Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 		VersionedComment comment = anode.getComment();
 
-		if (editor != null || noOfClicks > 1) {
-			CrucibleHelper.openFileOnComment(project, review, file, comment);
+		switch (noOfClicks) {
+			case 1:
+				if (editor != null) {
+					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
+					editor.getScrollingModel().scrollVertically(startOffset);
+				}
+				break;
+			case 2:
+				CrucibleHelper.openFileOnComment(project, review, file, comment);
+				break;
+			default:
+				break;
 		}
 	}
-
 }
