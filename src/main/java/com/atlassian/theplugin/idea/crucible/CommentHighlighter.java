@@ -35,6 +35,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.Set;
@@ -61,11 +63,11 @@ public final class CommentHighlighter {
 	private CommentHighlighter() {
 	}
 
-	public static void highlightCommentsInEditor(final Project project,
-			final Editor editor,
-			final ReviewAdapter review,
-			final CrucibleFileInfo reviewItem,
-			final OpenFileDescriptor displayFile) {
+	public static void highlightCommentsInEditor(@NotNull final Project project,
+			@NotNull final Editor editor,
+			@NotNull final ReviewAdapter review,
+			@NotNull final CrucibleFileInfo reviewItem,
+			@Nullable final OpenFileDescriptor displayFile) {
 		if (editor != null) {
 			applyHighlighters(project, editor, reviewItem);
 			Document doc = editor.getDocument();
@@ -90,13 +92,26 @@ public final class CommentHighlighter {
 				doc.addDocumentListener(documentListener);
 				vf.putUserData(LISTENER_KEY, documentListener);
 			}
-			if (displayFile.canNavigateToSource()) {
-				displayFile.navigateIn(editor);
+
+//			VersionedComment comment = vf.getUserData(VERSIONED_COMMENT_DATA_KEY);
+//			if (comment != null) {
+//				final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
+//				editor.getScrollingModel().scrollVertically(startOffset);
+//				editor.getCaretModel().moveToOffset(startOffset);
+//			}
+
+			if (displayFile != null) {
+				if (displayFile.canNavigateToSource()) {
+					displayFile.navigateIn(editor);
+				}
 			}
+
 		}
 	}
 
-	public static void updateCommentsInEditors(Project project, ReviewAdapter review) {
+
+	public static void updateCommentsInEditors(@NotNull final Project project,
+			@NotNull final ReviewAdapter review) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			Document document = editor.getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
@@ -145,7 +160,9 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void applyHighlighters(final Project project, final Editor editor, final CrucibleFileInfo fileInfo) {
+	private static void applyHighlighters(@NotNull final Project project,
+			@NotNull final Editor editor,
+			@NotNull final CrucibleFileInfo fileInfo) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
 
@@ -156,8 +173,11 @@ public final class CommentHighlighter {
 				int endLine = comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
 				try {
 					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
-					final int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
-					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset - 1,
+					int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
+					if (startOffset < endOffset) {
+						endOffset--;
+					}
+					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
 							HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
 					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
 							+ ":</b> " + comment.getMessage());
@@ -170,7 +190,7 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlighters(final MarkupModel markupModel) {
+	private static void removeHighlighters(@NotNull final MarkupModel markupModel) {
 		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
 			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
 				markupModel.removeHighlighter(rh);
@@ -178,7 +198,8 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlightersAndContextData(final MarkupModel markupModel, VirtualFile virtualFile) {
+	private static void removeHighlightersAndContextData(@NotNull final MarkupModel markupModel,
+			@NotNull VirtualFile virtualFile) {
 		removeHighlighters(markupModel);
 		virtualFile.putUserData(REVIEW_DATA_KEY, null);
 		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
