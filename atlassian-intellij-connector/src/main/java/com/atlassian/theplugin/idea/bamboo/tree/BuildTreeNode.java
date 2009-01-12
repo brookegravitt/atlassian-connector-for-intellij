@@ -35,7 +35,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
 	private BambooBuildAdapterIdea build;
-	private static final int DATE_LABEL_WIDTH = 85;
+	private static final int DATE_LABEL_WIDTH = 100;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
@@ -44,6 +44,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		this.build = build;
 	}
 
+	@Override
 	public BambooBuildAdapterIdea getBuild() {
 		return build;
 	}
@@ -53,6 +54,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return build.getBuildKey();
 	}
 
+	@Override
 	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
@@ -247,6 +249,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return sb.toString();
 	}
 
+	@Override
 	public void onSelect() {
 	}
 
