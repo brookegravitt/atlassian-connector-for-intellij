@@ -32,10 +32,12 @@ public class BuildGroupTreeNode extends AbstractTreeNode {
 		return name;
 	}
 
+	@Override
 	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
 		return getDefaultRenderer(c, selected, expanded, hasFocus);
 	}
 
+	@Override
 	public void onSelect() {
 
 	}

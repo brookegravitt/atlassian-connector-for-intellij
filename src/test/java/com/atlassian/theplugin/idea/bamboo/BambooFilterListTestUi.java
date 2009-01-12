@@ -101,7 +101,7 @@ public final class BambooFilterListTestUi {
 		return state ? BambooBuildInfo.BUILD_SUCCESSFUL : BambooBuildInfo.BUILD_FAILED;
 	}
 
-	private static java.util.List<BambooBuildAdapterIdea> getBuilds() {
+	public static java.util.List<BambooBuildAdapterIdea> getBuilds() {
 		return Arrays.asList(createBambooBuild("B1", "PR1", "Project One", getState(), B1),
 				createBambooBuild("B2", "PR2", "Project Two", getState(), B2),
 				createBambooBuild("B3", "PR3", "Project Three", getState(), B3),
@@ -114,6 +114,9 @@ public final class BambooFilterListTestUi {
 	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, String state,
 			BambooServerCfg serverCfg) {
 		final BambooBuildInfo buildInfo = new BambooBuildInfo();
+		buildInfo.setBuildTime(new Date());
+		buildInfo.setPollingTime(new Date());
+		buildInfo.setBuildRelativeBuildDate("55 seconds ago");
 		buildInfo.setBuildKey(buildKey);
 		buildInfo.setProjectKey(key);
 		buildInfo.setProjectName(name);
