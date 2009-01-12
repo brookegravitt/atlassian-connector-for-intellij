@@ -411,15 +411,15 @@
 		</group>
 
 		<group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
-			<reference id="ThePlugin.Bamboo.OpenBuild"/>
-			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<!--<reference id="ThePlugin.Bamboo.OpenBuild"/>-->
+			<!--<reference id="ThePlugin.Bamboo.ViewBuild"/>-->
 			<reference id="ThePlugin.Bamboo.ShowStackTrace"/>
 			<reference id="ThePlugin.Bamboo.ShowChanges"/>
 			<separator/>
-			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
-			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
-			<separator/>
-			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<!--<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>-->
+			<!--<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>-->
+			<!--<separator/>-->
+			<!--<reference id="ThePlugin.Bamboo.RunBuild"/>-->
 		</group>
 
 		<group id="ThePlugin.Bamboo.TestResultsToolBar" popup="false">
@@ -904,6 +904,15 @@
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
 			<separator/>
 			<reference id="ThePlugin.HelpBamboo"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.BuildPopupMenuNew" popup="true">
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
 		</group>
 
 	</actions>
