@@ -28,12 +28,15 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -51,17 +54,20 @@ public class CommentAction extends AnAction {
 	@Override
 	public void update(final AnActionEvent e) {
 		boolean visible = true;
-		Editor ed = e.getData(DataKeys.EDITOR);
-		if (ed == null) {
+		Editor editor = e.getData(DataKeys.EDITOR);
+		if (editor == null) {
 			visible = false;
 		} else {
-			int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
-			int end = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionEnd()) + 1;
+			int start = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionStart()) + 1;
+			int end = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionEnd()) + 1;
 			if (end < start || start <= 0 || end <= 0) {
 				visible = false;
 			} else {
-				ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-				CrucibleFileInfo reviewItem = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+				Document document = editor.getDocument();
+				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+
+				ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+				CrucibleFileInfo reviewItem = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 				if (review == null || reviewItem == null) {
 					visible = false;
 				} else {
@@ -89,8 +95,8 @@ public class CommentAction extends AnAction {
 
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
-		Editor ed = e.getData(DataKeys.EDITOR);
-		if (ed == null) {
+		Editor editor = e.getData(DataKeys.EDITOR);
+		if (editor == null) {
 			return;
 		}
 		final Project project = e.getData(DataKeys.PROJECT);
@@ -98,10 +104,12 @@ public class CommentAction extends AnAction {
 			return;
 		}
 
-		final int start = ed.getDocument().getLineNumber(ed.getSelectionModel().getSelectionStart()) + 1;
-		int selEndOffset = ed.getSelectionModel().getSelectionEnd();
-		int end = ed.getDocument().getLineNumber(selEndOffset);
-		int lastLineOffset = ed.getDocument().getLineStartOffset(end);
+		final Document document = editor.getDocument();
+		final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+		final int start = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionStart()) + 1;
+		int selEndOffset = editor.getSelectionModel().getSelectionEnd();
+		int end = editor.getDocument().getLineNumber(selEndOffset);
+		int lastLineOffset = editor.getDocument().getLineStartOffset(end);
 
 		// mind the fact that last line should not necessarily be included in the comment, because
 		// the caret may be at the beginning of the line while selecting
@@ -110,8 +118,8 @@ public class CommentAction extends AnAction {
 			++end;
 		}
 
-		final ReviewAdapter review = ed.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-		final CrucibleFileInfo file = ed.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+		final ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+		final CrucibleFileInfo file = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
 		// PL-833 - review can not be null when adding comment
 		// doesn't look like action called by Idea but anyway should not be null
@@ -141,13 +149,11 @@ public class CommentAction extends AnAction {
 						IdeaHelper.handleMissingPassword(e1);
 					}
 
-//			eventBroker.trigger(new VersionedCommentAddedOrEdited(this, review, file.getPermId(), newComment));
-
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
 							if (editor != null) {
-								CommentHighlighter.highlightCommentsInEditor(project, editor, review, file);
+								CommentHighlighter.highlightCommentsInEditor(project, editor, review, file, null);
 							}
 						}
 					});
@@ -157,10 +163,5 @@ public class CommentAction extends AnAction {
 
 			ProgressManager.getInstance().run(task);
 		}
-
-
-//		AddLineComment addComment = new AddLineComment(CrucibleReviewListenerImpl.ANONYMOUS,
-//				review, file, ed, start, end);
-//		IdeaHelper.getReviewActionEventBroker(project).trigger(addComment);
 	}
 }
