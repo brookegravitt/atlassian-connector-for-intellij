@@ -15,9 +15,11 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-/**
- * @author Jacek Jaroczynski
- */
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+
 public interface BuildListModelListener {
-	void modelUpdated();
+	void modelChanged();
+	void buildsChanged(@Nullable Collection<String> additionalInfo, @Nullable Collection<String> errors);
 }

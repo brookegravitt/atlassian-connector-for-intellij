@@ -16,9 +16,10 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BambooFilterListTestUi;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
-import com.atlassian.theplugin.idea.bamboo.BuildModel;
+import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 
@@ -28,6 +29,7 @@ import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Collection;
 
 public final class BuildTreeTestUi {
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
@@ -38,7 +40,8 @@ public final class BuildTreeTestUi {
 
 	public static void main(String[] args) {
 		ui = new BasicWideNodeTreeUI();
-		final BuildTree tree = new BuildTree(BuildGroupBy.SERVER, new BuildTreeModel(new BuildModel()));
+		BuildListModelImpl buildListModel = new BuildListModelImpl();
+		final BuildTree tree = new BuildTree(BuildGroupBy.SERVER, new BuildTreeModel(buildListModel));
 		//final TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		final JScrollPane jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -92,7 +95,13 @@ public final class BuildTreeTestUi {
 		jScrollPane.setViewportView(tree);
 		tree.setCellRenderer(TREE_RENDERER);
 		tree.setUI(ui);
-		tree.updateModel(BambooFilterListTestUi.getBuilds());
+		Collection<BambooBuildAdapterIdea> buildAdapters = BambooFilterListTestUi.getBuilds();
+//		Collection<BambooBuild> builds = new ArrayList<BambooBuild>();
+//		for (BambooBuildAdapterIdea build : buildAdapters) {
+//			builds.add(build.getBuild());
+//		}
+//		buildListModel.update(builds);
+//		tree.updateModel(BambooFilterListTestUi.getBuilds());
 		SwingAppRunner.run(jScrollPane);
 	}
 }

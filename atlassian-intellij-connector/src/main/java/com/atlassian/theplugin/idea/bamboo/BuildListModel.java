@@ -21,7 +21,7 @@ import java.util.Collection;
  * @author Jacek Jaroczynski
  */
 public interface BuildListModel {
-	void setBuilds(Collection<BambooBuildAdapterIdea> buildsCollection);
 	Collection<BambooBuildAdapterIdea> getBuilds();
+
 	void addListener(BuildListModelListener listener);
 }

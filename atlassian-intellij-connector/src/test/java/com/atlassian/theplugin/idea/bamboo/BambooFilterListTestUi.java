@@ -15,23 +15,25 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.awt.event.ActionListener;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Random;
 
 public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
@@ -51,7 +53,7 @@ public final class BambooFilterListTestUi {
 		cfgManager.addProjectSpecificServer(projectId1, B1);
 		cfgManager.addProjectSpecificServer(projectId1, B2);
 		cfgManager.addProjectSpecificServer(projectId1, B3);
-		final BambooModel model = new BambooModel();
+		final BuildListModelImpl model = new BuildListModelImpl();
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
