@@ -34,7 +34,7 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 				if (editor != null) {
 					Document document = editor.getDocument();
 					VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-					OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine(), 0);
+					OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine() - 1, 0);
 					if (display.canNavigateToSource()) {
 						display.navigateIn(editor);
 					}

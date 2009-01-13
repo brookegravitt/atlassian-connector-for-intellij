@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -94,8 +95,16 @@ public class CrucibleFileNode extends FileNode {
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
 			StringBuilder txt = new StringBuilder();
+			final CommitType commitType = node.getFile().getCommitType();
+			switch (commitType) {
+				case Moved:
+					txt.append(" moved, ");
+					break;
+				default:
+					break;
+			}
 			txt.append(" (rev: ");
-			switch (node.getFile().getCommitType()) {
+			switch (commitType) {
 				case Added:
 					txt.append(node.getFile().getFileDescriptor().getRevision());
 					break;
