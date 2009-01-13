@@ -42,7 +42,7 @@ public abstract class AbstractBuildListModelDecorator implements BuildListModel,
 	}
 
 	protected void notifyDecoratorListeners() {
-		for (BuildListModelListener listener : listeners){
+		for (BuildListModelListener listener : listeners) {
 			listener.modelChanged();
 		}
 	}
