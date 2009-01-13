@@ -29,8 +29,8 @@ public class LabelBuildAction extends AbstractBuildListAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (getBuild(event) != null && !getBuild(event).isBamboo2()
-				&& getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
+		if (getBuild(event) == null || !getBuild(event).isBamboo2()
+				|| getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
 			event.getPresentation().setEnabled(false);
 		}
 	}
