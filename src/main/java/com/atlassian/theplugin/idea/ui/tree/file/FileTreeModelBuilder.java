@@ -28,7 +28,7 @@ import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
+import com.atlassian.theplugin.idea.ui.tree.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
@@ -58,7 +58,7 @@ public final class FileTreeModelBuilder {
 
 	@Nullable
 	private static PsiFile guessCorrespondingPsiFile(final Project project, BambooFileInfo file) {
-        final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(file.getFileDescriptor().getName(), project);
+		final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(file.getFileDescriptor().getName(), project);
 		return CodeNavigationUtil.guessMatchingFile(file.getFileDescriptor().getUrl(), psifiles, project.getBaseDir());
 	}
 
@@ -140,7 +140,7 @@ public final class FileTreeModelBuilder {
 	}
 
 	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
-										 ReviewAdapter review, CrucibleFileInfo file, Project project) {
+			ReviewAdapter review, CrucibleFileInfo file, Project project) {
 		List<VersionedComment> fileComments = getFileVersionedComments(file);
 		CrucibleVersionedCommentClickAction action = new CrucibleVersionedCommentClickAction(project);
 		for (VersionedComment c : fileComments) {
