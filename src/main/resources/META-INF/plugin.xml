@@ -135,8 +135,8 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BambooModel"
-						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BambooModel"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"
+						serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"/>
 		<projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
 

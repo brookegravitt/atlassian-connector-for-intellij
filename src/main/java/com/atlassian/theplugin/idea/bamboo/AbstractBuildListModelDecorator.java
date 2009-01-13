@@ -15,23 +15,47 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class AbstractBuildListModelDecorator implements BuildListModel {
-	protected BuildModel parent;
+public abstract class AbstractBuildListModelDecorator implements BuildListModel, BuildListModelListener {
+	protected BuildListModel parent;
 
-	public AbstractBuildListModelDecorator(final BuildModel buildModel) {
+	private Collection<BuildListModelListener> listeners = new ArrayList<BuildListModelListener>();
+
+	public AbstractBuildListModelDecorator(final BuildListModel buildModel) {
 		this.parent = buildModel;
-	}
-
-	public void setBuilds(final Collection<BambooBuildAdapterIdea> buildsCollection) {
-		parent.setBuilds(buildsCollection);
+		parent.addListener(this);
 	}
 
 	public Collection<BambooBuildAdapterIdea> getBuilds() {
 		return parent.getBuilds();
+	}
+
+	public void addListener(final BuildListModelListener listener) {
+		listeners.add(listener);
+	}
+
+	protected void notifyDecoratorListeners() {
+		for (BuildListModelListener listener : listeners){
+			listener.modelChanged();
+		}
+	}
+
+	public void modelChanged() {
+		for (BuildListModelListener listener : listeners) {
+			listener.modelChanged();
+		}
+	}
+
+	public void buildsChanged(@Nullable final Collection<String> additionalInfo, @Nullable final Collection<String> errors) {
+		for (BuildListModelListener listener : listeners) {
+			listener.buildsChanged(additionalInfo, errors);
+		}
 	}
 }

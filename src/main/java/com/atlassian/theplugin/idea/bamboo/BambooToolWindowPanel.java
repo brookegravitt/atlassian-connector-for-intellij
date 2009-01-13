@@ -60,7 +60,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private final Project project;
-	private final BambooModel bambooModel;
+	private final BuildListModelImpl bambooModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
 	private final BambooFilterList filterList;
@@ -75,7 +75,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	public BambooToolWindowPanel(@NotNull final Project project,
-			@NotNull final BambooModel bambooModel,
+			@NotNull final BuildListModelImpl bambooModel,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
@@ -101,9 +101,9 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 		});
 
-		bambooModel.addListener(new BambooModelListener() {
-			public void filterChanged() {
-				updateTree();
+		bambooModel.addListener(new BuildListModelListener() {
+			public void modelChanged() {
+//				updateTree();
 			}
 
 			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
@@ -121,17 +121,17 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				}
 				setStatusMessage(sb.toString(), errors != null && errors.size() > 0);
 				filterList.update();
-				updateTree();
+//				updateTree();
 			}
 
-			private void updateTree() {
-				final Collection<BambooBuildAdapterIdea> ideas = bambooModel.getBuilds();
-				buildTree.updateModel(ideas);
-			}
+//			private void updateTree() {
+//				final Collection<BambooBuildAdapterIdea> ideas = bambooModel.getBuilds();
+//				buildTree.updateModel(ideas);
+//			}
 		});
 
 
-		searchBuildModel = new SearchBuildListModel(new BuildModel());
+		searchBuildModel = new SearchBuildListModel(bambooModel);
 		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel));
 		toolBar = createToolBar();
 		init();
@@ -274,7 +274,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 		bambooModel.setFilter(null);
 		// by default there should be "ALL", which means null filter
-		buildTree.updateModel(bambooModel.getBuilds());
+//		buildTree.updateModel(bambooModel.getBuilds());
 
 		bambooConfiguration.getView().setFilterType(bambooFilterType);
 	}
