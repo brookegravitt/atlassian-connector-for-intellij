@@ -170,7 +170,7 @@ public final class CommentHighlighter {
 						endOffset--;
 					}
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
-							HighlighterLayer.WARNING - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
+							HighlighterLayer.SELECTION - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
 					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
 							+ ":</b> " + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
