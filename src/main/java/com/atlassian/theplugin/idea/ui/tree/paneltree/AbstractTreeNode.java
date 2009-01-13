@@ -45,42 +45,64 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	public abstract JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus);
 	public abstract void onSelect();
 
+	private static final class RendererPanel extends JPanel {
+
+		private SimpleColoredComponent groupComponent;
+		private JLabel iconLabel;
+		private JPanel panel;
+
+		private RendererPanel() {
+			super(new FormLayout("pref, pref:grow", "pref"));
+			panel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow"));
+
+			CellConstraints cc = new CellConstraints();
+			groupComponent = new SimpleColoredComponent();
+			iconLabel = new JLabel();
+			iconLabel.setBackground(UIUtil.getTreeTextBackground());
+
+			add(iconLabel, cc.xy(1, 1));
+
+			panel.add(groupComponent, cc.xy(2, 1));
+
+			setBackground(UIUtil.getTreeTextBackground());
+
+			add(panel, cc.xy(2, 1));
+		}
+
+		public void setIcon(Icon icon) {
+			iconLabel.setIcon(icon);
+		}
+
+		public void setParameters(String name, int childCount, boolean selected, boolean enabled) {
+			groupComponent.clear();
+			Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
+			Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
+
+			fgColor = enabled ? fgColor : UIUtil.getInactiveTextColor();
+			groupComponent.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
+
+			panel.setBackground(bgColor);
+
+			groupComponent.append(" (" + childCount + ")",
+					new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
+
+		}
+	}
+
+	private static final RendererPanel RENDERER_PANEL = new RendererPanel();
+
 	@SuppressWarnings("UnusedDeclaration")
 	public JComponent getDefaultRenderer(JComponent c, boolean selected, boolean expanded,
 			boolean hasFocus) {
-		JPanel panel = new JPanel(new FormLayout("left:pref, left:pref, pref:grow", "pref:grow"));
-		JPanel mainPanel = new JPanel(new FormLayout("pref, pref:grow", "pref"));
-
-		CellConstraints cc = new CellConstraints();
-		Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
-		Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
-
-		fgColor = c.isEnabled() ? fgColor : UIUtil.getInactiveTextColor();
-
-		panel.setBackground(bgColor);
-		SimpleColoredComponent groupComponet = new SimpleColoredComponent();
-		JLabel label = new JLabel();
-		label.setBackground(UIUtil.getTreeTextBackground());
-
 		if (c.isEnabled()) {
-			label.setIcon(expanded ? iconOpen : iconClosed);
-			mainPanel.add(label, cc.xy(1, 1));
+			RENDERER_PANEL.setIcon(expanded ? iconOpen : iconClosed);
 		} else {
-			label.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
-			mainPanel.add(label, cc.xy(1, 1));
+			RENDERER_PANEL.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
 		}
 
-		groupComponet.append(name, new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD, fgColor));
-		panel.add(groupComponet, cc.xy(1, 1));
+		RENDERER_PANEL.setParameters(name, getChildCount(), selected, c.isEnabled());
+		RENDERER_PANEL.validate();
+		return RENDERER_PANEL;
 
-		int childCount = getChildCount();
-		groupComponet.append(" (" + childCount + ")",
-				new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
-		panel.add(groupComponet, cc.xy(2, 1));
-
-
-		mainPanel.setBackground(UIUtil.getTreeTextBackground());
-		mainPanel.add(panel, cc.xy(2, 1));
-		return mainPanel;
 	}
 }
