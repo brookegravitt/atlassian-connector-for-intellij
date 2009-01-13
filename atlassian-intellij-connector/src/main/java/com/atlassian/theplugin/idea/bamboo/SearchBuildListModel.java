@@ -24,9 +24,8 @@ import java.util.List;
  */
 public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 	private String searchTerm = "";
-	private Collection<BuildListModelListener> listeners = new ArrayList<BuildListModelListener>();
 
-	public SearchBuildListModel(BuildModel buildModel) {
+	public SearchBuildListModel(BuildListModelImpl buildModel) {
 		super(buildModel);
 	}
 
@@ -34,9 +33,6 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 		return search(parent.getBuilds());
 	}
 
-	public void addListener(final BuildListModelListener listener) {
-		this.listeners.add(listener);
-	}
 
 	private Collection<BambooBuildAdapterIdea> search(Collection<BambooBuildAdapterIdea> col) {
 		if (searchTerm.length() == 0) {
@@ -58,9 +54,6 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 
 		this.searchTerm = searchTerm.toLowerCase();
 
-		// todo refresh tree
-		for (BuildListModelListener listener : listeners) {
-			listener.modelUpdated();
-		}
+		notifyDecoratorListeners();
 	}
 }
