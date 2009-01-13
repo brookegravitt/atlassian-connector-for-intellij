@@ -92,14 +92,6 @@ public final class CommentHighlighter {
 				doc.addDocumentListener(documentListener);
 				vf.putUserData(LISTENER_KEY, documentListener);
 			}
-
-//			VersionedComment comment = vf.getUserData(VERSIONED_COMMENT_DATA_KEY);
-//			if (comment != null) {
-//				final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
-//				editor.getScrollingModel().scrollVertically(startOffset);
-//				editor.getCaretModel().moveToOffset(startOffset);
-//			}
-
 			if (displayFile != null) {
 				if (displayFile.canNavigateToSource()) {
 					displayFile.navigateIn(editor);
