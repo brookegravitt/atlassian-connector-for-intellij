@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.idea.bamboo.BuildModel;
+import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -25,7 +25,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  */
 public class GeneralBuildNodeManipulator extends BuildNodeManipulator {
 
-	public GeneralBuildNodeManipulator(BuildModel buildModel, DefaultMutableTreeNode root) {
+	public GeneralBuildNodeManipulator(BuildListModel buildModel, DefaultMutableTreeNode root) {
 		super(buildModel, root);
 	}
 

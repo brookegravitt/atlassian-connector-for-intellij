@@ -21,14 +21,18 @@ import java.util.Collection;
 /**
  * @author Jacek Jaroczynski
  */
-public class BuildModel {
+public class BuildModel implements BuildListModel {
 	private Collection<BambooBuildAdapterIdea> builds = new ArrayList<BambooBuildAdapterIdea>();
 
-	public void setBuils(final Collection<BambooBuildAdapterIdea> buildsCollection) {
+	public void setBuilds(final Collection<BambooBuildAdapterIdea> buildsCollection) {
 		this.builds = buildsCollection;
 	}
 
 	public Collection<BambooBuildAdapterIdea> getBuilds() {
 		return builds;
+	}
+
+	public void addListener(final BuildListModelListener listener) {
+
 	}
 }
