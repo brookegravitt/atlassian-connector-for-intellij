@@ -328,7 +328,7 @@ public final class VcsIdeaHelper {
 					case Deleted:
 						Messages.showErrorDialog(project,
 								"Your project does not contain requested file " + filePath + ". Please update to revision "
-										+ fileRevision + " before review", "File removed form repository");
+										+ fileRevision + " before review", "File removed from repository");
 
 						break;
 					case Added:
