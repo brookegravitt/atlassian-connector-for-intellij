@@ -103,10 +103,24 @@ public class BambooFilterList extends JList {
 						.getAllEnabledBambooServers(projectId);
 
 				for (BambooServerCfg bambooServer : bambooServers) {
-					final BamboServerFilterWrapper obj = new BamboServerFilterWrapper(new BambooServerFilter(bambooServer),
+					final BambooServerFilter serverFilter = new BambooServerFilter(bambooServer);
+					final BamboServerFilterWrapper obj = new BamboServerFilterWrapper(serverFilter,
 							bambooModel);
 					if (!listModel.contains(obj)) {
 						listModel.addElement(obj);
+					} else {
+						// as BambooServerCfg objects are mutable and could be just changed in user settings, we need to up
+						// update them basing on ServerId - the only immutable link.
+						// I don't like this code, but I have no time now to fight with restoration of user selection
+						// if I was to reset totally the model of this list
+						final int i = listModel.indexOf(obj);
+						if (i != -1) {
+							final Object o = listModel.get(i);
+							if (o instanceof BamboServerFilterWrapper) {
+								BamboServerFilterWrapper wrapper = (BamboServerFilterWrapper) o;
+								wrapper.updateWrapped(serverFilter);
+							}
+						}
 					}
 				}
 
@@ -127,14 +141,15 @@ public class BambooFilterList extends JList {
 	}
 
 	private static class BambooServerFilter implements BambooBuildFilter {
+		@NotNull
 		private final BambooServerCfg bambooServerCfg;
 
-		public BambooServerFilter(final BambooServerCfg bambooServerCfg) {
+		public BambooServerFilter(@NotNull final BambooServerCfg bambooServerCfg) {
 			this.bambooServerCfg = bambooServerCfg;
 		}
 
 		public boolean doesMatch(final BambooBuildAdapterIdea build) {
-			return bambooServerCfg.equals(build.getServer());
+			return bambooServerCfg.getServerId().equals(build.getServer().getServerId());
 		}
 
 		@Override
@@ -148,8 +163,9 @@ public class BambooFilterList extends JList {
 
 			final BambooServerFilter that = (BambooServerFilter) o;
 
+			// BambooServerCfg is mutable so we need to base on something immutable
 			//noinspection RedundantIfStatement
-			if (!bambooServerCfg.equals(that.bambooServerCfg)) {
+			if (!bambooServerCfg.getServerId().equals(that.bambooServerCfg.getServerId())) {
 				return false;
 			}
 
@@ -158,7 +174,7 @@ public class BambooFilterList extends JList {
 
 		@Override
 		public int hashCode() {
-			return bambooServerCfg.hashCode();
+			return bambooServerCfg.getServerId().hashCode();
 		}
 	}
 
@@ -279,6 +295,10 @@ public class BambooFilterList extends JList {
 	private static class BamboServerFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooServerFilter> {
 		public BamboServerFilterWrapper(final BambooServerFilter wrapped, final BambooModel model) {
 			super(wrapped, model);
+		}
+
+		public void updateWrapped(BambooServerFilter newWrapped) {
+			wrapped = newWrapped;
 		}
 
 		@Override
