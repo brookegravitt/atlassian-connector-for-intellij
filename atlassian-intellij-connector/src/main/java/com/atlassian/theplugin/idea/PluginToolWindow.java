@@ -400,7 +400,9 @@ public class PluginToolWindow {
 				ToolWindowPanels left = ToolWindowPanels.valueOfTitle(((Content) o).getDisplayName());
 				ToolWindowPanels right = ToolWindowPanels.valueOfTitle(((Content) o1).getDisplayName());
 
-				return left.getTabOrder() - right.getTabOrder();
+				if (left != null && right != null) {
+					return left.getTabOrder() - right.getTabOrder();
+				}
 			}
 			return 0;
 		}
