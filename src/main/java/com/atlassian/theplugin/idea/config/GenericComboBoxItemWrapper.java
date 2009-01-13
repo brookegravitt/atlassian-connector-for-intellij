@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.config;
 
 public class GenericComboBoxItemWrapper<T> {
-	protected final T wrapped;
+	protected T wrapped;
 
 	public GenericComboBoxItemWrapper(final T wrapped) {
 		this.wrapped = wrapped;
