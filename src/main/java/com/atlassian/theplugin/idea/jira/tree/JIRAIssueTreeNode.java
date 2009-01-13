@@ -30,110 +30,155 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		super(issue.getKey() + ": " + issue.getSummary(), null, null);
 		this.model = model;
 		this.issue = issue;
+		renderer = new RendererPanel();
 	}
+
+	private final class RendererPanel extends JPanel {
+		private JPanel padding;
+		private SelectableLabel updated;
+		private SelectableLabel prio;
+		private SelectableLabel state;
+		private SelectableLabel summary;
+
+		private SelectableLabel key;
+		private JLabel typeLabel;
+
+		private RendererPanel() {
+			super(new GridBagLayout());
+
+			setBackground(UIUtil.getTreeTextBackground());
+
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.weightx = 0.0;
+			gbc.insets = new Insets(0, 0, 0, GAP);
+			gbc.fill = GridBagConstraints.NONE;
+			typeLabel = new JLabel(null, CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.LEADING);
+			typeLabel.setOpaque(true);
+			typeLabel.setBackground(UIUtil.getTreeTextBackground());
+			add(typeLabel, gbc);
+
+			gbc.insets = new Insets(0, 0, 0, 0);
+			gbc.gridx++;
+			key = new SelectableLabel(true, true, issue.getKey() + ": ", ICON_HEIGHT, false, true);
+			add(key, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 1.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			summary = new SelectableLabel(true, true, issue.getSummary(), ICON_HEIGHT, false, true);
+			add(summary, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
+			state = new SelectableLabel(true, true, issue.getStatus(),
+					CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
+					SwingConstants.LEADING, ICON_HEIGHT, false, true);
+			add(state, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.insets = new Insets(0, 0, 0, 0);
+			prio = new SelectableLabel(true, true, null,
+					CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
+					SwingConstants.LEADING, ICON_HEIGHT, false, true);
+			// setting minimum size is necessary as gridbag layout may
+			// ignore preffered size if some other lables do not fit!!!
+			prio.setMinimumSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
+			prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
+			add(prio, gbc);
+
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
+			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+			String t;
+			try {
+				t = dfo.format(df.parse(issue.getUpdated()));
+			} catch (java.text.ParseException e) {
+				t = "Invalid";
+			}
+			updated = new SelectableLabel(true, true, t, null, SwingConstants.LEADING, ICON_HEIGHT, false, true);
+			updated.setHorizontalAlignment(SwingConstants.RIGHT);
+			Dimension minDimension = updated.getPreferredSize();
+
+			minDimension.setSize(
+					Math.max(PluginUtil.getDateWidth(updated, dfo), minDimension.getWidth()), minDimension.getHeight());
+
+			updated.setPreferredSize(minDimension);
+			updated.setMinimumSize(minDimension);
+			updated.setMaximumSize(minDimension);
+			updated.setSize(minDimension);
+
+			add(updated, gbc);
+
+			padding = new JPanel();
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
+			padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
+			padding.setOpaque(true);
+			add(padding, gbc);
+
+			setParameters(true, true);
+			
+			setToolTipText(buildTolltip(issue, 0));
+
+			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
+			final JToolTip jToolTip = createToolTip();
+			jToolTip.setTipText(buildTolltip(issue, 0));
+			final int prefWidth = jToolTip.getPreferredSize().width;
+			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+			setToolTipText(buildTolltip(issue, width));
+		}
+
+		public void setParameters(boolean selected, boolean enabled) {
+
+			Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
+					: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+
+			typeLabel.setIcon(typeIcon);
+			
+			key.setSelected(selected);
+			key.setEnabled(enabled);
+
+			summary.setSelected(selected);
+			summary.setEnabled(enabled);
+
+			final String iconTypeUrl = issue.getStatusTypeUrl();
+			Icon statusIcon = enabled
+					? CachedIconLoader.getIcon(iconTypeUrl) : CachedIconLoader.getDisabledIcon(iconTypeUrl);
+			state.setIcon(statusIcon);
+			state.setSelected(selected);
+			state.setEnabled(enabled);
+
+			final String iconUrl = issue.getPriorityIconUrl();
+			Icon prioIcon = enabled ? CachedIconLoader.getIcon(iconUrl) : CachedIconLoader.getDisabledIcon(iconUrl);
+			prio.setIcon(prioIcon);
+			prio.setSelected(selected);
+			prio.setEnabled(enabled);
+
+			updated.setSelected(selected);
+			updated.setEnabled(enabled);
+
+			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
+			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+		}
+	}
+
+	private RendererPanel renderer;
 
 	@Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		boolean enabled = c.isEnabled();
-
-		JPanel p = new JPanel();
-		p.setBackground(UIUtil.getTreeTextBackground());
-		p.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weightx = 0.0;
-		gbc.insets = new Insets(0, 0, 0, GAP);
-		gbc.fill = GridBagConstraints.NONE;
-		Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
-				: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
-		JLabel typeLabel = new JLabel(typeIcon, SwingConstants.LEADING);
-		typeLabel.setOpaque(true);
-		typeLabel.setBackground(UIUtil.getTreeTextBackground());
-		p.add(typeLabel, gbc);
-
-		gbc.insets = new Insets(0, 0, 0, 0);
-		gbc.gridx++;
-		JLabel key = new SelectableLabel(selected, enabled, issue.getKey() + ": ", ICON_HEIGHT);
-		p.add(key, gbc);
-
-		gbc.gridx++;
-		gbc.weightx = 1.0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		JLabel summary = new SelectableLabel(selected, enabled, issue.getSummary(), ICON_HEIGHT);
-		p.add(summary, gbc);
-
-		gbc.gridx++;
-		gbc.weightx = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-		final String iconTypeUrl = issue.getStatusTypeUrl();
-		Icon statusIcon = enabled ? CachedIconLoader.getIcon(iconTypeUrl) : CachedIconLoader.getDisabledIcon(iconTypeUrl);
-		JLabel state = new SelectableLabel(selected, enabled, issue.getStatus(), statusIcon,
-				SwingConstants.LEADING, ICON_HEIGHT);
-		p.add(state, gbc);
-
-		final String iconUrl = issue.getPriorityIconUrl();
-
-		Icon prioIcon = enabled ? CachedIconLoader.getIcon(iconUrl) : CachedIconLoader.getDisabledIcon(iconUrl);
-
-		gbc.gridx++;
-		gbc.weightx = 0.0;
-		gbc.insets = new Insets(0, 0, 0, 0);
-		JLabel prio = new SelectableLabel(selected, enabled, null, prioIcon, SwingConstants.LEADING, ICON_HEIGHT);
-		// setting minimum size is necessary as gridbag layout may ignore preffered size if some other lables do not fit!!!
-		prio.setMinimumSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
-		prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
-		p.add(prio, gbc);
-
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
-		DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);		
-		String t;
-		try {
-			t = dfo.format(df.parse(issue.getUpdated()));
-		} catch (java.text.ParseException e) {
-			t = "Invalid";
-		}
-		gbc.gridx++;
-        gbc.weightx = 0.0;
-
-		JLabel updated = new SelectableLabel(selected, enabled, t, null, SwingConstants.LEADING, ICON_HEIGHT);
-		updated.setHorizontalAlignment(SwingConstants.RIGHT);
-		Dimension minDimension = updated.getPreferredSize();
-
-		minDimension.setSize(
-				Math.max(PluginUtil.getDateWidth(updated, dfo), minDimension.getWidth()), minDimension.getHeight());
-		
-		updated.setPreferredSize(minDimension);
-		updated.setMinimumSize(minDimension);
-		updated.setMaximumSize(minDimension);
-		updated.setSize(minDimension);
-		p.add(updated, gbc);
-		JPanel padding = new JPanel();
-        gbc.gridx++;
-        gbc.weightx = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-        padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-        padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-        padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
-        padding.setOpaque(true);
-        p.add(padding, gbc);
-
-		p.setToolTipText(buildTolltip(0));
-
-		// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
-		final JToolTip jToolTip = p.createToolTip();
-		jToolTip.setTipText(buildTolltip(0));
-		final int prefWidth = jToolTip.getPreferredSize().width;
-		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-		p.setToolTipText(buildTolltip(width));
-
-
-		return p;
+		renderer.setParameters(selected, c.isEnabled());
+		return renderer;
 	}
 
-	private String buildTolltip(int width) {
+	private static String buildTolltip(JIRAIssue issue, int width) {
 		StringBuilder sb = new StringBuilder(
                 "<html>"
                 + BODY_WITH_STYLE);
