@@ -208,8 +208,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
-				&& (buildDetailsInfo.getState() != BambooBuildAdapterIdea.BuildState.UNKNOWN
-				|| buildDetailsInfo.getBuildKey() != null)) {
+				&& buildDetailsInfo.getState() != BambooBuildAdapterIdea.BuildState.UNKNOWN) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
 		}
 	}
