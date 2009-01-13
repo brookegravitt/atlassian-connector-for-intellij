@@ -56,5 +56,11 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
 		}
 	}
 
+	protected void setStatusErrorMessage(final Project project, final String message) {
+		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+		if (panel != null) {
+			panel.setStatusMessage(message, true);
+		}
+	}
 }
 

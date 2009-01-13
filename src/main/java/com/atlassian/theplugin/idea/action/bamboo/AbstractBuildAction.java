@@ -39,7 +39,7 @@ import java.awt.*;
  */
 public abstract class AbstractBuildAction extends AnAction {
 
-	protected void setStatusMessageUIThread(final Project project, final String message) {
+	private void setStatusMessageUIThread(final Project project, final String message) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				setStatusMessage(project, message);
@@ -47,7 +47,16 @@ public abstract class AbstractBuildAction extends AnAction {
 		});
 	}
 
+	private void setStatusErrorMessageUIThread(final Project project, final String message) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				setStatusErrorMessage(project, message);
+			}
+		});
+	}
+
 	protected abstract void setStatusMessage(final Project project, final String message);
+	protected abstract void setStatusErrorMessage(final Project project, final String message);
 
 	protected abstract BambooBuildAdapterIdea getBuild(final AnActionEvent event);
 
@@ -68,9 +77,9 @@ public abstract class AbstractBuildAction extends AnAction {
 								executeBuild(build.getServer(), build.getBuildKey());
 						setStatusMessageUIThread(project, "Build executed on plan: " + build.getBuildKey());
 					} catch (ServerPasswordNotProvidedException e) {
-						setStatusMessageUIThread(project, "Build not executed: Password not provided for server");
+						setStatusErrorMessageUIThread(project, "Build not executed: Password not provided for server");
 					} catch (RemoteApiException e) {
-						setStatusMessageUIThread(project, "Build not executed: " + e.getMessage());
+						setStatusErrorMessageUIThread(project, "Build not executed: " + e.getMessage());
 					}
 				}
 			};
@@ -111,9 +120,9 @@ public abstract class AbstractBuildAction extends AnAction {
 							addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
 					setStatusMessageUIThread(project, "Label applied on build");
 				} catch (ServerPasswordNotProvidedException e) {
-					setStatusMessageUIThread(project, "Label not applied: Password on provided for server");
+					setStatusErrorMessageUIThread(project, "Label not applied: Password on provided for server");
 				} catch (RemoteApiException e) {
-					setStatusMessageUIThread(project, "Label not applied: " + e.getMessage());
+					setStatusErrorMessageUIThread(project, "Label not applied: " + e.getMessage());
 				}
 			}
 		};
@@ -147,14 +156,13 @@ public abstract class AbstractBuildAction extends AnAction {
 								addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentText);
 						setStatusMessageUIThread(project, "Comment added to build");
 					} catch (ServerPasswordNotProvidedException e) {
-						setStatusMessageUIThread(project, "Comment not added: Password not provided for server");
+						setStatusErrorMessageUIThread(project, "Comment not added: Password not provided for server");
 					} catch (RemoteApiException e) {
-						setStatusMessageUIThread(project, "Comment not added: " + e.getMessage());
+						setStatusErrorMessageUIThread(project, "Comment not added: " + e.getMessage());
 					}
 				}
 			};
 
 			ProgressManager.getInstance().run(commentTask);
 		}
-
 }
