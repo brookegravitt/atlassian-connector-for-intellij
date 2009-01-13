@@ -37,11 +37,8 @@ public final class SelectableLabel extends JLabel {
 		if (bold) {
 			setFont(getFont().deriveFont(Font.BOLD));
 		}
-		
-		if (icon != null) {
-			setIcon(icon);
-			setDisabledIcon(icon);
-		}
+
+		setIcon(icon);
 
 		setEnabled(enabled);
 		setSelected(selected);
@@ -59,6 +56,13 @@ public final class SelectableLabel extends JLabel {
 		fgColor = enabled ? fgColor : UIUtil.getInactiveTextColor();
 		setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 		setForeground(fgColor);
+	}
+
+	public void setIcon(Icon icon) {
+		if (icon != null) {
+			super.setIcon(icon);
+			setDisabledIcon(icon);
+		}
 	}
 
 	public void adjustPreferredSize() {
