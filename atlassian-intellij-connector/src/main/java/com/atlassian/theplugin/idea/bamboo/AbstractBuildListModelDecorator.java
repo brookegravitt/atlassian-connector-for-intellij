@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.bamboo.tree;
+package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.idea.bamboo.BuildListModel;
-
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class BuildNodeManipulator {
+public abstract class AbstractBuildListModelDecorator implements BuildListModel {
+	protected BuildModel parent;
 
-	protected final BuildListModel buildModel;
-	protected final DefaultMutableTreeNode rootNode;
-
-	public BuildNodeManipulator(final BuildListModel buildModel, final DefaultMutableTreeNode rootNode) {
-		this.buildModel = buildModel;
-		this.rootNode = rootNode;
+	public AbstractBuildListModelDecorator(final BuildModel buildModel) {
+		this.parent = buildModel;
 	}
 
-	public abstract int getChildCount(Object parent);
+	public void setBuilds(final Collection<BambooBuildAdapterIdea> buildsCollection) {
+		parent.setBuilds(buildsCollection);
+	}
 
-	public abstract Object getChild(Object parent, int index);
+	public Collection<BambooBuildAdapterIdea> getBuilds() {
+		return parent.getBuilds();
+	}
 }
