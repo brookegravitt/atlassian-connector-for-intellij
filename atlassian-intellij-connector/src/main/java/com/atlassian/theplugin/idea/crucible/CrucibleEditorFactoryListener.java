@@ -43,16 +43,15 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 					for (CrucibleFileInfo fileInfo : files) {
 						PsiFile f = CodeNavigationUtil
 								.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
-						if (f != null) {
+						if (f != null && f.getVirtualFile() != null) {
 							Document doc = editorFactoryEvent.getEditor().getDocument();
 							VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
-							if (virtualFile.equals(f.getVirtualFile())) {
-								if (fileInfo.getNumberOfLineComments() > 0) {
+							if (virtualFile != null) {
+								if (virtualFile.getPath().equals(f.getVirtualFile().getPath())) {
 									showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile, review,
 											fileInfo);
 								}
 							}
-
 						}
 					}
 				} catch (ValueNotYetInitialized valueNotYetInitialized) {
@@ -88,7 +87,7 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 				, new VcsIdeaHelper.OpenDiffAction() {
 
 					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-						if (referenceFile == null) {
+						if (referenceFile == null && reviewItem.getCommitType() == CommitType.Modified) {
 							Messages.showErrorDialog(project,
 									"Cannot fetch " + reviewItem.getOldFileDescriptor().getAbsoluteUrl()
 											+ ".\nAnnotated file cannot be displayed.", "Error");

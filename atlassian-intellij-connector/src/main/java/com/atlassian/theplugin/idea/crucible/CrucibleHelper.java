@@ -63,32 +63,17 @@ public final class CrucibleHelper {
 			final ReviewAdapter review,
 			final CrucibleFileInfo reviewItem) {
 
-		int line = 1;
-
-		java.util.List<VersionedComment> fileComments;
-		fileComments = reviewItem.getVersionedComments();
-
-		if (fileComments != null && !fileComments.isEmpty()) {
-			line = fileComments.iterator().next().getFromStartLine();
-		}
-
 		VcsIdeaHelper.openFileWithDiffs(project
 				, true
 				, reviewItem.getFileDescriptor().getAbsoluteUrl()
 				, reviewItem.getOldFileDescriptor().getRevision()
 				, reviewItem.getFileDescriptor().getRevision()
 				, reviewItem.getCommitType()
-				, line
+				, 1
 				, 1
 				, new VcsIdeaHelper.OpenDiffAction() {
 
 					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-						if (referenceFile == null) {
-							Messages.showErrorDialog(project,
-									"Cannot fetch " + reviewItem.getOldFileDescriptor().getAbsoluteUrl()
-											+ ".\nAnnotated file cannot be displayed.", "Error");
-							return;
-						}
 						FileEditorManager fem = FileEditorManager.getInstance(project);
 						Editor editor = fem.openTextEditor(displayFile, true);
 						if (editor == null) {
