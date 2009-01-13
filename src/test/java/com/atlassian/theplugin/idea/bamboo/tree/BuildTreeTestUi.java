@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.atlassian.theplugin.idea.bamboo.BambooFilterListTestUi;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
+import com.atlassian.theplugin.idea.bamboo.BuildModel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 
@@ -37,7 +38,7 @@ public final class BuildTreeTestUi {
 
 	public static void main(String[] args) {
 		ui = new BasicWideNodeTreeUI();
-		final BuildTree tree = new BuildTree(null, BuildGroupBy.SERVER, new BuildTreeModel());
+		final BuildTree tree = new BuildTree(BuildGroupBy.SERVER, new BuildTreeModel(new BuildModel()));
 		//final TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		final JScrollPane jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.idea.bamboo.BuildModel;
+import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import java.util.Set;
  * @author Jacek Jaroczynski
  */
 public class ServerBuildNodeManipulator extends BuildNodeManipulator {
-	public ServerBuildNodeManipulator(final BuildModel buildModel, final DefaultMutableTreeNode root) {
+	public ServerBuildNodeManipulator(final BuildListModel buildModel, final DefaultMutableTreeNode root) {
 		super(buildModel, root);
 	}
 

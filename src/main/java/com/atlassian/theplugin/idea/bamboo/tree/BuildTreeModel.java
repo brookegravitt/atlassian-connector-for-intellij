@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
-import com.atlassian.theplugin.idea.bamboo.BuildModel;
+import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -30,7 +30,7 @@ import java.util.Collection;
  */
 public class BuildTreeModel extends DefaultTreeModel {
 
-	private BuildModel buildModel = new BuildModel();
+	private BuildListModel buildListModel;
 
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 
@@ -40,15 +40,17 @@ public class BuildTreeModel extends DefaultTreeModel {
 	private BuildNodeManipulator dateNodeManipulator;
 	private BuildNodeManipulator projectNodeManipulator;
 
-	public BuildTreeModel() {
+	public BuildTreeModel(final BuildListModel buildListModel) {
 		super(new DefaultMutableTreeNode());
 
-		// todo add group by node manipulators
-		generalNodeManipulator = new GeneralBuildNodeManipulator(buildModel, getRoot());
-		stateNodeManipulator = new StateBuildNodeManipulator(buildModel, getRoot());
-		serverNodeManipulator = new ServerBuildNodeManipulator(buildModel, getRoot());
-		dateNodeManipulator = new DateBuildNodeManipulator(buildModel, getRoot());
-		projectNodeManipulator = new ProjectBuildNodeManipulator(buildModel, getRoot());
+		this.buildListModel = buildListModel;
+
+		generalNodeManipulator = new GeneralBuildNodeManipulator(buildListModel, getRoot());
+		stateNodeManipulator = new StateBuildNodeManipulator(buildListModel, getRoot());
+		serverNodeManipulator = new ServerBuildNodeManipulator(buildListModel, getRoot());
+		dateNodeManipulator = new DateBuildNodeManipulator(buildListModel, getRoot());
+		projectNodeManipulator = new ProjectBuildNodeManipulator(buildListModel, getRoot());
+
 	}
 
 	/**
@@ -146,7 +148,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 		if (parent == getRoot()) {
 			if (child instanceof BuildTreeNode) {
 				BambooBuildAdapterIdea build = ((BuildTreeNode) child).getBuild();
-				return new ArrayList<BambooBuildAdapterIdea>(buildModel.getBuilds()).indexOf(build);
+				return new ArrayList<BambooBuildAdapterIdea>(buildListModel.getBuilds()).indexOf(build);
 			}
 		}
 
@@ -154,11 +156,16 @@ public class BuildTreeModel extends DefaultTreeModel {
 	}
 
 	public void update(final Collection<BambooBuildAdapterIdea> buildStatuses) {
-		buildModel.setBuils(buildStatuses);
+		buildListModel.setBuilds(buildStatuses);
+		update();
+	}
+
+	public void update() {
 		getRoot().removeAllChildren();
 		nodeStructureChanged(getRoot());
-		nodeChanged(getRoot());
-		nodeStructureChanged(root);
-		nodeChanged(root);
+	}
+
+	public BuildListModel getBuildListModel() {
+		return buildListModel;
 	}
 }

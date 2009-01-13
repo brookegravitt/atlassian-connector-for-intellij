@@ -17,8 +17,8 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
+import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.intellij.openapi.project.Project;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -35,7 +35,7 @@ public class BuildTree extends AbstractTree {
 
 	private TreeModelListener localTreeModelListener = new LocalTreeModelListener();
 
-	public BuildTree(final Project project, final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
+	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
 		super(buildTreeModel);
 
 		this.buildTreeModel = buildTreeModel;
@@ -44,6 +44,7 @@ public class BuildTree extends AbstractTree {
 		init();
 
 		buildTreeModel.addTreeModelListener(localTreeModelListener);
+		buildTreeModel.getBuildListModel().addListener(new LocalListModelListener());
 	}
 
 	private void init() {
@@ -131,6 +132,23 @@ public class BuildTree extends AbstractTree {
 
 		public void treeStructureChanged(final TreeModelEvent e) {
 			expandTree();
+		}
+	}
+
+	private class LocalListModelListener implements BuildListModelListener {
+		public void modelUpdated() {
+			Set<TreePath> collapsedPaths = getCollapsedPaths();
+			BambooBuildAdapterIdea build = getSelectedBuild();
+
+			// rebuild the tree
+			buildTreeModel.update();
+
+			// expand entire tree
+			expandTree();
+
+			// restore selection and collapse state
+			collapsePaths(collapsedPaths);
+			selectBuildNode(build);
 		}
 	}
 }

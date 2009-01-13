@@ -68,6 +68,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private JComponent toolBar;
 	private BambooProjectConfiguration bambooConfiguration;
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
+	private SearchBuildListModel searchBuildModel;
 
 	public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
@@ -130,7 +131,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		});
 
 
-		buildTree = new BuildTree(project, groupBy, new BuildTreeModel());
+		searchBuildModel = new SearchBuildListModel(new BuildModel());
+		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel));
 		toolBar = createToolBar();
 		init();
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
@@ -217,15 +219,15 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	protected void addSearchBoxListener() {
 		searchField.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				searchBuildModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				searchBuildModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				searchBuildModel.setSearchTerm(getSearchField().getText());
 			}
 		});
 
@@ -242,6 +244,10 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			public void keyReleased(KeyEvent e) {
 			}
 		});
+	}
+
+	private SearchTextField getSearchField() {
+		return searchField;
 	}
 
 	@Override
@@ -271,7 +277,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		buildTree.updateModel(bambooModel.getBuilds());
 
 		bambooConfiguration.getView().setFilterType(bambooFilterType);
-
 	}
 
 	public void refresh() {
