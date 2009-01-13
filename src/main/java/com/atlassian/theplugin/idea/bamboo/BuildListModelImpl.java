@@ -19,23 +19,19 @@ import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Collections;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class BambooModel {
+public class BuildListModelImpl implements BuildListModel {
 	/**
 	 * null means no filter - all builds matchs
 	 */
 	private BambooBuildFilter filter;
 
-	private final Collection<BambooModelListener> listeners = new CopyOnWriteArrayList<BambooModelListener>();
+	private final Collection<BuildListModelListener> listeners = new CopyOnWriteArrayList<BuildListModelListener>();
 
 	private final Collection<BambooBuildAdapterIdea> allBuilds = MiscUtil.buildArrayList();
 
@@ -82,7 +78,7 @@ public class BambooModel {
 
 		//setBuilds(buildStatuses);
 		notifyListeners(new Notifier() {
-			public void notify(final BambooModelListener listener) {
+			public void notify(final BuildListModelListener listener) {
 				listener.buildsChanged(Collections.singleton(info.toString()), errors);
 			}
 		});
@@ -115,23 +111,23 @@ public class BambooModel {
 		if (this.filter != filter) {
 			this.filter = filter;
 			notifyListeners(new Notifier() {
-				public void notify(final BambooModelListener listener) {
-					listener.filterChanged();
+				public void notify(final BuildListModelListener listener) {
+					listener.modelChanged();
 				}
 			});
 		}
 	}
 
 	private interface Notifier {
-		void notify(BambooModelListener listener);
+		void notify(BuildListModelListener listener);
 	}
 
-	public void addListener(BambooModelListener listener) {
+	public void addListener(BuildListModelListener listener) {
 		listeners.add(listener);
 	}
 
 	private void notifyListeners(Notifier notifier) {
-		for (BambooModelListener listener : listeners) {
+		for (BuildListModelListener listener : listeners) {
 			notifier.notify(listener);
 		}
 

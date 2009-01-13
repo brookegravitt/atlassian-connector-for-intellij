@@ -19,6 +19,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -33,8 +34,6 @@ import java.util.Set;
 public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
 
-	private TreeModelListener localTreeModelListener = new LocalTreeModelListener();
-
 	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
 		super(buildTreeModel);
 
@@ -43,8 +42,8 @@ public class BuildTree extends AbstractTree {
 
 		init();
 
-		buildTreeModel.addTreeModelListener(localTreeModelListener);
-		buildTreeModel.getBuildListModel().addListener(new LocalListModelListener());
+		buildTreeModel.addTreeModelListener(new LocalTreeModelListener());
+		buildTreeModel.getBuildListModel().addListener(new LocalBuildListModelListener());
 	}
 
 	private void init() {
@@ -86,57 +85,35 @@ public class BuildTree extends AbstractTree {
 		}
 	}
 
-	public void updateModel(final Collection<BambooBuildAdapterIdea> buildStatuses) {
-
-		Set<TreePath> collapsedPaths = getCollapsedPaths();
-		BambooBuildAdapterIdea build = getSelectedBuild();
-
-		// rebuild the tree
-		buildTreeModel.update(buildStatuses);
-
-		// expand entire tree
-		expandTree();
-
-		// restore selection and collapse state
-		collapsePaths(collapsedPaths);
-		selectBuildNode(build);	
-	}
-
-//	public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
-//		final Collection<BambooBuildAdapterIdea> collection = new ArrayList<BambooBuildAdapterIdea>();
-//		for (BambooBuild build : buildStatuses) {
-//			BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
-//			collection.add(buildAdapter);
-//		}
-//
-//		updateModel(collection);
-//	}
-
 	public void groupBy(final BuildGroupBy groupingType) {
 		buildTreeModel.groupBy(groupingType);
 		expandTree();
 	}
 
 	private class LocalTreeModelListener implements TreeModelListener {
-		public void treeNodesChanged(final TreeModelEvent e) {
+		public void treeNodesChanged(final TreeModelEvent e) { }
 
-		}
+		public void treeNodesInserted(final TreeModelEvent e) { }
 
-		public void treeNodesInserted(final TreeModelEvent e) {
-
-		}
-
-		public void treeNodesRemoved(final TreeModelEvent e) {
-
-		}
+		public void treeNodesRemoved(final TreeModelEvent e) { }
 
 		public void treeStructureChanged(final TreeModelEvent e) {
 			expandTree();
 		}
 	}
 
-	private class LocalListModelListener implements BuildListModelListener {
-		public void modelUpdated() {
+	private class LocalBuildListModelListener implements BuildListModelListener {
+
+		public void modelChanged() {
+			refreshTree();
+		}
+
+		public void buildsChanged(@Nullable final Collection<String> additionalInfo,
+				@Nullable final Collection<String> errors) {
+			refreshTree();
+		}
+
+		private void refreshTree() {
 			Set<TreePath> collapsedPaths = getCollapsedPaths();
 			BambooBuildAdapterIdea build = getSelectedBuild();
 

@@ -23,7 +23,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
@@ -56,7 +55,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	/**
 	 * Sets groupBy field used to group the tree and triggers tree to rebuild
 	 * Only tree should use that method.
-	 * @param aGroupBy
+	 * @param aGroupBy group by option
 	 */
 	public void groupBy(BuildGroupBy aGroupBy) {
 		setGroupBy(aGroupBy);
@@ -71,7 +70,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	/**
 	 * Simple setter (does not trigger tree to rebuild)
 	 * Used when initializig tree (before first load of builds status)
-	 * @param groupBy
+	 * @param groupBy group by option
 	 */
 	public void setGroupBy(BuildGroupBy groupBy) {
 		if (groupBy != null) {
@@ -155,10 +154,10 @@ public class BuildTreeModel extends DefaultTreeModel {
 		return -1;
 	}
 
-	public void update(final Collection<BambooBuildAdapterIdea> buildStatuses) {
-		buildListModel.setBuilds(buildStatuses);
-		update();
-	}
+//	public void update(final Collection<BambooBuildAdapterIdea> buildStatuses) {
+//		buildListModel.setBuilds(buildStatuses);
+//		update();
+//	}
 
 	public void update() {
 		getRoot().removeAllChildren();

@@ -33,12 +33,13 @@ import java.util.Set;
 public class BambooFilterList extends JList {
 	private final ProjectCfgManager projectCfgManager;
 	private final ProjectId projectId;
-	private final BambooModel bambooModel;
+	private final BuildListModelImpl bambooModel;
 	private BambooFilterType bambooFilterType; // = BambooFilterType.NONE;
 	private final BamboAllFilterWrapper allFilterWrapper;
 
 
-	public BambooFilterList(final ProjectCfgManager projectCfgManager, final ProjectId projectId, final BambooModel model) {
+	public BambooFilterList(final ProjectCfgManager projectCfgManager,
+			final ProjectId projectId, final BuildListModelImpl model) {
 		super(new DefaultListModel());
 		this.projectCfgManager = projectCfgManager;
 		this.projectId = projectId;
@@ -262,9 +263,9 @@ public class BambooFilterList extends JList {
 
 	private abstract static class AbstractBambooBuildFilterWrapper<T extends BambooBuildFilter>
 			extends GenericComboBoxItemWrapper<T> {
-		private final BambooModel model;
+		private final BuildListModelImpl model;
 
-		public AbstractBambooBuildFilterWrapper(final T wrapped, final BambooModel model) {
+		public AbstractBambooBuildFilterWrapper(final T wrapped, final BuildListModelImpl model) {
 			super(wrapped);
 			this.model = model;
 		}
@@ -282,7 +283,7 @@ public class BambooFilterList extends JList {
 	}
 
 	private static class BamboAllFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooBuildFilter> {
-		public BamboAllFilterWrapper(final BambooModel model) {
+		public BamboAllFilterWrapper(final BuildListModelImpl model) {
 			super(ALL_FILTER, model);
 		}
 
@@ -293,7 +294,7 @@ public class BambooFilterList extends JList {
 	}
 
 	private static class BamboServerFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooServerFilter> {
-		public BamboServerFilterWrapper(final BambooServerFilter wrapped, final BambooModel model) {
+		public BamboServerFilterWrapper(final BambooServerFilter wrapped, final BuildListModelImpl model) {
 			super(wrapped, model);
 		}
 
@@ -311,7 +312,7 @@ public class BambooFilterList extends JList {
 	}
 
 	private static class BamboProjectFilterWrapper extends AbstractBambooBuildFilterWrapper<BambooProjectFilter> {
-		public BamboProjectFilterWrapper(final BambooProjectFilter wrapped, final BambooModel model) {
+		public BamboProjectFilterWrapper(final BambooProjectFilter wrapped, final BuildListModelImpl model) {
 			super(wrapped, model);
 		}
 
@@ -328,7 +329,7 @@ public class BambooFilterList extends JList {
 
 
 	private static class BuildStatusFilterWrapper extends AbstractBambooBuildFilterWrapper<BuildStatusFilter> {
-		public BuildStatusFilterWrapper(final BuildStatusFilter wrapped, final BambooModel model) {
+		public BuildStatusFilterWrapper(final BuildStatusFilter wrapped, final BuildListModelImpl model) {
 			super(wrapped, model);
 		}
 

@@ -31,9 +31,9 @@ import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooModel;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
@@ -86,7 +86,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private final BambooTableToolWindowPanel bambooTableToolWindowPanel;
-	private final BambooModel bambooModel;
+	private final BuildListModelImpl bambooModel;
 	private CrucibleStatusChecker crucibleStatusChecker;
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
@@ -112,7 +112,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final BambooTableToolWindowPanel bambooTableToolWindowPanel,
 			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
-			@NotNull BambooModel bambooModel,
+			@NotNull BuildListModelImpl bambooModel,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel) {
