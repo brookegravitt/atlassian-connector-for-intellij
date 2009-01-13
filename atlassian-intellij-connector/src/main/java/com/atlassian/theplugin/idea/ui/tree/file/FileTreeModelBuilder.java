@@ -28,7 +28,7 @@ import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.CrucibleFileClickAction;
+import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
