@@ -7,8 +7,12 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 
 public class CrucibleVersionedCommentClickAction implements AtlassianClickAction {
 	private Project project;
@@ -28,8 +32,12 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 		switch (noOfClicks) {
 			case 1:
 				if (editor != null) {
-					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
-					editor.getScrollingModel().scrollVertically(startOffset);
+					Document document = editor.getDocument();
+					VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+					OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine() - 1, 0);
+					if (display.canNavigateToSource()) {
+						display.navigateIn(editor);
+					}
 				}
 				break;
 			case 2:

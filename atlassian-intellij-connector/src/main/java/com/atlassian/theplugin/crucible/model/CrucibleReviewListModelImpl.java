@@ -201,9 +201,11 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			if (crucibleFilter == PredefinedFilter.OpenInIde) {
 				openInIde = updatedReviews.get(crucibleFilter).getReviews();
-				getCollectionForFilter(reviews, PredefinedFilter.OpenInIde);
-				for (ReviewAdapter reviewAdapter : openInIde) {
-					notifications.addAll(addReview(PredefinedFilter.OpenInIde, reviewAdapter, updateReason));
+				if (openInIde != null) {
+					getCollectionForFilter(reviews, PredefinedFilter.OpenInIde);
+					for (ReviewAdapter reviewAdapter : openInIde) {
+						notifications.addAll(addReview(PredefinedFilter.OpenInIde, reviewAdapter, updateReason));
+					}
 				}
 			}
 		}
@@ -213,13 +215,14 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				continue;
 			}
 
-			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
-
-			for (ReviewAdapter reviewAdapter : r) {
-				if (openInIde != null && openInIde.contains(reviewAdapter)) {
-					addReviewToCategory(crucibleFilter, reviewAdapter);
-				} else {
-					notifications.addAll(addReview(crucibleFilter, reviewAdapter, updateReason));
+			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
+			if (updated != null) {
+				for (ReviewAdapter reviewAdapter : updated) {
+					if (openInIde != null && openInIde.contains(reviewAdapter)) {
+						addReviewToCategory(crucibleFilter, reviewAdapter);
+					} else {
+						notifications.addAll(addReview(crucibleFilter, reviewAdapter, updateReason));
+					}
 				}
 			}
 		}
@@ -247,14 +250,16 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				continue;
 			}
 
-			Collection<ReviewAdapter> r = updatedReviews.get(crucibleFilter).getReviews();
+			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 
 			for (ReviewAdapter reviewAdapter : getCollectionForFilter(reviews, crucibleFilter)) {
 				boolean found = false;
-				for (ReviewAdapter adapter : r) {
-					if (adapter.getPermId().equals(reviewAdapter.getPermId())) {
-						found = true;
-						break;
+				if (updated != null) {
+					for (ReviewAdapter adapter : updated) {
+						if (adapter.getPermId().equals(reviewAdapter.getPermId())) {
+							found = true;
+							break;
+						}
 					}
 				}
 				if (!found) {
