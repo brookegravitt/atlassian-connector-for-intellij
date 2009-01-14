@@ -253,6 +253,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 
 			final Set<ReviewAdapter> filterReviews = getCollectionForFilter(reviews, crucibleFilter);
+			final Set<ReviewAdapter> reviewsForDeleteFromCategory = new HashSet<ReviewAdapter>();
 			for (ReviewAdapter reviewAdapter : filterReviews) {
 				boolean found = false;
 				if (updated != null) {
@@ -264,9 +265,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 					}
 				}
 				if (!found) {
-					removeReviewFromCategory(crucibleFilter, reviewAdapter);
+					reviewsForDeleteFromCategory.add(reviewAdapter);
 				}
 			}
+			reviews.get(crucibleFilter).removeAll(reviewsForDeleteFromCategory);
 		}
 
 		// remove categories
