@@ -17,6 +17,7 @@ import java.awt.event.ComponentEvent;
 public class TreeUISetup {
 	private final TreeCellRenderer renderer;
 	private final MyTreeUI ui = new MyTreeUI();
+	private boolean isTreeRebuilding;
 
 	//
 	// voodoo magic below - makes the lastTree node as wide as the whole panel. Somehow. Like I said - it is magic.
@@ -42,20 +43,24 @@ public class TreeUISetup {
 		});
 		tree.addTreeExpansionListener(new TreeExpansionListener() {
 			public void treeExpanded(final TreeExpansionEvent event) {
-				forceTreePrefSizeRecalculation(tree);
+				if (!isTreeRebuilding) {
+					forceTreePrefSizeRecalculation(tree);
+				}
 			}
 
 			public void treeCollapsed(final TreeExpansionEvent event) {
-				forceTreePrefSizeRecalculation(tree);
+				if (!isTreeRebuilding) {
+					forceTreePrefSizeRecalculation(tree);
+				}
 			}
 		});
 	}
 
-	private void forceTreePrefSizeRecalculation(final JTree tree) {
+	public void forceTreePrefSizeRecalculation(final JTree tree) {
 		// we have to call it asynchronously, as otherwise it would be ignored
 		// as there would be already in EDT some stuff which recalculates preferred with
 		// so the changes to prefered size triggered by the magic below would be effectively overwritten
-		ApplicationManager.getApplication().invokeLater(new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				tree.setUI(null);
 				tree.setUI(ui);
@@ -65,6 +70,10 @@ public class TreeUISetup {
 
 	public void registerUI(JTree tree) {
 		tree.setUI(ui);
+	}
+
+	public void setTreeRebuilding(final boolean treeRebuilding) {
+		isTreeRebuilding = treeRebuilding;
 	}
 
 	private class MyTreeUI extends BasicWideNodeTreeUI {

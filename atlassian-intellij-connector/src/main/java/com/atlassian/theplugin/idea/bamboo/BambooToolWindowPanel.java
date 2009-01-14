@@ -27,8 +27,6 @@ import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.SearchTextField;
@@ -43,7 +41,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -57,7 +54,6 @@ import java.util.Collection;
 public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
-	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
 	private final ProjectCfgManager projectCfgManager;
@@ -95,36 +91,29 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		filterList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(final ListSelectionEvent e) {
-				final BambooBuildFilter filter = filterList.getSelection();
-				bambooModel.setFilter(filter);
+				if (e.getValueIsAdjusting() == false) {
+					final BambooBuildFilter filter = filterList.getSelection();
+					bambooModel.setFilter(filter);
+				}
 			}
 		});
 
 		bambooModel.addListener(new BuildListModelListener() {
 			public void modelChanged() {
-//				updateTree();
 			}
 
 			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
 					@Nullable final Collection<String> errors) {
 				setStatusMessage(additionalInfo, errors);
 				filterList.update();
-//				updateTree();
 			}
-
-//			private void updateTree() {
-//				final Collection<BambooBuildAdapterIdea> ideas = bambooModel.getBuilds();
-//				buildTree.updateModel(ideas);
-//			}
 		});
 
 
 		searchBuildModel = new SearchBuildListModel(bambooModel);
-		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel));
+		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel), getRightScrollPane());
 		toolBar = createToolBar();
 		init();
-		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
-		uiSetup.initializeUI(buildTree, getRightScrollPane());
 		addBuildTreeListeners();
 		addSearchBoxListener();
 
@@ -256,7 +245,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	public void setBambooFilterType(@Nullable final BambooFilterType bambooFilterType) {
-//		this.bambooFilterType = bambooFilterType;
 		filterList.setBambooFilterType(bambooFilterType);
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 		bambooModel.setFilter(null);
