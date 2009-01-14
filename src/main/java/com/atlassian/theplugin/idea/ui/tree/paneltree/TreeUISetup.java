@@ -1,11 +1,10 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
-import com.intellij.openapi.application.ApplicationManager;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
