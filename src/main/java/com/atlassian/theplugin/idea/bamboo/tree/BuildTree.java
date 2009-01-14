@@ -19,12 +19,17 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.TreeCellRenderer;
+import javax.swing.*;
 import java.util.Collection;
 import java.util.Set;
 
@@ -33,12 +38,18 @@ import java.util.Set;
  */
 public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
+	private final TreeUISetup buildTreeUiSetup;
+	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
-	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel) {
+	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel,
+			@NotNull final JScrollPane parentScrollPane) {
 		super(buildTreeModel);
 
 		this.buildTreeModel = buildTreeModel;
 		this.buildTreeModel.setGroupBy(groupBy);
+		buildTreeUiSetup = new TreeUISetup(TREE_RENDERER);
+		buildTreeUiSetup.initializeUI(this, parentScrollPane);
+
 
 		init();
 
@@ -55,8 +66,8 @@ public class BuildTree extends AbstractTree {
 
 	public BambooBuildAdapterIdea getSelectedBuild() {
 		final TreePath selectionPath = getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() != null
-				&& selectionPath.getLastPathComponent() instanceof BuildTreeNode) {
+		if (selectionPath != null && selectionPath.getLastPathComponent() != null && selectionPath
+				.getLastPathComponent() instanceof BuildTreeNode) {
 			return ((BuildTreeNode) selectionPath.getLastPathComponent()).getBuild();
 		} else {
 			// nothing selected
@@ -91,11 +102,14 @@ public class BuildTree extends AbstractTree {
 	}
 
 	private class LocalTreeModelListener implements TreeModelListener {
-		public void treeNodesChanged(final TreeModelEvent e) { }
+		public void treeNodesChanged(final TreeModelEvent e) {
+		}
 
-		public void treeNodesInserted(final TreeModelEvent e) { }
+		public void treeNodesInserted(final TreeModelEvent e) {
+		}
 
-		public void treeNodesRemoved(final TreeModelEvent e) { }
+		public void treeNodesRemoved(final TreeModelEvent e) {
+		}
 
 		public void treeStructureChanged(final TreeModelEvent e) {
 			expandTree();
@@ -114,18 +128,26 @@ public class BuildTree extends AbstractTree {
 		}
 
 		private void refreshTree() {
-			Set<TreePath> collapsedPaths = getCollapsedPaths();
-			BambooBuildAdapterIdea build = getSelectedBuild();
+			//		long begin = System.currentTimeMillis();
+			try {
+				buildTreeUiSetup.setTreeRebuilding(true);
+				Set<TreePath> collapsedPaths = getCollapsedPaths();
+				BambooBuildAdapterIdea build = getSelectedBuild();
 
-			// rebuild the tree
-			buildTreeModel.update();
+				// rebuild the tree
+				buildTreeModel.update();
 
-			// expand entire tree
-			expandTree();
+				// expand entire tree
+				expandTree();
 
-			// restore selection and collapse state
-			collapsePaths(collapsedPaths);
-			selectBuildNode(build);
+				// restore selection and collapse state
+				collapsePaths(collapsedPaths);
+				selectBuildNode(build);
+			} finally {
+				buildTreeUiSetup.setTreeRebuilding(false);
+				buildTreeUiSetup.forceTreePrefSizeRecalculation(BuildTree.this);
+			}
+			//			System.out.println("Time: " + (System.currentTimeMillis() - begin));
 		}
 	}
 }
