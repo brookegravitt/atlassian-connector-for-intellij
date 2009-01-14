@@ -252,7 +252,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 
-			for (ReviewAdapter reviewAdapter : getCollectionForFilter(reviews, crucibleFilter)) {
+			final Set<ReviewAdapter> filterReviews = getCollectionForFilter(reviews, crucibleFilter);
+			for (ReviewAdapter reviewAdapter : filterReviews) {
 				boolean found = false;
 				if (updated != null) {
 					for (ReviewAdapter adapter : updated) {
