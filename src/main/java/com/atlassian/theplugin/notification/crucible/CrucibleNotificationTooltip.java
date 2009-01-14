@@ -118,10 +118,10 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			RegualNotificationsProcessor regualNotificationsProcessor = new RegualNotificationsProcessor(notifications,
+			RegularNotificationsProcessor regularNotificationsProcessor = new RegularNotificationsProcessor(notifications,
 					notificationCount).invoke();
-			int changesCount = regualNotificationsProcessor.getChangesCount();
-			notificationCount = regualNotificationsProcessor.getNotificationCount();
+			int changesCount = regularNotificationsProcessor.getChangesCount();
+			notificationCount = regularNotificationsProcessor.getNotificationCount();
 			if (changesCount > 0) {
 				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
 						.append("<td colspan=2><b>")
@@ -129,7 +129,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						.append(" change")
 						.append(changesCount != 1 ? "s" : "")
 						.append("</b></td></tr>");
-				sb.append(regualNotificationsProcessor.getChanges());
+				sb.append(regularNotificationsProcessor.getChanges());
 			}
 
 			sb.append("</table>");
@@ -169,13 +169,13 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 		display.resetIcon();
 	}
 
-	private class RegualNotificationsProcessor {
+	private class RegularNotificationsProcessor {
 		private final java.util.List<CrucibleNotification> notifications;
 		private int notificationCount;
 		private int changesCount;
 		private StringBuilder changes;
 
-		public RegualNotificationsProcessor(final java.util.List<CrucibleNotification> notifications,
+		public RegularNotificationsProcessor(final java.util.List<CrucibleNotification> notifications,
 				final int notificationCount) {
 			this.notifications = notifications;
 			this.notificationCount = notificationCount;
@@ -193,12 +193,15 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			return changes.toString();
 		}
 
-		public RegualNotificationsProcessor invoke() {
+		public RegularNotificationsProcessor invoke() {
 			changesCount = 0;
 			changes = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
 				CrucibleNotificationType type = notification.getType();
-				String id = notification.getId().getId();
+				String id = "";
+				if (notification.getId() != null) {
+					id = notification.getId().getId();
+				}
 
 				switch (type) {
 					case EXCEPTION_RAISED:
