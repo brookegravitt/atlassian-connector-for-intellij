@@ -18,9 +18,7 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.*;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -60,17 +58,17 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 		if (!notifications.isEmpty()) {
 			StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 
+			int notificationCount = 0;
 			int newExceptionCount = 0;
-			int exceptionCount = 0;
 			StringBuilder nsb = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
 				if (notification.getType() == CrucibleNotificationType.EXCEPTION_RAISED) {
-					exceptionCount++;
 					NewExceptionNotification newNotification = (NewExceptionNotification) notification;
 					NewExceptionNotification oldNotification = exceptions.get(newNotification.getServer());
 					if (oldNotification == null
 							|| !newNotification.equals(oldNotification)) {
 						newExceptionCount++;
+						notificationCount++;
 						nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
 								.append(notification.getItemUrl()).append("\">")
 								.append("").append("</a></td><td>").append(notification.getPresentationMessage())
@@ -101,18 +99,12 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			for (CrucibleNotification notification : notifications) {
 				if (notification.getType() == CrucibleNotificationType.NEW_REVIEW) {
 					newReviewCount++;
+					notificationCount++;
 					String id = notification.getId().getId();
 					nsb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
 							.append(notification.getItemUrl()).append("\">")
 							.append(id).append("</a></td><td>").append(notification.getPresentationMessage())
 							.append("</td></tr>");
-				}
-			}
-
-			int notVisibleReviewCount = 0;
-			for (CrucibleNotification notification : notifications) {
-				if (notification.getType() == CrucibleNotificationType.NOT_VISIBLE_REVIEW) {
-					notVisibleReviewCount++;
 				}
 			}
 
@@ -126,7 +118,59 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			int changesCount = notifications.size() - newReviewCount - exceptionCount - notVisibleReviewCount;
+			int changesCount = 0;
+			StringBuilder changes = new StringBuilder();
+			for (CrucibleNotification notification : notifications) {
+				CrucibleNotificationType type = notification.getType();
+				String id = notification.getId().getId();
+
+				switch (type) {
+					case EXCEPTION_RAISED:
+					case NEW_REVIEW:
+					case NOT_VISIBLE_REVIEW:
+						break;
+					case NEW_GENERAL_COMMENT:
+					case NEW_VERSIONED_COMMENT:
+					case NEW_REPLY:
+					case REMOVED_GENERAL_COMMENT:
+					case REMOVED_VERSIONED_COMMENT:
+					case REMOVED_REPLY:
+						AbstractCommentNotification commentNotification = (AbstractCommentNotification) notification;
+						if (!commentNotification.isDraft()) {
+							changesCount++;
+							notificationCount++;
+							changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
+									.append(notification.getItemUrl()).append("\">")
+									.append(id).append("</a></td><td>")
+									.append(notification.getPresentationMessage()).append("</td></tr>");
+						}
+						break;
+					case UPDATED_GENERAL_COMMENT:
+					case UPDATED_VERSIONED_COMMENT:
+					case UPDATED_REPLY:
+						AbstractUpdatedCommentNotification updatedCommentNotification
+								= (AbstractUpdatedCommentNotification) notification;
+						if (!updatedCommentNotification.isDraft()
+								&& (!updatedCommentNotification.isDraft() && !updatedCommentNotification.wasDraft())) {
+							changesCount++;
+							notificationCount++;
+							changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
+									.append(notification.getItemUrl()).append("\">")
+									.append(id).append("</a></td><td>")
+									.append(notification.getPresentationMessage()).append("</td></tr>");
+						}
+						break;
+					default:
+						changesCount++;
+						notificationCount++;
+						changes.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
+								.append(notification.getItemUrl()).append("\">")
+								.append(id).append("</a></td><td>")
+								.append(notification.getPresentationMessage()).append("</td></tr>");
+						break;
+				}
+			}
+
 			if (changesCount > 0) {
 				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
 						.append("<td colspan=2><b>")
@@ -134,24 +178,12 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						.append(" change")
 						.append(changesCount != 1 ? "s" : "")
 						.append("</b></td></tr>");
-
-				for (CrucibleNotification notification : notifications) {
-					CrucibleNotificationType type = notification.getType();
-					if (type != CrucibleNotificationType.EXCEPTION_RAISED
-							&& type != CrucibleNotificationType.NEW_REVIEW
-							&& type != CrucibleNotificationType.NOT_VISIBLE_REVIEW) {
-						String id = notification.getId().getId();
-						sb.append("<tr><td colspan=2 width=\"1%\" nowrap valign=top><a href=\"")
-								.append(notification.getItemUrl()).append("\">")
-								.append(id).append("</a></td><td>")
-								.append(notification.getPresentationMessage()).append("</td></tr>");
-					}
-				}
+				sb.append(changes.toString());
 			}
 
 			sb.append("</table>");
 			if (project != null) {
-				if (notifications.size() - notVisibleReviewCount - (exceptionCount - newExceptionCount) > 0) {
+				if (notificationCount > 0) {
 					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
 
 					JEditorPane content = new JEditorPane();

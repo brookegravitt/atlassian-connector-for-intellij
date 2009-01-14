@@ -29,7 +29,6 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.SearchTextField;
@@ -108,18 +107,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
 					@Nullable final Collection<String> errors) {
-				StringBuilder sb = new StringBuilder();
-				if (additionalInfo != null) {
-					for (String s : additionalInfo) {
-						sb.append(s).append(Util.HTML_NEW_LINE);
-					}
-				}
-				if (errors != null) {
-					for (String s : errors) {
-						sb.append(s).append(Util.HTML_NEW_LINE);
-					}
-				}
-				setStatusMessage(sb.toString(), errors != null && errors.size() > 0);
+				setStatusMessage(additionalInfo, errors);
 				filterList.update();
 //				updateTree();
 			}
@@ -153,7 +141,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
 
 	}
-
 
 
 	private void addBuildTreeListeners() {
