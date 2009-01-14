@@ -22,6 +22,8 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	protected Icon disabledIconOpen;
 	protected Icon disabledIconClosed;
 
+	private RendererPanel renderer;
+
 	public AbstractTreeNode(String name, Icon icon, Icon disabledIcon) {
 		this.name = name;
 		if (icon != null) {
@@ -38,6 +40,8 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 			this.disabledIconOpen = this.iconOpen;
 			this.disabledIconClosed = this.iconClosed;
 		}
+
+		renderer = new RendererPanel();
 	}
 
 	@Override
@@ -50,6 +54,10 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 		private SimpleColoredComponent groupComponent;
 		private JLabel iconLabel;
 		private JPanel panel;
+		private String oldName= "";
+		private int oldChildCount;
+		private boolean oldSelected;
+		private boolean oldEnabled;
 
 		private RendererPanel() {
 			super(new FormLayout("pref, pref:grow", "pref"));
@@ -70,10 +78,15 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 		}
 
 		public void setIcon(Icon icon) {
-			iconLabel.setIcon(icon);
+			if (icon != iconLabel.getIcon()) {
+				iconLabel.setIcon(icon);
+			}
 		}
 
 		public void setParameters(String name, int childCount, boolean selected, boolean enabled) {
+			if (name.equals(oldName) && childCount == oldChildCount && selected == oldSelected && enabled == oldEnabled) {
+				return;
+			}
 			groupComponent.clear();
 			Color bgColor = selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground();
 			Color fgColor = selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground();
@@ -86,23 +99,24 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 			groupComponent.append(" (" + childCount + ")",
 					new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, fgColor));
 
+			oldName = name;
+			oldChildCount = childCount;
+			oldSelected = selected;
+			oldEnabled = enabled;
 		}
 	}
-
-	private static final RendererPanel RENDERER_PANEL = new RendererPanel();
 
 	@SuppressWarnings("UnusedDeclaration")
 	public JComponent getDefaultRenderer(JComponent c, boolean selected, boolean expanded,
 			boolean hasFocus) {
 		if (c.isEnabled()) {
-			RENDERER_PANEL.setIcon(expanded ? iconOpen : iconClosed);
+			renderer.setIcon(expanded ? iconOpen : iconClosed);
 		} else {
-			RENDERER_PANEL.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
+			renderer.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
 		}
 
-		RENDERER_PANEL.setParameters(name, getChildCount(), selected, c.isEnabled());
-		RENDERER_PANEL.validate();
-		return RENDERER_PANEL;
+		renderer.setParameters(name, getChildCount(), selected, c.isEnabled());
+		return renderer;
 
 	}
 }
