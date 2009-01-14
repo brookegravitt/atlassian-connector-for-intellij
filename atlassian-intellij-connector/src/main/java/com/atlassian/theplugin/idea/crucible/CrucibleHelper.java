@@ -185,6 +185,8 @@ public final class CrucibleHelper {
 		public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 			Document displayDocument = EMPTY_DOCUMENT;
 			Document referenceDocument = EMPTY_DOCUMENT;
+			displayDocument.setReadOnly(true);
+			referenceDocument.setReadOnly(true);
 			DiffContent displayFileContent = null;
 			if (displayFile != null) {
 				displayFileContent = createDiffContent(project, displayFile.getFile());
