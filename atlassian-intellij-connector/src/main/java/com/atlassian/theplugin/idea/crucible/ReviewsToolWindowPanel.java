@@ -75,6 +75,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
 
+	private static final int ONE_SECOND = 1000;
+
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
@@ -228,17 +230,14 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
 				triggerDelayedSearchBoxUpdate();
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void removeUpdate(DocumentEvent e) {
 				triggerDelayedSearchBoxUpdate();
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void changedUpdate(DocumentEvent e) {
 				triggerDelayedSearchBoxUpdate();
-//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 		});
 		getSearchField().addKeyboardListener(new KeyListener() {
@@ -257,10 +256,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private void triggerDelayedSearchBoxUpdate() {
-		if (timer.isRunning()) {
+		if (timer != null && timer.isRunning()) {
 			return;
 		}
-		timer = new Timer(1000, new ActionListener() {
+		timer = new Timer(ONE_SECOND, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
