@@ -75,7 +75,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.add(icon, gbc);
 
 		// title
-		String title = " " + build.getBuildKey() + "-" + build.getBuildNumber();
+		String title = " " + build.getBuildKey();
+		if (build.getBuildNumber().length() > 0) {
+			title += "-" + build.getBuildNumber();
+		}
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;

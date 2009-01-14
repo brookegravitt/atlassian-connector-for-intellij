@@ -38,7 +38,11 @@ public class BuildNumberColumn extends TableColumnInfo {
 
 	@Override
 	public Object valueOf(Object o) {
-		return Integer.valueOf(((BambooBuildAdapterIdea) o).getBuildNumber());
+		if (((BambooBuildAdapterIdea) o).getBuildNumber().length() > 0) {
+			return Integer.valueOf(((BambooBuildAdapterIdea) o).getBuildNumber());
+		} else {
+			return 0;
+		}
 	}
 
 	@Override
