@@ -15,7 +15,7 @@ import java.awt.event.ComponentEvent;
  */
 public class TreeUISetup {
 	private final TreeCellRenderer renderer;
-	private final MyTreeUI ui = new MyTreeUI();
+//	private final MyTreeUI ui = new MyTreeUI();
 	private boolean isTreeRebuilding;
 
 	//
@@ -35,8 +35,8 @@ public class TreeUISetup {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				if (tree.isVisible()) {
-					tree.setUI(null);
-					tree.setUI(ui);
+//					tree.setUI(null);
+					tree.setUI(new MyTreeUI());
 				}
 			}
 		});
@@ -61,14 +61,14 @@ public class TreeUISetup {
 		// so the changes to prefered size triggered by the magic below would be effectively overwritten
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				tree.setUI(null);
-				tree.setUI(ui);
+//				tree.setUI(null);
+				tree.setUI(new MyTreeUI());
 			}
 		});
 	}
 
 	public void registerUI(JTree tree) {
-		tree.setUI(ui);
+		tree.setUI(new MyTreeUI());
 	}
 
 	public void setTreeRebuilding(final boolean treeRebuilding) {
