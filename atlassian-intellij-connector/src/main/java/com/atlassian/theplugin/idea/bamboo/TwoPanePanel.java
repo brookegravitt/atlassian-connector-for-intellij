@@ -79,8 +79,10 @@ public abstract class TwoPanePanel extends JPanel {
 		statusBarPane = new JPanel(new FormLayout("2px, left:d:grow, right:pref, 2px", "4px, pref, 4px"));
 		oldColor = statusBarPane.getBackground();
 		CellConstraints cc = new CellConstraints();
+		//CHECKSTYLE:MAGIC:OFF
 		statusBarPane.add(statusBar, cc.xy(2, 2));
 		statusBarPane.add(hyperlinkLabel, cc.xy(3, 2));
+		//CHECKSTYLE:MAGIC:ON
 		hyperlinkLabel.setVisible(false);
 		hyperlinkLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		hyperlinkLabel.addMouseListener(new MouseAdapter() {
@@ -152,12 +154,12 @@ public abstract class TwoPanePanel extends JPanel {
 		return rightScrollPane;
 	}
 
-	public void setStatusMessage(final String message) {
-		setStatusMessage(Collections.singleton(message), Collections.<String>emptySet());
+	public void setStatusMessage(final String infoMessage) {
+		setStatusMessage(Collections.singleton(infoMessage), Collections.<String>emptySet());
 	}
 
-	public void setErrorMessage(final String message) {
-		setStatusMessage(Collections.<String>emptySet(), Collections.singleton(message));
+	public void setErrorMessage(final String errorMessage) {
+		setStatusMessage(Collections.<String>emptySet(), Collections.singleton(errorMessage));
 	}
 
 	private final Color oldColor;
@@ -168,47 +170,7 @@ public abstract class TwoPanePanel extends JPanel {
 	 * @param errors info error messages
 	 */
 	public void setStatusMessage(final Collection<String> msg, final Collection<String> errors) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				StringBuilder sb = new StringBuilder();
-				for (String s : msg) {
-					sb.append(s).append("\n");
-				}
-				for (String s : errors) {
-					sb.append(s).append("\n");
-				}
-				if (msg.size() + errors.size() > 1) {
-					hyperlinkLabel.setVisible(true);
-				} else {
-					hyperlinkLabel.setVisible(false);
-				}
-
-				String oneLiner = "";
-
-				final Iterator<String> iterator = errors.iterator();
-				if (iterator.hasNext()) {
-					oneLiner = iterator.next();
-				} else {
-					final Iterator<String> it2 = msg.iterator();
-					if (it2.hasNext()) {
-						oneLiner = it2.next();
-					}
-				}
-
-				message = sb.toString();
-				statusBar.setText(oneLiner);
-				statusBarPane.revalidate();
-				statusBar.scrollRectToVisible(new Rectangle(1, statusBar.getPreferredSize().height, 1, 1));
-				if (errors.size() > 0) {
-					statusBarPane.setBackground(FAIL_COLOR);
-					hyperlinkLabel.setBackground(FAIL_COLOR);
-				} else {
-					statusBarPane.setBackground(oldColor);
-					hyperlinkLabel.setBackground(oldColor);
-				}
-				repaint();
-			}
-		});
+		EventQueue.invokeLater(new StatusMessageRunnable(msg, errors));
 	}
 
 	private JComponent createRightContent() {
@@ -245,4 +207,53 @@ public abstract class TwoPanePanel extends JPanel {
 	protected abstract JComponent getToolBar();
 	protected abstract JComponent getLeftPanel();
 
+	private class StatusMessageRunnable implements Runnable {
+		private final Collection<String> msg;
+		private final Collection<String> errors;
+
+		public StatusMessageRunnable(final Collection<String> msg, final Collection<String> errors) {
+			this.msg = msg;
+			this.errors = errors;
+		}
+
+		public void run() {
+			StringBuilder sb = new StringBuilder();
+			for (String s : msg) {
+				sb.append(s).append("\n");
+			}
+			for (String s : errors) {
+				sb.append(s).append("\n");
+			}
+			if (msg.size() + errors.size() > 1) {
+				hyperlinkLabel.setVisible(true);
+			} else {
+				hyperlinkLabel.setVisible(false);
+			}
+
+			String oneLiner = "";
+
+			final Iterator<String> iterator = errors.iterator();
+			if (iterator.hasNext()) {
+				oneLiner = iterator.next();
+			} else {
+				final Iterator<String> it2 = msg.iterator();
+				if (it2.hasNext()) {
+					oneLiner = it2.next();
+				}
+			}
+
+			message = sb.toString();
+			statusBar.setText(oneLiner);
+			statusBarPane.revalidate();
+			statusBar.scrollRectToVisible(new Rectangle(1, statusBar.getPreferredSize().height, 1, 1));
+			if (errors.size() > 0) {
+				statusBarPane.setBackground(FAIL_COLOR);
+				hyperlinkLabel.setBackground(FAIL_COLOR);
+			} else {
+				statusBarPane.setBackground(oldColor);
+				hyperlinkLabel.setBackground(oldColor);
+			}
+			repaint();
+		}
+	}
 }
