@@ -53,7 +53,7 @@ public class BuildListModelImpl implements BuildListModel {
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN) {
-					errors.add(build.getMessage());
+					errors.add(build.getBuildKey() + ": " + build.getMessage());
 					haveErrors = true;
 				}
 			}
@@ -66,13 +66,12 @@ public class BuildListModelImpl implements BuildListModel {
 		allBuilds.addAll(buildAdapters);
 
 		final StringBuilder info = new StringBuilder();
-		info.append("Loaded <b>");
+		info.append("Loaded ");
 		info.append(builds.size());
-		info.append("</b> builds");
+		info.append(" builds");
 		if (lastPollingTime != null) {
-			info.append(" at  <b>");
+			info.append(" at ");
 			info.append(TIME_DF.print(lastPollingTime.getTime()));
-			info.append("</b>");
 		}
 		info.append(".");
 

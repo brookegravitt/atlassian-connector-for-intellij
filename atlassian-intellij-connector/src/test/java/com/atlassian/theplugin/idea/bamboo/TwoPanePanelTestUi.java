@@ -21,6 +21,8 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.Random;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public final class TwoPanePanelTestUi {
@@ -45,10 +47,20 @@ public final class TwoPanePanelTestUi {
 				button.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
 						if (new Random().nextBoolean()) {
-							setStatusMessage("All OK<br/>", false);
+							if (new Random().nextBoolean()) {
+								setStatusMessage("All OK");
+							} else {
+								setStatusMessage(Arrays.asList("Very looooooooooooooooooong message",
+										"THIS IS VERY LOOOOOOOOOOOOOOOOOONG line", "The last line"),
+										Collections.<String>emptySet());
+							}
 						} else {
-							setStatusMessage("Very long message<br/>THIS IS VERY LOOOOOOOOOOOOOOOOOONG line<br/>Another line<br/>",
-									new Random().nextBoolean());
+							setStatusMessage(Arrays.<String>asList("Very long message",
+									"THIS IS VERY LOOOOOOOOOOOOOOOOOONG line",
+									"Another line"), Arrays.asList("My Error", "Second line of my error",
+									"Last lineWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+											+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXYZWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+											+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWAAAAAAAAAMMMMWWWWWWZZZ!"));
 						}
 					}
 				});
