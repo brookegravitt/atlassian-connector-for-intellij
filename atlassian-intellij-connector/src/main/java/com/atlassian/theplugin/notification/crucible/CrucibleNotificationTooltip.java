@@ -118,8 +118,84 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			}
 
 
-			int changesCount = 0;
-			StringBuilder changes = new StringBuilder();
+			RegualNotificationsProcessor regualNotificationsProcessor = new RegualNotificationsProcessor(notifications,
+					notificationCount).invoke();
+			int changesCount = regualNotificationsProcessor.getChangesCount();
+			notificationCount = regualNotificationsProcessor.getNotificationCount();
+			if (changesCount > 0) {
+				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
+						.append("<td colspan=2><b>")
+						.append(changesCount)
+						.append(" change")
+						.append(changesCount != 1 ? "s" : "")
+						.append("</b></td></tr>");
+				sb.append(regualNotificationsProcessor.getChanges());
+			}
+
+			sb.append("</table>");
+			if (project != null) {
+				if (notificationCount > 0) {
+					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
+
+					JEditorPane content = new JEditorPane();
+					content.setEditable(false);
+					content.setContentType("text/html");
+					content.setEditorKit(new ClasspathHTMLEditorKit());
+					content.setText("<html>" + StausIconBambooListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+					content.setBackground(BACKGROUND_COLOR);
+					content.addHyperlinkListener(new GenericHyperlinkListener());
+
+					content.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent e) {
+							display.resetIcon();
+							pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
+						}
+					});
+					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
+					final WindowManager windowManager = WindowManager.getInstance();
+					if (windowManager != null) {
+						final StatusBar statusBar = windowManager.getStatusBar(project);
+						if (statusBar != null) {
+							statusBar.fireNotificationPopup(new JScrollPane(content), BACKGROUND_COLOR);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void resetState() {
+		display.resetIcon();
+	}
+
+	private class RegualNotificationsProcessor {
+		private final java.util.List<CrucibleNotification> notifications;
+		private int notificationCount;
+		private int changesCount;
+		private StringBuilder changes;
+
+		public RegualNotificationsProcessor(final java.util.List<CrucibleNotification> notifications,
+				final int notificationCount) {
+			this.notifications = notifications;
+			this.notificationCount = notificationCount;
+		}
+
+		public int getNotificationCount() {
+			return notificationCount;
+		}
+
+		public int getChangesCount() {
+			return changesCount;
+		}
+
+		public String getChanges() {
+			return changes.toString();
+		}
+
+		public RegualNotificationsProcessor invoke() {
+			changesCount = 0;
+			changes = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
 				CrucibleNotificationType type = notification.getType();
 				String id = notification.getId().getId();
@@ -170,51 +246,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						break;
 				}
 			}
-
-			if (changesCount > 0) {
-				sb.append("<tr><td width=20><img src=\"/icons/crucible-blue-16.png\" height=16 width=16 border=0></td>")
-						.append("<td colspan=2><b>")
-						.append(changesCount)
-						.append(" change")
-						.append(changesCount != 1 ? "s" : "")
-						.append("</b></td></tr>");
-				sb.append(changes.toString());
-			}
-
-			sb.append("</table>");
-			if (project != null) {
-				if (notificationCount > 0) {
-					display.triggerNewReviewAction(notifications.size(), exceptionRaised);
-
-					JEditorPane content = new JEditorPane();
-					content.setEditable(false);
-					content.setContentType("text/html");
-					content.setEditorKit(new ClasspathHTMLEditorKit());
-					content.setText("<html>" + StausIconBambooListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
-					content.setBackground(BACKGROUND_COLOR);
-					content.addHyperlinkListener(new GenericHyperlinkListener());
-
-					content.addMouseListener(new MouseAdapter() {
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							display.resetIcon();
-							pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
-						}
-					});
-					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
-					final WindowManager windowManager = WindowManager.getInstance();
-					if (windowManager != null) {
-						final StatusBar statusBar = windowManager.getStatusBar(project);
-						if (statusBar != null) {
-							statusBar.fireNotificationPopup(new JScrollPane(content), BACKGROUND_COLOR);
-						}
-					}
-				}
-			}
+			return this;
 		}
-	}
-
-	public void resetState() {
-		display.resetIcon();
 	}
 }
