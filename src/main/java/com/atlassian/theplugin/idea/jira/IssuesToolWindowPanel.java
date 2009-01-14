@@ -41,10 +41,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +74,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
 	private JTree issueTree;
 	private JIRAIssueListModel baseIssueListModel;
+	private Timer timer;
 
+	private static final int ONE_SECOND = 1000;
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final PluginConfiguration pluginConfiguration,
@@ -228,15 +227,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	protected void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
-				searchingIssueListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				searchingIssueListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-				searchingIssueListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
 			}
 		});
 		getSearchField().addKeyboardListener(new KeyListener() {
@@ -253,6 +252,20 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 	}
+
+	private void triggerDelayedSearchBoxUpdate() {
+		if (timer != null && timer.isRunning()) {
+			return;
+		}
+		timer = new Timer(ONE_SECOND, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				searchingIssueListModel.setSearchTerm(getSearchField().getText());
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
+	}
+
 
 	private void addIssuesTreeListeners() {
 		getRightTree().addKeyListener(new KeyAdapter() {
