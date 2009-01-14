@@ -106,47 +106,51 @@ public final class CommentHighlighter {
 			@NotNull final ReviewAdapter review) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			Document document = editor.getDocument();
-			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-			if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
-				final ReviewAdapter data = virtualFile.getUserData(REVIEW_DATA_KEY);
-				final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
-				if (data != null && file != null) {
-					if (data.getPermId().equals(review.getPermId())) {
+			if (document != null) {
+				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+				if (virtualFile != null) {
+					if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
+						final ReviewAdapter data = virtualFile.getUserData(REVIEW_DATA_KEY);
+						final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
+						if (data != null && file != null) {
+							if (data.getPermId().equals(review.getPermId())) {
+								try {
+									for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
+										if (crucibleFileInfo.equals(file)) {
+											applyHighlighters(project, editor, crucibleFileInfo);
+											virtualFile.putUserData(REVIEW_DATA_KEY, review);
+											virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+											virtualFile.putUserData(COMMENT_DATA_KEY, true);
+										}
+									}
+								} catch (ValueNotYetInitialized valueNotYetInitialized) {
+									throw new RuntimeException(valueNotYetInitialized);
+								}
+							} else {
+								removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+							}
+						}
+					} else {
 						try {
-							for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
-								if (crucibleFileInfo.equals(file)) {
-									applyHighlighters(project, editor, crucibleFileInfo);
-									virtualFile.putUserData(REVIEW_DATA_KEY, review);
-									virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
-									virtualFile.putUserData(COMMENT_DATA_KEY, true);
+							Set<CrucibleFileInfo> files = review.getFiles();
+							for (CrucibleFileInfo fileInfo : files) {
+								PsiFile f = CodeNavigationUtil
+										.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
+								if (f != null) {
+									VirtualFile virtualFile2 = FileDocumentManager.getInstance().getFile(document);
+									if (virtualFile2.equals(f.getVirtualFile())) {
+										applyHighlighters(project, editor, fileInfo);
+										virtualFile.putUserData(REVIEW_DATA_KEY, review);
+										virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
+										virtualFile.putUserData(COMMENT_DATA_KEY, true);
+									}
+									break;
 								}
 							}
 						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							throw new RuntimeException(valueNotYetInitialized);
-						}
-					} else {
-						removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
-					}
-				}
-			} else {
-				try {
-					Set<CrucibleFileInfo> files = review.getFiles();
-					for (CrucibleFileInfo fileInfo : files) {
-						PsiFile f = CodeNavigationUtil
-								.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
-						if (f != null) {
-							VirtualFile virtualFile2 = FileDocumentManager.getInstance().getFile(document);
-							if (virtualFile2.equals(f.getVirtualFile())) {
-								applyHighlighters(project, editor, fileInfo);
-								virtualFile.putUserData(REVIEW_DATA_KEY, review);
-								virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
-								virtualFile.putUserData(COMMENT_DATA_KEY, true);
-							}
-							break;
+							// don't do anything - should not happen, but even if happens - we don't want to break file opening
 						}
 					}
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					// don't do anything - should not happen, but even if happens - we don't want to break file opening
 				}
 			}
 		}
