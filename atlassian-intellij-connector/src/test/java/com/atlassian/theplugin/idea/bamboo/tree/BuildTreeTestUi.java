@@ -15,32 +15,23 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BambooFilterListTestUi;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 
 import javax.swing.*;
-import javax.swing.event.TreeExpansionEvent;
-import javax.swing.event.TreeExpansionListener;
-import javax.swing.tree.TreeCellRenderer;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public final class BuildTreeTestUi {
-	private static BasicWideNodeTreeUI ui;
 
 	private BuildTreeTestUi() {
 	}
 
 	public static void main(String[] args) {
-		ui = new BasicWideNodeTreeUI();
 		BuildListModelImpl buildListModel = new BuildListModelImpl();
 		final JScrollPane jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -90,7 +81,7 @@ public final class BuildTreeTestUi {
 					}
 				});
 			}
-		})*/;
+		});*/
 
 		//uiSetup.initializeUI(tree, jScrollPane);
 		jScrollPane.setViewportView(tree);
