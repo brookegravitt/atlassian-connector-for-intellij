@@ -54,7 +54,7 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 		private SimpleColoredComponent groupComponent;
 		private JLabel iconLabel;
 		private JPanel panel;
-		private String oldName= "";
+		private String oldName = "";
 		private int oldChildCount;
 		private boolean oldSelected;
 		private boolean oldEnabled;

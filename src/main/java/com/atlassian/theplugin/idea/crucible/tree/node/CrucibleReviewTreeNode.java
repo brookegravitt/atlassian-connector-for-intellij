@@ -46,7 +46,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		return review.getPermId().getId() + ": " + review.getName();
 	}
 
-	private class RendererPanel extends JPanel {
+	private final class RendererPanel extends JPanel {
 		private SelectableLabel key;
 		private SelectableLabel summary;
 		private SelectableLabel state;
