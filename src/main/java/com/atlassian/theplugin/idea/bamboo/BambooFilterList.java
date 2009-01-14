@@ -90,7 +90,6 @@ public class BambooFilterList extends JList {
 					uniqueBambooProjects.add(buildStatuse.getProjectName());
 				}
 				for (String bambooProject : uniqueBambooProjects) {
-//					if (listModel.contains())
 					final BamboProjectFilterWrapper obj = new BamboProjectFilterWrapper(new BambooProjectFilter(bambooProject),
 							bambooModel);
 					// add those projects which don't exist yet
@@ -138,7 +137,6 @@ public class BambooFilterList extends JList {
 			default:
 				break;
 		}
-//		return listModel;
 	}
 
 	private static class BambooServerFilter implements BambooBuildFilter {
