@@ -50,10 +50,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Collection;
 
 /**
@@ -76,6 +73,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleReviewListModel reviewListModel;
+	private Timer timer;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
@@ -229,15 +227,18 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	protected void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void removeUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 
 			public void changedUpdate(DocumentEvent e) {
-				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+				triggerDelayedSearchBoxUpdate();
+//				searchingReviewListModel.setSearchTerm(getSearchField().getText());
 			}
 		});
 		getSearchField().addKeyboardListener(new KeyListener() {
@@ -253,6 +254,19 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			public void keyReleased(KeyEvent e) {
 			}
 		});
+	}
+
+	private void triggerDelayedSearchBoxUpdate() {
+		if (timer.isRunning()) {
+			return;
+		}
+		timer = new Timer(1000, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				searchingReviewListModel.setSearchTerm(getSearchField().getText());
+			}
+		});
+		timer.setRepeats(false);
+		timer.start();
 	}
 
 	@Override
