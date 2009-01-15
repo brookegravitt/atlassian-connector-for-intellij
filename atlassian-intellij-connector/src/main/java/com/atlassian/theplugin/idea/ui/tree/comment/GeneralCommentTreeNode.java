@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.atlassian.theplugin.util.CommentPanelBuilder;
 
 import javax.swing.*;
@@ -46,14 +47,17 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 		return comment;
 	}
 
+	@Override
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
 	}
 
+	@Override
 	public AtlassianTreeNode getClone() {
 		return new GeneralCommentTreeNode(this);
 	}
 
+	@Override
 	public int compareTo(Object o) {
 		if (o instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode gctn = (GeneralCommentTreeNode) o;
@@ -69,10 +73,10 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 			JPanel panel;
 			if (node.isEditable()) {
 				panel = CommentPanelBuilder.createEditPanelOfGeneralComment(
-						node.getReview(), node.getComment());
+						node.getReview(), node.getComment(), MultiLineUtil.getCurrentWidth(tree, row));
 			} else {
 				panel = CommentPanelBuilder.createViewPanelOfGeneralComment(
-						node.getReview(), node.getComment(), isSelected);
+						node.getReview(), node.getComment(), isSelected, MultiLineUtil.getCurrentWidth(tree, row));
 			}
 			return panel;
 		}

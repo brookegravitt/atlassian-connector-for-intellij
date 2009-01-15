@@ -17,12 +17,14 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 import java.text.DateFormat;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -39,13 +41,13 @@ public final class CommentPanelBuilder {
 		// this is utility class
 	}
 
-	public static JPanel createEditPanelOfGeneralComment(ReviewAdapter review, GeneralComment comment) {
-		return createViewPanelOfGeneralComment(review, comment, false); // no editing temporarily
+	public static JPanel createEditPanelOfGeneralComment(ReviewAdapter review, GeneralComment comment, int width) {
+		return createViewPanelOfGeneralComment(review, comment, false, width); // no editing temporarily
 	}
 
 	public static JPanel createViewPanelOfGeneralComment(final ReviewAdapter review, final GeneralComment comment,
-														 final boolean isSelected) {
-		return new CommentPanel(null, comment) {
+														 final boolean isSelected, int width) {
+		return new CommentPanel(null, comment, width) {
 			@Override
 			public Color getHeaderBackground() {
 				if (comment.getAuthor().getUserName().equals(review.getServer().getUsername())) {
@@ -67,13 +69,13 @@ public final class CommentPanelBuilder {
 	}
 
 	public static JPanel createEditPanelOfVersionedComment(ReviewAdapter review, CrucibleFileInfo file,
-			VersionedComment comment) {
-		return createViewPanelOfVersionedComment(review, file, comment, false);
+			VersionedComment comment, int width) {
+		return createViewPanelOfVersionedComment(review, file, comment, false, width);
 	}
 
 	public static JPanel createViewPanelOfVersionedComment(final ReviewAdapter review, CrucibleFileInfo file,
-			final VersionedComment comment, final boolean isSelected) {
-		return new CommentPanel(file, comment) {
+			final VersionedComment comment, final boolean isSelected, int width) {
+		return new CommentPanel(file, comment, width) {
 			@Override
 			public Color getHeaderBackground() {
 				Color c;
@@ -113,12 +115,17 @@ public final class CommentPanelBuilder {
 		private static final Color BORDER_COLOR = new Color(0xCC, 0xCC, 0xCC);
 
 
-		private CommentPanel(CrucibleFileInfo file, Comment comment) {
+		private CommentPanel(CrucibleFileInfo file, Comment comment, int width) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 
 			this.file = file;
 			this.comment = comment;
+
+			final Component messageBody = createMessageBody();
+			final int height = MultiLineUtil
+					.getHeight(comment.getMessage(), width, messageBody.getFont(), new FontRenderContext(null, true, true));
+			messageBody.setPreferredSize(new Dimension(0, height));
 
 			setBackground(getBodyBackground());
 			CellConstraints cc = new CellConstraints();
@@ -139,7 +146,7 @@ public final class CommentPanelBuilder {
 			header.setBackground(getHeaderBackground());
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
-			body.add(getMessageBody(), cc.xy(2, 2));
+			body.add(messageBody, cc.xy(2, 2));
 			body.setBackground(getBodyBackground());
 
 			add(header, cc.xy(1, 1));
@@ -158,10 +165,8 @@ public final class CommentPanelBuilder {
 		}
 
 		protected Component getAuthorLabel() {
-			BoldLabel label =
-					new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
-							.getAuthor().getDisplayName());
-			return label;
+			return new BoldLabel("".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName() : comment
+					.getAuthor().getDisplayName());
 		}
 
 		protected Component getLineInfoLabel() {
@@ -254,7 +259,7 @@ public final class CommentPanelBuilder {
 			return key;
 		}
 
-		protected Component getMessageBody() {
+		protected Component createMessageBody() {
 			JTextArea result = new JTextArea();
 			result.setText(comment.getMessage());
 			result.setLineWrap(true);
