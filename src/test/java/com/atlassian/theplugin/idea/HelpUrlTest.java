@@ -27,6 +27,6 @@ public class HelpUrlTest extends TestCase {
 	}
 
 	public void testGetBadHelpTopic() {
-		assertNull(HelpUrl.getHelpUrl("dupa"));
+		assertNull(HelpUrl.getHelpUrl("theplugin.someinvalid.nonexsiting.key"));
 	}
 }
