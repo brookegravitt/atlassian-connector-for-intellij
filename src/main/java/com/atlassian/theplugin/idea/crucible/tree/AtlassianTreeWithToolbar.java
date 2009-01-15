@@ -58,6 +58,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	public AtlassianTreeWithToolbar(final String toolbarName, boolean installUi) {
 		super(toolbarName);
 		this.installUi = installUi;
+		init();
 	}
 
 	@Override
