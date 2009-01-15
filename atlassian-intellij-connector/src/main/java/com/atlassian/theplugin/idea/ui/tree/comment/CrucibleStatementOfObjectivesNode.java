@@ -71,7 +71,7 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 			// wseliga: I know that component should be cached here and created only once and reused between invocations
 			// but we could live here without it especially comparing to the cost of rebuilding every thing onresize of
 			// this tree (new UI is set)
-			return new StatementOfObjectivesPanel(MultiLineUtil.getCurrentWidth(tree, row), node.getText()) ;
+			return new StatementOfObjectivesPanel(MultiLineUtil.getCurrentWidth(tree, row), node.getText());
 		}
 	}
 
