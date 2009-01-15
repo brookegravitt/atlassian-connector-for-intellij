@@ -53,9 +53,15 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
                 add(new JLabel("Toolbar initialization failed"), BorderLayout.NORTH);
             }
         }
-		add(new JScrollPane(getTreeComponent()), BorderLayout.CENTER);
-
     }
+
+	/**
+	 * Call this method at the end of your constructor.
+	 * Two phase creation.
+	 */
+	protected void init() {
+		add(new JScrollPane(getTreeComponent()), BorderLayout.CENTER);
+	}
 
     protected abstract Component getTreeComponent();
 
