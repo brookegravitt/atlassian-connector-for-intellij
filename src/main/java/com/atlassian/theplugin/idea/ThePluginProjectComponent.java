@@ -106,6 +106,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
 
+	private CrucibleEditorFactoryListener crucibleEditorFactoryListener;
+
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
@@ -276,8 +278,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			created = true;
 
+			crucibleEditorFactoryListener = new CrucibleEditorFactoryListener(project,
+					crucibleReviewListModel);
 			EditorFactory.getInstance()
-					.addEditorFactoryListener(new CrucibleEditorFactoryListener(project, crucibleReviewListModel));
+					.addEditorFactoryListener(crucibleEditorFactoryListener);
 
 			registerCrucibleNotifier();
 
@@ -347,6 +351,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
+
+			EditorFactory.getInstance().removeEditorFactoryListener(crucibleEditorFactoryListener);
 
 			created = false;
 		}
