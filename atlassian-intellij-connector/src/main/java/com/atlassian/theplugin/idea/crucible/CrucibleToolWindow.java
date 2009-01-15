@@ -53,11 +53,12 @@ import java.awt.*;
 /**
  * User: pmaruszak
  */
-public class CrucibleToolWindow extends SingleTabToolWindow {
+public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvider {
 	private static final String TOOL_WINDOW_NAME_PREFIX = "Review";
+	private ReviewAdapter reviewAdapter;
 
 	protected CrucibleToolWindow(@NotNull final Project project,
-								 @NotNull final CrucibleReviewListModel reviewListModel) {
+			@NotNull final CrucibleReviewListModel reviewListModel) {
 		super(project, reviewListModel);
 	}
 
@@ -81,6 +82,13 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 		super.closeToolWindow(TOOL_WINDOW_NAME_PREFIX);
 	}
 
+	public Object getData(@NonNls final String dataId) {
+		if (dataId.equals(Constants.REVIEW)) {
+			return reviewAdapter;
+		}
+		return null;
+	}
+
 	private final class ReviewContentParameters implements SingleTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
 
@@ -90,6 +98,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow {
 	}
 
 	public void showReview(ReviewAdapter reviewAdapter) {
+		this.reviewAdapter = reviewAdapter;
 		showToolWindow(new ReviewContentParameters(reviewAdapter), TOOL_WINDOW_NAME_PREFIX, Constants.CRUCIBLE_ICON);
 	}
 
