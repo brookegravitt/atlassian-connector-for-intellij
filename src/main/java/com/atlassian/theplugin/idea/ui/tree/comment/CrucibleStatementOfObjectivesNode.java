@@ -17,12 +17,14 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
 
 public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
@@ -63,12 +65,13 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {
-		private static final StatementOfObjectivesPanel PANEL = new StatementOfObjectivesPanel();
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {
 			CrucibleStatementOfObjectivesNode node = (CrucibleStatementOfObjectivesNode) value;
-			PANEL.setText(node.getText());
-			return PANEL;
+			// wseliga: I know that component should be cached here and created only once and reused between invocations
+			// but we could live here without it especially comparing to the cost of rebuilding every thing onresize of
+			// this tree (new UI is set)
+			return new StatementOfObjectivesPanel(MultiLineUtil.getCurrentWidth(tree, row), node.getText()) ;
 		}
 	}
 
@@ -79,11 +82,7 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 
 		private JTextArea messageBody;
 
-		public void setText(String text) {
-			messageBody.setText(text);
-		}
-
-		private StatementOfObjectivesPanel() {
+		private StatementOfObjectivesPanel(int width, String text) {
 			super(new FormLayout("pref:grow",
 					"pref, pref:grow"));
 
@@ -95,6 +94,10 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 
 			JPanel body = new JPanel(new FormLayout("4dlu, pref:grow, 4dlu", "2dlu, pref:grow, 2dlu"));
 			messageBody = createMessageBody();
+			final int height = MultiLineUtil
+					.getHeight(text, width, messageBody.getFont(), new FontRenderContext(null, true, true));
+			messageBody.setPreferredSize(new Dimension(0, height));
+			messageBody.setText(text);
 			body.add(messageBody, cc.xy(2, 2));
 			body.setBackground(messageBody.getBackground());
 			add(body, cc.xy(1, 2));
