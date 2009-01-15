@@ -21,7 +21,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 public abstract class CommentTreeNode extends FileNode {
-	private boolean editable = false;
+	private boolean editable;
 	protected ReviewAdapter review;
 
 	protected CommentTreeNode(AtlassianClickAction action) {
@@ -40,6 +40,7 @@ public abstract class CommentTreeNode extends FileNode {
 		return review;
 	}
 
+	@Override
 	public boolean isCompactable() {
 		return false;
 	}
