@@ -158,7 +158,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
         sb.append(review.getPermId().getId());
         sb.append("</font></b>");
 
-		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
+		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
 
 		String summary = review.getName();
 		sb.append(StringEscapeUtils.escapeHtml(summary));
