@@ -16,11 +16,24 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class ViewBuildAction extends AbstractBuildListAction {
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		openBuildInBrowser(event);
+	}
+
+	@Override
+	public void update(final AnActionEvent event) {
+		super.update(event);
+		BambooBuildAdapterIdea build = getBuild(event);
+		if (build != null && build.getBuildKey() != null && build.getBuildNumber() != null) {
+			event.getPresentation().setEnabled(true);
+		} else {
+			event.getPresentation().setEnabled(false);
+		}
 	}
 }
