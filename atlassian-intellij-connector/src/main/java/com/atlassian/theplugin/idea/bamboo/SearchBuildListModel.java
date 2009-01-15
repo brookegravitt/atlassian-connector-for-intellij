@@ -40,7 +40,7 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 		}
 		List<BambooBuildAdapterIdea> list = new ArrayList<BambooBuildAdapterIdea>();
 		for (BambooBuildAdapterIdea r : col) {
-			if (r.getBuildKey().toLowerCase().indexOf(searchTerm) > -1) {
+			if ((r.getBuildKey() + "-" + r.getBuildNumber()).toLowerCase().indexOf(searchTerm) > -1) {
 				list.add(r);
 			}
 		}
