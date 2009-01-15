@@ -16,6 +16,9 @@ public class QuickSearchAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
         final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
+		if (project == null) {
+			return;
+		}
 
 		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
 		if (builder == null) {
@@ -24,7 +27,8 @@ public class QuickSearchAction extends JIRAAbstractAction {
 
 		final JiraServerCfg server = builder.getServer();
         if (server != null) {
-            String query = Messages.showInputDialog(project, "Quick Search:",
+            String query = Messages.showInputDialog(project,
+					"Quick Search (entering just issue key will open this issue directly in IDE):",
                     "Search", IconLoader.getIcon("/actions/find.png"));
             if (query != null) {
 				if (query.matches("[A-Z]+\\-\\d+")) {
@@ -41,6 +45,7 @@ public class QuickSearchAction extends JIRAAbstractAction {
         }
 	}
 
+	@Override
 	public void onUpdate(AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event.getDataContext());
 		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
