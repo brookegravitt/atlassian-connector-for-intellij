@@ -247,10 +247,6 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 				gbc2.gridy = 0;
 
 				ReviewAdapter ra = params.reviewAdapter;
-				body.add(new BoldLabel("Statement of Objectives"), gbc1);
-				body.add(new JLabel(ra.getSummary()), gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
 				body.add(new BoldLabel("State"), gbc1);
 				body.add(new JLabel(ra.getState().getDisplayName()), gbc2);
 				gbc1.gridy++;
