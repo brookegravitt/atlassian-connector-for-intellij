@@ -31,12 +31,13 @@ import java.text.AttributedString;
 
 public final class MultiLineUtil {
 	private static final int MINIMUM_WIDTH = 10;
+	private static final int LINE_SEPARATION_PX = 4;
 
 	private MultiLineUtil() {
 	}
 
 
-	public static Collection<LineBreakMeasurer> prepareLineBreakMeasurer (String text, Font font, FontRenderContext frc) {
+	public static Collection<LineBreakMeasurer> prepareLineBreakMeasurer(String text, Font font, FontRenderContext frc) {
 
 		final String[] lines = text.split("\n");
 		Collection<LineBreakMeasurer> res = MiscUtil.buildArrayList(lines.length);
@@ -44,9 +45,13 @@ public final class MultiLineUtil {
 		Collections.<AttributedCharacterIterator.Attribute, Object>singletonMap(TextAttribute.FONT, font);
 
 		for (String line : lines) {
-			final AttributedString attStr = new AttributedString(line, map);
-			final LineBreakMeasurer measurer = new LineBreakMeasurer(attStr.getIterator(), frc);
-			res.add(measurer);
+			if (line.length() > 0) {
+				final AttributedString attStr = new AttributedString(line, map);
+				final LineBreakMeasurer measurer = new LineBreakMeasurer(attStr.getIterator(), frc);
+				res.add(measurer);
+			} else {
+				res.add(null);
+			}
 
 		}
 		return res;
@@ -59,11 +64,18 @@ public final class MultiLineUtil {
 		final Collection<LineBreakMeasurer> measurers = prepareLineBreakMeasurer(s, font, frc);
 		int height = 0;
 		for (LineBreakMeasurer measurer : measurers) {
-			TextLayout layout;
-			while (null != (layout = measurer.nextLayout(width))) {
+			if (measurer == null) {
+				TextLayout layout = new TextLayout("Ap", font, frc);
 				height += (layout.getAscent());
 				height += layout.getDescent() + layout.getLeading();
-				height += 4;
+				height += LINE_SEPARATION_PX;
+			} else {
+				TextLayout layout;
+				while (null != (layout = measurer.nextLayout(width))) {
+					height += (layout.getAscent());
+					height += layout.getDescent() + layout.getLeading();
+					height += LINE_SEPARATION_PX;
+				}
 			}
 
 		}

@@ -97,9 +97,9 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 		}
 	}
 
-	public void showReview(ReviewAdapter reviewAdapter) {
-		this.reviewAdapter = reviewAdapter;
-		showToolWindow(new ReviewContentParameters(reviewAdapter), TOOL_WINDOW_NAME_PREFIX, Constants.CRUCIBLE_ICON);
+	public void showReview(ReviewAdapter adapter) {
+		this.reviewAdapter = adapter;
+		showToolWindow(new ReviewContentParameters(adapter), TOOL_WINDOW_NAME_PREFIX, Constants.CRUCIBLE_ICON);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
