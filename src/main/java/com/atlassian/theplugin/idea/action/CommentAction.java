@@ -43,7 +43,6 @@ import java.awt.*;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
  * User: lguminski
  * Date: Aug 1, 2008
  * Time: 11:37:08 AM
@@ -65,25 +64,27 @@ public class CommentAction extends AnAction {
 			} else {
 				Document document = editor.getDocument();
 				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+				if (virtualFile != null) {
 
-				ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-				CrucibleFileInfo reviewItem = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-				if (review == null || reviewItem == null) {
-					visible = false;
-				} else {
-					final Project project = e.getData(DataKeys.PROJECT);
-					CrucibleReviewListModel crucibleReviewListModel
-							= IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
-					if (crucibleReviewListModel == null
-							|| !crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
+					ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+					CrucibleFileInfo reviewItem = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+					if (review == null || reviewItem == null) {
 						visible = false;
 					} else {
-						try {
-							if (!review.getActions().contains(Action.COMMENT)) {
+						final Project project = e.getData(DataKeys.PROJECT);
+						CrucibleReviewListModel crucibleReviewListModel
+								= IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
+						if (crucibleReviewListModel == null
+								|| !crucibleReviewListModel.getOpenInIdeReviews().contains(review)) {
+							visible = false;
+						} else {
+							try {
+								if (!review.getActions().contains(Action.COMMENT)) {
+									visible = false;
+								}
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
 								visible = false;
 							}
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							visible = false;
 						}
 					}
 				}
@@ -106,62 +107,64 @@ public class CommentAction extends AnAction {
 
 		final Document document = editor.getDocument();
 		final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-		final int start = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionStart()) + 1;
-		int selEndOffset = editor.getSelectionModel().getSelectionEnd();
-		int end = editor.getDocument().getLineNumber(selEndOffset);
-		int lastLineOffset = editor.getDocument().getLineStartOffset(end);
+		if (virtualFile != null) {
+			final int start = editor.getDocument().getLineNumber(editor.getSelectionModel().getSelectionStart()) + 1;
+			int selEndOffset = editor.getSelectionModel().getSelectionEnd();
+			int end = editor.getDocument().getLineNumber(selEndOffset);
+			int lastLineOffset = editor.getDocument().getLineStartOffset(end);
 
-		// mind the fact that last line should not necessarily be included in the comment, because
-		// the caret may be at the beginning of the line while selecting
-		// start > end is to handle empty selections (just a caret set) at the very beginning of a line
-		if (selEndOffset != lastLineOffset || start > end) {
-			++end;
-		}
+			// mind the fact that last line should not necessarily be included in the comment, because
+			// the caret may be at the beginning of the line while selecting
+			// start > end is to handle empty selections (just a caret set) at the very beginning of a line
+			if (selEndOffset != lastLineOffset || start > end) {
+				++end;
+			}
 
-		final ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-		final CrucibleFileInfo file = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+			final ReviewAdapter review = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+			final CrucibleFileInfo file = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 
-		// PL-833 - review can not be null when adding comment
-		// doesn't look like action called by Idea but anyway should not be null
-		if (review == null) {
-			return;
-		}
+			// PL-833 - review can not be null when adding comment
+			// doesn't look like action called by Idea but anyway should not be null
+			if (review == null) {
+				return;
+			}
 
-		final VersionedCommentBean newComment = new VersionedCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
-			newComment.setToStartLine(start);
-			newComment.setToEndLine(end);
+			final VersionedCommentBean newComment = new VersionedCommentBean();
+			CommentEditForm dialog = new CommentEditForm(project, review, newComment,
+					CrucibleHelper.getMetricsForReview(project, review));
+			dialog.pack();
+			dialog.setModal(true);
+			dialog.show();
+			if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+				newComment.setCreateDate(new Date());
+				newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+				newComment.setToStartLine(start);
+				newComment.setToEndLine(end);
 
-			Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
-				public void run(@NotNull final ProgressIndicator indicator) {
-					try {
-						review.addVersionedComment(file, newComment);
-					} catch (RemoteApiException e1) {
-						IdeaHelper.handleRemoteApiException(project, e1);
-					} catch (ServerPasswordNotProvidedException e1) {
-						IdeaHelper.handleMissingPassword(e1);
-					}
-
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
-							if (editor != null) {
-								CommentHighlighter.highlightCommentsInEditor(project, editor, review, file, null);
-							}
+				Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
+					public void run(@NotNull final ProgressIndicator indicator) {
+						try {
+							review.addVersionedComment(file, newComment);
+						} catch (RemoteApiException e1) {
+							IdeaHelper.handleRemoteApiException(project, e1);
+						} catch (ServerPasswordNotProvidedException e1) {
+							IdeaHelper.handleMissingPassword(e1);
 						}
-					});
 
-				}
-			};
+						EventQueue.invokeLater(new Runnable() {
+							public void run() {
+								Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+								if (editor != null) {
+									CommentHighlighter.highlightCommentsInEditor(project, editor, review, file, null);
+								}
+							}
+						});
 
-			ProgressManager.getInstance().run(task);
+					}
+				};
+
+				ProgressManager.getInstance().run(task);
+			}
 		}
 	}
 }
