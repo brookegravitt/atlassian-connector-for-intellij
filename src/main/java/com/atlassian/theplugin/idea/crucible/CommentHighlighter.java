@@ -71,33 +71,34 @@ public final class CommentHighlighter {
 		if (editor != null) {
 			applyHighlighters(project, editor, reviewItem);
 			Document doc = editor.getDocument();
-			VirtualFile vf = FileDocumentManager.getInstance().getFile(doc);
-			vf.putUserData(REVIEW_DATA_KEY, review);
-			vf.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
-			vf.putUserData(COMMENT_DATA_KEY, true);
-			DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
-			if (documentListener == null) {
-				documentListener = new DocumentListener() {
-					public void beforeDocumentChange(final DocumentEvent event) {
-					}
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
+			if (virtualFile != null) {
+				virtualFile.putUserData(REVIEW_DATA_KEY, review);
+				virtualFile.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
+				virtualFile.putUserData(COMMENT_DATA_KEY, true);
+				DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
+				if (documentListener == null) {
+					documentListener = new DocumentListener() {
+						public void beforeDocumentChange(final DocumentEvent event) {
+						}
 
-					public void documentChanged(final DocumentEvent event) {
-						ApplicationManager.getApplication().invokeLater(new Runnable() {
-							public void run() {
-								removeHighlighters(editor.getDocument().getMarkupModel(project));
-							}
-						});
+						public void documentChanged(final DocumentEvent event) {
+							ApplicationManager.getApplication().invokeLater(new Runnable() {
+								public void run() {
+									removeHighlighters(editor.getDocument().getMarkupModel(project));
+								}
+							});
+						}
+					};
+					doc.addDocumentListener(documentListener);
+					virtualFile.putUserData(LISTENER_KEY, documentListener);
+				}
+				if (displayFile != null) {
+					if (displayFile.canNavigateToSource()) {
+						displayFile.navigateIn(editor);
 					}
-				};
-				doc.addDocumentListener(documentListener);
-				vf.putUserData(LISTENER_KEY, documentListener);
-			}
-			if (displayFile != null) {
-				if (displayFile.canNavigateToSource()) {
-					displayFile.navigateIn(editor);
 				}
 			}
-
 		}
 	}
 
@@ -138,13 +139,15 @@ public final class CommentHighlighter {
 										.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
 								if (f != null) {
 									VirtualFile virtualFile2 = FileDocumentManager.getInstance().getFile(document);
-									if (virtualFile2.equals(f.getVirtualFile())) {
-										applyHighlighters(project, editor, fileInfo);
-										virtualFile.putUserData(REVIEW_DATA_KEY, review);
-										virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
-										virtualFile.putUserData(COMMENT_DATA_KEY, true);
+									if (virtualFile2 != null) {
+										if (virtualFile2.equals(f.getVirtualFile())) {
+											applyHighlighters(project, editor, fileInfo);
+											virtualFile.putUserData(REVIEW_DATA_KEY, review);
+											virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
+											virtualFile.putUserData(COMMENT_DATA_KEY, true);
+										}
+										break;
 									}
-									break;
 								}
 							}
 						} catch (ValueNotYetInitialized valueNotYetInitialized) {

@@ -129,12 +129,16 @@ public final class CrucibleHelper {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
 			final Document document = editor.getDocument();
-			final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-			final ReviewAdapter mr = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-			final CrucibleFileInfo mf = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-			if (mr != null && mf != null) {
-				if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
-					return editor;
+			if (document != null) {
+				final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+				if (virtualFile != null) {
+					final ReviewAdapter mr = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+					final CrucibleFileInfo mf = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+					if (mr != null && mf != null) {
+						if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
+							return editor;
+						}
+					}
 				}
 			}
 		}
