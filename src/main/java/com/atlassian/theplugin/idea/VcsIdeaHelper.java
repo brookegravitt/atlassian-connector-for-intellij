@@ -260,13 +260,13 @@ public final class VcsIdeaHelper {
 			case Modified:
 			case Moved:
 			case Copied:
-				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 				break;
 			case Unknown:
-				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 				break;
 			default:
-				niceFileMessage = "s" + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
 		}
 
 		new FetchingTwoFilesTask(project, modal, niceFileMessage, commitType, virtualFile, fromRevision,
