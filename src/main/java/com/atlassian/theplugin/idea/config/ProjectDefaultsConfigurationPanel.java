@@ -26,6 +26,9 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAProject;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -45,17 +48,22 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final int ALL_COLUMNS = 5;
 	private JComboBox defaultCrucibleServerCombo = new JComboBox();
 	private JComboBox defaultCrucibleProjectCombo = new JComboBox();
+	private JComboBox defaultJiraServerCombo = new JComboBox();
+	private JComboBox defaultJiraProjectCombo = new JComboBox();
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
 	private JComboBox defaultFishEyeServerCombo = new JComboBox();
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
+	private JIRAServerFacade jiraServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
+	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_NONE = new CrucibleProjectWrapper(null);
+	private static final JiraProjectWrapper JIRA_PROJECT_NONE = new JiraProjectWrapper(null);
 	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_NONE = new GenericComboBoxItemWrapper<String>(null);
 	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_FETCHING
 			= new GenericComboBoxItemWrapper<String>(null) {
@@ -66,6 +74,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	};
 
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_FETCHING = new CrucibleProjectWrapper(null) {
+		@Override
+		public String toString() {
+			return "Fetching...";
+		}
+
+	};
+	private static final JiraProjectWrapper JIRA_PROJECT_FETCHING = new JiraProjectWrapper(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
@@ -121,11 +136,60 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 	};
 
+	private final MyModel<JiraProjectWrapper, JIRAProject, JiraServerCfg> jiraProjectModel
+				= new MyModel<JiraProjectWrapper, JIRAProject, JiraServerCfg>(
+					JIRA_PROJECT_FETCHING, JIRA_PROJECT_NONE, "projects", "Jira") {
+
+			@Override
+			protected JiraProjectWrapper toT(final JIRAProject element) {
+				return new JiraProjectWrapper(element);
+			}
+
+			@Override
+			protected List<JIRAProject> getR(final JiraServerCfg serverCfg)
+					throws RemoteApiException, ServerPasswordNotProvidedException, JIRAException {
+				return jiraServerFacade.getProjects(serverCfg);
+			}
+
+			@Override
+			protected boolean isEqual(final JiraProjectWrapper element) {
+				return element.getWrapped().getKey().equals(projectConfiguration.getDefaultJiraProject());
+			}
+
+			@Override
+			protected void setOption(final JiraProjectWrapper newSelection) {
+				if (newSelection == null) {
+					projectConfiguration.setDefaultJiraProject(null);
+					return;
+				}
+				final JIRAProject wrapped = newSelection.getWrapped();
+				if (wrapped != null) {
+					projectConfiguration.setDefaultJiraProject(wrapped.getKey());
+				} else {
+					projectConfiguration.setDefaultJiraProject(null);
+				}
+
+			}
+
+			@Override
+			protected JiraServerCfg getCurrentServer() {
+				return getCurrentJiraServerCfg();
+			}
+		};
+
+
 	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
 		if (projectConfiguration.getDefaultCrucibleServerId() == null) {
 			return null;
 		}
 		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
+	}
+
+	private JiraServerCfg getCurrentJiraServerCfg() {
+		if (projectConfiguration.getDefaultJiraServerId() == null) {
+			return null;
+		}
+		return (JiraServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultJiraServerId());
 	}
 
 	private final MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg> crucRepoModel
@@ -210,9 +274,10 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	public ProjectDefaultsConfigurationPanel(final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
-			final UiTaskExecutor uiTaskExecutor) {
+			final JIRAServerFacade jiraServerFacade, final UiTaskExecutor uiTaskExecutor) {
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
+		this.jiraServerFacade = jiraServerFacade;
 		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
@@ -222,7 +287,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, 3dlu, fill:p");	  // rows
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, 3dlu, fill:p, 9dlu, p, 3dlu, p, 3dlu, p");	  // rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		layout.setRowGroups(new int[][]{{11, 13, 15}});
@@ -247,6 +312,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 13));
 		builder.addLabel("Path to Project", cc.xy(2, 15));
 		builder.add(pathToProjectEdit, cc.xy(4, 15));
+
+		builder.addSeparator("JIRA", cc.xyw(1, 17, ALL_COLUMNS));
+		builder.addLabel("Default Server", cc.xy(2, 19));
+		builder.add(defaultJiraServerCombo, cc.xy(4, 19));
+		builder.addLabel("Default Project", cc.xy(2, 21));
+		builder.add(defaultJiraProjectCombo, cc.xy(4, 21));
+
 		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
@@ -255,6 +327,12 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			public void itemStateChanged(final ItemEvent e) {
 				crucProjectModel.refresh();
 				crucRepoModel.refresh();
+			}
+		});
+
+		defaultJiraServerCombo.addItemListener(new ItemListener() {
+			public void itemStateChanged(final ItemEvent e) {
+				jiraProjectModel.refresh();
 			}
 		});
 
@@ -289,6 +367,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		defaultCrucibleRepositoryCombo.setModel(crucRepoModel);
 		defaultFishEyeRepositoryCombo.setModel(fishRepositoryModel);
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
+
+		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
+		defaultJiraProjectCombo.setModel(jiraProjectModel);
 	}
 
 
@@ -377,6 +458,69 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 			int i = 1;
 			for (CrucibleServerCfgWrapper server : getServers()) {
+				if (i == index) {
+					return server;
+				}
+				i++;
+			}
+			return null;
+		}
+
+		public int getSize() {
+			return getServers().size() + 1;
+		}
+
+	}
+
+	private class JiraServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
+		private Collection<JiraServerCfgWrapper> data;
+
+		private Collection<JiraServerCfgWrapper> getServers() {
+			if (data == null) {
+				data = MiscUtil.buildArrayList();
+				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
+					if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg.isEnabled()) {
+						data.add(new JiraServerCfgWrapper((JiraServerCfg) serverCfg));
+					}
+				}
+			}
+			return data;
+		}
+
+		public Object getSelectedItem() {
+			for (JiraServerCfgWrapper server : getServers()) {
+				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultJiraServerId())) {
+					return server;
+				}
+			}
+			return JIRA_SERVER_NONE;
+		}
+
+		public void setSelectedItem(final Object anItem) {
+			final Object selectedItem = getSelectedItem();
+			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+				if (anItem != null) {
+					JiraServerCfgWrapper item = (JiraServerCfgWrapper) anItem;
+					final JiraServerCfg wrapped = item.getWrapped();
+					if (wrapped != null) {
+						projectConfiguration.setDefaultJiraServerId(wrapped.getServerId());
+						projectConfiguration.setDefaultJiraProject(null);
+					} else {
+						projectConfiguration.setDefaultJiraServerId(null);
+					}
+				} else {
+					projectConfiguration.setDefaultJiraServerId(null);
+				}
+				fireContentsChanged(this, -1, -1);
+			}
+		}
+
+		public Object getElementAt(final int index) {
+			if (index == 0) {
+				return JIRA_SERVER_NONE;
+			}
+			int i = 1;
+			for (JiraServerCfgWrapper server : getServers()) {
 				if (i == index) {
 					return server;
 				}
