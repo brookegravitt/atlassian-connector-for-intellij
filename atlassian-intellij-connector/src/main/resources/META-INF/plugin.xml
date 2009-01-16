@@ -350,11 +350,12 @@
                 text="Publish Comment" icon="/actions/menu-saveall.png"/>
 
 
-        <action id="ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction"
+        <action id="$ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction"
                 text="Add Crucible Comment"
                 description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
             <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
         </action>
 
         <action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
