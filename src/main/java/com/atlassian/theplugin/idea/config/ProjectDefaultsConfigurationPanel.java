@@ -287,8 +287,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, " +
-						"3dlu, fill:p, 9dlu, p, 3dlu, p, 3dlu, p"); // rows
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, "
+						+ "3dlu, fill:p, 9dlu, p, 3dlu, p, 3dlu, p"); // rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		layout.setRowGroups(new int[][]{{11, 13, 15}});
