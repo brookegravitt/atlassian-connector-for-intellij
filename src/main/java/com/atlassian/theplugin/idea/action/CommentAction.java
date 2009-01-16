@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Action;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -39,6 +40,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
 
@@ -49,6 +51,21 @@ import java.util.Date;
  * To change this template use File | Settings | File Templates.
  */
 public class CommentAction extends AnAction {
+
+	public CommentAction() {
+		super();
+		setEnabledInModalContext(true);
+	}
+
+	public CommentAction(final String s) {
+		super(s);
+		setEnabledInModalContext(true);
+	}
+
+	public CommentAction(final String s, final String s1, final Icon icon) {
+		super(s, s1, icon);
+		setEnabledInModalContext(true);
+	}
 
 	@Override
 	public void update(final AnActionEvent e) {

@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.ui.tree.clickaction;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -21,7 +22,9 @@ public class CrucibleFileClickAction implements AtlassianClickAction {
 	public void execute(AtlassianTreeNode node, int noOfClicks) {
 		switch (noOfClicks) {
 			case 2:
-				CrucibleHelper.showVirtualFileWithComments(project, review, file);
+				if (file.getCommitType() != CommitType.Deleted) {
+					CrucibleHelper.showVirtualFileWithComments(project, review, file);
+				}
 				break;
 			default:
 				break;
