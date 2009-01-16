@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -23,6 +24,8 @@ import com.intellij.psi.PsiFile;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Set;
 
 public final class CodeNavigationUtil {
 
@@ -54,10 +57,41 @@ public final class CodeNavigationUtil {
 			int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
 					, StringUtils.reverse(absolutePath));
 			if (diff >= FilenameUtils.getName(absolutePath).length()
-					&& (diff > difference ||  absolutePath.equals(pathname))) {
+					&& (diff > difference || absolutePath.equals(pathname))) {
 				difference = diff;
 				bestMatch = psiFile;
 				if (absolutePath.equals(pathname)) {
+					break;
+				}
+			}
+		}
+		return bestMatch;
+	}
+
+	public static CrucibleFileInfo getBestMatchingCrucibleFileInfo(String path, Set<CrucibleFileInfo> files) {
+		CrucibleFileInfo bestMatch = null;
+		int difference = 0;
+
+		for (CrucibleFileInfo file : files) {
+			String pathname = "";
+			switch (file.getCommitType()) {
+				case Added:
+				case Modified:
+				case Copied:
+				case Moved:
+					pathname = file.getFileDescriptor().getAbsoluteUrl();
+					break;
+				case Deleted:
+					pathname = file.getOldFileDescriptor().getAbsoluteUrl();
+
+			}
+			int diff = StringUtils.indexOfDifference(StringUtils.reverse(path)
+					, StringUtils.reverse(pathname));
+			if (diff >= FilenameUtils.getName(pathname).length()
+					&& (diff > difference || pathname.equals(path))) {
+				difference = diff;
+				bestMatch = file;
+				if (pathname.equals(path)) {
 					break;
 				}
 			}

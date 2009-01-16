@@ -20,7 +20,9 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.EditorDiffActionImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.OpenDiffAction;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diff.*;
@@ -71,16 +73,7 @@ public final class CrucibleHelper {
 				, reviewItem.getCommitType()
 				, 1
 				, 1
-				, new VcsIdeaHelper.OpenDiffAction() {
-
-					public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-						FileEditorManager fem = FileEditorManager.getInstance(project);
-						Editor editor = fem.openTextEditor(displayFile, true);
-						if (editor == null) {
-							return;
-						}
-					}
-				});
+				, new EditorDiffActionImpl(project, review, reviewItem));
 	}
 
 	@NotNull
@@ -158,7 +151,7 @@ public final class CrucibleHelper {
 						, file.getCommitType()
 						, comment.getToStartLine() - 1
 						, 0
-						, new VcsIdeaHelper.OpenDiffAction() {
+						, new OpenDiffAction() {
 
 							public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 								FileEditorManager fem = FileEditorManager.getInstance(project);
@@ -177,7 +170,7 @@ public final class CrucibleHelper {
 
 	}
 
-	private static class MyOpenDiffAction implements VcsIdeaHelper.OpenDiffAction {
+	private static class MyOpenDiffAction implements OpenDiffAction {
 		private final Project project;
 		private final CrucibleFileInfo reviewItem;
 
