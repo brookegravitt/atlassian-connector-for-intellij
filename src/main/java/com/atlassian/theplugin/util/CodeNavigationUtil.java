@@ -83,6 +83,10 @@ public final class CodeNavigationUtil {
 					break;
 				case Deleted:
 					pathname = file.getOldFileDescriptor().getAbsoluteUrl();
+					break;
+				default:
+					pathname = file.getOldFileDescriptor().getAbsoluteUrl();
+					break;
 
 			}
 			int diff = StringUtils.indexOfDifference(StringUtils.reverse(path)
