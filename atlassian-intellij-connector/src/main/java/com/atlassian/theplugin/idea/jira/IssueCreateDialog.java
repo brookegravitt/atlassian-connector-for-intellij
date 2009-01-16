@@ -18,6 +18,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
@@ -48,10 +49,12 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JTextField assignee;
 	private final JiraServerCfg jiraServer;
 	private final JIRAServerModel model;
+	private ProjectConfiguration projectConfiguration;
 
-	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server) {
+	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server, final ProjectConfiguration projectConfiguration) {
 		super(false);
 		this.model = model;
+		this.projectConfiguration = projectConfiguration;
 		$$$setupUI$$$();
 		init();
 		pack();
@@ -131,7 +134,23 @@ public class IssueCreateDialog extends DialogWrapper {
 		}
 
 		if (projectComboBox.getModel().getSize() > 0) {
-			projectComboBox.setSelectedIndex(0);
+			// select default project
+			if (projectConfiguration != null && jiraServer.equals(projectConfiguration.getDefaultJiraServer())) {
+				String project = projectConfiguration.getDefaultJiraProject();
+
+				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
+					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
+						if (((JIRAProject) projectComboBox.getItemAt(i)).getKey().equals(project)) {
+							projectComboBox.setSelectedIndex(i);
+							break;
+						}
+					}
+				}
+
+			} else {
+				projectComboBox.setSelectedIndex(0);
+			}
+
 		}
 		projectComboBox.setEnabled(true);
 	}

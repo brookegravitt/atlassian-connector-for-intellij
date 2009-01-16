@@ -19,11 +19,11 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.options.Configurable;
@@ -35,10 +35,10 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import org.jdom.xpath.XPath;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -240,7 +240,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			configuration = setDefaultProjectConfiguration();
 		}
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
-				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(), uiTaskExecutor);
+				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
+				JIRAServerFacadeImpl.getInstance(), uiTaskExecutor);
 		return projectConfigurationPanel;
 	}
 

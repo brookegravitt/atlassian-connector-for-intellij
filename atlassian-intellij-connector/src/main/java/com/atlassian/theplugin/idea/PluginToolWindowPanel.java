@@ -24,7 +24,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
-	private Project project;
+	protected Project project;
 	private StatusBarIssuesPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
 	private Splitter splitLeftPane;
