@@ -1,10 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
@@ -12,6 +9,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -77,15 +75,18 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
+	private CfgManager cfgManager;
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, 
-			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator) {
+			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
+			@NotNull final ProjectCfgManager projectCfgManager) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraProjectCfg = jiraProjectConfiguration;
+		this.cfgManager = projectCfgManager.getCfgManager();
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
@@ -736,7 +737,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		final JiraServerCfg server = builder.getServer();
 
 		if (server != null) {
-			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server);
+			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
+					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)));
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();

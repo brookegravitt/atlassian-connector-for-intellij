@@ -26,6 +26,10 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 
@@ -41,18 +45,22 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	private ProjectDefaultsConfigurationPanelTestUi() {
 	}
 
-	public static void main(String[] args) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public static void main(String[] args) throws RemoteApiException, ServerPasswordNotProvidedException, JIRAException {
 		final CrucibleServerCfg crucibleServerCfg = new CrucibleServerCfg("Cruc Server 1", new ServerId());
 		crucibleServerCfg.setFisheyeInstance(true);
 		final CrucibleServerCfg crucibleServerCfg2 = new CrucibleServerCfg("Cruc Server 2", new ServerId());
 		final CrucibleServerCfg crucibleServerCfg3 = new CrucibleServerCfg("Cruc Server 3", new ServerId());
 		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerId());
 		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerId());
+		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerId());
+		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerId());
 		final ProjectConfiguration projectConfiguration = new ProjectConfiguration(MiscUtil.buildArrayList(
 				crucibleServerCfg2,
 				new BambooServerCfg("Bamboo Server 1", new ServerId()),
 				crucibleServerCfg,
-				crucibleServerCfg3, fishEyeServerCfg0, fishEyeServerCfg1));
+				crucibleServerCfg3, fishEyeServerCfg0, fishEyeServerCfg1,
+				jiraServerCfg1, jiraServerCfg2));
+
 		projectConfiguration.setDefaultCrucibleServerId(crucibleServerCfg2.getServerId());
 		projectConfiguration.setDefaultCrucibleProject("PR-5");
 		projectConfiguration.setDefaultCrucibleRepo("Connector");
@@ -61,16 +69,26 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		projectConfiguration.setDefaultFishEyeRepo("studio");
 		projectConfiguration.setFishEyeProjectPath("trunk/thePlugin");
 
-		List<CrucibleProject> projects1 = MiscUtil.buildArrayList(makeProject("id1", "PR-1", "Crucible Project 1"),
-				makeProject("id2", "PR-2", "Crucible Project 2"));
+		projectConfiguration.setDefaultJiraServerId(jiraServerCfg1.getServerId());
+		projectConfiguration.setDefaultJiraProject("PL");
+
+		List<CrucibleProject> projects1 = MiscUtil.buildArrayList(makeCrucibleProject("id1", "PR-1", "Crucible Project 1"),
+				makeCrucibleProject("id2", "PR-2", "Crucible Project 2"));
 		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
 
+		final List<CrucibleProject> projects2 = MiscUtil.buildArrayList(makeCrucibleProject("id5", "PR-5", "Crucible Project 5"),
+				makeCrucibleProject("id7", "LPR-5", "Crucible The Last Project"));
 
-		final List<CrucibleProject> projects2 = MiscUtil.buildArrayList(makeProject("id5", "PR-5", "Crucible Project 5"),
-				makeProject("id7", "LPR-5", "Crucible The Last Project"));
+		int id = 1;
+		List<JIRAProject> jiraProjects1 = MiscUtil.buildArrayList(makeJiraProject(id++, "AB", "Jira Project 1"),
+				makeJiraProject(id++, "PL", "Jira Project 2"));
+
+		final List<JIRAProject> jiraProjects2 = MiscUtil.buildArrayList(makeJiraProject(id++, "CD", "Jira Project 3"),
+				makeJiraProject(id, "EF", "Jira Project 4"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg)).andReturn(projects1).anyTimes();
+
 		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg2)).andAnswer(new IAnswer<List<CrucibleProject>>() {
 
 			public List<CrucibleProject> answer() throws Throwable {
@@ -111,9 +129,23 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		}).anyTimes();
 
 		EasyMock.replay(fishEyeServerFacade);
-		
-		JPanel panel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade, fishEyeServerFacade,
-				new DefaultSwingUiTaskExecutor());
+
+		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
+
+		EasyMock.expect(jiraServerFacade.getProjects(jiraServerCfg1)).andReturn(jiraProjects1).anyTimes();
+
+		EasyMock.expect(jiraServerFacade.getProjects(jiraServerCfg2)).andAnswer(new IAnswer<List<JIRAProject>>() {
+
+			public List<JIRAProject> answer() throws Throwable {
+				Thread.sleep(2000);
+				return jiraProjects2;
+			}
+		}).anyTimes();
+
+		EasyMock.replay(jiraServerFacade);
+
+		JPanel panel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
+				fishEyeServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor());
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
 		frame.getContentPane().setLayout(new GridLayout(1, 1));
@@ -128,6 +160,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 				System.out.println("Crucible repo: " + projectConfiguration.getDefaultCrucibleRepo());
 				System.out.println("FishEye server: " + projectConfiguration.getDefaultFishEyeServerId());
 				System.out.println("FishEye repo: " + projectConfiguration.getDefaultFishEyeRepo());
+				System.out.println("JIRA server: " + projectConfiguration.getDefaultJiraServerId());
+				System.out.println("JIRA project: " + projectConfiguration.getDefaultJiraProject());
 				System.exit(0);
 			}
 		});
@@ -136,7 +170,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 	}
 
-	private static CrucibleProject makeProject(String id, String key, String name) {
+	private static CrucibleProject makeCrucibleProject(String id, String key, String name) {
 		CrucibleProjectBean res = new CrucibleProjectBean();
 		res.setId(id);
 		res.setKey(key);
@@ -150,5 +184,12 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		return res;
 	}
 
+	private static JIRAProject makeJiraProject(long id, String key, String name) {
+		JIRAProjectBean res = new JIRAProjectBean();
+		res.setId(id);
+		res.setKey(key);
+		res.setName(name);
+		return res;
+	}
 
 }
