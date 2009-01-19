@@ -4,8 +4,8 @@ import com.atlassian.theplugin.jira.api.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * User: pmaruszak
@@ -64,7 +64,7 @@ public final class JIRAManualFilter {
 
 	}
 
-	public Map<QueryElement, ArrayList<String>> groupBy() {
+	public Map<QueryElement, ArrayList<String>> groupBy(final boolean skipAnyValues) {
 		TreeMap<QueryElement, ArrayList<String>> map = new TreeMap<QueryElement, ArrayList<String>>();
 
 		for (JIRAQueryFragment fragment : queryFragment) {
@@ -90,15 +90,16 @@ public final class JIRAManualFilter {
 			} else if (fragment instanceof JIRAReporterBean) {
 				qe = QueryElement.REPORTER;
 			}
-			addValueToMap(map, qe, fragment);
+			addValueToMap(map, qe, fragment, skipAnyValues);
 		}
 		return map;
 
 	}
 
 	private void addValueToMap(final TreeMap<QueryElement, ArrayList<String>> map, final QueryElement key,
-							   final JIRAQueryFragment fragment) {
-		if (fragment.getId() != JIRAServerCache.ANY_ID) {
+			final JIRAQueryFragment fragment, final boolean skipAnyValues) {
+
+		if (!skipAnyValues || fragment.getId() != JIRAServerCache.ANY_ID) {
 			if (!map.containsKey(key)) {
 				map.put(key, new ArrayList<String>());
 			}

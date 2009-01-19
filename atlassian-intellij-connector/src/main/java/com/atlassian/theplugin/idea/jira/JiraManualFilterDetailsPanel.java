@@ -8,12 +8,7 @@ import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.model.FrozenModel;
-import com.atlassian.theplugin.jira.model.FrozenModelListener;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.lang.StringUtils;
 
@@ -116,10 +111,20 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	public void setFilter(JIRAManualFilter jiraManualFilter) {
 
 		Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
-		final Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = jiraManualFilter.groupBy();
+		Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = jiraManualFilter.groupBy(true);
 		for (JIRAManualFilter.QueryElement element : map.keySet()) {
 			entries.add(new ScrollableTwoColumnPanel.Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
 		}
+
+
+		if (entries.size() == 0) {
+			// get also 'any' values
+			map = jiraManualFilter.groupBy(false);
+			for (JIRAManualFilter.QueryElement element : map.keySet()) {
+				entries.add(new ScrollableTwoColumnPanel.Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
+			}
+		}
+
 		panel.updateContent(entries);
 	}
 
