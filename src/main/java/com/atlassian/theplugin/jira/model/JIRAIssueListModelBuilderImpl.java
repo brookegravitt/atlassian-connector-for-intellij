@@ -78,7 +78,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.clear();
 			}
 
-			if (customFilter != null) {
+			if (customFilter != null && customFilter.size() > 0) {
 				l = facade.getIssues(server, customFilter, SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
 			}

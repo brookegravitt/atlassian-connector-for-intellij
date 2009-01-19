@@ -171,14 +171,16 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 											 boolean isChanged) {
 
 					
-					showManualFilterPanel(true);
+				showManualFilterPanel(true);
 
 				if (isChanged) {
+
 					setIssuesFilterParams(jiraServer, manualFilter);
-					refreshIssues();
 					jiraProjectConfiguration.getView().setViewServerId(jiraServer.getServerId().toString());
 					jiraProjectConfiguration.getView().setViewServerId(jiraServer.getServerId().toString());
 					jiraProjectConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+
+					refreshIssues();
 				}
 			}
 
