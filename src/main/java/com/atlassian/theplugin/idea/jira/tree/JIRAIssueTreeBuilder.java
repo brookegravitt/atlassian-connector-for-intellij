@@ -131,6 +131,8 @@ public class JIRAIssueTreeBuilder {
 					final TreePath selectionPath = tree.getSelectionModel().getSelectionPath();
 					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
 						((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+					} else {
+						issueModel.setSeletedIssue(null);
 					}
 				}
 			});
