@@ -19,22 +19,22 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.util.PluginUtil;
 import static com.spartez.util.junit3.TestUtil.assertNotEquals;
 import junit.framework.TestCase;
 
 public class ConfigurationTest extends TestCase {
-	private PluginConfigurationBean baseConf;
-	private PluginConfigurationBean newConf;
+	private IdeaPluginConfigurationBean baseConf;
+	private IdeaPluginConfigurationBean newConf;
 
 	@Override
 	protected void setUp() throws Exception {
-		baseConf = new PluginConfigurationBean();
+		baseConf = new IdeaPluginConfigurationBean();
 		ConfigurationFactory.setConfiguration(baseConf);
 
-		newConf = new PluginConfigurationBean(baseConf);
+		newConf = new IdeaPluginConfigurationBean(baseConf);
 	}
 
     public void testCopyConstructor() throws ServerPasswordNotProvidedException {

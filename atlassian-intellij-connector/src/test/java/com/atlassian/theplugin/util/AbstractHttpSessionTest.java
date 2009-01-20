@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
@@ -51,7 +51,7 @@ public class AbstractHttpSessionTest extends TestCase {
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
 
-        ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
+        ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
         mockServer = new JettyMockServer(httpServer);
 	}
 

@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -136,7 +136,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
     public void testBambooFormFieldSetting() throws Exception {
 		// TODO this call should be removed when HttpClientFactory is not singleton anymore
-		ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
+		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
 
 		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerId()));
 

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.util.io.FileUtil;
@@ -52,7 +52,7 @@ public class PluginDownloaderTest extends TestCase {
 			PluginDownloader.VERSION_TOKEN +
 			"&fileType=.zip";
 	private static final String SOME_VERSION = "0.3.0, SVN:2233";
-	private PluginConfiguration pluginConfiguration = new PluginConfigurationBean();
+	private PluginConfiguration pluginConfiguration = new IdeaPluginConfigurationBean();
 
 	@Override
 	protected void setUp() throws Exception {
