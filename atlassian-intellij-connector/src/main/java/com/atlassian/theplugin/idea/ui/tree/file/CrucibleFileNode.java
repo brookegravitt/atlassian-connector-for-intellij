@@ -126,11 +126,10 @@ public class CrucibleFileNode extends FileNode {
 					txt.append("-");
 					String newRev = node.getFile().getFileDescriptor().getRevision();
 					if (!StringUtils.isEmpty(newRev)) {
-						txt.append(oldRev);
+						txt.append(newRev);
 					} else {
 						txt.append("Unknown");
 					}
-					txt.append(newRev);
 					break;
 			}
 			txt.append(")");
