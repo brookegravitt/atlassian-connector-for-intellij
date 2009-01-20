@@ -147,6 +147,9 @@
         <component>
             <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
         </component>
+		<component>
+			<implementation-class>com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean</implementation-class>
+		</component>
     </application-components>
     <project-components>
         <component>

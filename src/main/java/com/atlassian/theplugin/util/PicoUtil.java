@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
@@ -30,6 +29,7 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import org.picocontainer.MutablePicoContainer;
 
+@Deprecated
 public final class PicoUtil {
 	///CLOVER:OFF
 	private PicoUtil() {
@@ -38,7 +38,6 @@ public final class PicoUtil {
 
 	private static final Class<?>[] GLOBAL_COMPONENTS = {
 			IdeaActionScheduler.class,
-			PluginConfigurationBean.class,
 			CfgManagerImpl.class,
 			NewVersionChecker.class,
 			IdeaUiTaskExecutor.class,

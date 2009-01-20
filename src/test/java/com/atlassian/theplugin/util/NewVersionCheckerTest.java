@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
@@ -52,7 +52,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		final PluginConfigurationBean config = new PluginConfigurationBean();
+		final IdeaPluginConfigurationBean config = new IdeaPluginConfigurationBean();
 		uid = config.getGeneralConfigurationData().getUid();
 		ConfigurationFactory.setConfiguration(config);
 
