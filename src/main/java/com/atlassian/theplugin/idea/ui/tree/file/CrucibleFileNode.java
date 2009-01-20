@@ -29,6 +29,7 @@ import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
@@ -114,15 +115,22 @@ public class CrucibleFileNode extends FileNode {
 				case Modified:
 				case Copied:
 				case Moved:
-					txt.append(node.getFile().getOldFileDescriptor().getRevision());
-					txt.append("-");
-					txt.append(node.getFile().getFileDescriptor().getRevision());
-					break;
 				case Unknown:
 				default:
-					txt.append(node.getFile().getOldFileDescriptor().getRevision());
+					String oldRev = node.getFile().getOldFileDescriptor().getRevision();
+					if (!StringUtils.isEmpty(oldRev)) {
+						txt.append(oldRev);
+					} else {
+						txt.append("Unknown");
+					}
 					txt.append("-");
-					txt.append(node.getFile().getFileDescriptor().getRevision());
+					String newRev = node.getFile().getFileDescriptor().getRevision();
+					if (!StringUtils.isEmpty(newRev)) {
+						txt.append(oldRev);
+					} else {
+						txt.append("Unknown");
+					}
+					txt.append(newRev);
 					break;
 			}
 			txt.append(")");
