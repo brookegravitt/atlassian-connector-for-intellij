@@ -62,7 +62,7 @@ public class BambooPlansForm extends JPanel {
 	private DefaultListModel model;
 
 	private boolean isListModified;
-	private Boolean isUseFavourite = null;
+	private Boolean isUseFavourite;
 	private transient BambooServerCfg bambooServerCfg;
 	private static final int NUM_SERVERS = 10;
 	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
@@ -134,9 +134,6 @@ public class BambooPlansForm extends JPanel {
 		}
 	}
 
-	private void setupTimezoneDiffSpinner() {
-	}
-
 	private void setViewState(int index, boolean newState) {
 		int[] oldIdx = list.getSelectedIndices();
 		int[] newIdx;
@@ -163,8 +160,7 @@ public class BambooPlansForm extends JPanel {
 		if (local != null) {
 			for (int i = 0; i < model.getSize(); i++) {
 				if (local.get(i) != null) {
-					if (((BambooPlanItem) model.getElementAt(i)).isSelected()
-							!= local.get(i).isSelected()) {
+					if (((BambooPlanItem) model.getElementAt(i)).isSelected() != local.get(i).isSelected()) {
 						isListModified = true;
 						break;
 					}
@@ -175,6 +171,22 @@ public class BambooPlansForm extends JPanel {
 		}
 	}
 
+	/**
+	 * helper field used to avoid race conditions between thread polling for isModified,
+	 * which calls {@link #saveData()}
+	 */
+	private BambooServerCfg currentlyPopulatedServer;
+
+	private synchronized BambooServerCfg getCurrentlyPopulatedServer() {
+		return currentlyPopulatedServer;
+	}
+
+	private synchronized void setCurrentlyPopulatedServer(BambooServerCfg bambooServerCfg) {
+		this.currentlyPopulatedServer = bambooServerCfg;
+	}
+
+
+
 	public void setData(final BambooServerCfg serverCfg) {
 		bambooServerCfg = serverCfg;
 
@@ -182,13 +194,11 @@ public class BambooPlansForm extends JPanel {
 			int offs = bambooServerCfg.getTimezoneOffset();
 			offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
 			timezoneOffsetSpinnerModel.setValue(offs);
-		}
-
-		//cbUseFavouriteBuilds.setEnabled(false);
-		if (bambooServerCfg.getUrl().length() > 0) {
-			retrievePlans(bambooServerCfg);
-		} else {
-			model.removeAllElements();
+			if (bambooServerCfg.getUrl().length() > 0) {
+				retrievePlans(bambooServerCfg);
+			} else {
+				model.removeAllElements();
+			}
 		}
 	}
 
@@ -200,7 +210,6 @@ public class BambooPlansForm extends JPanel {
 		} else {
 			cbUseFavouriteBuilds.setSelected(queryServer.isUseFavourites());
 		}
-		model.removeAllElements();
 		statusPane.setText("Waiting for server plans...");
 
 		new Thread(new Runnable() {
@@ -263,11 +272,21 @@ public class BambooPlansForm extends JPanel {
 		}, "atlassian-idea-plugin bamboo panel retrieve plans").start();
 	}
 
-	private synchronized void updatePlanNames(BambooServerCfg server, String message) {
+	/**
+	 * Synchronizes Bamboo plan view with given data.
+	 * Must be run in EDT.
+	 * This method is not thread-safe, but I leave it without synchronization,
+	 * as it's effective run only in single-threaded way (EDT)
+	 *
+	 * @param server Bamboo sever for which to update planes
+	 * @param message additional message which was built during fetching of data
+	 */
+	private void updatePlanNames(BambooServerCfg server, String message) {
 		if (server.equals(bambooServerCfg)) {
+			setCurrentlyPopulatedServer(null);
+			model.removeAllElements();
 			List<BambooPlanItem> plans = serverPlans.get(server.getServerId());
 			if (plans != null) {
-				model.removeAllElements();
 				for (BambooPlanItem plan : plans) {
 					plan.setSelected(false);
 					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
@@ -278,6 +297,16 @@ public class BambooPlansForm extends JPanel {
 					}
 					model.addElement(new BambooPlanItem(plan.getPlan(), plan.isSelected()));
 				}
+			} else {
+				// for those servers for which we cannot fetch metadata, we just show current plans
+				List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
+				for (SubscribedPlan plan : server.getSubscribedPlans()) {
+					final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlanData("Unknown", plan.getPlanId()),
+							true);
+					model.addElement(bambooPlanItem);
+					modelPlans.add(bambooPlanItem);
+				}
+				serverPlans.put(server.getServerId(), modelPlans);
 			}
 			statusPane.setText(message);
 			statusPane.setCaretPosition(0);
@@ -285,11 +314,20 @@ public class BambooPlansForm extends JPanel {
 			//	cbUseFavouriteBuilds.setEnabled(true);
 			list.setEnabled(!cbUseFavouriteBuilds.isSelected());
 			isListModified = false;
+			setCurrentlyPopulatedServer(server);
 		}
 	}
 
+	/**
+	 * This method could theoretically have race conditions with updatePlanNames names above,
+	 * as they move play with model. However both methods are run only in single thread (EWT), so race conditions
+	 * are not possible.
+	 */
 	public void saveData() {
-		if (bambooServerCfg == null) {
+		// additional check for getCurrentlyPopulatedServer() is used
+		// to avoid fetching data from list model when it's really not yet representing
+		// our current server
+		if (bambooServerCfg == null || !bambooServerCfg.equals(getCurrentlyPopulatedServer())) {
 			return;
 		}
 		// move data only when we have fetched the data - otherwise we could overwrite user data due to e.g. network problems
@@ -307,8 +345,7 @@ public class BambooPlansForm extends JPanel {
 			}
 		}
 		bambooServerCfg.setUseFavourites(cbUseFavouriteBuilds.isSelected());
-		bambooServerCfg.setTimezoneOffset(
-				((SpinnerNumberModel) spinnerTimeZoneDifference.getModel()).getNumber().intValue());
+		bambooServerCfg.setTimezoneOffset(((SpinnerNumberModel) spinnerTimeZoneDifference.getModel()).getNumber().intValue());
 	}
 
 	public boolean isModified() {
@@ -416,8 +453,9 @@ public class BambooPlansForm extends JPanel {
 		scrollPane1.setEnabled(true);
 		scrollPane1.setHorizontalScrollBarPolicy(31);
 		scrollPane1.setVerticalScrollBarPolicy(20);
-		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		statusPanel.add(scrollPane1,
+				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1,
+						new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
 		scrollPane1.setViewportView(statusPane);
