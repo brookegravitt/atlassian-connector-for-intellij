@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -70,10 +69,6 @@ public final class IdeaHelper {
 	public static CfgManager getCfgManager() {
 		return (CfgManager) ApplicationManager.getApplication().getPicoContainer()
 				.getComponentInstanceOfType(CfgManager.class);
-	}
-
-	public static PluginConfigurationBean getPluginConfiguration() {
-		return getAppComponent().getState();
 	}
 
 	@Nullable

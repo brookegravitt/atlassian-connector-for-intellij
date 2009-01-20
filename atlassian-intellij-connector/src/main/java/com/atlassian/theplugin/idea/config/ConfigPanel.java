@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
@@ -30,7 +30,7 @@ import java.awt.*;
 
 public final class ConfigPanel extends JPanel {
 
-	private transient PluginConfigurationBean localPluginConfigurationCopy = null;
+	private transient IdeaPluginConfigurationBean localPluginConfigurationCopy = null;
 
 	private final FooterPanel footerPanel = new FooterPanel();
 	private final JTabbedPane contentPanel = new JTabbedPane();
@@ -96,7 +96,7 @@ public final class ConfigPanel extends JPanel {
 	}
 
 	public void setData() {
-		this.localPluginConfigurationCopy = new PluginConfigurationBean(globalConfigurationBean);
+		this.localPluginConfigurationCopy = new IdeaPluginConfigurationBean(globalConfigurationBean);
 		generalConfigPanel.setData(localPluginConfigurationCopy);
 		bambooConfigPanel.setData(localPluginConfigurationCopy);
 		jiraConfigPanel.setData(localPluginConfigurationCopy);
