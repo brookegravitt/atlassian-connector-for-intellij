@@ -14,12 +14,14 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-public class EditorDiffActionImpl implements OpenDiffAction {
+public class EditorDifferenceActionImpl implements OpenDiffAction {
 	private final Project project;
 	private final ReviewAdapter review;
 	private final CrucibleFileInfo reviewItem;
 
-	public EditorDiffActionImpl(@NotNull final Project project,
+
+
+	public EditorDifferenceActionImpl(@NotNull final Project project,
 			@NotNull final ReviewAdapter review,
 			@NotNull final CrucibleFileInfo reviewItem) {
 		this.project = project;
@@ -34,8 +36,9 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 			return;
 		}
 		switch (commitType) {
-			case Moved:
+
 			case Copied:
+				case Moved:
 			case Modified:
 				final Document displayDocument = new FileContent(project, displayFile.getFile())
 						.getDocument();
