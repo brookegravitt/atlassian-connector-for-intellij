@@ -30,12 +30,11 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Lukasz Guminski
@@ -55,7 +54,7 @@ public class NewVersionButtonListener implements ActionListener {
         updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
         updateConfig.setAutoUpdateEnabled(true);    // check now button always checks for new version
         updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
-        updateConfig.setUid(IdeaHelper.getAppComponent().getState().getGeneralConfigurationData().getUid());
+        updateConfig.setUid(IdeaHelper.getAppComponent().getConfiguration().getState().getGeneralConfigurationData().getUid());
 
         ProgressManager.getInstance().run(new UpdateModalTask(generalConfigForm.getRootComponent()));
     }

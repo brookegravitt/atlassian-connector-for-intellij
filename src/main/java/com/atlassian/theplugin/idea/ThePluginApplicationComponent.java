@@ -19,17 +19,14 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
 import com.intellij.openapi.components.ApplicationComponent;
-import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.State;
-import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.options.Configurable;
@@ -44,10 +41,7 @@ import javax.swing.*;
 import java.util.*;
 import java.util.Timer;
 
-@State(name = "atlassian-ide-plugin",
-		storages = { @Storage(id = "atlassian-ide-plugin-id", file = "$APP_CONFIG$/atlassian-ide-plugin.app.xml") })
-public class ThePluginApplicationComponent
-		implements ApplicationComponent, Configurable, PersistentStateComponent<PluginConfigurationBean> {
+public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
 	static {
 		AreaPicoContainer apc = Extensions.getRootArea().getPicoContainer();
@@ -58,7 +52,8 @@ public class ThePluginApplicationComponent
 
 
 	private ConfigPanel configPanel;
-	private final PluginConfigurationBean configuration;
+
+	private final IdeaPluginConfigurationBean configuration;
 	private final CfgManager cfgManager;
 	private final NewVersionChecker newVersionChecker;
 
@@ -74,9 +69,10 @@ public class ThePluginApplicationComponent
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
 
-	public ThePluginApplicationComponent(final PluginConfigurationBean configuration, final CfgManager cfgManager,
+	public ThePluginApplicationComponent(IdeaPluginConfigurationBean configuration, final CfgManager cfgManager,
 			final NewVersionChecker newVersionChecker) {
 		this.configuration = configuration;
+
 		this.cfgManager = cfgManager;
 		this.newVersionChecker = newVersionChecker;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
@@ -103,6 +99,9 @@ public class ThePluginApplicationComponent
 		return null;
 	}
 
+	public IdeaPluginConfigurationBean getConfiguration() {
+		return configuration;
+	}
 
 	@NotNull
 	@NonNls
@@ -191,15 +190,6 @@ public class ThePluginApplicationComponent
 
 	public void disposeUIResources() {
 		configPanel = null;
-	}
-
-	public PluginConfigurationBean getState() {
-		return configuration;
-	}
-
-	public void loadState(PluginConfigurationBean state) {
-		configuration.setConfiguration(state);
-		configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 	}
 
 //	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
