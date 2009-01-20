@@ -28,6 +28,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -682,6 +683,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	private void getIssues(final boolean reload) {
+		// this is a nast workaround.
+		// it may happen (very rarely, but anyway) that we rich this place even though the project has been
+		// just closed. In this case running backgroundable task fails.
+		// to avoid that we simply detect if we have project frame still opened.
+		// in the future, if similar problems still occur, we should come up with some decent framework
+		// which would be notified when the project is being closed and would cancel starting such tasks at all.
+		if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
+			return;
+		}
 		Task.Backgroundable task = new Task.Backgroundable(getProject(), "Retrieving issues", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
@@ -694,7 +704,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				}
 			}
 		};
-
+		
 		ProgressManager.getInstance().run(task);
 	}
 
