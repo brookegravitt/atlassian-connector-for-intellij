@@ -709,6 +709,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 		refreshModels();
 	}
@@ -853,14 +854,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			} finally {
 				jiraServerModel.setModelFrozen(false);
 			}
+		}
 
-
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					refreshFilterModel();
-					jiraFilterListModel.fireModelChanged();
-				}
-			});
+		@Override
+		public void onSuccess() {
+			refreshFilterModel();
+			jiraFilterListModel.fireModelChanged();
 		}
 	}
 
@@ -894,7 +893,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			issueTree = new JTree();
 		}
 
-		TreeSpeedSearch treeSpeedSearch = new TreeSpeedSearch(issueTree);
+		new TreeSpeedSearch(issueTree);
 
 		issueTreeBuilder.rebuild(issueTree, getRightPanel());
 		return issueTree;
