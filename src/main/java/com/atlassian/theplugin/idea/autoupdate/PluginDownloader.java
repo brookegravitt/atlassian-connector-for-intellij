@@ -206,11 +206,20 @@ public class PluginDownloader {
 		File newFile = new File(destinationDir, newName);
 		PluginUtil.getLogger().info("Renaming downloaded file from [" + pluginArchiveFile.getAbsolutePath()
 				+ "] to [" + newFile + "]");
+
+
+
 		if (!pluginArchiveFile.renameTo(newFile)) {
-			pluginArchiveFile.delete();
-			throw new IOException("Renaming received file from \"" + srcName + "\" to \""
-					+ newFile.getAbsolutePath() + "\" failed.");
+			try {
+				FileUtil.copy(pluginArchiveFile, newFile);
+			} catch (IOException e) {
+				throw new IOException("Renaming file from [" + pluginArchiveFile.getAbsolutePath() + "] to ["
+						+ newFile.getAbsolutePath() + "] failed.");
+			} finally {
+				pluginArchiveFile.delete();
+			}
 		}
+		
 		PluginUtil.getLogger().info("After renaming file has [" + newFile.length() + "] bytes");
 		return newFile;
 	}
