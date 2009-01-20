@@ -42,6 +42,7 @@ import com.intellij.peer.PeerFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.vcsUtil.VcsUtil;
 import org.apache.commons.collections.map.ReferenceMap;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -249,7 +250,7 @@ public final class VcsIdeaHelper {
 			final int line, final int column, @Nullable final OpenDiffAction action) {
 		// CHECKSTYLE:ON
 
-		final String niceFileMessage;
+		String niceFileMessage;
 		switch (commitType) {
 			case Added:
 				niceFileMessage = " " + virtualFile.getName() + " (rev: " + toRevision + ") from VCS";
@@ -260,13 +261,20 @@ public final class VcsIdeaHelper {
 			case Modified:
 			case Moved:
 			case Copied:
-				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
-				break;
 			case Unknown:
-				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
-				break;
 			default:
-				niceFileMessage = "s " + virtualFile.getName() + " (rev: " + fromRevision + ", " + toRevision + ") from VCS";
+				niceFileMessage = "s " + virtualFile.getName() + " (rev: ";
+				if (!StringUtils.isEmpty(fromRevision)) {
+					niceFileMessage += fromRevision;
+					if (!StringUtils.isEmpty(toRevision)) {
+						niceFileMessage += ", ";
+					}
+				}
+				if (!StringUtils.isEmpty(toRevision)) {
+					niceFileMessage += " " + toRevision;
+				}
+				niceFileMessage += ") from VCS";
+				break;
 		}
 
 		new FetchingTwoFilesTask(project, modal, niceFileMessage, commitType, virtualFile, fromRevision,
@@ -419,7 +427,9 @@ public final class VcsIdeaHelper {
 					case Modified:
 					case Moved:
 					case Copied:
-						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision);
+						if (!StringUtils.isEmpty(fromRevision)) {
+							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, fromRevision);
+						}
 						displayVirtualFile = getVcsVirtualFile(project, virtualFile, toRevision);
 						break;
 					case Added:

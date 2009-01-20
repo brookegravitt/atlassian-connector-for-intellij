@@ -20,8 +20,8 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 	private final CrucibleFileInfo reviewItem;
 
 	public EditorDiffActionImpl(@NotNull final Project project,
-								@NotNull final ReviewAdapter review,
-								@NotNull final CrucibleFileInfo reviewItem) {
+			@NotNull final ReviewAdapter review,
+			@NotNull final CrucibleFileInfo reviewItem) {
 		this.project = project;
 		this.review = review;
 		this.reviewItem = reviewItem;
@@ -37,12 +37,14 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 			case Moved:
 			case Copied:
 			case Modified:
-				final Document displayDocument = new FileContent(project, displayFile.getFile())
-						.getDocument();
-				final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-				ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
-						, reviewItem.getOldFileDescriptor().getRevision()
-						, reviewItem.getFileDescriptor().getRevision());
+				if (referenceFile != null) {
+					final Document displayDocument = new FileContent(project, displayFile.getFile())
+							.getDocument();
+					final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+					ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
+							, reviewItem.getOldFileDescriptor().getRevision()
+							, reviewItem.getFileDescriptor().getRevision());
+				}
 				break;
 			case Added:
 				break;
