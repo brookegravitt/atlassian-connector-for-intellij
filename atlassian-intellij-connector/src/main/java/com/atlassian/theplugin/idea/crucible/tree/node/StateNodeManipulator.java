@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -82,7 +79,7 @@ public class StateNodeManipulator extends NodeManipulator {
 	}
 
 	private List<State> getDistinctStates() {
-		Set<State> states = new LinkedHashSet<State>();	// ordered set
+		Set<State> states = new TreeSet<State>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
 			states.add(review.getState());
@@ -90,6 +87,12 @@ public class StateNodeManipulator extends NodeManipulator {
 
 		return new ArrayList<State>(states);
 	}
+
+	private Comparator<State> COMPARATOR = new Comparator<State>() {
+		public int compare(State lhs, State rhs) {
+			return lhs.ordinal() - rhs.ordinal();
+		}
+	};
 
 	private int gentNumOfReviewsInState(State crucibleState) {
 		int ret = 0;
