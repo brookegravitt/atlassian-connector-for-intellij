@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -80,7 +77,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 	}
 
 	private List<CrucibleProject> getDistinctProjects() {
-		Set<CrucibleProject> projects = new LinkedHashSet<CrucibleProject>();	// ordered set
+		Set<CrucibleProject> projects = new TreeSet<CrucibleProject>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
 			projects.add(review.getCrucibleProject());
@@ -88,6 +85,12 @@ public class ProjectNodeManipulator extends NodeManipulator {
 
 		return new ArrayList<CrucibleProject>(projects);
 	}
+
+	private Comparator<CrucibleProject> COMPARATOR = new Comparator<CrucibleProject>() {
+		public int compare(CrucibleProject lhs, CrucibleProject rhs) {
+			return lhs.getName().compareTo(rhs.getName());
+		}
+	};
 
 	private int gentNumOfReviewsForProject(String projectKey) {
 		int ret = 0;
