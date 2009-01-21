@@ -369,7 +369,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			if (selection instanceof CrucibleFileNode) {
 				return selection;
 			}
-		}
+		} 
 		return null;
 
 	}
