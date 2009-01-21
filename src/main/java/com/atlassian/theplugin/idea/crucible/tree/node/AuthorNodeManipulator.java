@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -81,7 +78,7 @@ public class AuthorNodeManipulator extends NodeManipulator {
 	}
 
 	private List<User> getDistinctAuthors() {
-		Set<User> servers = new LinkedHashSet<User>();	// ordered set
+		Set<User> servers = new TreeSet<User>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
 			servers.add(review.getAuthor());
@@ -89,6 +86,13 @@ public class AuthorNodeManipulator extends NodeManipulator {
 
 		return new ArrayList<User>(servers);
 	}
+
+	private Comparator<User> COMPARATOR = new Comparator<User>() {
+		public int compare(User lhs, User rhs) {
+			return lhs.getDisplayName().compareTo(rhs.getDisplayName());
+		}
+	};
+
 
 	private int gentNumOfReviewsForAuthor(User author) {
 		int ret = 0;
