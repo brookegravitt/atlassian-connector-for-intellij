@@ -20,7 +20,6 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 
 /**
  * User: jgorycki
@@ -33,7 +32,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Builds";
 
 	public BuildToolWindow(@NotNull final Project project) {
-		super(new HashMap<String, ContentPanel>());
+		super(false);
 		this.project = project;
 	}
 
@@ -180,7 +179,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		}
 
 		public String getTitle() {
-			return "Build " + params.build.getBuildKey() + "-" + params.build.getBuildNumber();
+			return params.build.getBuildKey() + "-" + params.build.getBuildNumber();
 		}
 
 		private class SummaryPanel extends JPanel {

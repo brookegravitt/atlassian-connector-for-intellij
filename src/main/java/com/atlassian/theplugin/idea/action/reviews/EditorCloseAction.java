@@ -24,6 +24,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class EditorCloseAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getCrucibleToolWindow(event).closeToolWindow();
+		IdeaHelper.getCrucibleToolWindow(event).closeToolWindow(event);
 	}
 }
