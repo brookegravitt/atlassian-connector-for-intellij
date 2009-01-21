@@ -6,6 +6,7 @@ import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
@@ -45,6 +46,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * User: jgorycki
  * Date: Jan 8, 2009
@@ -80,7 +83,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Tests Results", false) {
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					BuildDetails details = bambooFacade.getBuildDetails(
 							build.getServer(), build.getBuildKey(), build.getBuildNumber());
@@ -245,7 +248,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		try {
 			return (JUnitConfiguration) config;
 		} catch (ClassCastException e) {
-			e.printStackTrace();
+			LoggerImpl.getInstance().warn("Unexpected RunConfiguration instance", e);
 		}
 		return null;
 	}
@@ -555,6 +558,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				} 
 			}
 
+			@Override
 			protected void onPopup(MouseEvent e) {
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -602,6 +606,10 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				}
 				Color statsColor = selected
 						? UIUtil.getTreeSelectionForeground() : UIUtil.getInactiveTextColor();
+				if (statsColor == null) {
+					LoggerImpl.getInstance().warn("Cannot determine system color for tree selection. Using black.");
+					statsColor = Color.BLACK;
+				}
 				StringBuilder txt = new StringBuilder();
 				txt.append("<html><body>");
 				txt.append(getText());
