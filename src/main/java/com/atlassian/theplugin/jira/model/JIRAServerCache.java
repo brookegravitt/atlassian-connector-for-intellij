@@ -31,12 +31,12 @@ public class JIRAServerCache {
     private static final int NO_VERSION_ID = -1;
     private static final int RELEASED_VERSION_ID = -3;
     private static final int UNRELEASED_VERSION_ID = -2;
-    private static final int NO_COMPONENT_ID = -1;
+    public static final int UNKNOWN_COMPONENT_ID = -1;
     private static final int UNRESOLVED_ID = -1;
 
     private final JiraServerCfg server;
-    private boolean validServer = false;
-    private String errorMessage = null;
+    private boolean validServer;
+    private String errorMessage;
 
     private List<JIRAProject> projects;
     private List<JIRAConstant> statuses;
@@ -52,7 +52,7 @@ public class JIRAServerCache {
 
 	private final JIRAServerFacade jiraServerFacade;
 
-    public JIRAServerCache(JiraServerCfg server, JIRAServerFacade jiraServerFacade) {
+	public JIRAServerCache(JiraServerCfg server, JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
@@ -289,7 +289,7 @@ public class JIRAServerCache {
 
                     components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
                     components.add(new JIRAComponentBean(ANY_ID, "Any"));
-                    components.add(new JIRAComponentBean(NO_COMPONENT_ID, "No component"));
+                    components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
                     components.addAll(retrieved);
 
                     componentsCache.put(project.getKey(), components);
