@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.PsiLocation;
@@ -21,10 +22,7 @@ import com.intellij.execution.impl.RunManagerImpl;
 import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -42,7 +40,6 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -547,7 +544,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				errInfoNode.selected();
 			}
 		});
-		testTree.addMouseListener(new MouseAdapter() {
+		testTree.addMouseListener(new PopupAwareMouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -555,6 +552,16 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 					AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
 					node.navigate();
+				} else {
+
+				}
+			}
+
+			protected void onPopup(MouseEvent e) {
+				int selRow = tree.getRowForLocation(e.getX(), e.getY());
+				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				if (selRow != -1 && selPath != null) {
+					launchPopup(e);
 				}
 			}
 		});
@@ -563,6 +570,18 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		testTree.setCellRenderer(renderer);
 
 		return testTree;
+	}
+
+	private void launchPopup(MouseEvent e) {
+		final DefaultActionGroup actionGroup = new DefaultActionGroup();
+		final ActionGroup configActionGroup = (ActionGroup) ActionManager
+				.getInstance().getAction("ThePlugin.Bamboo.TestResultsPopupMenu");
+		actionGroup.addAll(configActionGroup);
+
+		final ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu(contentKey, actionGroup);
+
+		final JPopupMenu jPopupMenu = popup.getComponent();
+		jPopupMenu.show(e.getComponent(), e.getX(), e.getY());
 	}
 
 	private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
