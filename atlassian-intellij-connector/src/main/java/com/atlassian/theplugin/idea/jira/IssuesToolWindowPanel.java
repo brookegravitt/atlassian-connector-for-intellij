@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -51,6 +52,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public static final String PLACE_PREFIX = IssuesToolWindowPanel.class.getSimpleName();
 	private final PluginConfiguration pluginConfiguration;
 	private JiraProjectConfiguration jiraProjectCfg;
+	private final UiTaskExecutor uiTaskExecutor;
 
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
 	private JIRAFilterListModel jiraFilterListModel;
@@ -82,11 +84,13 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, 
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
-			@NotNull final ProjectCfgManager projectCfgManager) {
+			@NotNull final ProjectCfgManager projectCfgManager,
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraProjectCfg = jiraProjectConfiguration;
+		this.uiTaskExecutor = uiTaskExecutor;
 		this.cfgManager = projectCfgManager.getCfgManager();
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -751,7 +755,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
-					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)));
+					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)), uiTaskExecutor);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();
