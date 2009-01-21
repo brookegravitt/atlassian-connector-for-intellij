@@ -59,7 +59,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	private final Project project;
 
 	public IssueToolWindow(@NotNull final Project project) {
-		super(new HashMap<String, ContentPanel>());
+		super(false);
 		this.project = project;
 	}
 
@@ -182,7 +182,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		public String getTitle() {
-			return "Issue " + params.issue.getKey();
+			return params.issue.getKey();
 		}
 
 		public void modelChanged(JIRAIssueListModel m) {
