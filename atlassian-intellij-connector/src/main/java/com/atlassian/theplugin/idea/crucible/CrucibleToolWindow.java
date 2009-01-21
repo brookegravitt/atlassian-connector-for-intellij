@@ -462,10 +462,14 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 					return true;
 				} else if (dataId.equals(Constants.REVIEW) && contentPanel != null && params != null) {
 					return params.reviewAdapter;
-				}
+				} 
 				return null;
 			}
 		}
 
+	}
+
+	public ReviewAdapter getReview() {
+		return reviewAdapter;
 	}
 }

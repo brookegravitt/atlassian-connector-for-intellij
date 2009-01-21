@@ -184,7 +184,8 @@ public class GeneralConfigForm {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new FormLayout("fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+		mainPanel.setLayout(new FormLayout("fill:d:grow",
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		autoUpdateConfigPanel = new JPanel();
 		autoUpdateConfigPanel.setLayout(new GridLayoutManager(3, 3, new Insets(0, 12, 12, 12), -1, -1));
@@ -195,30 +196,44 @@ public class GeneralConfigForm {
 		checkNowButton.setText("Check now");
 		checkNowButton.setMnemonic('C');
 		checkNowButton.setDisplayedMnemonicIndex(0);
-		autoUpdateConfigPanel.add(checkNowButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(checkNowButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-		autoUpdateConfigPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		chkUnstableVersionsCheckBox = new JCheckBox();
 		chkUnstableVersionsCheckBox.setEnabled(false);
 		chkUnstableVersionsCheckBox.setText("Check snapshot versions");
-		panel1.add(chkUnstableVersionsCheckBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(chkUnstableVersionsCheckBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, new Dimension(12, -1), null, null, 0, false));
+		panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, 1, new Dimension(12, -1), null, null, 0, false));
 		chkAutoUpdateEnabled = new JCheckBox();
 		chkAutoUpdateEnabled.setText("Enabled (stable version)");
 		chkAutoUpdateEnabled.setMnemonic('E');
 		chkAutoUpdateEnabled.setDisplayedMnemonicIndex(0);
-		autoUpdateConfigPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(chkAutoUpdateEnabled, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer2 = new Spacer();
-		autoUpdateConfigPanel.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		checkNewVersionStable = new JRadioButton();
 		checkNewVersionStable.setSelected(true);
 		checkNewVersionStable.setText("Stable only");
-		autoUpdateConfigPanel.add(checkNewVersionStable, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(checkNewVersionStable, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		checkNewVersionAll = new JRadioButton();
 		checkNewVersionAll.setText("Stable + snapshot");
-		autoUpdateConfigPanel.add(checkNewVersionAll, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		autoUpdateConfigPanel.add(checkNewVersionAll, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		reportAnonymousUsageStatisticsCheckBox = new JCheckBox();
 		reportAnonymousUsageStatisticsCheckBox.setEnabled(true);
 		reportAnonymousUsageStatisticsCheckBox.setSelected(false);
@@ -227,18 +242,32 @@ public class GeneralConfigForm {
 		reportAnonymousUsageStatisticsCheckBox.setDisplayedMnemonicIndex(0);
 		mainPanel.add(reportAnonymousUsageStatisticsCheckBox, cc.xy(1, 5));
 		httpProxyPanel = new JPanel();
-		httpProxyPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 12, 12, 0), -1, -1));
+		httpProxyPanel.setLayout(new GridLayoutManager(4, 2, new Insets(0, 12, 12, 0), -1, -1));
 		mainPanel.add(httpProxyPanel, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
 		httpProxyPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "HTTP Proxy"));
 		chkUseIdeaProxy = new JRadioButton();
 		chkUseIdeaProxy.setText("Use IDEA proxy settings");
-		httpProxyPanel.add(chkUseIdeaProxy, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		httpProxyPanel.add(chkUseIdeaProxy, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		httpProxyButton = new JButton();
 		httpProxyButton.setText("Edit IDEA proxy settings");
-		httpProxyPanel.add(httpProxyButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_NORTHWEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		httpProxyPanel.add(httpProxyButton, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_NORTHWEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		chkNoProxy = new JRadioButton();
 		chkNoProxy.setText("Do not use proxy");
-		httpProxyPanel.add(chkNoProxy, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		httpProxyPanel.add(chkNoProxy, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
+		final Spacer spacer3 = new Spacer();
+		httpProxyPanel.add(spacer3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		final JLabel label1 = new JLabel();
+		label1.setFont(new Font(label1.getFont().getName(), label1.getFont().getStyle(), 10));
+		label1.setText("Information: You have to restart IDEA to apply changes in the proxy configuration");
+		httpProxyPanel.add(label1, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(checkNewVersionStable);
@@ -254,6 +283,5 @@ public class GeneralConfigForm {
 	public JComponent $$$getRootComponent$$$() {
 		return mainPanel;
 	}
-
 }
 
