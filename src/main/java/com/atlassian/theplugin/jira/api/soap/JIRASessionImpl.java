@@ -44,7 +44,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	public static final int ONE_DAY_AGO = -24;
 
-	private boolean loggedIn = false;
+	private boolean loggedIn;
 
 	//
 	// AxisProperties are shit - if you try to set nonexistent property to null, NPE is thrown. Moreover, sometimes
@@ -166,6 +166,16 @@ public class JIRASessionImpl implements JIRASession {
 		}
 		if (issue.getAssignee() != null) {
 			remoteIssue.setAssignee(issue.getAssignee());
+		}
+
+		final List<JIRAConstant> components = issue.getComponents();
+		if (components != null && components.size() > 0) {
+			RemoteComponent[] remoteComponents = new RemoteComponent[components.size()];
+			int i = 0;
+			for (JIRAConstant component : components) {
+				remoteComponents[i++] = new RemoteComponent(String.valueOf(component.getId()), component.getName());
+			}
+			remoteIssue.setComponents(remoteComponents);
 		}
 
 		try {
@@ -446,6 +456,7 @@ public class JIRASessionImpl implements JIRASession {
 				throw new JiraUserNotFoundException("User Name for " + loginName + " not found");
 			}
 			return new JIRAUserBean(-1, ru.getFullname(), ru.getName()) {
+				@Override
 				public String getQueryStringFragment() {
 					return null;
 				}
