@@ -552,9 +552,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 					AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
 					node.navigate();
-				} else {
-
-				}
+				} 
 			}
 
 			protected void onPopup(MouseEvent e) {

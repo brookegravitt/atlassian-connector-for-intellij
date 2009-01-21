@@ -22,16 +22,13 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
-import com.atlassian.theplugin.idea.ui.SingleTabToolWindow;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -53,13 +50,21 @@ import java.awt.*;
 /**
  * User: pmaruszak
  */
-public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvider {
-	private static final String TOOL_WINDOW_NAME_PREFIX = "Review";
+public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvider {
+	private static final String TOOL_WINDOW_TITLE = "Reviews";
 	private ReviewAdapter reviewAdapter;
+	private final Project project;
+	private final CrucibleReviewListModel reviewListModel;
+
+	private ContentPanel contentPanel;
+	private ReviewContentParameters params;
+
 
 	protected CrucibleToolWindow(@NotNull final Project project,
 			@NotNull final CrucibleReviewListModel reviewListModel) {
-		super(project, reviewListModel);
+		super(true);
+		this.project = project;
+		this.reviewListModel = reviewListModel;
 	}
 
 	protected String getContentKey(ContentParameters params) {
@@ -74,12 +79,13 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
-		return new ReviewPanel((ReviewContentParameters) params);
+		contentPanel = new ReviewPanel((ReviewContentParameters) params);
+		return contentPanel;
 	}
 
 
-	public void closeToolWindow() {
-		super.closeToolWindow(TOOL_WINDOW_NAME_PREFIX);
+	public void closeToolWindow(AnActionEvent event) {
+		super.closeToolWindow(TOOL_WINDOW_TITLE, event);
 	}
 
 	public Object getData(@NonNls final String dataId) {
@@ -89,7 +95,7 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 		return null;
 	}
 
-	private final class ReviewContentParameters implements SingleTabToolWindow.ContentParameters {
+	private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
 
 		private ReviewContentParameters(ReviewAdapter reviewAdapter) {
@@ -99,23 +105,25 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 
 	public void showReview(ReviewAdapter adapter) {
 		this.reviewAdapter = adapter;
-		showToolWindow(new ReviewContentParameters(adapter), TOOL_WINDOW_NAME_PREFIX, Constants.CRUCIBLE_ICON);
+		params = new ReviewContentParameters(adapter);
+		showToolWindow(project, params, TOOL_WINDOW_TITLE, Constants.CRUCIBLE_ICON);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
-		if (getContentPanel() != null && getContentPanel().getContentParameters() != null) {
-			return ((ReviewPanel) getContentPanel()).commentsPanel.getReviewItemTreePanel().getAtlassianTreeWithToolbar();
+		if (params != null && getContentPanel(getContentKey(params)) != null) {
+			return ((ReviewPanel) getContentPanel(getContentKey(params)))
+					.commentsPanel.getReviewItemTreePanel().getAtlassianTreeWithToolbar();
 		}
 		return null;
 	}
 
 	public void switchFilter() {
-		if (getContentPanel() != null && getContentPanel().getContentParameters() != null) {
-			((ReviewPanel) getContentPanel()).commentsPanel.getReviewItemTreePanel().switchFilter();
+		if (params != null && getContentPanel(getContentKey(params)) != null) {
+			((ReviewPanel) getContentPanel(getContentKey(params))).commentsPanel.getReviewItemTreePanel().switchFilter();
 		}
 	}
 
-	private final class ReviewPanel extends SingleTabToolWindow.ContentPanel implements CrucibleReviewListModelListener {
+	private final class ReviewPanel extends MultiTabToolWindow.ContentPanel implements CrucibleReviewListModelListener {
 		private final ReviewContentParameters params;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -154,6 +162,10 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 
 		public void refresh() {
 
+		}
+
+		public String getTitle() {
+			return params.reviewAdapter.getPermId().getId();
 		}
 
 		public void unregister() {
@@ -448,9 +460,8 @@ public class CrucibleToolWindow extends SingleTabToolWindow implements DataProvi
 					return this;
 				} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
 					return true;
-				} else if (dataId.equals(Constants.REVIEW) && getContentPanel() != null
-						&& getContentPanel().getContentParameters() != null) {
-					return ((ReviewContentParameters) getContentPanel().getContentParameters()).reviewAdapter;
+				} else if (dataId.equals(Constants.REVIEW) && contentPanel != null && params != null) {
+					return params.reviewAdapter;
 				}
 				return null;
 			}
