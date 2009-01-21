@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.EditorDiffActionImpl;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.OpenDiffAction;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.*;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
@@ -40,7 +37,6 @@ import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,14 +77,8 @@ public final class CrucibleHelper {
 		if (!FileTypeManager.getInstance().getFileTypeByFile(virtualFile).isBinary()) {
 			return new FileContent(project, virtualFile);
 		} else {
-			try {
-				return new BinaryContent(virtualFile.contentsToByteArray(), null,
-						FileTypeManager.getInstance().getFileTypeByFile(virtualFile));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+			return IdeaVersionFacade.getInstance().createBinaryContent(virtualFile);
 		}
-
 	}
 
 	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
@@ -187,13 +177,17 @@ public final class CrucibleHelper {
 			DiffContent displayFileContent = null;
 			if (displayFile != null) {
 				displayFileContent = createDiffContent(project, displayFile.getFile());
-				displayDocument = displayFileContent.getDocument();
+				if (displayFileContent != null) {
+					displayDocument = displayFileContent.getDocument();
+				}
 			}
 
 			DiffContent referenceFileContent = null;
 			if (referenceFile != null) {
 				referenceFileContent = createDiffContent(project, referenceFile);
-				referenceDocument = referenceFileContent.getDocument();
+				if (referenceFileContent != null) {
+					referenceDocument = referenceFileContent.getDocument();
+				}
 			}
 
 			if ((displayFileContent != null && displayFileContent.isBinary())
