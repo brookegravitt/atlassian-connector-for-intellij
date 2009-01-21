@@ -57,7 +57,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	private final CrucibleReviewListModel reviewListModel;
 
 	private ContentPanel contentPanel;
-	private ReviewContentParameters params;
+	private ReviewContentParameters contentParams;
 
 
 	protected CrucibleToolWindow(@NotNull final Project project,
@@ -105,21 +105,21 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 	public void showReview(ReviewAdapter adapter) {
 		this.reviewAdapter = adapter;
-		params = new ReviewContentParameters(adapter);
-		showToolWindow(project, params, TOOL_WINDOW_TITLE, Constants.CRUCIBLE_ICON);
+		contentParams = new ReviewContentParameters(adapter);
+		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE, Constants.CRUCIBLE_ICON);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
-		if (params != null && getContentPanel(getContentKey(params)) != null) {
-			return ((ReviewPanel) getContentPanel(getContentKey(params)))
+		if (contentParams != null && getContentPanel(getContentKey(contentParams)) != null) {
+			return ((ReviewPanel) getContentPanel(getContentKey(contentParams)))
 					.commentsPanel.getReviewItemTreePanel().getAtlassianTreeWithToolbar();
 		}
 		return null;
 	}
 
 	public void switchFilter() {
-		if (params != null && getContentPanel(getContentKey(params)) != null) {
-			((ReviewPanel) getContentPanel(getContentKey(params))).commentsPanel.getReviewItemTreePanel().switchFilter();
+		if (contentParams != null && getContentPanel(getContentKey(contentParams)) != null) {
+			((ReviewPanel) getContentPanel(getContentKey(contentParams))).commentsPanel.getReviewItemTreePanel().switchFilter();
 		}
 	}
 
