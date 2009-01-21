@@ -435,7 +435,12 @@
             <reference id="ThePlugin.Bamboo.DebugFailedTests"/>
         </group>
 
-        <group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
+		<group id="ThePlugin.Bamboo.TestResultsPopupMenu" popup="true">
+			<reference id="ThePlugin.Bamboo.RunFailedTests"/>
+			<reference id="ThePlugin.Bamboo.DebugFailedTests"/>
+		</group>
+
+		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
             <reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
             <reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
             <reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
