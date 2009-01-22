@@ -132,7 +132,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	}
 	
 	private String getRelativeBuildTime() {
-		Date d = build.getBuildTime();
+		Date d = build.getBuildCompletedDate();
 		if (d != null) {
 			Calendar c = Calendar.getInstance();
 			c.setTime(d);
