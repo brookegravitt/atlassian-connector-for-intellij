@@ -61,6 +61,7 @@ public class AddAction extends AbstractCommentAction {
 				text = FILE_COMMENT_TEXT;
 			} else if (node instanceof CrucibleGeneralCommentsNode
 					|| node instanceof CrucibleChangeSetTitleNode
+					|| node instanceof CrucibleStatementOfObjectivesNode
 					|| (node == null && getReview(e) != null)) {
 				text = GENERAL_COMMENT_TEXT;
 			}
@@ -124,6 +125,8 @@ public class AddAction extends AbstractCommentAction {
 			return ((CrucibleFileNode) node).getReview();
 		} else if (node instanceof CrucibleChangeSetTitleNode) {
 			return ((CrucibleChangeSetTitleNode) node).getReview();
+		} else if (node instanceof CrucibleStatementOfObjectivesNode) {
+			return ((CrucibleStatementOfObjectivesNode) node).getReview();
 		}
 		return null;
 	}
@@ -163,6 +166,10 @@ public class AddAction extends AbstractCommentAction {
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
 			addCommentToFile(project, node.getReview(), node.getFile());
+		} else if (treeNode instanceof CrucibleStatementOfObjectivesNode) {
+			CrucibleStatementOfObjectivesNode node = (CrucibleStatementOfObjectivesNode) treeNode;
+			addGeneralComment(project, node.getReview());
+
 		}
 	}
 

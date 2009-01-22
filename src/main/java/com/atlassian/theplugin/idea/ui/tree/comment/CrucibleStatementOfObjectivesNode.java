@@ -15,9 +15,10 @@
  */
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -28,6 +29,7 @@ import java.awt.font.FontRenderContext;
 
 public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
+	private ReviewAdapter review;
 
 	private String getText() {
 		return text;
@@ -35,14 +37,16 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 
 	private final String text;
 
-	public CrucibleStatementOfObjectivesNode(final String text, AtlassianClickAction action) {
+	public CrucibleStatementOfObjectivesNode(final ReviewAdapter review, final String text, AtlassianClickAction action) {
 		super(action);
 		this.text = text;
+		this.review = review;
 	}
 
 	protected CrucibleStatementOfObjectivesNode(final CrucibleStatementOfObjectivesNode other) {
 		super(other.getAtlassianClickAction());
 		text = other.text;
+		review = other.review;
 	}
 
 
@@ -62,6 +66,10 @@ public class CrucibleStatementOfObjectivesNode extends AtlassianTreeNode {
 	@Override
 	public TreeCellRenderer getTreeCellRenderer() {
 		return MY_RENDERER;
+	}
+
+	public ReviewAdapter getReview() {
+		return review;
 	}
 
 	private static class MyRenderer implements TreeCellRenderer {
