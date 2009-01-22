@@ -20,7 +20,6 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
-import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
@@ -53,7 +52,6 @@ public class PluginToolWindow {
 	private Project project;
 	private final ReviewsToolWindowPanel reviewsToolWindowPanel;
 	private final IssuesToolWindowPanel issuesToolWindowPanel;
-	private final BambooTableToolWindowPanel bambooTableToolWindowPanel;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
 	public static final String TOOL_WINDOW_NAME = "Atlassian ";
@@ -87,14 +85,12 @@ public class PluginToolWindow {
 	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
 							@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 							@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-							@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
-							@NotNull BambooTableToolWindowPanel bambooTableToolWindowPanel) {
+							@NotNull IssuesToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
 		this.reviewsToolWindowPanel = reviewsToolWindowPanel;
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
-		this.bambooTableToolWindowPanel = bambooTableToolWindowPanel;
 	}
 
 
@@ -298,9 +294,7 @@ public class PluginToolWindow {
 
 	@Nullable
 	private Content createContent(final ToolWindowPanels component) {
-		switch (component) {
-			case BAMBOO_OLD:
-				return createBambooContent();
+		switch (component) {			
 			case BUILDS_WOJTEK:
 				return createBamboo2Content();
 			case CRUCIBLE:
@@ -317,16 +311,6 @@ public class PluginToolWindow {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
-		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
-		return content;
-	}
-
-
-	public Content createBambooContent() {
-		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		final Content content = contentManager.getFactory().createContent(bambooTableToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BAMBOO_OLD.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;

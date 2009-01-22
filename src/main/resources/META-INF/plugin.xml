@@ -41,7 +41,7 @@
 		]]>
     </description>
 
-    <version>${project.version}, SVN:${buildNumber}</version>
+    <version>2.0.0-beta-1, SVN:120</version>
 
     <!-- no email link for now - we don't have the plugin email alias yet-->
     <!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
@@ -248,15 +248,6 @@
                 description="Shows or hides Bamboo tab in main plugin window">
             <keyboard-shortcut first-keystroke="shift control b" keymap="$default"/>
         </action>
-        <action id="ThePlugin.Bamboo.ShowStackTrace"
-                class="com.atlassian.theplugin.idea.action.bamboo.BuildStackTraceAction" text="Show Failed Tests"
-                description="Show Failed Tests" icon="/debugger/stackFrame.png">
-            <keyboard-shortcut first-keystroke="shift control T" keymap="$default"/>
-        </action>
-        <action id="ThePlugin.Bamboo.ShowChanges" class="com.atlassian.theplugin.idea.action.bamboo.BuildChangesAction"
-                text="Show Changed Files" description="Show Changed Files" icon="/actions/createPatch.png">
-            <keyboard-shortcut first-keystroke="control F" keymap="$default"/>
-        </action>
         <action id="ThePlugin.Bamboo.OpenBuild" class="com.atlassian.theplugin.idea.action.bamboo.OpenBuildActionNew"
                 text="Open Build Details" description="Open Build Details" icon="/icons/bamboo-blue-16.png">
             <keyboard-shortcut first-keystroke="control B" keymap="$default"/>
@@ -400,38 +391,12 @@
             <add-to-group group-id="MainToolBar" anchor="last"/>
         </group>
 
-        <group id="ThePlugin.BambooToolWindowToolBar" popup="false" text="">
-            <reference id="ThePlugin.ShowSettings"/>
-            <reference id="ThePlugin.HelpBamboo"/>
-            <reference id="ThePlugin.Bamboo.RefreshStatus"/>
-            <!--<reference id="ThePlugin.Bamboo.OpenBuild"/>-->
-            <separator/>
-            <reference id="ThePlugin.Bamboo.ShowStackTrace"/>
-            <reference id="ThePlugin.Bamboo.ShowChanges"/>
-            <separator/>
-            <!--<reference id="ThePlugin.Bamboo.RunBuild"/>-->
-            <!--<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>-->
-            <!--<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>-->
-        </group>
-
         <group id="ThePlugin.BuildToolWindowToolBar" popup="false">
             <reference id="ThePlugin.Build.View"/>
             <reference id="ThePlugin.Build.Run"/>
             <reference id="ThePlugin.Build.Label"/>
             <reference id="ThePlugin.Build.Comment"/>
             <reference id="ThePlugin.Build.Close"/>
-        </group>
-
-        <group id="ThePlugin.Bamboo.BuildPopupMenu" popup="true">
-            <!--<reference id="ThePlugin.Bamboo.OpenBuild"/>-->
-            <!--<reference id="ThePlugin.Bamboo.ViewBuild"/>-->
-            <reference id="ThePlugin.Bamboo.ShowStackTrace"/>
-            <reference id="ThePlugin.Bamboo.ShowChanges"/>
-            <separator/>
-            <!--<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>-->
-            <!--<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>-->
-            <!--<separator/>-->
-            <!--<reference id="ThePlugin.Bamboo.RunBuild"/>-->
         </group>
 
         <group id="ThePlugin.Bamboo.TestResultsToolBar" popup="false">
@@ -482,9 +447,6 @@
                 text="Show/Hide Crucible Tab" description="Shows or hides Crucuble tab in main plugin window">
             <keyboard-shortcut first-keystroke="shift control y" keymap="$default"/>
         </action>
-        <action id="ThePlugin.Crucible.GetGeneralCommentReplies"
-                class="com.atlassian.theplugin.idea.action.crucible.GetGeneralCommentRepliesAction" text="View Replies"
-                icon="/icons/inspector/sortByCategory.png"/>
 
         <action id="ThePlugin.Crucible.PostCommitReview"
                 class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
@@ -536,10 +498,6 @@
         </group>
 
         <group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
-
-        <group id="ThePlugin.CrucibleGeneralCommentToolBar" popup="false" text="">
-            <reference id="ThePlugin.Crucible.GetGeneralCommentReplies"/>
-        </group>
 
         <group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
             <reference id="ThePlugin.Crucible.Comment.Reply"/>
