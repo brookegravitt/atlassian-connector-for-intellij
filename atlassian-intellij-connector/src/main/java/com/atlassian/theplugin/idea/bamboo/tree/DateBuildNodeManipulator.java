@@ -19,10 +19,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -80,7 +77,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 	}
 
 	private List<DatePeriod> getDistinctDates() {
-		Set<DatePeriod> dates = new LinkedHashSet<DatePeriod>();	// ordered set
+		Set<DatePeriod> dates = new TreeSet<DatePeriod>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
 			dates.add(DatePeriod.getBuilDate(build.getBuildCompletedDate()));
@@ -88,6 +85,12 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 
 		return new ArrayList<DatePeriod>(dates);
 	}
+
+	private static final Comparator<DatePeriod> COMPARATOR = new Comparator<DatePeriod>() {
+		public int compare(DatePeriod lhs, DatePeriod rhs) {
+			return lhs.ordinal() - rhs.ordinal();
+		}
+	};
 
 	private int gentNumOfBuildsForDate(DatePeriod date) {
 		int ret = 0;

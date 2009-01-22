@@ -151,11 +151,11 @@ public class JIRAIssueTreeBuilder {
 		}
 	};
 
-	private class SortableGroupsTreeModel extends DefaultTreeModel {
+	private final class SortableGroupsTreeModel extends DefaultTreeModel {
 
 		private Set<JIRAIssueGroupTreeNode> set = new TreeSet<JIRAIssueGroupTreeNode>(COMPARATOR);
 
-		boolean isFlat;
+		private boolean isFlat;
 
 		private SortableGroupsTreeModel(TreeNode root, JiraIssueGroupBy groupBy) {
 			super(root);

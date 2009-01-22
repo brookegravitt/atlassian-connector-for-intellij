@@ -19,10 +19,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -79,7 +76,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 	}
 
 	private List<String> getDistinctProjects() {
-		Set<String> projects = new LinkedHashSet<String>();	// ordered set
+		Set<String> projects = new TreeSet<String>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
 			projects.add(build.getProjectName());
@@ -87,6 +84,12 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 
 		return new ArrayList<String>(projects);
 	}
+
+	private static final Comparator<String> COMPARATOR = new Comparator<String>() {
+		public int compare(String lhs, String rhs) {
+			return lhs.compareTo(rhs);
+		}
+	};
 
 	private int gentNumOfBuildsForProject(String projectName) {
 		int ret = 0;
