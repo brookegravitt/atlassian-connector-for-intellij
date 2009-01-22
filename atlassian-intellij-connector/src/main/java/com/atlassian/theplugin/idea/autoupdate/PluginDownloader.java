@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -207,8 +208,6 @@ public class PluginDownloader {
 		PluginUtil.getLogger().info("Renaming downloaded file from [" + pluginArchiveFile.getAbsolutePath()
 				+ "] to [" + newFile + "]");
 
-
-
 		if (!pluginArchiveFile.renameTo(newFile)) {
 			try {
 				FileUtil.copy(pluginArchiveFile, newFile);
@@ -216,7 +215,9 @@ public class PluginDownloader {
 				throw new IOException("Renaming file from [" + pluginArchiveFile.getAbsolutePath() + "] to ["
 						+ newFile.getAbsolutePath() + "] failed.");
 			} finally {
-				pluginArchiveFile.delete();
+				if (!pluginArchiveFile.delete()) {
+					LoggerImpl.getInstance().warn("Deleting file [" + pluginArchiveFile.getAbsolutePath() + "] failed.");
+				}
 			}
 		}
 		
