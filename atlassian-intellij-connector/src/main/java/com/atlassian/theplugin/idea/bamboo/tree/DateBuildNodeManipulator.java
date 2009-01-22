@@ -83,7 +83,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		Set<DatePeriod> dates = new LinkedHashSet<DatePeriod>();	// ordered set
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			dates.add(DatePeriod.getBuilDate(build.getBuildTime()));
+			dates.add(DatePeriod.getBuilDate(build.getBuildCompletedDate()));
 		}
 
 		return new ArrayList<DatePeriod>(dates);
@@ -92,7 +92,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 	private int gentNumOfBuildsForDate(DatePeriod date) {
 		int ret = 0;
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (DatePeriod.getBuilDate(build.getBuildTime()) == date) {
+			if (DatePeriod.getBuilDate(build.getBuildCompletedDate()) == date) {
 				++ret;
 			}
 		}
@@ -105,7 +105,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 
 		// get all builds for date
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (DatePeriod.getBuilDate(build.getBuildTime()) == date) {
+			if (DatePeriod.getBuilDate(build.getBuildCompletedDate()) == date) {
 				array.add(build);
 			}
 		}
