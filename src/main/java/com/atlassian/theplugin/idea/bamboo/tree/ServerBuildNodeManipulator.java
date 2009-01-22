@@ -21,10 +21,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Jacek Jaroczynski
@@ -81,7 +78,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 	}
 
 	private List<BambooServerCfg> getDistinctServers() {
-		Set<BambooServerCfg> servers = new LinkedHashSet<BambooServerCfg>();	// ordered set
+		Set<BambooServerCfg> servers = new TreeSet<BambooServerCfg>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
 			servers.add(build.getServer());
@@ -89,6 +86,12 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 
 		return new ArrayList<BambooServerCfg>(servers);
 	}
+
+	private static final Comparator<BambooServerCfg> COMPARATOR = new Comparator<BambooServerCfg>() {
+		public int compare(BambooServerCfg lhs, BambooServerCfg rhs) {
+			return lhs.getName().compareTo(rhs.getName());
+		}
+	};
 
 	private int gentNumOfBuildsForServer(ServerId serverId) {
 		int ret = 0;
