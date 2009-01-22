@@ -134,7 +134,7 @@ public final class FileTreeModelBuilder {
 
 	private static void addStatementOfObjectives(final ReviewAdapter review, final AtlassianTreeModel model) {
 		if (review.getDescription() != null && review.getDescription().length() != 0) {
-			model.insertNode(new CrucibleStatementOfObjectivesNode(
+			model.insertNode(new CrucibleStatementOfObjectivesNode(review, 
 					review.getDescription(), AtlassianClickAction.EMPTY_ACTION), model.getRoot());
 		}
 	}
