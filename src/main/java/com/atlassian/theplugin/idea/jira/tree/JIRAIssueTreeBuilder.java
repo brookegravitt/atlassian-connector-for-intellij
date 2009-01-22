@@ -19,13 +19,13 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Map;
+import java.util.*;
 
 public class JIRAIssueTreeBuilder {
 
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
-	private DefaultTreeModel treeModel;
+	private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
 	private boolean isGroupSubtasksUnderParent;
@@ -43,7 +43,7 @@ public class JIRAIssueTreeBuilder {
 
 		private String name;
 
-		UpdateGroup(String name) {
+		private UpdateGroup(String name) {
 			this.name = name;
 		}
 
@@ -118,7 +118,7 @@ public class JIRAIssueTreeBuilder {
 
 	private void reCreateTree(final JTree tree, JComponent treeParent, DefaultMutableTreeNode root) {
 		tree.removeAll();
-		treeModel = new DefaultTreeModel(root);
+		treeModel = new SortableGroupsTreeModel(root, groupBy);
 		tree.setModel(treeModel);
 		TreeUISetup uiSetup = new TreeUISetup(TREE_RENDERER);
 		uiSetup.registerUI(tree);
@@ -143,6 +143,92 @@ public class JIRAIssueTreeBuilder {
 
 	public void setGroupSubtasksUnderParent(boolean groupSubtasksUnderParent) {
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
+	}
+
+	private static final Comparator<JIRAIssueGroupTreeNode> COMPARATOR = new Comparator<JIRAIssueGroupTreeNode>() {
+		public int compare(JIRAIssueGroupTreeNode lhs, JIRAIssueGroupTreeNode rhs) {
+			return lhs.toString().compareTo(rhs.toString());
+		}
+	};
+
+	private class SortableGroupsTreeModel extends DefaultTreeModel {
+
+		private Set<JIRAIssueGroupTreeNode> set = new TreeSet<JIRAIssueGroupTreeNode>(COMPARATOR);
+
+		boolean isFlat;
+
+		private SortableGroupsTreeModel(TreeNode root, JiraIssueGroupBy groupBy) {
+			super(root);
+			isFlat = groupBy == JiraIssueGroupBy.NONE;
+		}
+
+		public DefaultMutableTreeNode getGroupNode(String name, Icon icon, Icon disabledIcon) {
+			if (isFlat) {
+				return (DefaultMutableTreeNode) getRoot();
+			}
+			JIRAIssueGroupTreeNode n = findGroupNode(name);
+			if (n != null) {
+				return n;
+			}
+
+			n = new JIRAIssueGroupTreeNode(issueModel, name, icon, disabledIcon);
+			set.add(n);
+			((DefaultMutableTreeNode) getRoot()).removeAllChildren();
+			for (JIRAIssueGroupTreeNode node : set) {
+				((DefaultMutableTreeNode) getRoot()).add(node);	
+			}
+			nodeStructureChanged((DefaultMutableTreeNode) getRoot());
+			return n;
+		}
+
+		private JIRAIssueGroupTreeNode findGroupNode(String name) {
+			for (int i = 0; i < getChildCount(getRoot()); ++i) {
+				JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) getChild(getRoot(), i);
+				if (node.toString().equals(name)) {
+					return node;
+				}
+			}
+			return null;
+		}
+
+		@Override
+		public Object getChild(Object parent, int index) {
+			if (parent != getRoot() || isFlat) {
+				return super.getChild(parent, index);
+			}
+			return new ArrayList<JIRAIssueGroupTreeNode>(set).get(index);
+		}
+
+		@Override
+		public int getIndexOfChild(Object parent, Object child) {
+			if (parent != getRoot() || isFlat) {
+				return super.getIndexOfChild(parent, child);
+			}
+			int i = 0;
+			for (JIRAIssueGroupTreeNode n : set) {
+				if (n == child) {
+					return i;
+				}
+				++i;
+			}
+			return -1;
+		}
+
+		@Override
+		public int getChildCount(Object parent) {
+			if (parent != getRoot() || isFlat) {
+				return super.getChildCount(parent);
+			}
+			return set.size();
+		}
+
+		@Override
+		public boolean isLeaf(Object node) {
+			if (isFlat) {
+				return super.isLeaf(node);
+			}
+			return !(node instanceof JIRAIssueGroupTreeNode) && super.isLeaf(node);
+		}
 	}
 
 	private DefaultMutableTreeNode getPlace(JIRAIssue issue, DefaultMutableTreeNode root) {
@@ -173,13 +259,7 @@ public class JIRAIssueTreeBuilder {
 		if (name == null) {
 			name = "None";
 		}
-		DefaultMutableTreeNode n = findGroupNode(root, name);
-		if (n == null) {
-			n = new JIRAIssueGroupTreeNode(issueModel, name, CachedIconLoader.getIcon(iconUrl),
-					CachedIconLoader.getDisabledIcon(iconUrl));
-			root.add(n);
-		}
-		return n;
+		return treeModel.getGroupNode(name, CachedIconLoader.getIcon(iconUrl), CachedIconLoader.getDisabledIcon(iconUrl));
 	}
 
 	// isn't this constant defined somewhere?
@@ -241,15 +321,5 @@ public class JIRAIssueTreeBuilder {
 			return key;
 		}
 		return projectKeysToNames.get(key);
-	}
-
-	private DefaultMutableTreeNode findGroupNode(DefaultMutableTreeNode root, String name) {
-		for (int i = 0; i < treeModel.getChildCount(root); ++i) {
-			JIRAIssueGroupTreeNode node = (JIRAIssueGroupTreeNode) treeModel.getChild(root, i);
-			if (node.toString().equals(name)) {
-				return node;
-			}
-		}
-		return null;
 	}
 }
