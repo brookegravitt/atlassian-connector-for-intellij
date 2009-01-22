@@ -33,6 +33,7 @@ import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -45,8 +46,6 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * User: jgorycki
@@ -228,7 +227,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
 	}
 
-	public void runFailedTests(AnActionEvent ev, boolean debug) {
+	public void runTests(AnActionEvent ev, boolean debug) {
 		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
 		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
 		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
@@ -240,7 +239,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		IdeaVersionFacade.getInstance().runTests(settings, ev, debug);
 	}
 
-	public boolean canRunFailedTests() {
+	public boolean canRunTests() {
 		return createTestConfiguration(null);
 	}
 
@@ -301,8 +300,8 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		}
 
 		@Override
-		public void navigate() {
-			// no-op for packages
+		public boolean navigate(boolean testOnly) {
+			return false;
 		}
 
 		@Override
@@ -349,11 +348,15 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		}
 
 		@Override
-		public void navigate() {
+		public boolean navigate(boolean testOnly) {
 			PsiClass cls = IdeaVersionFacade.getInstance().findClass(className, project);
 			if (cls != null) {
-				cls.navigate(true);
+				if (!testOnly) {
+					cls.navigate(true);
+				}
+				return true;
 			}
+			return false;
 		}
 
 		@Override
@@ -396,11 +399,15 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		}
 
 		@Override
-		public void navigate() {
+		public boolean navigate(boolean testOnly) {
 			PsiMethod m = getMethod();
 			if (m != null) {
-				m.navigate(true);
+				if (!testOnly) {
+					m.navigate(true);
+				}
+				return true;
 			}
+			return false;
 		}
 
 		@Override
@@ -554,8 +561,8 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				if (e.getClickCount() >= 2) {
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
 					AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
-					node.navigate();
-				} 
+					jumpToSource(node);
+				}
 			}
 
 			@Override
@@ -563,6 +570,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
+					tree.setSelectionPath(selPath);
 					launchPopup(e);
 				}
 			}
@@ -572,6 +580,28 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		testTree.setCellRenderer(renderer);
 
 		return testTree;
+	}
+
+	public boolean canJumpToSource() {
+		TreePath p = tree.getSelectionPath();
+		if (p != null) {
+			AbstractTreeNode node = (AbstractTreeNode) p.getLastPathComponent();
+			return node != null && node.navigate(true);
+		}
+		return false;		
+	}
+
+	public void jumpToSource() {
+		TreePath p = tree.getSelectionPath();
+		if (p != null) {
+			jumpToSource((AbstractTreeNode) p.getLastPathComponent());
+		}
+	}
+
+	private void jumpToSource(AbstractTreeNode node) {
+		if (node != null) {
+			node.navigate(false);
+		}
 	}
 
 	private void launchPopup(MouseEvent e) {
@@ -642,7 +672,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			return "";
 		}
 
-		public abstract void navigate();
+		public abstract boolean navigate(boolean testOnly);
 
 		public abstract boolean createTestConfiguration(RunConfiguration configuration);
 	}

@@ -36,16 +36,28 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		this.project = project;
 	}
 
-	public void runFailedTests(AnActionEvent ev, boolean debug) {
+	public void runTests(AnActionEvent ev, boolean debug) {
 		BuildPanel bp = getContentPanel(ev.getPlace());
 		if (bp != null) {
-			bp.getTestDetailsPanel().runFailedTests(ev, debug);
+			bp.getTestDetailsPanel().runTests(ev, debug);
 		}
 	}
 
-	public boolean canRunFailedTests(String key) {
+	public boolean canRunTests(String key) {
 		BuildPanel bp = getContentPanel(key);
-		return bp != null && bp.getTestDetailsPanel().canRunFailedTests();
+		return bp != null && bp.getTestDetailsPanel().canRunTests();
+	}
+
+	public void jumpToSource(String key) {
+		BuildPanel bp = getContentPanel(key);
+		if (bp != null) {
+			bp.getTestDetailsPanel().jumpToSource();
+		}
+	}
+
+	public boolean canJumpToSource(String key) {
+		BuildPanel bp = getContentPanel(key);
+		return bp != null && bp.getTestDetailsPanel().canJumpToSource();
 	}
 
 	public void setPassedTestsVisible(String key, boolean visible) {
