@@ -56,6 +56,7 @@
     <change-notes>
         <![CDATA[
 		<ul>
+			<li>2.0.0-beta-12: Almost home stretch to 2.0</li>
 			<li>2.0.0-beta-11: New Bamboo tab and build tool window; JIRA issue panel</li>
 			<li>2.0.0-beta-10: More work new Crucible panel</li>
 			<li>2.0.0-beta-9: New Crucible panel</li>
@@ -263,16 +264,23 @@
         <action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
                 text="Expand All" icon="/actions/expandall.png"/>
         <action id="ThePlugin.Bamboo.CollapseTests"
-                class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction" text="Collapse All"
+                class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction"
+				text="Collapse All"
                 icon="/actions/collapseall.png"/>
-        <action id="ThePlugin.Bamboo.RunFailedTests"
-                class="com.atlassian.theplugin.idea.action.bamboo.RunFailedTestsAction" text="Run Failed Tests"
+        <action id="ThePlugin.Bamboo.RunTests"
+                class="com.atlassian.theplugin.idea.action.bamboo.RunTestsAction"
+				text="Run Tests"
                 icon="/actions/execute.png"/>
-        <action id="ThePlugin.Bamboo.DebugFailedTests"
-                class="com.atlassian.theplugin.idea.action.bamboo.DebugFailedTestsAction" text="Debug Failed Tests"
+        <action id="ThePlugin.Bamboo.DebugTests"
+                class="com.atlassian.theplugin.idea.action.bamboo.DebugTestsAction"
+				text="Debug Tests"
                 icon="/actions/startDebugger.png"/>
-        <action id="ThePlugin.Bamboo.ToggleAllTests"
-                class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction" text="Hide Passed"
+		<action id="ThePlugin.Bamboo.JumpToSource"
+				class="com.atlassian.theplugin.idea.action.bamboo.JumpToSourceAction" 
+				text="Jump to Source"/>
+		<action id="ThePlugin.Bamboo.ToggleAllTests"
+                class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction"
+				text="Hide Passed"
                 icon="/runConfigurations/hidePassed.png"/>
 
         <action id="ThePlugin.Build.View"
@@ -431,13 +439,15 @@
             <separator/>
             <reference id="ThePlugin.Bamboo.ExpandTests"/>
             <reference id="ThePlugin.Bamboo.CollapseTests"/>
-            <reference id="ThePlugin.Bamboo.RunFailedTests"/>
-            <reference id="ThePlugin.Bamboo.DebugFailedTests"/>
+            <reference id="ThePlugin.Bamboo.RunTests"/>
+            <reference id="ThePlugin.Bamboo.DebugTests"/>
         </group>
 
 		<group id="ThePlugin.Bamboo.TestResultsPopupMenu" popup="true">
-			<reference id="ThePlugin.Bamboo.RunFailedTests"/>
-			<reference id="ThePlugin.Bamboo.DebugFailedTests"/>
+			<reference id="ThePlugin.Bamboo.RunTests"/>
+			<reference id="ThePlugin.Bamboo.DebugTests"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.JumpToSource"/>
 		</group>
 
 		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
