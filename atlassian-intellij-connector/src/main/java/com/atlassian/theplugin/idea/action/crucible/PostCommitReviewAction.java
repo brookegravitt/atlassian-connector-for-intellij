@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewCreateForm;
@@ -34,7 +35,9 @@ public class PostCommitReviewAction extends Crucible16RepositoryAction {
 		}
 
 		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(project,
-				CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager());
+				CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager(),
+				IdeaHelper.getProjectComponent(project,
+						UiTaskExecutor.class));
 		reviewCreateForm.show();
 	}
 }

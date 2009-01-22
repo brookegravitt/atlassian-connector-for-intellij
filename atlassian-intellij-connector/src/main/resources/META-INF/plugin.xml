@@ -140,6 +140,8 @@
                         serviceImplementation="com.atlassian.theplugin.idea.bamboo.BuildListModelImpl"/>
         <projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
                         serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
+        <applicationService serviceInterface="com.atlassian.theplugin.commons.UiTaskExecutor"
+                            serviceImplementation="com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor"/>
 
 
     </extensions>
@@ -148,9 +150,9 @@
         <component>
             <implementation-class>com.atlassian.theplugin.idea.ThePluginApplicationComponent</implementation-class>
         </component>
-		<component>
-			<implementation-class>com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean</implementation-class>
-		</component>
+        <component>
+            <implementation-class>com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean</implementation-class>
+        </component>
     </application-components>
     <project-components>
         <component>
@@ -256,22 +258,22 @@
                 text="Expand All" icon="/actions/expandall.png"/>
         <action id="ThePlugin.Bamboo.CollapseTests"
                 class="com.atlassian.theplugin.idea.action.bamboo.CollapseTestsAction"
-				text="Collapse All"
+                text="Collapse All"
                 icon="/actions/collapseall.png"/>
         <action id="ThePlugin.Bamboo.RunTests"
                 class="com.atlassian.theplugin.idea.action.bamboo.RunTestsAction"
-				text="Run Tests"
+                text="Run Tests"
                 icon="/actions/execute.png"/>
         <action id="ThePlugin.Bamboo.DebugTests"
                 class="com.atlassian.theplugin.idea.action.bamboo.DebugTestsAction"
-				text="Debug Tests"
+                text="Debug Tests"
                 icon="/actions/startDebugger.png"/>
-		<action id="ThePlugin.Bamboo.JumpToSource"
-				class="com.atlassian.theplugin.idea.action.bamboo.JumpToSourceAction" 
-				text="Jump to Source"/>
-		<action id="ThePlugin.Bamboo.ToggleAllTests"
+        <action id="ThePlugin.Bamboo.JumpToSource"
+                class="com.atlassian.theplugin.idea.action.bamboo.JumpToSourceAction"
+                text="Jump to Source"/>
+        <action id="ThePlugin.Bamboo.ToggleAllTests"
                 class="com.atlassian.theplugin.idea.action.bamboo.ToggleAllTestsAction"
-				text="Hide Passed"
+                text="Hide Passed"
                 icon="/runConfigurations/hidePassed.png"/>
 
         <action id="ThePlugin.Build.View"
@@ -408,14 +410,14 @@
             <reference id="ThePlugin.Bamboo.DebugTests"/>
         </group>
 
-		<group id="ThePlugin.Bamboo.TestResultsPopupMenu" popup="true">
-			<reference id="ThePlugin.Bamboo.RunTests"/>
-			<reference id="ThePlugin.Bamboo.DebugTests"/>
-			<separator/>
-			<reference id="ThePlugin.Bamboo.JumpToSource"/>
-		</group>
+        <group id="ThePlugin.Bamboo.TestResultsPopupMenu" popup="true">
+            <reference id="ThePlugin.Bamboo.RunTests"/>
+            <reference id="ThePlugin.Bamboo.DebugTests"/>
+            <separator/>
+            <reference id="ThePlugin.Bamboo.JumpToSource"/>
+        </group>
 
-		<group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
+        <group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
             <reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
             <reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
             <reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
@@ -450,6 +452,10 @@
 
         <action id="ThePlugin.Crucible.PostCommitReview"
                 class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
+                icon="/icons/add_crucible.png"/>
+        <action id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"
+                class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewActionNoRevisionSelected"
+                text="Create Review"
                 icon="/icons/add_crucible.png"/>
         <action id="ThePlugin.Crucible.AddRevisionToReview"
                 class="com.atlassian.theplugin.idea.action.crucible.AddRevisionToReviewAction"
@@ -845,6 +851,7 @@
             <reference id="ThePlugin.Reviews.ExpandAll"/>
             <reference id="ThePlugin.Reviews.CollapseAll"/>
             <separator/>
+            <reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
             <reference id="ThePlugin.Reviews.GetComments"/>
             <reference id="ThePlugin.Reviews.ViewReview"/>
             <reference id="ThePlugin.HelpCrucible"/>
