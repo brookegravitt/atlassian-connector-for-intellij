@@ -223,17 +223,10 @@ public final class IdeaVersionFacade {
 		BinaryContent content = null;
 		FileType fileType = FileTypeManager.getInstance().getFileTypeByFile(virtualFile);
 		try {
-			if (isIdea8) {
-				Class binaryContentClass = Class.forName("com.intellij.openapi.diff.BinaryContent");
-				Constructor constructor = binaryContentClass
-						.getConstructor(new Class[]{byte[].class, Charset.class, FileType.class});
-				return (BinaryContent) constructor.newInstance(virtualFile.contentsToByteArray(), null, fileType);
-			} else {
-				Class binaryContentClass = Class.forName("com.intellij.openapi.diff.BinaryContent");
-				Constructor constructor = binaryContentClass
-						.getConstructor(new Class[]{byte[].class, String.class, FileType.class});
-				return (BinaryContent) constructor.newInstance(virtualFile.contentsToByteArray(), null, fileType);
-			}
+			Class binaryContentClass = Class.forName("com.intellij.openapi.diff.BinaryContent");
+			Constructor constructor = binaryContentClass
+					.getConstructor(new Class[]{byte[].class, isIdea8 ? Charset.class : String.class, FileType.class});
+			return (BinaryContent) constructor.newInstance(virtualFile.contentsToByteArray(), null, fileType);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
