@@ -87,7 +87,7 @@ public class AuthorNodeManipulator extends NodeManipulator {
 		return new ArrayList<User>(servers);
 	}
 
-	private Comparator<User> COMPARATOR = new Comparator<User>() {
+	private static final Comparator<User> COMPARATOR = new Comparator<User>() {
 		public int compare(User lhs, User rhs) {
 			return lhs.getDisplayName().compareTo(rhs.getDisplayName());
 		}

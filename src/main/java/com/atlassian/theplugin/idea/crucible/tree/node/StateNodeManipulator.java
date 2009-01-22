@@ -88,7 +88,7 @@ public class StateNodeManipulator extends NodeManipulator {
 		return new ArrayList<State>(states);
 	}
 
-	private Comparator<State> COMPARATOR = new Comparator<State>() {
+	private static final Comparator<State> COMPARATOR = new Comparator<State>() {
 		public int compare(State lhs, State rhs) {
 			return lhs.ordinal() - rhs.ordinal();
 		}
