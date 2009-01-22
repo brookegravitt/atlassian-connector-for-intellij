@@ -86,7 +86,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 		return new ArrayList<CrucibleProject>(projects);
 	}
 
-	private Comparator<CrucibleProject> COMPARATOR = new Comparator<CrucibleProject>() {
+	private static final Comparator<CrucibleProject> COMPARATOR = new Comparator<CrucibleProject>() {
 		public int compare(CrucibleProject lhs, CrucibleProject rhs) {
 			return lhs.getName().compareTo(rhs.getName());
 		}

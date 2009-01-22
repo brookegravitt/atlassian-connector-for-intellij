@@ -87,7 +87,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 		return new ArrayList<ServerCfg>(servers);
 	}
 
-	private Comparator<ServerCfg> COMPARATOR = new Comparator<ServerCfg>() {
+	private static final Comparator<ServerCfg> COMPARATOR = new Comparator<ServerCfg>() {
 		public int compare(ServerCfg lhs, ServerCfg rhs) {
 			return lhs.getName().compareTo(rhs.getName());
 		}
