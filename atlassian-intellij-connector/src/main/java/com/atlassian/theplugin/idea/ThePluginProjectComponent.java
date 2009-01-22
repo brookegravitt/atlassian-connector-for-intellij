@@ -32,7 +32,6 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooTableToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
 import com.atlassian.theplugin.idea.crucible.CrucibleEditorFactoryListener;
@@ -57,7 +56,6 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
-import com.intellij.ui.table.TableView;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -85,7 +83,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
-	private final BambooTableToolWindowPanel bambooTableToolWindowPanel;
 	private final BuildListModelImpl bambooModel;
 	private CrucibleStatusChecker crucibleStatusChecker;
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
@@ -111,7 +108,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
-			@NotNull final BambooTableToolWindowPanel bambooTableToolWindowPanel,
 			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
@@ -126,7 +122,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.projectConfigurationBean = projectConfigurationBean;
-		this.bambooTableToolWindowPanel = bambooTableToolWindowPanel;
 		this.bambooModel = bambooModel;
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
@@ -194,8 +189,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
 					PluginUtil.getLogger());
 
-			// DependencyValidationManager.getHolder(project, "", )
-			//this.bambooToolWindowPanel = BambooTableToolWindowPanel.getInstance(project, projectConfigurationBean);
+			// DependencyValidationManager.getHolder(project, "", )			
 
 			issuesToolWindowPanel.refreshModels();
 
@@ -207,8 +201,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// create tool window content
 
 //			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD);
-			TableView.restore(projectConfigurationBean.getBambooConfiguration().getTableConfiguration(),
-					bambooTableToolWindowPanel.getTable());
 
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
@@ -216,7 +208,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
-			bambooStatusChecker.registerListener(bambooTableToolWindowPanel);
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
 				public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
 					bambooModel.update(buildStatuses);
