@@ -30,7 +30,6 @@ import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -44,33 +43,15 @@ import com.intellij.vcsUtil.VcsUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
-public class CrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm {
+public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePostCommitReviewForm {
 
 	private CommittedChangesTreeBrowser commitedChangesBrowser;
 
-//	public CrucibleReviewCreateForm(final Project project, final CrucibleServerFacade crucibleServerFacade, @NotNull final CfgManager cfgManager) {
-//		this(project, crucibleServerFacade, "", cfgManager);
-//
-//		repositoryPanel.setLayout(new BorderLayout());
-//		repositoryPanel.add(new JLabel("Fetching recent commits...", JLabel.CENTER));
-//
-//
-//		showPatchPanel(false);
-//		setTitle("Create Review");
-//		pack();
-//
-//
-//	}
-
-
-	
-
 	public CrucibleCreatePostCommitReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
 			@NotNull final CfgManager cfgManager, @NotNull final UiTaskExecutor taskExecutor) {
-		super(project, crucibleServerFacade, "", cfgManager, "Create Post-Commit Review");
+		super(project, crucibleServerFacade, "", cfgManager);
 
 		setCustomComponent(new JLabel("Fetching recent commits...", JLabel.CENTER));
 
@@ -116,26 +97,11 @@ public class CrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm
 	@Override
 	protected Review createReview(final CrucibleServerCfg server, final ReviewProvider reviewProvider)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-
-		if (reviewProvider.getRepoName() == null) {
-			Messages.showErrorDialog(project, "Repository not selected. Unable to create review.\n", "Repository required");
-			return null;
-		}
 		final MyDataSink dataSink = new MyDataSink();
 		//noinspection deprecation
 		commitedChangesBrowser.calcData(DataKeys.CHANGE_LISTS, dataSink);
 		final ChangeList[] changes = dataSink.getChanges();
-		List<String> revisions = new ArrayList<String>();
-		if (changes != null) {
-			for (ChangeList change : changes) {
-				if (change instanceof CommittedChangeList) {
-					CommittedChangeList committedChangeList = (CommittedChangeList) change;
-					revisions.add(Long.toString(committedChangeList.getNumber()));
-				}
-			}
-		}
-		return crucibleServerFacade.createReviewFromRevision(server, reviewProvider, revisions);
-
+		return createReviewImpl(server, reviewProvider, changes);
 	}
 
 	private class MyDataSink implements DataSink {
@@ -150,13 +116,4 @@ public class CrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm
 		}
 	}
 
-	@Override
-	protected boolean isValid(final ReviewProvider reviewProvider) {
-		return (reviewProvider.getRepoName() != null);
-	}
-
-	@Override
-	protected boolean shouldAutoSelectRepo(final CrucibleReviewCreateForm.CrucibleServerData crucibleServerData) {
-		return crucibleServerData.getRepositories().size() == 1;
-	}
 }
