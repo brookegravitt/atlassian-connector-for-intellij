@@ -35,8 +35,6 @@ public class CrucibleCreatePreCommitReviewForm extends CrucibleReviewCreateForm 
 		super(project, crucibleServerFacade, commitMessage, cfgManager, "Create Pre-Commit Review");
 		this.patch = patch;
 		setTitle("Create Patch Review");
-		setCustomComponent(null);
-
 		JPanel patchContainer = new JPanel(new BorderLayout());
 
 		JLabel patchLabel = new JLabel();
@@ -48,7 +46,6 @@ public class CrucibleCreatePreCommitReviewForm extends CrucibleReviewCreateForm 
 		patchPreview.setEnabled(true);
 		patchPreview.setFont(new Font("Monospaced", patchPreview.getFont().getStyle(), patchPreview.getFont().getSize()));
 		patchPreview.setLineWrap(true);
-		patchPreview.setRows(5);
 		patchPreview.setText(patch);
 		patchPanel.setViewportView(patchPreview);
 		patchLabel.setLabelFor(patchPreview);
