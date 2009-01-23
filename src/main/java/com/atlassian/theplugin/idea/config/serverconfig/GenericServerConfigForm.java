@@ -85,10 +85,9 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	}
 
 	private void setServerState() {
-		// password can be empty, do not check for it
+		// user name and password can be empty (for anonymous connections), do not check for them
 		boolean enabled =
-				username.getText().length() > 0
-				&& serverName.getText().length() > 0
+				serverName.getText().length() > 0
 				&& serverUrl.getText().length() > 0;
 		cbEnabled.setSelected(enabled);
 	}
