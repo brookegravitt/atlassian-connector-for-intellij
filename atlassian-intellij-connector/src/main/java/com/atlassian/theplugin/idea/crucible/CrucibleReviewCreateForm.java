@@ -40,6 +40,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.intellij.ui.ListSpeedSearch;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -93,15 +94,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		customComponentPanel.removeAll();
 		if (component != null) {
 			customComponentPanel.add(component);
+			customComponentPanel.validate();
 		}
-		customComponentPanel.setVisible(component != null);
-		if (component == null) {
-			customComponentPanel.setPreferredSize(new Dimension(0, 0));
-		} else {
-			customComponentPanel.setPreferredSize(null);
-		}
-
-		validate();
 	}
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage, @NotNull final CfgManager cfgManager,
@@ -132,8 +126,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				int index = reviewersList.locationToIndex(e.getPoint());
 				setCheckboxState(index);
 				refreshUserModel();
+				reviewersList.setSelectedIndex(index);
 			}
 		});
+
+		new ListSpeedSearch(reviewersList);
 
 		reviewersList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -142,6 +139,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 					int index = reviewersList.getSelectedIndex();
 					setCheckboxState(index);
 					refreshUserModel();
+					reviewersList.setSelectedIndex(index);
 				}
 			}
 		});
@@ -200,7 +198,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		if (index != -1) {
 			UserListItem pi = (UserListItem) reviewersList.getModel().getElementAt(index);
 			pi.setSelected(!pi.isSelected());
-			setViewState(index, pi.isSelected());
+//			setViewState(index, pi.isSelected());
 			repaint();
 		}
 	}
@@ -224,6 +222,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 		reviewersList.setSelectedIndices(newIdx);
 	}
+	// CHECKSTYLE:ON
 
 	@Override
 	public JComponent getPreferredFocusedComponent() {
@@ -241,7 +240,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		createUIComponents();
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new FormLayout("fill:d:grow",
-				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:p:grow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:p:grow,top:3dlu:noGrow,fill:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		rootComponent.setMinimumSize(new Dimension(800, 505));
 		final JLabel label1 = new JLabel();
 		label1.setText("Title:");
@@ -256,24 +255,24 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		rootComponent.add(panel1, cc.xy(1, 5));
 		final JLabel label2 = new JLabel();
 		label2.setText("Server:");
-		panel1.add(label2, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+		panel1.add(label2, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		crucibleServersComboBox = new JComboBox();
 		panel1.add(crucibleServersComboBox, cc.xy(3, 1));
 		final JLabel label3 = new JLabel();
 		label3.setInheritsPopupMenu(false);
 		label3.setText("Project:");
-		panel1.add(label3, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
+		panel1.add(label3, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		projectsComboBox = new JComboBox();
 		panel1.add(projectsComboBox, cc.xy(3, 3));
 		final JLabel label4 = new JLabel();
 		label4.setText("Repository:");
-		panel1.add(label4, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.TOP));
+		panel1.add(label4, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		final JLabel label5 = new JLabel();
 		label5.setText("Moderator:");
-		panel1.add(label5, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.TOP));
+		panel1.add(label5, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		final JLabel label6 = new JLabel();
 		label6.setText("Author:");
-		panel1.add(label6, cc.xy(1, 9, CellConstraints.DEFAULT, CellConstraints.TOP));
+		panel1.add(label6, cc.xy(1, 9, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		repoComboBox = new JComboBox();
 		panel1.add(repoComboBox, cc.xy(3, 5));
 		moderatorComboBox = new JComboBox();
@@ -320,6 +319,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	public JComponent $$$getRootComponent$$$() {
 		return rootComponent;
 	}
+
+	// CHECKSTYLE:OFF
 
 	private static final class ServerComboBoxItem {
 		private final CrucibleServerCfg server;

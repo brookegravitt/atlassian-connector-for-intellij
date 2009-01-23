@@ -40,10 +40,13 @@ import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.List;
+import java.awt.*;
 
 public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePostCommitReviewForm {
 
@@ -53,7 +56,10 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 			@NotNull final CfgManager cfgManager, @NotNull final UiTaskExecutor taskExecutor) {
 		super(project, crucibleServerFacade, "", cfgManager);
 
-		setCustomComponent(new JLabel("Fetching recent commits...", JLabel.CENTER));
+		final JPanel fetchingPanel = new JPanel(new FormLayout("c:p:g", "10dlu, p, 10dlu"));
+		fetchingPanel.add(new JLabel("Fetching recent commits..."), new CellConstraints(1, 2));
+
+		setCustomComponent(fetchingPanel);
 
 		taskExecutor.execute(new UiTaskAdapter("Fetching recent commits", getContentPane()) {
 			List<CommittedChangeList> list;
