@@ -70,11 +70,10 @@ public class WorkLogCreate extends DialogWrapper {
 	private JTextField remainingEstimateField;
 	private JLabel remainingEstimateLabel;
 	private JTextPane anEstimateOfHowTextPane;
-	private boolean haveIssueStopProgressInfo = false;
+	private boolean haveIssueStopProgressInfo;
 	private JIRAAction stopProgressAction;
 	private JIRAServerFacade facade;
 	private Date endTime;
-	private final Calendar now = Calendar.getInstance();
 
 	private WdhmInputListener timeSpentListener;
 	private WdhmInputListener remainingEstimateListener;
@@ -446,14 +445,14 @@ public class WorkLogCreate extends DialogWrapper {
 
 		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
 
-		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
-				jiraServer, issue);
+		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(jiraServer, issue);
 		if (startProgressTimestamp != null) {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}
 
 		remainingEstimateField.getDocument().addDocumentListener(remainingEstimateListener);
 
+		final Calendar now = Calendar.getInstance();
 		endTime = now.getTime();
 
 		endDateLabel.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(now.getTime()));
@@ -521,11 +520,8 @@ public class WorkLogCreate extends DialogWrapper {
 
 	public Date getStartDate() {
 		Date d = endTime;
-		long t = d.getTime()
-				- (timeSpentListener.getWeeks() * Timer.ONE_WEEK)
-				- (timeSpentListener.getDays() * Timer.ONE_DAY)
-				- (timeSpentListener.getHours() * Timer.ONE_HOUR)
-				- (timeSpentListener.getMinutes() * Timer.ONE_MINUTE);
+		long t = d.getTime() - (timeSpentListener.getWeeks() * Timer.ONE_WEEK) - (timeSpentListener.getDays() * Timer.ONE_DAY)
+				- (timeSpentListener.getHours() * Timer.ONE_HOUR) - (timeSpentListener.getMinutes() * Timer.ONE_MINUTE);
 		d.setTime(t);
 		return d;
 	}
@@ -554,6 +550,7 @@ public class WorkLogCreate extends DialogWrapper {
 		return btnUpdateManually.isSelected();
 	}
 
+	@Override
 	protected JComponent createCenterPanel() {
 		return contentPane;
 	}
@@ -627,6 +624,7 @@ public class WorkLogCreate extends DialogWrapper {
 			show();
 		}
 
+		@Override
 		protected JComponent createCenterPanel() {
 			return panel;
 		}
