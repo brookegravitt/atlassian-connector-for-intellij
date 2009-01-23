@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.Util;
@@ -166,7 +167,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		JLabel date = new SelectableLabel(selected, enabled, build.getBuildRelativeBuildDate(), null,
+		String relativeBuildDate =
+				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset());
+		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(date, DATE_LABEL_WIDTH, ICON_HEIGHT);
 		date.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -241,7 +244,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Build Date:</b></td><td valign=\"top\">");
-		String date = build.getBuildRelativeBuildDate();
+		String date = DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset());
 		sb.append(StringEscapeUtils.escapeHtml(date).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
 				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 
