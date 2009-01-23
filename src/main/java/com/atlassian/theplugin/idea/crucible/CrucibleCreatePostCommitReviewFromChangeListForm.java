@@ -22,14 +22,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
-public class CrucibleCreatePostCommitReviewFromChangeListForm extends CrucibleReviewCreateForm {
+public class CrucibleCreatePostCommitReviewFromChangeListForm extends AbstractCrucibleCreatePostCommitReviewForm {
 	private final ChangeList[] changes;
 
 	private static String getReviewTitle(final ChangeList[] changes) {
@@ -44,39 +40,16 @@ public class CrucibleCreatePostCommitReviewFromChangeListForm extends CrucibleRe
 	public CrucibleCreatePostCommitReviewFromChangeListForm(final Project project,
 			final CrucibleServerFacade crucibleServerFacade,
 			final ChangeList[] changes, @NotNull final CfgManager cfgManager) {
-		super(project, crucibleServerFacade, getReviewTitle(changes), cfgManager, "Create Post-Commit Review");
+		super(project, crucibleServerFacade, getReviewTitle(changes), cfgManager);
 		this.changes = changes;
 		setCustomComponent(null);
 		pack();
 	}
 
 	@Override
-	protected boolean isValid(final ReviewProvider reviewProvider) {
-		return (reviewProvider.getRepoName() != null);
-	}
-
-	@Override
-	protected boolean shouldAutoSelectRepo(final CrucibleReviewCreateForm.CrucibleServerData crucibleServerData) {
-		return crucibleServerData.getRepositories().size() == 1;
-	}
-
-	@Override
 	protected Review createReview(final CrucibleServerCfg server, final ReviewProvider reviewProvider)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
-		if (reviewProvider.getRepoName() == null) {
-			Messages.showErrorDialog(project, "Repository not selected. Unable to create review.\n", "Repository required");
-			return null;
-		}
-		java.util.List<String> revisions = new ArrayList<String>();
-		if (changes != null) {
-			for (ChangeList change : changes) {
-				if (change instanceof CommittedChangeList) {
-					CommittedChangeList committedChangeList = (CommittedChangeList) change;
-					revisions.add(Long.toString(committedChangeList.getNumber()));
-				}
-			}
-		}
-		return crucibleServerFacade.createReviewFromRevision(server, reviewProvider, revisions);
+		return createReviewImpl(server, reviewProvider, changes);
 	}
 
 }

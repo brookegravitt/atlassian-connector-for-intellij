@@ -40,7 +40,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -304,7 +303,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		statementArea.setRows(5);
 		scrollPane2.setViewportView(statementArea);
 		customComponentPanel = new JPanel();
-		customComponentPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		customComponentPanel.setLayout(new BorderLayout(0, 0));
 		rootComponent.add(customComponentPanel, cc.xy(1, 11, CellConstraints.DEFAULT, CellConstraints.FILL));
 		leaveAsDraftCheckBox = new JCheckBox();
 		leaveAsDraftCheckBox.setText("Save review as Draft");
@@ -756,18 +755,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
-
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-
 		if (selectedItem != null) {
-
-
 			final CrucibleServerCfg server = selectedItem.getServer();
-			ReviewProvider reviewProvider = new ReviewProvider(server);
-
-
 			try {
-				final Review draftReview = createReview(server, reviewProvider);
+				final Review draftReview = createReview(server, new ReviewProvider(server));
 				if (draftReview == null) {
 					return;
 				}
@@ -793,7 +785,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								crucibleServerFacade.approveReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,
-										newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n" + "Leaving review in draft state.", "Permission denied");
+										newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n"
+												+ "Leaving review in draft state.", "Permission denied");
 							}
 						} else {
 							if (newReview.getActions()
@@ -801,7 +794,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								crucibleServerFacade.submitReview(server, draftReview.getPermId());
 							} else {
 								Messages.showErrorDialog(project,
-										newReview.getAuthor().getDisplayName() + " is authorized submit review.\n" + "Leaving review in draft state.", "Permission denied");
+										newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
+												+ "Leaving review in draft state.", "Permission denied");
 							}
 						}
 					} catch (ValueNotYetInitialized valueNotYetInitialized) {
