@@ -10,9 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
 /**
  * User: jgorycki
@@ -128,17 +126,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private void refreshBuildRelativeTime() {
-		relativeBuildTime.setText(getRelativeBuildTime());
-	}
-	
-	private String getRelativeBuildTime() {
-		Date d = build.getBuildCompletedDate();
-		if (d != null) {
-			Calendar c = Calendar.getInstance();
-			c.setTime(d);
-			c.add(Calendar.HOUR_OF_DAY, build.getServer().getTimezoneOffset());
-			return DateUtil.getRelativePastDate(new Date(), c.getTime());
-		}
-		return "Unknown";
+		relativeBuildTime.setText(
+				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset()));
 	}
 }

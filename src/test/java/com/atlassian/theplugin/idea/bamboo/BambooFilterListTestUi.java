@@ -117,6 +117,7 @@ public final class BambooFilterListTestUi {
 			BambooServerCfg serverCfg) {
 		final BambooBuildInfo buildInfo = new BambooBuildInfo();
 		buildInfo.setBuildTime(new Date());
+		buildInfo.setBuildCompletedDate(new Date());
 		buildInfo.setPollingTime(new Date());
 		buildInfo.setBuildRelativeBuildDate("55 seconds ago");
 		buildInfo.setBuildKey(buildKey);
