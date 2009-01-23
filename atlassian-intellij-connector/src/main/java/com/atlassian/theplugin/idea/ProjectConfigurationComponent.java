@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.options.Configurable;
@@ -69,9 +70,13 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
-	public static void handleServerCfgFactoryException(Project theProject, final Exception e) {
-		DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.",
-				e, CFG_LOAD_ERROR_MSG);
+	public static void handleServerCfgFactoryException(final Project theProject, final Exception e) {
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.",
+						e, CFG_LOAD_ERROR_MSG);
+			}
+		});
 	}
 
 	public void projectOpened() {
