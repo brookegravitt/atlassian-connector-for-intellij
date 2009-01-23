@@ -45,6 +45,7 @@ public class UserListItem {
         this.selected = selected;
     }
 
+	@Override
 	public boolean equals(final Object o) {
 		if (this == o) {
 			return true;
@@ -62,6 +63,15 @@ public class UserListItem {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		if (user != null) {
+			return user.getDisplayName();
+		}
+		return "User null";
+	}
+
+	@Override
 	public int hashCode() {
 		int result;
 		result = (user != null ? user.hashCode() : 0);
