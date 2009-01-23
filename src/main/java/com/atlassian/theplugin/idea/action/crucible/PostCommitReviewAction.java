@@ -16,10 +16,9 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewCreateForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewFromChangeListForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
@@ -29,15 +28,12 @@ public class PostCommitReviewAction extends Crucible16RepositoryAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		final Project project = event.getData(DataKeys.PROJECT);
-		final ChangeList[] changes = event.getData(DataKeys.CHANGE_LISTS);
+		@SuppressWarnings({"deprecation"}) final ChangeList[] changes = event.getData(DataKeys.CHANGE_LISTS);
 		if (project == null || changes == null) {
 			return;
 		}
 
-		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(project,
-				CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager(),
-				IdeaHelper.getProjectComponent(project,
-						UiTaskExecutor.class));
-		reviewCreateForm.show();
+		new CrucibleCreatePostCommitReviewFromChangeListForm(project, CrucibleServerFacadeImpl.getInstance(),
+				changes, IdeaHelper.getCfgManager()).show();
 	}
 }

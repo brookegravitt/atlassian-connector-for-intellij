@@ -37,8 +37,6 @@ public class CruciblePatchUploader implements Runnable {
 	}
 
 	public void run() {
-		final CrucibleReviewCreateForm reviewCreateForm
-				= new CrucibleReviewCreateForm(project, crucibleServerFacade, commitMessage, patch, cfgManager);
-		reviewCreateForm.show();
+		new CrucibleCreatePreCommitReviewForm(project, crucibleServerFacade, commitMessage, patch, cfgManager).show();
 	}
 }
