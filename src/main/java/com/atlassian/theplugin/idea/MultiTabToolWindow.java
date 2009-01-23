@@ -61,6 +61,7 @@ public abstract class MultiTabToolWindow {
 			if (contentPanel != null) {
 				Content c = itw.getContentManager().findContent(panelMap.get(contentKey).getTitle());
 				itw.getContentManager().setSelectedContent(c);
+				itw.show(null);
 			} else {
 				if (panelMap.size() > 0) {
 					itw.getContentManager().removeAllContents(true);
@@ -77,6 +78,7 @@ public abstract class MultiTabToolWindow {
 			} else {
 				Content c = itw.getContentManager().findContent(panelMap.get(contentKey).getTitle());
 				itw.getContentManager().setSelectedContent(c);
+				itw.show(null);
 			}
 		}
 	}
