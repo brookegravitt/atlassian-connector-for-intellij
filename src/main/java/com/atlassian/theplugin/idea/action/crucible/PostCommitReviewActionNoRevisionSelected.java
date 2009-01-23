@@ -4,16 +4,12 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.reviews.AbstractCrucibleToolbarAction;
-import com.atlassian.theplugin.idea.crucible.CrucibleReviewCreateForm;
+import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 
-/**
- * TODO: Document this class / interface here
- *
- * @since v3.13
- */
 public class PostCommitReviewActionNoRevisionSelected extends AbstractCrucibleToolbarAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
@@ -22,10 +18,12 @@ public class PostCommitReviewActionNoRevisionSelected extends AbstractCrucibleTo
 			return;
 		}
 
-		final CrucibleReviewCreateForm reviewCreateForm = new CrucibleReviewCreateForm(project,
-				CrucibleServerFacadeImpl.getInstance(), null, IdeaHelper.getCfgManager(),
-				IdeaHelper.getProjectComponent(project,
-						UiTaskExecutor.class));
-		reviewCreateForm.show();
+		final UiTaskExecutor uiTaskExecutor = IdeaHelper.getProjectComponent(project, UiTaskExecutor.class);
+		if (uiTaskExecutor == null) {
+			Messages.showErrorDialog(project, "Cannot fetch UI Task Executor", "Internal error");
+			return;
+		}
+		new CrucibleCreatePostCommitReviewForm(project, CrucibleServerFacadeImpl.getInstance(), IdeaHelper.getCfgManager(),
+				uiTaskExecutor).show();
 	}
 }
