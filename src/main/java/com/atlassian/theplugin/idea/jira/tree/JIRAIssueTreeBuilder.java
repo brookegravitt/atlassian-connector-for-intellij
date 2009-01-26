@@ -90,6 +90,9 @@ public class JIRAIssueTreeBuilder {
 	}
 
 	public synchronized void rebuild(JTree tree, JComponent treeParent) {
+
+		JIRAIssue selectedIsse = getSelectedIssue(tree);
+		
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
 			createUpdateGroups(root);
@@ -114,6 +117,44 @@ public class JIRAIssueTreeBuilder {
 			pruneEmptyUpdateGroups(root);
 		}
 		treeModel.nodeStructureChanged(root);
+
+		selectIssueNode(tree, selectedIsse);
+	}
+
+	private void selectIssueNode(final JTree tree, final JIRAIssue selectedIssue) {
+		if (selectedIssue == null) {
+			tree.clearSelection();
+			return;
+		}
+
+		// expand tree
+		for (int i = 0; i < tree.getVisibleRowCount(); i++) {
+			tree.expandRow(i);
+		}
+
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			TreePath path = tree.getPathForRow(i);
+			Object object = path.getLastPathComponent();
+			if (object instanceof JIRAIssueTreeNode) {
+				JIRAIssueTreeNode node = (JIRAIssueTreeNode) object;
+				if (node.getIssue().getKey().equals(selectedIssue.getKey())) {
+					tree.expandPath(path);
+					tree.makeVisible(path);
+					tree.setSelectionPath(path);
+					break;
+				}
+			}
+		}
+	}
+
+	private JIRAIssue getSelectedIssue(final JTree tree) {
+		final TreePath selectionPath = tree.getSelectionPath();
+		if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+			return ((JIRAIssueTreeNode) selectionPath.getLastPathComponent()).getIssue();
+		} else {
+			// nothing selected
+			return null;
+		}
 	}
 
 	private void reCreateTree(final JTree tree, JComponent treeParent, DefaultMutableTreeNode root) {

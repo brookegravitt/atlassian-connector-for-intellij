@@ -253,6 +253,10 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		return sb.toString();
 	}
 
+	public JIRAIssue getIssue() {
+		return issue;
+	}
+
 	@Override
 	public void onSelect() {
 		model.setSeletedIssue(issue);	
