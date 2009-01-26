@@ -62,15 +62,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//enum ReviewCreationMode {
-//	EMPTY,
-//	REVISION,
-//	PATCH
-//}
 
 public abstract class CrucibleReviewCreateForm extends DialogWrapper {
-//	private ReviewCreationMode mode;
-
 	private JPanel rootComponent;
 	private JTextField titleText;
 	private JComboBox crucibleServersComboBox;
@@ -130,7 +123,12 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		});
 
-		new ListSpeedSearch(reviewersList);
+		new ListSpeedSearch(reviewersList) {
+			@Override
+			protected boolean compare(final String s, final String s1) {
+				return s != null && s1 != null ? s.toUpperCase().contains(s1.toUpperCase()) : super.compare(s, s1);
+			}
+		};
 
 		reviewersList.addKeyListener(new KeyAdapter() {
 			@Override
@@ -836,15 +834,5 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		reviewersList.setCellRenderer(cellRenderer);
 		reviewersList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
-
-//	private boolean isReviewerSelected() {
-//		for (int i = 0; i < model.size(); i++) {
-//			if (((UserListItem) model.get(i)).isSelected()) {
-//				return true;
-//			}
-//		}
-//
-//		return false;
-//	}
 }
   
