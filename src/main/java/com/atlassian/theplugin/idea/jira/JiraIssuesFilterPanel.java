@@ -503,6 +503,9 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 
 	public void setComboValue(JComboBox combo, List<JIRAQueryFragment> advancedQuery) {
+
+		combo.setSelectedIndex(-1);
+
 		for (int i = 0, size = combo.getModel().getSize(); i < size; ++i) {
 			for (JIRAQueryFragment jiraQueryFragment : advancedQuery) {
 				JIRAQueryFragment fragment = (JIRAQueryFragment) combo.getModel().getElementAt(i);
@@ -540,8 +543,15 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		for (Object o : affectsVersionsList.getSelectedValues()) {
 			query.add((JIRAQueryFragment) o);
 		}
-		query.add((JIRAQueryFragment) assigneeComboBox.getSelectedItem());
-		query.add((JIRAQueryFragment) reporterComboBox.getSelectedItem());
+
+		if (assigneeComboBox.getSelectedItem() != null) {
+			query.add((JIRAQueryFragment) assigneeComboBox.getSelectedItem());
+		}
+
+		if (reporterComboBox.getSelectedItem() != null) {
+			query.add((JIRAQueryFragment) reporterComboBox.getSelectedItem());
+		}
+
 		return query;
 	}
 
