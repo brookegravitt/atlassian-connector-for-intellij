@@ -29,30 +29,49 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 
 	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 		FileEditorManager fem = FileEditorManager.getInstance(project);
-		Editor editor = fem.openTextEditor(displayFile, true);
-		if (editor == null) {
-			return;
-		}
 		switch (commitType) {
 			case Moved:
 			case Copied:
 			case Modified:
-				if (referenceFile != null) {
-					final Document displayDocument = new FileContent(project, displayFile.getFile())
-							.getDocument();
-					final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-					ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
-							, reviewItem.getOldFileDescriptor().getRevision()
-							, reviewItem.getFileDescriptor().getRevision());
+				if (displayFile != null) {
+					Editor editor = fem.openTextEditor(displayFile, true);
+					if (editor == null) {
+						return;
+					}
+
+					if (referenceFile != null) {
+						final Document displayDocument = new FileContent(project, displayFile.getFile())
+								.getDocument();
+						final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
+						ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
+								, reviewItem.getOldFileDescriptor().getRevision()
+								, reviewItem.getFileDescriptor().getRevision());
+					}
+					CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, displayFile);
 				}
 				break;
 			case Added:
+				if (displayFile != null) {
+					Editor editor = fem.openTextEditor(displayFile, true);
+					if (editor == null) {
+						return;
+					}
+					CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, displayFile);
+				}
 				break;
 			case Deleted:
+				if (referenceFile != null) {
+					OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile);
+					Editor editor = fem.openTextEditor(referenceFileDescriptor, true);
+					if (editor == null) {
+						return;
+					}
+					CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, referenceFileDescriptor);
+				}
 				break;
 			default:
 				break;
 		}
-		CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, displayFile);
+
 	}
 }
