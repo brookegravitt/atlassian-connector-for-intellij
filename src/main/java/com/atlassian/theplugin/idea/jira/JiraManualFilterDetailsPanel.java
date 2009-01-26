@@ -86,7 +86,9 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 				if (jiraServer != null && listModel.getJiraSelectedManualFilter() != null) {
 					final java.util.List<JIRAQueryFragment> listClone = new ArrayList<JIRAQueryFragment>();
 					for (JIRAQueryFragment fragment :  listModel.getJiraSelectedManualFilter().getQueryFragment()) {
-						listClone.add(fragment.getClone());
+						if (fragment != null) {
+							listClone.add(fragment.getClone());
+						}
 					}
 					jiraIssuesFilterPanel.setFilter(listClone);
 				}
