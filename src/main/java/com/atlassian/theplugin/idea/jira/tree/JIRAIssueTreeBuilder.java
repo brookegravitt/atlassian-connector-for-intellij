@@ -118,6 +118,11 @@ public class JIRAIssueTreeBuilder {
 		}
 		treeModel.nodeStructureChanged(root);
 
+		// expand tree
+		for (int i = 0; i < tree.getVisibleRowCount(); i++) {
+			tree.expandRow(i);
+		}
+
 		selectIssueNode(tree, selectedIsse);
 	}
 
@@ -127,17 +132,13 @@ public class JIRAIssueTreeBuilder {
 			return;
 		}
 
-		// expand tree
-		for (int i = 0; i < tree.getVisibleRowCount(); i++) {
-			tree.expandRow(i);
-		}
-
 		for (int i = 0; i < tree.getRowCount(); i++) {
 			TreePath path = tree.getPathForRow(i);
 			Object object = path.getLastPathComponent();
 			if (object instanceof JIRAIssueTreeNode) {
 				JIRAIssueTreeNode node = (JIRAIssueTreeNode) object;
-				if (node.getIssue().getKey().equals(selectedIssue.getKey())) {
+				if (node.getIssue().getKey().equals(selectedIssue.getKey())
+						&& node.getIssue().getServerUrl().equals(selectedIssue.getServerUrl())) {
 					tree.expandPath(path);
 					tree.makeVisible(path);
 					tree.setSelectionPath(path);
