@@ -393,6 +393,15 @@
             <add-to-group group-id="MainToolBar" anchor="last"/>
         </group>
 
+        <action id="ThePlugin.CommittedChanges.Refresh"
+                class="com.atlassian.theplugin.idea.action.crucible.RefreshCommittedChanges"
+                icon="/vcs/refresh.png"/>
+
+        <group id="ThePlugin.CommittedChangesToolbar">
+            <reference ref="ThePlugin.CommittedChanges.Refresh"/>
+            <reference ref="CommittedChanges.Details"/>
+        </group>
+
         <group id="ThePlugin.BuildToolWindowToolBar" popup="false">
             <reference id="ThePlugin.Build.View"/>
             <reference id="ThePlugin.Build.Run"/>
