@@ -394,7 +394,8 @@
         </group>
 
         <action id="ThePlugin.CommittedChanges.Refresh"
-                class="com.atlassian.theplugin.idea.action.crucible.RefreshCommittedChanges"
+				text="Refresh Committed Changes"
+				class="com.atlassian.theplugin.idea.action.crucible.RefreshCommittedChanges"
                 icon="/vcs/refresh.png"/>
 
         <group id="ThePlugin.CommittedChangesToolbar">
