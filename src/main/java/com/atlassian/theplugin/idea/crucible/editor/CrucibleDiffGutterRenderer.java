@@ -1,10 +1,20 @@
-package com.atlassian.theplugin.idea.crucible;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.codeInsight.hint.EditorFragmentComponent;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.diff.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPlaces;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.diff.DiffColors;
+import com.intellij.openapi.diff.DiffContent;
+import com.intellij.openapi.diff.DiffManager;
+import com.intellij.openapi.diff.DiffRequest;
+import com.intellij.openapi.diff.DocumentContent;
+import com.intellij.openapi.diff.FragmentContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -126,11 +136,11 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		showActiveHint(range, anEditor, point);
 	}
 
-    public boolean canDoAction(MouseEvent event) {
-        return true;
-    }
+	public boolean canDoAction(MouseEvent event) {
+		return true;
+	}
 
-    public Range getNextRange(Range aRange) {
+	public Range getNextRange(Range aRange) {
 		int j = ranges.indexOf(aRange);
 		if (j == ranges.size() - 1) {
 			return null;
@@ -435,7 +445,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 			}
 		});
 
-        IdeaVersionFacade.getInstance().showEditorHints(lightweightHint, anEditor, point);
+		IdeaVersionFacade.getInstance().showEditorHints(lightweightHint, anEditor, point);
 
 	}
 }

@@ -17,23 +17,27 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.*;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.editor.EditorDiffActionImpl;
+import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
+import com.atlassian.theplugin.idea.crucible.editor.OpenDiffToolAction;
 import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.impl.DocumentImpl;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +45,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CrucibleHelper {
-	static final Document EMPTY_DOCUMENT = new DocumentImpl("");
-
 	private CrucibleHelper() {
 	}
 
@@ -69,16 +71,7 @@ public final class CrucibleHelper {
 				, reviewItem.getCommitType()
 				, 1
 				, 1
-				, new EditorDiffActionImpl(project, review, reviewItem));
-	}
-
-	@NotNull
-	private static DiffContent createDiffContent(@NotNull final Project project, @NotNull final VirtualFile virtualFile) {
-		if (!FileTypeManager.getInstance().getFileTypeByFile(virtualFile).isBinary()) {
-			return new FileContent(project, virtualFile);
-		} else {
-			return IdeaVersionFacade.getInstance().createBinaryContent(virtualFile);
-		}
+				, new EditorDiffActionImpl(project, review, reviewItem, true));
 	}
 
 	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
@@ -91,7 +84,7 @@ public final class CrucibleHelper {
 				, reviewItem.getCommitType()
 				, 1
 				, 1
-				, new MyOpenDiffAction(project, reviewItem));
+				, new OpenDiffToolAction(project, reviewItem));
 	}
 
 	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project,
@@ -158,72 +151,5 @@ public final class CrucibleHelper {
 			}
 		});
 
-	}
-
-	private static class MyOpenDiffAction implements OpenDiffAction {
-		private final Project project;
-		private final CrucibleFileInfo reviewItem;
-
-		public MyOpenDiffAction(final Project project, final CrucibleFileInfo reviewItem) {
-			this.project = project;
-			this.reviewItem = reviewItem;
-		}
-
-		public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-			Document displayDocument = EMPTY_DOCUMENT;
-			Document referenceDocument = EMPTY_DOCUMENT;
-			displayDocument.setReadOnly(true);
-			referenceDocument.setReadOnly(true);
-			DiffContent displayFileContent = null;
-			if (displayFile != null) {
-				displayFileContent = createDiffContent(project, displayFile.getFile());
-				if (displayFileContent != null) {
-					displayDocument = displayFileContent.getDocument();
-				}
-			}
-
-			DiffContent referenceFileContent = null;
-			if (referenceFile != null) {
-				referenceFileContent = createDiffContent(project, referenceFile);
-				if (referenceFileContent != null) {
-					referenceDocument = referenceFileContent.getDocument();
-				}
-			}
-
-			if ((displayFileContent != null && displayFileContent.isBinary())
-					|| (referenceFileContent != null && referenceFileContent.isBinary())) {
-				Messages.showInfoMessage(project, "Files are binary. Diff not available.", "Information");
-				return;
-			}
-
-			final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
-			final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
-
-			DiffRequest request = new DiffRequest(project) {
-				@Override
-				public DiffContent[] getContents() {
-					return (new DiffContent[]{
-							referenceDocumentContentFinal,
-							displayDocumentContentFinal
-					});
-				}
-
-				@Override
-				public String[] getContentTitles() {
-					return (new String[]{
-							VcsBundle.message("diff.content.title.repository.version",
-									reviewItem.getOldFileDescriptor().getRevision()),
-							VcsBundle.message("diff.content.title.repository.version",
-									reviewItem.getFileDescriptor().getRevision())
-					});
-				}
-
-				@Override
-				public String getWindowTitle() {
-					return reviewItem.getFileDescriptor().getAbsoluteUrl();
-				}
-			};
-			DiffManager.getInstance().getDiffTool().show(request);
-		}
 	}
 }
