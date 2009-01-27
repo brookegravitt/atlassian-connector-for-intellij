@@ -41,7 +41,7 @@
 		]]>
     </description>
 
-    <version>2.0.0-beta-1, SVN:120</version>
+    <version>${project.version}, SVN:${buildNumber}</version>
 
     <!-- no email link for now - we don't have the plugin email alias yet-->
     <!--<vendor url="http://www.atlassian.com" email="support@atlassian.com">Atlassian</vendor>-->
