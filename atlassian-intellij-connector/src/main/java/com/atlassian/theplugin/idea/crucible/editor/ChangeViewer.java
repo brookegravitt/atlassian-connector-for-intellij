@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.crucible;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.LineMarkerRenderer;
+import com.intellij.openapi.editor.markup.MarkupEditorFilterFactory;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.ex.Range;
@@ -89,7 +93,7 @@ public final class ChangeViewer {
 	private static synchronized RangeHighlighter getRangeHighligter(final Project project, final List<Range> ranges,
 			final Range range, final Document referenceDocument, final Document displayDocument,
 			final String fromRevision, final String toRevision) {
-		
+
 		int j = range.getOffset1() < displayDocument.getLineCount() ? displayDocument
 				.getLineStartOffset(range.getOffset1()) : displayDocument
 				.getTextLength();

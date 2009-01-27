@@ -1,10 +1,8 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.ChangeViewer;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.intellij.openapi.diff.FileContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -18,13 +16,16 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 	private final Project project;
 	private final ReviewAdapter review;
 	private final CrucibleFileInfo reviewItem;
+	private final boolean focusOnOpen;
 
 	public EditorDiffActionImpl(@NotNull final Project project,
 			@NotNull final ReviewAdapter review,
-			@NotNull final CrucibleFileInfo reviewItem) {
+			@NotNull final CrucibleFileInfo reviewItem,
+			final boolean focusOnOpen) {
 		this.project = project;
 		this.review = review;
 		this.reviewItem = reviewItem;
+		this.focusOnOpen = focusOnOpen;
 	}
 
 	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
@@ -34,7 +35,8 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 			case Copied:
 			case Modified:
 				if (displayFile != null) {
-					Editor editor = fem.openTextEditor(displayFile, true);
+					displayFile.getFile().putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
+					Editor editor = fem.openTextEditor(displayFile, focusOnOpen);
 					if (editor == null) {
 						return;
 					}
@@ -52,7 +54,8 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 				break;
 			case Added:
 				if (displayFile != null) {
-					Editor editor = fem.openTextEditor(displayFile, true);
+					displayFile.getFile().putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
+					Editor editor = fem.openTextEditor(displayFile, focusOnOpen);
 					if (editor == null) {
 						return;
 					}
@@ -61,8 +64,9 @@ public class EditorDiffActionImpl implements OpenDiffAction {
 				break;
 			case Deleted:
 				if (referenceFile != null) {
+					referenceFile.putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
 					OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile);
-					Editor editor = fem.openTextEditor(referenceFileDescriptor, true);
+					Editor editor = fem.openTextEditor(referenceFileDescriptor, focusOnOpen);
 					if (editor == null) {
 						return;
 					}
