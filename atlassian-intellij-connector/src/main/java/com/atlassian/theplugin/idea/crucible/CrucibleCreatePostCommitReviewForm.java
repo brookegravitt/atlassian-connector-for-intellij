@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
@@ -36,19 +37,16 @@ import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vcs.RepositoryLocation;
 import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePostCommitReviewForm implements DataProvider {
@@ -64,19 +62,21 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 		super(project, crucibleServerFacade, "", cfgManager);
 		this.taskExecutor = taskExecutor;
 
-		final JPanel fetchingPanel = new JPanel(new FormLayout("c:p:g", "10dlu, p, 10dlu"));
-		fetchingPanel.add(new JLabel("Fetching recent commits..."), new CellConstraints(1, 2));
+		commitedChangesBrowser = new CommittedChangesTreeBrowser(project, Collections.<CommittedChangeList>emptyList());
+		ActionManager manager = ActionManager.getInstance();
+		ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.CommittedChangesToolbar");
+		ActionToolbar toolbar = manager.createActionToolbar("PostCommitReview", group, true);
+		commitedChangesBrowser.addToolBar(toolbar.getComponent());
+		setCustomComponent(commitedChangesBrowser);
 
-		setCustomComponent(fetchingPanel);
-
-		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane(), false));
+		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane()));
 
 		setTitle("Create Review");
 		pack();
 	}
 
 	public void updateChanges() {
-		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane(), true));
+		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane()));
 	}
 
 	@Override
@@ -110,14 +110,15 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 
 	private class ChangesRefreshTask extends UiTaskAdapter {
 		List<CommittedChangeList> list;
-		private final boolean alreadyVisible;
 
-		public ChangesRefreshTask(final String actionMame, final Component component, final boolean isAlreadyVisible) {
+		public ChangesRefreshTask(final String actionMame, final Component component) {
 			super(actionMame, component);
-			alreadyVisible = isAlreadyVisible;
 		}
 
 		public void run() throws Exception {
+			commitedChangesBrowser.setEmptyText("Fetching recent commits...");
+			IdeaVersionFacade.getInstance()
+					.setCommitedChangesList(commitedChangesBrowser, Collections.<CommittedChangeList>emptyList(), false);
 			final VirtualFile baseDir = project.getBaseDir();
 			if (baseDir == null) {
 				throw new RuntimeException("Cannot determine base directory of the project");
@@ -140,16 +141,8 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 
 		@Override
 		public void onSuccess() {
-			if (alreadyVisible) {
-				commitedChangesBrowser.setItems(list, true, CommittedChangesBrowserUseCase.COMMITTED);
-			} else {
-				commitedChangesBrowser = new CommittedChangesTreeBrowser(project, list);
-				ActionManager manager = ActionManager.getInstance();
-				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.CommittedChangesToolbar");
-				ActionToolbar toolbar = manager.createActionToolbar("PostCommitReview", group, true);
-				commitedChangesBrowser.addToolBar(toolbar.getComponent());
-				setCustomComponent(commitedChangesBrowser);
-			}
+			commitedChangesBrowser.setEmptyText("No recent commits");
+			IdeaVersionFacade.getInstance().setCommitedChangesList(commitedChangesBrowser, list, false);
 		}
 	}
 }
