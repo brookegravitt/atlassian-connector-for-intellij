@@ -10,6 +10,8 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
+import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -241,5 +243,36 @@ public final class IdeaVersionFacade {
 			e.printStackTrace();
 		}
 		return content;
+	}
+
+	public void setCommitedChangesList(@NotNull final CommittedChangesTreeBrowser browser,
+			@NotNull final java.util.List<CommittedChangeList> list, final boolean flag) {
+		try {
+			Method setItems = null;
+			for (Method method : browser.getClass().getMethods()) {
+				if (method.getName().equals("setItems")) {
+					setItems = method;
+					break;
+				}
+			}
+			if (setItems == null) {
+				return;
+			}
+			if (isIdea8) {
+				Class enumClass = Class.forName("com.intellij.openapi.vcs.changes.committed.CommittedChangesBrowserUseCase");
+				Method valueOf = enumClass.getMethod("valueOf", String.class);
+				setItems.invoke(browser, list, flag, valueOf.invoke(null, "COMMITTED"));
+			} else {
+				setItems.invoke(browser, list, flag);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
 	}
 }
