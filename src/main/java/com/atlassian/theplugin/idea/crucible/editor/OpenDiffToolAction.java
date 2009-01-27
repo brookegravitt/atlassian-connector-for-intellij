@@ -19,8 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenDiffToolAction implements OpenDiffAction {
-	final Document emptyDocument = new DocumentImpl("");
-
+	private final Document emptyDocument = new DocumentImpl("");
 	private final Project project;
 	private final CrucibleFileInfo reviewItem;
 
