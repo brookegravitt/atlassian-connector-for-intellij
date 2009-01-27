@@ -92,7 +92,7 @@ public class JIRAIssueTreeBuilder {
 	public synchronized void rebuild(JTree tree, JComponent treeParent) {
 
 		JIRAIssue selectedIsse = getSelectedIssue(tree);
-		
+
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
 			createUpdateGroups(root);
@@ -217,7 +217,7 @@ public class JIRAIssueTreeBuilder {
 			set.add(n);
 			((DefaultMutableTreeNode) getRoot()).removeAllChildren();
 			for (JIRAIssueGroupTreeNode node : set) {
-				((DefaultMutableTreeNode) getRoot()).add(node);	
+				((DefaultMutableTreeNode) getRoot()).add(node);
 			}
 			nodeStructureChanged((DefaultMutableTreeNode) getRoot());
 			return n;
@@ -308,7 +308,7 @@ public class JIRAIssueTreeBuilder {
 	private static final int DAYS_IN_WEEK = 7;
 
 	private UpdateGroup updatedDate2Name(JIRAIssue issue) {
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
 		UpdateGroup groupName;
 		try {
 			DateMidnight midnight = new DateMidnight();
