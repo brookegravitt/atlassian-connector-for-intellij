@@ -307,6 +307,10 @@
                 text="Show Diff with Local" icon="/actions/diffWithCurrent.png">
             <keyboard-shortcut first-keystroke="control D" keymap="$default"/>
         </action>
+		<action id="ThePlugin.Bamboo.Changes.DiffWithPrevious"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.ShowDiffWithPreviousAction"
+				text="Show Diff with Previous" icon="/actions/diff.png">
+		</action>
         <action id="ThePlugin.Bamboo.Changes.OpenRepoVersion"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
                 text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
@@ -430,6 +434,7 @@
         <group id="ThePlugin.Bamboo.CommitListToolBar" popup="false">
             <reference id="ThePlugin.Bamboo.Changes.GoToSource"/>
             <reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
+			<reference id="ThePlugin.Bamboo.Changes.DiffWithPrevious"/>
             <reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
             <separator/>
         </group>
