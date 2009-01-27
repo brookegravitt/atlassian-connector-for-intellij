@@ -19,7 +19,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
 public class OpenDiffToolAction implements OpenDiffAction {
-	final Document EMPTY_DOCUMENT = new DocumentImpl("");
+	final Document emptyDocument = new DocumentImpl("");
 
 	private final Project project;
 	private final CrucibleFileInfo reviewItem;
@@ -30,17 +30,17 @@ public class OpenDiffToolAction implements OpenDiffAction {
 	}
 
 	@NotNull
-	private DiffContent createDiffContent(@NotNull final Project project, @NotNull final VirtualFile virtualFile) {
+	private DiffContent createDiffContent(@NotNull final Project aProject, @NotNull final VirtualFile virtualFile) {
 		if (!FileTypeManager.getInstance().getFileTypeByFile(virtualFile).isBinary()) {
-			return new FileContent(project, virtualFile);
+			return new FileContent(aProject, virtualFile);
 		} else {
 			return IdeaVersionFacade.getInstance().createBinaryContent(virtualFile);
 		}
 	}
 
 	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-		Document displayDocument = EMPTY_DOCUMENT;
-		Document referenceDocument = EMPTY_DOCUMENT;
+		Document displayDocument = emptyDocument;
+		Document referenceDocument = emptyDocument;
 		displayDocument.setReadOnly(true);
 		referenceDocument.setReadOnly(true);
 		DiffContent displayFileContent = null;
