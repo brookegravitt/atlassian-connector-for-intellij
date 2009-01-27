@@ -22,7 +22,14 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -39,13 +46,23 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Action;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import static java.lang.System.arraycopy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public abstract class CrucibleReviewCreateForm extends DialogWrapper {
@@ -135,9 +152,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 				if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 					refreshUserModel();
-
 				}
-
 			}
 		});
 
@@ -152,8 +167,19 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		repoComboBox.addActionListener(enableOkActionListener);
 		projectsComboBox.addActionListener(enableOkActionListener);
 		crucibleServersComboBox.addActionListener(enableOkActionListener);
-		titleText.addActionListener(enableOkActionListener);
+		titleText.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(final DocumentEvent e) {
+				getOKAction().setEnabled(isValidForm());
+			}
 
+			public void removeUpdate(final DocumentEvent e) {
+				getOKAction().setEnabled(isValidForm());
+			}
+
+			public void changedUpdate(final DocumentEvent e) {
+				getOKAction().setEnabled(isValidForm());
+			}
+		});
 
 		fillInCrucibleServers();
 	}
@@ -804,7 +830,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	private boolean isValidForm() {
-
 		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem && titleText.getText().length() > 0
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
 				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem &&
@@ -815,7 +840,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			return false;
 		}
 	}
-
 
 	private void createUIComponents() {
 		model = new DefaultListModel();
