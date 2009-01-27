@@ -53,6 +53,28 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
+	private final class GroupByDateTreeNode extends JIRAIssueGroupTreeNode {
+		private final UpdateGroup group;
+
+		private GroupByDateTreeNode(UpdateGroup group) {
+			super(issueModel, group.toString(), null, null);
+			this.group = group;
+		}
+
+		private final Comparator<JIRAIssueGroupTreeNode> comparator = new Comparator<JIRAIssueGroupTreeNode>() {
+			public int compare(JIRAIssueGroupTreeNode lhs, JIRAIssueGroupTreeNode rhs) {
+				if (lhs instanceof GroupByDateTreeNode && rhs instanceof GroupByDateTreeNode) {
+					return ((GroupByDateTreeNode) lhs).group.ordinal() - ((GroupByDateTreeNode) rhs).group.ordinal();
+				}
+				return lhs.getComparator().compare(lhs, rhs);
+			}
+		};
+
+		public Comparator<JIRAIssueGroupTreeNode> getComparator() {
+			return comparator;
+		}
+	}
+
 	private Map<String, String> projectKeysToNames;
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model) {
@@ -78,7 +100,6 @@ public class JIRAIssueTreeBuilder {
 				}
 			}
 		});
-
 	}
 
 	public void setGroupBy(JiraIssueGroupBy groupBy) {
@@ -94,9 +115,6 @@ public class JIRAIssueTreeBuilder {
 		JIRAIssue selectedIsse = getSelectedIssue(tree);
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
-			createUpdateGroups(root);
-		}
 		reCreateTree(tree, treeParent, root);
 		if (isGroupSubtasksUnderParent) {
 			for (JIRAIssue issue : issueModel.getIssuesNoSubtasks()) {
@@ -112,9 +130,6 @@ public class JIRAIssueTreeBuilder {
 			for (JIRAIssue issue : issueModel.getIssues()) {
 				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
 			}
-		}
-		if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
-			pruneEmptyUpdateGroups(root);
 		}
 		treeModel.nodeStructureChanged(root);
 
@@ -187,15 +202,15 @@ public class JIRAIssueTreeBuilder {
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 	}
 
-	private static final Comparator<JIRAIssueGroupTreeNode> COMPARATOR = new Comparator<JIRAIssueGroupTreeNode>() {
-		public int compare(JIRAIssueGroupTreeNode lhs, JIRAIssueGroupTreeNode rhs) {
-			return lhs.toString().compareTo(rhs.toString());
-		}
-	};
-
 	private final class SortableGroupsTreeModel extends DefaultTreeModel {
 
-		private Set<JIRAIssueGroupTreeNode> set = new TreeSet<JIRAIssueGroupTreeNode>(COMPARATOR);
+		private final Comparator<JIRAIssueGroupTreeNode> comparator = new Comparator<JIRAIssueGroupTreeNode>() {
+			public int compare(JIRAIssueGroupTreeNode lhs, JIRAIssueGroupTreeNode rhs) {
+				return lhs.getComparator().compare(lhs, rhs);
+			}
+		};
+
+		private Set<JIRAIssueGroupTreeNode> set = new TreeSet<JIRAIssueGroupTreeNode>(comparator);
 
 		private boolean isFlat;
 
@@ -204,7 +219,7 @@ public class JIRAIssueTreeBuilder {
 			isFlat = groupBy == JiraIssueGroupBy.NONE;
 		}
 
-		public DefaultMutableTreeNode getGroupNode(String name, Icon icon, Icon disabledIcon) {
+		public DefaultMutableTreeNode getGroupNode(JIRAIssue issue, String name, Icon icon, Icon disabledIcon) {
 			if (isFlat) {
 				return (DefaultMutableTreeNode) getRoot();
 			}
@@ -213,7 +228,12 @@ public class JIRAIssueTreeBuilder {
 				return n;
 			}
 
-			n = new JIRAIssueGroupTreeNode(issueModel, name, icon, disabledIcon);
+			if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
+				n = new GroupByDateTreeNode(updatedDate2Name(issue));
+			} else {
+				n = new JIRAIssueGroupTreeNode(issueModel, name, icon, disabledIcon);
+			}
+			
 			set.add(n);
 			((DefaultMutableTreeNode) getRoot()).removeAllChildren();
 			for (JIRAIssueGroupTreeNode node : set) {
@@ -301,7 +321,8 @@ public class JIRAIssueTreeBuilder {
 		if (name == null) {
 			name = "None";
 		}
-		return treeModel.getGroupNode(name, CachedIconLoader.getIcon(iconUrl), CachedIconLoader.getDisabledIcon(iconUrl));
+		return treeModel.getGroupNode(issue, name, CachedIconLoader.getIcon(iconUrl),
+				CachedIconLoader.getDisabledIcon(iconUrl));
 	}
 
 	// isn't this constant defined somewhere?
@@ -335,26 +356,6 @@ public class JIRAIssueTreeBuilder {
 			groupName = UpdateGroup.UPDATED_INVALID;
 		}
 		return groupName;
-	}
-
-	private void createUpdateGroups(DefaultMutableTreeNode root) {
-		for (UpdateGroup g : UpdateGroup.values()) {
-			root.add(new JIRAIssueGroupTreeNode(issueModel, g.toString(), null, null));
-		}
-	}
-
-	private void pruneEmptyUpdateGroups(DefaultMutableTreeNode root) {
-		boolean haveEmptyNodes;
-		do {
-			haveEmptyNodes = false;
-			for (int i = 0; i < root.getChildCount(); ++i) {
-				if (root.getChildAt(i).getChildCount() == 0) {
-					root.remove(i);
-					haveEmptyNodes = true;
-					break;
-				}
-			}
-		} while (haveEmptyNodes);
 	}
 
 	private String getProjectName(String key) {
