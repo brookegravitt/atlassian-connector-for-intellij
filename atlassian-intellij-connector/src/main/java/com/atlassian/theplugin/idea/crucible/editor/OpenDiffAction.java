@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;

@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -160,6 +162,7 @@ public final class VcsIdeaHelper {
 			try {
 				byte[] currentContent = virtualFile.contentsToByteArray();
 				if (Arrays.equals(currentContent, vcvf.contentsToByteArray())) {
+					virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.TRUE);
 					return virtualFile;
 				}
 			} catch (IOException e) {

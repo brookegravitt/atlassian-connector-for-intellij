@@ -22,7 +22,13 @@ import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -32,9 +38,9 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
@@ -202,9 +208,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		Set<CrucibleFileInfo> files;
 		try {
-//			reviewItem.fillReview(
-//					CrucibleServerFacadeImpl.getInstance().getReview(reviewItem.getServer(), reviewItem.getPermId()));
-
 			List<VersionedComment> comments;
 			comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
 					reviewItem.getServer(), reviewItem.getPermId());
@@ -213,8 +216,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 					reviewItem.getServer(), reviewItem.getPermId()));
 
 			files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
-
 			reviewItem.setFilesAndVersionedComments(files, comments);
+
 		} catch (RemoteApiException e) {
 			IdeaHelper.handleRemoteApiException(project, e);
 			return;
@@ -369,7 +372,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			if (selection instanceof CrucibleFileNode) {
 				return selection;
 			}
-		} 
+		}
 		return null;
 
 	}
