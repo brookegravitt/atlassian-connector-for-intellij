@@ -1,11 +1,10 @@
-package com.atlassian.theplugin.idea.crucible;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.EditorDiffActionImpl;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.editor.Document;
@@ -33,26 +32,25 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 		Document doc = editorFactoryEvent.getEditor().getDocument();
 		VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
 		if (virtualFile != null) {
-			CrucibleFileInfo crucibleFileInfo = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-			if (crucibleFileInfo == null) {
-				Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
-				if (!reviews.isEmpty()) {
-					for (ReviewAdapter review : reviews) {
-						try {
-							CrucibleFileInfo crucibleFile = CodeNavigationUtil
-									.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
-							if (crucibleFile != null) {
-								showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,
-										review,
-										crucibleFile);
-
-							}
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// don't do anything - should not happen, but even if happens - we don't want to break file opening
+//			CrucibleFileInfo crucibleFileInfo = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+//			if (crucibleFileInfo == null) {
+			Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
+			if (!reviews.isEmpty()) {
+				for (ReviewAdapter review : reviews) {
+					try {
+						CrucibleFileInfo crucibleFile = CodeNavigationUtil
+								.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
+						if (crucibleFile != null) {
+							showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,
+									review,
+									crucibleFile);
 						}
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						// don't do anything - should not happen, but even if happens - we don't want to break file opening
 					}
 				}
 			}
+//			}
 		}
 	}
 
@@ -79,6 +77,6 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 				, reviewItem.getCommitType()
 				, line
 				, 1
-				, new EditorDiffActionImpl(project, review, reviewItem));
+				, new EditorUpdateDiffActionImpl(project, editor, review, reviewItem));
 	}
 }

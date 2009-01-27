@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.crucible;
+package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
@@ -28,7 +28,11 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -50,6 +54,12 @@ public final class CommentHighlighter {
 
 	private static final String REVIEWITEM_DATA_KEY_NAME = "REVIEW_ITEM_DATA_KEY";
 	public static final Key<CrucibleFileInfo> REVIEWITEM_DATA_KEY = Key.create(REVIEWITEM_DATA_KEY_NAME);
+
+	private static final String REVIEWITEM_GUESS_KEY_NAME = "REVIEW_ITEM_GUESS_KEY";
+	public static final Key<CrucibleFileInfo> REVIEWITEM_GUESS_KEY = Key.create(REVIEWITEM_GUESS_KEY_NAME);
+
+	private static final String REVIEWITEM_CURRENT_CONTENT_KEY_NAME = "EVIEWITEM_CURRENT_CONTENT_KEY";
+	public static final Key<Boolean> REVIEWITEM_CURRENT_CONTENT_KEY = Key.create(REVIEWITEM_CURRENT_CONTENT_KEY_NAME);
 
 	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	private static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
