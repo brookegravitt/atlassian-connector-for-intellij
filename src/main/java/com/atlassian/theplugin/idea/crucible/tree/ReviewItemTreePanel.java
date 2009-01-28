@@ -21,13 +21,11 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -38,7 +36,6 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
@@ -53,22 +50,21 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	//	ProjectView.
-	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree = null;
+	private AtlassianTreeWithToolbar reviewFilesAndCommentsTree;
 
 	private static final int WIDTH = 150;
 
@@ -78,18 +74,17 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
-	private JLabel statusLabel;
-
 	private CrucibleFilteredModelProvider.Filter filter;
 
 	public static final String MENU_PLACE = "menu review files";
 
 	private Project project;
 
-	private ReviewAdapter crucibleReview = null;
+	private ReviewAdapter crucibleReview;
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	private final CrucibleReviewListener reviewListener = new LocalReviewListener();
 	private final CrucibleReviewListModel crucibleReviewListModel;
+	private final ThePluginProjectComponent pluginProjectComponent;
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -103,7 +98,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		filterTreeNodes(filter.getNextState());
 	}
 
-	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter) {
+	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter,
+			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
+		this.pluginProjectComponent = pluginProjectComponent;
 		initLayout();
 		this.filter = filter;
 		this.crucibleReviewListModel = IdeaHelper.getProjectComponent(project, CrucibleReviewListModel.class);
@@ -113,9 +110,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		setLayout(new BorderLayout());
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
 		add(getReviewItemTree(), BorderLayout.CENTER);
-		statusLabel = new JLabel();
-		statusLabel.setBackground(UIUtil.getTreeTextBackground());
-		add(statusLabel, BorderLayout.SOUTH);
 	}
 
 	public JPanel getReviewItemTree() {
@@ -186,21 +180,16 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	public void startListeningForCredentialChanges(final Project aProject, final ReviewAdapter aCrucibleReview) {
 		setCrucibleReview(aCrucibleReview);
 		this.project = aProject;
-		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
-				addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+		pluginProjectComponent.getCfgManager().addProjectConfigurationListener(
+				CfgUtil.getProjectId(project), configurationListener);
 //				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 	}
 
 	public void stopListeningForCredentialChanges() {
-		IdeaHelper.getProjectComponent(project, ThePluginProjectComponent.class).getCfgManager().
-				removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+		pluginProjectComponent.getCfgManager().removeProjectConfigurationListener(
+				CfgUtil.getProjectId(project), configurationListener);
 //				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), configurationListener);
 	}
-
-	public void setStatus(String txt) {
-		statusLabel.setText(txt);
-	}
-
 
 	public void showReview(ReviewAdapter reviewItem) {
 
@@ -238,72 +227,20 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 	}
 
-	private String createGeneralInfoText(final ReviewAdapter reviewItem) {
-		final StringBuilder buffer = new StringBuilder();
-		buffer.append("<html>");
-		buffer.append("<body>");
-		buffer.append(reviewItem.getAuthor().getDisplayName());
-		buffer.append(" ");
-		buffer.append("<font size=-1 color=");
-		buffer.append(CrucibleConstants.CRUCIBLE_AUTH_COLOR);
-		buffer.append(">AUTH</font>");
-		buffer.append(" ");
-		if (!reviewItem.getAuthor().equals(reviewItem.getModerator())) {
-			buffer.append(reviewItem.getModerator().getDisplayName());
-		}
-		buffer.append(" ");
-		buffer.append("<font size=-1 color=");
-		buffer.append(CrucibleConstants.CRUCIBLE_MOD_COLOR);
-		buffer.append(">MOD</font>");
-		int i = 0;
-		Set<Reviewer> reviewers;
-		try {
-			reviewers = reviewItem.getReviewers();
-			if (reviewers != null) {
-				buffer.append("<br>");
-				for (Reviewer reviewer : reviewers) {
-					if (i > 0) {
-						buffer.append(", ");
-					}
-					buffer.append(reviewer.getDisplayName());
-					i++;
-				}
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			//ignore
-		}
-		buffer.append("</body>");
-		buffer.append("</html>");
-
-		return buffer.toString();
-	}
-
 	public CrucibleReviewListener getReviewListener() {
 		return reviewListener;
 	}
 
 	private class MyRunnable implements Runnable {
 
-		private final ReviewAdapter oldReview;
 		private final ReviewAdapter review;
-		private final List<CrucibleNotification> notifications;
 
 		public MyRunnable(final ReviewAdapter review) {
-			this.oldReview = null;
 			this.review = review;
-			this.notifications = new ArrayList<CrucibleNotification>();
-		}
-
-		public MyRunnable(final ReviewAdapter oldReview, final ReviewAdapter review,
-				final List<CrucibleNotification> notifications) {
-			this.oldReview = oldReview;
-			this.review = review;
-			this.notifications = notifications;
 		}
 
 		public void run() {
 
-			statusLabel.setText(createGeneralInfoText(getCrucibleReview()));
 			ModelProvider modelProvider = new ModelProvider() {
 
 				@Override
