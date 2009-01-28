@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -82,7 +82,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final PluginConfiguration pluginConfiguration,
-			@NotNull final JiraProjectConfiguration jiraProjectConfiguration, 
+			@NotNull final JiraProjectConfiguration jiraProjectConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
@@ -166,16 +166,16 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		});
 
 		manualFilterEditDetailsPanel = new JiraManualFilterDetailsPanel(jiraFilterListModel, jiraProjectCfg,
-																			getProject(), jiraServerModel);
+				getProject(), jiraServerModel);
 
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void modelChanged(JIRAFilterListModel listModel) {
 			}
 
 			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
-											 boolean isChanged) {
+					boolean isChanged) {
 
-					
+
 				showManualFilterPanel(true);
 
 				if (isChanged) {
@@ -190,7 +190,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 
 			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
-											boolean isChanged) {
+					boolean isChanged) {
 				if (isChanged) {
 					showManualFilterPanel(false);
 					setIssuesFilterParams(jiraServer, savedFilter);
@@ -203,10 +203,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 		getStatusBarPane().addMoreIssuesListener(new HyperlinkListener() {
-				public void hyperlinkUpdate(HyperlinkEvent e) {
-					getNextIssues();
-				}
-			});
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				getNextIssues();
+			}
+		});
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
@@ -708,7 +708,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				}
 			}
 		};
-		
+
 		ProgressManager.getInstance().run(task);
 	}
 
@@ -722,13 +722,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	 * Must be called from dispatch thread
 	 */
 	public void refreshModels() {
-				Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
-				ProgressManager.getInstance().run(task);
+		Task.Backgroundable task = new MetadataFetcherBackgroundableTask();
+		ProgressManager.getInstance().run(task);
 	}
 
 	public void projectUnregistered() {
 	}
-
 
 
 	public JiraIssueGroupBy getGroupBy() {
@@ -755,7 +754,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
-					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)), uiTaskExecutor);
+					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)), jiraProjectCfg, uiTaskExecutor);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();

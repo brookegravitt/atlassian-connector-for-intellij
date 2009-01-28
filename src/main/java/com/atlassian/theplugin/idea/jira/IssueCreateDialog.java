@@ -17,34 +17,31 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.UiTaskAdapter;
+import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
+import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
-import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public class IssueCreateDialog extends DialogWrapper {
 	private JPanel mainPanel;
@@ -59,12 +56,16 @@ public class IssueCreateDialog extends DialogWrapper {
 	private final JIRAServerModel model;
 	private ProjectConfiguration projectConfiguration;
 	private final UiTaskExecutor uiTaskExecutor;
+	private JiraProjectConfiguration jiraConfiguration;
 
 	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
-			@NotNull final ProjectConfiguration projectConfiguration, @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final ProjectConfiguration projectConfiguration,
+			@NotNull final JiraProjectConfiguration jiraProjectCfg,
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(false);
 		this.model = model;
 		this.projectConfiguration = projectConfiguration;
+		this.jiraConfiguration = jiraProjectCfg;
 		this.uiTaskExecutor = uiTaskExecutor;
 		$$$setupUI$$$();
 		componentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -148,8 +149,29 @@ public class IssueCreateDialog extends DialogWrapper {
 
 		if (projectComboBox.getModel().getSize() > 0) {
 			// select default project
-			if (projectConfiguration != null && jiraServer.equals(projectConfiguration.getDefaultJiraServer())) {
-				String project = projectConfiguration.getDefaultJiraProject();
+//			if (projectConfiguration != null && jiraServer.equals(projectConfiguration.getDefaultJiraServer())) {
+//				String project = projectConfiguration.getDefaultJiraProject();
+//
+//				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
+//					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
+//						if (((JIRAProject) projectComboBox.getItemAt(i)).getKey().equals(project)) {
+//							projectComboBox.setSelectedIndex(i);
+//							break;
+//						}
+//					}
+//				}
+//
+//			} else {
+//				projectComboBox.setSelectedIndex(0);
+//			}
+
+			projectComboBox.setSelectedIndex(0);
+
+			// select default project
+			if (jiraConfiguration != null
+					&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+
+				String project = jiraConfiguration.getView().getServerDefaults().get(jiraServer.getServerId().toString());
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -160,8 +182,6 @@ public class IssueCreateDialog extends DialogWrapper {
 					}
 				}
 
-			} else {
-				projectComboBox.setSelectedIndex(0);
 			}
 
 		}
@@ -268,6 +288,9 @@ public class IssueCreateDialog extends DialogWrapper {
 		if (projectComboBox.getSelectedItem() == null) {
 			Messages.showErrorDialog(this.getContentPane(), "Project has to be selected", "Project not defined");
 			return;
+		} else {
+			JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
+			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId().toString(), p.getKey());
 		}
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
 		if (typeComboBox.getSelectedItem() == null) {
@@ -283,7 +306,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				ComponentWrapper componentWrapper = (ComponentWrapper) selectedObject;
 				if (componentWrapper.getWrapped().getId() == JIRAServerCache.UNKNOWN_COMPONENT_ID) {
 					if (componentsList.getSelectedValues().length > 1) {
-						Messages.showErrorDialog(getContentPane(), 
+						Messages.showErrorDialog(getContentPane(),
 								"You cannot select \"Unknown\" with a specific component.");
 						return;
 					}
