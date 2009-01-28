@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -27,7 +26,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
-import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenDiffToolAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.intellij.openapi.application.ApplicationManager;
@@ -35,8 +33,6 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
@@ -135,20 +131,10 @@ public final class CrucibleHelper {
 						, file.getOldFileDescriptor().getRevision()
 						, file.getFileDescriptor().getRevision()
 						, file.getCommitType()
-						, comment.getToStartLine() - 1
+						, comment.getToStartLine()
 						, 0
-						, new OpenDiffAction() {
-							public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
-								FileEditorManager fem = FileEditorManager.getInstance(project);
-								if (displayFile != null) {
-									displayFile.getFile().putUserData(CommentHighlighter.VERSIONED_COMMENT_DATA_KEY, comment);
-									Editor editor = fem.openTextEditor(displayFile, false);
-									if (editor == null) {
-										return;
-									}
-								}
-							}
-						});
+						, new OpenEditorDiffActionImpl(project, review, file, comment.getToStartLine() - 1, 0, true)
+				);
 			}
 		});
 
