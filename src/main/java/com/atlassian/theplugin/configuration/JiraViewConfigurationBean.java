@@ -17,6 +17,9 @@
 package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
+import com.intellij.util.xmlb.annotations.Transient;
+
+import java.util.HashMap;
 
 
 public class JiraViewConfigurationBean {
@@ -24,6 +27,8 @@ public class JiraViewConfigurationBean {
 	private String viewFilterId;
 	private JiraIssueGroupBy groupBy;
 	private boolean collapseSubtasksUnderParent;
+
+	private HashMap<String, String> serverDefaults = new HashMap<String, String>();
 
 	public JiraViewConfigurationBean() {
 	}
@@ -58,5 +63,18 @@ public class JiraViewConfigurationBean {
 
 	public void setCollapseSubtasksUnderParent(boolean collapseSubtasksUnderParent) {
 		this.collapseSubtasksUnderParent = collapseSubtasksUnderParent;
+	}
+
+	public HashMap<String, String> getServerDefaults() {
+		return serverDefaults;
+	}
+
+	public void setServerDefaults(final HashMap<String, String> serverDefaults) {
+		this.serverDefaults = serverDefaults;
+	}
+
+	@Transient
+	public void addServerDefault(final String jiraServer, final String projectKey) {
+		serverDefaults.put(jiraServer, projectKey);
 	}
 }
