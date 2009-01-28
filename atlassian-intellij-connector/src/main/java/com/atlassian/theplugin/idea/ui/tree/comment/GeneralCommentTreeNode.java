@@ -18,18 +18,15 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.MultiLineUtil;
-import com.atlassian.theplugin.util.CommentPanelBuilder;
 
-import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
 
 public class GeneralCommentTreeNode extends CommentTreeNode {
 	private GeneralComment comment;
-	private static final TreeCellRenderer MY_RENDERER = new MyRenderer();
+	private static final TreeCellRenderer MY_RENDERER = new ReviewCommentRenderer();
 
 	public GeneralCommentTreeNode(ReviewAdapter review, GeneralComment comment, AtlassianClickAction action) {
 		super(action);
@@ -64,21 +61,5 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 			return getComment().getCreateDate().compareTo(gctn.getComment().getCreateDate());
 		}
 		return super.compareTo(o);
-	}
-
-	private static class MyRenderer implements TreeCellRenderer {
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
-				boolean leaf, int row, boolean hasFocus) {
-			GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
-			JPanel panel;
-			if (node.isEditable()) {
-				panel = CommentPanelBuilder.createEditPanelOfGeneralComment(
-						node.getReview(), node.getComment(), MultiLineUtil.getCurrentWidth(tree, row));
-			} else {
-				panel = CommentPanelBuilder.createViewPanelOfGeneralComment(
-						node.getReview(), node.getComment(), isSelected, MultiLineUtil.getCurrentWidth(tree, row));
-			}
-			return panel;
-		}
 	}
 }
