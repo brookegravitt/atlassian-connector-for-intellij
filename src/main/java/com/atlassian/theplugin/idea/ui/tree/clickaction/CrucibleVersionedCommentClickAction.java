@@ -38,7 +38,7 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 						OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine() - 1,
 								0);
 						if (display.canNavigateToSource()) {
-							display.navigate(true);
+							display.navigate(false);
 						}
 					}
 				}
