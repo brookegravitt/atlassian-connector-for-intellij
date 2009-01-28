@@ -16,6 +16,8 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 	private final Project project;
 	private final ReviewAdapter review;
 	private final CrucibleFileInfo reviewItem;
+	private final int line;
+	private final int column;
 	private final boolean focusOnOpen;
 
 	public OpenEditorDiffActionImpl(@NotNull final Project project,
@@ -25,6 +27,22 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 		this.project = project;
 		this.review = review;
 		this.reviewItem = reviewItem;
+		this.focusOnOpen = focusOnOpen;
+		this.line = 1;
+		this.column = 1;
+	}
+
+	public OpenEditorDiffActionImpl(@NotNull final Project project,
+			@NotNull final ReviewAdapter review,
+			@NotNull final CrucibleFileInfo reviewItem,
+			final int line,
+			final int column,
+			final boolean focusOnOpen) {
+		this.project = project;
+		this.review = review;
+		this.reviewItem = reviewItem;
+		this.line = line;
+		this.column = column;
 		this.focusOnOpen = focusOnOpen;
 	}
 
@@ -65,7 +83,7 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 			case Deleted:
 				if (referenceFile != null) {
 					referenceFile.putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
-					OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile);
+					OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile, line, column);
 					Editor editor = fem.openTextEditor(referenceFileDescriptor, focusOnOpen);
 					if (editor == null) {
 						return;
