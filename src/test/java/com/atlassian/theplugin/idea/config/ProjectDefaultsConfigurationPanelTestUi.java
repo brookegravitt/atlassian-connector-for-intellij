@@ -69,15 +69,13 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		projectConfiguration.setDefaultFishEyeRepo("studio");
 		projectConfiguration.setFishEyeProjectPath("trunk/thePlugin");
 
-		projectConfiguration.setDefaultJiraServerId(jiraServerCfg1.getServerId());
-		projectConfiguration.setDefaultJiraProject("PL");
-
 		List<CrucibleProject> projects1 = MiscUtil.buildArrayList(makeCrucibleProject("id1", "PR-1", "Crucible Project 1"),
 				makeCrucibleProject("id2", "PR-2", "Crucible Project 2"));
 		List<String> repos0 = MiscUtil.buildArrayList("studio00", "studio", "studio01");
 
-		final List<CrucibleProject> projects2 = MiscUtil.buildArrayList(makeCrucibleProject("id5", "PR-5", "Crucible Project 5"),
-				makeCrucibleProject("id7", "LPR-5", "Crucible The Last Project"));
+		final List<CrucibleProject> projects2 = MiscUtil
+				.buildArrayList(makeCrucibleProject("id5", "PR-5", "Crucible Project 5"),
+						makeCrucibleProject("id7", "LPR-5", "Crucible The Last Project"));
 
 		int id = 1;
 		List<JIRAProject> jiraProjects1 = MiscUtil.buildArrayList(makeJiraProject(id++, "AB", "Jira Project 1"),
@@ -111,7 +109,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.expect(crucibleServerFacade.getRepositories(crucibleServerCfg2)).andAnswer(new IAnswer<List<Repository>>() {
 			public List<Repository> answer() throws Throwable {
 				Thread.sleep(2000);
-				return MiscUtil.buildArrayList(makeRepository("Clover"), makeRepository("Connector"), makeRepository("FishEye"));
+				return MiscUtil
+						.buildArrayList(makeRepository("Clover"), makeRepository("Connector"), makeRepository("FishEye"));
 
 			}
 		}).anyTimes();
@@ -120,7 +119,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
 		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg0)).andReturn(repos0).anyTimes();
-		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<Collection<String>>(){
+		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<Collection<String>>() {
 
 			public Collection<String> answer() throws Throwable {
 				Thread.sleep(7000);
@@ -145,7 +144,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(jiraServerFacade);
 
 		JPanel panel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor());
+				fishEyeServerFacade, new DefaultSwingUiTaskExecutor());
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
 		frame.getContentPane().setLayout(new GridLayout(1, 1));
@@ -160,8 +159,6 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 				System.out.println("Crucible repo: " + projectConfiguration.getDefaultCrucibleRepo());
 				System.out.println("FishEye server: " + projectConfiguration.getDefaultFishEyeServerId());
 				System.out.println("FishEye repo: " + projectConfiguration.getDefaultFishEyeRepo());
-				System.out.println("JIRA server: " + projectConfiguration.getDefaultJiraServerId());
-				System.out.println("JIRA project: " + projectConfiguration.getDefaultJiraProject());
 				System.exit(0);
 			}
 		});
