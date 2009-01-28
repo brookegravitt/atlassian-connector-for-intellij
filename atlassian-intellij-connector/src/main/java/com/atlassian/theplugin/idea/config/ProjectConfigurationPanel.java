@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
@@ -46,11 +45,11 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
-			@NotNull final JIRAServerFacade jiraServerFacase, @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, jiraServerFacase, uiTaskExecutor);
+				fishEyeServerFacade, uiTaskExecutor);
 		initLayout();
 	}
 
