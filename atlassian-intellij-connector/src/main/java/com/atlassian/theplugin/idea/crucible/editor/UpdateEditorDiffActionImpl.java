@@ -11,13 +11,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-public class EditorUpdateDiffActionImpl implements OpenDiffAction {
+public class UpdateEditorDiffActionImpl implements OpenDiffAction {
 	private final Project project;
 	private final Editor editor;
 	private final ReviewAdapter review;
 	private final CrucibleFileInfo reviewItem;
 
-	public EditorUpdateDiffActionImpl(@NotNull final Project project,
+	public UpdateEditorDiffActionImpl(@NotNull final Project project,
 			@NotNull Editor editor,
 			@NotNull final ReviewAdapter review,
 			@NotNull final CrucibleFileInfo reviewItem) {

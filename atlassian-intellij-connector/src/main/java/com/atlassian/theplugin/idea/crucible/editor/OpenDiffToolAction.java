@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.diff.DiffContent;
 import com.intellij.openapi.diff.DiffManager;
@@ -21,11 +20,16 @@ import org.jetbrains.annotations.NotNull;
 public class OpenDiffToolAction implements OpenDiffAction {
 	private final Document emptyDocument = new DocumentImpl("");
 	private final Project project;
-	private final CrucibleFileInfo reviewItem;
+	private final String filename;
+	private final String fromRevision;
+	private final String toRevision;
 
-	public OpenDiffToolAction(final Project project, final CrucibleFileInfo reviewItem) {
+	public OpenDiffToolAction(final Project project, final String filename, final String fromRevision,
+			final String toRevision) {
 		this.project = project;
-		this.reviewItem = reviewItem;
+		this.filename = filename;
+		this.fromRevision = fromRevision;
+		this.toRevision = toRevision;
 	}
 
 	@NotNull
@@ -37,7 +41,7 @@ public class OpenDiffToolAction implements OpenDiffAction {
 		}
 	}
 
-	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
+	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, final CommitType commitType) {
 		Document displayDocument = emptyDocument;
 		Document referenceDocument = emptyDocument;
 		displayDocument.setReadOnly(true);
@@ -80,15 +84,15 @@ public class OpenDiffToolAction implements OpenDiffAction {
 			public String[] getContentTitles() {
 				return (new String[]{
 						VcsBundle.message("diff.content.title.repository.version",
-								reviewItem.getOldFileDescriptor().getRevision()),
+								fromRevision),
 						VcsBundle.message("diff.content.title.repository.version",
-								reviewItem.getFileDescriptor().getRevision())
+								toRevision)
 				});
 			}
 
 			@Override
 			public String getWindowTitle() {
-				return reviewItem.getFileDescriptor().getAbsoluteUrl();
+				return filename;
 			}
 		};
 		DiffManager.getInstance().getDiffTool().show(request);

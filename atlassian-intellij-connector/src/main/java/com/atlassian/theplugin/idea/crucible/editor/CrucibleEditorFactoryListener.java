@@ -77,6 +77,6 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 				, reviewItem.getCommitType()
 				, line
 				, 1
-				, new EditorUpdateDiffActionImpl(project, editor, review, reviewItem));
+				, new UpdateEditorDiffActionImpl(project, editor, review, reviewItem));
 	}
 }
