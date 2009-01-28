@@ -19,19 +19,16 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.MultiLineUtil;
-import com.atlassian.theplugin.util.CommentPanelBuilder;
 
-import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
-import java.awt.*;
 
 public class VersionedCommentTreeNode extends CommentTreeNode {
 	private CrucibleFileInfo file;
 	private VersionedComment comment;
-	private static final TreeCellRenderer MY_RENDERER = new MyTreeRenderer();
+	private static final TreeCellRenderer MY_RENDERER = new ReviewCommentRenderer();
 
 	public VersionedCommentTreeNode(ReviewAdapter review, CrucibleFileInfo file, VersionedComment comment,
             AtlassianClickAction action) {
@@ -103,20 +100,4 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 		return super.compareTo(o);
 	}
 
-	private static class MyTreeRenderer implements TreeCellRenderer {
-		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean isSelected, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
-			VersionedCommentTreeNode node = (VersionedCommentTreeNode) value;
-			JPanel panel;
-			if (node.isEditable()) {
-				panel = CommentPanelBuilder.createEditPanelOfVersionedComment(
-						node.getReview(), node.getFile(), node.getComment(), MultiLineUtil.getCurrentWidth(tree, row));
-			} else {
-				panel = CommentPanelBuilder.createViewPanelOfVersionedComment(
-						node.getReview(), node.getFile(), node.getComment(), isSelected,
-						MultiLineUtil.getCurrentWidth(tree, row));
-			}
-			return panel;
-		}
-	}
 }

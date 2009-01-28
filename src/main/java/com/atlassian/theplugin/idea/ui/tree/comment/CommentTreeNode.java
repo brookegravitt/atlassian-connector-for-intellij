@@ -22,6 +22,16 @@ import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
 public abstract class CommentTreeNode extends FileNode {
 	private boolean editable;
+
+	public boolean isExpanded() {
+		return isExpanded;
+	}
+
+	public void setExpanded(final boolean expanded) {
+		isExpanded = expanded;
+	}
+
+	private boolean isExpanded;
 	protected ReviewAdapter review;
 
 	protected CommentTreeNode(AtlassianClickAction action) {
