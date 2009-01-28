@@ -69,6 +69,8 @@ public final class CodeNavigationUtil {
 	}
 
 	public static CrucibleFileInfo getBestMatchingCrucibleFileInfo(String path, Set<CrucibleFileInfo> files) {
+		path = path.replace('\\', '/');
+
 		CrucibleFileInfo bestMatch = null;
 		int difference = 0;
 
