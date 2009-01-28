@@ -170,6 +170,7 @@ public final class VcsIdeaHelper {
 			}
 
 		}
+		virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.FALSE);
 		return vcvf;
 	}
 
@@ -450,7 +451,7 @@ public final class VcsIdeaHelper {
 						break;
 				}
 				if (displayVirtualFile != null) {
-					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line - 1, column - 1);
+					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line - 1, column);
 				} else {
 					// we cannot open such file (just for clarity as by default displayDescriptor = null)
 					displayDescriptor = null;
