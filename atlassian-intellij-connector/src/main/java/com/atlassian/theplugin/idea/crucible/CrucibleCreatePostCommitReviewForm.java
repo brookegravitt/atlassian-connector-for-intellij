@@ -32,6 +32,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.CachingCommittedChangesProvider;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
@@ -56,6 +57,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 
 	private CommittedChangesTreeBrowser commitedChangesBrowser;
 	private final UiTaskExecutor taskExecutor;
+	private int revisionsNumber = 30;
 
 	public CrucibleCreatePostCommitReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
 			@NotNull final CfgManager cfgManager, @NotNull final UiTaskExecutor taskExecutor) {
@@ -76,7 +78,12 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	}
 
 	public void updateChanges() {
-		this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane()));
+		CrucibleRevisionsNumber dialog = new CrucibleRevisionsNumber(project, revisionsNumber);
+		dialog.show();
+		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+			revisionsNumber = dialog.getValue();
+			this.taskExecutor.execute(new ChangesRefreshTask("Fetching recent commits", getContentPane()));
+		}
 	}
 
 	@Override
@@ -135,7 +142,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 				ChangeBrowserSettings changeBrowserSettings = new ChangeBrowserSettings();
 				RepositoryLocation repositoryLocation = committedChangesProvider
 						.getLocationFor(VcsUtil.getFilePath(baseDir.getPath()));
-				list = committedChangesProvider.getCommittedChanges(changeBrowserSettings, repositoryLocation, 30);
+				list = committedChangesProvider.getCommittedChanges(changeBrowserSettings, repositoryLocation, revisionsNumber);
 			}
 		}
 
