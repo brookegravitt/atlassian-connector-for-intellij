@@ -53,14 +53,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-public class ReviewCommentRenderer  extends DefaultTreeCellRenderer implements TreeCellRenderer {
+public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, final boolean isSelected, boolean expanded,
@@ -81,21 +80,17 @@ public class ReviewCommentRenderer  extends DefaultTreeCellRenderer implements T
 
 	}
 
-	private int getAvailableWidth(DefaultMutableTreeNode obj, JTree jtree)
-	{
+	private int getAvailableWidth(DefaultMutableTreeNode obj, JTree jtree) {
 		int i1 = jtree.getInsets().left + jtree.getInsets().right + getNesting(jtree) * obj.getLevel();
 		return jtree.getVisibleRect().width - i1 - 2;
 	}
 
-	private int getNesting(JTree jtree)
-	{
+	private int getNesting(JTree jtree) {
 		TreeUI treeui = jtree.getUI();
-		if(treeui instanceof BasicTreeUI)
-		{
-			BasicTreeUI basictreeui = (BasicTreeUI)treeui;
+		if (treeui instanceof BasicTreeUI) {
+			BasicTreeUI basictreeui = (BasicTreeUI) treeui;
 			return basictreeui.getLeftChildIndent() + basictreeui.getRightChildIndent();
-		} else
-		{
+		} else {
 			return (Integer) UIUtil.getTreeLeftChildIndent() + (Integer) UIUtil.getTreeRightChildIndent();
 		}
 	}
@@ -118,8 +113,10 @@ public class ReviewCommentRenderer  extends DefaultTreeCellRenderer implements T
 		versionedCommentBean.setAuthor(author);
 
 		final VersionedCommentBean versionedCommentBean2 = new VersionedCommentBean();
-		versionedCommentBean2.setMessage("my very very very beautiful but annoyingly very very long long long long long comment."
-				+ "Let us check if it wraps correctly \nWe have also another line here\n\nThere is also an empty line above");
+		versionedCommentBean2
+				.setMessage("my very very very beautiful but annoyingly very very long long long long long comment."
+						+
+						"Let us check if it wraps correctly \nWe have also another line here\n\nThere is also an empty line above");
 		versionedCommentBean2.setToEndLine(31);
 		final ReviewerBean author2 = new ReviewerBean();
 		author2.setUserName("mwent");
@@ -175,9 +172,10 @@ public class ReviewCommentRenderer  extends DefaultTreeCellRenderer implements T
 
 		final JTree jtree = new JTree(root);
 		jtree.setCellRenderer(renderer);
-		jtree.addMouseMotionListener(new MouseAdapter() {
+		jtree.addMouseMotionListener(new MouseMotionAdapter() {
 
 			private Cursor cursor;
+
 			@Override
 			public void mouseMoved(final MouseEvent e) {
 				final int row = jtree.getRowForLocation(e.getX(), e.getY());
@@ -198,7 +196,8 @@ public class ReviewCommentRenderer  extends DefaultTreeCellRenderer implements T
 		});
 
 		TreeUISetup buildTreeUiSetup = new TreeUISetup(renderer);
-		final JScrollPane parentScrollPane = new JScrollPane(jtree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		final JScrollPane parentScrollPane = new JScrollPane(jtree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		buildTreeUiSetup.initializeUI(jtree, parentScrollPane);
 
 //		final JComponent component = renderer.getTreeCellRendererComponent(null, null, false, true, true, 0, false);
@@ -218,7 +217,7 @@ class SimpleIconProvider implements IconProvider {
 	}
 
 	protected ImageIcon createImageIcon(String path,
-											   String description) {
+			String description) {
 		java.net.URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);
@@ -425,24 +424,24 @@ class CommentPanel extends JPanel {
 	}
 
 	private void addStylesToDocument(StyledDocument doc) {
-				//Initialize some styles.
-				Style def = StyleContext.getDefaultStyleContext().
-								getStyle(StyleContext.DEFAULT_STYLE);
+		//Initialize some styles.
+		Style def = StyleContext.getDefaultStyleContext().
+				getStyle(StyleContext.DEFAULT_STYLE);
 
-				Style regular = doc.addStyle("regular", def);
-				StyleConstants.setFontFamily(def, "SansSerif");
+		Style regular = doc.addStyle("regular", def);
+		StyleConstants.setFontFamily(def, "SansSerif");
 
 
-				Style s = doc.addStyle("defect", regular);
+		Style s = doc.addStyle("defect", regular);
 //				StyleConstants.setItalic(s, true);
-				s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
+		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
 
-				s = doc.addStyle("draft", regular);
-				StyleConstants.setBold(s, true);
-				s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.BLACK);
+		s = doc.addStyle("draft", regular);
+		StyleConstants.setBold(s, true);
+		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.BLACK);
 
-				s = doc.addStyle("line", regular);
-				StyleConstants.setBold(s, true);
+		s = doc.addStyle("line", regular);
+		StyleConstants.setBold(s, true);
 //
 //				s = doc.addStyle("icon", regular);
 //				StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
