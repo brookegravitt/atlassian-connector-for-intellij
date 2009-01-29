@@ -20,13 +20,15 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.atlassian.theplugin.idea.ui.IconPaths;
+import com.atlassian.theplugin.idea.util.IdeaIconProvider;
+import com.atlassian.theplugin.util.ui.IconProvider;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.plaf.TreeUI;
@@ -45,6 +47,23 @@ import java.util.Map;
 
 public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
 
+	/**
+	 * Useful for injecting your own IconProvider. Facilitates testing outside IDEA framework
+	 * @param iconProvider provider used for retrieving icons
+	 */
+	public ReviewCommentRenderer(final IconProvider iconProvider) {
+		this.iconProvider = iconProvider;
+	}
+
+	/**
+	 * uses default IDEA-specific icon provider. Not testable outside IDEA
+	 */
+	public ReviewCommentRenderer() {
+		this.iconProvider = new IdeaIconProvider();
+	}
+
+	private final IconProvider iconProvider;
+
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, final boolean isSelected, boolean expanded,
 			boolean leaf, int row, boolean aHasFocus) {
@@ -52,7 +71,7 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 			final CommentTreeNode node = (CommentTreeNode) value;
 			// @todo wseliga inject here IdeaIconProvider
 			return new CommentPanel(node.getComment(), getAvailableWidth(node, tree), row,
-					new SimpleIconProvider(), node.isExpanded(), isSelected);
+					iconProvider, node.isExpanded(), isSelected);
 		} else {
 			return super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, aHasFocus);
 		}
@@ -70,29 +89,6 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 			return basictreeui.getLeftChildIndent() + basictreeui.getRightChildIndent();
 		} else {
 			return (Integer) UIUtil.getTreeLeftChildIndent() + (Integer) UIUtil.getTreeRightChildIndent();
-		}
-	}
-
-}
-
-interface IconProvider {
-	@Nullable
-	Icon getIcon(@NotNull String path);
-}
-
-class SimpleIconProvider implements IconProvider {
-	@Nullable
-	public Icon getIcon(@NotNull final String path) {
-		return createImageIcon(path, "");
-	}
-
-	protected ImageIcon createImageIcon(String path, String description) {
-		java.net.URL imgURL = getClass().getResource(path);
-		if (imgURL != null) {
-			return new ImageIcon(imgURL, description);
-		} else {
-			System.err.println("Couldn't find file: " + path);
-			return null;
 		}
 	}
 
@@ -137,7 +133,9 @@ class CommentPanel extends JPanel {
 			// impossible (theoretically)
 			throw new RuntimeException(e);
 		}
+		//CHECKSTYLE:MAGIC:OFF
 		return getPreferredHeight(pane, Integer.MAX_VALUE) * 3 / 2;
+		//CHECKSTYLE:MAGIC:ON
 	}
 
 	private static int getLastColumnWidth(int totalWidth, int preferredWidth) {
@@ -190,7 +188,7 @@ class CommentPanel extends JPanel {
 
 
 		if (comment.isDefectRaised()) {
-			Icon myicon = iconProvider.getIcon("/icons/icn_plan_failed.gif");
+			Icon myicon = iconProvider.getIcon(IconPaths.REVIEW_COMMENT_DEFECT_PATH);
 			JLabel icon = new JLabel(myicon);
 			add(icon, DEFECT_ICON_POS);
 		}
