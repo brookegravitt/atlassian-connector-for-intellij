@@ -24,7 +24,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
-public class PostCommitReviewAction extends Crucible16RepositoryAction {
+public class PostCommitReviewAction extends Crucible16MultiRevisionRepositoryAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		final Project project = event.getData(DataKeys.PROJECT);
