@@ -21,7 +21,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Build key:"/>
+              <text value="Build Key:"/>
             </properties>
           </component>
           <component id="2b6dc" class="javax.swing.JTextField" binding="buildKeyField">
@@ -39,7 +39,7 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Build number:"/>
+              <text value="Build Number:"/>
             </properties>
           </component>
           <component id="51fbd" class="javax.swing.JTextField" binding="buildNumberField">
