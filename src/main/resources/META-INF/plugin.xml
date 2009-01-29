@@ -191,7 +191,7 @@
 
         <action id="ThePlugin.AddFishEyeServerAction"
                 class="com.atlassian.theplugin.idea.config.serverconfig.action.AddFishEyeServerAction"
-                text="Add FishEye Server" description="Add a new FishEye server" icon="/icons/fisheye-16.png"/>
+                text="Add FishEye Server" description="Add a new FishEye Server" icon="/icons/fisheye-16.png"/>
 
         <group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
             <reference id="ThePlugin.AddServerAction"/>
@@ -283,19 +283,19 @@
         <action id="ThePlugin.Build.Run"
                 class="com.atlassian.theplugin.idea.action.bamboo.onebuild.RunBuildAction"
                 text="Run Build"
-                description="Run build" icon="/actions/execute.png"/>
+                description="Run Build" icon="/actions/execute.png"/>
         <action id="ThePlugin.Build.Comment"
                 class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CommentBuildAction"
                 text="Comment Build"
-                description="Add comment to build" icon="/actions/editSource.png"/>
+                description="Add Comment to Build" icon="/actions/editSource.png"/>
         <action id="ThePlugin.Build.Label"
                 class="com.atlassian.theplugin.idea.action.bamboo.onebuild.LabelBuildAction"
                 text="Label Build"
-                description="Add label to build" icon="/icons/icn_label.gif"/>
+                description="Add Label to Build" icon="/icons/icn_label.gif"/>
         <action id="ThePlugin.Build.Close"
                 class="com.atlassian.theplugin.idea.action.bamboo.onebuild.CloseBuildAction"
                 text="Close"
-                description="Close build panel" icon="/actions/cancel.png"/>
+                description="Close Build panel" icon="/actions/cancel.png"/>
 
         <action id="ThePlugin.Bamboo.Changes.GoToSource"
                 class="com.atlassian.theplugin.idea.action.bamboo.changes.GoToSourceAction" text="Jump to Source"
@@ -595,10 +595,10 @@
                 text="Url"/>
         <action id="ThePlugin.JiraIssues.CopyIssueSummary"
                 class="com.atlassian.theplugin.idea.action.issues.CopyIssueSummaryAction"
-                text="Key and summary"/>
+                text="Summary"/>
         <action id="ThePlugin.JiraIssues.CopyIssueKeySummary"
                 class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeySummaryAction"
-                text="Key and summary"/>
+                text="Key and Summary"/>
 
         <action id="ThePlugin.JiraIssues.OpenIssue"
                 class="com.atlassian.theplugin.idea.action.issues.OpenIssueAction"
@@ -641,7 +641,7 @@
                 icon="/actions/expandall.png"/>
         <action id="ThePlugin.JiraIssues.CollapseComments"
                 class="com.atlassian.theplugin.idea.action.issues.oneissue.CollapseCommentsAction"
-                text="Collapse All Aomments"
+                text="Collapse All Comments"
                 icon="/actions/collapseall.png"/>
         <action id="ThePlugin.JiraIssues.AddEditorComment"
                 class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
@@ -688,7 +688,7 @@
             <separator/>
         </group>
 
-        <group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to clipboard" popup="true">
+        <group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" popup="true">
             <reference id="ThePlugin.JiraIssues.CopyIssueKey"/>
             <reference id="ThePlugin.JiraIssues.CopyIssueUrl"/>
             <reference id="ThePlugin.JiraIssues.CopyIssueSummary"/>
