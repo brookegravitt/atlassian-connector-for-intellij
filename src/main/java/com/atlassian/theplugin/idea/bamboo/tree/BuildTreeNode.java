@@ -90,6 +90,15 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		// failed tests
 		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
+			// gap
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
+			JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
+					SwingConstants.LEADING, ICON_HEIGHT);
+			setFixedComponentSize(empty1, 3 * GAP, ICON_HEIGHT);
+			p.add(empty1, gbc);
+
 			gbc.gridx++;
 			gbc.weightx = 0.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -110,10 +119,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty1, GAP, ICON_HEIGHT);
-		p.add(empty1, gbc);
+		setFixedComponentSize(empty2, GAP, ICON_HEIGHT);
+		p.add(empty2, gbc);
 
 		String commiters = getCommiters();
 
@@ -148,10 +157,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty3 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty2, GAP + GAP + GAP, ICON_HEIGHT);
-		p.add(empty1, gbc);
+		setFixedComponentSize(empty3, 3 * GAP, ICON_HEIGHT);
+		p.add(empty3, gbc);
 
 		// server
 		gbc.gridx++;
