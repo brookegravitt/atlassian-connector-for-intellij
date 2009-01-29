@@ -83,7 +83,17 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void projectOpened() {
-		load();
+		if (cfgManager.getProjectConfiguration(getProjectId()) == null) {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					Messages.showErrorDialog(project, "If you see this message, something bad happend to the "
+							+ "initialization sequence of IDEA. You may encounter now various strange problems with Connector."
+							+ "\nPlease report occurence of this message to us.",
+							"Internal Error in Atlassian IntelliJ Connector");					
+				}
+			});
+		}
+
 		cfgManager.addProjectConfigurationListener(getProjectId(), configurationListener);
 	}
 
