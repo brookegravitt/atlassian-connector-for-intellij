@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -59,6 +60,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
+	private PrivateConfigurationFactory PRIVATE_CFG_FACTORY = new PrivateConfigurationFactoryImpl();
+
+
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
 			final UiTaskExecutor uiTaskExecutor) {
@@ -122,16 +126,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		Document privateRoot = null; // null means that there is no private cfg available
 		try {
-			final String privateCfgFile = getPrivateCfgFilePath();
+			final String privateCfgFile = getPrivateOldCfgFilePath();
 			if (privateCfgFile != null && new File(privateCfgFile).exists()) {
 				privateRoot = builder.build(privateCfgFile);
 			}
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
-		}
+			}
 
 		ProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
-				privateRoot != null ? privateRoot.getRootElement() : null);
+				privateRoot != null ? privateRoot.getRootElement() : null, PRIVATE_CFG_FACTORY);
 		ProjectConfiguration projectConfiguration;
 		try {
 			projectConfiguration = cfgFactory.load();
@@ -178,15 +182,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.xml";
 	}
 
-	@Nullable
-	private String getPrivateCfgFilePath() {
-		final VirtualFile baseDir = project.getBaseDir();
-		if (baseDir == null) {
-			return null;
-		}
-		return baseDir.getPath() + File.separator + "atlassian-ide-plugin.private.xml";
-	}
 
+	private String getPrivateOldCfgFilePath() {
+		final File baseNewProjectFile = new File(project.getBaseDir().getPath() + File.separator + "atlassian-ide-plugin.private.xml");
+
+		if (baseNewProjectFile != null && baseNewProjectFile.isFile() && baseNewProjectFile.canRead()) {
+			return baseNewProjectFile.getAbsolutePath();
+		}
+
+		return null;
+	}
 
 	private ProjectId getProjectId() {
 		return CfgUtil.getProjectId(project);
@@ -194,15 +199,24 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
-		final Element privateElement = new Element("atlassian-ide-plugin-private");
-		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, privateElement);
+
+		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, null, PRIVATE_CFG_FACTORY);
 		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			cfgFactory.save(configuration);
 			final String publicCfgFile = getCfgFilePath();
-			final String privateCfgFile = getPrivateCfgFilePath();
+
 			writeXmlFile(element, publicCfgFile);
-			writeXmlFile(privateElement, privateCfgFile);
+
+			for (ServerCfg serverCfg : configuration.getServers()) {
+				try {
+					PRIVATE_CFG_FACTORY.save(serverCfg.createPrivateProjectConfiguration());
+				} catch (ThePluginException e) {
+					IdeaLoggerImpl.getInstance().error("Cannot write private cfg file for server Uuid = "
+							+ serverCfg.getServerId().getUuid());
+				}
+			}
+
 		}
 	}
 
