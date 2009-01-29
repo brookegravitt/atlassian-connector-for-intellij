@@ -24,21 +24,29 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentEvent;
 import java.awt.*;
 
-public class ReviewDetailsTreeMouseListener extends MouseAdapter implements MouseMotionListener {
-	public ReviewDetailsTreeMouseListener(final ReviewCommentRenderer renderer, TreeUISetup treeUISetup) {
+import org.jetbrains.annotations.NotNull;
+
+public class ReviewDetailsTreeMouseListener extends MouseAdapter implements MouseMotionListener, ComponentListener {
+	public ReviewDetailsTreeMouseListener(@NotNull JTree jtree, final ReviewCommentRenderer renderer, TreeUISetup treeUISetup) {
+		this.jtree = jtree;
 		this.renderer = renderer;
 		this.treeUISetup = treeUISetup;
+		jtree.addMouseListener(this);
+		jtree.addMouseMotionListener(this);
+		jtree.addComponentListener(this);
 	}
 
+	private final JTree jtree;
 	private ReviewCommentRenderer renderer;
 	private final TreeUISetup treeUISetup;
 	private DefaultMutableTreeNode lastHoveredNode;
 	private Component lastRendererComponent;
 
 	private boolean isMoreLessLinkHit(MouseEvent mouseevent) {
-		JTree jtree = (JTree) mouseevent.getSource();
 		TreePath treepath = jtree.getPathForLocation(mouseevent.getX(), mouseevent.getY());
 		if (treepath != null) {
 			Rectangle rectangle = jtree.getPathBounds(treepath);
@@ -69,7 +77,6 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 
 	@Override
 	public void mouseClicked(final MouseEvent e) {
-		JTree jtree = (JTree) e.getSource();
 		if (isMoreLessLinkHit(e)) {
 			final TreePath treepath = jtree.getPathForLocation(e.getX(), e.getY());
 			if (treepath != null) {
@@ -77,7 +84,11 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 				if (o instanceof CommentTreeNode) {
 					CommentTreeNode commentTreeNode = (CommentTreeNode) o;
 					commentTreeNode.setExpanded(!commentTreeNode.isExpanded());
-					treeUISetup.forceTreePrefSizeRecalculation(jtree);
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							treeUISetup.forceTreePrefSizeRecalculation(jtree);
+						}
+					});
 					lastHoveredNode = null;
 					lastRendererComponent = null;
 				}
@@ -87,7 +98,6 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 
 	@SuppressWarnings({"override"})
 	public void mouseMoved(final MouseEvent e) {
-		JTree jtree = (JTree) e.getSource();
 		jtree.setCursor(isMoreLessLinkHit(e) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
 	}
 
@@ -97,5 +107,19 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 	 */
 	@SuppressWarnings({"override"})
 	public void mouseDragged(final MouseEvent e) {
+	}
+
+	public void componentResized(final ComponentEvent e) {
+		lastHoveredNode = null;
+		lastRendererComponent = null;
+	}
+
+	public void componentMoved(final ComponentEvent e) {
+	}
+
+	public void componentShown(final ComponentEvent e) {
+	}
+
+	public void componentHidden(final ComponentEvent e) {
 	}
 }

@@ -59,6 +59,7 @@ public class VersionedCommentTreeNode extends CommentTreeNode {
 		return file;
 	}
 
+	@Override
 	public VersionedComment getComment() {
 		return comment;
 	}

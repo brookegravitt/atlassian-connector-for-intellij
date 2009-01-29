@@ -16,11 +16,10 @@
 package com.atlassian.theplugin.idea.crucible.ui;
 
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
@@ -49,21 +48,14 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, final boolean isSelected, boolean expanded,
 			boolean leaf, int row, boolean aHasFocus) {
-		if (value instanceof VersionedCommentTreeNode) {
-			final VersionedCommentTreeNode node = (VersionedCommentTreeNode) value;
-
-			return new CommentPanel(node.getFile(), node.getComment(), getAvailableWidth(node, tree), row,
-					new SimpleIconProvider(), node.isExpanded(), isSelected);
-		} else if (value instanceof GeneralCommentTreeNode) {
-			final GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
+		if (value instanceof CommentTreeNode) {
+			final CommentTreeNode node = (CommentTreeNode) value;
 			// @todo wseliga inject here IdeaIconProvider
-			return new CommentPanel(null, node.getComment(), getAvailableWidth(node, tree), row,
+			return new CommentPanel(node.getComment(), getAvailableWidth(node, tree), row,
 					new SimpleIconProvider(), node.isExpanded(), isSelected);
 		} else {
 			return super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, aHasFocus);
 		}
-
-
 	}
 
 	private int getAvailableWidth(DefaultMutableTreeNode obj, JTree jtree) {
@@ -108,15 +100,13 @@ class SimpleIconProvider implements IconProvider {
 
 class CommentPanel extends JPanel {
 	private Comment comment;
-	private CrucibleFileInfo file;
 
 	private static final CellConstraints MORE_LINK_POS = new CellConstraints(3, 2);
 	private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(5, 2);
 	private static final CellConstraints AUTHOR_POS = new CellConstraints(7, 2);
 	private static final int OTHER_COLUMNS_WIDTH = 34;
 	private Rectangle moreBounds;
-	private static final int MIN_TEXT_WIDTH = 100;
-	private static final int ONE_LINE_HEIGHT = 25;
+	private static final int MIN_TEXT_WIDTH = 200;
 
 	private static int getPreferredHeight(JComponent component, int preferredWidth) {
 		try {
@@ -135,12 +125,38 @@ class CommentPanel extends JPanel {
 		return moreBounds;
 	}
 
+	private static int oneLineHeight = getFDSFDS();
+
+	private static int getFDSFDS() {
+			JTextPane pane = new JTextPane();
+			final StyledDocument doc = pane.getStyledDocument();
+			addStylesToDocument(doc);
+		try {
+			doc.insertString(doc.getLength(), "Ng", doc.getStyle("regular"));
+		} catch (BadLocationException e) {
+			// impossible (theoretically)
+			throw new RuntimeException(e);
+		}
+		return getPreferredHeight(pane, Integer.MAX_VALUE) * 3 / 2;
+	}
+
+	private static int getLastColumnWidth(int totalWidth, int preferredWidth) {
+		if (totalWidth > preferredWidth + MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
+			return preferredWidth;
+		} else if (totalWidth > MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
+			return totalWidth - MIN_TEXT_WIDTH - OTHER_COLUMNS_WIDTH;
+		} else {
+			return 0;
+		}
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
-	public CommentPanel(@Nullable CrucibleFileInfo file, Comment comment, int width, final int row, IconProvider iconProvider,
+	public CommentPanel(Comment comment, int width, final int row, IconProvider iconProvider,
 			boolean isExpanded, final boolean isSelected) {
-		super(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:"
-				+ LAST_COLUMN_WIDTH + "px" + ", 4px", "4px, top:pref:grow, 2dlu"));
-		this.file = file;
+		final JLabel reviewerAndAuthorLabel = new JLabel(getAuthorLabel(comment) + ", " + getDateLabel(comment));
+		final int lastColumnWidth = getLastColumnWidth(width, reviewerAndAuthorLabel.getPreferredSize().width);
+		setLayout(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:"
+				+ lastColumnWidth + "px" + ", 4px", "4px, top:pref:grow, 2dlu"));
 		this.comment = comment;
 		if (isSelected) {
 			setOpaque(true);
@@ -148,30 +164,26 @@ class CommentPanel extends JPanel {
 		} else {
 			setOpaque(false);
 		}
-
-		JTextPane messageBody = createMessageBody();
-
-		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - LAST_COLUMN_WIDTH, MIN_TEXT_WIDTH);
+		final JTextPane messageBody = createMessageBody(comment);
+		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - lastColumnWidth, MIN_TEXT_WIDTH);
 		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		CellConstraints cc = new CellConstraints();
 		final JLabel moreLabel;
-		if (preferredHeight > ONE_LINE_HEIGHT) {
+		if (preferredHeight > oneLineHeight) {
 			moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
 			add(moreLabel, MORE_LINK_POS);
-			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH,
+			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - lastColumnWidth,
 					MIN_TEXT_WIDTH);
 			preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		} else {
 			moreLabel = null;
 		}
 
-		if (preferredHeight < ONE_LINE_HEIGHT || isExpanded) {
-//			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH, 100);
-//			preferredHeight = getPreferredHeight(messageBody, queryWidth);
+		if (preferredHeight < oneLineHeight || isExpanded) {
 			add(messageBody, cc.xy(1, 2));
 			messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
 		} else {
-			final SimpleColoredComponent jLabel = getSingleLineComponent();
+			final SimpleColoredComponent jLabel = getSingleLineComponent(comment);
 			jLabel.setMinimumSize(new Dimension(0, 0));
 			add(jLabel, cc.xy(1, 2));
 		}
@@ -183,8 +195,7 @@ class CommentPanel extends JPanel {
 			add(icon, DEFECT_ICON_POS);
 		}
 
-		JLabel reviewer = new JLabel(getAuthorLabel() + " , " + getDateLabel());
-		add(reviewer, AUTHOR_POS);
+		add(reviewerAndAuthorLabel, AUTHOR_POS);
 
 		validate();
 		setSize(new Dimension(width, Integer.MAX_VALUE));
@@ -197,21 +208,24 @@ class CommentPanel extends JPanel {
 
 
 	@NotNull
-	private String getDateLabel() {
+	private static String getDateLabel(Comment comment) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(comment.getCreateDate()));
 		return sb.toString();
 	}
 
-	protected String getAuthorLabel() {
-		return "".equals(comment.getAuthor().getDisplayName()) ? comment.getAuthor().getUserName()
+	private static String getAuthorLabel(Comment comment) {
+		return "".equals(comment.getAuthor().getDisplayName())
+				? comment.getAuthor().getUserName()
 				: comment.getAuthor().getDisplayName();
 	}
 
-	protected String getLineInfoLabel() {
-		if (file != null) {
+	private static String getLineInfoLabel(@NotNull Comment comment) {
+		if (comment.isReply()) {
+			return "Reply";
+		}
+		if (comment instanceof VersionedComment) {
 			VersionedComment vc = (VersionedComment) comment;
-
 			if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
 				int startLine = vc.getToStartLine();
 				int endLine = vc.getToEndLine();
@@ -222,31 +236,13 @@ class CommentPanel extends JPanel {
 				txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
 				return txt2;
 			}
-			if (comment.isReply()) {
-				return "Reply";
-			}
-
-			if (!comment.isReply()) {
-				return "General File";
-			}
+			return "General File";
 		}
 		return "General Comment";
 	}
 
 
-	protected Component getStateLabel(String text, boolean isInState, Color color) {
-		JLabel label = new JLabel("");
-
-		if (isInState) {
-			label.setText(text);
-			label.setFont(label.getFont().deriveFont(Font.BOLD));
-			label.setForeground(color);
-		}
-		return label;
-	}
-
-
-	protected String getRankingString() {
+	private static String getRankingString(Comment comment) {
 		StringBuilder sb = new StringBuilder();
 		if (comment.getCustomFields().size() > 0) {
 			sb.append("(");
@@ -266,15 +262,17 @@ class CommentPanel extends JPanel {
 		return sb.toString();
 	}
 
-	private SimpleColoredComponent getSingleLineComponent() {
+
+	private SimpleColoredComponent getSingleLineComponent(Comment vc) {
 		final SimpleColoredComponent res = new SimpleColoredComponent();
 		res.setOpaque(false);
-		final String lineInfoLabel = getLineInfoLabel();
+		final String lineInfoLabel = getLineInfoLabel(vc);
 		if (lineInfoLabel.length() > 0) {
 			res.append("(" + lineInfoLabel + ") ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 		}
-		res.append(comment.getMessage() + " ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-		res.append(" " + getRankingString(), SimpleTextAttributes.GRAY_ATTRIBUTES);
+		final String message = StringUtil.getFirstLine(comment.getMessage());
+		res.append(message + " ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+		res.append(" " + getRankingString(vc), SimpleTextAttributes.GRAY_ATTRIBUTES);
 		if (comment.isDraft()) {
 			StringBuilder drafInfo = new StringBuilder();
 			drafInfo.append(" ");
@@ -284,21 +282,19 @@ class CommentPanel extends JPanel {
 		return res;
 	}
 
-	protected JTextPane createMessageBody() {
-
+	private static JTextPane createMessageBody(Comment vc) {
 		JTextPane pane = new JTextPane();
 		pane.setOpaque(false);
-
 		final StyledDocument doc = pane.getStyledDocument();
 		addStylesToDocument(doc);
 		try {
-			final String lineInfoLabel = getLineInfoLabel();
+			final String lineInfoLabel = getLineInfoLabel(vc);
 			if (lineInfoLabel.length() > 0) {
 				doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ", doc.getStyle("line"));
 			}
-			doc.insertString(doc.getLength(), comment.getMessage() + " ", doc.getStyle("regular"));
-			doc.insertString(doc.getLength(), " " + getRankingString(), doc.getStyle("defect"));
-			if (comment.isDraft()) {
+			doc.insertString(doc.getLength(), vc.getMessage() + " ", doc.getStyle("regular"));
+			doc.insertString(doc.getLength(), " " + getRankingString(vc), doc.getStyle("defect"));
+			if (vc.isDraft()) {
 				StringBuilder drafInfo = new StringBuilder();
 				if (doc.getLength() > 0) {
 					drafInfo.append(" ");
@@ -312,7 +308,7 @@ class CommentPanel extends JPanel {
 		return pane;
 	}
 
-	private void addStylesToDocument(StyledDocument doc) {
+	private static void addStylesToDocument(StyledDocument doc) {
 		//Initialize some styles.
 		Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
@@ -323,8 +319,8 @@ class CommentPanel extends JPanel {
 		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
 
 		s = doc.addStyle("draft", regular);
-		StyleConstants.setBold(s, true);
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.BLACK);
+//		StyleConstants.setBold(s, true);
+		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
 
 		s = doc.addStyle("line", regular);
 		StyleConstants.setBold(s, true);
