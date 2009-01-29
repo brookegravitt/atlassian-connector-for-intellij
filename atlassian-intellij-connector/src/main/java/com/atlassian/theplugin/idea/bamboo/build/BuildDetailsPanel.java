@@ -47,6 +47,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	public JPanel createBody() {
 		JPanel p = new JPanel();
 		p.setLayout(new GridBagLayout());
+		p.setBackground(Color.WHITE);
 
 		GridBagConstraints gbc1 = new GridBagConstraints();
 		GridBagConstraints gbc2 = new GridBagConstraints();
@@ -64,7 +65,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
 				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-		gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
+		gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
 		gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 
 
@@ -116,7 +117,10 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc1.gridwidth = 2;
 		gbc1.weighty = 1.0;
 		gbc1.fill = GridBagConstraints.VERTICAL;
-		p.add(new JPanel(), gbc1);
+		JPanel filler = new JPanel();
+		filler.setOpaque(true);
+		filler.setBackground(Color.WHITE);
+		p.add(filler, gbc1);
 
 		return p;
 	}
