@@ -30,14 +30,14 @@
             <constraints>
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
                 <minimum-size width="80" height="-1"/>
-                <preferred-size width="80" height="-1"/>
+                <preferred-size width="92" height="16"/>
               </grid>
             </constraints>
             <properties>
               <horizontalAlignment value="4"/>
               <horizontalTextPosition value="4"/>
               <labelFor value="b1d90"/>
-              <text value="&amp;Server Name"/>
+              <text value="&amp;Server Name:"/>
             </properties>
           </component>
           <component id="4cd9d" class="javax.swing.JTextField" binding="serverUrl">
@@ -66,29 +66,39 @@
           </component>
           <component id="42b70" class="javax.swing.JLabel">
             <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                <minimum-size width="80" height="-1"/>
+                <preferred-size width="92" height="16"/>
+              </grid>
             </constraints>
             <properties>
+              <horizontalAlignment value="4"/>
               <labelFor value="4cd9d"/>
-              <text value="Server &amp;URL"/>
+              <text value="Server &amp;URL:"/>
             </properties>
           </component>
           <component id="fc53e" class="javax.swing.JLabel">
             <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="92" height="16"/>
+              </grid>
             </constraints>
             <properties>
+              <horizontalAlignment value="4"/>
               <labelFor value="3f7b8"/>
-              <text value="User&amp;name"/>
+              <text value="User&amp;name:"/>
             </properties>
           </component>
           <component id="7e17a" class="javax.swing.JLabel">
             <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false">
+                <preferred-size width="92" height="16"/>
+              </grid>
             </constraints>
             <properties>
+              <horizontalAlignment value="4"/>
               <labelFor value="794e2"/>
-              <text value="&amp;Password"/>
+              <text value="&amp;Password:"/>
             </properties>
           </component>
           <component id="6398" class="javax.swing.JButton" binding="testConnection">

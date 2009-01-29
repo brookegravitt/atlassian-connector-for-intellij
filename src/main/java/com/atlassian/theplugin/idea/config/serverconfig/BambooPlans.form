@@ -134,7 +134,7 @@
               <gridbag top="0" left="12" bottom="0" right="12" weightx="0.0" weighty="0.0"/>
             </constraints>
             <properties>
-              <text value="Time Zone Difference"/>
+              <text value="Time Zone Difference:"/>
             </properties>
           </component>
           <component id="6fbcc" class="javax.swing.JLabel">
