@@ -51,7 +51,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 	private static final float SPLIT_RATIO = 0.6f;
 	protected static final int ROW_HEIGHT = 16;
 
-	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, (TreeUISetup)null);
+	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, (TreeUISetup) null);
 	private final Project project;
 	private final BambooBuildAdapterIdea build;
 
