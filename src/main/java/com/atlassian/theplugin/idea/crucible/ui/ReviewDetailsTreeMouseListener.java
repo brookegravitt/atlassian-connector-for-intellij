@@ -85,7 +85,7 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 		}
 	}
 
-	@Override
+	@SuppressWarnings({"override"})
 	public void mouseMoved(final MouseEvent e) {
 		JTree jtree = (JTree) e.getSource();
 		jtree.setCursor(isMoreLessLinkHit(e) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
@@ -95,7 +95,7 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 	 * Needed for compilation under JDK 1.5, which has screwed up MouseAdapter
 	 * @param e event
 	 */
-	@Override
+	@SuppressWarnings({"override"})
 	public void mouseDragged(final MouseEvent e) {
 	}
 }
