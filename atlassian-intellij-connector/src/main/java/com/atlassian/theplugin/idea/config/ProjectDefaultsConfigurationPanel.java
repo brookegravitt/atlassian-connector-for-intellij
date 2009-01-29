@@ -218,7 +218,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
-		pathToProjectEdit.setToolTipText("Path to root directory in your repo. "
+		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
 				+ "E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
 //		panel.setPreferredSize(new Dimension(300, 200));
 
