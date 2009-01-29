@@ -37,10 +37,12 @@ import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.ui.ListSpeedSearch;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -632,6 +634,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			this.server = server;
 		}
 
+		@Nullable
 		@Override
 		public User getAuthor() {
 			if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
@@ -653,6 +656,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			return statementArea.getText();
 		}
 
+		@Nullable
 		@Override
 		public User getModerator() {
 			if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
@@ -667,11 +671,13 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			return titleText.getText();
 		}
 
+		@Nullable
 		@Override
 		public PermId getParentReview() {
 			return null;
 		}
 
+		@Nullable
 		@Override
 		public PermId getPermId() {
 			return null;
@@ -682,6 +688,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			return ((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getWrappedProject().getKey();
 		}
 
+		@Nullable
 		@Override
 		public String getRepoName() {
 			if (repoComboBox.getSelectedItem() instanceof RepositoryComboBoxItem) {
@@ -691,6 +698,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		}
 
+		@Nullable
 		@Override
 		public State getState() {
 			return null;
@@ -711,57 +719,71 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 		if (selectedItem != null) {
 			final CrucibleServerCfg server = selectedItem.getServer();
-			try {
-				final Review draftReview = createReview(server, new ReviewProvider(server));
-				if (draftReview == null) {
-					return;
-				}
 
-				Set<String> users = new HashSet<String>();
-				for (int i = 0; i < model.getSize(); ++i) {
-					UserListItem item = (UserListItem) model.get(i);
-					if (item.isSelected()) {
-						users.add(item.getUser().getUserName());
-					}
-				}
+			Task.Backgroundable changesTask = new Task.Backgroundable(project,
+					"Creating review...", false) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
 
-				if (!users.isEmpty()) {
-					crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
-				}
-
-				if (!leaveAsDraftCheckBox.isSelected()) {
 					try {
-						Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-						if (newReview.getModerator().getUserName().equals(server.getUsername())) {
-							if (newReview.getActions()
-									.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
-								crucibleServerFacade.approveReview(server, draftReview.getPermId());
-							} else {
-								Messages.showErrorDialog(project,
-										newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n"
-												+ "Leaving review in draft state.", "Permission denied");
-							}
-						} else {
-							if (newReview.getActions()
-									.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
-								crucibleServerFacade.submitReview(server, draftReview.getPermId());
-							} else {
-								Messages.showErrorDialog(project,
-										newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
-												+ "Leaving review in draft state.", "Permission denied");
+						final Review draftReview = createReview(server, new ReviewProvider(server));
+						if (draftReview == null) {
+							return;
+						}
+
+						Set<String> users = new HashSet<String>();
+						for (int i = 0; i < model.getSize(); ++i) {
+							UserListItem item = (UserListItem) model.get(i);
+							if (item.isSelected()) {
+								users.add(item.getUser().getUserName());
 							}
 						}
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						Messages.showErrorDialog(project, "Unable to change review state. Leaving review in draft state.",
-								"Permission denied");
+
+						if (!users.isEmpty()) {
+							crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
+						}
+
+						if (!leaveAsDraftCheckBox.isSelected()) {
+							try {
+								Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+								if (newReview.getModerator().getUserName().equals(server.getUsername())) {
+									if (newReview.getActions()
+											.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
+										crucibleServerFacade.approveReview(server, draftReview.getPermId());
+									} else {
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n"
+														+ "Leaving review in draft state.", "Permission denied");
+									}
+								} else {
+									if (newReview.getActions()
+											.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
+										crucibleServerFacade.submitReview(server, draftReview.getPermId());
+									} else {
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
+														+ "Leaving review in draft state.", "Permission denied");
+									}
+								}
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								Messages.showErrorDialog(project,
+										"Unable to change review state. Leaving review in draft state.",
+										"Permission denied");
+							}
+						}
+					} catch (final Throwable e) {
+						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+							public void run() {
+								DialogWithDetails
+										.showExceptionDialog(project, "Error creating review: " + server.getUrl(),
+												e, "Error");
+							}
+						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
 					}
 				}
-				super.doOKAction();
-			} catch (RemoteApiException e) {
-				showMessageDialog(e.getMessage(), "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-			} catch (ServerPasswordNotProvidedException e) {
-				showMessageDialog(e.getMessage(), "Error creating review: " + server.getUrl(), Messages.getErrorIcon());
-			}
+			};
+			ProgressManager.getInstance().run(changesTask);
+			super.doOKAction();
 		}
 	}
 
