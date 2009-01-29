@@ -56,9 +56,9 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 					new SimpleIconProvider(), node.isExpanded(), isSelected);
 		} else if (value instanceof GeneralCommentTreeNode) {
 			final GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
-			final CommentPanel panel = new CommentPanel(null, node.getComment(), getAvailableWidth(node, tree), row,
+			// @todo wseliga inject here IdeaIconProvider
+			return new CommentPanel(null, node.getComment(), getAvailableWidth(node, tree), row,
 					new SimpleIconProvider(), node.isExpanded(), isSelected);
-			return panel;
 		} else {
 			return super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, aHasFocus);
 		}
@@ -135,11 +135,11 @@ class CommentPanel extends JPanel {
 		return moreBounds;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public CommentPanel(@Nullable CrucibleFileInfo file, Comment comment, int width, final int row, IconProvider iconProvider,
 			boolean isExpanded, final boolean isSelected) {
-//		super(new FormLayout("d:grow, 4dlu, 10dlu, 4dlu, right:d, 2dlu", "2dlu, top:pref:grow, 2dlu"));
-		super(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:" + LAST_COLUMN_WIDTH + "px" + ", 4px",
-				"4px, top:pref:grow, 2dlu"));
+		super(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:"
+				+ LAST_COLUMN_WIDTH + "px" + ", 4px", "4px, top:pref:grow, 2dlu"));
 		this.file = file;
 		this.comment = comment;
 		if (isSelected) {
@@ -174,7 +174,6 @@ class CommentPanel extends JPanel {
 			final SimpleColoredComponent jLabel = getSingleLineComponent();
 			jLabel.setMinimumSize(new Dimension(0, 0));
 			add(jLabel, cc.xy(1, 2));
-//			add(new JLabel("Bardzo długi string"), cc.xy(1, 2));
 		}
 
 
@@ -184,25 +183,16 @@ class CommentPanel extends JPanel {
 			add(icon, DEFECT_ICON_POS);
 		}
 
-
 		JLabel reviewer = new JLabel(getAuthorLabel() + " , " + getDateLabel());
-//		reviewer.setMinimumSize(new Dimension(0, 0));
 		add(reviewer, AUTHOR_POS);
 
 		validate();
-
-
 		setSize(new Dimension(width, Integer.MAX_VALUE));
 		addNotify();
 		doLayout();
 		if (moreLabel != null) {
 			moreBounds = moreLabel.getBounds();
 		}
-//		System.out.println(reviewer.getLocation());
-//		int preferredHeight = getPreferredHeight(this, width);
-//		setSize(new Dimension(width, preferredHeight));
-//		setPreferredSize(new Dimension(width, preferredHeight));
-//		System.out.println(getPreferredSize());
 	}
 
 
@@ -229,8 +219,6 @@ class CommentPanel extends JPanel {
 					endLine = startLine;
 				}
 				String txt2 = "";
-//				txt2 += " Revision " + file.getFileDescriptor().getRevision();
-//				txt2 += ": ";
 				txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
 				return txt2;
 			}
@@ -289,11 +277,9 @@ class CommentPanel extends JPanel {
 		res.append(" " + getRankingString(), SimpleTextAttributes.GRAY_ATTRIBUTES);
 		if (comment.isDraft()) {
 			StringBuilder drafInfo = new StringBuilder();
-			if (true) {
-				drafInfo.append(" ");
-			}
+			drafInfo.append(" ");
 			drafInfo.append("Draft");
-			res.append(drafInfo.toString(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+			res.append(drafInfo.toString(), SimpleTextAttributes.GRAY_ATTRIBUTES);
 		}
 		return res;
 	}
@@ -302,7 +288,6 @@ class CommentPanel extends JPanel {
 
 		JTextPane pane = new JTextPane();
 		pane.setOpaque(false);
-//		pane.setBorder(BorderFactory.createEmptyBorder());
 
 		final StyledDocument doc = pane.getStyledDocument();
 		addStylesToDocument(doc);
@@ -329,15 +314,12 @@ class CommentPanel extends JPanel {
 
 	private void addStylesToDocument(StyledDocument doc) {
 		//Initialize some styles.
-		Style def = StyleContext.getDefaultStyleContext().
-				getStyle(StyleContext.DEFAULT_STYLE);
+		Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
 		Style regular = doc.addStyle("regular", def);
 		StyleConstants.setFontFamily(def, "SansSerif");
 
-
 		Style s = doc.addStyle("defect", regular);
-//				StyleConstants.setItalic(s, true);
 		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
 
 		s = doc.addStyle("draft", regular);
@@ -346,30 +328,6 @@ class CommentPanel extends JPanel {
 
 		s = doc.addStyle("line", regular);
 		StyleConstants.setBold(s, true);
-//
-//				s = doc.addStyle("icon", regular);
-//				StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-//				ImageIcon pigIcon = createImageIcon("images/Pig.gif",
-//													"a cute pig");
-//				if (pigIcon != null) {
-//					StyleConstants.setIcon(s, pigIcon);
-//				}
-//
-//				s = doc.addStyle("button", regular);
-//				StyleConstants.setAlignment(s, StyleConstants.ALIGN_CENTER);
-//				ImageIcon soundIcon = createImageIcon("images/sound.gif",
-//													  "sound icon");
-//				JButton button = new JButton();
-//				if (soundIcon != null) {
-//					button.setIcon(soundIcon);
-//				} else {
-//					button.setText("BEEP");
-//				}
-//				button.setCursor(Cursor.getDefaultCursor());
-//				button.setMargin(new Insets(0,0,0,0));
-//				button.setActionCommand(buttonString);
-//				button.addActionListener(this);
-//				StyleConstants.setComponent(s, button);
 	}
 }
 
