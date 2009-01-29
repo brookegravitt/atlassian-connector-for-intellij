@@ -63,7 +63,7 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 			// show/hide toolbar on click
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
+				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
             }
 		});
 
