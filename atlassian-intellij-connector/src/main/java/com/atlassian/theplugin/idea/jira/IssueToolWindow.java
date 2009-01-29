@@ -78,7 +78,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	public void showIssue(JiraServerCfg server, final JIRAIssue issue, JIRAIssueListModel model) {
 		showToolWindow(project, new IssueContentParameters(server, issue, model),
-				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_ICON);
+				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON);
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
