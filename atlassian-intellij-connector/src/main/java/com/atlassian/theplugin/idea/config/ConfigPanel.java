@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
@@ -38,6 +39,8 @@ public final class ConfigPanel extends JPanel {
 	private final CrucibleGeneralForm crucibleConfigPanel;
 	private final JiraGeneralForm jiraConfigPanel;
 	private final GeneralConfigPanel generalConfigPanel;
+	private final AboutForm aboutBox;
+
 
 	private final transient PluginConfiguration globalConfigurationBean;
 
@@ -49,6 +52,9 @@ public final class ConfigPanel extends JPanel {
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
 		this.generalConfigPanel = new GeneralConfigPanel(globalConfigurationBean, newVersionChecker);
 		this.globalConfigurationBean = globalConfigurationBean;
+
+		aboutBox = new AboutForm();
+
 		initLayout();
 	}
 
@@ -72,6 +78,8 @@ public final class ConfigPanel extends JPanel {
 
 		// add general tab
 		contentPanel.add(generalConfigPanel.getTitle(), generalConfigPanel);
+
+		contentPanel.add("About", aboutBox.getRootPane());
 
 		add(contentPanel, BorderLayout.CENTER);
 		add(footerPanel, BorderLayout.SOUTH);
