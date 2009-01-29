@@ -157,12 +157,16 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	 * @param isError error flag
 	 */
 	public void setStatusMessage(final String msg, final boolean isError) {
+		setStatusMessage(msg, isError, false);
+	}
+
+	public void setStatusMessage(final String msg, final boolean isError, final boolean rightAlign) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				if (isError) {
 					statusBarPane.setErrorMessage(msg);
 				} else {
-					statusBarPane.setMessage(msg);
+					statusBarPane.setMessage(msg, rightAlign);
 				}
 			}
 		});
