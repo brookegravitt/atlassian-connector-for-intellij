@@ -21,6 +21,9 @@ import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ChangeListUtil {
 	private ChangeListUtil() {
 	}
@@ -38,6 +41,25 @@ public final class ChangeListUtil {
 				}
 				return contentRevision.getRevisionNumber().asString();
 			}
+		}
+		return null;
+	}
+
+	public static List<String> getRevisions(AnActionEvent event) {
+		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
+		if (changes != null) {
+			List<String> revisions = new ArrayList<String>();
+			for (Change change : changes[0].getChanges()) {
+				if (change.getAfterRevision() == null) {
+					continue;
+				}
+				final ContentRevision contentRevision = change.getAfterRevision();
+				if (contentRevision == null) {
+					return null;
+				}
+				revisions.add(contentRevision.getRevisionNumber().asString());
+			}
+			return revisions;
 		}
 		return null;
 	}
