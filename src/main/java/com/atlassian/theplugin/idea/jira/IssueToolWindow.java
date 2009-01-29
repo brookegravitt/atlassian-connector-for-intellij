@@ -244,10 +244,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				JPanel body = new JPanel();
 
 				body.setLayout(new GridBagLayout());
+				body.setOpaque(true);
+				body.setBackground(Color.WHITE);
 
 				GridBagConstraints gbc1 = new GridBagConstraints();
 				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
+				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
@@ -299,14 +301,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc2.gridy++;
 				body.add(new BoldLabel("Resolution"), gbc1);
 				body.add(new JLabel(params.issue.getResolution()), gbc2);
-				gbc1.gridx = 2;
-				gbc2.gridx = gbc1.gridx + 1;
-				gbc1.gridy = 0;
-				gbc2.gridy = 0;
-				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc1.gridy++;
+				gbc2.gridy++;
 				body.add(new BoldLabel("Created"), gbc1);
 				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
 				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -319,10 +315,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				body.add(new JLabel(t), gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
-				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("Updated"), gbc1);
 				try {
 					t = ds.format(df.parse(params.issue.getUpdated()));
@@ -346,7 +338,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc1.gridy++;
 				gbc1.weighty = 1.0;
 				gbc1.fill = GridBagConstraints.VERTICAL;
-				body.add(new JPanel(), gbc1);
+				JPanel filler = new JPanel();
+				filler.setBackground(Color.WHITE);
+				body.add(filler, gbc1);
 
 				return body;
 			}
@@ -787,7 +781,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			UserLabel(final String serverUrl, final String userName, final String userNameId) {
-				super(userName);
+				super(userName, Color.BLUE, Color.WHITE, Color.BLUE);
 				addListener(serverUrl, userNameId);
 			}
 
