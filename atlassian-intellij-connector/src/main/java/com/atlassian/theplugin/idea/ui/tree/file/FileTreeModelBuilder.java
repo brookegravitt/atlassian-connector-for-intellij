@@ -30,7 +30,6 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleFileClickAction;
 import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
-import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.project.Project;
@@ -80,7 +79,6 @@ public final class FileTreeModelBuilder {
 						// todo add some action
 					}
 				}));
-		addStatementOfObjectives(review, model);
 		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
@@ -109,7 +107,6 @@ public final class FileTreeModelBuilder {
 
 		FileTreeModel model = new FileTreeModel(root);
 
-		addStatementOfObjectives(review, model);
 		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		FileNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
@@ -130,13 +127,6 @@ public final class FileTreeModelBuilder {
 		}
 		model.compactModel(filesNode);
 		return model;
-	}
-
-	private static void addStatementOfObjectives(final ReviewAdapter review, final AtlassianTreeModel model) {
-		if (review.getDescription() != null && review.getDescription().length() != 0) {
-			model.insertNode(new CrucibleStatementOfObjectivesNode(review, 
-					review.getDescription(), AtlassianClickAction.EMPTY_ACTION), model.getRoot());
-		}
 	}
 
 	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
