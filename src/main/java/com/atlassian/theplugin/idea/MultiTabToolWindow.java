@@ -40,7 +40,7 @@ public abstract class MultiTabToolWindow {
 	}
 
 	protected void showToolWindow(final Project project, ContentParameters params,
-								  final String title, final Icon icon) {
+								  final String title, final Icon icon, final Icon tabIcon) {
 		String contentKey = getContentKey(params);
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow itw = twm.getToolWindow(title);
@@ -68,13 +68,13 @@ public abstract class MultiTabToolWindow {
 				}
 				contentPanel = createContentPanel(params);
 				panelMap.put(contentKey, contentPanel);
-				fillToolWindowContents(contentKey, contentPanel, icon, itw);
+				fillToolWindowContents(contentKey, contentPanel, tabIcon, itw);
 			}
 		} else {
 			if (contentPanel == null) {
 				contentPanel = createContentPanel(params);
 				panelMap.put(contentKey, contentPanel);
-				fillToolWindowContents(contentKey, contentPanel, icon, itw);
+				fillToolWindowContents(contentKey, contentPanel, tabIcon, itw);
 			} else {
 				Content c = itw.getContentManager().findContent(panelMap.get(contentKey).getTitle());
 				itw.getContentManager().setSelectedContent(c);
