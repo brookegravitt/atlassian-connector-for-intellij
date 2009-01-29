@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 
 /**
  * @author Lukasz Guminski
@@ -47,7 +48,18 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	@Override
 	public AtlassianTree getTreeComponent() {
 		if (tree == null) {
-			tree = new AtlassianTree();
+			if (treeUISetup == null) {
+				tree = new AtlassianTree();
+			} else {
+				tree = new AtlassianTree() {
+					private static final int SCROLLING_STEP = 10;
+					@Override
+					public int getScrollableUnitIncrement(final Rectangle visibleRect, final int orientation, final int direction) {
+						// looks like something much better than standard JTree behaviour for very high rows
+						return SCROLLING_STEP;
+					}
+				};
+			}
 			tree.setRowHeight(0);
 			if (treeUISetup != null) {
 				treeUISetup.initializeUI(tree, jScrollPane);
