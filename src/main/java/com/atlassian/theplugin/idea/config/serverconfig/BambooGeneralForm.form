@@ -32,7 +32,7 @@
         </constraints>
         <properties>
           <selected value="true"/>
-          <text value="All build failures and first build success"/>
+          <text value="All Build Failures and First Build Success"/>
         </properties>
       </component>
       <component id="76d70" class="javax.swing.JRadioButton" binding="firstFailureFirstSuccess" default-binding="true">
@@ -41,7 +41,7 @@
           <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
-          <text value="First build failure and first build success"/>
+          <text value="First Build Failure and First Build Success"/>
         </properties>
       </component>
       <component id="8d7bd" class="javax.swing.JRadioButton" binding="never" default-binding="true">
@@ -113,7 +113,7 @@
           <forms top="0" left="20" bottom="0" right="0"/>
         </constraints>
         <properties>
-          <text value="Only for my builds"/>
+          <text value="Only for My Builds"/>
           <toolTipText value="Shows notification popup only for builds triggered by commit of the logged in user"/>
         </properties>
       </component>
