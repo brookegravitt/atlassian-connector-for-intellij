@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.project.Project;
@@ -35,6 +36,7 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
 	private final ProjectDefaultsConfigurationPanel defaultsConfigurationPanel;
+   	private final AboutForm aboutBox;
 
 	private ProjectConfiguration projectConfiguration;
 
@@ -50,6 +52,8 @@ public class ProjectConfigurationPanel extends JPanel {
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, uiTaskExecutor);
+		aboutBox = new AboutForm();
+
 		initLayout();
 	}
 
@@ -69,6 +73,7 @@ public class ProjectConfigurationPanel extends JPanel {
 		// add servers tab
 		contentPanel.add(serverConfigPanel.getTitle(), serverConfigPanel);
 		contentPanel.add("Defaults", defaultsConfigurationPanel);
+		contentPanel.add("About", aboutBox.getRootPane());
 
 		add(contentPanel, BorderLayout.CENTER);
 		add(footerPanel, BorderLayout.SOUTH);
