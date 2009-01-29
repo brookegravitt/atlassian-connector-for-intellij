@@ -328,7 +328,7 @@
                 icon="/actions/expandall.png"/>
         <action id="ThePlugin.Crucible.ShowFileAction"
                 class="com.atlassian.theplugin.idea.action.crucible.ShowFileAction"
-                text="Open File for Review" icon="/actions/menu-open.png">
+                text="Open Revision for Review" icon="/actions/menu-open.png">
             <keyboard-shortcut first-keystroke="control O" keymap="$default"/>
         </action>
         <action id="ThePlugin.Crucible.ShowReviewItemDiffAction"
