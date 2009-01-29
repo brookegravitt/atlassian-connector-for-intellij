@@ -584,9 +584,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				gbc.weighty = 1.0;
 				comments.setLayout(new VerticalFlowLayout());
+				comments.setOpaque(true);
+				comments.setBackground(Color.WHITE);
 				scroll.setViewportView(comments);
-				scroll.getViewport().setOpaque(false);
-				scroll.setOpaque(false);
+				scroll.getViewport().setOpaque(true);
+				scroll.getViewport().setBackground(Color.WHITE);
+				scroll.setOpaque(true);
+				scroll.setBackground(Color.WHITE);
 				scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 				scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -776,7 +780,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 		private class UserLabel extends HyperlinkLabel {
 			UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
-				super(userName, color, HEADER_BACKGROUND_COLOR, color);
+				super(userName, color, Color.WHITE, color);
 				addListener(serverUrl, userNameId);
 			}
 
@@ -831,7 +835,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					}
 				});
 
-				body.setOpaque(false);
+				body.setOpaque(true);
+				body.setBackground(Color.WHITE);
 				body.setBorder(BorderFactory.createEmptyBorder());
 				body.setContentType("text/html");
 				body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -854,7 +859,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			public CommentPanel(int cmtNumber, final JIRAComment comment, final JiraServerCfg server, JTabbedPane tabs) {
 				setOpaque(true);
-				setBackground(HEADER_BACKGROUND_COLOR);
+				setBackground(Color.WHITE);
 
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc;
@@ -868,12 +873,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				add(btnShowHide, gbc);
 
 				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, 0);
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
 				JLabel commentNumber = new WhiteLabel();
 				commentNumber.setText(Integer.valueOf(cmtNumber).toString() + ".");
 				add(commentNumber, gbc);
 
 				gbc.gridx++;
+				gbc.insets = new Insets(0, 0, 0, 0);
 				UserLabel ul = new UserLabel(server.getUrl(), comment.getAuthorFullName(),
 						comment.getAuthor(), UIUtil.getTableSelectionForeground());
 				add(ul, gbc);
@@ -881,11 +887,21 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				final JLabel hyphen = new WhiteLabel();
 				hyphen.setText("-");
 				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN, 0, Constants.DIALOG_MARGIN);
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
 				add(hyphen, gbc);
 
 				final JLabel creationDate = new WhiteLabel();
-				creationDate.setText(comment.getCreationDate().getTime().toString());
+
+				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
+				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				String t;
+				try {
+					t = dfo.format(df.parse(comment.getCreationDate().getTime().toString()));
+				} catch (java.text.ParseException e) {
+					t = "Invalid date: " + comment.getCreationDate().getTime().toString();
+				}
+
+				creationDate.setText(t);
 				gbc.gridx++;
 				gbc.fill = GridBagConstraints.HORIZONTAL;
 				gbc.weightx = 1.0;
@@ -900,8 +916,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				commentBody.setEditable(false);
 				commentBody.setOpaque(true);
-				commentBody.setBackground(UIUtil.getPanelBackground());
-				commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN, 0, 0));
+				commentBody.setBackground(Color.WHITE);
+				commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN + Constants.DIALOG_MARGIN / 2, 0, 0));
 				commentBody.setContentType("text/html");
 				commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
