@@ -22,14 +22,14 @@
           <forms/>
         </constraints>
         <properties/>
-        <border type="etched" title="Auto-upgrade"/>
+        <border type="etched" title="Auto Upgrade"/>
         <children>
           <component id="a66bf" class="javax.swing.JButton" binding="checkNowButton" default-binding="true">
             <constraints>
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="&amp;Check now"/>
+              <text value="&amp;Check Now"/>
             </properties>
           </component>
           <grid id="5c68" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -46,7 +46,7 @@
                 </constraints>
                 <properties>
                   <enabled value="false"/>
-                  <text value="Check snapshot versions"/>
+                  <text value="Check Snapshot Versions"/>
                 </properties>
               </component>
               <hspacer id="dadcc">
@@ -63,7 +63,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="&amp;Enabled (stable version)"/>
+              <text value="&amp;Enabled (Stable Version)"/>
             </properties>
           </component>
           <hspacer id="9bcf5">
@@ -77,7 +77,7 @@
             </constraints>
             <properties>
               <selected value="true"/>
-              <text value="Stable only"/>
+              <text value="Stable Only"/>
             </properties>
           </component>
           <component id="70258" class="javax.swing.JRadioButton" binding="checkNewVersionAll">
@@ -85,7 +85,7 @@
               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Stable + snapshot"/>
+              <text value="Stable + Snapshot"/>
             </properties>
           </component>
         </children>
@@ -115,7 +115,7 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Use IDEA proxy settings"/>
+              <text value="Use IDEA Proxy Settings"/>
             </properties>
           </component>
           <component id="d216f" class="javax.swing.JButton" binding="httpProxyButton">
@@ -123,7 +123,7 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Edit IDEA proxy settings"/>
+              <text value="Edit IDEA Proxy Settings"/>
             </properties>
           </component>
           <component id="10322" class="javax.swing.JRadioButton" binding="chkNoProxy">
@@ -131,7 +131,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Do not use proxy"/>
+              <text value="Do Not Use Proxy"/>
             </properties>
           </component>
           <vspacer id="b998b">
