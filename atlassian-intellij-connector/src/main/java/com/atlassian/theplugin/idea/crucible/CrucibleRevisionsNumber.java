@@ -18,7 +18,7 @@ public class CrucibleRevisionsNumber extends DialogWrapper {
 
 	private static final int MAX_REVISIONS = 3000;
 
-	//checkstyle:OFF
+	//CHECKSTYLE:OFF
 	public CrucibleRevisionsNumber(int value) {
 		super(false);
 		rootComponent = new JPanel();
@@ -52,7 +52,7 @@ public class CrucibleRevisionsNumber extends DialogWrapper {
 		numberSpinner.setModel(new SpinnerNumberModel(value, 1, MAX_REVISIONS, 1));
 		pack();
 	}
-	//checkstyle:ON
+	//CHECKSTYLE:ON
 
 
 	@Override
