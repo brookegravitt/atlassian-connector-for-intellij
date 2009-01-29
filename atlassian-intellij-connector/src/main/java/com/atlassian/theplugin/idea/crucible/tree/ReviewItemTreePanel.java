@@ -120,7 +120,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			final ReviewCommentRenderer renderer = new ReviewCommentRenderer();
 			final TreeUISetup treeUISetup = new TreeUISetup(renderer);
 			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar", treeUISetup);
-			final ReviewDetailsTreeMouseListener listener = new ReviewDetailsTreeMouseListener(reviewFilesAndCommentsTree.getTreeComponent(), renderer, treeUISetup);
+			new ReviewDetailsTreeMouseListener(reviewFilesAndCommentsTree.getTreeComponent(), renderer, treeUISetup);
 			reviewFilesAndCommentsTree.setRootVisible(false);
 			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
 

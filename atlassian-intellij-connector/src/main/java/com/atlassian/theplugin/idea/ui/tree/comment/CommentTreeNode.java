@@ -20,9 +20,13 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
+import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
+
+import javax.swing.tree.TreeCellRenderer;
 
 public abstract class CommentTreeNode extends FileNode {
 	private boolean editable;
+	private static final TreeCellRenderer MY_RENDERER = new ReviewCommentRenderer();
 
 	public boolean isExpanded() {
 		return isExpanded;
@@ -57,6 +61,11 @@ public abstract class CommentTreeNode extends FileNode {
 	@Override
 	public boolean isCompactable() {
 		return false;
+	}
+
+	@Override
+    public TreeCellRenderer getTreeCellRenderer() {
+		return MY_RENDERER;
 	}
 
 }
