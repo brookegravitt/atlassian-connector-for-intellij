@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +24,10 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleChangeSetTitleNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleGeneralCommentsNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -45,7 +42,6 @@ public class AddAction extends AbstractCommentAction {
 	private static final String REPLY_TEXT = "Reply";
 	private static final String COMMENT_TEXT = "Add Comment";
 	private static final String FILE_COMMENT_TEXT = "Add Revision Comment";
-	private static final String GENERAL_COMMENT_TEXT = "Add General Comment";
 
 	@Override
 	public void update(AnActionEvent e) {
@@ -53,19 +49,11 @@ public class AddAction extends AbstractCommentAction {
 
 		String text = COMMENT_TEXT;
 		boolean enabled = node != null && checkIfAuthorized(getReview(node));
-		if (node == null) {
-			enabled = getReview(e) != null && checkIfAuthorized(getReview(e));
-		}
+
 		if (enabled) {
 			if (node instanceof CrucibleFileNode) {
 				text = FILE_COMMENT_TEXT;
-			} else if (node instanceof CrucibleGeneralCommentsNode
-					|| node instanceof CrucibleChangeSetTitleNode
-					|| node instanceof CrucibleStatementOfObjectivesNode
-					|| (node == null && getReview(e) != null)) {
-				text = GENERAL_COMMENT_TEXT;
-			}
-			if (node instanceof VersionedCommentTreeNode) {
+			} else if (node instanceof VersionedCommentTreeNode) {
 				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
 				if (vcNode.getComment().isReply()) {
 					enabled = false;
@@ -86,15 +74,6 @@ public class AddAction extends AbstractCommentAction {
 			e.getPresentation().setVisible(enabled);
 		}
 		e.getPresentation().setText(text);
-	}
-
-	private ReviewAdapter getReview(final AnActionEvent e) {
-		CrucibleToolWindow crucibleDetailsWindow = IdeaHelper.getProjectComponent(e, CrucibleToolWindow.class);
-		if (crucibleDetailsWindow != null) {
-			return crucibleDetailsWindow.getReview();
-		}
-
-		return null;
 	}
 
 	private boolean checkIfAuthorized(final ReviewAdapter review) {
@@ -119,14 +98,8 @@ public class AddAction extends AbstractCommentAction {
 			return ((GeneralSectionNode) node).getReview();
 		} else if (node instanceof FileNameNode) {
 			return ((FileNameNode) node).getReview();
-		} else if (node instanceof CrucibleGeneralCommentsNode) {
-			return ((CrucibleGeneralCommentsNode) node).getReview();
 		} else if (node instanceof CrucibleFileNode) {
 			return ((CrucibleFileNode) node).getReview();
-		} else if (node instanceof CrucibleChangeSetTitleNode) {
-			return ((CrucibleChangeSetTitleNode) node).getReview();
-		} else if (node instanceof CrucibleStatementOfObjectivesNode) {
-			return ((CrucibleStatementOfObjectivesNode) node).getReview();
 		}
 		return null;
 	}
@@ -137,42 +110,24 @@ public class AddAction extends AbstractCommentAction {
 		com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node = getSelectedNode(e);
 		if (node != null && currentProject != null) {
 			addComment(currentProject, node);
-		} else if (currentProject != null && getReview(e) != null) {
-			// no selection (add general comment)
-			addGeneralComment(currentProject, getReview(e));
 		}
-
 	}
 
 	private void addComment(Project project, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			addReplyToGeneralComment(project, node.getReview(), node.getComment());
-		} else if (treeNode instanceof GeneralSectionNode) {
-			GeneralSectionNode node = (GeneralSectionNode) treeNode;
-			addGeneralComment(project, node.getReview());
-		} else if (treeNode instanceof CrucibleChangeSetTitleNode) {
-			CrucibleChangeSetTitleNode node = (CrucibleChangeSetTitleNode) treeNode;
-			addGeneralComment(project, node.getReview());
 		} else if (treeNode instanceof FileNameNode) {
 			FileNameNode node = (FileNameNode) treeNode;
 			addCommentToFile(project, node.getReview(), node.getFile());
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			addReplyToVersionedComment(project, node.getReview(), node.getFile(), node.getComment());
-		} else if (treeNode instanceof CrucibleGeneralCommentsNode) {
-			CrucibleGeneralCommentsNode node = (CrucibleGeneralCommentsNode) treeNode;
-			addGeneralComment(project, node.getReview());
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
 			addCommentToFile(project, node.getReview(), node.getFile());
-		} else if (treeNode instanceof CrucibleStatementOfObjectivesNode) {
-			CrucibleStatementOfObjectivesNode node = (CrucibleStatementOfObjectivesNode) treeNode;
-			addGeneralComment(project, node.getReview());
-
 		}
 	}
-
 
 	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
@@ -208,19 +163,18 @@ public class AddAction extends AbstractCommentAction {
 			final CrucibleFileInfo file, final VersionedComment comment) {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) newComment,
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
 				CrucibleHelper.getMetricsForReview(project, review));
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			final VersionedComment parentComment = comment;
-			newComment.setFromLineInfo(parentComment.isFromLineInfo());
-			newComment.setFromStartLine(parentComment.getFromStartLine());
-			newComment.setFromEndLine(parentComment.getFromEndLine());
-			newComment.setToLineInfo(parentComment.isToLineInfo());
-			newComment.setToStartLine(parentComment.getToStartLine());
-			newComment.setToEndLine(parentComment.getToEndLine());
+			newComment.setFromLineInfo(comment.isFromLineInfo());
+			newComment.setFromStartLine(comment.getFromStartLine());
+			newComment.setFromEndLine(comment.getFromEndLine());
+			newComment.setToLineInfo(comment.isToLineInfo());
+			newComment.setToStartLine(comment.getToStartLine());
+			newComment.setToEndLine(comment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
 			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
@@ -229,7 +183,7 @@ public class AddAction extends AbstractCommentAction {
 
 				public void run(final ProgressIndicator indicator) {
 					try {
-						review.addVersionedCommentReply(file, parentComment, newComment);
+						review.addVersionedCommentReply(file, comment, newComment);
 					} catch (RemoteApiException e) {
 						IdeaHelper.handleRemoteApiException(project, e);
 					} catch (ServerPasswordNotProvidedException e) {
@@ -238,35 +192,6 @@ public class AddAction extends AbstractCommentAction {
 				}
 			};
 
-			ProgressManager.getInstance().run(task);
-		}
-	}
-
-	private void addGeneralComment(final Project project, final ReviewAdapter review) {
-		final GeneralCommentBean newComment = new GeneralCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
-
-			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
-
-				public void run(final ProgressIndicator indicator) {
-					try {
-						review.addGeneralComment(newComment);
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						IdeaHelper.handleError(project, valueNotYetInitialized);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
-					}
-				}
-			};
 			ProgressManager.getInstance().run(task);
 		}
 	}
