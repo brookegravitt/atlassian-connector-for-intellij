@@ -311,7 +311,7 @@ public class PluginToolWindow {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
 				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo-white.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
 	}
@@ -320,7 +320,7 @@ public class PluginToolWindow {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(
 				reviewsToolWindowPanel, PluginToolWindow.ToolWindowPanels.CRUCIBLE.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_crucible.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_crucible-white.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
 	}
@@ -329,7 +329,7 @@ public class PluginToolWindow {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(
 				issuesToolWindowPanel, PluginToolWindow.ToolWindowPanels.ISSUES.toString(), false);
-		content.setIcon(IconLoader.getIcon("/icons/tab_jira.png"));
+		content.setIcon(IconLoader.getIcon("/icons/tab_jira-white.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
 	}
