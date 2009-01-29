@@ -60,6 +60,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private ProjectConfiguration projectConfiguration;
 	private final UiTaskExecutor uiTaskExecutor;
 	private JiraProjectConfiguration jiraConfiguration;
+	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
 			@NotNull final ProjectConfiguration projectConfiguration,
@@ -110,13 +111,14 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 		});
 
-		projectComboBox.addActionListener(new ActionListener() {
+		projectComboListener = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
 				updateIssueTypes(p);
 				updateComponents(p);
 			}
-		});
+		};
+		projectComboBox.addActionListener(projectComboListener);
 		getOKAction().setEnabled(false);
 		getOKAction().putValue(Action.NAME, "Create");
 	}
@@ -144,15 +146,21 @@ public class IssueCreateDialog extends DialogWrapper {
 
 	private void addProjects(List<JIRAProject> projects) {
 		projectComboBox.removeAllItems();
+
+		// adding elements to combo triggers selection changed action which updates components for selected project
+		// we do not want to call jira several time for the same project here
+		projectComboBox.removeActionListener(projectComboListener);
 		for (JIRAProject project : projects) {
 			if (project.getId() != JIRAServerCache.ANY_ID) {
 				projectComboBox.addItem(project);
 			}
 		}
+		projectComboBox.addActionListener(projectComboListener);
+
 
 		if (projectComboBox.getModel().getSize() > 0) {
 
-			projectComboBox.setSelectedIndex(0);
+			boolean defaultSelected = false;
 
 			// select default project
 			if (jiraConfiguration != null
@@ -165,11 +173,15 @@ public class IssueCreateDialog extends DialogWrapper {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
 						if (((JIRAProject) projectComboBox.getItemAt(i)).getKey().equals(project)) {
 							projectComboBox.setSelectedIndex(i);
+							defaultSelected = true;
 							break;
 						}
 					}
 				}
+			}
 
+			if (!defaultSelected) {
+				projectComboBox.setSelectedIndex(0);
 			}
 		}
 		projectComboBox.setEnabled(true);
