@@ -118,42 +118,12 @@ public final class ReviewCommentRendererTestUi {
 		final JTree jtree = new JTree(root);
 		jtree.setCellRenderer(renderer);
 
-//				new MouseMotionAdapter() {
-//
-//			private boolean linkHit(final MouseEvent e) {
-//				return false;
-//			}
-//
-//			private Cursor cursor;
-//			@Override
-//			public void mouseMoved(final MouseEvent e) {
-//				final int row = jtree.getRowForLocation(e.getX(), e.getY());
-//				final Rectangle bounds = jtree.getRowBounds(row);
-//				if (bounds != null && e.getX() > bounds.x + bounds.width - CommentPanel.LAST_COLUMN_WIDTH - 65
-//						&& e.getX() < bounds.x + bounds.width - CommentPanel.LAST_COLUMN_WIDTH - 30
-//						&& e.getY() > bounds.y && e.getY() < bounds.y + 15) {
-//					if (cursor == null) {
-//						cursor = jtree.getCursor();
-//					}
-//					jtree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//				} else {
-//					if (cursor != null) {
-//						jtree.setCursor(cursor);
-//					}
-//				}
-//			}
-//		});
-
 		TreeUISetup buildTreeUiSetup = new TreeUISetup(renderer);
 		final JScrollPane parentScrollPane = new JScrollPane(jtree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		buildTreeUiSetup.initializeUI(jtree, parentScrollPane);
 
-		final ReviewDetailsTreeMouseListener treeMouseListener = new ReviewDetailsTreeMouseListener(renderer, buildTreeUiSetup);
-		jtree.addMouseMotionListener(treeMouseListener);
-		jtree.addMouseListener(treeMouseListener);
-
-//		final JComponent component = renderer.getTreeCellRendererComponent(null, null, false, true, true, 0, false);
+		new ReviewDetailsTreeMouseListener(jtree, renderer, buildTreeUiSetup);
 		SwingAppRunner.run(parentScrollPane);
 	}
 }
