@@ -33,6 +33,9 @@ import java.util.Iterator;
  */
 public class BuildTreeNode extends AbstractBuildTreeNode {
 
+	// this is absolutely sick
+	private static final int THREE = 3;
+
 	private static final int MAX_TOOLTIP_WIDTH = 500;
 	private static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
@@ -96,7 +99,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			gbc.fill = GridBagConstraints.NONE;
 			JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
 					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(empty1, 3 * GAP, ICON_HEIGHT);
+			setFixedComponentSize(empty1, THREE * GAP, ICON_HEIGHT);
 			p.add(empty1, gbc);
 
 			gbc.gridx++;
@@ -159,7 +162,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		JLabel empty3 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty3, 3 * GAP, ICON_HEIGHT);
+		setFixedComponentSize(empty3, THREE * GAP, ICON_HEIGHT);
 		p.add(empty3, gbc);
 
 		// server
