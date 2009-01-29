@@ -33,6 +33,7 @@ import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.apache.commons.lang.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class IssueCreateDialog extends DialogWrapper {
@@ -148,22 +151,6 @@ public class IssueCreateDialog extends DialogWrapper {
 		}
 
 		if (projectComboBox.getModel().getSize() > 0) {
-			// select default project
-//			if (projectConfiguration != null && jiraServer.equals(projectConfiguration.getDefaultJiraServer())) {
-//				String project = projectConfiguration.getDefaultJiraProject();
-//
-//				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
-//					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
-//						if (((JIRAProject) projectComboBox.getItemAt(i)).getKey().equals(project)) {
-//							projectComboBox.setSelectedIndex(i);
-//							break;
-//						}
-//					}
-//				}
-//
-//			} else {
-//				projectComboBox.setSelectedIndex(0);
-//			}
 
 			projectComboBox.setSelectedIndex(0);
 
@@ -171,7 +158,8 @@ public class IssueCreateDialog extends DialogWrapper {
 			if (jiraConfiguration != null
 					&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
-				String project = jiraConfiguration.getView().getServerDefaults().get(jiraServer.getServerId().toString());
+				String project = jiraConfiguration.getView().getServerDefaults().
+						get(jiraServer.getServerId().toString()).getKey();
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -183,7 +171,6 @@ public class IssueCreateDialog extends DialogWrapper {
 				}
 
 			}
-
 		}
 		projectComboBox.setEnabled(true);
 	}
@@ -235,7 +222,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		componentsList.setEnabled(false);
 		getOKAction().setEnabled(false);
 		uiTaskExecutor.execute(new UiTaskAdapter("fetching components", getContentPane()) {
-			List<JIRAComponentBean> components;
+			private List<JIRAComponentBean> components;
 
 			public void run() throws Exception {
 				components = model.getComponents(jiraServer, project);
@@ -270,6 +257,45 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 		}
 		componentsList.setModel(listModel);
+
+		if (projectComboBox.getSelectedItem() != null
+				&& jiraConfiguration != null && jiraConfiguration.getView() != null
+				&& jiraConfiguration.getView().getServerDefaults() != null
+				&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+
+			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
+
+			String configProject = jiraConfiguration.getView().getServerDefaults().
+					get(jiraServer.getServerId().toString()).getKey();
+
+			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaults().
+					get(jiraServer.getServerId().toString()).getValue();
+
+			// select default components for specified project
+			if (selectedProject.equals(configProject)) {
+
+				ArrayList<Integer> indexesToSelect = new ArrayList<Integer>(componentsList.getModel().getSize() + 1);
+
+				for (int i = 0; i < componentsList.getModel().getSize(); ++i) {
+					if (componentsList.getModel().getElementAt(i) instanceof ComponentWrapper) {
+						ComponentWrapper wrapper = (ComponentWrapper) componentsList.getModel().getElementAt(i);
+
+						if (wrapper.getWrapped() != null) {
+							JIRAComponentBean component = wrapper.getWrapped();
+
+							if (configComponents.contains(component.getId())) {
+								indexesToSelect.add(i);
+							}
+						}
+					}
+				}
+
+				if (indexesToSelect.size() > 0) {
+					componentsList.setSelectedIndices(ArrayUtils.toPrimitive(indexesToSelect.toArray(new Integer[0])));
+				}
+			}
+		}
+
 		componentsList.setEnabled(true);
 		getOKAction().setEnabled(true);
 	}
@@ -288,9 +314,6 @@ public class IssueCreateDialog extends DialogWrapper {
 		if (projectComboBox.getSelectedItem() == null) {
 			Messages.showErrorDialog(this.getContentPane(), "Project has to be selected", "Project not defined");
 			return;
-		} else {
-			JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId().toString(), p.getKey());
 		}
 		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
 		if (typeComboBox.getSelectedItem() == null) {
@@ -301,6 +324,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		issueProxy.setDescription(description.getText());
 		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
 		List<JIRAConstant> components = MiscUtil.buildArrayList();
+		Collection<Long> selectedComponents = new LinkedHashSet<Long>();
 		for (Object selectedObject : componentsList.getSelectedValues()) {
 			if (selectedObject instanceof ComponentWrapper) {
 				ComponentWrapper componentWrapper = (ComponentWrapper) selectedObject;
@@ -312,6 +336,7 @@ public class IssueCreateDialog extends DialogWrapper {
 					}
 				}
 				components.add(componentWrapper.getWrapped());
+				selectedComponents.add(componentWrapper.getWrapped().getId());
 			}
 		}
 
@@ -322,6 +347,13 @@ public class IssueCreateDialog extends DialogWrapper {
 		if (assignTo.length() > 0) {
 			issueProxy.setAssignee(assignTo);
 		}
+
+		// save selected project and components to the config
+		if (jiraConfiguration != null && jiraConfiguration.getView() != null) {
+			JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
+			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId().toString(), p.getKey(), selectedComponents);
+		}
+
 		super.doOKAction();
 	}
 
