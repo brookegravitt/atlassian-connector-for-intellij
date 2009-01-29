@@ -40,6 +40,7 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 		this.comment = node.comment;
 	}
 
+	@Override
 	public GeneralComment getComment() {
 		return comment;
 	}
