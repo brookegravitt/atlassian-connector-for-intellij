@@ -48,7 +48,7 @@ import java.util.Locale;
  * Time: 3:59:21 PM
  */
 public final class IssueToolWindow extends MultiTabToolWindow {
-	private static final String TOOL_WINDOW_TITLE = "Issues";
+	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
 
 	//CHECKSTYLE\:MAGIC\:OFF

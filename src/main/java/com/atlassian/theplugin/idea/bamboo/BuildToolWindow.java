@@ -29,7 +29,7 @@ import java.awt.event.ActionListener;
 public class BuildToolWindow extends MultiTabToolWindow {
 
 	private final Project project;
-	private static final String TOOL_WINDOW_TITLE = "Builds";
+	private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
 
 	public BuildToolWindow(@NotNull final Project project) {
 		super(false);
