@@ -57,7 +57,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import static java.lang.System.arraycopy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -215,25 +214,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 	}
 
-	private void setViewState(int index, boolean newState) {
-		int[] oldIdx = reviewersList.getSelectedIndices();
-		int[] newIdx;
-		if (newState) {
-			newIdx = new int[oldIdx.length + 1];
-			arraycopy(newIdx, 0, oldIdx, 0, oldIdx.length);
-			newIdx[newIdx.length - 1] = index;
-		} else {
-			newIdx = new int[Math.max(0, oldIdx.length - 1)];
-			int i = 0;
-			for (int id : oldIdx) {
-				if (id == index) {
-					continue;
-				}
-				newIdx[i++] = id;
-			}
-		}
-		reviewersList.setSelectedIndices(newIdx);
-	}
 	// CHECKSTYLE:ON
 
 	@Override
@@ -535,7 +515,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private void updateServerRelatedCombos(final CrucibleServerCfg server, final CrucibleServerData crucibleServerData) {
 
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-		if (selectedItem == null || selectedItem.getServer().equals(server) == false) {
+		if (selectedItem == null || !selectedItem.getServer().equals(server)) {
 			return;
 		}
 
