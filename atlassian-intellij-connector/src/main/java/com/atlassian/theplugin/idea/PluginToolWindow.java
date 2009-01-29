@@ -295,7 +295,7 @@ public class PluginToolWindow {
 	@Nullable
 	private Content createContent(final ToolWindowPanels component) {
 		switch (component) {			
-			case BUILDS_WOJTEK:
+			case BUILDS:
 				return createBamboo2Content();
 			case CRUCIBLE:
 				return createCrucibleContentNew();
@@ -310,7 +310,7 @@ public class PluginToolWindow {
 	public Content createBamboo2Content() {
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
 		final Content content = contentManager.getFactory().createContent(bambooToolWindowPanel,
-				PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK.toString(), false);
+				PluginToolWindow.ToolWindowPanels.BUILDS.toString(), false);
 		content.setIcon(IconLoader.getIcon("/icons/tab_bamboo.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
@@ -339,10 +339,9 @@ public class PluginToolWindow {
 	 * List of available panels in tool window
 	 */
 	public enum ToolWindowPanels {
-		ISSUES("Issues", 1),
-		BUILDS_WOJTEK("Builds", 2),
-		CRUCIBLE("Reviews", 3),
-		BAMBOO_OLD("Builds old", 4);
+		ISSUES("Issues - JIRA", 1),
+		BUILDS("Builds - Bamboo", 2),
+		CRUCIBLE("Reviews - Crucible", 3);
 
 		private final String title;
 
