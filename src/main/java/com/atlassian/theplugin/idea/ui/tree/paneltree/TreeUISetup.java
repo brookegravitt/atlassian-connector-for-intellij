@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
