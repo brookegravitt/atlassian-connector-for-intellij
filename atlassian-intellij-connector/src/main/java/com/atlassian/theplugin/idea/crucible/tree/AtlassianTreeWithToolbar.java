@@ -16,19 +16,17 @@
 
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.Icons;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 /**
  * @author Lukasz Guminski
@@ -38,36 +36,27 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
 	private State state = State.DIRED;
 
-
-	private ViewState viewState = ViewState.EXPANDED;
-	private final boolean installUi;
-
-	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider) {
-		this(toolbar, modelProvider, true);
-	}
-
-	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider, boolean installUi) {
-		this(toolbar, installUi);
+	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider, @Nullable TreeUISetup treeUISetup) {
+		this(toolbar, treeUISetup);
 		setModelProvider(modelProvider);
 	}
 
-	public AtlassianTreeWithToolbar(final String toolbarName) {
-		this(toolbarName, true);
+	public AtlassianTreeWithToolbar(final String toolbarName, TreeUISetup treeUISetup) {
+		super(toolbarName);
+		this.treeUISetup = treeUISetup;
+		jScrollPane.setViewportView(getTreeComponent());
 	}
 
-	public AtlassianTreeWithToolbar(final String toolbarName, boolean installUi) {
-		super(toolbarName);
-		this.installUi = installUi;
-		init();
-	}
+
+	TreeUISetup treeUISetup;
 
 	@Override
 	public AtlassianTree getTreeComponent() {
 		if (tree == null) {
 			tree = new AtlassianTree();
 			tree.setRowHeight(0);
-			if (installUi) {
-				initializeUI();
+			if (treeUISetup != null) {
+				treeUISetup.initializeUI(tree, jScrollPane);
 			} else {
 				tree.setCellRenderer(AtlassianTree.DISPATCHING_RENDERER);
 			}
@@ -76,31 +65,8 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 
-	public void initializeUI() {
-		registerUI();
-		addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				if (tree.isVisible()) {
-					registerUI();
-				}
-			}
-		});
-	}
-
-	private void registerUI() {
-		tree.setUI(new MyTreeUI());
-	}
-
 	public void clear() {
 		setModel(new AtlassianTreeModel(null));
-	}
-
-	private class MyTreeUI extends BasicWideNodeTreeUI {
-		@Override
-		protected TreeCellRenderer createDefaultCellRenderer() {
-			return AtlassianTree.DISPATCHING_RENDERER;
-		}
 	}
 
 
@@ -148,7 +114,6 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 	public void setViewState(final ViewState viewState) {
-		this.viewState = viewState;
 		switch (viewState) {
 			case COLLAPSED:
 				collapseAll();

@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.ui.tree.paneltree;
 
 import com.atlassian.theplugin.idea.BasicWideNodeTreeUI;
+import com.sun.istack.internal.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -28,7 +29,7 @@ public class TreeUISetup {
 		this.renderer = renderer;
 	}
 
-	public void initializeUI(final JTree tree, final JComponent treeParent) {
+	public void initializeUI(final JTree tree, @NotNull final JComponent treeParent) {
 		ToolTipManager.sharedInstance().registerComponent(tree);
 		registerUI(tree);
 		treeParent.addComponentListener(new ComponentAdapter() {

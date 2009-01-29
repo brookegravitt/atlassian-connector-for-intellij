@@ -14,6 +14,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -26,6 +27,7 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -49,7 +51,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 	private static final float SPLIT_RATIO = 0.6f;
 	protected static final int ROW_HEIGHT = 16;
 
-	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, false);
+	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, (TreeUISetup)null);
 	private final Project project;
 	private final BambooBuildAdapterIdea build;
 
@@ -63,7 +65,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving changed files", false) {
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 					BuildDetails details = bambooFacade.getBuildDetails(

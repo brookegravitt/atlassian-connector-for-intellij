@@ -158,6 +158,7 @@ public class AtlassianTree extends JTree {
 
 	protected static class AtlassianTreeCellRenderer extends DefaultTreeCellRenderer {
 
+		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {
 			try {

@@ -15,26 +15,14 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
-import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.intellij.ui.SimpleColoredComponent;
+import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -53,10 +41,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.text.DateFormat;
-import java.util.Collections;
 import java.util.Map;
 
 public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements TreeCellRenderer {
@@ -71,8 +56,9 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 					new SimpleIconProvider(), node.isExpanded(), isSelected);
 		} else if (value instanceof GeneralCommentTreeNode) {
 			final GeneralCommentTreeNode node = (GeneralCommentTreeNode) value;
-			return new CommentPanel(null, node.getComment(), getAvailableWidth(node, tree), row, new SimpleIconProvider(),
-					node.isExpanded(), isSelected);
+			final CommentPanel panel = new CommentPanel(null, node.getComment(), getAvailableWidth(node, tree), row,
+					new SimpleIconProvider(), node.isExpanded(), isSelected);
+			return panel;
 		} else {
 			return super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, aHasFocus);
 		}
@@ -95,114 +81,6 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 		}
 	}
 
-
-	public static void main(String[] args) throws ValueNotYetInitialized {
-		ReviewCommentRenderer renderer = new ReviewCommentRenderer();
-		CrucibleServerCfg cruc = new CrucibleServerCfg("my crucible server", new ServerId());
-		ReviewBean review = new ReviewBean("myreviewbean");
-		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
-		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");
-		VersionedVirtualFile vvf2 = new VersionedVirtualFile("mypath", "1.567");
-		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfoImpl(vvf1, vvf2, new PermIdBean("mypermid"));
-
-		final VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
-		versionedCommentBean.setMessage("my beautiful message");
-		final ReviewerBean author = new ReviewerBean();
-		author.setUserName("wseliga");
-		author.setDisplayName("Wojciech Seliga");
-		versionedCommentBean.setAuthor(author);
-
-		final VersionedCommentBean versionedCommentBean2 = new VersionedCommentBean();
-		versionedCommentBean2
-				.setMessage("my very very very beautiful but annoyingly very very long long long long long comment."
-						+
-						"Let us check if it wraps correctly \nWe have also another line here\n\nThere is also an empty line above");
-		versionedCommentBean2.setToEndLine(31);
-		final ReviewerBean author2 = new ReviewerBean();
-		author2.setUserName("mwent");
-		author2.setDisplayName("Marek Went Long Lastname");
-		versionedCommentBean2.setAuthor(author2);
-		final CustomFieldBean customFieldBean = new CustomFieldBean();
-		customFieldBean.setValue("Major");
-		versionedCommentBean2.getCustomFields().put("Rank", customFieldBean);
-		final CustomFieldBean customFieldBean2 = new CustomFieldBean();
-		customFieldBean2.setValue("Missing");
-		versionedCommentBean2.getCustomFields().put("Classification", customFieldBean2);
-		versionedCommentBean2.setToStartLine(171);
-		versionedCommentBean2.setToEndLine(0);
-		versionedCommentBean2.setToLineInfo(true);
-		versionedCommentBean2.setDraft(true);
-
-		final VersionedCommentBean versionedCommentBean3 = new VersionedCommentBean();
-		versionedCommentBean3.setMessage("Another comment. Let us see if it wraps corrent.\nAnd if empty lines work fine\n"
-				+ "This statement sucks:\n\tif (false) {\n\t\t...\n\t}");
-		versionedCommentBean3.setToStartLine(21);
-		versionedCommentBean3.setToEndLine(131);
-		versionedCommentBean3.setToLineInfo(true);
-		final ReviewerBean author3 = new ReviewerBean();
-		author3.setUserName("ewong");
-		author3.setDisplayName("Edwin Wong");
-		versionedCommentBean3.setAuthor(author3);
-		versionedCommentBean3.setDefectRaised(true);
-
-
-		crucibleFileInfo.addComment(versionedCommentBean);
-		crucibleFileInfo.addComment(versionedCommentBean2);
-		review.setFiles(Collections.singleton(crucibleFileInfo));
-		final VersionedCommentTreeNode n1 = new VersionedCommentTreeNode(reviewAdapter, crucibleFileInfo, versionedCommentBean,
-				null);
-		final VersionedCommentTreeNode n2 = new VersionedCommentTreeNode(reviewAdapter, crucibleFileInfo, versionedCommentBean2,
-				null);
-		final VersionedCommentTreeNode n3 = new VersionedCommentTreeNode(reviewAdapter, crucibleFileInfo, versionedCommentBean3,
-				null);
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		GeneralCommentBean generalComment = new GeneralCommentBean();
-		generalComment.setAuthor(author3);
-		generalComment.setMessage("This is general comment for this review. Should be quite lengthy");
-		GeneralCommentTreeNode generalCommentTreeNode = new GeneralCommentTreeNode(reviewAdapter, generalComment, null);
-		root.add(generalCommentTreeNode);
-		root.add(n1);
-		root.add(n2);
-		n2.setExpanded(true);
-		DefaultMutableTreeNode nestedChild = new DefaultMutableTreeNode();
-		DefaultMutableTreeNode nestedChild2 = new DefaultMutableTreeNode();
-		nestedChild.add(nestedChild2);
-		nestedChild2.add(n3);
-		root.add(nestedChild);
-
-		final JTree jtree = new JTree(root);
-		jtree.setCellRenderer(renderer);
-		jtree.addMouseMotionListener(new MouseMotionAdapter() {
-
-			private Cursor cursor;
-
-			@Override
-			public void mouseMoved(final MouseEvent e) {
-				final int row = jtree.getRowForLocation(e.getX(), e.getY());
-				final Rectangle bounds = jtree.getRowBounds(row);
-				if (bounds != null && e.getX() > bounds.x + bounds.width - CommentPanel.LAST_COLUMN_WIDTH - 65
-						&& e.getX() < bounds.x + bounds.width - CommentPanel.LAST_COLUMN_WIDTH - 30
-						&& e.getY() > bounds.y && e.getY() < bounds.y + 15) {
-					if (cursor == null) {
-						cursor = jtree.getCursor();
-					}
-					jtree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				} else {
-					if (cursor != null) {
-						jtree.setCursor(cursor);
-					}
-				}
-			}
-		});
-
-		TreeUISetup buildTreeUiSetup = new TreeUISetup(renderer);
-		final JScrollPane parentScrollPane = new JScrollPane(jtree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		buildTreeUiSetup.initializeUI(jtree, parentScrollPane);
-
-//		final JComponent component = renderer.getTreeCellRendererComponent(null, null, false, true, true, 0, false);
-		SwingAppRunner.run(parentScrollPane);
-	}
 }
 
 interface IconProvider {
@@ -216,8 +94,7 @@ class SimpleIconProvider implements IconProvider {
 		return createImageIcon(path, "");
 	}
 
-	protected ImageIcon createImageIcon(String path,
-			String description) {
+	protected ImageIcon createImageIcon(String path, String description) {
 		java.net.URL imgURL = getClass().getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL, description);
@@ -233,14 +110,15 @@ class CommentPanel extends JPanel {
 	private Comment comment;
 	private CrucibleFileInfo file;
 
-	private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(4, 2);
+	private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(5, 2);
+	private static final CellConstraints AUTHOR_POS = new CellConstraints(7, 2);
 	private static final int OTHER_COLUMNS_WIDTH = 34;
+	private Rectangle moreBounds;
 
 	private static int getPreferredHeight(JComponent component, int preferredWidth) {
 		try {
 			component.addNotify();
 			component.doLayout();
-//			component.getToolkit().cre
 			component.setSize(preferredWidth, Integer.MAX_VALUE);
 			return component.getPreferredSize().height;
 		} finally {
@@ -250,13 +128,17 @@ class CommentPanel extends JPanel {
 
 	static final int LAST_COLUMN_WIDTH = 250;
 
-	private boolean isFullyDisplayed;
+	public Rectangle getMoreBounds() {
+		return moreBounds;
+	}
 
 	public CommentPanel(@Nullable CrucibleFileInfo file, Comment comment, int width, final int row, IconProvider iconProvider,
 			boolean isExpanded, final boolean isSelected) {
 //		super(new FormLayout("d:grow, 4dlu, 10dlu, 4dlu, right:d, 2dlu", "2dlu, top:pref:grow, 2dlu"));
-		super(new FormLayout("d:grow, d, 5px, 16px, 5px, right:"
-				+ LAST_COLUMN_WIDTH + "px" + ", 4px", "4px, top:pref:grow, 2dlu"));
+		super(new FormLayout("max(d;100px):grow, 2dlu, d, 5px, 16px, 5px, right:" + LAST_COLUMN_WIDTH + "px" + ", 4px",
+				"4px, top:pref:grow, 2dlu"));
+		this.file = file;
+		this.comment = comment;
 		if (isSelected) {
 			setOpaque(true);
 			setBackground(UIUtil.getTreeSelectionBackground());
@@ -264,29 +146,33 @@ class CommentPanel extends JPanel {
 			setOpaque(false);
 		}
 
-
-		this.file = file;
-		this.comment = comment;
-
 		JTextPane messageBody = createMessageBody();
 
 		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - LAST_COLUMN_WIDTH, 100);
 		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		CellConstraints cc = new CellConstraints();
-		if (preferredHeight > 20) {
-			final JLabel moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
-			add(moreLabel, cc.xy(2, 2));
-			isFullyDisplayed = false;
+		final JLabel moreLabel;
+		if (preferredHeight > 25) {
+			moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
+			add(moreLabel, cc.xy(3, 2));
 			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH, 100);
 			preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		} else {
-			isFullyDisplayed = true;
+			moreLabel = null;
 		}
 
-		messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
-//		System.out.println(messageBody.getPreferredSize());
+		if (preferredHeight < 25 || isExpanded) {
+//			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH, 100);
+//			preferredHeight = getPreferredHeight(messageBody, queryWidth);
+			add(messageBody, cc.xy(1, 2));
+			messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
+		} else {
+			final SimpleColoredComponent jLabel = getSingleLineComponent();
+			jLabel.setMinimumSize(new Dimension(0, 0));
+			add(jLabel, cc.xy(1, 2));
+//			add(new JLabel("Bardzo długi string"), cc.xy(1, 2));
+		}
 
-		add(messageBody, cc.xy(1, 2));
 
 		if (comment.isDefectRaised()) {
 			Icon myicon = iconProvider.getIcon("/icons/icn_plan_failed.gif");
@@ -297,9 +183,18 @@ class CommentPanel extends JPanel {
 
 		JLabel reviewer = new JLabel(getAuthorLabel() + " , " + getDateLabel());
 //		reviewer.setMinimumSize(new Dimension(0, 0));
-		add(reviewer, cc.xy(6, 2));
+		add(reviewer, AUTHOR_POS);
 
 		validate();
+
+
+		setSize(new Dimension(width, 100));
+		addNotify();
+		doLayout();
+		if (moreLabel != null) {
+			moreBounds = moreLabel.getBounds();
+		}
+//		System.out.println(reviewer.getLocation());
 //		int preferredHeight = getPreferredHeight(this, width);
 //		setSize(new Dimension(width, preferredHeight));
 //		setPreferredSize(new Dimension(width, preferredHeight));
@@ -379,26 +274,31 @@ class CommentPanel extends JPanel {
 		return sb.toString();
 	}
 
+	private SimpleColoredComponent getSingleLineComponent() {
+		final SimpleColoredComponent res = new SimpleColoredComponent();
+		res.setOpaque(false);
+		final String lineInfoLabel = getLineInfoLabel();
+		if (lineInfoLabel.length() > 0) {
+			res.append("(" + lineInfoLabel + ") ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+		}
+		res.append(comment.getMessage() + " ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+		res.append(" " + getRankingString(), SimpleTextAttributes.GRAY_ATTRIBUTES);
+		if (comment.isDraft()) {
+			StringBuilder drafInfo = new StringBuilder();
+			if (true) {
+				drafInfo.append(" ");
+			}
+			drafInfo.append("Draft");
+			res.append(drafInfo.toString(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
+		}
+		return res;
+	}
+
 	protected JTextPane createMessageBody() {
 
-		JLabel result = new JLabel();
-		result.setText("<html>" + comment.getMessage());
-//		result.setLineWrap(true);
-//		result.setWrapStyleWord(true);
-//		result.setBackground(getBodyBackground());
-//		return result;
-//
-//		JTextArea result = new JTextArea();
-//		result.setText(comment.getMessage());
-//		result.setLineWrap(true);
-//		result.setWrapStyleWord(true);
-//		result.setBackground(getBodyBackground());
-//		return result;
 		JTextPane pane = new JTextPane();
 		pane.setOpaque(false);
-//		pane.setBackground(Color.PINK);
-		pane.setBorder(BorderFactory.createEmptyBorder());
-
+//		pane.setBorder(BorderFactory.createEmptyBorder());
 
 		final StyledDocument doc = pane.getStyledDocument();
 		addStylesToDocument(doc);

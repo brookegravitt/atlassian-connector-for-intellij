@@ -77,8 +77,7 @@ public class BambooPlansForm extends JPanel {
 
 		$$$setupUI$$$();
 
-		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1,
-				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
 
@@ -186,7 +185,6 @@ public class BambooPlansForm extends JPanel {
 	}
 
 
-
 	public void setData(final BambooServerCfg serverCfg) {
 		bambooServerCfg = serverCfg;
 
@@ -278,7 +276,7 @@ public class BambooPlansForm extends JPanel {
 	 * This method is not thread-safe, but I leave it without synchronization,
 	 * as it's effective run only in single-threaded way (EDT)
 	 *
-	 * @param server Bamboo sever for which to update planes
+	 * @param server  Bamboo sever for which to update planes
 	 * @param message additional message which was built during fetching of data
 	 */
 	private void updatePlanNames(BambooServerCfg server, String message) {
@@ -476,7 +474,7 @@ public class BambooPlansForm extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		timezonePanel.add(spinnerTimeZoneDifference, gbc);
 		final JLabel label1 = new JLabel();
-		label1.setText("Time Zone Difference");
+		label1.setText("Time Zone Difference:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
@@ -484,7 +482,7 @@ public class BambooPlansForm extends JPanel {
 		gbc.insets = new Insets(0, 12, 0, 12);
 		timezonePanel.add(label1, gbc);
 		final JLabel label2 = new JLabel();
-		label2.setText("Hours ahead of the the build server");
+		label2.setText("Hours Ahead of the Build Server");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2;
 		gbc.gridy = 0;
