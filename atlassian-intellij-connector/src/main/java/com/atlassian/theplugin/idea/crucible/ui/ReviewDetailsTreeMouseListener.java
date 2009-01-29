@@ -23,9 +23,10 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.*;
 
-public class ReviewDetailsTreeMouseListener extends MouseAdapter {
+public class ReviewDetailsTreeMouseListener extends MouseAdapter implements MouseMotionListener {
 	public ReviewDetailsTreeMouseListener(final ReviewCommentRenderer renderer, TreeUISetup treeUISetup) {
 		this.renderer = renderer;
 		this.treeUISetup = treeUISetup;
@@ -38,7 +39,6 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter {
 
 	private boolean isMoreLessLinkHit(MouseEvent mouseevent) {
 		JTree jtree = (JTree) mouseevent.getSource();
-		Object obj = null;
 		TreePath treepath = jtree.getPathForLocation(mouseevent.getX(), mouseevent.getY());
 		if (treepath != null) {
 			Rectangle rectangle = jtree.getPathBounds(treepath);
@@ -89,5 +89,13 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter {
 	public void mouseMoved(final MouseEvent e) {
 		JTree jtree = (JTree) e.getSource();
 		jtree.setCursor(isMoreLessLinkHit(e) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+	}
+
+	/**
+	 * Needed for compilation under JDK 1.5, which has screwed up MouseAdapter
+	 * @param e event
+	 */
+	@Override
+	public void mouseDragged(final MouseEvent e) {
 	}
 }
