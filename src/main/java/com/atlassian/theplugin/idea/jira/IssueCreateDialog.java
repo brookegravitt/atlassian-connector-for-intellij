@@ -167,7 +167,7 @@ public class IssueCreateDialog extends DialogWrapper {
 					&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
 				String project = jiraConfiguration.getView().getServerDefaults().
-						get(jiraServer.getServerId().toString()).getKey();
+						get(jiraServer.getServerId().toString()).getProject();
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -278,10 +278,10 @@ public class IssueCreateDialog extends DialogWrapper {
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 
 			String configProject = jiraConfiguration.getView().getServerDefaults().
-					get(jiraServer.getServerId().toString()).getKey();
+					get(jiraServer.getServerId().toString()).getProject();
 
 			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaults().
-					get(jiraServer.getServerId().toString()).getValue();
+					get(jiraServer.getServerId().toString()).getComponents();
 
 			// select default components for specified project
 			if (selectedProject.equals(configProject)) {
