@@ -19,9 +19,9 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.intellij.util.xmlb.annotations.Transient;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 
 
 public class JiraViewConfigurationBean {
@@ -30,8 +30,8 @@ public class JiraViewConfigurationBean {
 	private JiraIssueGroupBy groupBy;
 	private boolean collapseSubtasksUnderParent;
 
-	private HashMap<String, Pair> serverDefaults =
-			new HashMap<String, Pair>();
+	private HashMap<String, JiraProjectDefaultComponentsBean> serverDefaults =
+			new HashMap<String, JiraProjectDefaultComponentsBean>();
 
 	public JiraViewConfigurationBean() {
 	}
@@ -68,22 +68,20 @@ public class JiraViewConfigurationBean {
 		this.collapseSubtasksUnderParent = collapseSubtasksUnderParent;
 	}
 
-	public HashMap<String, Pair> getServerDefaults() {
+	public HashMap<String, JiraProjectDefaultComponentsBean> getServerDefaults() {
 		return serverDefaults;
 	}
 
-	public void setServerDefaults(final HashMap<String, Pair> serverDefaults) {
+	public void setServerDefaults(final HashMap<String, JiraProjectDefaultComponentsBean> serverDefaults) {
 		this.serverDefaults = serverDefaults;
 	}
 
 	@Transient
 	public void addServerDefault(final String jiraServer, final String projectKey, final Collection<Long> components) {
-		ArrayList<Long> comp = new ArrayList<Long>(components);
+		LinkedHashSet<Long> comp = new LinkedHashSet<Long>(components);
 
-		Pair tmp = new Pair(projectKey, comp);
+		JiraProjectDefaultComponentsBean tmp = new JiraProjectDefaultComponentsBean(projectKey, comp);
 
 		serverDefaults.put(jiraServer, tmp);
 	}
-
-
 }
