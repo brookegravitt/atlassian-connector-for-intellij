@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Jacek Jaroczynski
@@ -199,12 +201,16 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	private String getCommiters() {
-		String commiters = "";
-		for (String commiter : build.getCommiters()) {
-			commiters += commiter + ", ";
+		StringBuilder commiters = new StringBuilder();
+
+		Collection<String> c = build.getCommiters();
+		for (Iterator<String> iterator = c.iterator(); iterator.hasNext();) {
+			commiters.append(iterator.next());
+			if (!iterator.hasNext()) {
+				commiters.append(", ");
+			}
 		}
-		return commiters;
-//		return "Jacek, Zenek, Rysiek";
+		return commiters.toString();
 	}
 
 	private String buildTolltip(int width) {

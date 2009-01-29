@@ -757,7 +757,7 @@
         <action id="ThePlugin.Reviews.CompleteReview"
                 class="com.atlassian.theplugin.idea.action.reviews.CompleteReviewAction"
                 text="Complete Review"
-                icon="/actions/check.png"/>
+                icon="/icons/icn_complete.gif"/>
         <action id="ThePlugin.Reviews.UncompleteReview"
                 class="com.atlassian.theplugin.idea.action.reviews.UncompleteReviewAction"
                 text="Uncomplete Review"

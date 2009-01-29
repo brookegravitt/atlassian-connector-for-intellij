@@ -47,6 +47,8 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 /**
  * User: pmaruszak
@@ -251,10 +253,12 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				JPanel body = new JPanel();
 
 				body.setLayout(new GridBagLayout());
+				body.setOpaque(true);
+				body.setBackground(Color.WHITE);
 
 				GridBagConstraints gbc1 = new GridBagConstraints();
 				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_END;
+				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
 				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
@@ -268,6 +272,29 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				gbc2.gridy = 0;
 
 				ReviewAdapter ra = params.reviewAdapter;
+				body.add(new BoldLabel("Statement of Objectives"), gbc1);
+
+				final JEditorPane statementOfObjectives = new JEditorPane();
+				statementOfObjectives.setEditable(false);
+				statementOfObjectives.setOpaque(true);
+				statementOfObjectives.setBackground(Color.WHITE);
+				statementOfObjectives.setContentType("text/plain");
+				statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+				statementOfObjectives.setText(ra.getDescription());
+
+				body.add(statementOfObjectives, gbc2);
+				body.addComponentListener(new ComponentAdapter() {
+					public void componentResized(ComponentEvent e) {
+						statementOfObjectives.validate();
+					}
+				});
+
+				gbc1.gridy++;
+				gbc2.gridy++;
+				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("State"), gbc1);
 				body.add(new JLabel(ra.getState().getDisplayName()), gbc2);
 				gbc1.gridy++;
@@ -288,10 +315,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				text += days;
 				body.add(new JLabel(text), gbc2);
 
-				gbc1.gridx = 2;
-				gbc2.gridx = gbc1.gridx + 1;
-				gbc1.gridy = 0;
-				gbc2.gridy = 0;
+				gbc1.gridy++;
+				gbc2.gridy++;
 				body.add(new BoldLabel("Author"), gbc1);
 				body.add(new JLabel(ra.getCreator().getDisplayName()), gbc2);
 
@@ -319,6 +344,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 						JLabel label = new JLabel(reviewer.getDisplayName(),
 								reviewer.isCompleted() ? reviewCompletedIcon : null,
 								SwingConstants.LEFT);
+						label.setOpaque(true);
+						label.setBackground(Color.WHITE);
 						label.setHorizontalTextPosition(SwingUtilities.LEFT);
 						label.setHorizontalAlignment(SwingUtilities.LEFT);
 						reviewers.add(label);
@@ -332,8 +359,10 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				gbc1.gridy++;
 				gbc1.weighty = 1.0;
 				gbc1.fill = GridBagConstraints.VERTICAL;
-				body.add(new JPanel(), gbc1);
-
+				JPanel filler = new JPanel();
+				filler.setOpaque(true);
+				filler.setBackground(Color.WHITE);
+				body.add(filler, gbc1);
 
 				return body;
 			}
