@@ -18,15 +18,12 @@ package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 
-import javax.swing.tree.TreeCellRenderer;
 
 public class GeneralCommentTreeNode extends CommentTreeNode {
 	private GeneralComment comment;
-	private static final TreeCellRenderer MY_RENDERER = new ReviewCommentRenderer();
 
 	public GeneralCommentTreeNode(ReviewAdapter review, GeneralComment comment, AtlassianClickAction action) {
 		super(action);
@@ -43,11 +40,6 @@ public class GeneralCommentTreeNode extends CommentTreeNode {
 	@Override
 	public GeneralComment getComment() {
 		return comment;
-	}
-
-	@Override
-	public TreeCellRenderer getTreeCellRenderer() {
-		return MY_RENDERER;
 	}
 
 	@Override

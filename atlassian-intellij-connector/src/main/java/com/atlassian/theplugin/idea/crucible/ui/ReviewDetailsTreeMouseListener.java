@@ -84,13 +84,13 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 				if (o instanceof CommentTreeNode) {
 					CommentTreeNode commentTreeNode = (CommentTreeNode) o;
 					commentTreeNode.setExpanded(!commentTreeNode.isExpanded());
+					lastHoveredNode = null;
+					lastRendererComponent = null;
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							treeUISetup.forceTreePrefSizeRecalculation(jtree);
 						}
 					});
-					lastHoveredNode = null;
-					lastRendererComponent = null;
 				}
 			}
 		}

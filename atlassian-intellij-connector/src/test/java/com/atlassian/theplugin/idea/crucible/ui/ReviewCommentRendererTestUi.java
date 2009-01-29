@@ -32,6 +32,7 @@ import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.util.ui.SimpleIconProvider;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.*;
@@ -42,7 +43,7 @@ public final class ReviewCommentRendererTestUi {
 	}
 
 	public static void main(String[] args) throws ValueNotYetInitialized {
-		ReviewCommentRenderer renderer = new ReviewCommentRenderer();
+		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
 		CrucibleServerCfg cruc = new CrucibleServerCfg("my crucible server", new ServerId());
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
