@@ -30,6 +30,7 @@ import com.intellij.openapi.components.SettingsSavingComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -130,15 +131,17 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			if (privateCfgFile != null && new File(privateCfgFile).exists()) {
 				privateRoot = builder.build(privateCfgFile);
 			}
+
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
-			}
+		}
 
 		ProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
 				privateRoot != null ? privateRoot.getRootElement() : null, PRIVATE_CFG_FACTORY);
 		ProjectConfiguration projectConfiguration;
 		try {
 			projectConfiguration = cfgFactory.load();
+
 		} catch (ServerCfgFactoryException e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
@@ -151,6 +154,26 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			projectConfiguration.setDefaultFishEyeServerId(null);
 		}
 		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project), projectConfiguration);
+		final String oldFilePath = getPrivateOldCfgFilePath();
+
+		//delete old private cfg file
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				if (oldFilePath != null && oldFilePath.length() > 0) {
+					int value = Messages.showYesNoDialog(project,
+							"Configuration migrated succesfully to new location.\nDelete file: " + oldFilePath,
+							"Would you like to delete old configuration file?", Messages.getQuestionIcon());
+
+					if (value == DialogWrapper.OK_EXIT_CODE) {
+						File oldPrivateCfgFile = new File(oldFilePath);
+						if (oldPrivateCfgFile != null) {
+							oldPrivateCfgFile.delete();
+						}
+					}
+
+				}
+			}
+		});
 
 	}
 
