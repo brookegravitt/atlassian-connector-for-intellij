@@ -313,7 +313,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 				reviewers.setLayout(layout);
 
-				Icon reviewCompletedIcon = IconLoader.getIcon("/actions/check.png");
+				Icon reviewCompletedIcon = IconLoader.getIcon("/icons/icn_complete.gif");
 				try {
 					for (Reviewer reviewer : ra.getReviewers()) {
 						JLabel label = new JLabel(reviewer.getDisplayName(),
