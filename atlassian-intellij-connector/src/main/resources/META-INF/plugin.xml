@@ -564,7 +564,7 @@
                 icon="/icons/inspector/sortByCategory.png"/>
         <action id="ThePlugin.JiraIssues.Refresh"
                 class="com.atlassian.theplugin.idea.action.issues.RefreshIssuesAction"
-                text="Refresh"
+                text="Refresh Issue List"
                 icon="/actions/sync.png"/>
         <action id="ThePlugin.JiraIssues.ExpandIssues"
                 class="com.atlassian.theplugin.idea.action.issues.ExpandIssuesAction"
@@ -675,15 +675,17 @@
 
         <group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
             <reference id="ThePlugin.JiraIssues.GroupByCombo"/>
-            <reference id="ThePlugin.JiraIssues.GroupSubtasks"/>
-            <reference id="ThePlugin.JiraIssues.Refresh"/>
+			<reference id="ThePlugin.JiraIssues.GroupSubtasks"/>
             <reference id="ThePlugin.JiraIssues.ExpandIssues"/>
             <reference id="ThePlugin.JiraIssues.CollapseIssues"/>
             <separator/>
+			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<separator/>
             <reference id="ThePlugin.JiraIssues.CreateIssue"/>
             <reference id="ThePlugin.JiraIssues.QuickSearch"/>
-            <reference id="ThePlugin.JiraIssues.OpenIssue"/>
-            <reference id="ThePlugin.JiraIssues.ViewIssue"/>
+			<reference id="ThePlugin.JiraIssues.Refresh"/>
+			<separator/>
             <reference id="ThePlugin.HelpJIRA"/>
             <separator/>
         </group>
@@ -866,10 +868,12 @@
             <reference id="ThePlugin.Reviews.GroupByCombo"/>
             <reference id="ThePlugin.Reviews.ExpandAll"/>
             <reference id="ThePlugin.Reviews.CollapseAll"/>
-            <separator/>
-            <reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
+			<separator/>
             <reference id="ThePlugin.Reviews.GetComments"/>
             <reference id="ThePlugin.Reviews.ViewReview"/>
+			<separator/>
+			<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
+			<separator/>
             <reference id="ThePlugin.HelpCrucible"/>
         </group>
 
@@ -891,30 +895,23 @@
 
         <group id="ThePlugin.Bamboo.LeftToolBar" popup="false">
             <reference id="ThePlugin.ShowSettings"/>
-            <reference id="ThePlugin.Bamboo.OpenBuild"/>
-            <reference id="ThePlugin.Bamboo.ViewBuild"/>
-            <!-- @Jacek: old ThePlugin.Bamboo.RefreshStatus works fine for us. No need to create another Refresh action
-         <reference id="ThePlugin.Builds.Refresh"/>
-         -->
-            <!-- @Wojtek: thanks for the hint in this place. Yupiii!!! -->
-            <reference id="ThePlugin.Bamboo.RefreshStatus"/>
-            <separator/>
-            <!--
-                           <action id="ThePlugin.Ui.LabelAction" class="com.atlassian.theplugin.idea.ui.LabelAction"
-                                   text="Filter By:" description="Filter By:"/>
-               -->
+			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
+			<separator/>
         </group>
         <group id="ThePlugin.Bamboo.MiddleToolBar" popup="false">
-            <reference id="ThePlugin.Bamboo.FilterBy"/>
+			<reference id="ThePlugin.Bamboo.FilterBy"/>
         </group>
         <group id="ThePlugin.Bamboo.RightToolBar" popup="false">
             <reference id="ThePlugin.Builds.GroupByCombo"/>
             <reference id="ThePlugin.Builds.ExpandAll"/>
             <reference id="ThePlugin.Builds.CollapseAll"/>
-            <separator/>
-            <reference id="ThePlugin.Bamboo.RunBuild"/>
-            <reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
-            <reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.OpenBuild"/>
+			<reference id="ThePlugin.Bamboo.ViewBuild"/>
+			<separator/>
+			<reference id="ThePlugin.Bamboo.RunBuild"/>
+			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
             <separator/>
             <reference id="ThePlugin.HelpBamboo"/>
         </group>
