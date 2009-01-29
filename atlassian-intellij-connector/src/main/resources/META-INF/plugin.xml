@@ -613,13 +613,13 @@
                 text="Edit in Browser"/>
         <action id="ThePlugin.JiraIssues.AssignIssueToMyself"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
-                text="Assign to Myself"/>
+                text="Assign to Me"/>
         <action id="ThePlugin.JiraIssues.AssignIssueToUser"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
                 text="Assign to User"/>
         <action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
-                text="Assign to Myself and Start Working"/>
+                text="Assign to Me and Start Working"/>
         <action id="ThePlugin.JiraIssues.AddComment"
                 class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
                 text="Add Comment"/>

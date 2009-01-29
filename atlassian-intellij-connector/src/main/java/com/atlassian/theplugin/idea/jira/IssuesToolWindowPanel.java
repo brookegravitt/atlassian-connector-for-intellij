@@ -626,7 +626,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				JIRAIssue myIssue = currentIssueListModel.getSelectedIssue();
-				setStatusMessage("Assigning issue " + myIssue.getKey() + " to myself...");
+				setStatusMessage("Assigning issue " + myIssue.getKey() + " to me...");
 				try {
 					jiraServerFacade.setAssignee(server, myIssue, server.getUsername());
 					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, myIssue);
