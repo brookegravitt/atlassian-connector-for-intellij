@@ -3,11 +3,6 @@ package com.atlassian.theplugin.idea.crucible.comboitems;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * TODO: Document this class / interface here
- *
- * @since v3.13
- */
 public class RepositoryComboBoxItem {
 
 	private final Repository repo;
