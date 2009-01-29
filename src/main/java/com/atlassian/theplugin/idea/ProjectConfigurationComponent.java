@@ -61,8 +61,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
-	private static PrivateConfigurationFactory PRIVATE_CFG_FACTORY = new PrivateConfigurationFactoryImpl();
-
+	private PrivateConfigurationFactory privateCfgFactory = new PrivateConfigurationFactoryImpl();
 
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
@@ -137,7 +136,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 
 		ProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
-				privateRoot != null ? privateRoot.getRootElement() : null, PRIVATE_CFG_FACTORY);
+				privateRoot != null ? privateRoot.getRootElement() : null, privateCfgFactory);
 		ProjectConfiguration projectConfiguration;
 		try {
 			projectConfiguration = cfgFactory.load();
@@ -224,7 +223,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
 
-		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, null, PRIVATE_CFG_FACTORY);
+		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, null, privateCfgFactory);
 		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			cfgFactory.save(configuration);
@@ -234,7 +233,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 			for (ServerCfg serverCfg : configuration.getServers()) {
 				try {
-					PRIVATE_CFG_FACTORY.save(serverCfg.createPrivateProjectConfiguration());
+					privateCfgFactory.save(serverCfg.createPrivateProjectConfiguration());
 				} catch (ThePluginException e) {
 					IdeaLoggerImpl.getInstance().error("Cannot write private cfg file for server Uuid = "
 							+ serverCfg.getServerId().getUuid());
