@@ -112,7 +112,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	public void showReview(ReviewAdapter adapter) {
 		this.reviewAdapter = adapter;
 		contentParams = new ReviewContentParameters(adapter);
-		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE, Constants.CRUCIBLE_ICON);
+		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
+				Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
