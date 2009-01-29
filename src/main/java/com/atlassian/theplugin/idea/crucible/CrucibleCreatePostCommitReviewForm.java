@@ -78,7 +78,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	}
 
 	public void updateChanges() {
-		CrucibleRevisionsNumber dialog = new CrucibleRevisionsNumber(project, revisionsNumber);
+		CrucibleRevisionsNumber dialog = new CrucibleRevisionsNumber(revisionsNumber);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			revisionsNumber = dialog.getValue();
