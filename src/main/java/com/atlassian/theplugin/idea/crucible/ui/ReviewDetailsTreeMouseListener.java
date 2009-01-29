@@ -78,8 +78,8 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 					CommentTreeNode commentTreeNode = (CommentTreeNode) o;
 					commentTreeNode.setExpanded(!commentTreeNode.isExpanded());
 					treeUISetup.forceTreePrefSizeRecalculation(jtree);
-				} else {
-					JOptionPane.showMessageDialog(jtree, "My message");
+					lastHoveredNode = null;
+					lastRendererComponent = null;
 				}
 			}
 		}

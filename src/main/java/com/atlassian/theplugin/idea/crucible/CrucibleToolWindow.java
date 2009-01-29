@@ -18,6 +18,11 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
@@ -28,6 +33,7 @@ import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -49,6 +55,7 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Date;
 
 /**
  * User: pmaruszak
@@ -142,7 +149,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 			this.params = params;
 
 			JTabbedPane tabs = new JTabbedPane();
-			detailsPanel = new DetailsPanel();
+			detailsPanel = new DetailsPanel(params.reviewAdapter);
 
 			tabs.addTab("Details", detailsPanel);
 			commentsPanel = new CommentsPanel();
@@ -204,182 +211,26 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		}
 
 		public void reviewAdded(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void reviewRemoved(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void reviewChanged(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void modelChanged(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void reviewListUpdateStarted(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void reviewListUpdateFinished(UpdateContext updateContext) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
 		public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
-			//To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		private class DetailsPanel extends JPanel {
-			private JScrollPane scroll;
-
-			public DetailsPanel() {
-				setLayout(new GridBagLayout());
-
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
-
-				scroll = new JScrollPane(createBody());
-				scroll.setBorder(BorderFactory.createEmptyBorder());
-				add(scroll, gbc);
-			}
-
-			private JPanel createBody() {
-				JPanel body = new JPanel();
-
-				body.setLayout(new GridBagLayout());
-				body.setOpaque(true);
-				body.setBackground(Color.WHITE);
-
-				GridBagConstraints gbc1 = new GridBagConstraints();
-				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.fill = GridBagConstraints.HORIZONTAL;
-				gbc2.weightx = 1.0;
-				gbc1.gridx = 0;
-				gbc2.gridx = gbc1.gridx + 1;
-				gbc1.gridy = 0;
-				gbc2.gridy = 0;
-
-				ReviewAdapter ra = params.reviewAdapter;
-				body.add(new BoldLabel("Statement of Objectives"), gbc1);
-
-				final JEditorPane statementOfObjectives = new JEditorPane();
-				statementOfObjectives.setEditable(false);
-				statementOfObjectives.setOpaque(true);
-				statementOfObjectives.setBackground(Color.WHITE);
-				statementOfObjectives.setContentType("text/plain");
-				statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				statementOfObjectives.setText(ra.getDescription());
-
-				body.add(statementOfObjectives, gbc2);
-				body.addComponentListener(new ComponentAdapter() {
-					public void componentResized(ComponentEvent e) {
-						statementOfObjectives.validate();
-					}
-				});
-
-				gbc1.gridy++;
-				gbc2.gridy++;
-				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				body.add(new BoldLabel("State"), gbc1);
-				body.add(new JLabel(ra.getState().getDisplayName()), gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Open"), gbc1);
-
-				DateTime now = new DateTime();
-				Period period = new Period(ra.getCreateDate().getTime(), now.getMillis());
-
-				String years = getFormattedPeriod(period.getYears(), "year");
-				String months = getFormattedPeriod(period.getMonths(), "month");
-				String days = getFormattedPeriod(period.getDays(), "day");
-
-				String text = years;
-				text += years.length() > 0 ? " and " : "";
-				text += months;
-				text += months.length() > 0 && days.length() > 0 ? " and " : "";
-				text += days;
-				body.add(new JLabel(text), gbc2);
-
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Author"), gbc1);
-				body.add(new JLabel(ra.getCreator().getDisplayName()), gbc2);
-
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Moderator"), gbc1);
-				body.add(new JLabel(ra.getModerator().getDisplayName()), gbc2);
-
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Reviewers"), gbc1);
-
-				JPanel reviewers = new JPanel();
-				VerticalFlowLayout layout = new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 0, true, false);
-				layout.setHgap(0);
-				layout.setVgap(0);
-				Container container = new Container();
-				layout.layoutContainer(container);
-
-				reviewers.setLayout(layout);
-
-				Icon reviewCompletedIcon = IconLoader.getIcon("/icons/icn_complete.gif");
-				try {
-					for (Reviewer reviewer : ra.getReviewers()) {
-						JLabel label = new JLabel(reviewer.getDisplayName(),
-								reviewer.isCompleted() ? reviewCompletedIcon : null,
-								SwingConstants.LEFT);
-						label.setOpaque(true);
-						label.setBackground(Color.WHITE);
-						label.setHorizontalTextPosition(SwingUtilities.LEFT);
-						label.setHorizontalAlignment(SwingUtilities.LEFT);
-						reviewers.add(label);
-					}
-
-					body.add(reviewers, gbc2);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					//do not care
-				}
-
-				gbc1.gridy++;
-				gbc1.weighty = 1.0;
-				gbc1.fill = GridBagConstraints.VERTICAL;
-				JPanel filler = new JPanel();
-				filler.setOpaque(true);
-				filler.setBackground(Color.WHITE);
-				body.add(filler, gbc1);
-
-				return body;
-			}
-
-		}
-
-		private String getFormattedPeriod(int value, String singName) {
-			String text = "";
-			if (value > 0) {
-				text = value + " " + singName;
-				if (value > 1) {
-					text += "s";
-				}
-			}
-
-			return text;
-		}
 
 		private final class CommentsPanel extends JPanel {
 			private ReviewItemTreePanel reviewItemTreePanel;
@@ -416,8 +267,6 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				};
 
 				ProgressManager.getInstance().run(task);
-
-
 			}
 
 			private void registerListeners() {
@@ -501,7 +350,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 					return true;
 				} else if (dataId.equals(Constants.REVIEW) && contentPanel != null && params != null) {
 					return params.reviewAdapter;
-				} 
+				}
 				return null;
 			}
 		}
@@ -510,5 +359,199 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 	public ReviewAdapter getReview() {
 		return reviewAdapter;
+	}
+}
+
+
+class DetailsPanel extends JPanel {
+	private JScrollPane scroll;
+
+	private final ReviewAdapter ra;
+
+	public DetailsPanel(final ReviewAdapter reviewAdapter) {
+		this.ra = reviewAdapter;
+		setLayout(new GridBagLayout());
+
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gbc.weighty = 1.0;
+		gbc.fill = GridBagConstraints.BOTH;
+
+		scroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		final JPanel panel = createBody();
+		scroll.setViewportView(panel);
+		scroll.setBorder(BorderFactory.createEmptyBorder());
+		add(scroll, gbc);
+	}
+
+	private JPanel createBody() {
+		final JPanel body = new JPanel();
+
+		body.setLayout(new GridBagLayout());
+		body.setOpaque(true);
+		body.setBackground(Color.WHITE);
+
+		GridBagConstraints gbc1 = new GridBagConstraints();
+		GridBagConstraints gbc2 = new GridBagConstraints();
+		gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+		gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+		gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.fill = GridBagConstraints.HORIZONTAL;
+		gbc2.weightx = 1.0;
+		gbc1.gridx = 0;
+		gbc2.gridx = gbc1.gridx + 1;
+		gbc1.gridy = 0;
+		gbc2.gridy = 0;
+
+		body.add(new BoldLabel("Statement of Objectives"), gbc1);
+
+		final JEditorPane statementOfObjectives = new JEditorPane() {
+
+		};
+		statementOfObjectives.setEditable(false);
+		statementOfObjectives.setOpaque(true);
+		statementOfObjectives.setBackground(Color.WHITE);
+		statementOfObjectives.setContentType("text/plain");
+		statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+		statementOfObjectives.setText(ra.getDescription());
+		statementOfObjectives.setBorder(null);
+
+		body.add(statementOfObjectives, gbc2);
+		scroll.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+////				statementOfObjectives.doLayout();
+//				System.out.println(statementOfObjectives.getX());
+//				int preferredWidth = e.getComponent().getWidth() - statementOfObjectives.getX();
+//				System.out.println(preferredWidth);
+//				statementOfObjectives.setSize(preferredWidth, 100);
+//				final int prefHeight = statementOfObjectives.getPreferredSize().height;
+//				System.out.println("H" + prefHeight);
+//				statementOfObjectives.setPreferredSize(new Dimension(preferredWidth , prefHeight));
+//				statementOfObjectives.setSize(preferredWidth, prefHeight);
+//				body.validate();
+////				invalidate();
+//
+//
+				body.setPreferredSize(null);
+				body.setPreferredSize(new Dimension(scroll.getViewport().getWidth(),
+						body.getPreferredSize().height));
+				body.validate();
+			}
+		});
+
+		gbc1.gridy++;
+		gbc2.gridy++;
+		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+		body.add(new BoldLabel("State"), gbc1);
+		body.add(new JLabel(ra.getState().getDisplayName()), gbc2);
+		gbc1.gridy++;
+		gbc2.gridy++;
+		body.add(new BoldLabel("Open"), gbc1);
+
+		DateTime now = new DateTime();
+		Period period = new Period(ra.getCreateDate().getTime(), now.getMillis());
+
+		String years = getFormattedPeriod(period.getYears(), "year");
+		String months = getFormattedPeriod(period.getMonths(), "month");
+		String days = getFormattedPeriod(period.getDays(), "day");
+
+		String text = years;
+		text += years.length() > 0 ? " and " : "";
+		text += months;
+		text += months.length() > 0 && days.length() > 0 ? " and " : "";
+		text += days;
+		body.add(new JLabel(text), gbc2);
+
+		gbc1.gridy++;
+		gbc2.gridy++;
+		body.add(new BoldLabel("Author"), gbc1);
+		body.add(new JLabel(ra.getCreator().getDisplayName()), gbc2);
+
+		gbc1.gridy++;
+		gbc2.gridy++;
+		body.add(new BoldLabel("Moderator"), gbc1);
+		body.add(new JLabel(ra.getModerator().getDisplayName()), gbc2);
+
+		gbc1.gridy++;
+		gbc2.gridy++;
+		body.add(new BoldLabel("Reviewers"), gbc1);
+
+		JPanel reviewers = new JPanel();
+		VerticalFlowLayout layout = new VerticalFlowLayout(VerticalFlowLayout.TOP, 0, 0, true, false);
+		layout.setHgap(0);
+		layout.setVgap(0);
+		Container container = new Container();
+		layout.layoutContainer(container);
+
+		reviewers.setLayout(layout);
+
+		Icon reviewCompletedIcon = IconLoader.getIcon("/icons/icn_complete.gif");
+		try {
+			for (Reviewer reviewer : ra.getReviewers()) {
+				JLabel label = new JLabel(reviewer.getDisplayName(),
+						reviewer.isCompleted() ? reviewCompletedIcon : null,
+						SwingConstants.LEFT);
+				label.setOpaque(true);
+				label.setBackground(Color.WHITE);
+				label.setHorizontalTextPosition(SwingUtilities.LEFT);
+				label.setHorizontalAlignment(SwingUtilities.LEFT);
+				reviewers.add(label);
+			}
+
+			body.add(reviewers, gbc2);
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			//do not care
+		}
+
+		gbc1.gridy++;
+		gbc1.weighty = 1.0;
+		gbc1.fill = GridBagConstraints.VERTICAL;
+		JPanel filler = new JPanel();
+		filler.setOpaque(true);
+		filler.setBackground(Color.WHITE);
+		body.add(filler, gbc1);
+
+		return body;
+	}
+
+	private String getFormattedPeriod(int value, String singName) {
+		String text = "";
+		if (value > 0) {
+			text = value + " " + singName;
+			if (value > 1) {
+				text += "s";
+			}
+		}
+
+		return text;
+	}
+
+	public static void main(String[] args) {
+		CrucibleServerCfg cruc = new CrucibleServerCfg("my crucible server", new ServerId());
+		ReviewBean review = new ReviewBean("myreviewbean");
+		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
+		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"
+				+ "jldfjal jfdlkjafl jldfsjalfj ldsj fldjsf; ljWojciech Seliga fjdsalkfjs df\nA new line above\nand then some"
+				+ "very very very long lllllllllllllloooong string.");
+		review.setName("My review name");
+		review.setState(State.REVIEW);
+		review.setCreateDate(new Date());
+		final ReviewerBean author = new ReviewerBean();
+		author.setUserName("wseliga");
+		author.setDisplayName("Wojciech Seliga");
+		review.setAuthor(author);
+		review.setCreator(author);
+		review.setModerator(author);
+
+		SwingAppRunner.run(new DetailsPanel(reviewAdapter));
 	}
 }

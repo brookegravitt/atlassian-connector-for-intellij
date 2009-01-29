@@ -76,14 +76,13 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 		return review;
 	}
 
+	@Override
 	public AtlassianTreeNode getClone() {
 		return new GeneralSectionNode(this);
 	}
 
 	public int compareTo(Object o) {
-		if (o instanceof CrucibleStatementOfObjectivesNode) {
-			return 1;
-		} else if (o instanceof GeneralSectionNode) {
+		if (o instanceof GeneralSectionNode) {
 			return 0;
 		}
 		return -1;
