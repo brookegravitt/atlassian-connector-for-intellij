@@ -110,10 +110,13 @@ class CommentPanel extends JPanel {
 	private Comment comment;
 	private CrucibleFileInfo file;
 
+	private static final CellConstraints MORE_LINK_POS = new CellConstraints(3, 2);
 	private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(5, 2);
 	private static final CellConstraints AUTHOR_POS = new CellConstraints(7, 2);
 	private static final int OTHER_COLUMNS_WIDTH = 34;
 	private Rectangle moreBounds;
+	private static final int MIN_TEXT_WIDTH = 100;
+	private static final int ONE_LINE_HEIGHT = 25;
 
 	private static int getPreferredHeight(JComponent component, int preferredWidth) {
 		try {
@@ -135,7 +138,7 @@ class CommentPanel extends JPanel {
 	public CommentPanel(@Nullable CrucibleFileInfo file, Comment comment, int width, final int row, IconProvider iconProvider,
 			boolean isExpanded, final boolean isSelected) {
 //		super(new FormLayout("d:grow, 4dlu, 10dlu, 4dlu, right:d, 2dlu", "2dlu, top:pref:grow, 2dlu"));
-		super(new FormLayout("max(d;100px):grow, 2dlu, d, 5px, 16px, 5px, right:" + LAST_COLUMN_WIDTH + "px" + ", 4px",
+		super(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:" + LAST_COLUMN_WIDTH + "px" + ", 4px",
 				"4px, top:pref:grow, 2dlu"));
 		this.file = file;
 		this.comment = comment;
@@ -148,20 +151,21 @@ class CommentPanel extends JPanel {
 
 		JTextPane messageBody = createMessageBody();
 
-		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - LAST_COLUMN_WIDTH, 100);
+		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - LAST_COLUMN_WIDTH, MIN_TEXT_WIDTH);
 		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		CellConstraints cc = new CellConstraints();
 		final JLabel moreLabel;
-		if (preferredHeight > 25) {
+		if (preferredHeight > ONE_LINE_HEIGHT) {
 			moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
-			add(moreLabel, cc.xy(3, 2));
-			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH, 100);
+			add(moreLabel, MORE_LINK_POS);
+			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH,
+					MIN_TEXT_WIDTH);
 			preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		} else {
 			moreLabel = null;
 		}
 
-		if (preferredHeight < 25 || isExpanded) {
+		if (preferredHeight < ONE_LINE_HEIGHT || isExpanded) {
 //			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - LAST_COLUMN_WIDTH, 100);
 //			preferredHeight = getPreferredHeight(messageBody, queryWidth);
 			add(messageBody, cc.xy(1, 2));
@@ -188,7 +192,7 @@ class CommentPanel extends JPanel {
 		validate();
 
 
-		setSize(new Dimension(width, 100));
+		setSize(new Dimension(width, Integer.MAX_VALUE));
 		addNotify();
 		doLayout();
 		if (moreLabel != null) {

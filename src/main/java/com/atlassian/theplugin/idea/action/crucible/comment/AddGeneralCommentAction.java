@@ -39,6 +39,8 @@ import com.intellij.openapi.ui.DialogWrapper;
 
 import java.util.Date;
 
+import org.jetbrains.annotations.NotNull;
+
 public class AddGeneralCommentAction extends AbstractCommentAction {
 
 	@Override
@@ -96,7 +98,8 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
 						review.addGeneralComment(newComment);
 					} catch (ValueNotYetInitialized valueNotYetInitialized) {
