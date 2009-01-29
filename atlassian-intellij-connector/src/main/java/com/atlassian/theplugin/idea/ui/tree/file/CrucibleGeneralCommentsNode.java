@@ -4,7 +4,6 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.CrucibleStatementOfObjectivesNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 
 import java.util.List;
@@ -45,10 +44,9 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 		return new CrucibleGeneralCommentsNode(getReview(), getChildren());
 	}
 
+	@Override
 	public int compareTo(Object o) {
-		if (o instanceof CrucibleStatementOfObjectivesNode) {
-			return 1;
-		} else if (o instanceof CrucibleGeneralCommentsNode) {
+		if (o instanceof CrucibleGeneralCommentsNode) {
 			return 0;
 		}
 		return -1;
@@ -68,6 +66,7 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 		return n;
 	}
 
+	@Override
 	public boolean isCompactable() {
 		return false;
 	}
