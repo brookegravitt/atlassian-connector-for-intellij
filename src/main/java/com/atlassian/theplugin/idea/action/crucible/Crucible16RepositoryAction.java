@@ -27,17 +27,6 @@ import com.intellij.openapi.project.Project;
 
 
 public abstract class Crucible16RepositoryAction extends AnAction {
-//	@Override
-//	public void update2(AnActionEvent event) {
-//
-//		final boolean isCrucibleConfigured = isCrucibleConfigured(event);
-//		event.getPresentation().setVisible(isCrucibleConfigured);
-//
-//		if (isCrucibleConfigured) {
-//			event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
-//		}
-//	}
-
 	@Override
 	public void update(AnActionEvent event) {
 		final boolean configured = isAnyCrucibleConfigured(event);
