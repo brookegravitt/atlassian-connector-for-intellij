@@ -33,8 +33,9 @@ import java.awt.*;
 public abstract class ComponentWithToolbar extends JPanel implements DataProvider {
 
     private static final String TOOLBAR_PLACE = "tree";
+	protected JScrollPane jScrollPane;
 
-    public ComponentWithToolbar(final String toolbarName) {
+	public ComponentWithToolbar(final String toolbarName) {
         super(new BorderLayout());
         JComponent toolbar = null;
         if (toolbarName != null && toolbarName.length() > 0) {
@@ -53,14 +54,9 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
                 add(new JLabel("Toolbar initialization failed"), BorderLayout.NORTH);
             }
         }
-    }
 
-	/**
-	 * Call this method at the end of your constructor.
-	 * Two phase creation.
-	 */
-	protected void init() {
-		add(new JScrollPane(getTreeComponent()), BorderLayout.CENTER);
+		jScrollPane = new JScrollPane();
+		add(jScrollPane, BorderLayout.CENTER);
 	}
 
     protected abstract Component getTreeComponent();

@@ -157,17 +157,17 @@ public class BambooGeneralForm extends JComponent {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new FormLayout(
-				"fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:d:grow",
-				"center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:d:grow"));
+		rootComponent.setLayout(
+				new FormLayout("fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:d:grow,left:4dlu:noGrow,fill:d:grow",
+						"center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:d:grow"));
 		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		allFailuresFirstSuccess = new JRadioButton();
 		allFailuresFirstSuccess.setSelected(true);
-		allFailuresFirstSuccess.setText("All build failures and first build success");
+		allFailuresFirstSuccess.setText("All Build Failures and First Build Success");
 		CellConstraints cc = new CellConstraints();
 		rootComponent.add(allFailuresFirstSuccess, cc.xy(3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		firstFailureFirstSuccess = new JRadioButton();
-		firstFailureFirstSuccess.setText("First build failure and first build success");
+		firstFailureFirstSuccess.setText("First Build Failure and First Build Success");
 		rootComponent.add(firstFailureFirstSuccess, cc.xy(3, 3, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		never = new JRadioButton();
 		never.setText("Never");
@@ -180,7 +180,7 @@ public class BambooGeneralForm extends JComponent {
 		label1.setText("Show Popup:");
 		rootComponent.add(label1, cc.xy(1, 1));
 		final JLabel label2 = new JLabel();
-		label2.setText("Polling Time [minutes]");
+		label2.setText("Polling Time [minutes]:");
 		rootComponent.add(label2, cc.xy(1, 9));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -193,7 +193,7 @@ public class BambooGeneralForm extends JComponent {
 		panel1.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		onlyMyBuilds = new JCheckBox();
-		onlyMyBuilds.setText("Only for my builds");
+		onlyMyBuilds.setText("Only for My Builds");
 		onlyMyBuilds.setToolTipText("Shows notification popup only for builds triggered by commit of the logged in user");
 		rootComponent.add(onlyMyBuilds,
 				new CellConstraints(3, 7, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 20, 0, 0)));

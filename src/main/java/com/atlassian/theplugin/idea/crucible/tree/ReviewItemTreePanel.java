@@ -37,11 +37,14 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
+import com.atlassian.theplugin.idea.crucible.ui.ReviewDetailsTreeMouseListener;
+import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
@@ -114,7 +117,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	public JPanel getReviewItemTree() {
 		if (reviewFilesAndCommentsTree == null) {
-			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar");
+			final ReviewCommentRenderer renderer = new ReviewCommentRenderer();
+			final TreeUISetup treeUISetup = new TreeUISetup(renderer);
+			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar", treeUISetup);
+			final ReviewDetailsTreeMouseListener listener = new ReviewDetailsTreeMouseListener(renderer, treeUISetup);
+			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(listener);
+			reviewFilesAndCommentsTree.getTreeComponent().addMouseMotionListener(listener);
 			reviewFilesAndCommentsTree.setRootVisible(false);
 			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
 
