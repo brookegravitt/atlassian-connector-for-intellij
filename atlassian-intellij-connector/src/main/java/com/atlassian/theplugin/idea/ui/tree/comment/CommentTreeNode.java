@@ -28,7 +28,9 @@ public abstract class CommentTreeNode extends FileNode {
 	}
 
 	public void setExpanded(final boolean expanded) {
-		isExpanded = expanded;
+		if (isExpanded != expanded) {
+			isExpanded = expanded;
+		}
 	}
 
 	private boolean isExpanded;

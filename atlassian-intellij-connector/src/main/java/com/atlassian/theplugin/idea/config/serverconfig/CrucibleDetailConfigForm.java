@@ -99,7 +99,7 @@ public class CrucibleDetailConfigForm {
 		gbc.insets = new Insets(0, 12, 12, 8);
 		rootComponent.add(panel1, gbc);
 		cbFisheye = new JCheckBox();
-		cbFisheye.setText("Crucible server contains Fisheye instance");
+		cbFisheye.setText("Crucible Server Contains Fisheye Instance");
 		panel1.add(cbFisheye, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
