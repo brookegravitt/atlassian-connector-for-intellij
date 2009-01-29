@@ -60,7 +60,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
-	private PrivateConfigurationFactory PRIVATE_CFG_FACTORY = new PrivateConfigurationFactoryImpl();
+	private static PrivateConfigurationFactory PRIVATE_CFG_FACTORY = new PrivateConfigurationFactoryImpl();
 
 
 
@@ -184,7 +184,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 
 	private String getPrivateOldCfgFilePath() {
-		final File baseNewProjectFile = new File(project.getBaseDir().getPath() + File.separator + "atlassian-ide-plugin.private.xml");
+		final File baseNewProjectFile = new File(project.getBaseDir().getPath()
+				+ File.separator + "atlassian-ide-plugin.private.xml");
 
 		if (baseNewProjectFile != null && baseNewProjectFile.isFile() && baseNewProjectFile.canRead()) {
 			return baseNewProjectFile.getAbsolutePath();
