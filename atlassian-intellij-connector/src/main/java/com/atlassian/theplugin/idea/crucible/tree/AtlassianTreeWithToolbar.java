@@ -36,19 +36,13 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
 	private State state = State.DIRED;
 
-	public AtlassianTreeWithToolbar(String toolbar, final ModelProvider modelProvider, @Nullable TreeUISetup treeUISetup) {
-		this(toolbar, treeUISetup);
-		setModelProvider(modelProvider);
-	}
-
-	public AtlassianTreeWithToolbar(final String toolbarName, TreeUISetup treeUISetup) {
+	public AtlassianTreeWithToolbar(final String toolbarName, @Nullable TreeUISetup treeUISetup) {
 		super(toolbarName);
 		this.treeUISetup = treeUISetup;
 		jScrollPane.setViewportView(getTreeComponent());
 	}
 
-
-	TreeUISetup treeUISetup;
+	private TreeUISetup treeUISetup;
 
 	@Override
 	public AtlassianTree getTreeComponent() {
