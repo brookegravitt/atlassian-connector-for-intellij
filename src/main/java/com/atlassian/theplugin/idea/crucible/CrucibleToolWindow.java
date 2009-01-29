@@ -52,7 +52,7 @@ import java.awt.*;
  * User: pmaruszak
  */
 public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvider {
-	private static final String TOOL_WINDOW_TITLE = "Reviews";
+	private static final String TOOL_WINDOW_TITLE = "Reviews - Crucible";
 	private ReviewAdapter reviewAdapter;
 	private final Project project;
 	private final CrucibleReviewListModel reviewListModel;

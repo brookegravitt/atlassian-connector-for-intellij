@@ -210,7 +210,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 //			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BAMBOO_OLD);
 
-			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS_WOJTEK);
+			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.CRUCIBLE);
 			toolWindow.registerPanel(PluginToolWindow.ToolWindowPanels.ISSUES);
 
