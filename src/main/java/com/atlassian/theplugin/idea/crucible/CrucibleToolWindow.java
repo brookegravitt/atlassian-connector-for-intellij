@@ -15,14 +15,14 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
@@ -35,7 +35,11 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;

@@ -60,6 +60,7 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode implement
 	}
 
 	public static final AtlassianTreeNode EMPTY_NODE = new AtlassianTreeNode(AtlassianClickAction.EMPTY_ACTION) {
+		@Override
 		public TreeCellRenderer getTreeCellRenderer() {
 			return new TreeCellRenderer() {
 				public Component getTreeCellRendererComponent(final JTree jTree, final Object o, final boolean b,
@@ -69,6 +70,7 @@ public abstract class AtlassianTreeNode extends DefaultMutableTreeNode implement
 			};
 		}
 
+		@Override
 		public AtlassianTreeNode getClone() {
 			return AtlassianTreeNode.EMPTY_NODE;  
 		}
