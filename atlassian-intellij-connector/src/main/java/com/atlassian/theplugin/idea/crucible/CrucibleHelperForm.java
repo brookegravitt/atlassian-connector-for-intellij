@@ -175,7 +175,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private void updateServerRelatedCombos(final ReviewAdapter reviewAdapter, final List<Repository> repositories) {
 
 		final ReviewComboBoxItem selectedItem = (ReviewComboBoxItem) reviewComboBox.getSelectedItem();
-		if (selectedItem == null || selectedItem.getReview().equals(reviewAdapter) == false) {
+		if (selectedItem == null || !selectedItem.getReview().equals(reviewAdapter)) {
 			return;
 		}
 
