@@ -36,7 +36,9 @@ public class TreeUISetup {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				if (tree.isVisible()) {
-//					tree.setUI(null);
+					// the trick with switching UI, by invoking tree.setUI(null) and then tree.setUi(oldUi) does not work
+					// due to a bug (leaking listener on uninstallUI) in Sun's TreeUI,
+					// so we have to every time create a new project
 					tree.setUI(new MyTreeUI());
 				}
 			}

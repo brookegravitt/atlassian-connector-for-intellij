@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 
@@ -32,6 +33,7 @@ public abstract class CommentTreeNode extends FileNode {
 			isExpanded = expanded;
 		}
 	}
+	public abstract Comment getComment();
 
 	private boolean isExpanded;
 	protected ReviewAdapter review;
