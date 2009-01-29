@@ -236,19 +236,19 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		final CellConstraints cc = new CellConstraints();
 
 		builder.addSeparator("Crucible", cc.xyw(1, 1, ALL_COLUMNS));
-		builder.addLabel("Default Server", cc.xy(2, 3));
+		builder.addLabel("Default Server:", cc.xy(2, 3));
 		builder.add(defaultCrucibleServerCombo, cc.xy(4, 3));
-		builder.addLabel("Default Project", cc.xy(2, 5));
+		builder.addLabel("Default Project:", cc.xy(2, 5));
 		builder.add(defaultCrucibleProjectCombo, cc.xy(4, 5));
-		builder.addLabel("Default Repository", cc.xy(2, 7));
+		builder.addLabel("Default Repository:", cc.xy(2, 7));
 		builder.add(defaultCrucibleRepositoryCombo, cc.xy(4, 7));
 
 		builder.addSeparator("FishEye", cc.xyw(1, 9, ALL_COLUMNS));
-		builder.addLabel("Default Server", cc.xy(2, 11));
+		builder.addLabel("Default Server:", cc.xy(2, 11));
 		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
-		builder.addLabel("Default Repository", cc.xy(2, 13));
+		builder.addLabel("Default Repository:", cc.xy(2, 13));
 		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 13));
-		builder.addLabel("Path to Project", cc.xy(2, 15));
+		builder.addLabel("Path to Project:", cc.xy(2, 15));
 		builder.add(pathToProjectEdit, cc.xy(4, 15));
 		//CHECKSTYLE:MAGIC:ON
 
