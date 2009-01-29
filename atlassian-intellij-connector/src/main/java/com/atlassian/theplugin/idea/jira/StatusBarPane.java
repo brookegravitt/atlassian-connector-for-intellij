@@ -52,7 +52,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
 		gbc.weightx = 0.0;
 		add(statusPanel, gbc);
 
-		setMessage(initialText);
+		setMessage(initialText, false);
 	}
 
 
@@ -61,13 +61,15 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	}
 
 
-	public void setMessage(String message) {
+	public void setMessage(String message, boolean rightAlign) {
+		pane.setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);
 		pane.setText(" " + message);
 		pane.setBackground(defaultColor);
 		setBackground(defaultColor);
 	}
 
 	public void setErrorMessage(String msg) {
+		pane.setHorizontalAlignment(SwingConstants.LEFT);
 		pane.setBackground(FAIL_COLOR);
 		setBackground(FAIL_COLOR);
 		pane.setText(" " + msg);

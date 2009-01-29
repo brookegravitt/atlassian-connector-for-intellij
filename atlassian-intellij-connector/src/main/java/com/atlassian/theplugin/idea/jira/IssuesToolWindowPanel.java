@@ -137,7 +137,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 						expandAllRightTreeNodes();
-						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues");
+						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 					}
 				});
 			}
@@ -700,7 +700,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					getStatusBarPane().setMessage("Loading issues...");
+					getStatusBarPane().setMessage("Loading issues...", false);
 					jiraIssueListModelBuilder.addIssuesToModel(
 							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 				} catch (JIRAException e) {
