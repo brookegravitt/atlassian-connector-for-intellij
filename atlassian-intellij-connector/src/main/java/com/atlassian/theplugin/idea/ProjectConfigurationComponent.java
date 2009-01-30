@@ -123,7 +123,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
-			if (path == null || new File(path).exists() == false) {
+			if (path == null || !new File(path).exists()) {
 				setDefaultProjectConfiguration();
 				return;
 			}
@@ -180,11 +180,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 					projectConfiguration.setPrivateConfigurationMigrated(true);
 					if (value == DialogWrapper.OK_EXIT_CODE) {
 						File oldPrivateCfgFile = new File(oldFilePath);
-						if (oldPrivateCfgFile != null) {
-							oldPrivateCfgFile.delete();
+						oldPrivateCfgFile.delete();
 
-						}
-					}					
+					}
 
 					if (value == DialogWrapper.CANCEL_EXIT_CODE) {
 						projectConfiguration.setPrivateConfigurationMigrated(false);
@@ -201,6 +199,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	/**
 	 * Ensuring that old attributes do not break our loading
+	 * @param root, roote element
 	 */
 	private void cleanupDom(final Document root) throws JDOMException {
 		@SuppressWarnings("unchecked")
