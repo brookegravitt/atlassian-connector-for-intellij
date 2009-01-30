@@ -293,14 +293,16 @@ class CommentPanel extends JPanel {
 				doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ", doc.getStyle("line"));
 			}
 			doc.insertString(doc.getLength(), vc.getMessage() + " ", doc.getStyle("regular"));
-			doc.insertString(doc.getLength(), " " + getRankingString(vc), doc.getStyle(isSelected ? "defect-selected" : "defect"));
+			doc.insertString(doc.getLength(), " " + getRankingString(vc),
+					doc.getStyle(isSelected ? "defect-selected" : "defect"));
 			if (vc.isDraft()) {
 				StringBuilder drafInfo = new StringBuilder();
 				if (doc.getLength() > 0) {
 					drafInfo.append(" ");
 				}
 				drafInfo.append("Draft");
-				doc.insertString(doc.getLength(), drafInfo.toString(), doc.getStyle(isSelected ? "draft-selected" : "draft"));
+				doc.insertString(doc.getLength(), drafInfo.toString(),
+						doc.getStyle(isSelected ? "draft-selected" : "draft"));
 			}
 		} catch (BadLocationException e) {
 			throw new RuntimeException(e);
