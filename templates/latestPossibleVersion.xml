@@ -5,11 +5,11 @@
         <releaseNotes><![CDATA[
         <html><body>
         <p>
-        With pleasure, Atlassian presents version <b>2.0 Beta 11</b> of the Atlassian IntelliJ Connector.
-		In this iteration we have focused on the new connector'as Builds and Reviews tab.
+        With pleasure, Atlassian presents version <b>2.0 Beta 12</b> of the Atlassian IntelliJ Connector.
+		In this iteration we have focused on the Review-Crucible tab, a lot of fixes and improvements. We are close to final release 2.0.0.<br>Please upgrade, try and test beta-12 before final release. 
         </p>
         </body></html>
         ]]></releaseNotes>
-        <releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+11+Release+Notes</releaseNotesUrl>
+        <releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+12+Release+Notes</releaseNotesUrl>
     </version>
 </response>
