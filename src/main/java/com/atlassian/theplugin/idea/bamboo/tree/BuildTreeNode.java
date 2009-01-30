@@ -222,6 +222,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 				commiters.append(", ");
 			}
 		}
+		if (commiters.length() >= 2) {
+			//delete two last characters == ", "
+			commiters.delete(commiters.length() - 2, commiters.length());
+		}
 		return commiters.toString();
 	}
 
