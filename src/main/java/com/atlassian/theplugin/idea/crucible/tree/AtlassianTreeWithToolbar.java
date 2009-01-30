@@ -54,7 +54,8 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 				tree = new AtlassianTree() {
 					private static final int SCROLLING_STEP = 10;
 					@Override
-					public int getScrollableUnitIncrement(final Rectangle visibleRect, final int orientation, final int direction) {
+					public int getScrollableUnitIncrement(final Rectangle visibleRect, final int orientation,
+							final int direction) {
 						// looks like something much better than standard JTree behaviour for very high rows
 						return SCROLLING_STEP;
 					}
