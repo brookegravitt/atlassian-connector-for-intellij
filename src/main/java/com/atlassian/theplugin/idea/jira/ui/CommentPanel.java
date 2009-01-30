@@ -86,7 +86,7 @@ class CommentPanel extends JPanel {
 
 	public CommentPanel(IssueCommentTreeNode node, int width) {
 
-		JIRAComment comment = node.getComment();
+		comment = node.getComment();
 		boolean isExpanded = node.isExpanded();
 
 		final JLabel authorAndDateLabel =
@@ -98,7 +98,6 @@ class CommentPanel extends JPanel {
 				+ "right:" + lastColumnWidth + "px, "
 				+ "4px",
 				"top:pref:grow"));
-		this.comment = comment;
 		setOpaque(false);
 		
 		final JTextPane messageBody = createMessageBody(comment);
