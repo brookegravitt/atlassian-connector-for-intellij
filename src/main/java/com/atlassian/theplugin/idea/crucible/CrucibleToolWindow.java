@@ -17,12 +17,18 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.UpdateContext;
@@ -367,7 +373,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 }
 
 
-class DetailsPanel extends JPanel {
+class DetailsPanel extends JPanel implements CrucibleReviewListener {
 	private JScrollPane scroll;
 
 	private final ReviewAdapter ra;
@@ -388,6 +394,7 @@ class DetailsPanel extends JPanel {
 		scroll.setViewportView(panel);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		add(scroll, gbc);
+		ra.addReviewListener(this);
 	}
 
 	private JPanel createBody() {
@@ -424,7 +431,6 @@ class DetailsPanel extends JPanel {
 		statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 		statementOfObjectives.setText(ra.getDescription());
 		statementOfObjectives.setBorder(null);
-
 		body.add(statementOfObjectives, gbc2);
 		scroll.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -557,5 +563,38 @@ class DetailsPanel extends JPanel {
 		review.setModerator(author);
 
 		SwingAppRunner.run(new DetailsPanel(reviewAdapter));
+	}
+
+	public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId file,
+			final VersionedComment parentComment,
+			final
+			VersionedComment comment) {
+	}
+
+	public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
+			final GeneralComment comment) {
+	}
+
+	public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+	}
+
+	public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId file, final VersionedComment comment) {
+	}
+
+	public void removedComment(final ReviewAdapter review, final Comment comment) {
+	}
+
+	public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
+	}
+
+	public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId, final VersionedComment comment) {
+	}
+
+	public void reviewChanged(final ReviewAdapter reviewAdapter, final java.util.List<CrucibleNotification> notifications) {
+		final JPanel panel = createBody();
+		scroll.setViewport(null);
+		scroll.setViewportView(panel);
+		scroll.validate();
+		validate();
 	}
 }

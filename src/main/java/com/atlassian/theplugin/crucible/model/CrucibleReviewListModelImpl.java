@@ -9,8 +9,17 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReview
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -134,8 +143,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return r.get(crucibleFilter);
 	}
 
-	public synchronized void addReviewToCategory(CrucibleFilter crucibleFilter,
-			ReviewAdapter review) {
+	public synchronized void addReviewToCategory(CrucibleFilter crucibleFilter, ReviewAdapter review) {
+		if (!reviews.containsKey(crucibleFilter)) {
+			reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
+		}
 		reviews.get(crucibleFilter).add(review);
 	}
 
@@ -170,6 +181,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return reviews.get(PredefinedFilter.OpenInIde);
 	}
 
+	@Nullable
 	public synchronized ReviewAdapter getSelectedReview() {
 		if (getReviews().contains(selectedReview)) {
 			return selectedReview;
