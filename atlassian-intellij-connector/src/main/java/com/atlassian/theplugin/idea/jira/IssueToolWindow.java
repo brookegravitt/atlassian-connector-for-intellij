@@ -4,7 +4,11 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.ui.IssueCommentRenderer;
+import com.atlassian.theplugin.idea.jira.ui.IssueCommentTreeMouseListener;
+import com.atlassian.theplugin.idea.jira.ui.IssueCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
@@ -23,19 +27,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
-import com.intellij.openapi.ui.VerticalFlowLayout;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,10 +51,6 @@ import java.util.Locale;
 public final class IssueToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
-
-	//CHECKSTYLE\:MAGIC\:OFF
-	private static final Color HEADER_BACKGROUND_COLOR = new Color(153, 153, 153);
-	//CHECKSTYLE\:MAGIC\:ON
 
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
@@ -93,7 +90,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	public void setCommentsExpanded(String key, boolean expanded) {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			ip.descriptionAndCommentsPanel.setAllVisible(expanded);
+			ip.descriptionAndCommentsPanel.setAllExpanded(expanded);
 		}
 	}
 
@@ -550,12 +547,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			private final Splitter splitPane = new Splitter(false, PluginToolWindowPanel.PANEL_SPLIT_RATIO);
 
-			private ScrollablePanel comments = new ScrollablePanel();
 			private JScrollPane scroll = new JScrollPane();
 
 			private Border border = BorderFactory.createTitledBorder("Comments");
 			private final JTabbedPane tabs;
 			private final int tabIndex;
+			private DefaultMutableTreeNode rootNode;
+			private DefaultTreeModel commentsTreeModel;
 
 			public DescriptionAndCommentsPanel(JTabbedPane tabs, int tabIndex) {
 				this.tabs = tabs;
@@ -583,10 +581,21 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.fill = GridBagConstraints.BOTH;
 
 				gbc.weighty = 1.0;
-				comments.setLayout(new VerticalFlowLayout());
-				comments.setOpaque(true);
-				comments.setBackground(Color.WHITE);
-				scroll.setViewportView(comments);
+
+				JTree commentsTree = new JTree();
+				final IssueCommentRenderer renderer = new IssueCommentRenderer();
+				final TreeUISetup treeUISetup = new TreeUISetup(renderer);
+				new IssueCommentTreeMouseListener(commentsTree, renderer, treeUISetup);
+				commentsTree.setRootVisible(false);
+				commentsTree.setCellRenderer(renderer);
+
+				scroll.setViewportView(commentsTree);
+				treeUISetup.initializeUI(commentsTree, scroll);
+				commentsTree.setRowHeight(0);
+				rootNode = new DefaultMutableTreeNode();
+				commentsTreeModel = new DefaultTreeModel(rootNode);
+				commentsTree.setModel(commentsTreeModel);
+
 				scroll.getViewport().setOpaque(true);
 				scroll.getViewport().setBackground(Color.WHITE);
 				scroll.setOpaque(true);
@@ -615,18 +624,20 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			public void addComment(JIRAComment c) {
-				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, params.server, tabs);
-				comments.add(p);
+				rootNode.add(new IssueCommentTreeNode(c, rootNode.getChildCount()));
+				commentsTreeModel.nodeStructureChanged(rootNode);
 			}
 
 			public void clearComments() {
-				comments.removeAll();
+				rootNode.removeAllChildren();
+				commentsTreeModel.nodeStructureChanged(rootNode);
 			}
 
-			public void setAllVisible(boolean visible) {
-				for (Component c : comments.getComponents()) {
-					((CommentPanel) c).getShowHideButton().setState(visible);
+			public void setAllExpanded(boolean expanded) {
+				for (int i = 0; i < rootNode.getChildCount(); ++i) {
+					((IssueCommentTreeNode) rootNode.getChildAt(i)).setExpanded(expanded);
 				}
+				commentsTreeModel.nodeStructureChanged(rootNode);
 			}
 
 			public void scrollToFirst() {
@@ -722,62 +733,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private abstract class AbstractShowHideButton extends JLabel {
-
-			private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
-			private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
-			private boolean shown = true;
-
-			public AbstractShowHideButton() {
-				setHorizontalAlignment(0);
-				setIcon(down);
-				setToolTipText(getTooltip());
-				addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						click();
-					}
-				});
-			}
-
-			public void setState(boolean visible) {
-				shown = visible;
-				setIcon(shown ? down : right);
-				setComponentVisible(shown);
-			}
-
-			public void click() {
-				shown = !shown;
-				setState(shown);
-			}
-
-			protected abstract void setComponentVisible(boolean visible);
-
-			protected abstract String getTooltip();
-		}
-
-		private class ShowHideButton extends AbstractShowHideButton {
-			private JComponent body;
-			private JComponent container;
-
-			public ShowHideButton(JComponent body, JComponent container) {
-				this.body = body;
-				this.container = container;
-			}
-
-			@Override
-			protected void setComponentVisible(boolean visible) {
-				body.setVisible(visible);
-				container.validate();
-				container.getParent().validate();
-			}
-
-			@Override
-			protected String getTooltip() {
-				return "Collapse/Expand";
-			}
-		}
-
 		private class UserLabel extends HyperlinkLabel {
 			UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
 				super(userName, color, Color.WHITE, color);
@@ -798,12 +753,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 										+ userNameId);
 					}
 				});
-			}
-		}
-
-		private class WhiteLabel extends JLabel {
-			public WhiteLabel() {
-				setForeground(UIUtil.getTableSelectionForeground());
 			}
 		}
 
@@ -850,88 +799,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				Insets i = b.getBorderInsets(this);
 				int minHeight = i.top + i.bottom;
 				setMinimumSize(new Dimension(0, minHeight));
-			}
-		}
-
-		private class CommentPanel extends JPanel {
-
-			private ShowHideButton btnShowHide;
-
-			public CommentPanel(int cmtNumber, final JIRAComment comment, final JiraServerCfg server, JTabbedPane tabs) {
-				setOpaque(true);
-				setBackground(Color.WHITE);
-
-				setLayout(new GridBagLayout());
-				GridBagConstraints gbc;
-
-				JEditorPane commentBody = new JEditorPane();
-				btnShowHide = new ShowHideButton(commentBody, this);
-				gbc = new GridBagConstraints();
-				gbc.gridx++;
-				gbc.gridy = 0;
-				gbc.anchor = GridBagConstraints.WEST;
-				add(btnShowHide, gbc);
-
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
-				JLabel commentNumber = new WhiteLabel();
-				commentNumber.setText(Integer.valueOf(cmtNumber).toString() + ".");
-				add(commentNumber, gbc);
-
-				gbc.gridx++;
-				gbc.insets = new Insets(0, 0, 0, 0);
-				UserLabel ul = new UserLabel(server.getUrl(), comment.getAuthorFullName(),
-						comment.getAuthor(), UIUtil.getTableSelectionForeground());
-				add(ul, gbc);
-
-				final JLabel hyphen = new WhiteLabel();
-				hyphen.setText("-");
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
-				add(hyphen, gbc);
-
-				final JLabel creationDate = new WhiteLabel();
-
-				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
-				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				String t;
-				try {
-					t = dfo.format(df.parse(comment.getCreationDate().getTime().toString()));
-				} catch (java.text.ParseException e) {
-					t = "Invalid date: " + comment.getCreationDate().getTime().toString();
-				}
-
-				creationDate.setText(t);
-				gbc.gridx++;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.weightx = 1.0;
-				gbc.insets = new Insets(0, 0, 0, 0);
-				add(creationDate, gbc);
-
-				if (StackTraceDetector.containsStackTrace(comment.getBody())) {
-					tabs.add("Stack Trace: Comment #" + cmtNumber, new StackTracePanel(comment.getBody()));
-				}
-
-				int gridwidth = gbc.gridx + 1;
-
-				commentBody.setEditable(false);
-				commentBody.setOpaque(true);
-				commentBody.setBackground(Color.WHITE);
-				commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN + Constants.DIALOG_MARGIN / 2, 0, 0));
-				commentBody.setContentType("text/html");
-				commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
-				gbc.gridx = 0;
-				gbc.gridy = 1;
-				gbc.gridwidth = gridwidth;
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
-				add(commentBody, gbc);
-			}
-
-			public AbstractShowHideButton getShowHideButton() {
-				return btnShowHide;
 			}
 		}
 
