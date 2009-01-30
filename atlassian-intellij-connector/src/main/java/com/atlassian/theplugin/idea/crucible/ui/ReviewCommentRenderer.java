@@ -162,7 +162,7 @@ class CommentPanel extends JPanel {
 		} else {
 			setOpaque(false);
 		}
-		final JTextPane messageBody = createMessageBody(comment);
+		final JTextPane messageBody = createMessageBody(comment, isSelected);
 		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - lastColumnWidth, MIN_TEXT_WIDTH);
 		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		CellConstraints cc = new CellConstraints();
@@ -181,7 +181,7 @@ class CommentPanel extends JPanel {
 			add(messageBody, cc.xy(1, 2));
 			messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
 		} else {
-			final SimpleColoredComponent jLabel = getSingleLineComponent(comment);
+			final SimpleColoredComponent jLabel = getSingleLineComponent(comment, isSelected);
 			jLabel.setMinimumSize(new Dimension(0, 0));
 			add(jLabel, cc.xy(1, 2));
 		}
@@ -261,7 +261,7 @@ class CommentPanel extends JPanel {
 	}
 
 
-	private SimpleColoredComponent getSingleLineComponent(Comment vc) {
+	private SimpleColoredComponent getSingleLineComponent(Comment vc, boolean isSelected) {
 		final SimpleColoredComponent res = new SimpleColoredComponent();
 		res.setOpaque(false);
 		final String lineInfoLabel = getLineInfoLabel(vc);
@@ -270,17 +270,19 @@ class CommentPanel extends JPanel {
 		}
 		final String message = StringUtil.getFirstLine(comment.getMessage());
 		res.append(message + " ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-		res.append(" " + getRankingString(vc), SimpleTextAttributes.GRAY_ATTRIBUTES);
+		res.append(" " + getRankingString(vc), isSelected
+				? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.GRAY_ATTRIBUTES);
 		if (comment.isDraft()) {
 			StringBuilder drafInfo = new StringBuilder();
 			drafInfo.append(" ");
 			drafInfo.append("Draft");
-			res.append(drafInfo.toString(), SimpleTextAttributes.GRAY_ATTRIBUTES);
+			res.append(drafInfo.toString(), isSelected
+					? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.GRAY_ATTRIBUTES);
 		}
 		return res;
 	}
 
-	private static JTextPane createMessageBody(Comment vc) {
+	private static JTextPane createMessageBody(Comment vc, boolean isSelected) {
 		JTextPane pane = new JTextPane();
 		pane.setOpaque(false);
 		final StyledDocument doc = pane.getStyledDocument();
@@ -291,14 +293,14 @@ class CommentPanel extends JPanel {
 				doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ", doc.getStyle("line"));
 			}
 			doc.insertString(doc.getLength(), vc.getMessage() + " ", doc.getStyle("regular"));
-			doc.insertString(doc.getLength(), " " + getRankingString(vc), doc.getStyle("defect"));
+			doc.insertString(doc.getLength(), " " + getRankingString(vc), doc.getStyle(isSelected ? "defect-selected" : "defect"));
 			if (vc.isDraft()) {
 				StringBuilder drafInfo = new StringBuilder();
 				if (doc.getLength() > 0) {
 					drafInfo.append(" ");
 				}
 				drafInfo.append("Draft");
-				doc.insertString(doc.getLength(), drafInfo.toString(), doc.getStyle("draft"));
+				doc.insertString(doc.getLength(), drafInfo.toString(), doc.getStyle(isSelected ? "draft-selected" : "draft"));
 			}
 		} catch (BadLocationException e) {
 			throw new RuntimeException(e);
@@ -316,9 +318,17 @@ class CommentPanel extends JPanel {
 		Style s = doc.addStyle("defect", regular);
 		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
 
+		s = doc.addStyle("defect-selected", regular);
+
+		s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+
 		s = doc.addStyle("draft", regular);
 //		StyleConstants.setBold(s, true);
 		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
+
+		s = doc.addStyle("draft-selected", regular);
+
+		s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
 
 		s = doc.addStyle("line", regular);
 		StyleConstants.setBold(s, true);
