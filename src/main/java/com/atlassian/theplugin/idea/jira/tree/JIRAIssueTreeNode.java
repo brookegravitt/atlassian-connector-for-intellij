@@ -22,7 +22,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 
 	private static final int MAX_TOOLTIP_WIDTH = 400;
 	private static final int MAX_DESCRIPTION_LENGTH = 360;
-	
+
 	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
@@ -125,7 +125,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			add(padding, gbc);
 
 			setParameters(true, true);
-			
+
 			setToolTipText(buildTolltip(issue, 0));
 
 			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
@@ -142,7 +142,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 					: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
 			typeLabel.setIcon(typeIcon);
-			
+
 			key.setSelected(selected);
 			key.setEnabled(enabled);
 
@@ -180,15 +180,15 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 
 	private static String buildTolltip(JIRAIssue issue, int width) {
 		StringBuilder sb = new StringBuilder(
-                "<html>"
-                + BODY_WITH_STYLE);
+				"<html>"
+						+ BODY_WITH_STYLE);
 
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
 
 		sb.append("<table ").append(widthString).append(">");
 		sb.append("<tr><td colspan=5><b><font color=blue>");
-        sb.append(issue.getKey());
-        sb.append("</font></b>");
+		sb.append(issue.getKey());
+		sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
 		String summary = issue.getSummary();
@@ -200,6 +200,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
+		// issue.getDescription() can return null
 		String description = Html2text.translate(issue.getDescription());
 		if (description.length() > MAX_DESCRIPTION_LENGTH) {
 			description = description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
@@ -208,12 +209,12 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		sb.append("");
 		sb.append("</td></tr>");
 
-        sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
-        sb.append(issue.getStatus());
-        sb.append("");
-        sb.append("</td></tr>");
+		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
+		sb.append(issue.getStatus());
+		sb.append("");
+		sb.append("</td></tr>");
 
-        sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
+		sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
 		sb.append(issue.getReporter());
 		sb.append("");
 		sb.append("</td></tr>");
@@ -259,7 +260,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 
 	@Override
 	public void onSelect() {
-		model.setSeletedIssue(issue);	
+		model.setSeletedIssue(issue);
 	}
 
 	@Override
