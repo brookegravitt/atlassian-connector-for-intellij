@@ -120,6 +120,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private void load() {
 		final Document root;
 		final SAXBuilder builder = new SAXBuilder(false);
+		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
 			if (path == null || new File(path).exists() == false) {
@@ -147,7 +148,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 		ProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
 				privateRoot != null ? privateRoot.getRootElement() : null, privateCfgFactory);
-		ProjectConfiguration projectConfiguration;
+		final ProjectConfiguration projectConfiguration;
 		try {
 			projectConfiguration = cfgFactory.load();
 
@@ -162,27 +163,39 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			//now resolves migration problem from Crucible as FishEye to pure FishEye
 			projectConfiguration.setDefaultFishEyeServerId(null);
 		}
-		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project), projectConfiguration);
+
+		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+		
 		final String oldFilePath = getPrivateOldCfgFilePath();
 
 		//delete old private cfg file
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				if (oldFilePath != null && oldFilePath.length() > 0) {
-					int value = Messages.showYesNoDialog(project,
-							"Configuration migrated succesfully to new location.\nDelete file: " + oldFilePath,
-							"Would you like to delete old configuration file?", Messages.getQuestionIcon());
+				if (oldFilePath != null && oldFilePath.length() > 0
+						&& !projectConfiguration.isPrivateConfigurationMigrated()) {
+					int value = Messages.showYesNoCancelDialog(project,
+							"Would you like to delete old configuration file?\nDelete file: " + oldFilePath,
+							"Configuration migrated succesfully to new location", Messages.getQuestionIcon());
 
+					projectConfiguration.setPrivateConfigurationMigrated(true);
 					if (value == DialogWrapper.OK_EXIT_CODE) {
 						File oldPrivateCfgFile = new File(oldFilePath);
 						if (oldPrivateCfgFile != null) {
 							oldPrivateCfgFile.delete();
+
 						}
+					}					
+
+					if (value == DialogWrapper.CANCEL_EXIT_CODE) {
+						projectConfiguration.setPrivateConfigurationMigrated(false);
 					}
+
 
 				}
 			}
 		});
+
+		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
 
 	}
 
