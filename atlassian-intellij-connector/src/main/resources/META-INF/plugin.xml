@@ -142,8 +142,8 @@
 						serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.UiTaskExecutor"
 							serviceImplementation="com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor"/>
-		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationFactory"
-							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.PrivateConfigurationFactoryImpl"/>
+		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao"
+							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
 
 
 	</extensions>
