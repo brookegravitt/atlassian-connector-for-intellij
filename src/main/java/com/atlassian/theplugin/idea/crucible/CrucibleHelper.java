@@ -125,6 +125,16 @@ public final class CrucibleHelper {
 
 		ApplicationManager.getApplication().runReadAction(new Runnable() {
 			public void run() {
+				int line;
+				switch (file.getCommitType()) {
+					case Deleted:
+						line = comment.getFromStartLine() - 1;
+						break;
+					default:
+						line = comment.getToStartLine() - 1;
+						break;
+				}
+
 				VcsIdeaHelper.openFileWithDiffs(project
 						, true
 						, file.getFileDescriptor().getAbsoluteUrl()
@@ -133,7 +143,7 @@ public final class CrucibleHelper {
 						, file.getCommitType()
 						, comment.getToStartLine()
 						, 0
-						, new OpenEditorDiffActionImpl(project, review, file, comment.getToStartLine() - 1, 0, true)
+						, new OpenEditorDiffActionImpl(project, review, file, line, 0, true)
 				);
 			}
 		});

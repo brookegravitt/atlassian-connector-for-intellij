@@ -36,6 +36,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
@@ -111,6 +112,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 	public void closeToolWindow(AnActionEvent event) {
 		super.closeToolWindow(TOOL_WINDOW_TITLE, event);
+		CommentHighlighter.removeCommentsInEditors(project);
 	}
 
 	public Object getData(@NonNls final String dataId) {

@@ -19,8 +19,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.ui.IconPaths;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.atlassian.theplugin.idea.util.IdeaIconProvider;
 import com.atlassian.theplugin.util.ui.IconProvider;
 import com.intellij.ui.SimpleColoredComponent;
@@ -49,6 +49,7 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 
 	/**
 	 * Useful for injecting your own IconProvider. Facilitates testing outside IDEA framework
+	 *
 	 * @param iconProvider provider used for retrieving icons
 	 */
 	public ReviewCommentRenderer(final IconProvider iconProvider) {
@@ -124,9 +125,9 @@ class CommentPanel extends JPanel {
 	private static int oneLineHeight = getFDSFDS();
 
 	private static int getFDSFDS() {
-			JTextPane pane = new JTextPane();
-			final StyledDocument doc = pane.getStyledDocument();
-			addStylesToDocument(doc);
+		JTextPane pane = new JTextPane();
+		final StyledDocument doc = pane.getStyledDocument();
+		addStylesToDocument(doc);
 		try {
 			doc.insertString(doc.getLength(), "Ng", doc.getStyle("regular"));
 		} catch (BadLocationException e) {
@@ -233,6 +234,17 @@ class CommentPanel extends JPanel {
 				String txt2 = "";
 				txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
 				return txt2;
+			} else {
+				if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
+					int startLine = vc.getFromStartLine();
+					int endLine = vc.getFromEndLine();
+					if (endLine == 0) {
+						endLine = startLine;
+					}
+					String txt2 = "";
+					txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
+					return txt2;
+				}
 			}
 			return "General File";
 		}

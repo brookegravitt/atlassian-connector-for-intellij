@@ -16,7 +16,12 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.ui.MultiLineUtil;
 import com.intellij.ui.components.labels.BoldLabel;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -46,7 +51,7 @@ public final class CommentPanelBuilder {
 	}
 
 	public static JPanel createViewPanelOfGeneralComment(final ReviewAdapter review, final GeneralComment comment,
-														 final boolean isSelected, int width) {
+			final boolean isSelected, int width) {
 		return new CommentPanel(null, comment, width) {
 			@Override
 			public Color getHeaderBackground() {
@@ -132,7 +137,7 @@ public final class CommentPanelBuilder {
 			JPanel header = new JPanel(
 					new FormLayout(
 							"4dlu, left:pref, 10dlu, left:pref, 10dlu, left:pref, 10dlu, pref:grow, 10dlu, right:pref, "
-							 + "10dlu, right:pref, 10dlu, pref, 4dlu",
+									+ "10dlu, right:pref, 10dlu, pref, 4dlu",
 							"2dlu, pref:grow, 2dlu"));
 			header.add(getAuthorLabel(), AUTHOR_POS);
 			header.add(getDateLabel(), DATE_POS);
