@@ -53,6 +53,8 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 			case Copied:
 			case Modified:
 				if (displayFile != null) {
+					displayFile.getFile().putUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY,
+							reviewItem.getFileDescriptor().getUrl());
 					displayFile.getFile().putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
 					Editor editor = fem.openTextEditor(displayFile, focusOnOpen);
 					if (editor == null) {
@@ -72,6 +74,8 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 				break;
 			case Added:
 				if (displayFile != null) {
+					displayFile.getFile().putUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY,
+							reviewItem.getFileDescriptor().getUrl());
 					displayFile.getFile().putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
 					Editor editor = fem.openTextEditor(displayFile, focusOnOpen);
 					if (editor == null) {
@@ -82,6 +86,8 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 				break;
 			case Deleted:
 				if (referenceFile != null) {
+					referenceFile.putUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY,
+							reviewItem.getOldFileDescriptor().getUrl());
 					referenceFile.putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
 					OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile, line, column);
 					Editor editor = fem.openTextEditor(referenceFileDescriptor, focusOnOpen);

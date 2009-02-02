@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
@@ -158,8 +159,13 @@ public class CommentAction extends AnAction {
 			if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 				newComment.setCreateDate(new Date());
 				newComment.setAuthor(new UserBean(review.getServer().getUsername()));
-				newComment.setToStartLine(start);
-				newComment.setToEndLine(end);
+				if (file.getCommitType() == CommitType.Deleted) {
+					newComment.setFromStartLine(start);
+					newComment.setFromEndLine(end);
+				} else {
+					newComment.setToStartLine(start);
+					newComment.setToEndLine(end);
+				}
 
 				Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
 					public void run(@NotNull final ProgressIndicator indicator) {

@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -38,7 +39,6 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,14 +49,14 @@ public final class CommentHighlighter {
 	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
 
+	private static final String CRUCIBLE_REVIEW_CONTEXT_KEY_NAME = "CRUCIBLE_REVIEW_CONTEXT";
+	public static final Key<String> CRUCIBLE_REVIEW_CONTEXT_KEY = Key.create(CRUCIBLE_REVIEW_CONTEXT_KEY_NAME);
+
 	private static final String REVIEW_DATA_KEY_NAME = "REVIEW_DATA_KEY";
 	public static final Key<ReviewAdapter> REVIEW_DATA_KEY = Key.create(REVIEW_DATA_KEY_NAME);
 
 	private static final String REVIEWITEM_DATA_KEY_NAME = "REVIEW_ITEM_DATA_KEY";
 	public static final Key<CrucibleFileInfo> REVIEWITEM_DATA_KEY = Key.create(REVIEWITEM_DATA_KEY_NAME);
-
-	private static final String REVIEWITEM_GUESS_KEY_NAME = "REVIEW_ITEM_GUESS_KEY";
-	public static final Key<CrucibleFileInfo> REVIEWITEM_GUESS_KEY = Key.create(REVIEWITEM_GUESS_KEY_NAME);
 
 	private static final String REVIEWITEM_CURRENT_CONTENT_KEY_NAME = "EVIEWITEM_CURRENT_CONTENT_KEY";
 	public static final Key<Boolean> REVIEWITEM_CURRENT_CONTENT_KEY = Key.create(REVIEWITEM_CURRENT_CONTENT_KEY_NAME);
@@ -144,20 +144,37 @@ public final class CommentHighlighter {
 					} else {
 						try {
 							Set<CrucibleFileInfo> files = review.getFiles();
-							for (CrucibleFileInfo fileInfo : files) {
-								PsiFile f = CodeNavigationUtil
-										.guessCorrespondingPsiFile(project, fileInfo.getFileDescriptor().getName());
-								if (f != null) {
-									VirtualFile virtualFile2 = FileDocumentManager.getInstance().getFile(document);
-									if (virtualFile2 != null) {
-										if (virtualFile2.equals(f.getVirtualFile())) {
-											applyHighlighters(project, editor, fileInfo);
-											virtualFile.putUserData(REVIEW_DATA_KEY, review);
-											virtualFile.putUserData(REVIEWITEM_DATA_KEY, fileInfo);
-											virtualFile.putUserData(COMMENT_DATA_KEY, true);
-										}
-										break;
-									}
+							if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
+								final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+										virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
+								if (fileInfo != null) {
+									VcsIdeaHelper.openFileWithDiffs(project
+											, false
+											, fileInfo.getFileDescriptor().getAbsoluteUrl()
+											, fileInfo.getOldFileDescriptor().getRevision()
+											, fileInfo.getFileDescriptor().getRevision()
+											, fileInfo.getCommitType()
+											, 1
+											, 1
+											,
+											new UpdateEditorWithContextActionImpl(project, editor, review,
+													fileInfo));
+								}
+							} else {
+								CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+										virtualFile.getPath(), files);
+								if (fileInfo != null) {
+									VcsIdeaHelper.openFileWithDiffs(project
+											, false
+											, fileInfo.getFileDescriptor().getAbsoluteUrl()
+											, fileInfo.getOldFileDescriptor().getRevision()
+											, fileInfo.getFileDescriptor().getRevision()
+											, fileInfo.getCommitType()
+											, 1
+											, 1
+											,
+											new UpdateEditorCurrentContentActionImpl(project, editor, review,
+													fileInfo));
 								}
 							}
 						} catch (ValueNotYetInitialized valueNotYetInitialized) {
@@ -167,21 +184,54 @@ public final class CommentHighlighter {
 				}
 			}
 		}
+
 	}
 
-	private static void applyHighlighters(@NotNull final Project project,
-			@NotNull final Editor editor,
-			@NotNull final CrucibleFileInfo fileInfo) {
+	public static void removeCommentsInEditors(@NotNull final Project project) {
+		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
+			Document document = editor.getDocument();
+			if (document != null) {
+				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+				if (virtualFile != null) {
+					if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
+						removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+					}
+				}
+			}
+		}
+	}
+
+	private static void applyHighlighters
+			(
+					@NotNull final Project project,
+					@NotNull final Editor editor,
+					@NotNull final CrucibleFileInfo fileInfo) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
 
 		TextAttributes textAttributes = new TextAttributes();
 		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
 		for (VersionedComment comment : fileInfo.getVersionedComments()) {
-			if (comment.getToStartLine() > 0) {
-				int endLine = comment.getToEndLine() > 0 ? comment.getToEndLine() : comment.getToStartLine();
+			int start = 0;
+			int stop = 0;
+			switch (fileInfo.getCommitType()) {
+				case Deleted:
+					if (comment.isFromLineInfo()) {
+						start = comment.getFromStartLine();
+						stop = comment.getFromEndLine();
+					}
+					break;
+				default:
+					if (comment.isToLineInfo()) {
+						start = comment.getToStartLine();
+						stop = comment.getToEndLine();
+					}
+					break;
+			}
+			if (start > 0) {
+				int endLine = stop > 0 ? stop : start;
 				try {
-					final int startOffset = editor.getDocument().getLineStartOffset(comment.getToStartLine() - 1);
+					final int startOffset = editor.getDocument().getLineStartOffset(start - 1);
 					int endOffset = editor.getDocument().getLineEndOffset(endLine - 1);
 					if (startOffset < endOffset) {
 						endOffset--;
@@ -199,7 +249,9 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlighters(@NotNull final MarkupModel markupModel) {
+	private static void removeHighlighters
+			(
+					@NotNull final MarkupModel markupModel) {
 		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
 			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
 				markupModel.removeHighlighter(rh);
@@ -207,8 +259,10 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlightersAndContextData(@NotNull final MarkupModel markupModel,
-			@NotNull VirtualFile virtualFile) {
+	private static void removeHighlightersAndContextData
+			(
+					@NotNull final MarkupModel markupModel,
+					@NotNull VirtualFile virtualFile) {
 		removeHighlighters(markupModel);
 		virtualFile.putUserData(REVIEW_DATA_KEY, null);
 		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
