@@ -11,13 +11,13 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-public class UpdateEditorDiffActionImpl implements OpenDiffAction {
+public class UpdateEditorCurrentContentActionImpl implements OpenDiffAction {
 	private final Project project;
 	private final Editor editor;
 	private final ReviewAdapter review;
 	private final CrucibleFileInfo reviewItem;
 
-	public UpdateEditorDiffActionImpl(@NotNull final Project project,
+	public UpdateEditorCurrentContentActionImpl(@NotNull final Project project,
 			@NotNull Editor editor,
 			@NotNull final ReviewAdapter review,
 			@NotNull final CrucibleFileInfo reviewItem) {
@@ -44,7 +44,7 @@ public class UpdateEditorDiffActionImpl implements OpenDiffAction {
 									, reviewItem.getOldFileDescriptor().getRevision()
 									, reviewItem.getFileDescriptor().getRevision());
 						}
-						CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, displayFile);
+						CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, null);
 					}
 				}
 				break;
@@ -53,7 +53,7 @@ public class UpdateEditorDiffActionImpl implements OpenDiffAction {
 					Boolean current = displayFile.getFile().getUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY);
 					if (current != null && current.equals(Boolean.TRUE)) {
 						displayFile.getFile().putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
-						CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, displayFile);
+						CommentHighlighter.highlightCommentsInEditor(project, editor, review, reviewItem, null);
 					}
 				}
 				break;
@@ -62,9 +62,8 @@ public class UpdateEditorDiffActionImpl implements OpenDiffAction {
 					Boolean current = referenceFile.getUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY);
 					if (current != null && current.equals(Boolean.TRUE)) {
 						referenceFile.putUserData(CommentHighlighter.REVIEWITEM_DATA_KEY, reviewItem);
-						OpenFileDescriptor referenceFileDescriptor = new OpenFileDescriptor(project, referenceFile);
 						CommentHighlighter
-								.highlightCommentsInEditor(project, editor, review, reviewItem, referenceFileDescriptor);
+								.highlightCommentsInEditor(project, editor, review, reviewItem, null);
 					}
 				}
 				break;
