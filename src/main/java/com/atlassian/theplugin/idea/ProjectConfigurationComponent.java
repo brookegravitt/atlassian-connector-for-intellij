@@ -17,13 +17,20 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.PrivateConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
@@ -57,27 +64,38 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final Project project;
 	private final CfgManager cfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
+	private final PrivateConfigurationFactory privateCfgFactory;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
-	private PrivateConfigurationFactory privateCfgFactory = new PrivateConfigurationFactoryImpl();
+	/**
+	 * race condtions wrt to this variable are harmless as threads mutating it (via save) reset it from false to true
+	 * and then save configuration. So saving (if really needed) will not be skipped anyway even if two threads
+	 * start in the moment when shouldSaveConfiguration was false
+	 */
+	private boolean shouldSaveConfiguration;
 
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
-			final UiTaskExecutor uiTaskExecutor) {
+			final UiTaskExecutor uiTaskExecutor,
+			@NotNull PrivateConfigurationFactory privateCfgFactory) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
-		load();
+		this.privateCfgFactory = privateCfgFactory;
+		shouldSaveConfiguration = load();
 	}
 
 
 	public static void handleServerCfgFactoryException(final Project theProject, final Exception e) {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
-				DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.",
-						e, CFG_LOAD_ERROR_MSG);
+				DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.\n"
+						+ "If you want to preserve settings stored in your configuration, do not edit your "
+						+ PluginUtil.PRODUCT_NAME + " configuration using IDEA, but instead close the project "
+						+  "and try resolve the problem by modyfing directly the configuration file",
+						e, PluginUtil.PRODUCT_NAME);
 			}
 		});
 	}
@@ -117,89 +135,100 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
-	private void load() {
+	private boolean load() {
 		final Document root;
 		final SAXBuilder builder = new SAXBuilder(false);
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
 			if (path == null || !new File(path).exists()) {
+				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
-				return;
+				return false;
 			}
 			root = builder.build(path);
 			cleanupDom(root);
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
-			return;
+			return false;
 		}
 
-		Document privateRoot = null; // null means that there is no private cfg available
-		try {
-			final String privateCfgFile = getPrivateOldCfgFilePath();
-			if (privateCfgFile != null && new File(privateCfgFile).exists()) {
-				privateRoot = builder.build(privateCfgFile);
-			}
+		final JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
+				privateCfgFactory);
+		migrateOldPrivateProjectSettings(cfgFactory);
 
-		} catch (Exception e) {
-			handleServerCfgFactoryException(project, e);
-		}
-
-		ProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
-				privateRoot != null ? privateRoot.getRootElement() : null, privateCfgFactory);
-		final ProjectConfiguration projectConfiguration;
 		try {
+			final ProjectConfiguration projectConfiguration;
 			projectConfiguration = cfgFactory.load();
-
+			if (projectConfiguration.getDefaultFishEyeServer() == null) {
+				//means that configuration holds Crucible as FishEye server.
+				//in the future this code should be removed
+				//now resolves migration problem from Crucible as FishEye to pure FishEye
+				projectConfiguration.setDefaultFishEyeServerId(null);
+			}
+			cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
 		} catch (ServerCfgFactoryException e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
-			return;
-		}
-		if (projectConfiguration.getDefaultFishEyeServer() == null) {
-			//means that configuration holds Crucible as FishEye server.
-			//in the future this code should be removed
-			//now resolves migration problem from Crucible as FishEye to pure FishEye
-			projectConfiguration.setDefaultFishEyeServerId(null);
+			return false;
 		}
 
-		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
-		
-		final String oldFilePath = getPrivateOldCfgFilePath();
 
-		//delete old private cfg file
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				if (oldFilePath != null && oldFilePath.length() > 0
-						&& !projectConfiguration.isPrivateConfigurationMigrated()) {
-					int value = Messages.showYesNoCancelDialog(project,
-							"Would you like to delete old configuration file?\nDelete file: " + oldFilePath,
-							"Configuration migrated succesfully to new location", Messages.getQuestionIcon());
+		return true;
+	}
 
-					projectConfiguration.setPrivateConfigurationMigrated(true);
-					if (value == DialogWrapper.OK_EXIT_CODE) {
-						File oldPrivateCfgFile = new File(oldFilePath);
-						oldPrivateCfgFile.delete();
-
+	private void migrateOldPrivateProjectSettings(final JDomProjectConfigurationFactory cfgFactory) {
+		final SAXBuilder builder = new SAXBuilder(false);
+		final File privateCfgFile = getPrivateOldCfgFilePath();
+		boolean someMigrationHappened = false;
+		if (privateCfgFile != null) {
+			try {
+				final Document privateRoot = builder.build(privateCfgFile);
+				final PrivateProjectConfiguration ppc = cfgFactory.loadOldPrivateConfiguration(privateRoot.getRootElement());
+				for (PrivateServerCfgInfo privateServerCfgInfo : ppc.getPrivateServerCfgInfos()) {
+					try {
+						final PrivateServerCfgInfo newPsci = privateCfgFactory.load(privateServerCfgInfo.getServerId());
+						if (newPsci == null) {
+							privateCfgFactory.save(privateServerCfgInfo);
+							someMigrationHappened = true;
+						}
+					} catch (ServerCfgFactoryException e) {
+						// ignore here - just don't try to overwrite it with data from old XML file
 					}
-
-					if (value == DialogWrapper.CANCEL_EXIT_CODE) {
-						projectConfiguration.setPrivateConfigurationMigrated(false);
-					}
-
-
 				}
+			} catch (Exception e) {
+				handleServerCfgFactoryException(project, e);
 			}
-		});
+		}
 
-		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+		if (someMigrationHappened) {
+			ApplicationManager.getApplication().invokeLater(new Runnable() {
+				public void run() {
+					int value = Messages.showYesNoCancelDialog(project,
+							"Configuration has been succesfully migrated to new location (home directory).\n"
+									+ "Would you like to delete now old configuration file?\n\nDelete file: ["
+									+ privateCfgFile + "]",
+							PluginUtil.PRODUCT_NAME + " upgrade process", Messages.getQuestionIcon());
+
+					if (value == DialogWrapper.OK_EXIT_CODE) {
+						if (privateCfgFile.delete() == false) {
+							Messages.showWarningDialog(project, "Cannot remove file [" + privateCfgFile.getAbsolutePath()
+									+ "].\nTry removing it manually.\n" + PluginUtil.PRODUCT_NAME
+									+ " should still behave correctly.", PluginUtil.PRODUCT_NAME);
+						}
+
+					}
+				}
+			});
+		}
 
 	}
 
 	/**
 	 * Ensuring that old attributes do not break our loading
-	 * @param root, roote element
+	 * @param root root element of XML document
+	 * @throws org.jdom.JDOMException when tree is invalid
 	 */
 	private void cleanupDom(final Document root) throws JDOMException {
 		@SuppressWarnings("unchecked")
@@ -207,6 +236,13 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		for (Element e : nodes) {
 			e.removeChild("projectName");
 			e.removeChild("repositoryName");
+		}
+		@SuppressWarnings("unchecked")
+		final List<Element> prjCfgNode = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration");
+		for (Element e : prjCfgNode) {
+			e.removeChild("isPrivateConfigurationMigrated");
+			e.removeChild("defaultJiraServerId");
+			e.removeChild("defaultJiraProject");
 		}
 	}
 
@@ -227,12 +263,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 
-	private String getPrivateOldCfgFilePath() {
-		final File baseNewProjectFile = new File(project.getBaseDir().getPath()
+	private File getPrivateOldCfgFilePath() {
+		final VirtualFile baseDir = project.getBaseDir();
+		if (baseDir == null) {
+			return null;
+		}
+		final File baseNewProjectFile = new File(baseDir.getPath()
 				+ File.separator + "atlassian-ide-plugin.private.xml");
 
-		if (baseNewProjectFile != null && baseNewProjectFile.isFile() && baseNewProjectFile.canRead()) {
-			return baseNewProjectFile.getAbsolutePath();
+		if (baseNewProjectFile.isFile() && baseNewProjectFile.canRead()) {
+			return baseNewProjectFile;
 		}
 
 		return null;
@@ -245,23 +285,21 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
 
-		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, null, privateCfgFactory);
+		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, privateCfgFactory);
 		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
-			cfgFactory.save(configuration);
-			final String publicCfgFile = getCfgFilePath();
-
-			writeXmlFile(element, publicCfgFile);
-
-			for (ServerCfg serverCfg : configuration.getServers()) {
-				try {
-					privateCfgFactory.save(serverCfg.createPrivateProjectConfiguration());
-				} catch (ThePluginException e) {
-					IdeaLoggerImpl.getInstance().error("Cannot write private cfg file for server Uuid = "
-							+ serverCfg.getServerId().getUuid());
-				}
+			if (configuration.getServers().size() > 0 && shouldSaveConfiguration == false) {
+				// apparently somebody still prefers to populate invalid configuration, so we would save it now
+				shouldSaveConfiguration = true;
 			}
 
+			if (shouldSaveConfiguration) {
+				cfgFactory.save(configuration);
+				final String publicCfgFile = getCfgFilePath();
+
+				writeXmlFile(element, publicCfgFile);
+
+			}
 		}
 	}
 
