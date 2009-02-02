@@ -19,13 +19,13 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.PrivateConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
 import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
-import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationFactory;
+import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
@@ -64,7 +64,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final Project project;
 	private final CfgManager cfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final PrivateConfigurationFactory privateCfgFactory;
+	private final PrivateConfigurationDao privateCfgDao;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
@@ -79,11 +79,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
 			final UiTaskExecutor uiTaskExecutor,
-			@NotNull PrivateConfigurationFactory privateCfgFactory) {
+			@NotNull PrivateConfigurationDao privateCfgDao) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
-		this.privateCfgFactory = privateCfgFactory;
+		this.privateCfgDao = privateCfgDao;
 		shouldSaveConfiguration = load();
 	}
 
@@ -154,8 +154,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			return false;
 		}
 
-		final JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(root.getRootElement(),
-				privateCfgFactory);
+		final JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(root.getRootElement(), privateCfgDao);
 		migrateOldPrivateProjectSettings(cfgFactory);
 
 		try {
@@ -178,7 +177,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return true;
 	}
 
-	private void migrateOldPrivateProjectSettings(final JDomProjectConfigurationFactory cfgFactory) {
+	private void migrateOldPrivateProjectSettings(final JDomProjectConfigurationDao cfgFactory) {
 		final SAXBuilder builder = new SAXBuilder(false);
 		final File privateCfgFile = getPrivateOldCfgFilePath();
 		boolean someMigrationHappened = false;
@@ -188,9 +187,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				final PrivateProjectConfiguration ppc = cfgFactory.loadOldPrivateConfiguration(privateRoot.getRootElement());
 				for (PrivateServerCfgInfo privateServerCfgInfo : ppc.getPrivateServerCfgInfos()) {
 					try {
-						final PrivateServerCfgInfo newPsci = privateCfgFactory.load(privateServerCfgInfo.getServerId());
+						final PrivateServerCfgInfo newPsci = privateCfgDao.load(privateServerCfgInfo.getServerId());
 						if (newPsci == null) {
-							privateCfgFactory.save(privateServerCfgInfo);
+							privateCfgDao.save(privateServerCfgInfo);
 							someMigrationHappened = true;
 						}
 					} catch (ServerCfgFactoryException e) {
@@ -285,7 +284,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");
 
-		JDomProjectConfigurationFactory cfgFactory = new JDomProjectConfigurationFactory(element, privateCfgFactory);
+		JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(element, privateCfgDao);
 		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			if (configuration.getServers().size() > 0 && shouldSaveConfiguration == false) {
