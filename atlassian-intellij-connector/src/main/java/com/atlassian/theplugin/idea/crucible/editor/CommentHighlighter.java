@@ -201,11 +201,9 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void applyHighlighters
-			(
-					@NotNull final Project project,
-					@NotNull final Editor editor,
-					@NotNull final CrucibleFileInfo fileInfo) {
+	private static void applyHighlighters(@NotNull final Project project,
+			@NotNull final Editor editor,
+			@NotNull final CrucibleFileInfo fileInfo) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
 
@@ -249,9 +247,7 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlighters
-			(
-					@NotNull final MarkupModel markupModel) {
+	private static void removeHighlighters(@NotNull final MarkupModel markupModel) {
 		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
 			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
 				markupModel.removeHighlighter(rh);
@@ -259,10 +255,8 @@ public final class CommentHighlighter {
 		}
 	}
 
-	private static void removeHighlightersAndContextData
-			(
-					@NotNull final MarkupModel markupModel,
-					@NotNull VirtualFile virtualFile) {
+	private static void removeHighlightersAndContextData(@NotNull final MarkupModel markupModel,
+			@NotNull VirtualFile virtualFile) {
 		removeHighlighters(markupModel);
 		virtualFile.putUserData(REVIEW_DATA_KEY, null);
 		virtualFile.putUserData(REVIEWITEM_DATA_KEY, null);
