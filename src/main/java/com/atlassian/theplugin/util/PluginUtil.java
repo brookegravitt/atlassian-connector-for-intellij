@@ -24,6 +24,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.jdom.xpath.XPath;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.io.File;
@@ -171,5 +172,9 @@ public final class PluginUtil {
 		}
 		return dateWidth;
 	}
+
+
+	@NotNull
+	public static final String PRODUCT_NAME = "Atlassian IntelliJ Connector"; 
 }
 
