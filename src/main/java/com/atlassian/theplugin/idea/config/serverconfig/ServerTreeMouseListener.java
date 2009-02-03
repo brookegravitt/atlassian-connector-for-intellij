@@ -49,7 +49,7 @@ public class ServerTreeMouseListener extends MouseAdapter implements MouseMotion
 			if (treepath != null) {
 				final Object o = treepath.getLastPathComponent();
 				if (o instanceof ServerInfoNode) {
-					BrowserUtil.launchBrowser(((ServerInfoNode)o).getServerType().getInfoUrl());
+					BrowserUtil.launchBrowser(((ServerInfoNode) o).getServerType().getInfoUrl());
 				}
 			}
 		}
