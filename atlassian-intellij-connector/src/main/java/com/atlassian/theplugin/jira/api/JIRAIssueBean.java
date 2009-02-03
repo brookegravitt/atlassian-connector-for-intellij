@@ -18,9 +18,9 @@ package com.atlassian.theplugin.jira.api;
 
 import org.jdom.Element;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class JIRAIssueBean implements JIRAIssue {
     private String serverUrl;
@@ -55,6 +55,10 @@ public class JIRAIssueBean implements JIRAIssue {
 	private List<String> subTaskList;
 	private boolean thisIsASubTask;
 	private String parentIssueKey;
+	private String originalEstimate;
+	private String remainingEstimate;
+	private String timeSpent;
+	private List<JIRAComment> commentsList;
 
 	public JIRAIssueBean() {
     }
@@ -140,6 +144,32 @@ public class JIRAIssueBean implements JIRAIssue {
 				if (subTaskKey != null) {
 					subTaskList.add(subTaskKey);
 				}
+			}
+		}
+
+		this.originalEstimate = getTextSafely(e, "timeoriginalestimate");
+		this.remainingEstimate = getTextSafely(e, "timeestimate");
+		this.timeSpent = getTextSafely(e, "timespent");
+
+		Element comments = e.getChild("comments");
+		if (comments != null) {
+			commentsList = new ArrayList<JIRAComment>();
+			for (Object comment : comments.getChildren("comment")) {
+				Element el = (Element) comment;
+				String commentId = el.getAttributeValue("id", "-1");
+				String author = el.getAttributeValue("author", "Unknown");
+				String text = el.getText();
+				String creationDate = el.getAttributeValue("created", "Unknown");
+
+				Calendar cal = Calendar.getInstance();
+				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
+				try {
+					cal.setTime(df.parse(creationDate));
+				} catch (java.text.ParseException ex) {
+					// oh well, invalid time  - now what? :(
+				}
+
+				commentsList.add(new JIRACommentBean(commentId, author, text, cal));
 			}
 		}
 	}
@@ -373,12 +403,9 @@ public class JIRAIssueBean implements JIRAIssue {
         if (serverUrl != null ? !serverUrl.equals(that.serverUrl) : that.serverUrl != null) {
             return false;
         }
-        if (summary != null ? !summary.equals(that.summary) : that.summary != null) {
-            return false;
-        }
+		return !(summary != null ? !summary.equals(that.summary) : that.summary != null);
 
-        return true;
-    }
+	}
 
     private static final int ONE_EFF = 31;
 
@@ -428,5 +455,33 @@ public class JIRAIssueBean implements JIRAIssue {
 
 	public void setComponents(List<JIRAConstant> components) {
 		this.components = components;
+	}
+
+	public String getOriginalEstimate() {
+		return originalEstimate;
+	}
+
+	public void setOriginalEstimate(String originalEstimate) {
+		this.originalEstimate = originalEstimate;
+	}
+
+	public String getRemainingEstimate() {
+		return remainingEstimate;
+	}
+
+	public void setRemainingEstimate(String remainingEstimate) {
+		this.remainingEstimate = remainingEstimate;
+	}
+
+	public String getTimeSpent() {
+		return timeSpent;
+	}
+
+	public void setTimeSpent(String timeSpent) {
+		this.timeSpent = timeSpent;
+	}
+
+	public List<JIRAComment> getComments() {
+		return commentsList;
 	}
 }
