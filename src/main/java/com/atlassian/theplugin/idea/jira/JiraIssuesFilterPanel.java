@@ -599,6 +599,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
 			if (!isWindowClosed()) {
+				enableFields(false);
+				final ModalityState modality = ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane());
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						setListValues(projectList, prjSel);
@@ -614,7 +616,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 						addProjectActionListener();
 						enableFields(true);
 					}
-				}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
+				}, modality);
 			}
 		}
 	}
