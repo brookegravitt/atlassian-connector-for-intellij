@@ -21,7 +21,12 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -118,10 +123,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			treeUISetup = new TreeUISetup(renderer);
 			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar",
 					treeUISetup, new AtlassianTree.ViewStateListener() {
-				public void setViewState(AtlassianTreeWithToolbar.ViewState state) {
-					setCommentsState(state);
-				}
-			});
+						public void setViewState(AtlassianTreeWithToolbar.ViewState state) {
+							setCommentsState(state);
+						}
+					});
 			new ReviewDetailsTreeMouseListener(reviewFilesAndCommentsTree.getTreeComponent(), renderer, treeUISetup);
 			reviewFilesAndCommentsTree.setRootVisible(false);
 			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
@@ -299,7 +304,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			public boolean isValid(final AtlassianTreeNode node) {
 				if (node instanceof CrucibleFileNode) {
 					CrucibleFileNode anode = (CrucibleFileNode) node;
-					return anode.getFile().getNumberOfComments() > 0;
+					return (anode.getFile().getNumberOfComments() > 0) || (node.getChildCount() > 0);
 				}
 				return true;
 			}
