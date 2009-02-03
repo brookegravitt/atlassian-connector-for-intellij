@@ -44,21 +44,12 @@ public abstract class TreeAction extends AnAction {
 		e.getPresentation().setEnabled(enabled);
 
 		updateTreeAction(e, tree);
-
-//		if (tree != null) {
-//			updateTreeAction(e, tree);
-//		} else {
-//			enabled = false;
-//		}
-//		e.getPresentation().setEnabled(enabled);
 	}
 
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTreeWithToolbar tree = identifyTreeWithAllPossibleMeans(e);
 		Project project = DataKeys.PROJECT.getData(e.getDataContext());
-//		if (tree != null) {
 		executeTreeAction(project, tree);
-//		}
 	}
 
 	private AtlassianTreeWithToolbar identifyTreeWithAllPossibleMeans(final AnActionEvent e) {
@@ -69,9 +60,6 @@ public abstract class TreeAction extends AnAction {
 		if (tree == null) {
 			tree = findTreeM3(e);
 		}
-//		if (tree == null) {
-//			tree = findTreeM4(e);
-//		}
 		return tree;
 	}
 

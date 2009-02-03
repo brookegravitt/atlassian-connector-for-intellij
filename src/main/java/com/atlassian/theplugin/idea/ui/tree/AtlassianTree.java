@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.ui.tree;
 
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -136,7 +137,7 @@ public class AtlassianTree extends JTree {
 			return;
 		}
 		for (int i = 0; i < getRowCount(); i++) {
-			if (((AtlassianTreeNode) getPathForRow(i).getLastPathComponent()).equals(node)) {
+			if (getPathForRow(i).getLastPathComponent().equals(node)) {
 				disableNotification = true; // this works because everything is being done in Swing thread
 				this.setSelectionRow(i);
 				this.scrollRowToVisible(i);
@@ -175,4 +176,7 @@ public class AtlassianTree extends JTree {
 	}
 
 
+	public interface ViewStateListener {
+		void setViewState(AtlassianTreeWithToolbar.ViewState state);
+	}
 }

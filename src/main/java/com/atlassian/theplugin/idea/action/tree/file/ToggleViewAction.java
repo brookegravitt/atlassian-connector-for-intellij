@@ -36,6 +36,7 @@ public class ToggleViewAction extends TreeAction {
 		}
 		if (tree != null) {
 			tree.changeState();
+			tree.setViewState(AtlassianTreeWithToolbar.ViewState.EXPANDED);
 		}
 	}
 
