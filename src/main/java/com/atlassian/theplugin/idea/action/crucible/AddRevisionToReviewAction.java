@@ -24,7 +24,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 
-public class AddRevisionToReviewAction extends Crucible16MultiRevisionRepositoryAction {
+public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
