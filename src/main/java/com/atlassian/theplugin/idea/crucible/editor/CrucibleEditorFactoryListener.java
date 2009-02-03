@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
@@ -29,29 +30,35 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 	}
 
 	public void editorCreated(final EditorFactoryEvent editorFactoryEvent) {
-		Document doc = editorFactoryEvent.getEditor().getDocument();
-		VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
-		if (virtualFile != null) {
-			CrucibleFileInfo crucibleFile = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-			if (crucibleFile == null) {
-				Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
-				if (!reviews.isEmpty()) {
-					for (ReviewAdapter review : reviews) {
-						try {
-							crucibleFile = CodeNavigationUtil
-									.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// don't do anything - should not happen, but even if happens - we don't want to break file opening
-						}
+		try {
+			Document doc = editorFactoryEvent.getEditor().getDocument();
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
+			if (virtualFile != null) {
+				CrucibleFileInfo crucibleFile = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+				if (crucibleFile == null) {
+					Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
+					if (!reviews.isEmpty()) {
+						for (ReviewAdapter review : reviews) {
+							try {
+								crucibleFile = CodeNavigationUtil
+										.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								// don't do anything - should not happen, but even if happens - we don't want to break file opening
+							}
 
-						if (crucibleFile != null) {
-							showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,
-									review,
-									crucibleFile);
+							if (crucibleFile != null) {
+								showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,
+										review,
+										crucibleFile);
+							}
 						}
 					}
 				}
 			}
+		} catch (Throwable t) {
+			// this is crutial part of file open procedure in IDEA. Even if we can not display comment highlighters
+			// file should be opened anyway.
+			LoggerImpl.getInstance().error("Unable to determine Crucible comments for file", t);
 		}
 	}
 
