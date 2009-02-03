@@ -21,8 +21,6 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NonNls;
@@ -36,12 +34,11 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
-
+	public static final String TOOLBAR_NAME = "ThePlugin.AddRemoveServerPopup";
+	
 	private JTree serverTree;
 	private ServerTreeModel model;
 	private DefaultMutableTreeNode selectedNode;
@@ -52,7 +49,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	private static final int VISIBLE_ROW_COUNT = 7;
     private Collection<ServerCfg> servers;
 
-    /**
+	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
 	 * @param serverConfigPanel panel to invoke storeServer() and showEmptyPanel() on.
 	 */
@@ -93,44 +90,10 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			serverTree.setShowsRootHandles(true);
 
 			serverTree.addTreeSelectionListener(this);
-			serverTree.addMouseListener(new MouseAdapter() {
-				public static final String TOOLBAR_NAME = "ThePlugin.AddRemoveServerPopup";
 
-				@Override
-				public void mousePressed(MouseEvent e) {
-					processPopup(e);
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					processPopup(e);
-				}
-
-				public void processPopup(MouseEvent e) {
-					if (e.isPopupTrigger() == false) {
-						return;
-					}
-
-					final JTree theTree = (JTree) e.getComponent();
-
-					TreePath path = theTree.getPathForLocation(e.getX(), e.getY());
-					if (path != null) {
-						theTree.setSelectionPath(path);
-					}
-//					Object o = path.getLastPathComponent();
-//					if (o instanceof ServerNode) {
-						ActionGroup menu = (ActionGroup) ActionManager.getInstance().getAction(TOOLBAR_NAME);
-						if (menu == null) {
-							return;
-						}
-						ActionManager.getInstance().createActionPopupMenu(toString(), menu)
-								.getComponent().show(e.getComponent(), e.getX(), e.getY());
-//					}
-				}
-			});
-			
-
-			serverTree.setCellRenderer(new ServerTreeRenderer());
+			final ServerTreeRenderer treeRenderer = new ServerTreeRenderer();
+			serverTree.setCellRenderer(treeRenderer);
+			final ServerTreeMouseListener serverTreeMouseListener = new ServerTreeMouseListener(serverTree, TOOLBAR_NAME);
 		}
 		return serverTree;
 	}
@@ -150,7 +113,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
         servers.add(newServer);
 
         ServerNode child = ServerNodeFactory.getServerNode(newServer);
-		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType, true);
+		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
 		model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
 
 		TreePath path = new TreePath(child.getPath());
@@ -240,7 +203,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
             for (ServerCfg server : servers) {
 				ServerNode child = ServerNodeFactory.getServerNode(server);
-			    ServerTypeNode serverTypeNode = model.getServerTypeNode(server.getServerType(), true);
+			    ServerTypeNode serverTypeNode = model.getServerTypeNode(server.getServerType());
 
 				model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
 
@@ -302,6 +265,8 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 //				}
 			} else if (selectedNode instanceof ServerTypeNode) {
 				serverConfigPanel.showEmptyPanel();
+			} else if (selectedNode instanceof ServerInfoNode) {
+				serverConfigPanel.showEmptyPanel();				
 			}
 		} else {
 			serverConfigPanel.showEmptyPanel();
