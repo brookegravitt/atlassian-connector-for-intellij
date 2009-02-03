@@ -25,7 +25,6 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.HyperlinkLabel;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -146,6 +145,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
 		private final IssueContentParameters params;
+		private int stackTraceCounter = 0;
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
@@ -733,6 +733,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			private void resetStackTraces() {
+				stackTraceCounter = 0;
+
 				while (tabs.getTabCount() > 2) {
 					tabs.remove(2);
 				}
@@ -742,6 +744,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
 				}
 			}
+
 			private class RefreshCommentsRunnable implements Runnable {
 				public void run() {
 					try {
@@ -845,27 +848,34 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class UserLabel extends HyperlinkLabel {
-			UserLabel(final String serverUrl, final String userName, final String userNameId, Color color) {
-				super(userName, color, Color.WHITE, color);
-				addListener(serverUrl, userNameId);
-			}
-
+		private class UserLabel extends JLabel {
 			UserLabel(final String serverUrl, final String userName, final String userNameId) {
-				super(userName, Color.BLUE, Color.WHITE, Color.BLUE);
+				setOpaque(true);
+				setBackground(Color.WHITE);
+				setBorder(BorderFactory.createEmptyBorder());
+				putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+				String userNameFixed = userName.replace(" ", "&nbsp;");
+				setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
 				addListener(serverUrl, userNameId);
 			}
-
+			
 			private void addListener(final String serverUrl, final String userNameId) {
-				addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						BrowserUtil.launchBrowser(
-								serverUrl
-										+ "/secure/ViewProfile.jspa?name="
-										+ userNameId);
+				addMouseListener(new MouseAdapter() {
+					public void mouseClicked(MouseEvent e) {
+						BrowserUtil.launchBrowser(serverUrl	+ "/secure/ViewProfile.jspa?name=" + userNameId);
+					}
+
+					public void mouseEntered(MouseEvent e) {
+						setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					}
+
+					public void mouseExited(MouseEvent e) {
+						setCursor(Cursor.getDefaultCursor());
 					}
 				});
 			}
+
+
 		}
 
 		private class WhiteLabel extends JLabel {
@@ -904,7 +914,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				body.setOpaque(true);
 				body.setBackground(Color.WHITE);
-				body.setBorder(BorderFactory.createEmptyBorder());
+				body.setMargin(new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2));
 				body.setContentType("text/html");
 				body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				String descriptionFixed = params.issue.getDescription().replace("/>", ">");
@@ -925,9 +936,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			private ShowHideButton btnShowHide;
 
+			private static final int COMMENT_GAP = 6;
+
 			public CommentPanel(int cmtNumber, final JIRAComment comment, final JiraServerCfg server, JTabbedPane tabs) {
 				setOpaque(true);
 				setBackground(Color.WHITE);
+
+				int upperMargin = cmtNumber == 1 ? 0 : COMMENT_GAP;
 
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc;
@@ -938,27 +953,25 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.gridx++;
 				gbc.gridy = 0;
 				gbc.anchor = GridBagConstraints.WEST;
+				gbc.insets = new Insets(upperMargin, 0, 0, 0);
 				add(btnShowHide, gbc);
 
 				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
-				JLabel commentNumber = new WhiteLabel();
-				commentNumber.setText(Integer.valueOf(cmtNumber).toString() + ". ");
-				add(commentNumber, gbc);
-
-				gbc.gridx++;
-				gbc.insets = new Insets(0, 0, 0, 0);
+				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
 				UserLabel ul = new UserLabel(server.getUrl(), comment.getAuthorFullName(),
 						comment.getAuthor());
+				ul.setFont(ul.getFont().deriveFont(Font.BOLD));
 				add(ul, gbc);
 
 				final JLabel hyphen = new WhiteLabel();
 				hyphen.setText("-");
 				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
+				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
 				add(hyphen, gbc);
 
 				final JLabel creationDate = new WhiteLabel();
+				creationDate.setForeground(Color.GRAY);
+				creationDate.setFont(creationDate.getFont().deriveFont(Font.ITALIC));
 
 				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
 				DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -971,25 +984,41 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				creationDate.setText(t);
 				gbc.gridx++;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.weightx = 1.0;
-				gbc.insets = new Insets(0, 0, 0, 0);
+				gbc.insets = new Insets(upperMargin, 0, 0, 0);
 				add(creationDate, gbc);
 
-				if (StackTraceDetector.containsStackTrace(comment.getBody())) {
-					tabs.add("Stack Trace: Comment #" + cmtNumber,
-							new StackTracePanel(Html2text.translate(comment.getBody())));
+				String dehtmlizedBody = Html2text.translate(comment.getBody());
+				if (StackTraceDetector.containsStackTrace(dehtmlizedBody)) {
+					tabs.add("Comment Stack Trace #" + (++stackTraceCounter), new StackTracePanel(dehtmlizedBody));
+
+					gbc.gridx++;
+					gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
+					JLabel traceNumber = new WhiteLabel();
+					traceNumber.setText("Stack Trace #" + stackTraceCounter);
+					traceNumber.setForeground(Color.RED);
+					
+					add(traceNumber, gbc);
 				}
+
+				// filler
+				gbc.gridx++;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+				gbc.weightx = 1.0;
+				JPanel filler = new JPanel();
+				filler.setBackground(Color.WHITE);
+				filler.setOpaque(true);
+				gbc.insets = new Insets(upperMargin, 0, 0, 0);
+				add(filler, gbc);
 
 				int gridwidth = gbc.gridx + 1;
 
 				commentBody.setEditable(false);
 				commentBody.setOpaque(true);
 				commentBody.setBackground(Color.WHITE);
-				commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN + Constants.DIALOG_MARGIN / 2, 0, 0));
+				commentBody.setMargin(new Insets(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
 				commentBody.setContentType("text/html");
 				commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				// JTextPanel does not do XHTML :(
+				// JEditorPane does not do XHTML :(
 				String bodyFixed = comment.getBody().replace("/>", ">");
 				commentBody.setText("<html><head></head><body>" + bodyFixed + "</body></html>");
 				commentBody.addHyperlinkListener(new HyperlinkListener() {
@@ -1005,6 +1034,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.weightx = 1.0;
 				gbc.weighty = 1.0;
 				gbc.fill = GridBagConstraints.BOTH;
+				gbc.insets = new Insets(0, 0, 0, 0);
 				add(commentBody, gbc);
 			}
 
