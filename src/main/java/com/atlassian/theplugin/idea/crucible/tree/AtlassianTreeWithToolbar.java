@@ -20,7 +20,6 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.Icons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,13 +36,16 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	private ModelProvider modelProvider = ModelProvider.EMPTY_MODEL_PROVIDER;
 	private State state = State.DIRED;
 
-	public AtlassianTreeWithToolbar(final String toolbarName, @Nullable TreeUISetup treeUISetup) {
+	public AtlassianTreeWithToolbar(final String toolbarName, @Nullable TreeUISetup treeUISetup,
+									AtlassianTree.ViewStateListener viewStateListener) {
 		super(toolbarName);
 		this.treeUISetup = treeUISetup;
+		this.viewStateListener = viewStateListener;
 		jScrollPane.setViewportView(getTreeComponent());
 	}
 
 	private TreeUISetup treeUISetup;
+	private final AtlassianTree.ViewStateListener viewStateListener;
 
 	@Override
 	public AtlassianTree getTreeComponent() {
@@ -131,6 +133,9 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 			default:
 				throw new IllegalStateException("Unknown state of tree: " + viewState.toString());
 		}
+		if (viewStateListener != null) {
+			viewStateListener.setViewState(viewState);
+		}
 	}
 
 	public void collapseAll() {
@@ -193,39 +198,8 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 	}
 
 	public enum ViewState {
-		COLLAPSED(IconLoader.getIcon("/actions/collapseall.png"), "Collapse All") {
-
-			@Override
-			public ViewState getNextState() {
-				return EXPANDED;
-			}
-		},
-		EXPANDED(IconLoader.getIcon("/actions/expandall.png"), "Expand All") {
-
-			@Override
-			public ViewState getNextState() {
-				return COLLAPSED;
-			}
-		};
-
-		private Icon icon;
-		private String string;
-
-		ViewState(final Icon icon, final String string) {
-			this.icon = icon;
-			this.string = string;
-		}
-
-		public abstract ViewState getNextState();
-
-		public Icon getIcon() {
-			return icon;
-		}
-
-		@Override
-		public String toString() {
-			return string;
-		}
+		COLLAPSED,
+		EXPANDED
 	}
 }
 
