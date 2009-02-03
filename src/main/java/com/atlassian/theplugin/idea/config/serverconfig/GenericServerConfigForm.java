@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 	private JButton testConnection;
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
-    private DocumentListener listener;
+	private DocumentListener listener;
 
 	private transient ServerCfg serverCfg;
 
@@ -88,7 +88,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		// user name and password can be empty (for anonymous connections), do not check for them
 		boolean enabled =
 				serverName.getText().length() > 0
-				&& serverUrl.getText().length() > 0;
+						&& serverUrl.getText().length() > 0;
 		cbEnabled.setSelected(enabled);
 	}
 
@@ -193,12 +193,12 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		final JLabel label1 = new JLabel();
 		label1.setHorizontalAlignment(4);
 		label1.setHorizontalTextPosition(4);
-		label1.setText("Server Name");
+		label1.setText("Server Name:");
 		label1.setDisplayedMnemonic('S');
 		label1.setDisplayedMnemonicIndex(0);
 		panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1),
-				new Dimension(80, -1), null, 0, false));
+				new Dimension(92, 16), null, 0, false));
 		serverUrl = new JTextField();
 		panel1.add(serverUrl, new GridConstraints(2, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
@@ -212,23 +212,29 @@ public class GenericServerConfigForm implements LoginDataProvided {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, new Dimension(150, -1), null, 0, false));
 		final JLabel label2 = new JLabel();
-		label2.setText("Server URL");
+		label2.setHorizontalAlignment(4);
+		label2.setText("Server URL:");
 		label2.setDisplayedMnemonic('U');
 		label2.setDisplayedMnemonicIndex(7);
 		panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(80, -1),
+				new Dimension(92, 16), null, 0, false));
 		final JLabel label3 = new JLabel();
-		label3.setText("Username");
+		label3.setHorizontalAlignment(4);
+		label3.setText("Username:");
 		label3.setDisplayedMnemonic('N');
 		label3.setDisplayedMnemonicIndex(4);
 		panel1.add(label3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(92, 16), null, 0,
+				false));
 		final JLabel label4 = new JLabel();
-		label4.setText("Password");
+		label4.setHorizontalAlignment(4);
+		label4.setText("Password:");
 		label4.setDisplayedMnemonic('P');
 		label4.setDisplayedMnemonicIndex(0);
 		panel1.add(label4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(92, 16), null, 0,
+				false));
 		testConnection = new JButton();
 		testConnection.setText("Test Connection");
 		testConnection.setMnemonic('T');

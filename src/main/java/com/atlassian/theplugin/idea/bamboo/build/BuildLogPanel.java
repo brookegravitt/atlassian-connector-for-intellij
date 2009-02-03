@@ -123,27 +123,47 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 		// /path/to/file/MyClass.java
 		// /path/to/file/MyClass.java:20:30
 		// /path/to/file/MyClass.java:20
+
+		// this pattern is too heavy and it does not allow white characters other than space in the path or file name
+//		private static final Pattern JAVA_FILE_PATTERN
+//				= Pattern.compile("([/\\\\]?[\\S ]*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
+
+		// this pattern is more lightwave (for some real data it operates 100 times faster then above one - see UnitTest)
+		// this pattern also allows white characters other than space in the path or filename (e.g. tab which is allow by Linux)
+		// both patterns will nor work in case there is slash or backslash in the filename 
 		private static final Pattern JAVA_FILE_PATTERN
-				= Pattern.compile("([/\\\\]?[\\S ]*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
+				= Pattern.compile("^(.*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
 
 		@Nullable
 		public Result applyFilter(final String line, final int textEndOffset) {
+
+//			long start = System.currentTimeMillis();
+
 			if (!line.contains(".java")) {
 				return null; // to make it faster
 			}
+
+			Result ret = null;
+
 			final Matcher m = findMatchings(line);
 			while (m.find()) {
 				final String matchedString = m.group();
+
+//	System.out.println("Matched: " + matchedString);
+
 				final String filename = m.group(FILENAME_GROUP);
 
 				if (filename != null && filename.length() > 0) {
+
+//	System.out.println("Filename: " + filename);
+
+//	System.out.println("Path: " +  m.group(FULLPATH_GROUP));
 
 					final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(
 							project, m.group(FULLPATH_GROUP));
 					if (psiFile != null) {
 						VirtualFile virtualFile = psiFile.getVirtualFile();
 						if (virtualFile != null) {
-
 
 							int focusLine = 0;
 							int focusColumn = 0;
@@ -152,9 +172,13 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 							try {
 								if (rowGroup != null) {
 									focusLine = Integer.parseInt(rowGroup) - 1;
+
+//	System.out.println("Focus line: " + focusLine);
 								}
 								if (columnGroup != null) {
 									focusColumn = Integer.parseInt(columnGroup) - 1;
+
+//	System.out.println("Focus column: " + focusColumn);
 								}
 							} catch (NumberFormatException e) {
 								// just iterate to the next thing
@@ -162,20 +186,35 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 							final OpenFileHyperlinkInfo info = new OpenFileHyperlinkInfo(project, virtualFile,
 									focusLine, focusColumn);
 							final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
+
+//	System.out.println("Relative path: " + relativePath);
+
 							final int startMatchingFileIndex = relativePath != null
 									? matchedString.replace('\\', '/').indexOf(relativePath)
 									: matchedString.lastIndexOf(filename);
+
+//	System.out.println("Matching file index: " + startMatchingFileIndex);
+
 							final int highlightStartOffset =
 									textEndOffset - line.length() + m.start() + startMatchingFileIndex;
+
+//	System.out.println("Highlight start: " + highlightStartOffset);
+
 							final int highlightEndOffset = textEndOffset - line.length() + m.end();
-							return new Result(highlightStartOffset, highlightEndOffset, info, hyperlinkAttributes);
+
+//	System.out.println("Highliht end: " + highlightEndOffset);
+
+							ret = new Result(highlightStartOffset, highlightEndOffset, info, hyperlinkAttributes);
 						}
 					}
-
 				}
-
 			}
-			return null;
+
+//			long stop = System.currentTimeMillis(); // stop timing
+//
+//			System.out.println((stop - start) + "\t" + line); // print execution time
+
+			return ret;
 		}
 
 		public static Matcher findMatchings(final String line) {
