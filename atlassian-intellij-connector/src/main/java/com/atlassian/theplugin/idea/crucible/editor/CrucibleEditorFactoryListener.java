@@ -43,7 +43,8 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 								crucibleFile = CodeNavigationUtil
 										.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
 							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								// don't do anything - should not happen, but even if happens - we don't want to break file opening
+								// don't do anything - should not happen
+								// but even if happens - we don't want to break file opening
 							}
 
 							if (crucibleFile != null) {
