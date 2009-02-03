@@ -430,63 +430,65 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						|| (params.issue.getFixVersions() == null)
 						|| (params.issue.getComponents() == null)) {
 
-					Runnable runnable = new Runnable() {
-						private String[] errorString = null;
-
-						public void run() {
-
-							try {
-								if (params.server != null) {
-
-									// damn it! the XML view of the list of issues does not
-									// have estimates and time spent :(
-									final JIRAIssue issueWithEstimates =
-											facade.getIssue(params.server, params.issue.getKey());
-									params.issue.setOriginalEstimate(issueWithEstimates.getOriginalEstimate());
-									params.issue.setRemainingEstimate(issueWithEstimates.getRemainingEstimate());
-									params.issue.setTimeSpent(issueWithEstimates.getTimeSpent());
-
-									final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
-									params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
-									params.issue.setFixVersions(issueDetails.getFixVersions());
-									params.issue.setComponents(issueDetails.getComponents());
-								}
-							} catch (JIRAException e) {
-								errorString = new String[]{"Unable to retrieve"};
-							}
-							SwingUtilities.invokeLater(new Runnable() {
-								public void run() {
-									if (errorString == null) {
-										setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
-										setFixVersions(getStringArray(params.issue.getFixVersions()));
-										setComponents(getStringArray(params.issue.getComponents()));
-										setOriginalEstimate(params.issue.getOriginalEstimate());
-										setRemainingEstimate(params.issue.getRemainingEstimate());
-										setTimeSpent(params.issue.getTimeSpent());
-									} else {
-										getAffectVersionsLabel().setForeground(Color.RED);
-										getFixVersionsLabel().setForeground(Color.RED);
-										getComponentsLabel().setForeground(Color.RED);
-										originalEstimate.setForeground(Color.RED);
-										remainingEstimate.setForeground(Color.RED);
-										timeSpent.setForeground(Color.RED);
-										setAffectsVersions(errorString);
-										setFixVersions(errorString);
-										setComponents(errorString);
-										setOriginalEstimate(errorString[0]);
-										setRemainingEstimate(errorString[0]);
-										setTimeSpent(errorString[0]);
-
-									}
-								}
-							});
-						}
-					};
+					Runnable runnable = new IssueDetailsRunnable();
 					new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 				} else {
 					setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 					setFixVersions(getStringArray(params.issue.getFixVersions()));
 					setComponents(getStringArray(params.issue.getComponents()));
+				}
+			}
+
+			private class IssueDetailsRunnable implements Runnable {
+				private String[] errorString = null;
+
+				public void run() {
+
+					try {
+						if (params.server != null) {
+
+							// damn it! the XML view of the list of issues does not
+							// have estimates and time spent :(
+							final JIRAIssue issueWithEstimates =
+									facade.getIssue(params.server, params.issue.getKey());
+							params.issue.setOriginalEstimate(issueWithEstimates.getOriginalEstimate());
+							params.issue.setRemainingEstimate(issueWithEstimates.getRemainingEstimate());
+							params.issue.setTimeSpent(issueWithEstimates.getTimeSpent());
+
+							final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
+							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
+							params.issue.setFixVersions(issueDetails.getFixVersions());
+							params.issue.setComponents(issueDetails.getComponents());
+						}
+					} catch (JIRAException e) {
+						errorString = new String[]{"Unable to retrieve"};
+					}
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							if (errorString == null) {
+								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
+								setFixVersions(getStringArray(params.issue.getFixVersions()));
+								setComponents(getStringArray(params.issue.getComponents()));
+								setOriginalEstimate(params.issue.getOriginalEstimate());
+								setRemainingEstimate(params.issue.getRemainingEstimate());
+								setTimeSpent(params.issue.getTimeSpent());
+							} else {
+								getAffectVersionsLabel().setForeground(Color.RED);
+								getFixVersionsLabel().setForeground(Color.RED);
+								getComponentsLabel().setForeground(Color.RED);
+								originalEstimate.setForeground(Color.RED);
+								remainingEstimate.setForeground(Color.RED);
+								timeSpent.setForeground(Color.RED);
+								setAffectsVersions(errorString);
+								setFixVersions(errorString);
+								setComponents(errorString);
+								setOriginalEstimate(errorString[0]);
+								setRemainingEstimate(errorString[0]);
+								setTimeSpent(errorString[0]);
+
+							}
+						}
+					});
 				}
 			}
 
@@ -726,51 +728,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			public void refreshComments() {
 
 				tabs.setTitleAt(tabIndex, "Refreshing comments...");
-				final Runnable runnable = new Runnable() {
-					public void run() {
-						try {
-							if (params.server != null) {
-								java.util.List<JIRAComment> cmts = null;
-
-								JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
-								if (oneIssue != null) {
-									cmts = oneIssue.getComments();
-								}
-								if (cmts == null) {
-									// oh well, no comments in XML - can it even happen? Fall back to SOAP
-									cmts = facade.getComments(params.server, params.issue);
-								}
-
-								for (JIRAComment c : cmts) {
-									try {
-										JIRAUserBean u = JIRAUserNameCache.getInstance()
-												.getUser(params.server, c.getAuthor());
-										c.setAuthorFullName(u.getName());
-									} catch (JiraUserNotFoundException e) {
-										c.setAuthorFullName(c.getAuthor());
-									}
-								}
-
-								final java.util.List<JIRAComment> comments = cmts;
-								SwingUtilities.invokeLater(new Runnable() {
-									public void run() {
-										clearComments();
-										resetStackTraces();
-										int size = comments.size();
-										if (size > 0) {
-											for (JIRAComment c : comments) {
-												addComment(c);
-											}
-										}
-										tabs.setTitleAt(tabIndex, "Comments(" + size + ")");
-									}
-								});
-							}
-						} catch (JIRAException e) {
-							tabs.setTitleAt(tabIndex, "Unable to retrieve comments");
-						}
-					}
-				};
+				Runnable runnable = new RefreshCommentsRunnable();
 				new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
 			}
 
@@ -782,6 +740,51 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				String stack = Html2text.translate(params.issue.getDescription());
 				if (StackTraceDetector.containsStackTrace(stack)) {
 					tabs.add("Stack Trace: Description", new StackTracePanel(stack));
+				}
+			}
+			private class RefreshCommentsRunnable implements Runnable {
+				public void run() {
+					try {
+						if (params.server != null) {
+							java.util.List<JIRAComment> cmts = null;
+
+							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
+							if (oneIssue != null) {
+								cmts = oneIssue.getComments();
+							}
+							if (cmts == null) {
+								// oh well, no comments in XML - can it even happen? Fall back to SOAP
+								cmts = facade.getComments(params.server, params.issue);
+							}
+
+							for (JIRAComment c : cmts) {
+								try {
+									JIRAUserBean u = JIRAUserNameCache.getInstance()
+											.getUser(params.server, c.getAuthor());
+									c.setAuthorFullName(u.getName());
+								} catch (JiraUserNotFoundException e) {
+									c.setAuthorFullName(c.getAuthor());
+								}
+							}
+
+							final java.util.List<JIRAComment> finalCmtsYesIKnowThisIsStupidButYouKnowCheckstyle = cmts;
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									clearComments();
+									resetStackTraces();
+									int size = finalCmtsYesIKnowThisIsStupidButYouKnowCheckstyle.size();
+									if (size > 0) {
+										for (JIRAComment c : finalCmtsYesIKnowThisIsStupidButYouKnowCheckstyle) {
+											addComment(c);
+										}
+									}
+									tabs.setTitleAt(tabIndex, "Comments(" + size + ")");
+								}
+							});
+						}
+					} catch (JIRAException e) {
+						tabs.setTitleAt(tabIndex, "Unable to retrieve comments");
+					}
 				}
 			}
 		}
