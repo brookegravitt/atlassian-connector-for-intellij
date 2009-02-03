@@ -52,7 +52,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 enum AddMode {
 	ADDREVISION,
@@ -429,13 +431,20 @@ public class CrucibleHelperForm extends DialogWrapper {
 				try {
 					switch (mode) {
 						case ADDREVISION:
-							final List<String> revisions = new ArrayList<String>();
+							final Set<String> revisions = new HashSet<String>();
 							for (ChangeList change : changes) {
 								for (Change change1 : change.getChanges()) {
-									revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
+									if (change1.getType() == Change.Type.DELETED) {
+										revisions.add(change1.getBeforeRevision().getRevisionNumber().asString());
+									} else {
+										revisions.add(change1.getAfterRevision().getRevisionNumber().asString());
+									}
+									break;
 								}
 							}
-							crucibleServerFacade.addRevisionsToReview(server, permId, repoName, revisions);
+
+							crucibleServerFacade
+									.addRevisionsToReview(server, permId, repoName, new ArrayList<String>(revisions));
 							break;
 						case ADDPATCH:
 							crucibleServerFacade.addPatchToReview(server, permId, repoName, patch);
@@ -445,7 +454,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 					ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 						public void run() {
 							DialogWithDetails
-									.showExceptionDialog(project, "Cannot retrieve data from Crucible server",
+									.showExceptionDialog(project, "Cannot add revision to review. Check selected repository.",
 											e, "Error");
 						}
 					}, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
