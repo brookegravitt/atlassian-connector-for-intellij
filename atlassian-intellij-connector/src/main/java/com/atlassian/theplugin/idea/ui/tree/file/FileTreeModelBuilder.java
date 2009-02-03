@@ -113,11 +113,25 @@ public final class FileTreeModelBuilder {
 
 		try {
 			for (final CrucibleFileInfo file : review.getFiles()) {
-				//according to filter show only "proper files"
 				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
 						new CrucibleFileClickAction(project, review, file));
 
 				FileNode node = model.createPlace(filesNode, file);
+
+				// find duplicates
+				for (String key : node.getChildren().keySet()) {
+					if (key.equals(childNode.getName())) {
+						FileNode fileNode = node.getChildren().get(key);
+						if (!(fileNode instanceof CrucibleFileNode) && childNode instanceof CrucibleFileNode) {
+							for (String s : fileNode.getChildren().keySet()) {
+								childNode.addChild(fileNode.getChildren().get(s));
+							}
+							fileNode.removeChildren();
+							node.removeChild(fileNode);
+							break;
+						}
+					}
+				}
 
 				fillFileComments(childNode, model, review, file, project);
 				node.addChild(childNode);
