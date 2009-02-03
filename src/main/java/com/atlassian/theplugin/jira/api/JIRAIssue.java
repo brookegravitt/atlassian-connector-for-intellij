@@ -93,4 +93,17 @@ public interface JIRAIssue {
 
 	void setComponents(List<JIRAConstant> components);
 
+	String getOriginalEstimate();
+
+	void setOriginalEstimate(String t);
+
+	String getRemainingEstimate();
+
+	void setRemainingEstimate(String t);
+
+	String getTimeSpent();
+
+	void setTimeSpent(String t);
+
+	List<JIRAComment> getComments();
 }

@@ -219,6 +219,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
 			private JLabel componentsLabel = new BoldLabel("Component/s");
 			private JScrollPane scroll;
+			private JLabel originalEstimate = new JLabel("Fetching...");
+			private JLabel remainingEstimate = new JLabel("Fetching...");
+			private JLabel timeSpent = new JLabel("Fetching...");
 
 			public DetailsPanel() {
 				setLayout(new GridBagLayout());
@@ -332,6 +335,19 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				body.add(components, gbc2);
 
 				gbc1.gridy++;
+				gbc2.gridy++;
+				body.add(new BoldLabel("Original Estimate"), gbc1);
+				body.add(originalEstimate, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				body.add(new BoldLabel("Remaining Estimate"), gbc1);
+				body.add(remainingEstimate, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				body.add(new BoldLabel("Time Spent"), gbc1);
+				body.add(timeSpent, gbc2);
+
+				gbc1.gridy++;
 				gbc1.weighty = 1.0;
 				gbc1.fill = GridBagConstraints.VERTICAL;
 				JPanel filler = new JPanel();
@@ -421,6 +437,15 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 							try {
 								if (params.server != null) {
+
+									// damn it! the XML view of the list of issues does not
+									// have estimates and time spent :(
+									final JIRAIssue issueWithEstimates =
+											facade.getIssue(params.server, params.issue.getKey());
+									params.issue.setOriginalEstimate(issueWithEstimates.getOriginalEstimate());
+									params.issue.setRemainingEstimate(issueWithEstimates.getRemainingEstimate());
+									params.issue.setTimeSpent(issueWithEstimates.getTimeSpent());
+
 									final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
 									params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 									params.issue.setFixVersions(issueDetails.getFixVersions());
@@ -435,13 +460,23 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 										setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 										setFixVersions(getStringArray(params.issue.getFixVersions()));
 										setComponents(getStringArray(params.issue.getComponents()));
+										setOriginalEstimate(params.issue.getOriginalEstimate());
+										setRemainingEstimate(params.issue.getRemainingEstimate());
+										setTimeSpent(params.issue.getTimeSpent());
 									} else {
 										getAffectVersionsLabel().setForeground(Color.RED);
 										getFixVersionsLabel().setForeground(Color.RED);
 										getComponentsLabel().setForeground(Color.RED);
+										originalEstimate.setForeground(Color.RED);
+										remainingEstimate.setForeground(Color.RED);
+										timeSpent.setForeground(Color.RED);
 										setAffectsVersions(errorString);
 										setFixVersions(errorString);
 										setComponents(errorString);
+										setOriginalEstimate(errorString[0]);
+										setRemainingEstimate(errorString[0]);
+										setTimeSpent(errorString[0]);
+
 									}
 								}
 							});
@@ -452,6 +487,30 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 					setFixVersions(getStringArray(params.issue.getFixVersions()));
 					setComponents(getStringArray(params.issue.getComponents()));
+				}
+			}
+
+			private void setTimeSpent(String t) {
+				if (t != null) {
+					timeSpent.setText(t);
+				} else {
+					timeSpent.setText("None");
+				}
+			}
+
+			private void setRemainingEstimate(String t) {
+				if (t != null) {
+					remainingEstimate.setText(t);
+				} else {
+					remainingEstimate.setText("None");
+				}
+			}
+
+			private void setOriginalEstimate(String t) {
+				if (t != null) {
+					originalEstimate.setText(t);
+				} else {
+					originalEstimate.setText("None");
 				}
 			}
 
@@ -671,8 +730,16 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					public void run() {
 						try {
 							if (params.server != null) {
-								final java.util.List<JIRAComment> cmts =
-										facade.getComments(params.server, params.issue);
+								java.util.List<JIRAComment> cmts = null;
+
+								JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
+								if (oneIssue != null) {
+									cmts = oneIssue.getComments();
+								}
+								if (cmts == null) {
+									// oh well, no comments in XML - can it even happen? Fall back to SOAP
+									cmts = facade.getComments(params.server, params.issue);
+								}
 
 								for (JIRAComment c : cmts) {
 									try {
@@ -684,13 +751,14 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 									}
 								}
 
+								final java.util.List<JIRAComment> comments = cmts;
 								SwingUtilities.invokeLater(new Runnable() {
 									public void run() {
 										clearComments();
 										resetStackTraces();
-										int size = cmts.size();
+										int size = comments.size();
 										if (size > 0) {
-											for (JIRAComment c : cmts) {
+											for (JIRAComment c : comments) {
 												addComment(c);
 											}
 										}
@@ -906,7 +974,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				add(creationDate, gbc);
 
 				if (StackTraceDetector.containsStackTrace(comment.getBody())) {
-					tabs.add("Stack Trace: Comment #" + cmtNumber, new StackTracePanel(comment.getBody()));
+					tabs.add("Stack Trace: Comment #" + cmtNumber,
+							new StackTracePanel(Html2text.translate(comment.getBody())));
 				}
 
 				int gridwidth = gbc.gridx + 1;
@@ -917,7 +986,16 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				commentBody.setMargin(new Insets(0, Constants.DIALOG_MARGIN + Constants.DIALOG_MARGIN / 2, 0, 0));
 				commentBody.setContentType("text/html");
 				commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				commentBody.setText("<html><head></head><body>" + comment.getBody() + "</body></html>");
+				// JTextPanel does not do XHTML :(
+				String bodyFixed = comment.getBody().replace("/>", ">");
+				commentBody.setText("<html><head></head><body>" + bodyFixed + "</body></html>");
+				commentBody.addHyperlinkListener(new HyperlinkListener() {
+					public void hyperlinkUpdate(HyperlinkEvent e) {
+						if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+							BrowserUtil.launchBrowser(e.getURL().toString());
+						}
+					}
+				});
 				gbc.gridx = 0;
 				gbc.gridy = 1;
 				gbc.gridwidth = gridwidth;
