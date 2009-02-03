@@ -18,8 +18,9 @@ package com.atlassian.theplugin.idea.config.serverconfig.model;
 
 import com.atlassian.theplugin.commons.ServerType;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
  * Model for server JTree. Constructs supported server type nodes
@@ -32,21 +33,50 @@ public class ServerTreeModel extends DefaultTreeModel {
 
 	public ServerTreeModel(RootNode root) {
 		super(root);
+		for (ServerType serverType : ServerType.values()) {
+			ServerTypeNode serverTypeNode = new ServerTypeNode(serverType);
+			serverTypeNode.add(new ServerInfoNode(serverType));
+			root.add(serverTypeNode);
+		}
 	}
 
-	public ServerTypeNode getServerTypeNode(ServerType serverType, boolean addIfMissing) {
+	public ServerTypeNode getServerTypeNode(ServerType serverType) {
 		for (int i = 0; i < root.getChildCount(); ++i) {
 			ServerTypeNode serverTypeNode = (ServerTypeNode) root.getChildAt(i);
 			if (serverTypeNode.getServerType() == serverType) {
 				return serverTypeNode;
 			}
 		}
-		if (addIfMissing) {
-			final ServerTypeNode child = new ServerTypeNode(serverType);
-			insertNodeInto(child, (DefaultMutableTreeNode) root, root.getChildCount());
-			this.nodeChanged(root);
-			return child;
-		}
 		return null;
+	}
+
+
+	public void insertNodeInto(final MutableTreeNode newChild, final MutableTreeNode parent, final int index) {
+		int newIndex = index;
+		for (int i=0; i < parent.getChildCount(); i++) {
+			if (parent instanceof ServerTypeNode && parent.getChildAt(i) instanceof ServerInfoNode) {
+				parent.remove(i);
+				super.nodeStructureChanged(parent);
+				newIndex = index > 0 ? index - 1 : 0;
+				break;
+			}
+		}
+		super.insertNodeInto(newChild, parent, newIndex);
+	}
+
+	public void nodeStructureChanged(final TreeNode node) {
+		for (int i=0; i < node.getChildCount(); i++) {
+			if (node instanceof ServerTypeNode && node.getChildAt(i) instanceof ServerInfoNode) {
+				((ServerTypeNode)node).remove(i);
+				break;
+			}
+		}
+		if (node.getChildCount() == 0) {
+			if (node instanceof ServerTypeNode) {
+				ServerTypeNode serverTypeNode = (ServerTypeNode) node;
+				serverTypeNode.add(new ServerInfoNode(serverTypeNode.getServerType()));
+			}
+		}
+		super.nodeStructureChanged(node);
 	}
 }
