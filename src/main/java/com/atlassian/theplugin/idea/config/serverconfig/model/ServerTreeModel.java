@@ -53,7 +53,7 @@ public class ServerTreeModel extends DefaultTreeModel {
 
 	public void insertNodeInto(final MutableTreeNode newChild, final MutableTreeNode parent, final int index) {
 		int newIndex = index;
-		for (int i=0; i < parent.getChildCount(); i++) {
+		for (int i = 0; i < parent.getChildCount(); i++) {
 			if (parent instanceof ServerTypeNode && parent.getChildAt(i) instanceof ServerInfoNode) {
 				parent.remove(i);
 				super.nodeStructureChanged(parent);
@@ -65,9 +65,9 @@ public class ServerTreeModel extends DefaultTreeModel {
 	}
 
 	public void nodeStructureChanged(final TreeNode node) {
-		for (int i=0; i < node.getChildCount(); i++) {
+		for (int i = 0; i < node.getChildCount(); i++) {
 			if (node instanceof ServerTypeNode && node.getChildAt(i) instanceof ServerInfoNode) {
-				((ServerTypeNode)node).remove(i);
+				((ServerTypeNode) node).remove(i);
 				break;
 			}
 		}
