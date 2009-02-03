@@ -129,7 +129,7 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 //				= Pattern.compile("([/\\\\]?[\\S ]*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
 
 		// this pattern is more lightwave (for some real data it operates 100 times faster then above one - see UnitTest)
-		// this pattern also allows white characters other than space in the path or filename (e.g. tab which is allow by Linux)
+		// this pattern also allows white characters other than space in the path or filename (e.g. tab which is allowed by Linux)
 		// both patterns will nor work in case there is slash or backslash in the filename 
 		private static final Pattern JAVA_FILE_PATTERN
 				= Pattern.compile("^(.*?([^/\\\\]+\\.java))(:\\[?(\\d+)([\\,:](\\d+)\\]?)?)?");
