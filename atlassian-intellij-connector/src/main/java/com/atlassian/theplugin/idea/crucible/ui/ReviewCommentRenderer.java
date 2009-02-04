@@ -72,7 +72,7 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 			final CommentTreeNode node = (CommentTreeNode) value;
 			// @todo wseliga inject here IdeaIconProvider
 			return new CommentPanel(node.getComment(), getAvailableWidth(node, tree), row,
-					iconProvider, node.isExpanded(), isSelected);
+					iconProvider, node.isExpanded(), isSelected, tree.getFont());
 		} else {
 			return super.getTreeCellRendererComponent(tree, value, isSelected, expanded, leaf, row, aHasFocus);
 		}
@@ -93,259 +93,288 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 		}
 	}
 
-}
+	public static class CommentPanel extends JPanel {
+		private Comment comment;
 
-class CommentPanel extends JPanel {
-	private Comment comment;
+		private static final CellConstraints MORE_LINK_POS = new CellConstraints(3, 1);
+		private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(5, 1);
+		private static final CellConstraints AUTHOR_POS = new CellConstraints(7, 1);
+		private static final int OTHER_COLUMNS_WIDTH = 34;
+		private Rectangle moreBounds;
+		private static final int MIN_TEXT_WIDTH = 200;
+		private final Font font;
 
-	private static final CellConstraints MORE_LINK_POS = new CellConstraints(3, 2);
-	private static final CellConstraints DEFECT_ICON_POS = new CellConstraints(5, 2);
-	private static final CellConstraints AUTHOR_POS = new CellConstraints(7, 2);
-	private static final int OTHER_COLUMNS_WIDTH = 34;
-	private Rectangle moreBounds;
-	private static final int MIN_TEXT_WIDTH = 200;
-
-	private static int getPreferredHeight(JComponent component, int preferredWidth) {
-		try {
-			component.addNotify();
-			component.doLayout();
-			component.setSize(preferredWidth, Integer.MAX_VALUE);
-			return component.getPreferredSize().height;
-		} finally {
-			component.removeNotify();
-		}
-	}
-
-	static final int LAST_COLUMN_WIDTH = 250;
-
-	public Rectangle getMoreBounds() {
-		return moreBounds;
-	}
-
-	private static int oneLineHeight = getFDSFDS();
-
-	private static int getFDSFDS() {
-		JTextPane pane = new JTextPane();
-		final StyledDocument doc = pane.getStyledDocument();
-		addStylesToDocument(doc);
-		try {
-			doc.insertString(doc.getLength(), "Ng", doc.getStyle("regular"));
-		} catch (BadLocationException e) {
-			// impossible (theoretically)
-			throw new RuntimeException(e);
-		}
-		//CHECKSTYLE:MAGIC:OFF
-		return getPreferredHeight(pane, Integer.MAX_VALUE) * 3 / 2;
-		//CHECKSTYLE:MAGIC:ON
-	}
-
-	private static int getLastColumnWidth(int totalWidth, int preferredWidth) {
-		if (totalWidth > preferredWidth + MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
-			return preferredWidth;
-		} else if (totalWidth > MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
-			return totalWidth - MIN_TEXT_WIDTH - OTHER_COLUMNS_WIDTH;
-		} else {
-			return 0;
-		}
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public CommentPanel(Comment comment, int width, final int row, IconProvider iconProvider,
-			boolean isExpanded, final boolean isSelected) {
-		final JLabel reviewerAndAuthorLabel = new JLabel(getAuthorLabel(comment) + ", " + getDateLabel(comment));
-		final int lastColumnWidth = getLastColumnWidth(width, reviewerAndAuthorLabel.getPreferredSize().width);
-		setLayout(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:"
-				+ lastColumnWidth + "px" + ", 4px", "4px, top:pref:grow, 2dlu"));
-		this.comment = comment;
-		if (isSelected) {
-			setOpaque(true);
-			setBackground(UIUtil.getTreeSelectionBackground());
-		} else {
-			setOpaque(false);
-		}
-		final JTextPane messageBody = createMessageBody(comment, isSelected);
-		int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - lastColumnWidth, MIN_TEXT_WIDTH);
-		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
-		CellConstraints cc = new CellConstraints();
-		final JLabel moreLabel;
-		if (preferredHeight > oneLineHeight) {
-			moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
-			add(moreLabel, MORE_LINK_POS);
-			queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - lastColumnWidth,
-					MIN_TEXT_WIDTH);
-			preferredHeight = getPreferredHeight(messageBody, queryWidth);
-		} else {
-			moreLabel = null;
+		private static int getPreferredHeight(JComponent component, int preferredWidth) {
+			try {
+				component.addNotify();
+				component.doLayout();
+				component.setSize(preferredWidth, Integer.MAX_VALUE);
+				// kalamon: after adding 2 pixels it seems to look less like total shit (but still crappy)
+				return component.getPreferredSize().height + 2;
+			} finally {
+				component.removeNotify();
+			}
 		}
 
-		if (preferredHeight < oneLineHeight || isExpanded) {
-			add(messageBody, cc.xy(1, 2));
-			messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
-		} else {
-			final SimpleColoredComponent jLabel = getSingleLineComponent(comment, isSelected);
-			jLabel.setMinimumSize(new Dimension(0, 0));
-			add(jLabel, cc.xy(1, 2));
+		static final int LAST_COLUMN_WIDTH = 250;
+
+		public Rectangle getMoreBounds() {
+			return moreBounds;
 		}
 
+		private static int oneLineHeight = getFDSFDS();
 
-		if (comment.isDefectRaised()) {
-			Icon myicon = iconProvider.getIcon(IconPaths.REVIEW_COMMENT_DEFECT_PATH);
-			JLabel icon = new JLabel(myicon);
-			add(icon, DEFECT_ICON_POS);
+		private static int getFDSFDS() {
+			JTextPane pane = new JTextPane();
+			final StyledDocument doc = pane.getStyledDocument();
+			addStylesToDocument(doc);
+			try {
+				doc.insertString(doc.getLength(), "Ng", doc.getStyle("regular"));
+			} catch (BadLocationException e) {
+				// impossible (theoretically)
+				throw new RuntimeException(e);
+			}
+			//CHECKSTYLE:MAGIC:OFF
+			return getPreferredHeight(pane, Integer.MAX_VALUE) * 3 / 2;
+			//CHECKSTYLE:MAGIC:ON
 		}
 
-		add(reviewerAndAuthorLabel, AUTHOR_POS);
-
-		validate();
-		setSize(new Dimension(width, Integer.MAX_VALUE));
-		addNotify();
-		doLayout();
-		if (moreLabel != null) {
-			moreBounds = moreLabel.getBounds();
-		}
-	}
-
-
-	@NotNull
-	private static String getDateLabel(Comment comment) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(comment.getCreateDate()));
-		return sb.toString();
-	}
-
-	private static String getAuthorLabel(Comment comment) {
-		return "".equals(comment.getAuthor().getDisplayName())
-				? comment.getAuthor().getUserName()
-				: comment.getAuthor().getDisplayName();
-	}
-
-	private static String getLineInfoLabel(@NotNull Comment comment) {
-		if (comment.isReply()) {
-			return "Reply";
-		}
-		if (comment instanceof VersionedComment) {
-			VersionedComment vc = (VersionedComment) comment;
-			if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
-				int startLine = vc.getToStartLine();
-				int endLine = vc.getToEndLine();
-				if (endLine == 0) {
-					endLine = startLine;
-				}
-				String txt2 = "";
-				txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
-				return txt2;
+		private static int getLastColumnWidth(int totalWidth, int preferredWidth) {
+			if (totalWidth > preferredWidth + MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
+				return preferredWidth;
+			} else if (totalWidth > MIN_TEXT_WIDTH + OTHER_COLUMNS_WIDTH) {
+				return totalWidth - MIN_TEXT_WIDTH - OTHER_COLUMNS_WIDTH;
 			} else {
-				if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
-					int startLine = vc.getFromStartLine();
-					int endLine = vc.getFromEndLine();
+				return 0;
+			}
+		}
+
+		@SuppressWarnings({"UnusedDeclaration"})
+		public CommentPanel(Comment comment, int width, final int row, IconProvider iconProvider,
+					  boolean isExpanded, final boolean isSelected, Font font) {
+			this.font = font;
+			final JLabel reviewerAndAuthorLabel = new JLabel(getAuthorLabel(comment) + ", " + getDateLabel(comment));
+			reviewerAndAuthorLabel.setFont(font);
+			if (isSelected) {
+				reviewerAndAuthorLabel.setForeground(UIUtil.getTreeSelectionForeground());
+			}
+			final int lastColumnWidth = getLastColumnWidth(width, reviewerAndAuthorLabel.getPreferredSize().width);
+			setLayout(new FormLayout("max(d;" + MIN_TEXT_WIDTH + "px):grow, 2dlu, d, 5px, 16px, 5px, right:"
+					+ lastColumnWidth + "px" + ", 4px", "top:pref:grow"));
+			this.comment = comment;
+			if (isSelected) {
+				setOpaque(true);
+				setBackground(UIUtil.getTreeSelectionBackground());
+			} else {
+				setOpaque(false);
+			}
+			final JTextPane messageBody = createMessageBody(comment, isSelected);
+			int queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - lastColumnWidth, MIN_TEXT_WIDTH);
+			int preferredHeight = getPreferredHeight(messageBody, queryWidth);
+			CellConstraints cc = new CellConstraints();
+			final JLabel moreLabel;
+			if (preferredHeight > oneLineHeight) {
+				moreLabel = new JLabel("<html><a href='#'>" + (isExpanded ? "less" : "more") + "</a>");
+				moreLabel.setFont(font);
+				add(moreLabel, MORE_LINK_POS);
+				queryWidth = Math.max(width - OTHER_COLUMNS_WIDTH - moreLabel.getPreferredSize().width - lastColumnWidth,
+						MIN_TEXT_WIDTH);
+				preferredHeight = getPreferredHeight(messageBody, queryWidth);
+			} else {
+				moreLabel = null;
+			}
+
+			if (preferredHeight < oneLineHeight || isExpanded) {
+				add(messageBody, cc.xy(1, 1));
+				messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
+				messageBody.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+			} else {
+				final SimpleColoredComponent jLabel = getSingleLineComponent(comment, isSelected);
+				jLabel.setMinimumSize(new Dimension(0, 0));
+				add(jLabel, cc.xy(1, 1));
+			}
+
+
+			if (comment.isDefectRaised()) {
+				Icon myicon = iconProvider.getIcon(IconPaths.REVIEW_COMMENT_DEFECT_PATH);
+				JLabel icon = new JLabel(myicon);
+				add(icon, DEFECT_ICON_POS);
+			}
+
+			add(reviewerAndAuthorLabel, AUTHOR_POS);
+
+			validate();
+			setSize(new Dimension(width, Integer.MAX_VALUE));
+			addNotify();
+			doLayout();
+			if (moreLabel != null) {
+				moreBounds = moreLabel.getBounds();
+			}
+		}
+
+
+		@NotNull
+		private static String getDateLabel(Comment comment) {
+			StringBuilder sb = new StringBuilder();
+			sb.append(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(comment.getCreateDate()));
+			return sb.toString();
+		}
+
+		private static String getAuthorLabel(Comment comment) {
+			return "".equals(comment.getAuthor().getDisplayName())
+					? comment.getAuthor().getUserName()
+					: comment.getAuthor().getDisplayName();
+		}
+
+		private static String getLineInfoLabel(@NotNull Comment comment) {
+			if (comment.isReply()) {
+				return "Reply";
+			}
+			if (comment instanceof VersionedComment) {
+				VersionedComment vc = (VersionedComment) comment;
+				if (vc.getToStartLine() > 0 && vc.isToLineInfo()) {
+					int startLine = vc.getToStartLine();
+					int endLine = vc.getToEndLine();
 					if (endLine == 0) {
 						endLine = startLine;
 					}
 					String txt2 = "";
 					txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
 					return txt2;
+				} else {
+					if (vc.getFromStartLine() > 0 && vc.isFromLineInfo()) {
+						int startLine = vc.getFromStartLine();
+						int endLine = vc.getFromEndLine();
+						if (endLine == 0) {
+							endLine = startLine;
+						}
+						String txt2 = "";
+						txt2 += endLine != startLine ? startLine + " - " + endLine : endLine;
+						return txt2;
+					}
 				}
+				return "General File";
 			}
-			return "General File";
+			return "General Comment";
 		}
-		return "General Comment";
-	}
 
 
-	private static String getRankingString(Comment comment) {
-		StringBuilder sb = new StringBuilder();
-		if (comment.getCustomFields().size() > 0) {
-			sb.append("(");
-		}
-		for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
-			if (sb.length() > 1) {
-				sb.append(", ");
+		private static String getRankingString(Comment comment) {
+			StringBuilder sb = new StringBuilder();
+			if (comment.getCustomFields().size() > 0) {
+				sb.append("(");
 			}
-			sb.append(elem.getKey()).append(": ");
-			sb.append(elem.getValue().getValue());
+			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
+				if (sb.length() > 1) {
+					sb.append(", ");
+				}
+				sb.append(elem.getKey()).append(": ");
+				sb.append(elem.getValue().getValue());
+			}
+
+			if (comment.getCustomFields().size() > 0) {
+				sb.append(")");
+			}
+
+			return sb.toString();
 		}
 
-		if (comment.getCustomFields().size() > 0) {
-			sb.append(")");
-		}
 
-		return sb.toString();
-	}
-
-
-	private SimpleColoredComponent getSingleLineComponent(Comment vc, boolean isSelected) {
-		final SimpleColoredComponent res = new SimpleColoredComponent();
-		res.setOpaque(false);
-		final String lineInfoLabel = getLineInfoLabel(vc);
-		if (lineInfoLabel.length() > 0) {
-			res.append("(" + lineInfoLabel + ") ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-		}
-		final String message = StringUtil.getFirstLine(comment.getMessage());
-		res.append(message + " ", SimpleTextAttributes.REGULAR_ATTRIBUTES);
-		res.append(" " + getRankingString(vc), isSelected
-				? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.GRAY_ATTRIBUTES);
-		if (comment.isDraft()) {
-			StringBuilder drafInfo = new StringBuilder();
-			drafInfo.append(" ");
-			drafInfo.append("Draft");
-			res.append(drafInfo.toString(), isSelected
-					? SimpleTextAttributes.SELECTED_SIMPLE_CELL_ATTRIBUTES : SimpleTextAttributes.GRAY_ATTRIBUTES);
-		}
-		return res;
-	}
-
-	private static JTextPane createMessageBody(Comment vc, boolean isSelected) {
-		JTextPane pane = new JTextPane();
-		pane.setOpaque(false);
-		final StyledDocument doc = pane.getStyledDocument();
-		addStylesToDocument(doc);
-		try {
+		private SimpleColoredComponent getSingleLineComponent(Comment vc, boolean isSelected) {
+			final SimpleColoredComponent res = new SimpleColoredComponent();
+			res.setFont(font);
+			res.setOpaque(false);
+			res.setIpad(new Insets(0, 0, 0, 0));
 			final String lineInfoLabel = getLineInfoLabel(vc);
 			if (lineInfoLabel.length() > 0) {
-				doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ", doc.getStyle("line"));
+				res.append("(" + lineInfoLabel + ") ",
+						new SimpleTextAttributes(SimpleTextAttributes.STYLE_BOLD,
+								isSelected ? UIUtil.getTreeSelectionForeground() : null));
 			}
-			doc.insertString(doc.getLength(), vc.getMessage() + " ", doc.getStyle("regular"));
-			doc.insertString(doc.getLength(), " " + getRankingString(vc),
-					doc.getStyle(isSelected ? "defect-selected" : "defect"));
-			if (vc.isDraft()) {
+			final String message = StringUtil.getFirstLine(comment.getMessage());
+			res.append(message + " ",
+					new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN,
+							isSelected ? UIUtil.getTreeSelectionForeground() : null));
+			res.append(" " + getRankingString(vc),
+					new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC,
+							isSelected ? UIUtil.getTreeSelectionForeground() : Color.GRAY));
+			if (comment.isDraft()) {
 				StringBuilder drafInfo = new StringBuilder();
-				if (doc.getLength() > 0) {
-					drafInfo.append(" ");
-				}
+				drafInfo.append(" ");
 				drafInfo.append("Draft");
-				doc.insertString(doc.getLength(), drafInfo.toString(),
-						doc.getStyle(isSelected ? "draft-selected" : "draft"));
+				res.append(drafInfo.toString(),
+						new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC,
+								isSelected ? UIUtil.getTreeSelectionForeground() : Color.GRAY));
 			}
-		} catch (BadLocationException e) {
-			throw new RuntimeException(e);
+			return res;
 		}
-		return pane;
+
+		private JTextPane createMessageBody(Comment vc, boolean isSelected) {
+			JTextPane pane = new JTextPane();
+			pane.setFont(font);
+			pane.setOpaque(false);
+			final StyledDocument doc = pane.getStyledDocument();
+			addStylesToDocument(doc);
+			try {
+				final String lineInfoLabel = getLineInfoLabel(vc);
+				if (lineInfoLabel.length() > 0) {
+					doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ",
+							doc.getStyle(isSelected ? "line-selected" : "line"));
+				}
+				doc.insertString(doc.getLength(), vc.getMessage() + " ",
+						doc.getStyle(isSelected ? "regular-selected" : "regular"));
+				doc.insertString(doc.getLength(), " " + getRankingString(vc),
+						doc.getStyle(isSelected ? "defect-selected" : "defect"));
+				if (vc.isDraft()) {
+					StringBuilder drafInfo = new StringBuilder();
+					if (doc.getLength() > 0) {
+						drafInfo.append(" ");
+					}
+					drafInfo.append("Draft");
+					doc.insertString(doc.getLength(), drafInfo.toString(),
+							doc.getStyle(isSelected ? "draft-selected" : "draft"));
+				}
+			} catch (BadLocationException e) {
+				throw new RuntimeException(e);
+			}
+			return pane;
+		}
+
+		private static void addStylesToDocument(StyledDocument doc) {
+			//Initialize some styles.
+			Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
+
+			Style regular = doc.addStyle("regular", def);
+
+			Style s = doc.addStyle("regular-selected", regular);
+
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+
+			s = doc.addStyle("defect", regular);
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
+			s.addAttribute(StyleConstants.ColorConstants.Italic, true);
+
+			s = doc.addStyle("defect-selected", regular);
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+			s.addAttribute(StyleConstants.ColorConstants.Italic, true);
+
+			s = doc.addStyle("draft", regular);
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
+			s.addAttribute(StyleConstants.ColorConstants.Italic, true);
+
+			s = doc.addStyle("draft-selected", regular);
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+			s.addAttribute(StyleConstants.ColorConstants.Italic, true);
+
+			s = doc.addStyle("line", regular);
+			StyleConstants.setBold(s, true);
+
+			s = doc.addStyle("line-selected", regular);
+			StyleConstants.setBold(s, true);
+			s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+		}
 	}
 
-	private static void addStylesToDocument(StyledDocument doc) {
-		//Initialize some styles.
-		Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
-
-		Style regular = doc.addStyle("regular", def);
-		StyleConstants.setFontFamily(def, "SansSerif");
-
-		Style s = doc.addStyle("defect", regular);
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
-
-		s = doc.addStyle("defect-selected", regular);
-
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
-
-		s = doc.addStyle("draft", regular);
-//		StyleConstants.setBold(s, true);
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
-
-		s = doc.addStyle("draft-selected", regular);
-
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
-
-		s = doc.addStyle("line", regular);
-		StyleConstants.setBold(s, true);
-	}
 }
+
 
