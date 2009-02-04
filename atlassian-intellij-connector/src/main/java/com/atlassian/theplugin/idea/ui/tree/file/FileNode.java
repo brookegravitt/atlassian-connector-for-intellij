@@ -84,6 +84,7 @@ public abstract class FileNode extends AtlassianTreeNode {
 		return -1; // fixme?
 	}
 
+	@Override
 	public String toString() {
 		return getName();
 	}

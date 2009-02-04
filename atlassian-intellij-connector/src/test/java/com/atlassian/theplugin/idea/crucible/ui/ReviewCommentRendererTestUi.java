@@ -53,6 +53,7 @@ public final class ReviewCommentRendererTestUi {
 
 		final VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
 		versionedCommentBean.setMessage("my beautiful message");
+		versionedCommentBean.setDefectRaised(true);
 		final ReviewerBean author = new ReviewerBean();
 		author.setUserName("wseliga");
 		author.setDisplayName("Wojciech Seliga");
@@ -125,6 +126,6 @@ public final class ReviewCommentRendererTestUi {
 		buildTreeUiSetup.initializeUI(jtree, parentScrollPane);
 
 		new ReviewDetailsTreeMouseListener(jtree, renderer, buildTreeUiSetup);
-		SwingAppRunner.run(parentScrollPane);
+		SwingAppRunner.run(parentScrollPane, ReviewCommentRenderer.class.getName(), 600, 200);
 	}
 }
