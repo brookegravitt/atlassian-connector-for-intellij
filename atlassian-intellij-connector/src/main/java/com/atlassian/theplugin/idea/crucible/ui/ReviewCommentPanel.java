@@ -54,7 +54,7 @@ class ReviewCommentPanel extends JPanel {
 			component.doLayout();
 			component.setPreferredSize(null);
 			component.setSize(preferredWidth, Integer.MAX_VALUE);
-			return component.getPreferredSize().height ;
+			return component.getPreferredSize().height;
 		} finally {
 			component.removeNotify();
 		}
