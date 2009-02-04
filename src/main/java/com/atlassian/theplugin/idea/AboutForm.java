@@ -1,9 +1,14 @@
 package com.atlassian.theplugin.idea;
 
-import com.jgoodies.forms.layout.FormLayout;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.util.IconLoader;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
 
 /**
  * User: jgorycki
@@ -12,6 +17,46 @@ import javax.swing.*;
  */
 public class AboutForm {
 	private JPanel mainPanel;
+	private JEditorPane aboutText;
+	private JLabel iconLabel;
+
+	public AboutForm() {
+		iconLabel.setIcon(IconLoader.getIcon("/icons/Atlassian.png"));
+		iconLabel.setText("");
+		
+		aboutText.setContentType("text/html");
+		aboutText.setEditable(false);
+		aboutText.setOpaque(true);
+		aboutText.setBackground(Color.WHITE);
+		aboutText.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+		aboutText.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					BrowserUtil.launchBrowser(e.getURL().toString());
+				}
+			}
+		});
+		setAboutText();
+	}
+
+	private void setAboutText() {
+		aboutText.setText(
+				"<html><body><center>"
+				+ "The Atlassian IntelliJ Connector is an IDEA plugin that lets you "
+				+ "work with the Atlassian products within your IDE. Now you don't "
+				+ "have to switch between websites, email messages and new feeds to "
+				+ "see what's happening to your project and your code. Instead, you "
+				+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues, "
+				+ "<a href=\"http://www.atlassian.com/software/crucible\">Crucible</a> reviews "
+				+ "and <a href=\"http://www.atlassian.com/software/bamboo\">Bamboo</a> build "
+				+ "information right there in your development environment. Viewing your "
+				+ "code in <a href=\"http://www.atlassian.com/software/fisheye\">FishEye</a> is just a click away."
+				+ "<br><br><br><br>"
+				+ "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
+				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>"
+				+ "</center></body></html>"
+		);
+	}
 
 	public JPanel getRootPane() {
 		return mainPanel;
