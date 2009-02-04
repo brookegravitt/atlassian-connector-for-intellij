@@ -99,7 +99,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	public void refreshComments(String key) {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
-			ip.descriptionAndCommentsPanel.refreshComments();
+			ip.descriptionAndCommentsPanel.refreshDescriptionAndComments();
 		}
 	}
 
@@ -205,7 +205,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					break;
 				}
 			}
-			descriptionAndCommentsPanel.refreshComments();
+			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
 		}
@@ -426,17 +426,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 
 			public synchronized void getMoreIssueDetails() {
-				if ((params.issue.getAffectsVersions() == null)
-						|| (params.issue.getFixVersions() == null)
-						|| (params.issue.getComponents() == null)) {
-
-					Runnable runnable = new IssueDetailsRunnable();
-					new Thread(runnable, "atlassian-idea-plugin get issue details").start();
-				} else {
-					setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
-					setFixVersions(getStringArray(params.issue.getFixVersions()));
-					setComponents(getStringArray(params.issue.getComponents()));
-				}
+				Runnable runnable = new IssueDetailsRunnable();
+				new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 			}
 
 			private class IssueDetailsRunnable implements Runnable {
@@ -613,6 +604,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			private Border border = BorderFactory.createTitledBorder("Comments");
 			private final JTabbedPane tabs;
 			private final int tabIndex;
+			private DescriptionPanel descriptionPanel;
 
 			public DescriptionAndCommentsPanel(JTabbedPane tabs, int tabIndex) {
 				this.tabs = tabs;
@@ -658,7 +650,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				wrap.add(scroll, BorderLayout.CENTER);
 				rightPanel.add(wrap, gbc);
 
-				splitPane.setFirstComponent(new DescriptionPanel());
+				descriptionPanel = new DescriptionPanel();
+				splitPane.setFirstComponent(descriptionPanel);
 				splitPane.setSecondComponent(rightPanel);
 
 				setLayout(new BorderLayout());
@@ -705,7 +698,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 									facade.addComment(params.server, params.issue, issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
-											refreshComments();
+											refreshDescriptionAndComments();
 										}
 									});
 								}
@@ -725,10 +718,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				}
 			}
 
-			public void refreshComments() {
+			public void refreshDescriptionAndComments() {
 
 				tabs.setTitleAt(tabIndex, "Refreshing comments...");
-				Runnable runnable = new RefreshCommentsRunnable();
+				Runnable runnable = new RefreshDescriptionAndCommentsRunnable();
 				new Thread(runnable, "atlassian-idea-plugin refresh comments").start();
 			}
 
@@ -745,7 +738,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				}
 			}
 
-			private class RefreshCommentsRunnable implements Runnable {
+			private class RefreshDescriptionAndCommentsRunnable implements Runnable {
 				public void run() {
 					try {
 						if (params.server != null) {
@@ -753,6 +746,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
 							if (oneIssue != null) {
+								descriptionPanel.setDescription(oneIssue.getDescription());
 								cmts = oneIssue.getComments();
 							}
 							if (cmts == null) {
@@ -885,6 +879,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		private class DescriptionPanel extends JPanel {
+			private JEditorPane body;
+
 			public DescriptionPanel() {
 				setLayout(new GridBagLayout());
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -897,7 +893,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.weightx = 1.0;
 				gbc.weighty = 1.0;
 
-				JEditorPane body = new JEditorPane();
+				body = new JEditorPane();
 				JScrollPane sp = new JScrollPane(body,
 						ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 						ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -918,10 +914,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN / 2));
 				body.setContentType("text/html");
 				body.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-				String descriptionFixed = params.issue.getDescription().replace("/>", ">");
-				body.setText("<html><head></head><body>" + descriptionFixed + "</body></html>");
+				setDescription(params.issue.getDescription());
 				sp.getViewport().setOpaque(false);
-				body.setCaretPosition(0);
 				add(sp, gbc);
 
 				Border b = BorderFactory.createTitledBorder("Description");
@@ -929,6 +923,16 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				Insets i = b.getBorderInsets(this);
 				int minHeight = i.top + i.bottom;
 				setMinimumSize(new Dimension(0, minHeight));
+			}
+
+			public void setDescription(String description) {
+				if (description != null) {
+					String descriptionFixed = description.replace("/>", ">");
+					body.setText("<html><body>" + descriptionFixed + "</body></html>");
+					body.setCaretPosition(0);
+				} else {
+					body.setText("");
+				}
 			}
 		}
 
