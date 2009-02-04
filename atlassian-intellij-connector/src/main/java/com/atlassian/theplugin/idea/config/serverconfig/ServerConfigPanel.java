@@ -94,7 +94,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		setLayout(gbl);
 
 		Splitter splitter = new Splitter(false, SPLIT_RATIO);
-        splitter.setShowDividerControls(true);
+        splitter.setShowDividerControls(false);
         splitter.setFirstComponent(createSelectPane());
         splitter.setSecondComponent(createEditPane());
         splitter.setHonorComponentsMinimumSize(true);
