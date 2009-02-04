@@ -127,7 +127,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = jiraIssueListModelBuilder.getServer();
 						if (srvcfg == null) {
-							setStatusMessage("Server not defined", true);
+							// just skip - this happens on freshly added/enabled server when you have no
+							// recent filter selection. See bug PL-1155
 							return;
 						}
 						Map<String, String> projectMap = new HashMap<String, String>();
