@@ -15,20 +15,15 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.ComponentListener;
-import java.awt.event.ComponentEvent;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-
-import org.jetbrains.annotations.NotNull;
+import java.awt.event.*;
 
 public class ReviewDetailsTreeMouseListener extends MouseAdapter implements MouseMotionListener, ComponentListener {
 	public ReviewDetailsTreeMouseListener(@NotNull JTree jtree, final ReviewCommentRenderer renderer, TreeUISetup treeUISetup) {
@@ -62,8 +57,9 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 							jtree, node, false, false, node.isLeaf(), -1, false);
 				}
 
-				if (lastRendererComponent instanceof CommentPanel) {
-					final CommentPanel commentPanel = (CommentPanel) lastRendererComponent;
+				if (lastRendererComponent instanceof ReviewCommentRenderer.CommentPanel) {
+					final ReviewCommentRenderer.CommentPanel commentPanel =
+							(ReviewCommentRenderer.CommentPanel) lastRendererComponent;
 					final Rectangle bounds = commentPanel.getMoreBounds();
 					if (bounds != null) {
 						return bounds.contains(x, y);
