@@ -30,9 +30,13 @@ public final class SwingAppRunner {
 	}
 
 	public static void run(@NotNull JComponent component) {
-		JFrame frame = new JFrame("ServerConfigPanel test");
+		run(component, "Test Application", WIDTH, HEIGHT);
+	}
+
+	public static void run(@NotNull JComponent component, @NotNull String titile, final int width, final int height) {
+		JFrame frame = new JFrame("Test Application");
 		//Finish setting up the frame, and show it.
-		frame.setSize(WIDTH, HEIGHT);
+		frame.setSize(width, height);
 		frame.getContentPane().add(component, BorderLayout.CENTER);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -44,4 +48,5 @@ public final class SwingAppRunner {
 		frame.setVisible(true);
 
 	}
+
 }

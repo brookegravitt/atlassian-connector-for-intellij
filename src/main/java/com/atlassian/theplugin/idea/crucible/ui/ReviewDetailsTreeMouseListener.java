@@ -25,6 +25,11 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * This component is by design thread-unsafe (due to potential performance reason as synchronization would need to occur
+ * on every mouse movement).
+ * It should be only used in Event Dispatch Thread.
+ */
 public class ReviewDetailsTreeMouseListener extends MouseAdapter implements MouseMotionListener, ComponentListener {
 	public ReviewDetailsTreeMouseListener(@NotNull JTree jtree, final ReviewCommentRenderer renderer, TreeUISetup treeUISetup) {
 		this.jtree = jtree;
@@ -39,7 +44,8 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 	private ReviewCommentRenderer renderer;
 	private final TreeUISetup treeUISetup;
 	private DefaultMutableTreeNode lastHoveredNode;
-	private Component lastRendererComponent;
+	private Rectangle hyperlinkBounds;
+
 
 	private boolean isMoreLessLinkHit(MouseEvent mouseevent) {
 		TreePath treepath = jtree.getPathForLocation(mouseevent.getX(), mouseevent.getY());
@@ -53,18 +59,20 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 				final DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
 				if (node != lastHoveredNode) {
 					lastHoveredNode = node;
-					lastRendererComponent = renderer.getTreeCellRendererComponent(
-							jtree, node, false, false, node.isLeaf(), -1, false);
-				}
-
-				if (lastRendererComponent instanceof ReviewCommentRenderer.CommentPanel) {
-					final ReviewCommentRenderer.CommentPanel commentPanel =
-							(ReviewCommentRenderer.CommentPanel) lastRendererComponent;
-					final Rectangle bounds = commentPanel.getMoreBounds();
-					if (bounds != null) {
-						return bounds.contains(x, y);
+					final Component rendererComponent = renderer
+							.getTreeCellRendererComponent(jtree, node, false, false, node.isLeaf(), -1, false);
+					if (rendererComponent instanceof CommentPanel) {
+						final CommentPanel commentPanel = (CommentPanel) rendererComponent;
+						// it will work as long as getMoreBounds returns a new object which is not shared
+						// and modified in a different place. It works as Component.getBounds() creates a copy every time.
+						hyperlinkBounds = commentPanel.getMoreBounds();
+					} else {
+						hyperlinkBounds = null;
 					}
 				}
+					if (hyperlinkBounds != null) {
+						return hyperlinkBounds.contains(x, y);
+					}
 			}
 		}
 		return false;
@@ -81,7 +89,12 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 					CommentTreeNode commentTreeNode = (CommentTreeNode) o;
 					commentTreeNode.setExpanded(!commentTreeNode.isExpanded());
 					lastHoveredNode = null;
-					lastRendererComponent = null;
+					// whole code below is evil, but it does the trick. Without it
+					// (calling treeUISetup.forceTreePrefSizeRecalculation only once)
+					// we may end up with empty space where vertical scrollbar
+					treeUISetup.forceTreePrefSizeRecalculation(jtree);
+					// this second call ensures that it will be processed after the messages triggered
+					// by the first call are already processed (we put the message at the end of EDT)
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							treeUISetup.forceTreePrefSizeRecalculation(jtree);
@@ -107,7 +120,6 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 
 	public void componentResized(final ComponentEvent e) {
 		lastHoveredNode = null;
-		lastRendererComponent = null;
 	}
 
 	public void componentMoved(final ComponentEvent e) {

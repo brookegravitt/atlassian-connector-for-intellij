@@ -38,7 +38,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 
 	public AtlassianTreeWithToolbar(final String toolbarName, @Nullable TreeUISetup treeUISetup,
 									AtlassianTree.ViewStateListener viewStateListener) {
-		super(toolbarName);
+		super(toolbarName, treeUISetup == null);
 		this.treeUISetup = treeUISetup;
 		this.viewStateListener = viewStateListener;
 		jScrollPane.setViewportView(getTreeComponent());

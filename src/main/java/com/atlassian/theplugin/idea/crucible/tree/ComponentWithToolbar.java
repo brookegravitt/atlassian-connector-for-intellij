@@ -35,7 +35,7 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
     private static final String TOOLBAR_PLACE = "tree";
 	protected JScrollPane jScrollPane;
 
-	public ComponentWithToolbar(final String toolbarName) {
+	public ComponentWithToolbar(final String toolbarName, boolean canHaveHorizontalScrollbar) {
         super(new BorderLayout());
         JComponent toolbar = null;
         if (toolbarName != null && toolbarName.length() > 0) {
@@ -55,7 +55,10 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
             }
         }
 
-		jScrollPane = new JScrollPane();
+		jScrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				canHaveHorizontalScrollbar
+						? JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+						: JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		add(jScrollPane, BorderLayout.CENTER);
 	}
 
