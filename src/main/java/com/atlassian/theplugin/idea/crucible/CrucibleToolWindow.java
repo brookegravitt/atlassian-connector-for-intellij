@@ -243,7 +243,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 				final VersionedComment comment) {
 		}
 
-		public void reviewChanged(final ReviewAdapter reviewAdapter, final java.util.List<CrucibleNotification> notifications) {
+		public void reviewChanged(final ReviewAdapter review, final java.util.List<CrucibleNotification> notifications) {
 			summaryPanel.refresh();
 			detailsPanel.refresh();
 		}
