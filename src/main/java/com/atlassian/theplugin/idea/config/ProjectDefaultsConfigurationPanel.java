@@ -209,13 +209,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 	};
 
-	String CRUCIBLE_HELP_TEXT = "<html>Default values for the Crucible review creation dialog";
+	private static final String CRUCIBLE_HELP_TEXT = "<html>Default values for the Crucible review creation dialog";
 
-	String FISHEYE_HELP_TEXT_1 = "<html>The values below will be used for "
+	private static final String FISHEYE_HELP_TEXT_1 = "<html>The values below will be used for "
 			+ "the construction of FishEye code pointer links, "
 			+ "available in popup menus in your source code editor.";
 
-	String FISHEYE_HELP_TEXT_2 = "<html>"
+	private static final String FISHEYE_HELP_TEXT_2 = "<html>"
 			+ "Path to the root of the project in your repository. "
 			+ "Typically it will be something like <b>\"trunk/\"</b> or <b>\"trunk/myproject\"</b>. "
 			+ "Leave blank if your project is located at the repository root";
