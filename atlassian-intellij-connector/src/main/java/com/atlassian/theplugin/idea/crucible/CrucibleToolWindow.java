@@ -29,9 +29,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
-import com.atlassian.theplugin.crucible.model.UpdateContext;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -75,7 +72,6 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	private static final String TOOL_WINDOW_TITLE = "Reviews - Crucible";
 	private ReviewAdapter reviewAdapter;
 	private final Project project;
-	private final CrucibleReviewListModel reviewListModel;
 	private final ThePluginProjectComponent pluginProjectComponent;
 
 	private ContentPanel contentPanel;
@@ -83,11 +79,9 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 
 	protected CrucibleToolWindow(@NotNull final Project project,
-			@NotNull final CrucibleReviewListModel reviewListModel,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
 		super(true);
 		this.project = project;
-		this.reviewListModel = reviewListModel;
 		this.pluginProjectComponent = pluginProjectComponent;
 	}
 
@@ -151,7 +145,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		}
 	}
 
-	private final class ReviewPanel extends MultiTabToolWindow.ContentPanel implements CrucibleReviewListModelListener {
+	private final class ReviewPanel extends MultiTabToolWindow.ContentPanel implements CrucibleReviewListener {
 		private final ReviewContentParameters params;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -182,8 +176,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 			gbc.insets = new Insets(0, 0, 0, 0);
 			add(tabs, gbc);
 
-			if (reviewListModel != null) {
-				reviewListModel.addListener(this);
+			if (params.reviewAdapter != null) {
+				params.reviewAdapter.addReviewListener(this);
 			}
 			refresh();
 		}
@@ -200,7 +194,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		@Override
 		public void unregister() {
 			if (params != null) {
-				reviewListModel.removeListener(this);
+				params.reviewAdapter.removeReviewListener(this);
 			}
 
 			commentsPanel.unregisterListeners();
@@ -222,27 +216,37 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 			return commentsPanel;
 		}
 
-		public void reviewAdded(UpdateContext updateContext) {
+		public void createdOrEditedVersionedCommentReply(final ReviewAdapter review, final PermId file,
+				final VersionedComment parentComment,
+				final
+				VersionedComment comment) {
 		}
 
-		public void reviewRemoved(UpdateContext updateContext) {
+		public void createdOrEditedGeneralCommentReply(final ReviewAdapter review, final GeneralComment parentComment,
+				final GeneralComment comment) {
 		}
 
-		public void reviewChanged(UpdateContext updateContext) {
+		public void createdOrEditedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 		}
 
-		public void modelChanged(UpdateContext updateContext) {
+		public void createdOrEditedVersionedComment(final ReviewAdapter review, final PermId file,
+				final VersionedComment comment) {
 		}
 
-		public void reviewListUpdateStarted(UpdateContext updateContext) {
+		public void removedComment(final ReviewAdapter review, final Comment comment) {
 		}
 
-		public void reviewListUpdateFinished(UpdateContext updateContext) {
+		public void publishedGeneralComment(final ReviewAdapter review, final GeneralComment comment) {
 		}
 
-		public void reviewListUpdateError(UpdateContext updateContext, Exception exception) {
+		public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId,
+				final VersionedComment comment) {
 		}
 
+		public void reviewChanged(final ReviewAdapter reviewAdapter, final java.util.List<CrucibleNotification> notifications) {
+			summaryPanel.refresh();
+			detailsPanel.refresh();
+		}
 
 		private final class CommentsPanel extends JPanel {
 			private ReviewItemTreePanel reviewItemTreePanel;
@@ -375,7 +379,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 }
 
 
-class DetailsPanel extends JPanel implements CrucibleReviewListener {
+class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
 	private final ReviewAdapter ra;
@@ -396,7 +400,6 @@ class DetailsPanel extends JPanel implements CrucibleReviewListener {
 		scroll.setViewportView(panel);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		add(scroll, gbc);
-		ra.addReviewListener(this);
 	}
 
 	private JPanel createBody() {
@@ -592,7 +595,7 @@ class DetailsPanel extends JPanel implements CrucibleReviewListener {
 	public void publishedVersionedComment(final ReviewAdapter review, final PermId filePermId, final VersionedComment comment) {
 	}
 
-	public void reviewChanged(final ReviewAdapter reviewAdapter, final java.util.List<CrucibleNotification> notifications) {
+	public void refresh() {
 		final JPanel panel = createBody();
 		scroll.setViewport(null);
 		scroll.setViewportView(panel);

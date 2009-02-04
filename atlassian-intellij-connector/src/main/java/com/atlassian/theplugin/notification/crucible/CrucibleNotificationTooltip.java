@@ -18,7 +18,11 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.*;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.AbstractCommentNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.AbstractUpdatedCommentNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -207,6 +211,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					case EXCEPTION_RAISED:
 					case NEW_REVIEW:
 					case NOT_VISIBLE_REVIEW:
+					case REVIEW_DATA_CHANGED:
 						break;
 					case NEW_GENERAL_COMMENT:
 					case NEW_VERSIONED_COMMENT:
