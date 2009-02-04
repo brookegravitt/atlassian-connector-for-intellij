@@ -44,7 +44,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	private DefaultMutableTreeNode selectedNode;
 	private boolean forceExpand = true;
 
-	public static final int WIDTH = 190;
+	public static final int WIDTH = 240;
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
     private Collection<ServerCfg> servers;

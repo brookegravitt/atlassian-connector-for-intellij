@@ -209,6 +209,16 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 	};
 
+	String CRUCIBLE_HELP_TEXT = "<html>Default values for the Crucible review creation dialog";
+
+	String FISHEYE_HELP_TEXT_1 = "<html>The values below will be used for "
+			+ "the construction of FishEye code pointer links, "
+			+ "available in popup menus in your source code editor.";
+
+	String FISHEYE_HELP_TEXT_2 = "<html>"
+			+ "Path to the root of the project in your repository. "
+			+ "Typically it will be something like <b>\"trunk/\"</b> or <b>\"trunk/myproject\"</b>. "
+			+ "Leave blank if your project is located at the repository root";
 
 	public ProjectDefaultsConfigurationPanel(final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
@@ -223,12 +233,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
-				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 9dlu, p, 3dlu, p, 3dlu, fill:p, "
-						+ "3dlu, fill:p, 9dlu, p, 3dlu, p, 3dlu, p"); // rows
+			"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
+			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); // rows
 
 		//CHECKSTYLE:MAGIC:OFF
-		layout.setRowGroups(new int[][]{{11, 13, 15}});
+//		layout.setRowGroups(new int[][]{{11, 13, 15}});
 
 		PanelBuilder builder = new PanelBuilder(layout, this);
 		builder.setDefaultDialogBorder();
@@ -236,20 +245,35 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		final CellConstraints cc = new CellConstraints();
 
 		builder.addSeparator("Crucible", cc.xyw(1, 1, ALL_COLUMNS));
-		builder.addLabel("Default Server:", cc.xy(2, 3));
-		builder.add(defaultCrucibleServerCombo, cc.xy(4, 3));
-		builder.addLabel("Default Project:", cc.xy(2, 5));
-		builder.add(defaultCrucibleProjectCombo, cc.xy(4, 5));
-		builder.addLabel("Default Repository:", cc.xy(2, 7));
-		builder.add(defaultCrucibleRepositoryCombo, cc.xy(4, 7));
+		JLabel cruHelp = new JLabel(CRUCIBLE_HELP_TEXT);
+		cruHelp.setFont(cruHelp.getFont().deriveFont(10.0f));
+		// jgorycki: well, it seems like FormLayout doesn't give a shit about JLabel's maximum width. However,
+		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
+		// of producing one long line
+		cruHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		builder.add(cruHelp, cc.xyw(1, 3, ALL_COLUMNS));
+		builder.addLabel("Default Server:", cc.xy(2, 5));
+		builder.add(defaultCrucibleServerCombo, cc.xy(4, 5));
+		builder.addLabel("Default Project:", cc.xy(2, 7));
+		builder.add(defaultCrucibleProjectCombo, cc.xy(4, 7));
+		builder.addLabel("Default Repository:", cc.xy(2, 9));
+		builder.add(defaultCrucibleRepositoryCombo, cc.xy(4, 9));
 
-		builder.addSeparator("FishEye", cc.xyw(1, 9, ALL_COLUMNS));
-		builder.addLabel("Default Server:", cc.xy(2, 11));
-		builder.add(defaultFishEyeServerCombo, cc.xy(4, 11));
-		builder.addLabel("Default Repository:", cc.xy(2, 13));
-		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 13));
-		builder.addLabel("Path to Project:", cc.xy(2, 15));
-		builder.add(pathToProjectEdit, cc.xy(4, 15));
+		builder.addSeparator("FishEye", cc.xyw(1, 11, ALL_COLUMNS));
+		JLabel fshHelp1 = new JLabel(FISHEYE_HELP_TEXT_1);
+		fshHelp1.setFont(fshHelp1.getFont().deriveFont(10.0f));
+		fshHelp1.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		builder.add(fshHelp1, cc.xyw(1, 13, ALL_COLUMNS));
+		builder.addLabel("Default Server:", cc.xy(2, 15));
+		builder.add(defaultFishEyeServerCombo, cc.xy(4, 15));
+		builder.addLabel("Default Repository:", cc.xy(2, 17));
+		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 17));
+		builder.addLabel("Path to Project:", cc.xy(2, 19));
+		builder.add(pathToProjectEdit, cc.xy(4, 19));
+		JLabel fshHelp2 = new JLabel(FISHEYE_HELP_TEXT_2);
+		fshHelp2.setFont(fshHelp2.getFont().deriveFont(10.0f));
+		fshHelp2.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		builder.add(fshHelp2, cc.xy(4, 21));
 		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
