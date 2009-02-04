@@ -165,7 +165,7 @@ public class JIRAIssueTreeBuilder {
 
 	private JIRAIssue getSelectedIssue(final JTree tree) {
 		final TreePath selectionPath = tree.getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRAIssueTreeNode) {
 			return ((JIRAIssueTreeNode) selectionPath.getLastPathComponent()).getIssue();
 		} else {
 			// nothing selected
@@ -233,7 +233,7 @@ public class JIRAIssueTreeBuilder {
 			} else {
 				n = new JIRAIssueGroupTreeNode(issueModel, name, icon, disabledIcon);
 			}
-			
+
 			set.add(n);
 			((DefaultMutableTreeNode) getRoot()).removeAllChildren();
 			for (JIRAIssueGroupTreeNode node : set) {
