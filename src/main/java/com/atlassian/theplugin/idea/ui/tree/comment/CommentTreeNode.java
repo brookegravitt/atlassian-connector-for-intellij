@@ -70,6 +70,6 @@ public abstract class CommentTreeNode extends FileNode {
 
 	@Override
 	public String toString() {
-		return "Comment node: "+ getComment().getMessage();
+		return "Comment node: " + getComment().getMessage();
 	}
 }
