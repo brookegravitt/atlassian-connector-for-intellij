@@ -54,7 +54,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
     private JPanel editPane;
 	private static final String BLANK_CARD = "Blank card";
 
-	private static final float SPLIT_RATIO = 0.3f;
+	private static final float SPLIT_RATIO = 0.39f;
 
 	private Collection<ServerCfg> serverCfgs;
     private final BambooServerConfigForm bambooServerConfigForm;
@@ -117,6 +117,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		toolBarPanel.add(createToolbar(), BorderLayout.NORTH);
 		selectPane.add(toolBarPanel, BorderLayout.NORTH);
 		selectPane.add(serverTreePanel, BorderLayout.CENTER);
+		selectPane.setMinimumSize(new Dimension(ServerTreePanel.WIDTH, ServerTreePanel.HEIGHT));
 		return selectPane;
     }
 

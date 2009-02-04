@@ -39,6 +39,8 @@ public class ProjectConfigurationPanel extends JPanel {
    	private final AboutForm aboutBox;
 
 	private ProjectConfiguration projectConfiguration;
+	private static final int WIDTH = 750;
+	private static final int HEIGHT = 400;
 
 	public ProjectConfiguration getProjectConfiguration() {
 		serverConfigPanel.saveData();
@@ -59,6 +61,8 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	private void initLayout() {
 		setLayout(new BorderLayout());
+		setMinimumSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(getMinimumSize());
 
 		contentPanel.setOpaque(true);
 		contentPanel.setBackground(new Color(Constants.BG_COLOR_R, Constants.BG_COLOR_G, Constants.BG_COLOR_B));
