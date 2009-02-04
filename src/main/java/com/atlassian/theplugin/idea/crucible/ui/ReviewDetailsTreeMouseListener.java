@@ -61,11 +61,11 @@ public class ReviewDetailsTreeMouseListener extends MouseAdapter implements Mous
 					lastHoveredNode = node;
 					final Component rendererComponent = renderer
 							.getTreeCellRendererComponent(jtree, node, false, false, node.isLeaf(), -1, false);
-					if (rendererComponent instanceof CommentPanel) {
-						final CommentPanel commentPanel = (CommentPanel) rendererComponent;
+					if (rendererComponent instanceof ReviewCommentPanel) {
+						final ReviewCommentPanel reviewCommentPanel = (ReviewCommentPanel) rendererComponent;
 						// it will work as long as getMoreBounds returns a new object which is not shared
 						// and modified in a different place. It works as Component.getBounds() creates a copy every time.
-						hyperlinkBounds = commentPanel.getMoreBounds();
+						hyperlinkBounds = reviewCommentPanel.getMoreBounds();
 					} else {
 						hyperlinkBounds = null;
 					}
