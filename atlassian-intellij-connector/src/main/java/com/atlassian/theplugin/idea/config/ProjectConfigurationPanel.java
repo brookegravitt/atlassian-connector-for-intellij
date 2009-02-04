@@ -39,8 +39,8 @@ public class ProjectConfigurationPanel extends JPanel {
    	private final AboutForm aboutBox;
 
 	private ProjectConfiguration projectConfiguration;
-	private static final int WIDTH = 750;
-	private static final int HEIGHT = 400;
+	private static final int WIDTH = 800;
+	private static final int HEIGHT = 600;
 
 	public ProjectConfiguration getProjectConfiguration() {
 		serverConfigPanel.saveData();
