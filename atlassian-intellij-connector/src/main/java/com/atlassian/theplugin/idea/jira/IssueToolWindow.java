@@ -222,6 +222,14 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			private JLabel originalEstimate = new JLabel("Fetching...");
 			private JLabel remainingEstimate = new JLabel("Fetching...");
 			private JLabel timeSpent = new JLabel("Fetching...");
+			private JLabel issueType;
+			private JLabel issueStatus;
+			private JLabel issuePriority;
+			private JComponent issueAssignee;
+			private JComponent issueReporter;
+			private JLabel issueResolution;
+			private JLabel issueCreationTime;
+			private JLabel issueUpdateTime;
 
 			public DetailsPanel() {
 				setLayout(new GridBagLayout());
@@ -262,9 +270,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc2.gridy = 0;
 
 				body.add(new BoldLabel("Type"), gbc1);
-				body.add(new JLabel(params.issue.getType(),
-						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
-						SwingConstants.LEFT), gbc2);
+
+				fillBaseIssueDetails();
+
+				body.add(issueType, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
@@ -272,55 +281,31 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				body.add(new BoldLabel("Status"), gbc1);
-				body.add(new JLabel(params.issue.getStatus(),
-						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
-						SwingConstants.LEFT), gbc2);
+				body.add(issueStatus, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Priority"), gbc1);
-				body.add(new JLabel(params.issue.getPriority(),
-						CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
-						SwingConstants.LEFT), gbc2);
+				body.add(issuePriority, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Assignee"), gbc1);
-				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
-				if (!params.issue.getAssigneeId().equals("-1")) {
-					body.add(new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
-							params.issue.getAssigneeId()), gbc2);
-				} else {
-					body.add(new JLabel("Unassigned"), gbc2);
-				}
+				body.add(issueAssignee, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Reporter"), gbc1);
-				body.add(new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-						params.issue.getReporterId()), gbc2);
+				body.add(issueReporter, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Resolution"), gbc1);
-				body.add(new JLabel(params.issue.getResolution()), gbc2);
+				body.add(issueResolution, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Created"), gbc1);
-				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
-				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				String t;
-				try {
-					t = ds.format(df.parse(params.issue.getCreated()));
-				} catch (ParseException e) {
-					t = "Invalid";
-				}
-				body.add(new JLabel(t), gbc2);
+				body.add(issueCreationTime, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(new BoldLabel("Updated"), gbc1);
-				try {
-					t = ds.format(df.parse(params.issue.getUpdated()));
-				} catch (ParseException e) {
-					t = "Invalid";
-				}
-				body.add(new JLabel(t), gbc2);
+				body.add(issueUpdateTime, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
 				body.add(affectsVersionsLabel, gbc1);
@@ -355,6 +340,43 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				body.add(filler, gbc1);
 
 				return body;
+			}
+
+			private void fillBaseIssueDetails() {
+				issueType = new JLabel(params.issue.getType(),
+						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
+						SwingConstants.LEFT);
+				issueStatus = new JLabel(params.issue.getStatus(),
+						CachedIconLoader.getIcon(params.issue.getStatusTypeUrl()),
+						SwingConstants.LEFT);
+				issuePriority = new JLabel(params.issue.getPriority(),
+						CachedIconLoader.getIcon(params.issue.getPriorityIconUrl()),
+						SwingConstants.LEFT);
+				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
+				if (!params.issue.getAssigneeId().equals("-1")) {
+					issueAssignee = new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
+							params.issue.getAssigneeId());
+				} else {
+					issueAssignee = new JLabel("Unassigned");
+				}
+				issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
+						params.issue.getReporterId());
+				issueResolution = new JLabel(params.issue.getResolution());
+				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
+				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+				String t;
+				try {
+					t = ds.format(df.parse(params.issue.getCreated()));
+				} catch (ParseException e) {
+					t = "Invalid";
+				}
+				issueCreationTime = new JLabel(t);
+				try {
+					t = ds.format(df.parse(params.issue.getUpdated()));
+				} catch (ParseException e) {
+					t = "Invalid";
+				}
+				issueUpdateTime = new JLabel(t);
 			}
 
 			public JLabel getAffectVersionsLabel() {
@@ -425,7 +447,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 
-			public synchronized void getMoreIssueDetails() {
+			public synchronized void getIssueDetails() {
 				Runnable runnable = new IssueDetailsRunnable();
 				new Thread(runnable, "atlassian-idea-plugin get issue details").start();
 			}
@@ -437,14 +459,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 					try {
 						if (params.server != null) {
-
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
-							final JIRAIssue issueWithEstimates =
-									facade.getIssue(params.server, params.issue.getKey());
-							params.issue.setOriginalEstimate(issueWithEstimates.getOriginalEstimate());
-							params.issue.setRemainingEstimate(issueWithEstimates.getRemainingEstimate());
-							params.issue.setTimeSpent(issueWithEstimates.getTimeSpent());
+							final JIRAIssue issueWithEstimates = facade.getIssue(params.server, params.issue.getKey());
+							params.issue = issueWithEstimates;
 
 							final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
@@ -456,6 +474,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					}
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
+							scroll.setViewportView(createBody());
 							if (errorString == null) {
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 								setFixVersions(getStringArray(params.issue.getFixVersions()));
@@ -508,8 +527,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			public void refresh() {
-				scroll.setViewportView(createBody());
-				getMoreIssueDetails();
+				getIssueDetails();
 			}
 		}
 
