@@ -45,23 +45,53 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		}
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 		for (JIRAIssue i : col) {
-			if (i.getKey().toLowerCase().indexOf(searchTerm) > -1
-					|| i.getSummary().toLowerCase().indexOf(searchTerm) > -1) {
+			if (isMatch(i)) {
 				list.add(i);
 			}
 		}
 		return list;
 	}
 
+	private boolean isMatch(JIRAIssue issue) {
+		return issue.getKey().toLowerCase().indexOf(searchTerm) > -1
+				|| issue.getSummary().toLowerCase().indexOf(searchTerm) > -1;
+	}
+
 	public Collection<JIRAIssue> getIssues() {
 		return search(parent.getIssues());
 	}
 
+	/*
+	 * this version of the routine also returns issues that have subtasks matching the search term
+	 */
 	public Collection<JIRAIssue> getIssuesNoSubtasks() {
-		return search(parent.getIssuesNoSubtasks());
+		List<JIRAIssue> result = new ArrayList<JIRAIssue>();
+		
+		Collection<JIRAIssue> issues = parent.getIssues();
+		for (JIRAIssue i : issues) {
+			if (!i.isSubTask()) {
+				if (isMatch(i)) {
+					result.add(i);
+				} else {
+					for (String subKey : i.getSubTaskKeys()) {
+						JIRAIssue sub = parent.findIssue(subKey);
+						if (sub != null && isMatch(sub)) {
+							result.add(i);
+							break;
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
+	@NotNull
 	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
 		return search(parent.getSubtasks(p));
+	}
+
+	public JIRAIssue findIssue(String key) {
+		return parent.findIssue(key);
 	}
 }
