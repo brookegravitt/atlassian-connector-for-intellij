@@ -79,20 +79,17 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
-	private CfgManager cfgManager;
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
-			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraProjectCfg = jiraProjectConfiguration;
 		this.uiTaskExecutor = uiTaskExecutor;
-		this.cfgManager = projectCfgManager.getCfgManager();
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
@@ -765,7 +762,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
-					cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)), jiraProjectCfg, uiTaskExecutor);
+					jiraProjectCfg, uiTaskExecutor);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();
