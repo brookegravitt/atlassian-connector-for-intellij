@@ -82,12 +82,10 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 
-		for (JIRAIssue i : getIssues()) {
-			for (String key : parent.getSubTaskKeys()) {
-				if (key.equals(i.getKey())) {
-					list.add(i);
-					break;
-				}
+		for (String key : parent.getSubTaskKeys()) {
+			JIRAIssue sub = findIssue(key);
+			if (sub != null) {
+				list.add(sub);
 			}
 		}
 		return list;
@@ -99,8 +97,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 		for (JIRAIssue i : getIssues()) {
 			if (i.isSubTask()) {
-				String parent = i.getParentIssueKey();
-				if (findParent(parent) == null) {
+				if (findIssue(i.getParentIssueKey()) == null) {
 					list.add(i);
 				}
 			}
@@ -108,13 +105,8 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		return list;
 	}
 
-	private JIRAIssue findParent(String key) {
-		for (JIRAIssue i : getIssues()) {
-			if (key.equals(i.getKey())) {
-				return i;
-			}
-		}
-		return null;
+	public JIRAIssue findIssue(String key) {
+		return issues.get(key);
 	}
 
 	public void fireModelChanged() {
