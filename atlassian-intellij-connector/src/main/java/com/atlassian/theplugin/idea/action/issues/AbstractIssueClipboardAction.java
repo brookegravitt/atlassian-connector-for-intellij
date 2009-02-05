@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ide.CopyPasteManager;
 
@@ -28,12 +26,11 @@ public abstract class AbstractIssueClipboardAction extends JIRAAbstractAction {
 	}
 
 	private JIRAIssue getJIRAIssue(final AnActionEvent event) {
-		JIRAIssueListModelBuilder builder =
-				IdeaHelper.getProjectComponent(IdeaHelper.getCurrentProject(event), JIRAIssueListModelBuilderImpl.class);
-		if (builder == null || builder.getModel() == null) {
-			return null;
+		final JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
+		if (issue != null) {
+			return issue;
 		}
-		return builder.getModel().getSelectedIssue();
+		return null;
 	}
 
 	protected abstract String getCliboardText(JIRAIssue issue);

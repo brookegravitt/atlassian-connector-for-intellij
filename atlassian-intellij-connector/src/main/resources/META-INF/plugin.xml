@@ -337,12 +337,12 @@
                 text="Group by Directory" icon="/nodes/folder.png"/>
         <action id="ThePlugin.Tree.File.ExpandFiles"
                 class="com.atlassian.theplugin.idea.action.tree.file.ExpandFilesAction"
-				text="Expand All"
+                text="Expand All"
                 icon="/actions/expandall.png"/>
-		<action id="ThePlugin.Tree.File.CollapseFiles"
-				class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction"
-				text="Collapse All"
-				icon="/actions/collapseall.png"/>
+        <action id="ThePlugin.Tree.File.CollapseFiles"
+                class="com.atlassian.theplugin.idea.action.tree.file.CollapseFilesAction"
+                text="Collapse All"
+                icon="/actions/collapseall.png"/>
         <action id="ThePlugin.Crucible.ShowFileAction"
                 class="com.atlassian.theplugin.idea.action.crucible.ShowFileAction"
                 text="Open Revision for Review" icon="/actions/menu-open.png">
@@ -478,7 +478,7 @@
             <add-to-group anchor="last" group-id="ThePlugin.Crucible.ReviewFileListToolBar"/>
             <reference id="ThePlugin.Tree.File.GroupByDir"/>
             <reference id="ThePlugin.Tree.File.ExpandFiles"/>
-			<reference id="ThePlugin.Tree.File.CollapseFiles"/>
+            <reference id="ThePlugin.Tree.File.CollapseFiles"/>
         </group>
 
         <!-- Crucible tool window panel related actions -->
@@ -635,21 +635,27 @@
                 icon="/general/web.png"/>
         <action id="ThePlugin.JiraIssues.EditIssue"
                 class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
-                text="Edit in Browser"/>
+                text="Edit in Browser"
+                icon="/actions/editSource.png"/>
         <action id="ThePlugin.JiraIssues.AssignIssueToMyself"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
+                icon="/icons/user_16.gif"
                 text="Assign to Me"/>
         <action id="ThePlugin.JiraIssues.AssignIssueToUser"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
+                icon="/icons/user_16.gif"
                 text="Assign to User"/>
         <action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
                 class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
+                icon="/icons/user_16.gif"
                 text="Assign to Me and Start Working"/>
         <action id="ThePlugin.JiraIssues.AddComment"
                 class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
-                text="Add Comment"/>
+                text="Add Comment"
+                icon="/general/add.png"/>
         <action id="ThePlugin.JiraIssues.LogWork"
                 class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
+                icon="/general/todoDefault.png"
                 text="Log Work"/>
         <action id="ThePlugin.JiraIssues.CreateChangeList"
                 class="com.atlassian.theplugin.idea.action.issues.CreateChangeListAction"
@@ -668,26 +674,10 @@
                 class="com.atlassian.theplugin.idea.action.issues.oneissue.CollapseCommentsAction"
                 text="Collapse All Comments"
                 icon="/actions/collapseall.png"/>
-        <action id="ThePlugin.JiraIssues.AddEditorComment"
+        <action id="ThePlugin.JiraIssues.EditorAddComment"
                 class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
                 text="Add Comment"
                 icon="/general/add.png"/>
-        <action id="ThePlugin.JiraIssues.EditorViewIssue"
-                class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorViewIssueAction"
-                text="View in Browser"
-                icon="/general/web.png"/>
-        <action id="ThePlugin.JiraIssues.EditorEditIssue"
-                class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorEditIssueAction"
-                text="Edit in Browser"
-                icon="/actions/editSource.png"/>
-        <action id="ThePlugin.JiraIssues.EditorLogWork"
-                class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorLogWorkAction"
-                text="Log Work"
-                icon="/general/todoDefault.png"/>
-        <action id="ThePlugin.JiraIssues.EditorCreateChangeList"
-                class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorCreateChangeListAction"
-                text="Create Change List"
-                icon="/general/toolWindowChanges.png"/>
         <action id="ThePlugin.JiraIssues.EditorRefresh"
                 class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
                 text="Refresh"
@@ -715,7 +705,8 @@
             <separator/>
         </group>
 
-        <group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" popup="true">
+        <group id="ThePlugin.JiraIssues.CopyToClipboardGroup" text="Copy to Clipboard" icon="/actions/menu-copy.png"
+               popup="true">
             <reference id="ThePlugin.JiraIssues.CopyIssueKey"/>
             <reference id="ThePlugin.JiraIssues.CopyIssueUrl"/>
             <reference id="ThePlugin.JiraIssues.CopyIssueSummary"/>
@@ -740,10 +731,19 @@
         </group>
 
         <group id="ThePlugin.JiraIssues.OneIssueToolBar" popup="false">
-            <reference id="ThePlugin.JiraIssues.EditorViewIssue"/>
-            <reference id="ThePlugin.JiraIssues.EditorEditIssue"/>
-            <reference id="ThePlugin.JiraIssues.EditorLogWork"/>
-            <reference id="ThePlugin.JiraIssues.EditorCreateChangeList"/>
+            <reference id="ThePlugin.JiraIssues.ViewIssue"/>
+            <reference id="ThePlugin.JiraIssues.EditIssue"/>
+            <separator/>
+            <reference id="ThePlugin.JiraIssues.EditorAddComment"/>
+            <reference id="ThePlugin.JiraIssues.LogWork"/>
+            <reference id="ThePlugin.JiraIssues.CreateChangeList"/>
+            <separator/>
+            <reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
+            <reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
+            <reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
+            <separator/>
+            <reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
+            <separator/>
             <reference id="ThePlugin.JiraIssues.EditorRefresh"/>
             <reference id="ThePlugin.JiraIssues.EditorClose"/>
         </group>
@@ -752,7 +752,7 @@
             <reference id="ThePlugin.JiraIssues.RefreshComments"/>
             <reference id="ThePlugin.JiraIssues.ExpandComments"/>
             <reference id="ThePlugin.JiraIssues.CollapseComments"/>
-            <reference id="ThePlugin.JiraIssues.AddEditorComment"/>
+            <reference id="ThePlugin.JiraIssues.EditorAddComment"/>
         </group>
 
 

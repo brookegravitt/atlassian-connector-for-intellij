@@ -2,7 +2,11 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
@@ -18,11 +22,34 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.jira.model.FrozenModel;
+import com.atlassian.theplugin.jira.model.FrozenModelListener;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
+import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -41,7 +68,12 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -457,8 +489,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void assignIssueToMyself() {
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
+//		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue == null) {
 			return;
 		}
@@ -472,8 +504,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void assignIssueToSomebody() {
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+	public void assignIssueToSomebody(@NotNull final JIRAIssue issue) {
+//		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue == null) {
 			return;
 		}
@@ -614,8 +646,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void startWorkingOnIssue() {
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+	public void startWorkingOnIssue(@NotNull final JIRAIssue issue) {
+//		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue == null) {
 			return;
 		}
