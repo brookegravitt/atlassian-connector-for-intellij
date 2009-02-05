@@ -110,7 +110,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		boolean filterFound = false;
 		if (JiraFilterConfigurationBean.MANUAL_FILTER_LABEL.equals(viewFilterId)) {
 			filterFound = setSelectionManualFilter(viewServerId);
-		} else if (viewFilterId.length() > 0) {
+		} else if (viewFilterId != null && viewFilterId.length() > 0) {
 			try {
 				filterFound = setSelectionSavedFilter(Long.parseLong(viewFilterId), viewServerId);
 			} catch (NumberFormatException e) {
