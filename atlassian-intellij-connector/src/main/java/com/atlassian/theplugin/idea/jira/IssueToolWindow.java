@@ -156,7 +156,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	}
 
 
-	private class ContentListener implements ContentManagerListener {
+	private final class ContentListener implements ContentManagerListener {
 		private final String contentKey;
 
 		private ContentListener(final String contentKey) {
