@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -29,7 +30,12 @@ public abstract class AbstractSortingJIRAIssueListModel extends JIRAIssueListMod
 		return sort(parent.getIssuesNoSubtasks());
 	}
 
+	@NotNull
 	public Collection<JIRAIssue> getSubtasks(JIRAIssue p) {
 		return sort(parent.getSubtasks(p));
+	}
+
+	public JIRAIssue findIssue(String key) {
+		return parent.findIssue(key);
 	}
 }

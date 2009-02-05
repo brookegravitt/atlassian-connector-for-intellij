@@ -20,6 +20,8 @@ public interface JIRAIssueListModel extends FrozenModel {
 	@NotNull
 	Collection<JIRAIssue> getSubtasks(JIRAIssue parent);
 
+	JIRAIssue findIssue(String key);
+	
 	void setSeletedIssue(JIRAIssue issue);
 	JIRAIssue getSelectedIssue();
 
