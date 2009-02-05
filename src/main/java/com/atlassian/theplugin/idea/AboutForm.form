@@ -10,9 +10,9 @@
     </constraints>
     <properties>
       <background color="-1"/>
-      <maximumSize width="600" height="221"/>
-      <minimumSize width="600" height="221"/>
-      <preferredSize width="600" height="221"/>
+      <maximumSize width="600" height="500"/>
+      <minimumSize width="600" height="500"/>
+      <preferredSize width="600" height="500"/>
     </properties>
     <border type="none"/>
     <children>
