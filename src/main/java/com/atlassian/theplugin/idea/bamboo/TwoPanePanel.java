@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.idea.Constants;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -133,6 +134,7 @@ public abstract class TwoPanePanel extends JPanel {
 	public void init() {
 
 		splitPane.setFirstComponent(createLeftContent());
+		leftUpperScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, Constants.DIALOG_MARGIN / 2, 0, 0));
 		leftUpperScrollPane.setViewportView(getLeftPanel());
 		rightScrollPane.setViewportView(getRightTree());
 		add(getToolBar(), BorderLayout.NORTH);
