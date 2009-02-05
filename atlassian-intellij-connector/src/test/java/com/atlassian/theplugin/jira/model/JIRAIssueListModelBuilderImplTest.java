@@ -64,11 +64,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
-//		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
-//		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
-//		builder.setServer(server);
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
-//		builder.setSavedFilter(savedFilter);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);
 			builder.addIssuesToModel(savedFilter, server, 25, false);
@@ -86,10 +82,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
-//		builder.setServer(server);
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
-//		builder.setCustomFilter(query);
 		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
 		try {
 			builder.addIssuesToModel(manualFilter, server, 25, true);
@@ -109,10 +103,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
-//		builder.setServer(server);
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
-//		builder.setCustomFilter(query);
 		model.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel m) {
 				if (model == m) {
@@ -139,9 +131,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
-//		builder.setServer(server);
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
-//		builder.setSavedFilter(savedFilter);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);
 			builder.addIssuesToModel(savedFilter, server, 25, false);
