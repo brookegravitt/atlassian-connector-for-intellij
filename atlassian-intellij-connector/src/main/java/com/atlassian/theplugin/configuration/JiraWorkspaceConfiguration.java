@@ -26,14 +26,14 @@ import java.util.Map;
 
 @State(name = "atlassian-ide-plugin-workspace-issues",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-issues-id", file = "$WORKSPACE_FILE$")})
-public class JiraProjectConfiguration implements PersistentStateComponent<JiraProjectConfiguration> {
+public class JiraWorkspaceConfiguration implements PersistentStateComponent<JiraWorkspaceConfiguration> {
 	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 
-	public JiraProjectConfiguration() {
+	public JiraWorkspaceConfiguration() {
 	}
 
-	public void copyConfiguration(JiraProjectConfiguration jiraConfiguration) {
+	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
 		this.filters = jiraConfiguration.filters;
 		this.view = jiraConfiguration.view;
 	}
@@ -69,11 +69,11 @@ public class JiraProjectConfiguration implements PersistentStateComponent<JiraPr
 		filters.put(serverId, filterConfiguration);
 	}
 
-	public JiraProjectConfiguration getState() {
+	public JiraWorkspaceConfiguration getState() {
 		return this;
 	}
 
-	public void loadState(final JiraProjectConfiguration jiraProjectConfiguration) {
+	public void loadState(final JiraWorkspaceConfiguration jiraProjectConfiguration) {
 		copyConfiguration(jiraProjectConfiguration);
 	}
 }
