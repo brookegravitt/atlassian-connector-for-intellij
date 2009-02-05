@@ -2,10 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 
 public class CreateIssueAction extends JIRAAbstractAction {
 	@Override
@@ -18,9 +15,9 @@ public class CreateIssueAction extends JIRAAbstractAction {
 
 	@Override
 	public void onUpdate(AnActionEvent event) {
-		final Project project = IdeaHelper.getCurrentProject(event);
-		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-		boolean enabled = builder != null && builder.getServer() != null;
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+
+		boolean enabled = panel != null && panel.getSelectedServer() != null;
 		event.getPresentation().setEnabled(enabled);
 	}
 }

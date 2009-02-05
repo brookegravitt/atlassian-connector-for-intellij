@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,7 +77,8 @@ public class BambooPlansForm extends JPanel {
 
 		$$$setupUI$$$();
 
-		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		final GridConstraints constraint = new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false);
 
@@ -451,9 +452,8 @@ public class BambooPlansForm extends JPanel {
 		scrollPane1.setEnabled(true);
 		scrollPane1.setHorizontalScrollBarPolicy(31);
 		scrollPane1.setVerticalScrollBarPolicy(20);
-		statusPanel.add(scrollPane1,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1,
-						new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
 		scrollPane1.setViewportView(statusPane);
@@ -471,25 +471,53 @@ public class BambooPlansForm extends JPanel {
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 0;
+		gbc.gridheight = 3;
 		gbc.anchor = GridBagConstraints.WEST;
 		timezonePanel.add(spinnerTimeZoneDifference, gbc);
 		final JLabel label1 = new JLabel();
 		label1.setText("Time Zone Difference:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 0;
+		gbc.gridy = 1;
+		gbc.gridheight = 2;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 12, 0, 12);
 		timezonePanel.add(label1, gbc);
 		final JLabel label2 = new JLabel();
-		label2.setText("Hours Ahead of the Build Server");
+		label2.setFont(new Font(label2.getFont().getName(), label2.getFont().getStyle(), 10));
+		label2.setHorizontalAlignment(0);
+		label2.setHorizontalTextPosition(0);
+		label2.setText("This computer has a time difference of x hours");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 2;
 		gbc.gridy = 0;
+		gbc.gridheight = 2;
 		gbc.weightx = 1.0;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 12, 0, 0);
 		timezonePanel.add(label2, gbc);
+		final JLabel label3 = new JLabel();
+		label3.setFont(new Font(label3.getFont().getName(), label3.getFont().getStyle(), 10));
+		label3.setHorizontalAlignment(0);
+		label3.setHorizontalTextPosition(0);
+		label3.setText("from the Bamboo server. Positive number denotes");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 2;
+		gbc.gridy = 2;
+		gbc.weightx = 1.0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 12, 0, 0);
+		timezonePanel.add(label3, gbc);
+		final JLabel label4 = new JLabel();
+		label4.setFont(new Font(label4.getFont().getName(), label4.getFont().getStyle(), 10));
+		label4.setText("hours ahead, negative number denotes hours behind.");
+		gbc = new GridBagConstraints();
+		gbc.gridx = 2;
+		gbc.gridy = 3;
+		gbc.weightx = 1.0;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(0, 12, 0, 0);
+		timezonePanel.add(label4, gbc);
 	}
 
 	/**

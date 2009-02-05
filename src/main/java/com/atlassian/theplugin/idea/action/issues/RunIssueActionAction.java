@@ -7,12 +7,12 @@ import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -27,7 +27,7 @@ public class RunIssueActionAction extends AnAction {
 	private IssuesToolWindowPanel window;
 
 	public RunIssueActionAction(IssuesToolWindowPanel toolWindow, JIRAServerFacade facade,
-	                            JIRAIssue issue, JIRAAction jiraAction) {
+			JIRAIssue issue, JIRAAction jiraAction) {
 		super(jiraAction.getName());
 		this.issue = issue;
 		action = jiraAction;
@@ -46,10 +46,10 @@ public class RunIssueActionAction extends AnAction {
 	public void launchBrowser() {
 		JiraIssueAdapter.get(issue).clearCachedActions();
 		BrowserUtil.launchBrowser(issue.getServerUrl()
-			+ "/secure/WorkflowUIDispatcher.jspa?id="
-			+ issue.getId()
-			+ "&"
-			+ action.getQueryStringFragment());
+				+ "/secure/WorkflowUIDispatcher.jspa?id="
+				+ issue.getId()
+				+ "&"
+				+ action.getQueryStringFragment());
 	}
 
 	private class IssueActionOrLaunchBrowserRunnable {
@@ -58,6 +58,7 @@ public class RunIssueActionAction extends AnAction {
 		IssueActionOrLaunchBrowserRunnable(Project project) {
 			this.project = project;
 		}
+
 		public void run() {
 			try {
 				window.setStatusMessage(
@@ -66,13 +67,15 @@ public class RunIssueActionAction extends AnAction {
 								+ "\" in issue "
 								+ issue.getKey()
 								+ "...");
-				JIRAIssueListModelBuilder builder =
-						IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-				if (builder == null) {
+
+
+				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+
+				if (panel == null) {
 					return;
 				}
 
-				JiraServerCfg server = builder.getServer();
+				JiraServerCfg server = panel.getSelectedServer();
 				if (server != null) {
 					List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, action);
 					if (fields.isEmpty()) {
@@ -99,7 +102,7 @@ public class RunIssueActionAction extends AnAction {
 										+ " run succesfully");
 
 						if (issueListModelBuilder != null) {
-							issueListModelBuilder.updateIssue(issue);
+							issueListModelBuilder.updateIssue(issue, server);
 						}
 					} else {
 						window.setStatusMessage(
