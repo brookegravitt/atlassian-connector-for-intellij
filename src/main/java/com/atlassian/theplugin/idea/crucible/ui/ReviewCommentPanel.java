@@ -47,6 +47,8 @@ class ReviewCommentPanel extends JPanel {
 	private SimpleColoredComponent singleLineLabel;
 	private JLabel defectIconLabel;
 	private static final int EXTRA_MARGIN = 100;
+	private static final int VERTICAL_MARGIN = 1;
+	private static final int HORIZONTAL_MARGIN = 5;
 
 	private static int getPreferredHeight(JComponent component, int preferredWidth) {
 		try {
@@ -105,14 +107,12 @@ class ReviewCommentPanel extends JPanel {
 			moreLabel.setFont(font);
 			singleLineLabel.setFont(font);
 		}
-		final int verticalMargin = 2;
-		final int horizontalMargin = 5;
 		defectIconLabel.setVisible(comment.isDefectRaised());
 		final int defIconPrefWidth = defectIconLabel.getPreferredSize().width;
-		int defectIconWidth = defectIconLabel.isVisible() ? defIconPrefWidth + horizontalMargin : 0;
+		int defectIconWidth = defectIconLabel.isVisible() ? defIconPrefWidth + HORIZONTAL_MARGIN : 0;
 		reviewerAndAuthorLabel.setText(getAuthorText(comment) + ", " + getDateText(comment));
 		reviewerAndAuthorLabel.setForeground(getTextColor(isSelected));
-		final int otherColumnsWidth = defectIconWidth + 2 * horizontalMargin;
+		final int otherColumnsWidth = defectIconWidth + 2 * HORIZONTAL_MARGIN;
 		final int lastColumnWidth = getLastColumnWidth(width, reviewerAndAuthorLabel.getPreferredSize().width,
 				otherColumnsWidth);
 		if (isSelected) {
@@ -148,25 +148,25 @@ class ReviewCommentPanel extends JPanel {
 		}
 
 
-		int moreWidth = moreLabel.isVisible() ? moreLabel.getPreferredSize().width + horizontalMargin : 0;
+		int moreWidth = moreLabel.isVisible() ? moreLabel.getPreferredSize().width + HORIZONTAL_MARGIN : 0;
 
-		int placeForMessage = width - horizontalMargin - lastColumnWidth - defectIconWidth - moreWidth - horizontalMargin;
+		int placeForMessage = width - HORIZONTAL_MARGIN - lastColumnWidth - defectIconWidth - moreWidth - HORIZONTAL_MARGIN;
 		if (placeForMessage < MIN_TEXT_WIDTH) {
 			placeForMessage = MIN_TEXT_WIDTH;
 		}
 		if (messageBody.isVisible()) {
-			messageBody.setBounds(0, verticalMargin, placeForMessage, preferredHeight);
+			messageBody.setBounds(0, VERTICAL_MARGIN, placeForMessage, preferredHeight);
 		} else {
-			singleLineLabel.setBounds(0, verticalMargin, placeForMessage, preferredHeight);
+			singleLineLabel.setBounds(0, VERTICAL_MARGIN, placeForMessage, preferredHeight);
 		}
 
-		int lastx = placeForMessage + horizontalMargin;
+		int lastx = placeForMessage + HORIZONTAL_MARGIN;
 
 		final Dimension moreLabelPrefSize;
 		if (moreLabel.isVisible()) {
 			moreLabelPrefSize = moreLabel.getPreferredSize();
-			moreLabel.setBounds(lastx, verticalMargin, moreLabelPrefSize.width, moreLabelPrefSize.height);
-			lastx += moreLabel.getWidth() + horizontalMargin;
+			moreLabel.setBounds(lastx, VERTICAL_MARGIN, moreLabelPrefSize.width, moreLabelPrefSize.height);
+			lastx += moreLabel.getWidth() + HORIZONTAL_MARGIN;
 			moreBounds = moreLabel.getBounds();
 		} else {
 			moreLabelPrefSize = new Dimension(0, 0);
@@ -176,21 +176,21 @@ class ReviewCommentPanel extends JPanel {
 		final int defectIconLabelPrefHeight;
 		if (defectIconLabel.isVisible()) {
 			defectIconLabelPrefHeight = defectIconLabel.getPreferredSize().height;
-			defectIconLabel.setBounds(lastx, verticalMargin, defIconPrefWidth, defectIconLabelPrefHeight);
-			lastx += defectIconLabel.getWidth() + horizontalMargin;
+			defectIconLabel.setBounds(lastx, VERTICAL_MARGIN, defIconPrefWidth, defectIconLabelPrefHeight);
+			lastx += defectIconLabel.getWidth() + HORIZONTAL_MARGIN;
 		} else {
 			defectIconLabelPrefHeight = 0;
 		}
 
 		reviewerAndAuthorLabel
-				.setBounds(lastx, verticalMargin, lastColumnWidth, reviewerAndAuthorLabel.getPreferredSize().height);
+				.setBounds(lastx, VERTICAL_MARGIN, lastColumnWidth, reviewerAndAuthorLabel.getPreferredSize().height);
 
 		int maxPreferredHeight = Collections
 				.max(Arrays.<Integer>asList(reviewerAndAuthorLabel.getPreferredSize().height, preferredHeight,
 						moreLabelPrefSize.height, defectIconLabelPrefHeight));
 
 		validate();
-		setPreferredSize(new Dimension(width + EXTRA_MARGIN, maxPreferredHeight + verticalMargin * 2));
+		setPreferredSize(new Dimension(width + EXTRA_MARGIN, maxPreferredHeight + VERTICAL_MARGIN * 2));
 		setSize(new Dimension(width + EXTRA_MARGIN, Integer.MAX_VALUE));
 		addNotify();
 		doLayout();
