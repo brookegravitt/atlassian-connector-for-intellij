@@ -182,7 +182,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_END;
 		String relativeBuildDate =
-				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset());
+				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
 		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(date, DATE_LABEL_WIDTH, ICON_HEIGHT);
@@ -237,8 +237,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
 
-		String name = build.getBuildName();
-		sb.append(StringEscapeUtils.escapeHtml(name));
+		sb.append(StringEscapeUtils.escapeHtml(build.getBuildName()));
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Project:</b></td><td valign=\"top\">");
@@ -262,7 +261,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Build Date:</b></td><td valign=\"top\">");
-		String date = DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset());
+		String date = DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
 		sb.append(StringEscapeUtils.escapeHtml(date).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
 				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 
