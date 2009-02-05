@@ -11,13 +11,7 @@ import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAComment;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAUserBean;
-import com.atlassian.theplugin.jira.api.JiraUserNotFoundException;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -25,18 +19,12 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.ui.content.ContentManagerEvent;
-import com.intellij.ui.content.ContentManagerListener;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -88,7 +76,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		final IssueContentParameters issueContentParameters = new IssueContentParameters(server, issue, model);
 		showToolWindow(project, issueContentParameters,
 				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON,
-				new ContentListener(getContentKey(issueContentParameters)));
+				null);
+//				new ContentListener(getContentKey(issueContentParameters)));
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
@@ -155,6 +144,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 	}
 
+/*
 	private class ContentListener implements ContentManagerListener {
 		private final String contentKey;
 
@@ -181,7 +171,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 	}
-
+*/
+	
 	private class IssuePanel extends ContentPanel
 			implements JIRAIssueListModelListener, DataProvider, IssueActionProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
