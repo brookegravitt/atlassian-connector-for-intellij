@@ -355,12 +355,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				// bleeeee :( - assignee ID (String value) equals "-1" for unassigned issues. Oh my...
 				if (!params.issue.getAssigneeId().equals("-1")) {
 					issueAssignee = new UserLabel(params.issue.getServerUrl(), params.issue.getAssignee(),
-							params.issue.getAssigneeId());
+							params.issue.getAssigneeId(), true);
 				} else {
 					issueAssignee = new JLabel("Unassigned");
 				}
 				issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-						params.issue.getReporterId());
+						params.issue.getReporterId(), true);
 				issueResolution = new JLabel(params.issue.getResolution());
 				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
 				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -804,23 +804,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private abstract class AbstractShowHideButton extends JLabel {
+		private class ShowHideButton extends JLabel {
+			private JComponent body;
+			private JComponent container;
 
 			private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
 			private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
 			private boolean shown = true;
-
-			public AbstractShowHideButton() {
-				setHorizontalAlignment(0);
-				setIcon(down);
-				setToolTipText(getTooltip());
-				addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						click();
-					}
-				});
-			}
 
 			public void setState(boolean visible) {
 				shown = visible;
@@ -833,42 +823,44 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				setState(shown);
 			}
 
-			protected abstract void setComponentVisible(boolean visible);
-
-			protected abstract String getTooltip();
-		}
-
-		private class ShowHideButton extends AbstractShowHideButton {
-			private JComponent body;
-			private JComponent container;
-
 			public ShowHideButton(JComponent body, JComponent container) {
 				this.body = body;
 				this.container = container;
+
+				setHorizontalAlignment(0);
+				setIcon(down);
+				addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						click();
+					}
+				});
 			}
 
-			@Override
 			protected void setComponentVisible(boolean visible) {
 				body.setVisible(visible);
 				container.validate();
 				container.getParent().validate();
 			}
 
-			@Override
 			protected String getTooltip() {
 				return "Collapse/Expand";
 			}
 		}
 
 		private class UserLabel extends JLabel {
-			UserLabel(final String serverUrl, final String userName, final String userNameId) {
+			UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 				setOpaque(true);
 				setBackground(Color.WHITE);
 				setBorder(BorderFactory.createEmptyBorder());
 				putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				String userNameFixed = userName.replace(" ", "&nbsp;");
-				setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
-				addListener(serverUrl, userNameId);
+				if (useLink) {
+					setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
+					addListener(serverUrl, userNameId);
+				} else {
+					setText("<html><body>" + userNameFixed + "</body></html>");
+				}
 			}
 			
 			private void addListener(final String serverUrl, final String userNameId) {
@@ -886,8 +878,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					}
 				});
 			}
-
-
 		}
 
 		private class WhiteLabel extends JLabel {
@@ -960,6 +950,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			private static final int COMMENT_GAP = 6;
 
+			private HeaderListener headerListener;
+
 			public CommentPanel(int cmtNumber, final JIRAComment comment, final JiraServerCfg server, JTabbedPane tabs) {
 				setOpaque(true);
 				setBackground(Color.WHITE);
@@ -971,6 +963,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 				JEditorPane commentBody = new JEditorPane();
 				btnShowHide = new ShowHideButton(commentBody, this);
+				headerListener = new HeaderListener();
+
 				gbc = new GridBagConstraints();
 				gbc.gridx++;
 				gbc.gridy = 0;
@@ -981,7 +975,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.gridx++;
 				gbc.insets = new Insets(upperMargin, Constants.DIALOG_MARGIN / 2, 0, 0);
 				UserLabel ul = new UserLabel(server.getUrl(), comment.getAuthorFullName(),
-						comment.getAuthor());
+						comment.getAuthor(), false);
 				ul.setFont(ul.getFont().deriveFont(Font.BOLD));
 				add(ul, gbc);
 
@@ -1058,9 +1052,17 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.fill = GridBagConstraints.BOTH;
 				gbc.insets = new Insets(0, 0, 0, 0);
 				add(commentBody, gbc);
+
+				addMouseListener(headerListener);
 			}
 
-			public AbstractShowHideButton getShowHideButton() {
+			private class HeaderListener extends MouseAdapter {
+				public void mouseClicked(MouseEvent e) {
+					btnShowHide.click();
+				}
+			}
+
+			public ShowHideButton getShowHideButton() {
 				return btnShowHide;
 			}
 		}
