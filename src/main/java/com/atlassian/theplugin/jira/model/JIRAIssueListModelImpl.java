@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -73,7 +74,12 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		return list;
 	}
 
+	@NotNull
 	public Collection<JIRAIssue> getSubtasks(JIRAIssue parent) {
+		if (parent == null) {
+			return getSubtasksWithMissingParents();
+		}
+
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 
 		for (JIRAIssue i : getIssues()) {
@@ -85,6 +91,30 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 			}
 		}
 		return list;
+	}
+
+	@NotNull
+	private Collection<JIRAIssue> getSubtasksWithMissingParents() {
+		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
+
+		for (JIRAIssue i : getIssues()) {
+			if (i.isSubTask()) {
+				String parent = i.getParentIssueKey();
+				if (findParent(parent) == null) {
+					list.add(i);
+				}
+			}
+		}
+		return list;
+	}
+
+	private JIRAIssue findParent(String key) {
+		for (JIRAIssue i : getIssues()) {
+			if (key.equals(i.getKey())) {
+				return i;
+			}
+		}
+		return null;
 	}
 
 	public void fireModelChanged() {
