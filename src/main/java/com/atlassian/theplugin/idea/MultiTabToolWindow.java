@@ -8,6 +8,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
+import com.intellij.ui.content.ContentManagerListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,15 +23,19 @@ import java.util.Map;
  */
 public abstract class MultiTabToolWindow {
 
-	private Map<String, ContentPanel> panelMap = new HashMap <String, ContentPanel>();
+	private Map<String, ContentPanel> panelMap = new HashMap<String, ContentPanel>();
 
 	protected abstract class ContentPanel extends JPanel {
 		public abstract void unregister();
+
 		public abstract String getTitle();
 	}
 
-	protected interface ContentParameters { }
+	protected interface ContentParameters {
+	}
+
 	protected abstract String getContentKey(ContentParameters params);
+
 	protected abstract ContentPanel createContentPanel(ContentParameters params);
 
 	private boolean singleTabMode;
@@ -39,8 +44,8 @@ public abstract class MultiTabToolWindow {
 		this.singleTabMode = singleTabMode;
 	}
 
-	protected void showToolWindow(final Project project, ContentParameters params,
-								  final String title, final Icon icon, final Icon tabIcon) {
+	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
+			final String title, final Icon icon, final Icon tabIcon) {
 		String contentKey = getContentKey(params);
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow itw = twm.getToolWindow(title);
@@ -81,6 +86,15 @@ public abstract class MultiTabToolWindow {
 				itw.show(null);
 			}
 		}
+
+		return itw;
+	}
+
+	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
+			final String title, final Icon icon, final Icon tabIcon, final ContentManagerListener listener) {
+		ToolWindow toolWindow = showToolWindow(project, params, title, icon, tabIcon);
+		toolWindow.getContentManager().addContentManagerListener(listener);
+		return toolWindow;
 	}
 
 	protected ToolWindow createNewToolWindow(final Project project, final String title, final Icon icon) {

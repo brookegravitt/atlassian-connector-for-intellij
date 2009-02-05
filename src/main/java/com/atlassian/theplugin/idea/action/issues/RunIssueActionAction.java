@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.action.issues;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueActionProvider;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -24,9 +24,9 @@ public class RunIssueActionAction extends AnAction {
 	private final JIRAIssue issue;
 	private JIRAAction action;
 	private JIRAServerFacade facade;
-	private IssuesToolWindowPanel window;
+	private IssueActionProvider window;
 
-	public RunIssueActionAction(IssuesToolWindowPanel toolWindow, JIRAServerFacade facade,
+	public RunIssueActionAction(IssueActionProvider toolWindow, JIRAServerFacade facade,
 			JIRAIssue issue, JIRAAction jiraAction) {
 		super(jiraAction.getName());
 		this.issue = issue;
@@ -68,14 +68,7 @@ public class RunIssueActionAction extends AnAction {
 								+ issue.getKey()
 								+ "...");
 
-
-				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-
-				if (panel == null) {
-					return;
-				}
-
-				JiraServerCfg server = panel.getSelectedServer();
+				JiraServerCfg server = window.getSelectedServer();
 				if (server != null) {
 					List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, action);
 					if (fields.isEmpty()) {
