@@ -215,7 +215,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		freezeSynchronizator.setServerModel(jiraServerModel);
 		freezeSynchronizator.setFilterModel(jiraFilterListModel);
 
-		init();
+		init(0);
 	}
 
 	protected void showManualFilterPanel(boolean visible) {

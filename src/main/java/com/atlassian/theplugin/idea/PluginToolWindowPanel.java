@@ -65,9 +65,10 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		add(splitPane, BorderLayout.CENTER);
 	}
 
-	public void init() {
+	public void init(int margin) {
 		splitPane.setFirstComponent(createLeftContent());
 		leftUpperScrollPane.setViewportView(getLeftTree());
+		leftUpperScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, margin, 0, 0));
 		rightScrollPane.setViewportView(getRightTree());
 		addSearchBoxListener();		
 	}
