@@ -126,6 +126,13 @@ public class JIRAIssueTreeBuilder {
 					}
 				}
 			}
+			Collection<JIRAIssue> orphans = issueModel.getSubtasks(null);
+			if (!orphans.isEmpty()) {
+				for (JIRAIssue i : orphans) {
+					JIRAIssueTreeNode node = new JIRAIssueTreeNode(issueModel, i);
+					getPlace(i, root).add(node);
+				}
+			}
 		} else {
 			for (JIRAIssue issue : issueModel.getIssues()) {
 				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
