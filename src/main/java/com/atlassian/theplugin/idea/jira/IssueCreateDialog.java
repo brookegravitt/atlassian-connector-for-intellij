@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
@@ -59,12 +59,12 @@ public class IssueCreateDialog extends DialogWrapper {
 	private final JIRAServerModel model;
 	private ProjectConfiguration projectConfiguration;
 	private final UiTaskExecutor uiTaskExecutor;
-	private JiraProjectConfiguration jiraConfiguration;
+	private JiraWorkspaceConfiguration jiraConfiguration;
 	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
 			@NotNull final ProjectConfiguration projectConfiguration,
-			@NotNull final JiraProjectConfiguration jiraProjectCfg,
+			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(false);
 		this.model = model;

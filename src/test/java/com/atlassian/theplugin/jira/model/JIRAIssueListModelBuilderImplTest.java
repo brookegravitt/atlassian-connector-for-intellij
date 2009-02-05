@@ -17,8 +17,8 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.*;
@@ -32,41 +32,47 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	private JIRATestServerFacade facade;
 
-    public void setUp() throws Exception {
-	    facade = new JIRATestServerFacade();
-        super.setUp();
-    }
+	public void setUp() throws Exception {
+		facade = new JIRATestServerFacade();
+		super.setUp();
+	}
 
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
+	public void tearDown() throws Exception {
+		super.tearDown();
+	}
 
-    public void testAddIssuesOnUninitialized() {
-	    JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
-	    JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+	public void testAddIssuesOnUninitialized() {
+		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-	    try {
-		    builder.addIssuesToModel(2, true);
-		    assertEquals(0, model.getIssues().size());
-		    builder.setServer(new JiraServerCfg("test", new ServerId()));
-		    assertEquals(0, model.getIssues().size());
-	    } catch (JIRAException e) {
-		    fail("JIRA exception? How come?");
-	    }
-    }
+		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
+		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+		try {
+			builder.addIssuesToModel(new JIRAManualFilter("manual filter", query), server, 2, true);
+			assertEquals(0, model.getIssues().size());
+//			builder.setServer(server);
+			assertEquals(0, model.getIssues().size());
+		} catch (JIRAException e) {
+			fail("JIRA exception? How come?");
+		}
+	}
 
 	public void testAddSavedFilterIssues() {
 		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		builder.setServer(new JiraServerCfg("test", new ServerId()));
-		builder.setSavedFilter(new JIRASavedFilterBean("test", 0));
+		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
+//		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
+//		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
+//		builder.setServer(server);
+		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
+//		builder.setSavedFilter(savedFilter);
 		try {
-			builder.addIssuesToModel(25, true);
-			builder.addIssuesToModel(25, false);
-			builder.addIssuesToModel(25, false);
+			builder.addIssuesToModel(savedFilter, server, 25, true);
+			builder.addIssuesToModel(savedFilter, server, 25, false);
+			builder.addIssuesToModel(savedFilter, server, 25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -79,20 +85,22 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		builder.setServer(new JiraServerCfg("test", new ServerId()));
+		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
+//		builder.setServer(server);
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
-		builder.setCustomFilter(query);
+//		builder.setCustomFilter(query);
+		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
 		try {
-			builder.addIssuesToModel(25, true);
-			builder.addIssuesToModel(25, false);
+			builder.addIssuesToModel(manualFilter, server, 25, true);
+			builder.addIssuesToModel(manualFilter, server, 25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
 		assertEquals(50, model.getIssues().size());
 	}
 
-	private	boolean listenerCalled = false;
+	private boolean listenerCalled = false;
 
 	public void testListeners() {
 		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
@@ -100,10 +108,11 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		builder.setServer(new JiraServerCfg("test", new ServerId()));
+		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
+//		builder.setServer(server);
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
-		builder.setCustomFilter(query);
+//		builder.setCustomFilter(query);
 		model.addModelListener(new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel m) {
 				if (model == m) {
@@ -113,10 +122,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 
-			}		
+			}
 		});
 		try {
-			builder.addIssuesToModel(25, true);
+			builder.addIssuesToModel(new JIRAManualFilter("manula filter", query), server, 25, true);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -129,12 +138,14 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		builder.setServer(new JiraServerCfg("test", new ServerId()));
-		builder.setSavedFilter(new JIRASavedFilterBean("test", 0));
+		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
+//		builder.setServer(server);
+		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
+//		builder.setSavedFilter(savedFilter);
 		try {
-			builder.addIssuesToModel(25, true);
-			builder.addIssuesToModel(25, false);
-			builder.addIssuesToModel(25, false);
+			builder.addIssuesToModel(savedFilter, server, 25, true);
+			builder.addIssuesToModel(savedFilter, server, 25, false);
+			builder.addIssuesToModel(savedFilter, server, 25, false);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}
@@ -170,13 +181,13 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		}
 
 		public List<JIRAIssue> getIssues(JiraServerCfg server, List<JIRAQueryFragment> query,
-		                                 String sort, String sortOrder, int start, int size)
+				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
 
 		public List<JIRAIssue> getSavedFilterIssues(JiraServerCfg server, List<JIRAQueryFragment> query,
-		                                            String sort, String sortOrder, int start, int size)
+				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
@@ -246,7 +257,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		}
 
 		public void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
-		                    boolean updateEstimate, String newEstimate) throws JIRAException {
+				boolean updateEstimate, String newEstimate) throws JIRAException {
 		}
 
 		public void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException {
