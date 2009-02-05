@@ -29,6 +29,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -40,9 +41,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
-import com.intellij.uiDesigner.core.GridConstraints;
-import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +55,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
@@ -140,11 +141,13 @@ public class CrucibleHelperForm extends DialogWrapper {
 			}
 		});
 
+		repositoryComboBox.setEnabled(false);
 		fillReviewCombos();
 	}
 
 	private void fillServerRelatedCombos(final ReviewAdapter review) {
 		repositoryComboBox.removeAllItems();
+		repositoryComboBox.setEnabled(false);
 		getOKAction().setEnabled(false);
 
 
@@ -212,6 +215,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 				}
 			}
 		}
+		repositoryComboBox.setEnabled(true);
 		getOKAction().setEnabled(true);
 	}
 
@@ -229,99 +233,72 @@ public class CrucibleHelperForm extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new FormLayout("fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
 		rootComponent.setBackground(UIManager.getColor("Button.background"));
 		rootComponent.setEnabled(false);
 		rootComponent.setMinimumSize(new Dimension(600, 300));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(1, 1, 1, 1), -1, -1));
-		rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		panel1.setLayout(new FormLayout("left:157px:noGrow,left:4dlu:noGrow,fill:300px:grow",
+				"top:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
+		CellConstraints cc = new CellConstraints();
+		rootComponent.add(panel1, cc.xywh(1, 1, 1, 3));
 		reviewComboBox = new JComboBox();
-		panel1.add(reviewComboBox, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label1 = new JLabel();
-		label1.setText("Review");
-		panel1.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final Spacer spacer1 = new Spacer();
-		rootComponent.add(spacer1,
-				new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-						GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		final JLabel label2 = new JLabel();
-		label2.setText("Id");
-		panel2.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label3 = new JLabel();
-		label3.setText("Title");
-		panel2.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label4 = new JLabel();
-		label4.setText("Author");
-		panel2.add(label4, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label5 = new JLabel();
-		label5.setText("Moderator");
-		panel2.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final JLabel label6 = new JLabel();
-		label6.setText("Statement of Objectives");
-		panel2.add(label6, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		idField = new JTextField();
-		idField.setBackground(UIManager.getColor("Button.background"));
-		idField.setEnabled(false);
-		panel2.add(idField, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
-				false));
-		titleField = new JTextField();
-		titleField.setBackground(UIManager.getColor("Button.background"));
-		titleField.setEnabled(false);
-		panel2.add(titleField, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
-				false));
-		authorField = new JTextField();
-		authorField.setBackground(UIManager.getColor("Button.background"));
-		authorField.setEnabled(false);
-		panel2.add(authorField, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
-				false));
-		moderatorField = new JTextField();
-		moderatorField.setBackground(UIManager.getColor("Button.background"));
-		moderatorField.setEnabled(false);
-		panel2.add(moderatorField, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
-				false));
-		descriptionArea = new JTextArea();
-		descriptionArea.setBackground(UIManager.getColor("Button.background"));
-		descriptionArea.setEnabled(false);
-		panel2.add(descriptionArea, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null,
-				0, false));
+		panel1.add(reviewComboBox, cc.xy(3, 1));
 		statusField = new JTextField();
 		statusField.setBackground(UIManager.getColor("Button.background"));
 		statusField.setEnabled(false);
-		panel2.add(statusField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0,
-				false));
-		final JLabel label7 = new JLabel();
-		label7.setText("State");
-		panel2.add(label7, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(statusField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+		idField = new JTextField();
+		idField.setBackground(UIManager.getColor("Button.background"));
+		idField.setEnabled(false);
+		panel1.add(idField, cc.xy(3, 5, CellConstraints.FILL, CellConstraints.DEFAULT));
+		titleField = new JTextField();
+		titleField.setBackground(UIManager.getColor("Button.background"));
+		titleField.setEnabled(false);
+		panel1.add(titleField, cc.xy(3, 7, CellConstraints.FILL, CellConstraints.DEFAULT));
+		authorField = new JTextField();
+		authorField.setBackground(UIManager.getColor("Button.background"));
+		authorField.setEnabled(false);
+		panel1.add(authorField, cc.xy(3, 9, CellConstraints.FILL, CellConstraints.DEFAULT));
+		moderatorField = new JTextField();
+		moderatorField.setBackground(UIManager.getColor("Button.background"));
+		moderatorField.setEnabled(false);
+		panel1.add(moderatorField, cc.xy(3, 11, CellConstraints.FILL, CellConstraints.DEFAULT));
+		final JLabel label1 = new JLabel();
+		label1.setText("State");
+		panel1.add(label1, cc.xy(1, 3));
+		final JLabel label2 = new JLabel();
+		label2.setText("Id");
+		panel1.add(label2, cc.xy(1, 5));
+		final JLabel label3 = new JLabel();
+		label3.setText("Title");
+		panel1.add(label3, cc.xy(1, 7));
+		final JLabel label4 = new JLabel();
+		label4.setText("Author");
+		panel1.add(label4, cc.xy(1, 9));
+		final JLabel label5 = new JLabel();
+		label5.setText("Moderator");
+		panel1.add(label5, cc.xy(1, 11));
 		repositoryComboBox = new JComboBox();
-		panel2.add(repositoryComboBox,
-				new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(repositoryComboBox, cc.xy(3, 13));
+		final JLabel label6 = new JLabel();
+		label6.setText("Repository");
+		panel1.add(label6, cc.xy(1, 13));
+		final JScrollPane scrollPane1 = new JScrollPane();
+		panel1.add(scrollPane1, cc.xy(3, 15, CellConstraints.FILL, CellConstraints.FILL));
+		descriptionArea = new JTextArea();
+		descriptionArea.setBackground(UIManager.getColor("Button.background"));
+		descriptionArea.setEditable(false);
+		descriptionArea.setEnabled(false);
+		descriptionArea.setLineWrap(true);
+		descriptionArea.setWrapStyleWord(true);
+		scrollPane1.setViewportView(descriptionArea);
+		final JLabel label7 = new JLabel();
+		label7.setText("Statement of Objectives");
+		panel1.add(label7, cc.xy(1, 15, CellConstraints.DEFAULT, CellConstraints.TOP));
 		final JLabel label8 = new JLabel();
-		label8.setText("Repository");
-		panel2.add(label8, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		label8.setText("Review");
+		panel1.add(label8, cc.xy(1, 1));
 	}
 
 	/**
@@ -340,7 +317,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 		@Override
 		public String toString() {
-			return review.getPermId().getId();
+			return review.getPermId().getId() + " - " + review.getName();
 		}
 
 		public ReviewAdapter getReview() {
@@ -397,8 +374,14 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 	private void updateReviewCombo(List<ReviewAdapter> reviews) {
 		reviewComboBox.addItem("");
+
 		if (!reviews.isEmpty()) {
+			Set<ReviewAdapterComparable> sorted = new TreeSet<ReviewAdapterComparable>();
 			for (ReviewAdapter review : reviews) {
+				sorted.add(new ReviewAdapterComparable(review));
+			}
+
+			for (ReviewAdapter review : sorted) {
 				reviewComboBox.addItem(new ReviewComboBoxItem(review));
 			}
 		}
@@ -466,5 +449,19 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	private void createUIComponents() {
+	}
+}
+
+class ReviewAdapterComparable extends ReviewAdapter implements Comparable {
+	ReviewAdapterComparable(final ReviewAdapter review) {
+		super(review);
+	}
+
+	public int compareTo(final Object o) {
+		if (!(o instanceof ReviewAdapterComparable)) {
+			return 0;
+		}
+		ReviewKeyComparator c = new ReviewKeyComparator();
+		return c.compare(this, (ReviewAdapter) o);
 	}
 }
