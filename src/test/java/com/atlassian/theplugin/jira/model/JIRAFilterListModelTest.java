@@ -8,7 +8,6 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: pmaruszak
@@ -16,18 +15,12 @@ import java.util.List;
 public class JIRAFilterListModelTest extends TestCase {
 	JIRAFilterListModel listModel;
 	private int notifiedModelChanged = 0;
-	private int notifiedSavedFilterSelected = 0;
-	private int notifiedManualFilterSelected = 0;
 	final private JiraServerCfg jServer = new JiraServerCfg("DZira serwer", new ServerId());
 
 	public void setUp() throws Exception {
 		super.setUp();
 		listModel = new JIRAFilterListModel();
 		notifiedModelChanged = 0;
-		notifiedSavedFilterSelected = 0;
-		notifiedManualFilterSelected = 0;
-
-
 	}
 
 	public void tearDown() throws Exception {
@@ -44,33 +37,17 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedModelChanged++;
 			}
 
-			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
-					boolean isChanged) {
-				notifiedSavedFilterSelected++;
-			}
-
-			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
-					boolean isChanged) {
-				notifiedManualFilterSelected++;
-			}
-
 		});
 
 		for (int i = 0; i < 10; i++) {
 			listModel.fireModelChanged();
-//			listModel.fireManualFilterSelected(true);
-//			listModel.fireSavedFilterSelected(true);
 		}
 
 		assertEquals(notifiedModelChanged, 10);
-		assertEquals(notifiedSavedFilterSelected, 0);
-		assertEquals(notifiedManualFilterSelected, 0);
 
 		listModel.setManualFilter(jServer, serverFilter1.getManualFilter());
 		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
 
-//		listModel.selectManualFilter(jServer, serverFilter1.getManualFilter());
-//		listModel.selectSavedFilter(jServer, serverFilter1.getSavedFilters().get(0));
 
 		for (int i = 0; i < 10; i++) {
 			listModel.fireModelChanged();
@@ -93,43 +70,6 @@ public class JIRAFilterListModelTest extends TestCase {
 
 		assertEquals(listModel.getSavedFilters(jServer).size(), 3);
 		assertEquals(listModel.getManualFilter(jServer), manual);
-
-	}
-
-	public void testSelectedManaualSavedFilter() {
-
-		JIRAServerFiltersBean serverFilter1 = new JIRAServerFiltersBean();
-		final JIRAManualFilter manual = new JIRAManualFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
-		final JIRAServerFiltersBean finalFilters = serverFilter1;
-
-		listModel.addModelListener(new JIRAFilterListModelListener() {
-
-			public void modelChanged(final JIRAFilterListModel listModel) {
-			}
-
-			public void selectedSavedFilter(final JiraServerCfg jiraServer, final JIRASavedFilter savedFilter,
-					boolean isChanged) {
-				assertTrue(finalFilters.getSavedFilters().contains(savedFilter));
-				assertTrue(jServer.equals(jiraServer));
-			}
-
-			public void selectedManualFilter(final JiraServerCfg jiraServer, final List<JIRAQueryFragment> manualFilter,
-					boolean isChanged) {
-				assertTrue(manual.getQueryFragment().equals(manualFilter));
-				assertTrue(jServer.equals(jiraServer));
-			}
-		});
-		fillInServerFiltersBean(serverFilter1, 3);
-		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
-
-//		assertTrue(listModel.getJiraSelectedManualFilter() == null);
-
-		serverFilter1.setManualFilter(manual);
-		listModel.setManualFilter(jServer, manual);
-//		listModel.selectManualFilter(jServer, manual);
-//		assertEquals(listModel.getJiraSelectedManualFilter(), manual);
-//
-//		listModel.selectSavedFilter(jServer, listModel.getSavedFilters(jServer).get(0));
 
 	}
 
