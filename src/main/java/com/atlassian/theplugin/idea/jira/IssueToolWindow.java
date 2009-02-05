@@ -8,7 +8,12 @@ import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.api.JIRAComment;
+import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.jira.api.JiraUserNotFoundException;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -20,12 +25,14 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -140,7 +147,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	private class IssuePanel extends ContentPanel implements JIRAIssueListModelListener {
+	private class IssuePanel extends ContentPanel implements JIRAIssueListModelListener, DataProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -208,6 +215,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
+		}
+
+		public Object getData(@NonNls final String dataId) {
+			if (dataId.equals(Constants.ISSUE)) {
+				return params.issue;
+			}
+			return null;
 		}
 
 		private class DetailsPanel extends JPanel {
@@ -575,6 +589,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.OneIssueToolBar");
 				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
+				toolbar.setTargetComponent(IssueToolWindow.IssuePanel.this);
 
 				JComponent comp = toolbar.getComponent();
 				add(comp, gbc);
@@ -862,11 +877,11 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					setText("<html><body>" + userNameFixed + "</body></html>");
 				}
 			}
-			
+
 			private void addListener(final String serverUrl, final String userNameId) {
 				addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
-						BrowserUtil.launchBrowser(serverUrl	+ "/secure/ViewProfile.jspa?name=" + userNameId);
+						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
 					}
 
 					public void mouseEntered(MouseEvent e) {
@@ -1012,7 +1027,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					JLabel traceNumber = new WhiteLabel();
 					traceNumber.setText("Stack Trace #" + stackTraceCounter);
 					traceNumber.setForeground(Color.RED);
-					
+
 					add(traceNumber, gbc);
 				}
 
