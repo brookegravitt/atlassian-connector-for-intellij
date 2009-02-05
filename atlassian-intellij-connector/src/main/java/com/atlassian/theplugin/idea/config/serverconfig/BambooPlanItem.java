@@ -16,18 +16,18 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 
 public class BambooPlanItem {
-	private BambooPlanData plan;
+	private BambooPlan plan;
 	private boolean selected;
 
-	public BambooPlanItem(BambooPlanData plan, boolean selected) {
+	public BambooPlanItem(BambooPlan plan, boolean selected) {
 		this.plan = plan;
 		this.selected = selected;
 	}
 
-	public BambooPlanData getPlan() {
+	public BambooPlan getPlan() {
 		return plan;
 	}
 
