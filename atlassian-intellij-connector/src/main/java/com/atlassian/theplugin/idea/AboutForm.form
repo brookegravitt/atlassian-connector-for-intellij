@@ -6,7 +6,7 @@
     <rowspec value="center:d:grow"/>
     <colspec value="fill:d:grow"/>
     <constraints>
-      <xy x="20" y="20" width="600" height="400"/>
+      <xy x="20" y="20" width="637" height="529"/>
     </constraints>
     <properties>
       <background color="-1"/>
@@ -18,23 +18,27 @@
     <children>
       <component id="ec49d" class="javax.swing.JEditorPane" binding="aboutText">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="0" indent="0" use-parent-layout="false">
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="150" height="50"/>
           </grid>
           <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
         <properties>
-          <maximumSize width="500" height="200"/>
-          <minimumSize width="500" height="200"/>
-          <preferredSize width="500" height="200"/>
+          <maximumSize width="500" height="250"/>
+          <minimumSize width="500" height="250"/>
+          <preferredSize width="500" height="250"/>
         </properties>
       </component>
       <component id="7dc66" class="javax.swing.JLabel" binding="iconLabel">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-          <forms defaultalign-horz="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
         <properties>
+          <maximumSize width="500" height="216"/>
+          <minimumSize width="500" height="216"/>
+          <preferredSize width="500" height="216"/>
+          <requestFocusEnabled value="false"/>
           <text value="Label"/>
         </properties>
       </component>

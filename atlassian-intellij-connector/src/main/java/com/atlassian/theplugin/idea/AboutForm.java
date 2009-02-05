@@ -44,7 +44,7 @@ public class AboutForm {
 				"<html><body><center>"
 				+ "The Atlassian IntelliJ Connector is an IDEA plugin that lets you "
 				+ "work with the Atlassian products within your IDE. Now you don't "
-				+ "have to switch between websites, email messages and new feeds to "
+				+ "have to switch between websites, email messages and news feeds to "
 				+ "see what's happening to your project and your code. Instead, you "
 				+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues, "
 				+ "<a href=\"http://www.atlassian.com/software/crucible\">Crucible</a> reviews "
@@ -54,6 +54,7 @@ public class AboutForm {
 				+ "<br><br><br><br>"
 				+ "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
 				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>"
+				+ "<br><br><br><br>Licensed under the Apache License, Version 2.0. Copyright (c) Atlassian 2009"
 				+ "</center></body></html>"
 		);
 	}
