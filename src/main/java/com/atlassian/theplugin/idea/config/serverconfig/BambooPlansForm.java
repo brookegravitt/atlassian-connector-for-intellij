@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
+import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -222,7 +222,7 @@ public class BambooPlansForm extends JPanel {
 				try {
 					ServerId key = queryServer.getServerId();
 					if (!serverPlans.containsKey(key)) {
-						Collection<BambooPlanData> plans;
+						Collection<BambooPlan> plans;
 						try {
 							plans = bambooServerFacade.getPlanList(queryServer);
 						} catch (ServerPasswordNotProvidedException e) {
@@ -236,7 +236,7 @@ public class BambooPlansForm extends JPanel {
 						}
 						List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
 						if (plans != null) {
-							for (BambooPlanData plan : plans) {
+							for (BambooPlan plan : plans) {
 								plansForServer.add(new BambooPlanItem(plan, false));
 							}
 							msg.append("Build plans updated from server\n");
@@ -250,9 +250,7 @@ public class BambooPlansForm extends JPanel {
 								}
 							}
 							if (!exists) {
-								BambooPlanData p = new BambooPlanData(sPlan.getPlanId(), sPlan.getPlanId());
-								p.setEnabled(false);
-								p.setFavourite(false);
+								BambooPlan p = new BambooPlan(sPlan.getPlanId(), sPlan.getPlanId(), false, false);
 								plansForServer.add(new BambooPlanItem(p, true));
 							}
 						}
@@ -304,7 +302,7 @@ public class BambooPlansForm extends JPanel {
 				// for those servers for which we cannot fetch metadata, we just show current plans
 				List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
 				for (SubscribedPlan plan : server.getSubscribedPlans()) {
-					final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlanData("Unknown", plan.getPlanId()),
+					final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getPlanId()),
 							true);
 					model.addElement(bambooPlanItem);
 					modelPlans.add(bambooPlanItem);
