@@ -57,18 +57,15 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JList componentsList;
 	private final JiraServerCfg jiraServer;
 	private final JIRAServerModel model;
-	private ProjectConfiguration projectConfiguration;
 	private final UiTaskExecutor uiTaskExecutor;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
-			@NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(false);
 		this.model = model;
-		this.projectConfiguration = projectConfiguration;
 		this.jiraConfiguration = jiraProjectCfg;
 		this.uiTaskExecutor = uiTaskExecutor;
 		$$$setupUI$$$();
@@ -163,8 +160,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			boolean defaultSelected = false;
 
 			// select default project
-			if (jiraConfiguration != null
-					&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+			if (jiraConfiguration != null && jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
 				String project = jiraConfiguration.getView().getServerDefaults().
 						get(jiraServer.getServerId().toString()).getProject();
@@ -270,10 +266,8 @@ public class IssueCreateDialog extends DialogWrapper {
 		}
 		componentsList.setModel(listModel);
 
-		if (projectComboBox.getSelectedItem() != null
-				&& jiraConfiguration != null && jiraConfiguration.getView() != null
-				&& jiraConfiguration.getView().getServerDefaults() != null
-				&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+		if (projectComboBox.getSelectedItem() != null && jiraConfiguration != null && jiraConfiguration.getView() != null
+				&& jiraConfiguration.getView().getServerDefaults() != null && jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 
@@ -342,8 +336,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				ComponentWrapper componentWrapper = (ComponentWrapper) selectedObject;
 				if (componentWrapper.getWrapped().getId() == JIRAServerCache.UNKNOWN_COMPONENT_ID) {
 					if (componentsList.getSelectedValues().length > 1) {
-						Messages.showErrorDialog(getContentPane(),
-								"You cannot select \"Unknown\" with a specific component.");
+						Messages.showErrorDialog(getContentPane(), "You cannot select \"Unknown\" with a specific component.");
 						return;
 					}
 				}

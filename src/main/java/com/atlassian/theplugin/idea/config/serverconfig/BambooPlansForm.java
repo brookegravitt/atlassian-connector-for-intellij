@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.SubscribedPlan;
-import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlanData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
@@ -31,7 +30,12 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import static java.lang.System.arraycopy;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -218,7 +222,7 @@ public class BambooPlansForm extends JPanel {
 				try {
 					ServerId key = queryServer.getServerId();
 					if (!serverPlans.containsKey(key)) {
-						Collection<BambooPlan> plans;
+						Collection<BambooPlanData> plans;
 						try {
 							plans = bambooServerFacade.getPlanList(queryServer);
 						} catch (ServerPasswordNotProvidedException e) {
@@ -232,7 +236,7 @@ public class BambooPlansForm extends JPanel {
 						}
 						List<BambooPlanItem> plansForServer = new ArrayList<BambooPlanItem>();
 						if (plans != null) {
-							for (BambooPlan plan : plans) {
+							for (BambooPlanData plan : plans) {
 								plansForServer.add(new BambooPlanItem(plan, false));
 							}
 							msg.append("Build plans updated from server\n");

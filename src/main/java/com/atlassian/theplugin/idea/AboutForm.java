@@ -40,23 +40,13 @@ public class AboutForm {
 	}
 
 	private void setAboutText() {
-		aboutText.setText(
-				"<html><body><center>"
-						+ "The Atlassian IntelliJ Connector is an IDEA plugin that lets you "
-						+ "work with the Atlassian products within your IDE. Now you don't "
-						+ "have to switch between websites, email messages and news feeds to "
-						+ "see what's happening to your project and your code. Instead, you "
-						+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues, "
-						+ "<a href=\"http://www.atlassian.com/software/crucible\">Crucible</a> reviews "
-						+ "and <a href=\"http://www.atlassian.com/software/bamboo\">Bamboo</a> build "
-						+ "information right there in your development environment. Viewing your "
-						+ "code in <a href=\"http://www.atlassian.com/software/fisheye\">FishEye</a> is just a click away."
-						+ "<br><br><br><br>"
-						+ "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
-						+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>"
-						+ "<br><br><br><br>Licensed under the Apache License, Version 2.0. Copyright (c) Atlassian 2009"
-						+ "</center></body></html>"
-		);
+		aboutText.setText("<html><body><center>" + "The Atlassian IntelliJ Connector is an IDEA plugin that lets you " + "work with the Atlassian products within your IDE. Now you don't "
+				+ "have to switch between websites, email messages and news feeds to " + "see what's happening to your project and your code. Instead, you "
+				+ "can see the relevant <a href=\"http://www.atlassian.com/software/jira\">JIRA</a> issues, " + "<a href=\"http://www.atlassian.com/software/crucible\">Crucible</a> reviews "
+				+ "and <a href=\"http://www.atlassian.com/software/bamboo\">Bamboo</a> build " + "information right there in your development environment. Viewing your "
+				+ "code in <a href=\"http://www.atlassian.com/software/fisheye\">FishEye</a> is just a click away." + "<br><br><br><br>" + "<font size=\"5\">Developed by Atlassian for you to lust after<br>"
+				+ "<a href=\"http://www.atlassian.com/\"><b>http://www.atlassian.com/<b></a></font>" + "<br><br><br><br>Licensed under the Apache License, Version 2.0. Copyright (c) Atlassian 2009"
+				+ "</center></body></html>");
 	}
 
 	public JPanel getRootPane() {
