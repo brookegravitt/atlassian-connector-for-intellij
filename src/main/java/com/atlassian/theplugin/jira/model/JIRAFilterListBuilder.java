@@ -60,11 +60,11 @@ public class JIRAFilterListBuilder {
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 			for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
 				try {
-					addServerSavedFilter(jiraServer);
+					loadServerSavedFilter(jiraServer);
 				} catch (JIRAException exc) {
 					e.addException(jiraServer, exc);
 				}
-				addManualFilter(jiraServer);
+				loadManualFilter(jiraServer);
 			}
 
 			if (!e.getExceptions().isEmpty()) {
@@ -76,7 +76,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void addServerSavedFilter(final JiraServerCfg jiraServer) throws JIRAException {
+	private void loadServerSavedFilter(final JiraServerCfg jiraServer) throws JIRAException {
 
 		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
 		List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
@@ -88,7 +88,7 @@ public class JIRAFilterListBuilder {
 		listModel.setSavedFilters(jiraServer, savedFilters);
 	}
 
-	private void addManualFilter(final JiraServerCfg jiraServer) {
+	private void loadManualFilter(final JiraServerCfg jiraServer) {
 
 		if (jiraWorkspaceCfg != null) {
 
