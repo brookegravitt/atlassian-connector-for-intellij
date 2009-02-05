@@ -7,7 +7,6 @@ import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +31,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	private final JiraWorkspaceConfiguration jiraProjectCfg;
 	private final JIRAServerModel jiraServerModel;
 	private final JButton editButton = new JButton("Edit");
-	public JiraServerCfg jiraServer;
+	private JiraServerCfg jiraServer;
 	private JIRAManualFilter jiraManualFilter;
 
 	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel,
@@ -51,14 +50,6 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 			public void modelChanged(JIRAFilterListModel aListModel) {
 				JiraManualFilterDetailsPanel.this.listModel = aListModel;
 			}
-
-			public void selectedSavedFilter(JiraServerCfg jiraServer, JIRASavedFilter savedFilter, boolean isChanged) {
-			}
-
-			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter,
-					boolean isChanged) {
-			}
-
 		});
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
@@ -114,13 +105,13 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 		});
 	}
 
-	public void setFilter(JIRAManualFilter jiraManualFilter, final JiraServerCfg jiraServerCfg) {
+	public void setFilter(JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
 
 		this.jiraServer = jiraServerCfg;
-		this.jiraManualFilter = jiraManualFilter;
+		this.jiraManualFilter = manualFilter;
 
 		Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
-		Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = jiraManualFilter.groupBy(true);
+		Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = manualFilter.groupBy(true);
 		for (JIRAManualFilter.QueryElement element : map.keySet()) {
 			entries.add(new ScrollableTwoColumnPanel.Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
 		}
@@ -128,7 +119,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 
 		if (entries.size() == 0) {
 			// get also 'any' values
-			map = jiraManualFilter.groupBy(false);
+			map = manualFilter.groupBy(false);
 			for (JIRAManualFilter.QueryElement element : map.keySet()) {
 				entries.add(new ScrollableTwoColumnPanel.Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
 			}

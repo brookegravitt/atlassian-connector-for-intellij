@@ -54,29 +54,17 @@ public class JIRAFilterListBuilder {
 	}
 
 	public void rebuildModel() throws JIRAServerFiltersBuilderException {
-		final String filterId = jiraWorkspaceCfg.getView().getViewFilterId();
-		final String filterServerId = jiraWorkspaceCfg.getView().getViewServerId();
-
 		try {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 			for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
 				try {
-					if (jiraServer.getServerId().toString().equals(filterServerId)) {
-						addServerSavedFilter(jiraServer, filterId);
-					} else {
-						addServerSavedFilter(jiraServer, "-1");
-					}
+					addServerSavedFilter(jiraServer);
 				} catch (JIRAException exc) {
 					e.addException(jiraServer, exc);
 				}
-
-				if (jiraServer.getServerId().toString().equals(filterServerId)) {
-					addManualFilter(jiraServer, filterId);
-				} else {
-					addManualFilter(jiraServer, "");
-				}
+				addManualFilter(jiraServer);
 			}
 
 			if (!e.getExceptions().isEmpty()) {
@@ -88,33 +76,19 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	public void addServerSavedFilter(final JiraServerCfg jiraServer, final String filterId) throws JIRAException {
-		JIRASavedFilter selection = null;
-		long selectionId = -1;
-		try {
-			selectionId = Long.parseLong(filterId);
-		} catch (Exception ex) {
-			// invalid filter id wil not be set
-		}
+	private void addServerSavedFilter(final JiraServerCfg jiraServer) throws JIRAException {
 
 		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
 		List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
 
 		for (JIRAQueryFragment query : filters) {
 			savedFilters.add((JIRASavedFilter) query);
-			if (query.getId() == selectionId) {
-				selection = (JIRASavedFilter) query;
-			}
 		}
 
 		listModel.setSavedFilters(jiraServer, savedFilters);
-
-		if (selection != null) {
-//			listModel.selectSavedFilter(jiraServer, selection);
-		}
 	}
 
-	private void addManualFilter(final JiraServerCfg jiraServer, final String filterId) {
+	private void addManualFilter(final JiraServerCfg jiraServer) {
 
 		if (jiraWorkspaceCfg != null) {
 
@@ -124,19 +98,14 @@ public class JIRAFilterListBuilder {
 
 			List<JIRAQueryFragment> query;
 			if (filter != null) {
-
 				query = getFragments(filter);
 			} else {
 				//nothing found in configuration == create empty, clear filter
-
 				query = new ArrayList<JIRAQueryFragment>();
 			}
 
 			final JIRAManualFilter jiraManualFilter = new JIRAManualFilter("Custom Filter", query);
 			listModel.setManualFilter(jiraServer, jiraManualFilter);
-			if (JiraFilterConfigurationBean.MANUAL_FILTER_LABEL.equals(filterId)) {
-//				listModel.selectManualFilter(jiraServer, jiraManualFilter);
-			}
 		}
 	}
 
