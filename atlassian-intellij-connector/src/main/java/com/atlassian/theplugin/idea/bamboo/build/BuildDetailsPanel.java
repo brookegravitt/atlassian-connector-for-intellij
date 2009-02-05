@@ -130,7 +130,6 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private void refreshBuildRelativeTime() {
-		relativeBuildTime.setText(
-				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate(),  build.getServer().getTimezoneOffset()));
+		relativeBuildTime.setText(DateUtil.getRelativeBuildTime(build.getBuildCompletedDate()));
 	}
 }
