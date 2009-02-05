@@ -1,13 +1,17 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
+import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
+import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAComment;
 import com.atlassian.theplugin.jira.api.JIRAConstant;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -31,6 +35,8 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.ui.content.ContentManagerEvent;
+import com.intellij.ui.content.ContentManagerListener;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -79,8 +85,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	}
 
 	public void showIssue(JiraServerCfg server, final JIRAIssue issue, JIRAIssueListModel model) {
-		showToolWindow(project, new IssueContentParameters(server, issue, model),
-				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON);
+		final IssueContentParameters issueContentParameters = new IssueContentParameters(server, issue, model);
+		showToolWindow(project, issueContentParameters,
+				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON,
+				new ContentListener(getContentKey(issueContentParameters)));
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
@@ -147,7 +155,35 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	private class IssuePanel extends ContentPanel implements JIRAIssueListModelListener, DataProvider {
+	private class ContentListener implements ContentManagerListener {
+		private final String contentKey;
+
+		private ContentListener(final String contentKey) {
+			this.contentKey = contentKey;
+		}
+
+		public void contentAdded(final ContentManagerEvent contentManagerEvent) {
+		}
+
+		public void contentRemoved(final ContentManagerEvent contentManagerEvent) {
+		}
+
+		public void contentRemoveQuery(final ContentManagerEvent contentManagerEvent) {
+		}
+
+		public void selectionChanged(final ContentManagerEvent contentManagerEvent) {
+			if (contentManagerEvent.getOperation() == ContentManagerEvent.ContentOperation.add
+					&& contentKey.equals(contentManagerEvent.getContent().getTabName())) {
+				IssuePanel ip = getContentPanel(contentKey);
+				if (ip != null) {
+					ip.reloadAvailableActions();
+				}
+			}
+		}
+	}
+
+	private class IssuePanel extends ContentPanel
+			implements JIRAIssueListModelListener, DataProvider, IssueActionProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
@@ -196,6 +232,18 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			});
 		}
 
+		public void setStatusMessage(final String message) {
+			// ignore for now - should we display it?
+		}
+
+		public void setStatusMessage(final String message, final boolean isError) {
+			// ignore for now - should we display it?
+		}
+
+		public JiraServerCfg getSelectedServer() {
+			return params.server;
+		}
+
 		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
 		}
 
@@ -204,6 +252,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				params.model.removeModelListener(this);
 			}
 		}
+
 
 		public void refresh() {
 			for (JIRAIssue i : params.model.getIssues()) {
@@ -215,7 +264,55 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
+			reloadAvailableActions();
 		}
+
+		void reloadAvailableActions() {
+			final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
+					.getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
+
+			final JIRAIssue issue = params.issue;
+			if (issue != null) {
+				java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+				if (actions != null) {
+					actionGroup.clearActions();
+					for (JIRAAction a : actions) {
+						actionGroup.addAction(new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue, a));
+					}
+				} else {
+					Thread t = new Thread() {
+						@Override
+						public void run() {
+							try {
+								JiraServerCfg jiraServer = params.server;
+
+								if (jiraServer != null) {
+									final java.util.List<JIRAAction> actions = facade
+											.getAvailableActions(jiraServer, issue);
+
+									JiraIssueAdapter.get(issue).setCachedActions(actions);
+									SwingUtilities.invokeLater(new Runnable() {
+										public void run() {
+											actionGroup.clearActions();
+											for (JIRAAction a : actions) {
+												actionGroup.addAction(new RunIssueActionAction(
+														IssueToolWindow.IssuePanel.this, facade, issue, a));
+											}
+										}
+									});
+								}
+							} catch (JIRAException e) {
+								// if we can not read actions, group will be disabled
+								LoggerImpl.getInstance()
+										.error("Unbale to read available actions for issue: " + issue.getKey());
+							}
+						}
+					};
+					t.start();
+				}
+			}
+		}
+
 
 		public Object getData(@NonNls final String dataId) {
 			if (dataId.equals(Constants.ISSUE)) {
@@ -475,8 +572,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						if (params.server != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
-							final JIRAIssue issueWithEstimates = facade.getIssue(params.server, params.issue.getKey());
-							params.issue = issueWithEstimates;
+							params.issue = facade.getIssue(params.server, params.issue.getKey());
 
 							final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
