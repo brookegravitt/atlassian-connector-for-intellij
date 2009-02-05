@@ -6,7 +6,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
-import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class JIRAFilterListBuilder {
 	private JIRAFilterListModel listModel;
-	private JiraProjectConfiguration jiraProjectCfg;
+	private JiraWorkspaceConfiguration jiraWorkspaceCfg;
 	private ProjectId projectId;
 	private final JIRAServerFacade jiraServerFacade;
 	private final CfgManager cfgManager;
@@ -35,6 +35,7 @@ public class JIRAFilterListBuilder {
 		this.jiraServerFacade = jiraServerFacade;
 		this.cfgManager = cfgManager;
 	}
+
 	public JIRAFilterListBuilder() {
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		cfgManager = IdeaHelper.getCfgManager();
@@ -48,13 +49,13 @@ public class JIRAFilterListBuilder {
 		this.listModel = listModel;
 	}
 
-	public void setJiraProjectCfg(@NotNull JiraProjectConfiguration jiraProjectCfg) {
-		this.jiraProjectCfg = jiraProjectCfg;
+	public void setJiraWorkspaceCfg(@NotNull JiraWorkspaceConfiguration jiraWorkspaceCfg) {
+		this.jiraWorkspaceCfg = jiraWorkspaceCfg;
 	}
 
 	public void rebuildModel() throws JIRAServerFiltersBuilderException {
-		final String filterId = jiraProjectCfg.getView().getViewFilterId();
-		final String filterServerId = jiraProjectCfg.getView().getViewServerId();
+		final String filterId = jiraWorkspaceCfg.getView().getViewFilterId();
+		final String filterServerId = jiraWorkspaceCfg.getView().getViewServerId();
 
 		try {
 			listModel.setModelFrozen(true);
@@ -109,16 +110,16 @@ public class JIRAFilterListBuilder {
 		listModel.setSavedFilters(jiraServer, savedFilters);
 
 		if (selection != null) {
-			listModel.selectSavedFilter(jiraServer, selection);
+//			listModel.selectSavedFilter(jiraServer, selection);
 		}
 	}
 
 	private void addManualFilter(final JiraServerCfg jiraServer, final String filterId) {
 
-		if (jiraProjectCfg != null) {
+		if (jiraWorkspaceCfg != null) {
 
 			List<JiraFilterEntryBean> filter =
-					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
+					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
 							.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
 
 			List<JIRAQueryFragment> query;
@@ -134,7 +135,7 @@ public class JIRAFilterListBuilder {
 			final JIRAManualFilter jiraManualFilter = new JIRAManualFilter("Custom Filter", query);
 			listModel.setManualFilter(jiraServer, jiraManualFilter);
 			if (JiraFilterConfigurationBean.MANUAL_FILTER_LABEL.equals(filterId)) {
-				listModel.selectManualFilter(jiraServer, jiraManualFilter);
+//				listModel.selectManualFilter(jiraServer, jiraManualFilter);
 			}
 		}
 	}

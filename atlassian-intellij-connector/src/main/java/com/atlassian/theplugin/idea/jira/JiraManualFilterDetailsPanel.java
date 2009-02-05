@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
-import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
@@ -29,12 +29,16 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	private JIRAFilterListModel listModel;
 	private final ScrollableTwoColumnPanel panel = new ScrollableTwoColumnPanel();
 	private final Project project;
-	private final JiraProjectConfiguration jiraProjectCfg;
+	private final JiraWorkspaceConfiguration jiraProjectCfg;
 	private final JIRAServerModel jiraServerModel;
 	private final JButton editButton = new JButton("Edit");
+	public JiraServerCfg jiraServer;
+	private JIRAManualFilter jiraManualFilter;
 
-	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel, JiraProjectConfiguration jiraProjectCfg, Project project,
-						  JIRAServerModel jiraServerModel) {
+	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel,
+			JiraWorkspaceConfiguration jiraProjectCfg,
+			Project project,
+			JIRAServerModel jiraServerModel) {
 		super(new BorderLayout());
 		this.jiraProjectCfg = jiraProjectCfg;
 		this.listModel = listModel;
@@ -52,18 +56,18 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 			}
 
 			public void selectedManualFilter(JiraServerCfg jiraServer, java.util.List<JIRAQueryFragment> manualFilter,
-											 boolean isChanged) {
+					boolean isChanged) {
 			}
 
 		});
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
 			public void modelFrozen(FrozenModel model, boolean frozen) {
-						setEnabled(!frozen);
+				setEnabled(!frozen);
 				editButton.setEnabled(!frozen);
 			}
 		});
-		
+
 	}
 
 
@@ -78,14 +82,14 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 		this.setBorder(border);
 		editButton.addActionListener(new ActionListener() {
 
+
 			public void actionPerformed(ActionEvent event) {
-				JiraServerCfg jiraServer = listModel.getJiraSelectedServer();
 				final JiraIssuesFilterPanel jiraIssuesFilterPanel
 						= new JiraIssuesFilterPanel(project, jiraServerModel, listModel, jiraServer);
 
-				if (jiraServer != null && listModel.getJiraSelectedManualFilter() != null) {
+				if (jiraServer != null && jiraManualFilter != null) {
 					final java.util.List<JIRAQueryFragment> listClone = new ArrayList<JIRAQueryFragment>();
-					for (JIRAQueryFragment fragment :  listModel.getJiraSelectedManualFilter().getQueryFragment()) {
+					for (JIRAQueryFragment fragment : jiraManualFilter.getQueryFragment()) {
 						if (fragment != null) {
 							listClone.add(fragment.getClone());
 						}
@@ -95,13 +99,13 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 				jiraIssuesFilterPanel.show();
 
 				if (jiraIssuesFilterPanel.getExitCode() == 0) {
-					JIRAManualFilter manualFilter = listModel.getJiraSelectedManualFilter();
+					JIRAManualFilter manualFilter = jiraManualFilter;
 					listModel.clearManualFilter(jiraServer);
 					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
 					listModel.setManualFilter(jiraServer, manualFilter);
-					listModel.selectManualFilter(jiraServer, manualFilter, true);
+//					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
-					jiraProjectCfg.getJiraFilterConfiguaration(listModel.getJiraSelectedServer().getServerId().toString())
+					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
 							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
 				}
@@ -110,7 +114,10 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 		});
 	}
 
-	public void setFilter(JIRAManualFilter jiraManualFilter) {
+	public void setFilter(JIRAManualFilter jiraManualFilter, final JiraServerCfg jiraServerCfg) {
+
+		this.jiraServer = jiraServerCfg;
+		this.jiraManualFilter = jiraManualFilter;
 
 		Collection<ScrollableTwoColumnPanel.Entry> entries = MiscUtil.buildArrayList();
 		Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = jiraManualFilter.groupBy(true);

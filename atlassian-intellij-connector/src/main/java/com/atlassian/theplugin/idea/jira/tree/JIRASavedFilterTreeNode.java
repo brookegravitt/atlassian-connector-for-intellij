@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
 import javax.swing.*;
 
@@ -11,13 +11,13 @@ import javax.swing.*;
  */
 public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 	private JIRASavedFilter savedFilter;
+	private JiraServerCfg jiraServerCfg;
 
-	private JIRAFilterListModel listModel;
 
-	public JIRASavedFilterTreeNode(final JIRAFilterListModel listModel, final JIRASavedFilter savedFilter) {
+	public JIRASavedFilterTreeNode(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg) {
 		super(savedFilter.getName(), null, null);
-		this.listModel = listModel;
 		this.savedFilter = savedFilter;
+		this.jiraServerCfg = jiraServerCfg;
 	}
 
 	public String toString() {
@@ -25,16 +25,20 @@ public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 	}
 
 	public JComponent getRenderer(final JComponent c, final boolean selected,
-	                              final boolean expanded, final boolean hasFocus) {
+			final boolean expanded, final boolean hasFocus) {
 
 
 		return new JLabel("Incorrect renderer");
 	}
 
 	public void onSelect() {
-		if (listModel != null && savedFilter != null) {
-			listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
-		}
+//		onSelect (listModel != null && savedFilter != null) {
+//			listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
+//		}
+	}
+
+	public JiraServerCfg getJiraServerCfg() {
+		return jiraServerCfg;
 	}
 
 	public JIRASavedFilter getSavedFilter() {

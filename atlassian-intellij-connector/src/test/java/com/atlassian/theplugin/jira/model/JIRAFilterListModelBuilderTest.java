@@ -3,8 +3,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.configuration.JiraProjectConfiguration;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.*;
 import junit.framework.TestCase;
@@ -26,38 +26,39 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.setUp();
 		facade = new JIRATestServerFacade();
 
-		JiraProjectConfiguration jiraConfig = new JiraProjectConfiguration();
+		JiraWorkspaceConfiguration jiraConfig = new JiraWorkspaceConfiguration();
 
 		facade = new JIRATestServerFacade();
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 		fillServersAndFilters(savedFilters);
-		
+
 		cfgManager = new CfgManagerTest(savedFilters);
 
-		JiraProjectConfiguration jiraCfg = new JiraProjectConfiguration();
+		JiraWorkspaceConfiguration jiraCfg = new JiraWorkspaceConfiguration();
 		fillJiraCfg(jiraCfg);
 
 		builder = new JIRAFilterListBuilder(facade, cfgManager);
 		listModel = new JIRAFilterListModel();
 		builder.setListModel(listModel);
-		builder.setJiraProjectCfg(jiraCfg);
+		builder.setJiraWorkspaceCfg(jiraCfg);
 	}
 
-	public void fillJiraCfg(JiraProjectConfiguration jiraCfg){
+	public void fillJiraCfg(JiraWorkspaceConfiguration jiraCfg) {
 		JiraViewConfigurationBean viewBean = new JiraViewConfigurationBean();
 		viewBean.setViewFilterId("none");
 		viewBean.setViewServerId("none");
 		jiraCfg.setView(viewBean);
 
 	}
+
 	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
 	}
 
-	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters){
-		for(int i = 0; i<3; i++){
-			JiraServerCfg server = new JiraServerCfg("jiraserver"+1, new ServerId());
+	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters) {
+		for (int i = 0; i < 3; i++) {
+			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
 		}
 	}
@@ -70,7 +71,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 		assertEquals(3, listModel.getJIRAServers().size());
 		JiraServerCfg jiraServer = savedFilters.keySet().iterator().next();
-		assertEquals(listModel.getSavedFilters(jiraServer).size(), savedFilters.get(jiraServer).size());		
+		assertEquals(listModel.getSavedFilters(jiraServer).size(), savedFilters.get(jiraServer).size());
 
 	}
 
@@ -96,13 +97,13 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
 		public List<JIRAIssue> getIssues(JiraServerCfg server, List<JIRAQueryFragment> query,
-		                                 String sort, String sortOrder, int start, int size)
+				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
 
 		public List<JIRAIssue> getSavedFilterIssues(JiraServerCfg server, List<JIRAQueryFragment> query,
-		                                            String sort, String sortOrder, int start, int size)
+				String sort, String sortOrder, int start, int size)
 				throws JIRAException {
 			return createIssueList(size);
 		}
@@ -125,7 +126,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 		public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException {
 			List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
-			for (JIRAQueryFragment query : savedFilters.get(server)){
+			for (JIRAQueryFragment query : savedFilters.get(server)) {
 				list.add(query);
 			}
 			return list;
@@ -180,7 +181,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
 		public void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
-		                    boolean updateEstimate, String newEstimate) throws JIRAException {
+				boolean updateEstimate, String newEstimate) throws JIRAException {
 		}
 
 		public void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException {
@@ -192,7 +193,8 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 		public List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
 			return null;
-		}}
+		}
+	}
 
 }
 
@@ -200,10 +202,11 @@ class CfgManagerTest implements CfgManager {
 	Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
 
 
-	public CfgManagerTest(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters ){
+	public CfgManagerTest(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
 
 		this.savedFilters = savedFilters;
 	}
+
 	public ProjectConfiguration getProjectConfiguration(final ProjectId projectId) {
 		return null;
 	}
@@ -260,7 +263,8 @@ class CfgManagerTest implements CfgManager {
 
 	}
 
-	public boolean removeProjectConfigurationListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
+	public boolean removeProjectConfigurationListener(final ProjectId projectId,
+			final ConfigurationListener configurationListener) {
 		return false;
 	}
 
@@ -271,7 +275,7 @@ class CfgManagerTest implements CfgManager {
 	public Collection<JiraServerCfg> getAllEnabledJiraServers(final ProjectId projectId) {
 		List<JiraServerCfg> list = new ArrayList<JiraServerCfg>();
 
-		for (JiraServerCfg server : savedFilters.keySet()){
+		for (JiraServerCfg server : savedFilters.keySet()) {
 			list.add(server);
 		}
 
@@ -282,7 +286,8 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
-	public void addConfigurationCredentialsListener(final ProjectId projectId, final ConfigurationCredentialsListener listener) {
+	public void addConfigurationCredentialsListener(final ProjectId projectId,
+			final ConfigurationCredentialsListener listener) {
 	}
 
 	public void removeAllConfigurationCredentialListeners(final ProjectId projectId) {

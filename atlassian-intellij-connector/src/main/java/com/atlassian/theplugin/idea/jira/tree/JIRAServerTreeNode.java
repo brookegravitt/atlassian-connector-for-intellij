@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
 
@@ -22,7 +22,7 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 		super(jiraServer.getName(), null, null);
 		this.listModel = listModel;
 		this.jiraServer = jiraServer;
-		
+
 	}
 
 	public String toString() {
@@ -37,7 +37,7 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 		JLabel label = new JLabel(jiraServer.getName(), JIRA_SERVER_ENABLED_ICON, SwingUtilities.LEADING);
 		label.setForeground(fgColor);
 		label.setBackground(bgColor);
-		label.setDisabledIcon(JIRA_SERVER_DISABLED_ICON);		
+		label.setDisabledIcon(JIRA_SERVER_DISABLED_ICON);
 
 		label.setEnabled(c.isEnabled());
 		label.setOpaque(true);
@@ -50,13 +50,13 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 	}
 
 	public void onSelect() {
-		if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.SAVED) {
-
-			listModel.selectSavedFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedSavedFilter());
-		} else if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.MANUAL) {
-			listModel.selectManualFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedManualFilter());
-
-		}
+//		if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.SAVED) {
+//
+//			listModel.selectSavedFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedSavedFilter());
+//		} else if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.MANUAL) {
+//			listModel.selectManualFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedManualFilter());
+//
+//		}
 
 	}
 }
