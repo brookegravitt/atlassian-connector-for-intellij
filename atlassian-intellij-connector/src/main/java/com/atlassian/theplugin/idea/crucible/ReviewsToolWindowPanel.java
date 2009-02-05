@@ -110,14 +110,14 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		this.reviewListModel = reviewListModel;
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
 		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
-		init();
+		init(Constants.DIALOG_MARGIN / 2);
 		this.reviewListModel.addListener(new LocalCrucibleReviewListModelListener());
 		filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
 	}
 
 	@Override
-	public void init() {
-		super.init();
+	public void init(int margin) {
+		super.init(margin);
 
 		addReviewTreeListeners();
 		setupReviewTree();
