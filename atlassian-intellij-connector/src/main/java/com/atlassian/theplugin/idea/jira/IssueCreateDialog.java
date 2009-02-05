@@ -62,8 +62,7 @@ public class IssueCreateDialog extends DialogWrapper {
 	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
-			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg,
-			@NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(false);
 		this.model = model;
 		this.jiraConfiguration = jiraProjectCfg;
