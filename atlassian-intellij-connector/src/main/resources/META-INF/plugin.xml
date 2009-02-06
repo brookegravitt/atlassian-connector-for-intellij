@@ -738,19 +738,19 @@
         <group id="ThePlugin.JiraIssues.OneIssueToolBar" popup="false">
             <reference id="ThePlugin.JiraIssues.ViewIssue"/>
             <reference id="ThePlugin.JiraIssues.EditIssue"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.EditorAddComment"/>
             <reference id="ThePlugin.JiraIssues.LogWork"/>
             <reference id="ThePlugin.JiraIssues.CreateChangeList"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
             <reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
             <reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.RunActionGroup"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.EditorRefresh"/>
             <reference id="ThePlugin.JiraIssues.EditorClose"/>
         </group>
@@ -871,12 +871,12 @@
 
         <group id="ThePlugin.Reviews.SingleReview.ToolBar" popup="false" text="">
             <reference id="ThePlugin.Reviews.ViewReview"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.Reviews.Refresh"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.Reviews.CompleteReview"/>
             <reference id="ThePlugin.Reviews.UncompleteReview"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.Reviews.ApproveReview"/>
             <reference id="ThePlugin.Reviews.SubmitReview"/>
             <!--<reference id="ThePlugin.Reviews.CloseReview"/>-->
@@ -884,10 +884,10 @@
             <reference id="ThePlugin.Reviews.SummarizeReview"/>
             <reference id="ThePlugin.Reviews.AbandonReview"/>
             <reference id="ThePlugin.Reviews.RecoverReview"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.Reviews.JoinReview"/>
             <reference id="ThePlugin.Reviews.SetReviewers"/>
-            <separator/>
+            <!--<separator/>-->
             <reference id="ThePlugin.Reviews.EditorClose"/>
         </group>
 

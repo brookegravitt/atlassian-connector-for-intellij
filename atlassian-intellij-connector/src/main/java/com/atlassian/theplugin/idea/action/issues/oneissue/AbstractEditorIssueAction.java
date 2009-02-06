@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.action.issues;
+package com.atlassian.theplugin.idea.action.issues.oneissue;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -9,32 +9,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 
-/**
- * User: pmaruszak
- */
-public abstract class JIRAAbstractAction extends AnAction {
-	public abstract void onUpdate(AnActionEvent event);
-
-	public void onUpdate(AnActionEvent event, boolean enabled) {
-	}
-
+public abstract class AbstractEditorIssueAction extends AnAction {
 	@Override
-	public final void update(AnActionEvent event) {
-		super.update(event);
-
-		boolean enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
-
-		if (enabled) {
-
-			onUpdate(event);
-		}
-
-		onUpdate(event, enabled);
-
-		enabled = false;
-		ServerCfg server = event.getData(Constants.SERVER_KEY);
+	public void update(final AnActionEvent e) {
+		boolean enabled = false;
+		ServerCfg server = e.getData(Constants.SERVER_KEY);
 		if (server != null) {
-			Project project = event.getData(DataKeys.PROJECT);
+			Project project = e.getData(DataKeys.PROJECT);
 			if (project != null) {
 				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
 				if (server2 != null && server2.isEnabled()) {
@@ -42,6 +23,6 @@ public abstract class JIRAAbstractAction extends AnAction {
 				}
 			}
 		}
-		event.getPresentation().setEnabled(enabled);
+		e.getPresentation().setEnabled(enabled);
 	}
 }
