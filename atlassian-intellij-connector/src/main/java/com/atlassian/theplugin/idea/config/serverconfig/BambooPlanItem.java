@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 
 public class BambooPlanItem {
-	private BambooPlan plan;
+	private final BambooPlan plan;
 	private boolean selected;
 
 	public BambooPlanItem(BambooPlan plan, boolean selected) {
