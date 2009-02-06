@@ -811,7 +811,7 @@
         <action id="ThePlugin.Reviews.ReopenReview"
                 class="com.atlassian.theplugin.idea.action.reviews.ReopenReviewAction"
                 text="Reopen Review"
-                icon="/icons/crucible/pin_close.png"/>
+                icon="/icons/crucible/pin_reopen.png"/>
         <action id="ThePlugin.Reviews.SummarizeReview"
                 class="com.atlassian.theplugin.idea.action.reviews.SummarizeReviewAction"
                 text="Summarize and Close Review"
