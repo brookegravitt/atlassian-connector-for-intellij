@@ -93,7 +93,7 @@ public abstract class MultiTabToolWindow {
 	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
 			final String title, final Icon icon, final Icon tabIcon, final ContentManagerListener listener) {
 		ToolWindow toolWindow = showToolWindow(project, params, title, icon, tabIcon);
-//		toolWindow.getContentManager().addContentManagerListener(listener);
+		toolWindow.getContentManager().addContentManagerListener(listener);
 		return toolWindow;
 	}
 
