@@ -15,9 +15,13 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+
 /**
  * User: pmaruszak
  */
 public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
+
+	void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer);
 }
