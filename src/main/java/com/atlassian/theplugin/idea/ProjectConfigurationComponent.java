@@ -206,7 +206,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				public void run() {
 					int value = Messages.showYesNoCancelDialog(project,
 							"Configuration has been succesfully migrated to new location (home directory).\n"
-									+ "Would you like to delete now old configuration file?\n\nDelete file: ["
+									+ "Would you like to delete the old configuration file?\n\nDelete file: ["
 									+ privateCfgFile + "]",
 							PluginUtil.PRODUCT_NAME + " upgrade process", Messages.getQuestionIcon());
 
