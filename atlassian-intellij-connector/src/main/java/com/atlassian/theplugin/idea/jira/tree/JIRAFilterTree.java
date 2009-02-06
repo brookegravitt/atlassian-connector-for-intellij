@@ -21,7 +21,7 @@ import java.util.HashSet;
 /**
  * User: pmaruszak
  */
-public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener {
+public class JIRAFilterTree extends JTree {
 
 	private static final JIRAFilterTreeRenderer MY_RENDERER = new JIRAFilterTreeRenderer();
 	private JiraWorkspaceConfiguration jiraProjectConfiguration;
@@ -36,7 +36,7 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		this.jiraProjectConfiguration = jiraProjectConfiguration;
 //		this.listModel = listModel;
 
-		listModel.addModelListener(this);
+		listModel.addModelListener(new LocalFilterListModelListener());
 
 		setShowsRootHandles(true);
 		setRootVisible(false);
@@ -134,17 +134,6 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 		}
 	}
 
-	public void modelChanged(JIRAFilterListModel aListModel) {
-		reCreateTree(aListModel);
-		expandAll();
-
-		//should only be used once during configuration read
-		if (!isAlreadyInitialized) {
-//			setSelectionSavedFilter();
-//			setSelectionManualFilter();
-			isAlreadyInitialized = true;
-		}
-	}
 
 	public boolean setSelectionSavedFilter(final long savedFilterId, final String serverId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
@@ -265,6 +254,25 @@ public class JIRAFilterTree extends JTree implements JIRAFilterListModelListener
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
 				listener.selectedManualFilterNode(manualFilter, serverCfg);
 			}
+		}
+
+	}
+
+	private class LocalFilterListModelListener implements JIRAFilterListModelListener {
+		public void modelChanged(JIRAFilterListModel aListModel) {
+			reCreateTree(aListModel);
+			expandAll();
+
+			//should only be used once during configuration read
+			if (!isAlreadyInitialized) {
+//			setSelectionSavedFilter();
+//			setSelectionManualFilter();
+				isAlreadyInitialized = true;
+			}
+		}
+
+		public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
+			// we don't care about changes in manual filter
 		}
 
 	}
