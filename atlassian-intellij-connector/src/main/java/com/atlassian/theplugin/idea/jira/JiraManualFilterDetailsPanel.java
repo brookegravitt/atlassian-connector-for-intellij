@@ -46,10 +46,15 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 		createPanelContent();
 
 		listModel.addModelListener(new JIRAFilterListModelListener() {
-
 			public void modelChanged(JIRAFilterListModel aListModel) {
 				JiraManualFilterDetailsPanel.this.listModel = aListModel;
 			}
+
+			public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg server) {
+				// refresh data in the view
+				setFilter(manualFilter, server);
+			}
+
 		});
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
@@ -99,6 +104,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
 							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
+					listModel.fireManualFilterChanged(manualFilter, jiraServer);
 				}
 
 			}

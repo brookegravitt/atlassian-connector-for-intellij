@@ -13,9 +13,6 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class JIRAFilterListModel implements FrozenModel {
-	public enum TypeOfFilterSelected {
-		NONE, MANUAL, SAVED
-	}
 
 	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
@@ -23,16 +20,10 @@ public class JIRAFilterListModel implements FrozenModel {
 
 //	private JiraServerCfg jiraSelectedServer;
 //
-//	private JIRASavedFilter jiraSelectedSavedFilter;
-//
+	//	private JIRASavedFilter jiraSelectedSavedFilter;
+	//
 	//	private JIRAManualFilter jiraSelectedManualFilter;
 	private boolean modelFrozen = false;
-
-	private TypeOfFilterSelected filterTypeSlection = TypeOfFilterSelected.NONE;
-
-	public TypeOfFilterSelected getFilterTypeSlection() {
-		return filterTypeSlection;
-	}
 
 //	public JiraServerCfg getJiraSelectedServer() {
 //		return jiraSelectedServer;
@@ -156,21 +147,23 @@ public class JIRAFilterListModel implements FrozenModel {
 //	}
 
 	public void fireModelChanged() {
-
 		for (JIRAFilterListModelListener listener : listeners) {
-
 			listener.modelChanged(this);
 		}
 	}
 
-	public void addModelListener(JIRAFilterListModelListener listener) {
-
-		listeners.add(listener);
-
-
+	public void fireManualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.manualFilterChanged(manualFilter, jiraServer);
+		}
 	}
 
-	public void removeModelListener(JIRAIssueListModelListener listener) {
+
+	public void addModelListener(JIRAFilterListModelListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeModelListener(JIRAFilterListModelListener listener) {
 		listeners.remove(listener);
 	}
 
@@ -188,16 +181,11 @@ public class JIRAFilterListModel implements FrozenModel {
 		fireModelFrozen();
 	}
 
-
 	public void addFrozenModelListener(FrozenModelListener listener) {
 		frozenModelListeners.add(listener);
 	}
 
 	public void removeFrozenModelListener(FrozenModelListener listener) {
-		frozenModelListeners.remove(listener);
-	}
-
-	public void removeFrozenModelListener(FrozenModel listener) {
 		frozenModelListeners.remove(listener);
 	}
 
