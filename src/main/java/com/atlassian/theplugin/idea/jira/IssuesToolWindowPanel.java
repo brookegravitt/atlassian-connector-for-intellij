@@ -41,7 +41,6 @@ import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.ActionPopupMenu;
@@ -465,20 +464,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void viewIssueInBrowser() {
-		JIRAIssue issue = currentIssueListModel.getSelectedIssue();
-		if (issue != null) {
-			BrowserUtil.launchBrowser(issue.getIssueUrl());
-		}
-	}
-
-	public void editIssueInBrowser() {
-		JIRAIssue issue = currentIssueListModel.getSelectedIssue();
-		if (issue != null) {
-			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
-		}
-	}
-
 	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
 //		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue == null) {
@@ -637,7 +622,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void startWorkingOnIssue(@NotNull final JIRAIssue issue) {
-//		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue == null) {
 			return;
 		}
@@ -648,26 +632,25 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-				JIRAIssue myIssue = currentIssueListModel.getSelectedIssue();
-				setStatusMessage("Assigning issue " + myIssue.getKey() + " to me...");
+				setStatusMessage("Assigning issue " + issue.getKey() + " to me...");
 				try {
-					jiraServerFacade.setAssignee(server, myIssue, server.getUsername());
-					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, myIssue);
+					jiraServerFacade.setAssignee(server, issue, server.getUsername());
+					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
 					boolean found = false;
 					for (JIRAAction a : actions) {
 						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							setStatusMessage("Starting progress on " + myIssue.getKey() + "...");
-							jiraServerFacade.progressWorkflowAction(server, myIssue, a);
-							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, myIssue);
-							setStatusMessage("Started progress on " + myIssue.getKey());
+							setStatusMessage("Starting progress on " + issue.getKey() + "...");
+							jiraServerFacade.progressWorkflowAction(server, issue, a);
+							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+							setStatusMessage("Started progress on " + issue.getKey());
 							found = true;
-							jiraIssueListModelBuilder.updateIssue(myIssue, server);
+							jiraIssueListModelBuilder.updateIssue(issue, server);
 							break;
 						}
 					}
 					if (!found) {
 						setStatusMessage("Progress on "
-								+ myIssue.getKey()
+								+ issue.getKey()
 								+ "  not started - no such workflow action available");
 					}
 				} catch (JIRAException e) {
@@ -911,6 +894,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public Object getData(@NotNull final String dataId) {
 		if (dataId.equals(Constants.ISSUE)) {
 			return currentIssueListModel.getSelectedIssue();
+		}
+		if (dataId.equals(Constants.SERVER)) {
+			return getSelectedServer();
 		}
 		return null;
 	}

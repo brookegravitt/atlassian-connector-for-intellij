@@ -497,7 +497,8 @@ public class WorkLogCreate extends DialogWrapper {
 							break;
 						}
 					}
-				} catch (JIRAException e) {
+				}
+				catch (JIRAException e) {
 					// well, let's ignore, this is an optional functionality anyway...
 				}
 				haveIssueStopProgressInfo = true;

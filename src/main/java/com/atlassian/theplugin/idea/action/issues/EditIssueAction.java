@@ -1,14 +1,15 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class EditIssueAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-		if (panel != null) {
-			panel.editIssueInBrowser();
+		final JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
+		if (issue != null) {
+			BrowserUtil.launchBrowser(issue.getServerUrl() + "/secure/EditIssue!default.jspa?key=" + issue.getKey());
 		}
 	}
 

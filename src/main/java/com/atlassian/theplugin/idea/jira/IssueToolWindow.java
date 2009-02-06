@@ -111,6 +111,14 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		closeToolWindow(TOOL_WINDOW_TITLE, e);
 	}
 
+	public boolean isServerEnabled(String key) {
+		IssuePanel ip = getContentPanel(key);
+		if (ip != null) {
+			return ip.params.server.isEnabled();
+		}
+		return false;
+	}
+
 	public void refreshComments(String key) {
 		IssuePanel ip = getContentPanel(key);
 		if (ip != null) {
@@ -318,6 +326,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		public Object getData(@NonNls final String dataId) {
 			if (dataId.equals(Constants.ISSUE)) {
 				return params.issue;
+			}
+			if (dataId.equals(Constants.SERVER)) {
+				return params.server;
 			}
 			return null;
 		}
