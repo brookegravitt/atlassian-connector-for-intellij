@@ -14,21 +14,37 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class RunJiraActionGroup extends ActionGroup {
-	private List<AnAction> actions = new ArrayList<AnAction>();
+	private Map<Project, List<AnAction>> actions = new WeakHashMap<Project, List<AnAction>>();
 
-	public void addAction(AnAction action) {
-		actions.add(action);
+	public void addAction(Project project, AnAction action) {
+		if (!actions.containsKey(project)) {
+			actions.put(project, new ArrayList<AnAction>());
+		}
+		actions.get(project).add(action);
 	}
 
-	public void clearActions() {
-		actions.clear();
+	public void clearActions(Project project) {
+		if (actions.containsKey(project)) {
+			actions.get(project).clear();
+		}
 	}
 
 	@NotNull
 	public AnAction[] getChildren(@Nullable final AnActionEvent anActionEvent) {
-		return actions.toArray(new AnAction[actions.size()]);
+		if (anActionEvent != null) {
+			Project project = anActionEvent.getData(DataKeys.PROJECT);
+			if (project != null) {
+				if (actions.containsKey(project)) {
+					final List<AnAction> actionsList = actions.get(project);
+					return actionsList.toArray(new AnAction[actionsList.size()]);
+				}
+			}
+		}
+		return new AnAction[]{};
 	}
 
 	@Override

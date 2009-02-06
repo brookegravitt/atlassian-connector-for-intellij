@@ -284,9 +284,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			if (issue != null) {
 				java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 				if (actions != null) {
-					actionGroup.clearActions();
+					actionGroup.clearActions(project);
 					for (JIRAAction a : actions) {
-						actionGroup.addAction(new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue, a));
+						actionGroup.addAction(project,
+								new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue, a));
 					}
 				} else {
 					Thread t = new Thread() {
@@ -302,10 +303,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 									JiraIssueAdapter.get(issue).setCachedActions(actions);
 									SwingUtilities.invokeLater(new Runnable() {
 										public void run() {
-											actionGroup.clearActions();
+											actionGroup.clearActions(project);
 											for (JIRAAction a : actions) {
-												actionGroup.addAction(new RunIssueActionAction(
-														IssueToolWindow.IssuePanel.this, facade, issue, a));
+												actionGroup.addAction(
+														project,
+														new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue,
+																a));
 											}
 										}
 									});
