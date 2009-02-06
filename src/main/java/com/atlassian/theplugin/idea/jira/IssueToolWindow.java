@@ -173,8 +173,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		public void selectionChanged(final ContentManagerEvent contentManagerEvent) {
-			if (/*contentManagerEvent.getOperation() == ContentManagerEvent.ContentOperation.add
-					&&*/ contentKey.equals(contentManagerEvent.getContent().getTabName())) {
+			if (contentKey.equals(contentManagerEvent.getContent().getTabName())
+					&& contentManagerEvent.getContent().isSelected()) {
 				IssuePanel ip = getContentPanel(contentKey);
 				if (ip != null) {
 					ip.reloadAvailableActions();
@@ -182,7 +182,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 	}
-
 
 	private class IssuePanel extends ContentPanel
 			implements JIRAIssueListModelListener, DataProvider, IssueActionProvider {
