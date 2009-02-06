@@ -244,13 +244,13 @@ public class BambooPlansForm extends JPanel {
 						for (SubscribedPlan sPlan : queryServer.getSubscribedPlans()) {
 							boolean exists = false;
 							for (BambooPlanItem bambooPlanItem : plansForServer) {
-								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getPlanId())) {
+								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getKey())) {
 									exists = true;
 									break;
 								}
 							}
 							if (!exists) {
-								BambooPlan p = new BambooPlan(sPlan.getPlanId(), sPlan.getPlanId(), false, false);
+								BambooPlan p = new BambooPlan(sPlan.getKey(), sPlan.getKey(), false, false);
 								plansForServer.add(new BambooPlanItem(p, true));
 							}
 						}
@@ -291,7 +291,7 @@ public class BambooPlansForm extends JPanel {
 				for (BambooPlanItem plan : plans) {
 					plan.setSelected(false);
 					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
-						if (sPlan.getPlanId().equals(plan.getPlan().getPlanKey())) {
+						if (sPlan.getKey().equals(plan.getPlan().getPlanKey())) {
 							plan.setSelected(true);
 							break;
 						}
@@ -302,7 +302,7 @@ public class BambooPlansForm extends JPanel {
 				// for those servers for which we cannot fetch metadata, we just show current plans
 				List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
 				for (SubscribedPlan plan : server.getSubscribedPlans()) {
-					final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getPlanId()),
+					final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()),
 							true);
 					model.addElement(bambooPlanItem);
 					modelPlans.add(bambooPlanItem);
