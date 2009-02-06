@@ -115,12 +115,10 @@ public final class BambooFilterListTestUi {
 
 	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, String state,
 			BambooServerCfg serverCfg) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo(buildKey, null, serverCfg.getUrl(), name);
-		buildInfo.setBuildTime(new Date());
+		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, serverCfg.getUrl(), name, "123")
+				.startTime(new Date()).pollingTime(new Date()).state(state).build();
 		buildInfo.setBuildCompletedDate(new Date());
-		buildInfo.setPollingTime(new Date());
 		buildInfo.setBuildRelativeBuildDate("55 seconds ago");
-		buildInfo.setBuildState(state);
 		buildInfo.setServer(serverCfg);
 		return new BambooBuildAdapterIdea(buildInfo);
 	}
