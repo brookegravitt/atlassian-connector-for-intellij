@@ -93,8 +93,6 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			// direct SSL connection
 			sslSocket = super.createSocket(host, sslPort);
 		} else {
-
-			// Default proxy port is 80, even for https
 			int tunnelPort = (tcp.getProxyPort().length() != 0)
 					? Integer.parseInt(tcp.getProxyPort())
 					: DEFAULT_PROXY_PORT;
