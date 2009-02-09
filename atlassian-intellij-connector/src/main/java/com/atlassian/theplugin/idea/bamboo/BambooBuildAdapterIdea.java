@@ -63,9 +63,9 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	public BuildState getState() {
 		if (build.getEnabled()) {
 			switch (build.getStatus()) {
-				case BUILD_FAILED:
+				case FAILURE:
 					return BuildState.FAIL;
-				case BUILD_SUCCEED:
+				case SUCCESS:
 					return BuildState.PASS;
 				case UNKNOWN:
 				default:

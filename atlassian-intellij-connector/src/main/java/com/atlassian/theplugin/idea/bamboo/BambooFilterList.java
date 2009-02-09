@@ -342,11 +342,9 @@ public class BambooFilterList extends JList {
 
 		private String getString() {
 			switch (wrapped.status) {
-				case BUILD_DISABLED:
-					return "Build Disabled";
-				case BUILD_FAILED:
+				case FAILURE:
 					return "Build Failed";
-				case BUILD_SUCCEED:
+				case SUCCESS:
 					return "Build Succeeded";
 				case UNKNOWN:
 					return "Unknown";
