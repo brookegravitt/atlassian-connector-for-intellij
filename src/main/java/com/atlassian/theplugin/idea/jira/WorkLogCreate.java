@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.HelpUrl;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
@@ -26,7 +25,6 @@ import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -40,7 +38,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.management.timer.Timer;
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -373,14 +374,17 @@ public class WorkLogCreate extends DialogWrapper {
 	}
 
 	private void createUIComponents() {
-		helpLabel = new HyperlinkLabel("Help");
-		final String helpUrl = HelpUrl.getHelpUrl(Constants.HELP_JIRA_WORKLOG);
-
-		helpLabel.addHyperlinkListener(new HyperlinkListener() {
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				BrowserUtil.launchBrowser(helpUrl);
-			}
-		});
+		// Help for Log Work has mysteriously disappeared from CAC. Hiding the help link for now
+		helpLabel = new HyperlinkLabel("");
+		helpLabel.setEnabled(false);
+//		helpLabel = new HyperlinkLabel("Help");
+//		final String helpUrl = HelpUrl.getHelpUrl(Constants.HELP_JIRA_WORKLOG);
+//
+//		helpLabel.addHyperlinkListener(new HyperlinkListener() {
+//			public void hyperlinkUpdate(HyperlinkEvent e) {
+//				BrowserUtil.launchBrowser(helpUrl);
+//			}
+//		});
 	}
 
 	private void updateOKAction() {
