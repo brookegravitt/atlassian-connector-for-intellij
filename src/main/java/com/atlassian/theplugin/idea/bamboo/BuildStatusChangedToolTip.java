@@ -77,10 +77,10 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		content.setText(popupInfo.toHtml());
 
 		switch (generalBuildStatus) {
-			case BUILD_SUCCEED:
+			case SUCCESS:
 				content.setBackground(BACKGROUND_COLOR_SUCCEED);
 				break;
-			case BUILD_FAILED:
+			case FAILURE:
 			default:
 				content.setBackground(BACKGROUND_COLOR_FAILED);
 				break;

@@ -92,7 +92,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.add(key, gbc);
 
 		// failed tests
-		if (build.getStatus() == BuildStatus.BUILD_FAILED) {
+		if (build.getStatus() == BuildStatus.FAILURE) {
 			// gap
 			gbc.gridx++;
 			gbc.weightx = 0.0;

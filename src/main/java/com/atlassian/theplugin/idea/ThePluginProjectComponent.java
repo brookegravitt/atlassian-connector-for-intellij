@@ -26,7 +26,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.StausIconBambooListener;
+import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -230,7 +230,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
 
 			// add icon listener to bamboo checker thread
-			final StausIconBambooListener iconBambooStatusListener = new StausIconBambooListener(statusBarBambooIcon);
+			final StatusIconBambooListener iconBambooStatusListener = new StatusIconBambooListener(statusBarBambooIcon);
 			bambooStatusChecker.registerListener(iconBambooStatusListener);
 
 			// add simple bamboo listener to bamboo checker thread
