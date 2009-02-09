@@ -73,14 +73,14 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 	public void updateBambooStatus(BuildStatus status, BambooPopupInfo notUsed) {
 //		tooltip.setHtmlContent(fullInfo);
 		switch (status) {
-			case BUILD_FAILED:
+			case FAILURE:
                 setToolTipText("Some builds failed. Click to see details.");
 				setIcon(ICON_RED);
                 break;
 			case UNKNOWN:
 				setIcon(ICON_GREY);
 				break;
-			case BUILD_SUCCEED:
+			case SUCCESS:
                 setToolTipText("All builds currently passing.");
 				setIcon(ICON_GREEN);
 				break;

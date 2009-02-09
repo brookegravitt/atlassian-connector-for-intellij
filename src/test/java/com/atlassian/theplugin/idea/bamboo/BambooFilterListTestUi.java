@@ -100,7 +100,7 @@ public final class BambooFilterListTestUi {
 
 	private static BuildStatus getState() {
 		boolean state = new Random().nextBoolean();
-		return state ? BuildStatus.BUILD_SUCCEED : BuildStatus.BUILD_FAILED;
+		return state ? BuildStatus.SUCCESS : BuildStatus.FAILURE;
 	}
 
 	public static java.util.List<BambooBuildAdapterIdea> getBuilds() {
