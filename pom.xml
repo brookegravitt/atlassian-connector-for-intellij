@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.atlassian.connector</groupId>
 		<artifactId>atlassian-connector-parent-pom</artifactId>
-		<version>2.1.0</version>
+		<version>2.1.1</version>
 	</parent>
 	<name>Atlassian Intellij IDEA Plugin</name>
 	<description>An Intellij IDEA plugin for Atlassian's tools.</description>
@@ -333,14 +333,23 @@
 					</execution>
 				</executions>
 			</plugin>
+<!--
 			<plugin>
 				<groupId>com.atlassian.maven.plugins</groupId>
 				<artifactId>maven-clover2-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
+					<resolveReportDescriptor>false</resolveReportDescriptor>
+					<generateXml>true</generateXml>
+					<generateHtml>true</generateHtml>
+
+-->
+<!--
 					<licenseLocation>${clover.licenseLocation}</licenseLocation>
 					<cloverDatabase>${clover.database}</cloverDatabase>
 					<cloverMergeDatabase>${clover.mergeDatabase}</cloverMergeDatabase>
+-->
+<!--
 					<targetPercentage>60%</targetPercentage>
 					<jdk>${jdkLevel}</jdk>
 					<excludes>
@@ -351,19 +360,10 @@
 					<methodContexts>
 						<private-constructor-noparam-nothrows>private +[a-zA-Z0-9_$]+ *\( *\)</private-constructor-noparam-nothrows>
 					</methodContexts>
+					<historyDir>${user.home}/clover-studio-history/${pom.artifactId}</historyDir>
 				</configuration>
-<!--
-				<executions>
-					<execution>
-						<phase>pre-site</phase>
-						<goals>
-							<goal>instrument</goal>
-							<goal>aggregate</goal>
-						</goals>
-					</execution>
-				</executions>
--->
 			</plugin>
+-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-idea-plugin</artifactId>
