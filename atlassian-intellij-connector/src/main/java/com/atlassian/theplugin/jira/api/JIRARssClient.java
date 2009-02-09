@@ -29,7 +29,6 @@ import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
-import com.intellij.openapi.diagnostic.Logger;
 import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -42,8 +41,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class JIRARssClient extends AbstractHttpSession {
-    private static final Logger LOGGER = Logger.getInstance(JIRARssClient.class.getName());
-
 	public JIRARssClient(final Server server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
 		super(server, callback);
 	}
@@ -61,7 +58,7 @@ public class JIRARssClient extends AbstractHttpSession {
 						  String sortBy,
 						  String sortOrder, int start, int max) throws JIRAException {
 
-        StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
+        StringBuilder url = new StringBuilder(getBaseUrl() + "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?");
 
 
 	    List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
@@ -102,7 +99,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	}
 
     public List<JIRAIssue> getAssignedIssues(String assignee) throws JIRAException {
-        String url = baseUrl + "/sr/jira.issueviews:searchrequest-xml"
+        String url = getBaseUrl() + "/sr/jira.issueviews:searchrequest-xml"
                 + "/temp/SearchRequest.xml?resolution=-1&assignee=" + encodeUrl(assignee)
                 + "&sorter/field=updated&sorter/order=DESC&tempMax=100" + appendAuthentication(false);
 
@@ -131,7 +128,7 @@ public class JIRARssClient extends AbstractHttpSession {
 									 int start, 
 									 int max) throws JIRAException {
 
-		StringBuilder url = new StringBuilder(baseUrl + "/sr/jira.issueviews:searchrequest-xml/");
+		StringBuilder url = new StringBuilder(getBaseUrl() + "/sr/jira.issueviews:searchrequest-xml/");
 
 		if (fragment.getQueryStringFragment() != null) {
 			url.append(fragment.getQueryStringFragment())
@@ -167,7 +164,7 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	public JIRAIssue getIssue(String issueKey) throws JIRAException {
 
-		StringBuffer url = new StringBuffer(baseUrl + "/si/jira.issueviews:issue-xml/");
+		StringBuffer url = new StringBuffer(getBaseUrl() + "/si/jira.issueviews:issue-xml/");
 		url.append(issueKey).append('/').append(issueKey).append(".xml");
 
 		url.append(appendAuthentication(true));
@@ -196,7 +193,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private List<JIRAIssue> makeIssues(@NotNull List<Element> issueElements) {
         List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
 		for (final Element issueElement : issueElements) {
-			result.add(new JIRAIssueBean(baseUrl, issueElement));
+			result.add(new JIRAIssueBean(getBaseUrl(), issueElement));
 		}
         return result;
     }
