@@ -103,11 +103,8 @@ public class NewVersionInfoForm extends DialogWrapper {
 	@Override
 	public void doCancelAction() {
 		if (showConfigPath) {
-			Messages.showMessageDialog(
-					"You can always install " + versionInfo.getVersion() + " version through " +
-							PluginUtil.getInstance().getName()
-							+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() +
-							" | General | Auto update | Check now)", "Information",
+			Messages.showMessageDialog("You can always install " + versionInfo.getVersion() + " version through " + PluginUtil.getInstance().getName()
+					+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() + " | General | Auto update | Check now)", "Information",
 					Messages.getInformationIcon());
 		}
 
