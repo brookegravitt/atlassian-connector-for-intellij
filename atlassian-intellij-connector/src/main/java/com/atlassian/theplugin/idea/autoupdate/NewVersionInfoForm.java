@@ -38,22 +38,25 @@ public class NewVersionInfoForm extends DialogWrapper {
 
 	private final GeneralConfigurationBean updateConfiguration;
 	private final InfoServer.VersionInfo versionInfo;
+	private boolean showConfigPath;
 
 	public NewVersionInfoForm(final Project project, final GeneralConfigurationBean updateConfiguration,
-			final InfoServer.VersionInfo versionInfo) {
+			final InfoServer.VersionInfo versionInfo, boolean showConfigPath) {
 		super(project, false);
 		this.updateConfiguration = updateConfiguration;
 		this.versionInfo = versionInfo;
 		this.project = project;
+		this.showConfigPath = showConfigPath;
 		initialize();
 	}
 
 	public NewVersionInfoForm(final Component parent, final GeneralConfigurationBean updateConfiguration,
-			final InfoServer.VersionInfo versionInfo) {
+			final InfoServer.VersionInfo versionInfo, boolean showConfigPath) {
 		super(parent, false);
 		this.updateConfiguration = updateConfiguration;
 		this.versionInfo = versionInfo;
 		this.project = null;
+		this.showConfigPath = showConfigPath;
 		initialize();
 	}
 
@@ -65,6 +68,7 @@ public class NewVersionInfoForm extends DialogWrapper {
 				+ aVersion + "</i></b>?<br></html>";
 
 		setTitle("New Atlassian Connector version " + aVersion + " is available.");
+		setOKButtonText("Install");
 
 		versionInfoLabel.setText(versionInfoUpgrade);
 		StringBuilder sb = new StringBuilder();
@@ -98,12 +102,14 @@ public class NewVersionInfoForm extends DialogWrapper {
 
 	@Override
 	public void doCancelAction() {
-		Messages.showMessageDialog(
-				"You can always install " + versionInfo.getVersion() + " version through " + PluginUtil.getInstance().getName()
-						+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() +
-						" | General | Auto update | Check now)", "Information",
-				Messages.getInformationIcon());
-
+		if (showConfigPath) {
+			Messages.showMessageDialog(
+					"You can always install " + versionInfo.getVersion() + " version through " +
+							PluginUtil.getInstance().getName()
+							+ " configuration panel (Preferences | IDE Settings | " + PluginUtil.getInstance().getName() +
+							" | General | Auto update | Check now)", "Information",
+					Messages.getInformationIcon());
+		}
 
 		dispose();
 		super.doCancelAction();
