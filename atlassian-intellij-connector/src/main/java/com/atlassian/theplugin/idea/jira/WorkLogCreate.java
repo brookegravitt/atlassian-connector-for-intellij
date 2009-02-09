@@ -466,7 +466,7 @@ public class WorkLogCreate extends DialogWrapper {
 						endDateLabel.setText(s);
 					}
 				} catch (NullPointerException npe) {
-					PluginUtil.getLogger().error("Cannot DateTime picker NPE: " + npe.getMessage());
+					PluginUtil.getLogger().error("Cannot create TimeDatePicker object, NPE: " + npe.getMessage());
 				}
 			}
 		});
