@@ -86,12 +86,17 @@ public final class Constants {
 
 	public static final String HELP_URL_BASE = "theplugin.help.url.prefix";
 	public static final String HELP_CONFIG_PANEL = "theplugin.config";
-	public static final String HELP_BAMBOO = "theplugin.bamboo";
 
-	public static final String HELP_CRUCIBLE = "theplugin.crucible";
 	public static final String HELP_JIRA = "theplugin.jira";
-	public static final String HELP_JIRA_WORKLOG = "theplugin.jira.worklog";
+	public static final String HELP_BAMBOO = "theplugin.bamboo";
+	public static final String HELP_CRUCIBLE = "theplugin.crucible";
+//	public static final String HELP_JIRA_WORKLOG = "theplugin.jira.worklog";
 	public static final String HELP_TEST_CONNECTION = "theplugin.testconnection";
+
+	public static final String HELP_ISSUE = "theplugin.issue";
+	public static final String HELP_BUILD = "theplugin.build";
+	public static final String HELP_REVIEW = "theplugin.review";
+
 	public static final Icon HELP_ICON = IconLoader.getIcon("/actions/help.png");
 	public static final Icon JIRA_ISSUE_TAB_ICON = IconLoader.getIcon("/icons/tab_jira-white.png");
 	public static final Icon JIRA_ISSUE_PANEL_ICON = IconLoader.getIcon("/icons/tab_jira.png");
