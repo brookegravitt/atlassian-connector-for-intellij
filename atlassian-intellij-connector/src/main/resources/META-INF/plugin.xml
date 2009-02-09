@@ -236,6 +236,21 @@
                 text="Help" description="Help" icon="/actions/help.png"/>
         <action id="ThePlugin.HelpJIRA" class="com.atlassian.theplugin.idea.action.jira.JIRAHelpAction" text="Help"
                 description="Help" icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpBuild"
+				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.BuildHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpReview"
+				class="com.atlassian.theplugin.idea.action.crucible.ReviewHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
+		<action id="ThePlugin.HelpIssue"
+				class="com.atlassian.theplugin.idea.action.jira.IssueHelpAction"
+				text="Help"
+				description="Help"
+				icon="/actions/help.png"/>
 
 
         <!-- Bamboo tool window panel related actions -->
@@ -433,14 +448,15 @@
             <reference id="ThePlugin.Build.Label"/>
             <reference id="ThePlugin.Build.Comment"/>
             <reference id="ThePlugin.Build.Close"/>
-        </group>
+			<separator />
+			<reference id="ThePlugin.HelpBuild"/>
+		</group>
 
         <group id="ThePlugin.Bamboo.TestResultsToolBar" popup="false">
             <reference id="ThePlugin.Bamboo.ToggleAllTests"/>
             <separator/>
             <reference id="ThePlugin.Bamboo.ExpandTests"/>
             <reference id="ThePlugin.Bamboo.CollapseTests"/>
-            t
             <reference id="ThePlugin.Bamboo.RunTests"/>
             <reference id="ThePlugin.Bamboo.DebugTests"/>
         </group>
@@ -753,7 +769,9 @@
             <!--<separator/>-->
             <reference id="ThePlugin.JiraIssues.EditorRefresh"/>
             <reference id="ThePlugin.JiraIssues.EditorClose"/>
-        </group>
+			<separator />
+			<reference id="ThePlugin.HelpIssue"/>
+		</group>
 
         <group id="ThePlugin.JiraIssues.CommentsToolBar" popup="false">
             <reference id="ThePlugin.JiraIssues.RefreshComments"/>
@@ -889,6 +907,8 @@
             <reference id="ThePlugin.Reviews.SetReviewers"/>
             <!--<separator/>-->
             <reference id="ThePlugin.Reviews.EditorClose"/>
+			<separator />
+			<reference id="ThePlugin.HelpReview"/>
         </group>
 
         <group id="ThePlugin.Reviews.LeftToolBar" popup="false" text="">
