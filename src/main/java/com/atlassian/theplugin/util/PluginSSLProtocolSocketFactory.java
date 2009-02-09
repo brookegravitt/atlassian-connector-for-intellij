@@ -41,7 +41,7 @@ import java.util.Hashtable;
 
 public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory implements SecureSocketFactory {
 	private X509TrustManager trustManager;
-	private static final int PROXY_PORT = 80;
+	private static final int DEFAULT_PROXY_PORT = 80;
 
 	public PluginSSLProtocolSocketFactory(Hashtable attributes) {
 		this();
@@ -97,9 +97,9 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			// Default proxy port is 80, even for https
 			int tunnelPort = (tcp.getProxyPort().length() != 0)
 					? Integer.parseInt(tcp.getProxyPort())
-					: PROXY_PORT;
+					: DEFAULT_PROXY_PORT;
 			if (tunnelPort < 0) {
-				tunnelPort = PROXY_PORT;
+				tunnelPort = DEFAULT_PROXY_PORT;
 			}
 
 			// Create the regular socket connection to the proxy
