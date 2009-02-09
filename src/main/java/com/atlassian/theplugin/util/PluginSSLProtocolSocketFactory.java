@@ -41,9 +41,10 @@ import java.util.Hashtable;
 
 public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory implements SecureSocketFactory {
 	private X509TrustManager trustManager;
+	private static final int PROXY_PORT = 80;
 
 	public PluginSSLProtocolSocketFactory(Hashtable attributes) {
-		this();		
+		this();
 	}
 
 	public PluginSSLProtocolSocketFactory() {
@@ -83,109 +84,110 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			sslPort = EasySSLProtocolSocketFactory.SSL_PORT;
 		}
 
-        TransportClientProperties tcp = TransportClientPropertiesFactory.create("https");
+		TransportClientProperties tcp = TransportClientPropertiesFactory.create("https");
 
-        //boolean hostInNonProxyList = super.isHostInNonProxyList(host, tcp.getNonProxyHosts());
+		//boolean hostInNonProxyList = super.isHostInNonProxyList(host, tcp.getNonProxyHosts());
 
-        Socket sslSocket = null;
-        if (tcp.getProxyHost().length() == 0) {// || hostInNonProxyList) {
-            // direct SSL connection
-            sslSocket = super.createSocket(host, sslPort);
-        } else {
+		Socket sslSocket = null;
+		if (tcp.getProxyHost().length() == 0) { // || hostInNonProxyList) {
+			// direct SSL connection
+			sslSocket = super.createSocket(host, sslPort);
+		} else {
 
-            // Default proxy port is 80, even for https
-            int tunnelPort = (tcp.getProxyPort().length() != 0)
-                             ? Integer.parseInt(tcp.getProxyPort())
-                             : 80;
-            if (tunnelPort < 0)
-                tunnelPort = 80;
+			// Default proxy port is 80, even for https
+			int tunnelPort = (tcp.getProxyPort().length() != 0)
+					? Integer.parseInt(tcp.getProxyPort())
+					: PROXY_PORT;
+			if (tunnelPort < 0) {
+				tunnelPort = PROXY_PORT;
+			}
 
-            // Create the regular socket connection to the proxy
-            Socket tunnel = new Socket(tcp.getProxyHost(), tunnelPort);
+			// Create the regular socket connection to the proxy
+			Socket tunnel = new Socket(tcp.getProxyHost(), tunnelPort);
 
-            // The tunnel handshake method (condensed and made reflexive)
-            OutputStream tunnelOutputStream = tunnel.getOutputStream();
-            PrintWriter out = new PrintWriter(
-                    new BufferedWriter(new OutputStreamWriter(tunnelOutputStream)));
+			// The tunnel handshake method (condensed and made reflexive)
+			OutputStream tunnelOutputStream = tunnel.getOutputStream();
+			PrintWriter out = new PrintWriter(
+					new BufferedWriter(new OutputStreamWriter(tunnelOutputStream)));
 
-            // More secure version... engage later?
-            // PasswordAuthentication pa =
-            // Authenticator.requestPasswordAuthentication(
-            // InetAddress.getByName(tunnelHost),
-            // tunnelPort, "SOCK", "Proxy","HTTP");
-            // if(pa == null){
-            // printDebug("No Authenticator set.");
-            // }else{
-            // printDebug("Using Authenticator.");
-            // tunnelUser = pa.getUserName();
-            // tunnelPassword = new String(pa.getPassword());
-            // }
-            out.print("CONNECT " + host + ":" + sslPort + " HTTP/1.0\r\n"
-                    + "User-Agent: AxisClient");
-            if (tcp.getProxyUser().length() != 0 &&
-                tcp.getProxyPassword().length() != 0) {
+			// More secure version... engage later?
+			// PasswordAuthentication pa =
+			// Authenticator.requestPasswordAuthentication(
+			// InetAddress.getByName(tunnelHost),
+			// tunnelPort, "SOCK", "Proxy","HTTP");
+			// if(pa == null){
+			// printDebug("No Authenticator set.");
+			// }else{
+			// printDebug("Using Authenticator.");
+			// tunnelUser = pa.getUserName();
+			// tunnelPassword = new String(pa.getPassword());
+			// }
+			out.print("CONNECT " + host + ":" + sslPort + " HTTP/1.0\r\n"
+					+ "User-Agent: AxisClient");
+			if (tcp.getProxyUser().length() != 0
+					&& tcp.getProxyPassword().length() != 0) {
 
-                // add basic authentication header for the proxy
-                String encodedPassword = XMLUtils.base64encode((tcp.getProxyUser()
-                        + ":"
-                        + tcp.getProxyPassword()).getBytes());
+				// add basic authentication header for the proxy
+				String encodedPassword = XMLUtils.base64encode((tcp.getProxyUser()
+						+ ":"
+						+ tcp.getProxyPassword()).getBytes());
 
-                out.print("\nProxy-Authorization: Basic " + encodedPassword);
-            }
-            out.print("\nContent-Length: 0");
-            out.print("\nPragma: no-cache");
-            out.print("\r\n\r\n");
-            out.flush();
-            InputStream tunnelInputStream = tunnel.getInputStream();
+				out.print("\nProxy-Authorization: Basic " + encodedPassword);
+			}
+			out.print("\nContent-Length: 0");
+			out.print("\nPragma: no-cache");
+			out.print("\r\n\r\n");
+			out.flush();
+			InputStream tunnelInputStream = tunnel.getInputStream();
 
 			PluginUtil.getLogger().debug(Messages.getMessage("isNull00", "tunnelInputStream",
 					"" + (tunnelInputStream
 							== null)));
-            String replyStr = "";
+			String replyStr = "";
 
-            // Make sure to read all the response from the proxy to prevent SSL negotiation failure
-            // Response message terminated by two sequential newlines
-            int newlinesSeen = 0;
-            boolean headerDone = false;    /* Done on first newline */
+			// Make sure to read all the response from the proxy to prevent SSL negotiation failure
+			// Response message terminated by two sequential newlines
+			int newlinesSeen = 0;
+			boolean headerDone = false;	/* Done on first newline */
 
-            while (newlinesSeen < 2) {
-                int i = tunnelInputStream.read();
+			while (newlinesSeen < 2) {
+				int i = tunnelInputStream.read();
 
-                if (i < 0) {
-                    throw new IOException("Unexpected EOF from proxy");
-                }
-                if (i == '\n') {
-                    headerDone = true;
-                    ++newlinesSeen;
-                } else if (i != '\r') {
-                    newlinesSeen = 0;
-                    if (!headerDone) {
-                        replyStr += String.valueOf((char) i);
-                    }
-                }
-            }
-            if (StringUtils.startsWithIgnoreWhitespaces("HTTP/1.0 200", replyStr) &&
-                    StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
-                throw new IOException(Messages.getMessage("cantTunnel00",
-                        new String[]{
-                            tcp.getProxyHost(),
-                            "" + tunnelPort,
-                            replyStr}));
-            }
+				if (i < 0) {
+					throw new IOException("Unexpected EOF from proxy");
+				}
+				if (i == '\n') {
+					headerDone = true;
+					++newlinesSeen;
+				} else if (i != '\r') {
+					newlinesSeen = 0;
+					if (!headerDone) {
+						replyStr += String.valueOf((char) i);
+					}
+				}
+			}
+			if (StringUtils.startsWithIgnoreWhitespaces("HTTP/1.0 200", replyStr) &&
+					StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
+				throw new IOException(Messages.getMessage("cantTunnel00",
+						new String[]{
+								tcp.getProxyHost(),
+								"" + tunnelPort,
+								replyStr}));
+			}
 
-            // End of condensed reflective tunnel handshake method
+			// End of condensed reflective tunnel handshake method
 			sslSocket = super.createSocket(tunnel, host, port, true);
 
 			PluginUtil.getLogger().debug(Messages.getMessage("setupTunnel00",
 					tcp.getProxyHost(),
 					"" + tunnelPort));
 
-        }
+		}
 
 		((SSLSocket) sslSocket).startHandshake();
 		PluginUtil.getLogger().debug(Messages.getMessage("createdSSL00"));
-        return sslSocket;
-    }
+		return sslSocket;
+	}
 
 
 }
