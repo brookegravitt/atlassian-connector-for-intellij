@@ -25,6 +25,7 @@ import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -32,18 +33,14 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import net.sf.nachocalendar.CalendarFactory;
 import net.sf.nachocalendar.components.CalendarPanel;
 import net.sf.nachocalendar.model.DateSelectionModel;
 import org.jetbrains.annotations.NotNull;
 
 import javax.management.timer.Timer;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -73,7 +70,7 @@ public class WorkLogCreate extends DialogWrapper {
 	private boolean haveIssueStopProgressInfo;
 	private JIRAAction stopProgressAction;
 	private JIRAServerFacade facade;
-	private Date endTime;
+	private Date endTime = Calendar.getInstance().getTime();
 
 	private WdhmInputListener timeSpentListener;
 	private WdhmInputListener remainingEstimateListener;
@@ -435,7 +432,6 @@ public class WorkLogCreate extends DialogWrapper {
 		this.facade = jiraFacade;
 
 		$$$setupUI$$$();
-		init();
 		setTitle("Add Worklog for " + issue.getKey());
 		setOKActionEnabled(false);
 		getOKAction().putValue(Action.NAME, "Add Worklog");
@@ -459,11 +455,18 @@ public class WorkLogCreate extends DialogWrapper {
 
 		endDateChange.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				TimeDatePicker tdp = new TimeDatePicker(endTime);
-				if (tdp.isOK()) {
-					endTime = tdp.getSelectedTime();
-					String s = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(endTime);
-					endDateLabel.setText(s);
+				try {
+
+					//we catch NPE because of bug in  CalendaRpanel.java method  private boolean isShowing(Date date);
+					//null minDate. minDate sometines is not initialized see PL-1105
+					TimeDatePicker tdp = new TimeDatePicker(endTime);
+					if (tdp.isOK()) {
+						endTime = tdp.getSelectedTime();
+						String s = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(endTime);
+						endDateLabel.setText(s);
+					}
+				} catch (NullPointerException npe) {
+					PluginUtil.getLogger().error("Cannot DateTime picker NPE: " + npe.getMessage());
 				}
 			}
 		});
@@ -505,6 +508,8 @@ public class WorkLogCreate extends DialogWrapper {
 				timeSpentListener.stateChanged();
 			}
 		}).start();
+
+		init();
 	}
 
 	public String getTimeSpentString() {
@@ -570,11 +575,11 @@ public class WorkLogCreate extends DialogWrapper {
 		TimeDatePicker(Date now) {
 			super(false);
 			init();
+			Calendar nowcal = Calendar.getInstance();
 
-			calendar = new CalendarPanel(1);
+			calendar = CalendarFactory.createCalendarPanel(1);
 			calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
 
-			Calendar nowcal = Calendar.getInstance();
 			nowcal.setTime(now);
 			nowcal.set(Calendar.HOUR_OF_DAY, 0);
 			nowcal.set(Calendar.MINUTE, 0);
@@ -622,6 +627,7 @@ public class WorkLogCreate extends DialogWrapper {
 			panel.add(new JLabel("minute", SwingConstants.CENTER), gbc);
 			gbc.gridy = 3;
 			panel.add(minute, gbc);
+
 			show();
 		}
 
