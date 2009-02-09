@@ -44,7 +44,9 @@ public class CrucibleMyReviewsTreeNode extends AbstractTreeNode {
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 		String txt = selected ? "<html>" + toString() : NAME;
-		return new SelectableLabel(selected, c.isEnabled(), txt, ICON_HEIGHT);
+		JComponent comp = new SelectableLabel(selected, c.isEnabled(), txt, ICON_HEIGHT);
+		comp.setFont(c.getFont());
+		return comp;
 	}
 
 	public void onSelect() { }
