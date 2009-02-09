@@ -98,9 +98,9 @@ public final class BambooFilterListTestUi {
 
 	}
 
-	private static String getState() {
+	private static BuildStatus getState() {
 		boolean state = new Random().nextBoolean();
-		return state ? BambooBuildInfo.BUILD_SUCCESSFUL : BambooBuildInfo.BUILD_FAILED;
+		return state ? BuildStatus.BUILD_SUCCEED : BuildStatus.BUILD_FAILED;
 	}
 
 	public static java.util.List<BambooBuildAdapterIdea> getBuilds() {
@@ -109,18 +109,18 @@ public final class BambooFilterListTestUi {
 				createBambooBuild("B3", "PR3", "Project Three", getState(), B3),
 				createBambooBuild("B4", "PR1", "Project One", getState(), B2),
 				createBambooBuild("B5", "PR3", "Project Three", getState(), B3),
-				createBambooBuild("B6", "PR1", "Project One", BuildStatus.UNKNOWN.toString(),
+				createBambooBuild("B6", "PR1", "Project One", BuildStatus.UNKNOWN,
 						new Random().nextBoolean() ? B1 : B2), createBambooBuild("B7", "PR4", "Project Four", getState(), B2));
 	}
 
-	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, String state,
+	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, serverCfg, name, "123")
+		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, serverCfg, name, "123", state)
 				.startTime(new Date())
 				.pollingTime(new Date())
 				.completionTime(new Date())
 				.relativeBuildDate("55 seconds ago")
-				.state(state).build();
+				.build();
 		return new BambooBuildAdapterIdea(buildInfo);
 	}
 
