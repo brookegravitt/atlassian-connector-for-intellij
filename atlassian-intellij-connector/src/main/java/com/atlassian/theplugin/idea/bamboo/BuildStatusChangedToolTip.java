@@ -23,14 +23,14 @@ import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
+import org.jetbrains.annotations.NotNull;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
 import javax.swing.*;
+import javax.swing.text.EditorKit;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
-import org.jetbrains.annotations.NotNull;
 
 public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDisplay {
 
@@ -46,8 +46,19 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 
 		content = new JEditorPane();
 		content.setEditable(false);
+		EditorKit kit = new ClasspathHTMLEditorKit();
+		// PL-1127 - we need to explicitely set editor kit before setting content type,
+		// otherwise if Thread.currentThread().getContextClassLoader() is null (which 
+		// it sometimes is for some weird-ass reason), setContentType() throws NPE.
+		// For more info, see this for example (or google around): 
+		// http://forums.sun.com/thread.jspa?threadID=560696&tstart=-1
+		//
+		// and yes - the below is proabably a belt-and-suspenders solution,
+		// but I am making a blind fix here, so hell if I know which one will work :) 
+		content.setEditorKit(kit);
+		content.setEditorKitForContentType("text/html", kit);
+
 		content.setContentType("text/html");
-		content.setEditorKit(new ClasspathHTMLEditorKit());
 
 		content.addMouseListener(new MouseAdapter() {
 			@Override
