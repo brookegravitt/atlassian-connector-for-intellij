@@ -52,9 +52,9 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			PluginConfiguration config = ConfigurationFactory.getConfiguration();
 			trustManager = new PluginTrustManager(config.getGeneralConfigurationData());
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();
 		} catch (KeyStoreException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();
 		}
 	}
 
@@ -70,12 +70,17 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 		try {
 			Class.forName(SocketFactoryFactory.class.getCanonicalName());
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace();
 		}
 		AxisProperties.setClassDefault(SecureSocketFactory.class,
 				PluginSSLProtocolSocketFactory.class.getCanonicalName());
 	}
 
+	/**
+ * Copied from AXIS source code, 
+ * original @author Davanum Srinivas (dims@yahoo.com)
+ * THIS CODE STILL HAS DEPENDENCIES ON sun.* and com.sun.*
+ */
 	public Socket create(final String host, final int port, final StringBuffer otherHeaders, final BooleanHolder useFullURL)
 			throws Exception {
 
@@ -86,9 +91,9 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 
 		TransportClientProperties tcp = TransportClientPropertiesFactory.create("https");
 
-		//boolean hostInNonProxyList = super.isHostInNonProxyList(host, tcp.getNonProxyHosts());
+		//boolean hostInNonProxyList = super.isHostInNonPxyList(host, tcp.getNonProxyHosts());
 
-		Socket sslSocket = null;
+		Socket sslSocket;
 		if (tcp.getProxyHost().length() == 0) { // || hostInNonProxyList) {
 			// direct SSL connection
 			sslSocket = super.createSocket(host, sslPort);
