@@ -77,10 +77,10 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 	}
 
 	/**
- * Copied from AXIS source code, 
- * original @author Davanum Srinivas (dims@yahoo.com)
- * THIS CODE STILL HAS DEPENDENCIES ON sun.* and com.sun.*
- */
+	 * Copied from AXIS source code,
+	 * original @author Davanum Srinivas (dims@yahoo.com)
+	 * THIS CODE STILL HAS DEPENDENCIES ON sun.* and com.sun.*
+	 */
 	public Socket create(final String host, final int port, final StringBuffer otherHeaders, final BooleanHolder useFullURL)
 			throws Exception {
 
@@ -169,8 +169,8 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 					}
 				}
 			}
-			if (StringUtils.startsWithIgnoreWhitespaces("HTTP/1.0 200", replyStr) &&
-					StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
+			if (StringUtils.startsWithIgnoreWhitespaces("HTTP/1.0 200", replyStr)
+					&& StringUtils.startsWithIgnoreWhitespaces("HTTP/1.1 200", replyStr)) {
 				throw new IOException(Messages.getMessage("cantTunnel00",
 						new String[]{
 								tcp.getProxyHost(),
