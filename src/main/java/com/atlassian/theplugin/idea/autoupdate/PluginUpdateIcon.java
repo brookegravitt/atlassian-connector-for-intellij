@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,13 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -43,17 +45,31 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
 		super(project, cfgManager);
+		final GeneralConfigurationBean config = pluginConfiguration.getGeneralConfigurationData();
 		handler = new NewVersionConfirmHandler(this, project, pluginConfiguration.getGeneralConfigurationData());
 
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				stopBlinking();
-				try {
-					handler.doAction(version, true);
-				} catch (ThePluginException e1) {
-					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
-				}
+//				try {
+				// check if newer version is available since last update
+
+				// prepare data for checker
+				GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
+				updateConfig.setAnonymousFeedbackEnabled(config.getAnonymousFeedbackEnabled());
+				updateConfig.setAutoUpdateEnabled(true);	// check now button always checks for new version
+				updateConfig.setCheckUnstableVersionsEnabled(config.isCheckUnstableVersionsEnabled());
+				updateConfig.setUid(IdeaHelper.getAppComponent().getConfiguration().getState()
+						.getGeneralConfigurationData().getUid());
+
+				// run checker
+				ProgressManager.getInstance().run(new NewVersionCheckModalTask(project, updateConfig, false));
+
+//					handler.doAction(version, true);
+//				} catch (ThePluginException e1) {
+//					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
+//				}
 			}
 		});
 	}
