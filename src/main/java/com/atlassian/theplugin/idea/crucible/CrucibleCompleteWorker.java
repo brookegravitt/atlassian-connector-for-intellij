@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.openapi.project.Project;
 
@@ -33,7 +33,8 @@ public class CrucibleCompleteWorker {
 
     public void run() {
         final CrucibleChangeReviewStateForm reviewCompleteForm =
-                new CrucibleChangeReviewStateForm(project, reviewInfo, complete ? Action.COMPLETE : Action.UNCOMPLETE);
+                new CrucibleChangeReviewStateForm(project, reviewInfo,
+						complete ? CrucibleAction.COMPLETE : CrucibleAction.UNCOMPLETE);
         reviewCompleteForm.showDialog();
     }
 }

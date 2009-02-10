@@ -22,11 +22,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
 
 /**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jun 23, 2008
- * Time: 9:15:51 PM
- * To change this template use File | Settings | File Templates.
+ * @author lguminski
  */
 public final class CrucibleConstants {
 

@@ -23,9 +23,9 @@ import org.easymock.EasyMock;
 
 public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
-    private final String changedFile = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action.java";
+    private final String changedFile = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java";
     private final String TEST_FILE_2 = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action2.java";
-    private final String TEST_FILE = "/PL/trunk/ThePlugin/commons/src/test/java/com/atlassian/theplugin/commons/Action.java";
+    private final String TEST_FILE = "/PL/trunk/ThePlugin/commons/src/test/java/com/atlassian/theplugin/commons/CrucibleAction.java";
     private final String PARENT_FILE = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons";
 
 	public void testGuessMatchingFile() {
@@ -37,7 +37,7 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
         MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/pazu-test", true);
 
         String[] wrongOnes = {
-                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/commons/Action.java",
+                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java",
                 "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java1",
                 "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode1.java",
                 //"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/CommentNode.java",

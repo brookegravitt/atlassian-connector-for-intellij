@@ -1,14 +1,13 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 
 /**
- * User: jgorycki
- * Date: Dec 3, 2008
- * Time: 2:18:44 PM
+ * @author jgorycki
  */
 public class ReopenReviewAction extends AbstractTransitionReviewAction {
-	protected Action getRequestedTransition() {
-		return Action.REOPEN;
+	@Override
+	protected CrucibleAction getRequestedTransition() {
+		return CrucibleAction.REOPEN;
 	}
 }
