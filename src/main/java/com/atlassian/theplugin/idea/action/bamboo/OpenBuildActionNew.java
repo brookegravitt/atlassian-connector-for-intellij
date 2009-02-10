@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
