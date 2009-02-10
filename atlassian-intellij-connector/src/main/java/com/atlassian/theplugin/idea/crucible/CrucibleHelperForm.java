@@ -21,11 +21,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -46,16 +42,13 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
@@ -238,7 +231,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		rootComponent.setEnabled(false);
 		rootComponent.setMinimumSize(new Dimension(600, 300));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new FormLayout("left:157px:noGrow,left:4dlu:noGrow,fill:300px:grow",
+		panel1.setLayout(new FormLayout("left:90px:noGrow,left:4dlu:noGrow,fill:300px:grow",
 				"top:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
 		CellConstraints cc = new CellConstraints();
 		rootComponent.add(panel1, cc.xywh(1, 1, 1, 3));
@@ -265,24 +258,24 @@ public class CrucibleHelperForm extends DialogWrapper {
 		moderatorField.setEnabled(false);
 		panel1.add(moderatorField, cc.xy(3, 11, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JLabel label1 = new JLabel();
-		label1.setText("State");
+		label1.setText("State:");
 		panel1.add(label1, cc.xy(1, 3));
 		final JLabel label2 = new JLabel();
-		label2.setText("Id");
+		label2.setText("Id:");
 		panel1.add(label2, cc.xy(1, 5));
 		final JLabel label3 = new JLabel();
-		label3.setText("Title");
+		label3.setText("Title:");
 		panel1.add(label3, cc.xy(1, 7));
 		final JLabel label4 = new JLabel();
-		label4.setText("Author");
+		label4.setText("Author:");
 		panel1.add(label4, cc.xy(1, 9));
 		final JLabel label5 = new JLabel();
-		label5.setText("Moderator");
+		label5.setText("Moderator:");
 		panel1.add(label5, cc.xy(1, 11));
 		repositoryComboBox = new JComboBox();
 		panel1.add(repositoryComboBox, cc.xy(3, 13));
 		final JLabel label6 = new JLabel();
-		label6.setText("Repository");
+		label6.setText("Repository:");
 		panel1.add(label6, cc.xy(1, 13));
 		final JScrollPane scrollPane1 = new JScrollPane();
 		panel1.add(scrollPane1, cc.xy(3, 15, CellConstraints.FILL, CellConstraints.FILL));
@@ -294,11 +287,11 @@ public class CrucibleHelperForm extends DialogWrapper {
 		descriptionArea.setWrapStyleWord(true);
 		scrollPane1.setViewportView(descriptionArea);
 		final JLabel label7 = new JLabel();
-		label7.setText("Statement of Objectives");
+		label7.setText("<html>Statement <br>of Objectives:</html>");
 		panel1.add(label7, cc.xy(1, 15, CellConstraints.DEFAULT, CellConstraints.TOP));
 		final JLabel label8 = new JLabel();
-		label8.setText("Review");
-		panel1.add(label8, cc.xy(1, 1));
+		label8.setText("Review:");
+		panel1.add(label8, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.CENTER));
 	}
 
 	/**

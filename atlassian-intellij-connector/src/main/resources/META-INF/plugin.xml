@@ -656,15 +656,15 @@
 				icon="/actions/editSource.png"/>
 		<action id="ThePlugin.JiraIssues.AssignIssueToMyself"
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToMyselfAction"
-				icon="/icons/user_16.gif"
+				icon="/icons/pin_assigntome.png"
 				text="Assign to Me"/>
 		<action id="ThePlugin.JiraIssues.AssignIssueToUser"
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
-				icon="/icons/user_16.gif"
+				icon="/icons/pin_assignuser.png"
 				text="Assign to User"/>
 		<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
-				icon="/icons/user_16.gif"
+				icon="/icons/pin_assignandstart.png"
 				text="Assign to Me and Start Working"/>
 		<action id="ThePlugin.JiraIssues.AddComment"
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
@@ -931,16 +931,16 @@
 			<reference id="ThePlugin.HelpCrucible"/>
 		</group>
 
-        <action id="ThePlugin.Builds.GroupByCombo"
-                class="com.atlassian.theplugin.idea.action.builds.GroupByAction"
-                text="Group By"/>
-        <action id="ThePlugin.Builds.ExpandAll"
-                class="com.atlassian.theplugin.idea.action.builds.ExpandAllAction"
-                text="Expand All" icon="/actions/expandall.png"/>
-        <action id="ThePlugin.Builds.CollapseAll"
-                class="com.atlassian.theplugin.idea.action.builds.CollapseAllAction"
-                text="Collapse All"
-                icon="/actions/collapseall.png"/>
+		<action id="ThePlugin.Builds.GroupByCombo"
+				class="com.atlassian.theplugin.idea.action.builds.GroupByAction"
+				text="Group By"/>
+		<action id="ThePlugin.Builds.ExpandAll"
+				class="com.atlassian.theplugin.idea.action.builds.ExpandAllAction"
+				text="Expand All" icon="/actions/expandall.png"/>
+		<action id="ThePlugin.Builds.CollapseAll"
+				class="com.atlassian.theplugin.idea.action.builds.CollapseAllAction"
+				text="Collapse All"
+				icon="/actions/collapseall.png"/>
 
 		<group id="ThePlugin.Bamboo.LeftToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettingsGroup"/>
