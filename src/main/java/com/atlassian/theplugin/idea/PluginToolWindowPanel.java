@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -48,7 +47,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		add(statusBarPane, BorderLayout.SOUTH);
 		splitPane.setShowDividerControls(false);
 		splitPane.setSecondComponent(createRightContent());
-		splitPane.setHonorComponentsMinimumSize(true);
+		splitPane.setHonorComponentsMinimumSize(false);
 
 		addComponentListener(new ComponentAdapter() {
 			@Override
@@ -185,14 +184,40 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		CellConstraints cc = new CellConstraints();
 		JComponent rightToolbar = createToolBar(rightToolbarName, getActionPlaceName());
 
-		final JPanel toolBarPanel = new JPanel(
-				new FormLayout("left:pref, left:pref:grow, right:pref:grow", "pref:grow"));
-		toolBarPanel.add(new JLabel("Group By "), cc.xy(1, 1));
+//		final JPanel toolBarPanel = new JPanel(
+//				new FormLayout("left:pref, left:pref:grow, right:pref:grow", "pref:grow"));
+//		toolBarPanel.add(new JLabel("Group By "), cc.xy(1, 1));
+//
+//		if (rightToolbar != null) {
+//			toolBarPanel.add(rightToolbar, cc.xy(1 + 1, 1));
+//		}
+//		toolBarPanel.add(searchField, cc.xy(1 + 2, 1));
 
+		final JPanel toolBarPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+//		gbc.weightx = 0.0;
+		gbc.weighty = 0.0;
+//		gbc.fill = GridBagConstraints.NONE;
+//		JLabel groupByLabel = new JLabel("Group By ");
+//		groupByLabel.setMinimumSize(new Dimension(0, getPreferredSize().height));
+//		toolBarPanel.add(groupByLabel, gbc);
+
+//		gbc.gridx++;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
 		if (rightToolbar != null) {
-			toolBarPanel.add(rightToolbar, cc.xy(1 + 1, 1));
+			toolBarPanel.add(rightToolbar, gbc);
 		}
-		toolBarPanel.add(searchField, cc.xy(1 + 2, 1));
+		gbc.gridx++;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0.0;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_END;
+
+		searchField.setMinimumSize(searchField.getPreferredSize());
+		searchField.setMaximumSize(searchField.getPreferredSize());
+		toolBarPanel.add(searchField, gbc);
 
 		rightPanel.add(toolBarPanel, BorderLayout.NORTH);
 		
