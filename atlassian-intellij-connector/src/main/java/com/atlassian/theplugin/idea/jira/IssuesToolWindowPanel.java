@@ -366,7 +366,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				super.update(event);
 
 				if (getChildrenCount() > 0) {
-					event.getPresentation().setText("Available Workflow Actions");
+					event.getPresentation().setText("Issue Workflow Actions");
 				}
 			}
 		};
