@@ -16,16 +16,12 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.VirtualFileSystem;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import junit.framework.TestCase;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import org.easymock.EasyMock;
 
 public class ReviewKeyComparatorTest extends TestCase {
 
@@ -52,138 +48,10 @@ public class ReviewKeyComparatorTest extends TestCase {
 	}
 
 	private ReviewAdapter getReviewAdapter(final String projectKey, final String key) {
-		Review review = new ReviewBean(null) {
-
-			public Set<Reviewer> getReviewers() {
-				return null;
-			}
-
-			public List<GeneralComment> getGeneralComments() {
-				return null;
-			}
-
-			public List<VersionedComment> getVersionedComments() throws ValueNotYetInitialized {
-				return null;
-			}
-
-			public Set<CrucibleFileInfo> getFiles() {
-				return null;
-			}
-
-			public List<Action> getTransitions() throws ValueNotYetInitialized {
-				return null;
-			}
-
-			public Set<Action> getActions() throws ValueNotYetInitialized {
-				return null;
-			}
-
-			public VirtualFileSystem getVirtualFileSystem() {
-				return null;
-			}
-
-			public CrucibleServerCfg getServer() {
-				return null;
-			}
-
-			public String getReviewUrl() {
-				return null;
-			}
-
-			public Review getInnerReviewObject() {
-				return null;
-			}
-
-			public void setGeneralComments(final List<GeneralComment> generalComments) {
-				// not implemented
-			}
-
-			public void removeGeneralComment(final GeneralComment comment) {
-				// not implemented
-			}
-
-			public void removeVersionedComment(final VersionedComment vComment, final CrucibleFileInfo file) {
-				// not implemented
-			}
-
-			public void setFilesAndVersionedComments(final List<CrucibleFileInfo> files, final List<VersionedComment> commentList) {
-
-			}
-
-			public User getAuthor() {
-				return null;
-			}
-
-			public User getCreator() {
-				return null;
-			}
-
-			public String getDescription() {
-				return null;
-			}
-
-			public User getModerator() {
-				return null;
-			}
-
-			public String getName() {
-				return null;
-			}
-
-			public PermId getParentReview() {
-				return null;
-			}
-
-			public PermId getPermId() {
-				return new PermId() {
-
-					public String getId() {
-						return key;
-					}
-				};
-			}
-
-			public String getProjectKey() {
-				return projectKey;
-			}
-
-			public String getRepoName() {
-				return null;
-			}
-
-			public State getState() {
-				return null;
-			}
-
-			public boolean isAllowReviewerToJoin() {
-				return false;
-			}
-
-			public int getMetricsVersion() {
-				return 0;
-			}
-
-			public Date getCreateDate() {
-				return null;
-			}
-
-			public Date getCloseDate() {
-				return null;
-			}
-
-			public String getSummary() {
-				return null;
-			}
-
-			public CrucibleFileInfo getFileByPermId(PermId id) {
-				return null;
-			}
-
-			public String getServerUrl() {
-				return null;
-			}
-		};
-
-		return new ReviewAdapter(review, null);
+		final Review mock = EasyMock.createNiceMock(Review.class);
+		EasyMock.expect(mock.getProjectKey()).andReturn(projectKey).anyTimes();
+		EasyMock.expect(mock.getPermId()).andReturn(new PermIdBean(key)).anyTimes();
+		EasyMock.replay(mock);
+		return new ReviewAdapter(mock, null);
 	}
 }

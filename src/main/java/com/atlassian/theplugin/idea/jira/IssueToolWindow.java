@@ -287,7 +287,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					actionGroup.clearActions(project);
 					for (JIRAAction a : actions) {
 						actionGroup.addAction(project,
-								new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue, a));
+								new RunIssueActionAction(this, facade, issue, a));
 					}
 				} else {
 					Thread t = new Thread() {

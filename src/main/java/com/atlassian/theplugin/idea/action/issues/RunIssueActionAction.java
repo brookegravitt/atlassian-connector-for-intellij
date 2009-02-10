@@ -35,6 +35,7 @@ public class RunIssueActionAction extends AnAction {
 		this.facade = facade;
 	}
 
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		runIssueActionOrLaunchBrowser(IdeaHelper.getCurrentProject(event));
 	}
