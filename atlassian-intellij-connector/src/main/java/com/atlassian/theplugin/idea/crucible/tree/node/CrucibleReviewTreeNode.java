@@ -6,7 +6,6 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
-import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.awt.*;
