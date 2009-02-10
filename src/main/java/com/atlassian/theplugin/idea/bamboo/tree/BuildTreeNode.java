@@ -21,6 +21,8 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
@@ -65,76 +67,65 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		boolean enabled = c.isEnabled();
 
 		JPanel p = new JPanel();
+
+		p.setLayout(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
+		CellConstraints cc = new CellConstraints();
+
 		p.setBackground(UIUtil.getTreeTextBackground());
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(build.getBuildKey());
+		if (build.getBuildNumber().length() > 0) {
+			sb.append("-").append(build.getBuildNumber());
+		}
+		// failed tests
+		if (build.getStatus() == BuildStatus.FAILURE) {
+			sb.append("    ")
+					.append(build.getTestsFailed())
+					.append("/")
+					.append(build.getTestsNumber())
+					.append(" Tests Failed");
+		}
+		p.add(new SelectableLabel(selected, enabled, sb.toString(), build.getIcon(),
+				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(1, 1));
+
+		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2, 1));
+
+
+		final JToolTip jToolTip = p.createToolTip();
+		jToolTip.setTipText(buildTolltip(0));
+		final int prefWidth = jToolTip.getPreferredSize().width;
+		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+		p.setToolTipText(buildTolltip(width));
+
+		return p;
+	}
+
+	private JPanel createPanelForOtherBuildDetails(boolean selected, boolean enabled) {
+		JPanel p = new JPanel(new GridBagLayout());
+
 		p.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
 		gbc.gridy = 0;
 		gbc.weightx = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-
-
-		// Icon
-		gbc.insets = new Insets(0, 0, 0, 0);
-		JLabel icon = new SelectableLabel(selected, enabled, " ", build.getIcon(),
-				SwingConstants.LEADING, ICON_HEIGHT);
-		p.add(icon, gbc);
-
-		// title
-		String title = " " + build.getBuildKey();
-		if (build.getBuildNumber().length() > 0) {
-			title += "-" + build.getBuildNumber();
-		}
-		gbc.gridx++;
-		gbc.weightx = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-		JLabel key = new SelectableLabel(selected, enabled, title, ICON_HEIGHT);
-		p.add(key, gbc);
-
-		// failed tests
-		if (build.getStatus() == BuildStatus.FAILURE) {
-			// gap
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
-			JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
-					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(empty1, THREE * GAP, ICON_HEIGHT);
-			p.add(empty1, gbc);
-
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			JLabel tests = new SelectableLabel(selected, enabled,
-					" " + build.getTestsFailed() + "/" + build.getTestsNumber() + " Tests Failed", ICON_HEIGHT);
-			p.add(tests, gbc);
-		}
-
-
-		// empty label
-		gbc.gridx++;
-		gbc.weightx = 1.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		JLabel empty = new SelectableLabel(selected, enabled, "", ICON_HEIGHT);
-		p.add(empty, gbc);
+		gbc.anchor = GridBagConstraints.LINE_END;
 
 		// gap
-		gbc.gridx++;
-		gbc.weightx = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty2, GAP, ICON_HEIGHT);
-		p.add(empty2, gbc);
+		setFixedComponentSize(empty1, THREE * GAP, ICON_HEIGHT);
+		p.add(empty1, gbc);
 
 		String commiters = getCommiters();
 
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		
 		// reason
 		if (!build.getBuildReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.anchor = GridBagConstraints.LINE_END;
 			JLabel reason = new SelectableLabel(selected, enabled, build.getBuildReason(), null,
 					SwingConstants.LEADING, ICON_HEIGHT);
 //			setFixedComponentSize(reason, REASON_LABEL_WIDTH, ICON_HEIGHT);
@@ -144,11 +135,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		// commiters
 		if (commiters.length() > 0 && build.getBuildReason().equals(CODE_HAS_CHANGED)) {
-
 			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.anchor = GridBagConstraints.LINE_END;
 			JLabel commitersList = new SelectableLabel(selected, enabled, "Changes by: " + commiters, null,
 					SwingConstants.LEADING, ICON_HEIGHT);
 			commitersList.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -156,14 +143,14 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		}
 
-				// gap
+		// gap
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty3 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty3, THREE * GAP, ICON_HEIGHT);
-		p.add(empty3, gbc);
+		setFixedComponentSize(empty2, THREE * GAP, ICON_HEIGHT);
+		p.add(empty2, gbc);
 
 		// server
 		gbc.gridx++;
@@ -202,14 +189,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		padding.setOpaque(true);
 		p.add(padding, gbc);
 
-		final JToolTip jToolTip = p.createToolTip();
-		jToolTip.setTipText(buildTolltip(0));
-		final int prefWidth = jToolTip.getPreferredSize().width;
-		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-		p.setToolTipText(buildTolltip(width));
-
 		return p;
-
 	}
 
 	private String getCommiters() {
