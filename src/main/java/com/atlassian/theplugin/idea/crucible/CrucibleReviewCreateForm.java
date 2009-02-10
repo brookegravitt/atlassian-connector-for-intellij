@@ -30,6 +30,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -96,8 +97,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-			@NotNull final CfgManager cfgManager,
-			@NotNull String dialogTitle) {
+			@NotNull final CfgManager cfgManager, @NotNull String dialogTitle) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -111,8 +111,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
-						crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 					fillServerRelatedCombos(boxItem.getServer());
 				}
@@ -720,8 +719,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		if (selectedItem != null) {
 			final CrucibleServerCfg server = selectedItem.getServer();
 
-			Task.Backgroundable changesTask = new Task.Backgroundable(project,
-					"Creating review...", false) {
+			Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", false) {
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
 
@@ -747,8 +745,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 							try {
 								Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
 								if (newReview.getModerator().getUserName().equals(server.getUsername())) {
-									if (newReview.getActions()
-											.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.APPROVE)) {
+									if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
 										crucibleServerFacade.approveReview(server, draftReview.getPermId());
 									} else {
 										Messages.showErrorDialog(project,
@@ -756,8 +753,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 														+ "Leaving review in draft state.", "Permission denied");
 									}
 								} else {
-									if (newReview.getActions()
-											.contains(com.atlassian.theplugin.commons.crucible.api.model.Action.SUBMIT)) {
+									if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
 										crucibleServerFacade.submitReview(server, draftReview.getPermId());
 									} else {
 										Messages.showErrorDialog(project,
@@ -767,8 +763,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								}
 							} catch (ValueNotYetInitialized valueNotYetInitialized) {
 								Messages.showErrorDialog(project,
-										"Unable to change review state. Leaving review in draft state.",
-										"Permission denied");
+										"Unable to change review state. Leaving review in draft state.", "Permission denied");
 							}
 						}
 					} catch (final Throwable e) {
@@ -778,9 +773,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								if (e.getMessage().contains("Specified change set id does not exist")) {
 									message += "\nSpecified change set could not be found on server. Check selected repository";
 								}
-								DialogWithDetails
-										.showExceptionDialog(project, message,
-												e, "Error");
+								DialogWithDetails.showExceptionDialog(project, message, e, "Error");
 							}
 						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
 					}
@@ -798,8 +791,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private boolean isValidForm() {
 		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem && titleText.getText().length() > 0
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
-				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem &&
-				moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem && moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 			final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 			return isValid(new ReviewProvider(selectedItem.getServer()));
 		} else {
