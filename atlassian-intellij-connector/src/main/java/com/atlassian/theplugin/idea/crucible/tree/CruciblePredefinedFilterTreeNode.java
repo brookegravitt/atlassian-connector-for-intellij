@@ -30,9 +30,7 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
-		JComponent comp = new SelectableLabel(selected, c.isEnabled(), "<html>" + toString(), ICON_HEIGHT);
-		comp.setFont(c.getFont());
-		return comp; 
+		return new SelectableLabel(selected, c.isEnabled(), c.getFont(), "<html>" + toString(), ICON_HEIGHT);
 	}
 
 	public void onSelect() {
