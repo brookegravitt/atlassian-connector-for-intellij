@@ -73,7 +73,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			gbc.gridx++;
 			gbc.weightx = 0.0;
 			gbc.fill = GridBagConstraints.NONE;
-			state = new SelectableLabel(true, true, issue.getStatus(),
+			state = new SelectableLabel(true, true, null, issue.getStatus(),
 					CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
 					SwingConstants.LEADING, ICON_HEIGHT, false, true);
 			add(state, gbc);
@@ -81,7 +81,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			gbc.gridx++;
 			gbc.weightx = 0.0;
 			gbc.insets = new Insets(0, 0, 0, 0);
-			prio = new SelectableLabel(true, true, null,
+			prio = new SelectableLabel(true, true, null, null,
 					CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
 					SwingConstants.LEADING, ICON_HEIGHT, false, true);
 			// setting minimum size is necessary as gridbag layout may
@@ -100,7 +100,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			} catch (java.text.ParseException e) {
 				t = "Invalid";
 			}
-			updated = new SelectableLabel(true, true, t, null, SwingConstants.LEADING, ICON_HEIGHT, false, true);
+			updated = new SelectableLabel(true, true, null, t, null, SwingConstants.LEADING, ICON_HEIGHT, false, true);
 			updated.setHorizontalAlignment(SwingConstants.RIGHT);
 			Dimension minDimension = updated.getPreferredSize();
 
