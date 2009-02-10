@@ -7,7 +7,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.ui.SearchTextField;
-import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -181,7 +180,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 
 		rightPanel.add(rightScrollPane, BorderLayout.CENTER);
 
-		CellConstraints cc = new CellConstraints();
+//		CellConstraints cc = new CellConstraints();
 		JComponent rightToolbar = createToolBar(rightToolbarName, getActionPlaceName());
 
 //		final JPanel toolBarPanel = new JPanel(

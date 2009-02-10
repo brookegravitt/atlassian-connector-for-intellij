@@ -749,9 +749,10 @@
 		</group>
 
 		<group id="ThePlugin.JiraIssues.RunActionGroup"
-			   class="com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup"
-			   icon="/icons/jira-blue-16.png"
-			   popup="true"/>
+			class="com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup"
+			icon="/icons/pin_other.png"
+			text="Issue Workflow Actions"
+			popup="true"/>
 
 		<group id="ThePlugin.JiraIssues.OneIssueToolBar" popup="false">
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
