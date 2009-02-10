@@ -218,8 +218,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 //		EasyMock.verify(listener);
 //
 //		// test 2 (added actions)
-//		reviewAdapter_2.getActions().add(Action.ABANDON);
-//		reviewAdapter_2.getActions().add(Action.CLOSE);
+//		reviewAdapter_2.getActions().add(CrucibleAction.ABANDON);
+//		reviewAdapter_2.getActions().add(CrucibleAction.CLOSE);
 //
 //		EasyMock.reset(listener);
 //
@@ -232,8 +232,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 //		EasyMock.verify(listener);
 //
 //		// test 3 (actions different order)
-//		reviewAdapter_3.getActions().add(Action.CLOSE);
-//		reviewAdapter_3.getActions().add(Action.ABANDON);
+//		reviewAdapter_3.getActions().add(CrucibleAction.CLOSE);
+//		reviewAdapter_3.getActions().add(CrucibleAction.ABANDON);
 //
 //		EasyMock.reset(listener);
 //
@@ -439,7 +439,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
 		rb.setState(State.REVIEW);
-		rb.setActions(new HashSet<Action>());
+		rb.setActions(new HashSet<CrucibleAction>());
 
 		return new ReviewAdapter(rb, server);
 	}
