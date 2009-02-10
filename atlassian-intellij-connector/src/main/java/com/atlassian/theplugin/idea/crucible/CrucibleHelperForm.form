@@ -31,7 +31,7 @@
         <rowspec value="center:max(d;4px):noGrow"/>
         <rowspec value="top:3dlu:noGrow"/>
         <rowspec value="center:d:grow"/>
-        <colspec value="left:157px:noGrow"/>
+        <colspec value="left:90px:noGrow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:300px:grow"/>
         <constraints>
@@ -114,7 +114,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="State"/>
+              <text value="State:"/>
             </properties>
           </component>
           <component id="cd3ee" class="javax.swing.JLabel">
@@ -123,7 +123,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Id"/>
+              <text value="Id:"/>
             </properties>
           </component>
           <component id="cbdf8" class="javax.swing.JLabel">
@@ -132,7 +132,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Title"/>
+              <text value="Title:"/>
             </properties>
           </component>
           <component id="a741" class="javax.swing.JLabel">
@@ -141,7 +141,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Author"/>
+              <text value="Author:"/>
             </properties>
           </component>
           <component id="c03ff" class="javax.swing.JLabel">
@@ -150,7 +150,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Moderator"/>
+              <text value="Moderator:"/>
             </properties>
           </component>
           <component id="fd02d" class="javax.swing.JComboBox" binding="repositoryComboBox">
@@ -166,7 +166,7 @@
               <forms/>
             </constraints>
             <properties>
-              <text value="Repository"/>
+              <text value="Repository:"/>
             </properties>
           </component>
           <scrollpane id="336a2">
@@ -195,16 +195,16 @@
               <forms defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <text value="Statement of Objectives"/>
+              <text value="&lt;html&gt;Statement &lt;br&gt;of Objectives:&lt;/html&gt;"/>
             </properties>
           </component>
           <component id="ee107" class="javax.swing.JLabel">
             <constraints>
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-              <forms/>
+              <forms defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <text value="Review"/>
+              <text value="Review:"/>
             </properties>
           </component>
         </children>
