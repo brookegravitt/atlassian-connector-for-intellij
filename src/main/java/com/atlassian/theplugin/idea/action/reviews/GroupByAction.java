@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.ComboWithLabel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -29,6 +29,14 @@ public class GroupByAction extends AbstractCrucibleToolbarAction implements Cust
 
 	public JComponent createCustomComponent(Presentation presentation) {
 		final JComboBox combo = new JComboBox(createModel());
+		ComboWithLabel cwl = new ComboWithLabel(combo, "Group By");
+
+		Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
+		if (project != null) {
+			ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
+			updateSelection(panel, combo);
+		}
+
 		presentation.putClientProperty(COMBOBOX_KEY, combo);
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -39,7 +47,7 @@ public class GroupByAction extends AbstractCrucibleToolbarAction implements Cust
 						panel.setGroupBy((CrucibleReviewGroupBy) combo.getSelectedItem());
 					} else {
 						LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot find "
-								+ IssuesToolWindowPanel.class);
+								+ ReviewsToolWindowPanel.class);
 					}
 				} else {
 					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current project");
@@ -47,7 +55,7 @@ public class GroupByAction extends AbstractCrucibleToolbarAction implements Cust
 
 			}
 		});
-		return combo;
+		return cwl;
 	}
 
 
@@ -62,9 +70,13 @@ public class GroupByAction extends AbstractCrucibleToolbarAction implements Cust
 			final JComboBox jComboBox = (JComboBox) myProperty;
 			jComboBox.setEnabled(enabled);
 			ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
-			if (panel != null && !panel.getGroupBy().equals(jComboBox.getSelectedItem())) {
-				jComboBox.setSelectedItem(panel.getGroupBy());
-			}
+			updateSelection(panel, jComboBox);
+		}
+	}
+
+	private void updateSelection(ReviewsToolWindowPanel panel, JComboBox combo) {
+		if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
+			combo.setSelectedItem(panel.getGroupBy());
 		}
 	}
 }

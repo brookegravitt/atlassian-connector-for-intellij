@@ -596,7 +596,8 @@
         </group>
         <!-- [END] Issues window related actions -->
 
-        <action id="ThePlugin.JiraIssues.GroupByCombo"
+		<!--<action id="ThePlugin.GroupByText" text="Group By"/>-->
+		<action id="ThePlugin.JiraIssues.GroupByCombo"
                 class="com.atlassian.theplugin.idea.action.issues.GroupByAction"
                 text="Group By"/>
         <action id="ThePlugin.JiraIssues.GroupSubtasks"
@@ -705,7 +706,8 @@
 
 
         <group id="ThePlugin.JiraIssues.IssuesToolBar" popup="false">
-            <reference id="ThePlugin.JiraIssues.GroupByCombo"/>
+			<!--<reference id="ThePlugin.GroupByText"/>-->
+			<reference id="ThePlugin.JiraIssues.GroupByCombo"/>
             <reference id="ThePlugin.JiraIssues.GroupSubtasks"/>
             <reference id="ThePlugin.JiraIssues.ExpandIssues"/>
             <reference id="ThePlugin.JiraIssues.CollapseIssues"/>
