@@ -6,6 +6,8 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,49 +48,53 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	}
 
 	private final class RendererPanel extends JPanel {
-		private SelectableLabel key;
-		private SelectableLabel summary;
+		private SelectableLabel keyAndSummary;
 		private SelectableLabel state;
 		private SelectableLabel author;
 		private SelectableLabel created;
 		private JPanel padding;
 
 		private RendererPanel() {
-			super(new GridBagLayout());
+			super(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
+			CellConstraints cc = new CellConstraints();
 
 			setBackground(UIUtil.getTreeTextBackground());
+
+			keyAndSummary =
+					new SelectableLabel(true, true, review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
+			add(keyAndSummary, cc.xy(1, 1));
+
+			add(createPanelForOtherReviewDetails(), cc.xy(2, 1));
+
+			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
+			final JToolTip jToolTip = createToolTip();
+			jToolTip.setTipText(buildTolltip(0));
+			final int prefWidth = jToolTip.getPreferredSize().width;
+			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+			setToolTipText(buildTolltip(width));
+		}
+
+		private JPanel createPanelForOtherReviewDetails() {
+			JPanel rest = new JPanel(new GridBagLayout());
 
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 0;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
-
-			gbc.insets = new Insets(0, 0, 0, 0);
-			key = new SelectableLabel(true, true, review.getPermId().getId() + ": ", ICON_HEIGHT);
-			add(key, gbc);
-
-			gbc.gridx++;
 			gbc.weightx = 1.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			summary = new SelectableLabel(true, true, review.getName(), ICON_HEIGHT);
-			add(summary, gbc);
+			state = new SelectableLabel(true, true, "    " + review.getState().value(), null,
+					SwingConstants.LEADING, ICON_HEIGHT);
+			setFixedComponentSize(state, STATUS_LABEL_WIDTH, ICON_HEIGHT);
+			rest.add(state, gbc);
 
 			gbc.gridx++;
 			gbc.weightx = 0.0;
 			gbc.fill = GridBagConstraints.NONE;
-			state = new SelectableLabel(true, true, review.getState().value(), null,
-					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(state, STATUS_LABEL_WIDTH, ICON_HEIGHT);
-			add(state, gbc);
-
-			gbc.gridx++;
-			gbc.weightx = 0.0;
 			gbc.insets = new Insets(0, 0, 0, 0);
 			author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
 					SwingConstants.LEADING, ICON_HEIGHT);
 			setFixedComponentSize(author, AUTHOR_LABEL_WIDTH, ICON_HEIGHT);
-			add(author, gbc);
+			rest.add(author, gbc);
 
 			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
 			String t = dfo.format(review.getCreateDate());
@@ -100,7 +106,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			minDimension.setSize(
 					Math.max(PluginUtil.getDateWidth(created, dfo), minDimension.getWidth()), minDimension.getHeight());
 			setFixedComponentSize(created, minDimension.width, ICON_HEIGHT);
-			add(created, gbc);
+			rest.add(created, gbc);
 
 			padding = new JPanel();
 			gbc.gridx++;
@@ -110,22 +116,14 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 			padding.setOpaque(true);
-			add(padding, gbc);
+			rest.add(padding, gbc);
 
-			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
-			final JToolTip jToolTip = createToolTip();
-			jToolTip.setTipText(buildTolltip(0));
-			final int prefWidth = jToolTip.getPreferredSize().width;
-			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-			setToolTipText(buildTolltip(width));
+			return rest;
 		}
 
 		public void setParameters(boolean selected, boolean enabled) {
-			key.setSelected(selected);
-			key.setEnabled(enabled);
-
-			summary.setSelected(selected);
-			summary.setEnabled(enabled);
+			keyAndSummary.setSelected(selected);
+			keyAndSummary.setEnabled(enabled);
 
 			state.setSelected(selected);
 			state.setEnabled(enabled);
