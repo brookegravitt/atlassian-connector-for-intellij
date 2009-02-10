@@ -397,11 +397,13 @@ public class JIRASessionImpl implements JIRASession {
     public List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException {
         try {
             RemoteNamedObject[] actions = service.getAvailableActions(token, issue.getKey());
-            List<JIRAAction> actionList = new ArrayList<JIRAAction>(actions != null ? actions.length : 0);
-            for (RemoteNamedObject action : actions) {
-				actionList.add(new JIRAActionBean(Long.valueOf(action.getId()), action.getName()));
-            }
-            return actionList;
+			List<JIRAAction> actionList = new ArrayList<JIRAAction>(actions != null ? actions.length : 0);
+			if (actions != null) {
+				for (RemoteNamedObject action : actions) {
+					actionList.add(new JIRAActionBean(Long.valueOf(action.getId()), action.getName()));
+				}
+			}
+			return actionList;
         } catch (RemoteException e) {
             throw new RemoteApiException(e.toString(), e);
         }
