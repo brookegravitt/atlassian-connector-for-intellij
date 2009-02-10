@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -43,6 +43,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -63,11 +64,11 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	private ReviewAdapter review;
 	private CrucibleServerFacade crucibleServerFacade;
-	private Action action;
+	private CrucibleAction action;
 	private DescriptionPanel descriptionPanel;
 	private Project project;
 
-	protected CrucibleChangeReviewStateForm(Project project, ReviewAdapter review, Action action) {
+	protected CrucibleChangeReviewStateForm(Project project, ReviewAdapter review, CrucibleAction action) {
 		super(false);
 		this.review = review;
 		this.action = action;
@@ -82,41 +83,41 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		switch (action) {
 			case CLOSE:
 				setTitle("Close Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Close Review");
+				getOKAction().putValue(Action.NAME, "Close Review");
 				summaryPanel.setBackground(UIUtil.getWindowColor());
 				break;
 			case APPROVE:
 				setTitle("Approve Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Approve Review");
+				getOKAction().putValue(Action.NAME, "Approve Review");
 				break;
 			case SUBMIT:
 				setTitle("Submit Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Submit Review");
+				getOKAction().putValue(Action.NAME, "Submit Review");
 				break;
 			case ABANDON:
 				setTitle("Abandon Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Abandon Review");
+				getOKAction().putValue(Action.NAME, "Abandon Review");
 				break;
 			case SUMMARIZE:
 				setTitle("Summarize and Close Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Summarize and Close Review");
+				getOKAction().putValue(Action.NAME, "Summarize and Close Review");
 				break;
 			case REOPEN:
 				setTitle("Reopen Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Reopen Review");
+				getOKAction().putValue(Action.NAME, "Reopen Review");
 				break;
 			case RECOVER:
 				setTitle("Recover Abandoned Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Recover Abandoned Review");
+				getOKAction().putValue(Action.NAME, "Recover Abandoned Review");
 				break;
 			case COMPLETE:
 				setTitle("Complete Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Complete Review");
+				getOKAction().putValue(Action.NAME, "Complete Review");
 				publishPanel.setVisible(true);
 				break;
 			case UNCOMPLETE:
 				setTitle("Uncomplete Review");
-				getOKAction().putValue(javax.swing.Action.NAME, "Uncomplete Review");
+				getOKAction().putValue(Action.NAME, "Uncomplete Review");
 				break;
 			default:
 				break;
@@ -130,11 +131,10 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		Task.Backgroundable fillTask = new Task.Backgroundable(project, "Retrieving Review Data", false) {
 
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					review.fillReview(
-							new ReviewAdapter(crucibleServerFacade.getReview(
-									review.getServer(), review.getPermId()), review.getServer()));
+					review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(review.getServer(), review.getPermId()),
+							review.getServer()));
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
@@ -158,8 +158,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	public void updateReviewInfo(final ReviewAdapter reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
-		if (Action.CLOSE.equals(action) || Action.SUMMARIZE.equals(action) || !"".equals(reviewInfo.getSummary())) {
-			boolean isEditable = Action.CLOSE.equals(action) || Action.SUMMARIZE.equals(action);
+		if (CrucibleAction.CLOSE.equals(action) || CrucibleAction.SUMMARIZE.equals(action) || !"".equals(reviewInfo.getSummary())) {
+			boolean isEditable = CrucibleAction.CLOSE.equals(action) || CrucibleAction.SUMMARIZE.equals(action);
 			descriptionPanel = new DescriptionPanel(review, isEditable);
 			summaryPanel.add(descriptionPanel, BorderLayout.CENTER);
 		} else {
@@ -225,7 +225,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 				crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
 				break;
 			case COMPLETE:
-				if (CrucibleChangeReviewStateForm.this.publishDraftsCheckBox.isSelected()) {
+				if (this.publishDraftsCheckBox.isSelected()) {
 					crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
 				}
 				crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
@@ -244,8 +244,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private void showErrorMessage(final String message) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				showMessageDialog(message,
-						"Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
+				showMessageDialog(message, "Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
 			}
 		});
 
@@ -267,33 +266,43 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		rootComponent.setMinimumSize(new Dimension(-1, -1));
 		detailsPanel = new JPanel();
 		detailsPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(detailsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootComponent.add(detailsPanel,
+				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
+						false));
 		commentsPanel = new JPanel();
 		commentsPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(commentsPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootComponent.add(commentsPanel,
+				new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
+						false));
 		publishPanel = new JPanel();
 		publishPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(publishPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootComponent.add(publishPanel,
+				new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
+						false));
 		publishDraftsCheckBox = new JCheckBox();
 		publishDraftsCheckBox.setSelected(true);
 		publishDraftsCheckBox.setText("Publish all my draft comments");
-		publishPanel.add(publishDraftsCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST,
-				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		publishPanel.add(publishDraftsCheckBox,
+				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		publishPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
-				1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		publishPanel.add(spacer1,
+				new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+						GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		summaryPanel = new JPanel();
 		summaryPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(summaryPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		rootComponent.add(summaryPanel,
+				new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
+						false));
 	}
 
 	/**
@@ -460,8 +469,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			String myAllComments;
 			try {
-				myAllComments = review.getNumberOfGeneralComments(userName)
-						+ review.getNumberOfVersionedComments(userName) + "";
+				myAllComments = review.getNumberOfGeneralComments(userName) + review.getNumberOfVersionedComments(userName) + "";
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				myAllComments = "Value not initialized yet";
 			}
@@ -565,8 +573,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
 
-			JScrollPane sp = new JScrollPane(body,
-					ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+			JScrollPane sp = new JScrollPane(body, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
 					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 			body.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
