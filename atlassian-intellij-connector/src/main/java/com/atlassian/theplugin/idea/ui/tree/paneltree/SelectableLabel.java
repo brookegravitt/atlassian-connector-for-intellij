@@ -12,27 +12,37 @@ import java.awt.*;
  */
 
 public final class SelectableLabel extends JLabel {
-	private final boolean enabled;
 	private final int height;
+
+	private final boolean enabled;
+
+	public SelectableLabel(final boolean selected, final boolean enabled, final Font font, final String txt,
+			final int iconHeight) {
+		this(selected, enabled, font, txt, null, SwingConstants.LEADING, iconHeight, false, true);
+	}
 
 	public SelectableLabel(boolean selected, boolean enabled, String text, int height) {
 		this(selected, enabled, text, null, SwingConstants.LEADING, height);
 	}
 
 	public SelectableLabel(boolean selected, boolean enabled, String text,
-						   int height, boolean bold, boolean doSizeAdjustment) {
-		this(selected, enabled, text, null, SwingConstants.LEADING, height, bold, doSizeAdjustment);
+			int height, boolean bold, boolean doSizeAdjustment) {
+		this(selected, enabled, null, text, null, SwingConstants.LEADING, height, bold, doSizeAdjustment);
 	}
 
 	public SelectableLabel(boolean selected, boolean enabled, String text, Icon icon, int alignment, int height) {
-		this(selected, enabled, text, icon, alignment, height, false, true);
+		this(selected, enabled, null, text, icon, alignment, height, false, true);
 	}
 
-	public SelectableLabel(boolean selected, boolean enabled, String text,
-						   Icon icon, int alignment, int height, boolean bold, boolean doSizeAdjustment) {
+	public SelectableLabel(boolean selected, boolean enabled, Font font, String text,
+			Icon icon, int alignment, int height, boolean bold, boolean doSizeAdjustment) {
 		super(text, SwingConstants.LEADING);
 		this.enabled = enabled;
 		this.height = height;
+
+		if (font != null) {
+			setFont(font);
+		}
 
 		if (bold) {
 			setFont(getFont().deriveFont(Font.BOLD));
@@ -46,7 +56,7 @@ public final class SelectableLabel extends JLabel {
 		if (doSizeAdjustment) {
 			adjustPreferredSize();
 		}
-		
+
 		setHorizontalTextPosition(alignment);
 		setOpaque(true);
 	}
