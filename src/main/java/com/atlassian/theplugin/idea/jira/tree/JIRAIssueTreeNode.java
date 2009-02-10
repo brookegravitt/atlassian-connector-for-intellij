@@ -8,6 +8,8 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,48 +40,54 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		private SelectableLabel updated;
 		private SelectableLabel prio;
 		private SelectableLabel state;
-		private SelectableLabel summary;
 
-		private SelectableLabel key;
-		private JLabel typeLabel;
+		private SelectableLabel keyAndSummary;
 
 		private RendererPanel() {
-			super(new GridBagLayout());
+			super(new FormLayout("fill:150px:grow, right:pref", "pref"));
+			CellConstraints cc = new CellConstraints();
 
 			setBackground(UIUtil.getTreeTextBackground());
+
+			keyAndSummary = new SelectableLabel(true, true, issue.getKey() + ": " + issue.getSummary(),
+					CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.TRAILING, ICON_HEIGHT);
+			add(keyAndSummary, cc.xy(1, 1));
+
+			add(createPanelForOtherIssueDetails(), cc.xy(2, 1));
+
+			setParameters(true, true);
+
+			setToolTipText(buildTolltip(issue, 0));
+
+			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
+			final JToolTip jToolTip = createToolTip();
+			jToolTip.setTipText(buildTolltip(issue, 0));
+			final int prefWidth = jToolTip.getPreferredSize().width;
+			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+			setToolTipText(buildTolltip(issue, width));
+		}
+
+		private JPanel createPanelForOtherIssueDetails() {
+			JPanel rest = new JPanel();
+			rest.setLayout(new GridBagLayout());
 
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx = 0;
 			gbc.gridy = 0;
-			gbc.weightx = 0.0;
-			gbc.insets = new Insets(0, 0, 0, GAP);
-			gbc.fill = GridBagConstraints.NONE;
-			typeLabel = new JLabel(null, CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.LEADING);
-			typeLabel.setOpaque(true);
-			typeLabel.setBackground(UIUtil.getTreeTextBackground());
-			add(typeLabel, gbc);
-
-			gbc.insets = new Insets(0, 0, 0, 0);
-			gbc.gridx++;
-			key = new SelectableLabel(true, true, issue.getKey() + ": ", ICON_HEIGHT, false, true);
-			add(key, gbc);
-
-			gbc.gridx++;
 			gbc.weightx = 1.0;
+			gbc.weighty = 0.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			summary = new SelectableLabel(true, true, issue.getSummary(), ICON_HEIGHT, false, true);
-			add(summary, gbc);
-
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
+			gbc.anchor = GridBagConstraints.FIRST_LINE_END;
 			state = new SelectableLabel(true, true, null, issue.getStatus(),
 					CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
 					SwingConstants.LEADING, ICON_HEIGHT, false, true);
-			add(state, gbc);
+			state.setHorizontalAlignment(SwingConstants.RIGHT);
+			state.setMinimumSize(state.getPreferredSize());
+			rest.add(state, gbc);
 
 			gbc.gridx++;
 			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
 			gbc.insets = new Insets(0, 0, 0, 0);
 			prio = new SelectableLabel(true, true, null, null,
 					CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
@@ -88,7 +96,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			// ignore preffered size if some other lables do not fit!!!
 			prio.setMinimumSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
 			prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
-			add(prio, gbc);
+			rest.add(prio, gbc);
 
 			gbc.gridx++;
 			gbc.weightx = 0.0;
@@ -112,7 +120,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			updated.setMaximumSize(minDimension);
 			updated.setSize(minDimension);
 
-			add(updated, gbc);
+			rest.add(updated, gbc);
 
 			padding = new JPanel();
 			gbc.gridx++;
@@ -122,18 +130,8 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 			padding.setOpaque(true);
-			add(padding, gbc);
-
-			setParameters(true, true);
-
-			setToolTipText(buildTolltip(issue, 0));
-
-			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
-			final JToolTip jToolTip = createToolTip();
-			jToolTip.setTipText(buildTolltip(issue, 0));
-			final int prefWidth = jToolTip.getPreferredSize().width;
-			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-			setToolTipText(buildTolltip(issue, width));
+			rest.add(padding, gbc);
+			return rest;
 		}
 
 		public void setParameters(boolean selected, boolean enabled) {
@@ -141,13 +139,9 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
 					: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
-			typeLabel.setIcon(typeIcon);
-
-			key.setSelected(selected);
-			key.setEnabled(enabled);
-
-			summary.setSelected(selected);
-			summary.setEnabled(enabled);
+			keyAndSummary.setIcon(typeIcon);
+			keyAndSummary.setSelected(selected);
+			keyAndSummary.setEnabled(enabled);
 
 			final String iconTypeUrl = issue.getStatusTypeUrl();
 			Icon statusIcon = enabled
