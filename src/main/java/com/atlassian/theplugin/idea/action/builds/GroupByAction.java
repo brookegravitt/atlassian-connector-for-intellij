@@ -54,7 +54,8 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 			public void actionPerformed(ActionEvent e) {
 				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
 				if (currentProject != null) {
-					final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(currentProject, BambooToolWindowPanel.class);
+					final BambooToolWindowPanel panel =
+							IdeaHelper.getProjectComponent(currentProject, BambooToolWindowPanel.class);
 					if (panel != null) {
 						panel.setGroupingType((BuildGroupBy) combo.getSelectedItem());
 					} else {
