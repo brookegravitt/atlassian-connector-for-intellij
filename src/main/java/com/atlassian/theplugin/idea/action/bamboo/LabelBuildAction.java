@@ -17,8 +17,6 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class LabelBuildAction extends AbstractBuildListAction {
