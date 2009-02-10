@@ -15,21 +15,21 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class BuildStateTreeNode extends BuildGroupTreeNode {
-	private BuildStatus status;
+	private AdjustedBuildStatus status;
 
-	public BuildStateTreeNode(BuildStatus status) {
-		super(status.toString());
+	public BuildStateTreeNode(AdjustedBuildStatus status) {
+		super(status.getName());
 
 		this.status = status;
 	}
 
-	public BuildStatus getStatus() {
+	public AdjustedBuildStatus getStatus() {
 		return status;
 	}
 }

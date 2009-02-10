@@ -32,9 +32,6 @@ import junit.framework.TestSuite;
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
-	//statuses as strings returned by bamboo Rest API
-	public static final String BUILD_SUCCESSFUL = "Successful";
-	public static final String BUILD_FAILED = "Failed";
 
 	@Override
     protected void setUp() throws Exception {
@@ -55,8 +52,6 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		// form use cloned instance
 		checkServerBean(outServerBean);
 		assertEquals(0, outServerBean.getSubscribedPlans().size());
-
-		/*  */
 
 		inServerBean.getSubscribedPlans().add(new SubscribedPlan("Plan-1"));
 

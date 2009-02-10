@@ -76,7 +76,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		// Icon
 		gbc.insets = new Insets(0, 0, 0, 0);
-		JLabel icon = new SelectableLabel(selected, enabled, " ", build.getBuildIcon(),
+		JLabel icon = new SelectableLabel(selected, enabled, " ", build.getIcon(),
 				SwingConstants.LEADING, ICON_HEIGHT);
 		p.add(icon, gbc);
 

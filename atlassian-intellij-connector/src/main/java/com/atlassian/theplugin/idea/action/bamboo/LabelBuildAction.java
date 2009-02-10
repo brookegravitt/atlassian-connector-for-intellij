@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class LabelBuildAction extends AbstractBuildListAction {
@@ -29,8 +31,8 @@ public class LabelBuildAction extends AbstractBuildListAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (getBuild(event) == null || !getBuild(event).isBamboo2()
-				|| getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
+		final BambooBuildAdapterIdea build = getBuild(event);
+		if (build == null || !build.isBamboo2() || !build.areActionsAllowed()) {
 			event.getPresentation().setEnabled(false);
 		}
 	}

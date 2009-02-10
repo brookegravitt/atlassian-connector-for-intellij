@@ -70,7 +70,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 
 
 		p.add(new BoldLabel("State"), gbc1);
-		p.add(new JLabel(build.getState().getName(), build.getState().getIcon(), SwingConstants.LEFT), gbc2);
+		p.add(new JLabel(build.getAdjustedStatus().getName(), build.getIcon(), SwingConstants.LEFT), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
