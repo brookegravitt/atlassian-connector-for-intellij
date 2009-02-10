@@ -27,7 +27,12 @@ import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -186,7 +191,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
-				&& buildDetailsInfo.getState() != BambooBuildAdapterIdea.BuildState.UNKNOWN) {
+				&& buildDetailsInfo.areActionsAllowed()) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
 		}
 	}
@@ -253,12 +258,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		bambooConfiguration.getView().setFilterType(bambooFilterType);
 	}
-
-	public void refresh() {
-		// I doubt if it's really necessary as refreshing anyway comes now asynchrounsly from Bamboo Status Chekcker.
-		// However we could make it synchronous and show then error message if anything fails
-	}
-
 
 	@Override
 	protected JComponent getLeftPanel() {
