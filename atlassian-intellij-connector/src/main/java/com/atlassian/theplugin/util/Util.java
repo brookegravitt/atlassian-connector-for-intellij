@@ -19,11 +19,28 @@ package com.atlassian.theplugin.util;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.PluginToolWindow;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.jetbrains.annotations.Nullable;
 
 public final class Util {
 	public static final String HTML_NEW_LINE = "<br />";
 
 	private Util() {
+	}
+
+
+	/**
+	 * Transforms provided text into simple HTML equivalent (multiline, honoring whitespaces). 
+	 * @param text plain text to tranform into HTML
+	 * @return tranformed text or <code>null</code> if <code>text</code> was null
+	 */
+	@Nullable
+	public static String textToMultilineHtml(@Nullable String text) {
+		if (text == null) {
+			return null;
+		}
+		return StringEscapeUtils.escapeHtml(text).replace("\n", HTML_NEW_LINE).replace("  ", "&nbsp; ")
+				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp; ");
 	}
 
 	public static ServerType toolWindowPanelsToServerType(PluginToolWindow.ToolWindowPanels panel) throws ThePluginException {

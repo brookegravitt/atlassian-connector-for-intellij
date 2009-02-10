@@ -161,7 +161,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
 
 		String summary = review.getName();
-		sb.append(StringEscapeUtils.escapeHtml(summary));
+		sb.append(Util.textToMultilineHtml(summary));
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Statement of Objectives:</b></td><td valign=\"top\">");
@@ -170,8 +170,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		if (description.length() > MAX_LENGTH) {
 			description = description.substring(0, MAX_LENGTH) + "\n...";
 		}
-		sb.append(StringEscapeUtils.escapeHtml(description).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
-				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
+		sb.append(Util.textToMultilineHtml(description));
 
 		sb.append("</td></tr>");
 

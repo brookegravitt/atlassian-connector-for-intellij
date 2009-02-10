@@ -136,7 +136,6 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	@Override
 	public void valueForPathChanged(TreePath path, Object newValue) {
-		System.out.println("valueForPathChanged");
 	}
 
 	@Override
