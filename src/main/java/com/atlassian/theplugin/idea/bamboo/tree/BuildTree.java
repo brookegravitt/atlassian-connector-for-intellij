@@ -50,7 +50,6 @@ public class BuildTree extends AbstractTree {
 		buildTreeUiSetup = new TreeUISetup(TREE_RENDERER);
 		buildTreeUiSetup.initializeUI(this, parentScrollPane);
 
-
 		init();
 
 		buildTreeModel.addTreeModelListener(new LocalTreeModelListener());
