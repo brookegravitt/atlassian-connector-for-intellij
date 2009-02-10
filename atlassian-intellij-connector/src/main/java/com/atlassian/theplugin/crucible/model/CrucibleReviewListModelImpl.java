@@ -103,6 +103,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			// new request is performed
 		} catch (Throwable t) {
 			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, notifications));
+			// comment from wseliga:
+			// todo this is somewhat crazy. We swallow here all the problems and stop building the model, which SUCKS!!!
 		}
 	}
 

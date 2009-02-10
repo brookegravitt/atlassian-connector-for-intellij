@@ -5,7 +5,7 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleSetReviewersWorker;
 import com.atlassian.theplugin.idea.Constants;
 
@@ -15,10 +15,12 @@ import com.atlassian.theplugin.idea.Constants;
  * Time: 2:34:51 PM
  */
 public class SetReviewersAction extends AbstractReviewAction {
-	protected Action getRequestedAction() {
-		return Action.MODIFYFILES;
+	@Override
+	protected CrucibleAction getRequestedAction() {
+		return CrucibleAction.MODIFY_FILES;
 	}
 
+	@Override
 	public void actionPerformed(final AnActionEvent event) {
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
 

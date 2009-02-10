@@ -95,7 +95,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 			return;
 		}
 		if (action == null) {
-			throw new IllegalArgumentException("Action handler not provided.");
+			throw new IllegalArgumentException("CrucibleAction handler not provided.");
 		}
 
 		// get latest version

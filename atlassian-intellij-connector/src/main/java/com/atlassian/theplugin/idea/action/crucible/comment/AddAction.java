@@ -81,7 +81,7 @@ public class AddAction extends AbstractCommentAction {
 			return false;
 		}
 		try {
-			if (!review.getActions().contains(Action.COMMENT)) {
+			if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 				return false;
 			}
 		} catch (ValueNotYetInitialized valueNotYetInitialized) {

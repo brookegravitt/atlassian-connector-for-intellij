@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Action;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -100,7 +100,7 @@ public class CommentAction extends AnAction {
 							visible = false;
 						} else {
 							try {
-								if (!review.getActions().contains(Action.COMMENT)) {
+								if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 									visible = false;
 								}
 							} catch (ValueNotYetInitialized valueNotYetInitialized) {
