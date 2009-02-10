@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
+import com.atlassian.theplugin.idea.ui.ComboWithLabel;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -43,12 +44,17 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 
 	public JComponent createCustomComponent(Presentation presentation) {
 		final JComboBox combo = new JComboBox(createModel());
+		ComboWithLabel cwl = new ComboWithLabel(combo, "Group By");
+
+		Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
+		updateSelection(project, combo);
+
 		presentation.putClientProperty(COMBOBOX_KEY, combo);
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				final Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
-				if (project != null) {
-					final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
+				if (currentProject != null) {
+					final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(currentProject, BambooToolWindowPanel.class);
 					if (panel != null) {
 						panel.setGroupingType((BuildGroupBy) combo.getSelectedItem());
 					} else {
@@ -56,12 +62,21 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 								+ BambooToolWindowPanel.class);
 					}
 				} else {
-					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current project");
+					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current currentProject");
 				}
 
 			}
 		});
-		return combo;
+		return cwl;
+	}
+
+	private void updateSelection(Project project, JComboBox combo) {
+		if (project != null) {
+			final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+			if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
+				combo.setSelectedItem(panel.getGroupBy());
+			}
+		}
 	}
 
 	public void update(final AnActionEvent e) {
@@ -69,12 +84,7 @@ public class GroupByAction extends AnAction implements CustomComponentAction {
 		if (myProperty instanceof JComboBox) {
 			final JComboBox combo = (JComboBox) myProperty;
 			final Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
-			if (project != null) {
-				final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
-				if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
-					combo.setSelectedItem(panel.getGroupBy());
-				}
-			}
+			updateSelection(project, combo);
 		}
 	}
 

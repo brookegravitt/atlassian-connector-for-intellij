@@ -15,16 +15,21 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
-
 public class FilterByAction extends AbstractBambooComboBoxAction {
+	
+	public FilterByAction() {
+		super("Filter By");
+	}
+
 	private static class BambooFilterTypeWrapper extends GenericComboBoxItemWrapper<BambooFilterType> {
 		public BambooFilterTypeWrapper(final BambooFilterType wrapped) {
 			super(wrapped);
@@ -52,16 +57,11 @@ public class FilterByAction extends AbstractBambooComboBoxAction {
 
 	@Override
 	public void update(final AnActionEvent e) {
-		final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(e, BambooToolWindowPanel.class);
-		if (panel == null) {
-			return;
-		}
+		Project p = IdeaHelper.getCurrentProject(e);
 		final Object clientProperty = e.getPresentation().getClientProperty(getComboKey());
 		if (clientProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) clientProperty;
-			if (((BambooFilterTypeWrapper) jComboBox.getSelectedItem()).getWrapped() != panel.getBambooFilterType()) {
-				jComboBox.setSelectedItem(new BambooFilterTypeWrapper(panel.getBambooFilterType()));
-			}
+			updateSelection(p, jComboBox);
 		}
 	}
 
@@ -76,4 +76,13 @@ public class FilterByAction extends AbstractBambooComboBoxAction {
 		return new DefaultComboBoxModel(model);
 	}
 
+	protected void updateSelection(Project project, JComboBox combo) {
+		final BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(project, BambooToolWindowPanel.class);
+		if (panel == null) {
+			return;
+		}
+		if (((BambooFilterTypeWrapper) combo.getSelectedItem()).getWrapped() != panel.getBambooFilterType()) {
+			combo.setSelectedItem(new BambooFilterTypeWrapper(panel.getBambooFilterType()));
+		}
+	}
 }
