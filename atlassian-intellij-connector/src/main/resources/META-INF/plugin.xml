@@ -942,28 +942,24 @@
 				text="Collapse All"
 				icon="/actions/collapseall.png"/>
 
-		<group id="ThePlugin.Bamboo.LeftToolBar" popup="false">
-			<reference id="ThePlugin.ShowSettingsGroup"/>
-			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
-			<separator/>
-		</group>
-		<group id="ThePlugin.Bamboo.MiddleToolBar" popup="false">
-			<reference id="ThePlugin.Bamboo.FilterBy"/>
-		</group>
-		<group id="ThePlugin.Bamboo.RightToolBar" popup="false">
-			<reference id="ThePlugin.Builds.GroupByCombo"/>
-			<reference id="ThePlugin.Builds.ExpandAll"/>
-			<reference id="ThePlugin.Builds.CollapseAll"/>
-			<separator/>
-			<reference id="ThePlugin.Bamboo.OpenBuild"/>
-			<reference id="ThePlugin.Bamboo.ViewBuild"/>
-			<separator/>
-			<reference id="ThePlugin.Bamboo.RunBuild"/>
-			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
-			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
-			<separator/>
-			<reference id="ThePlugin.HelpBamboo"/>
-		</group>
+        <group id="ThePlugin.Bamboo.ToolBar" popup="false">
+            <reference id="ThePlugin.ShowSettingsGroup"/>
+            <reference id="ThePlugin.Bamboo.RefreshStatus"/>
+            <separator/>
+            <reference id="ThePlugin.Bamboo.FilterBy"/>
+            <reference id="ThePlugin.Builds.GroupByCombo"/>
+            <reference id="ThePlugin.Builds.ExpandAll"/>
+            <reference id="ThePlugin.Builds.CollapseAll"/>
+            <separator/>
+            <reference id="ThePlugin.Bamboo.OpenBuild"/>
+            <reference id="ThePlugin.Bamboo.ViewBuild"/>
+            <separator/>
+            <reference id="ThePlugin.Bamboo.RunBuild"/>
+            <reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
+            <reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+            <separator/>
+            <reference id="ThePlugin.HelpBamboo"/>
+        </group>
 
 		<group id="ThePlugin.Bamboo.BuildPopupMenuNew" popup="true">
 			<reference id="ThePlugin.Bamboo.OpenBuild"/>

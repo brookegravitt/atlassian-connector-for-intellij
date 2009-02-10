@@ -35,8 +35,6 @@ import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.SearchTextField;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +45,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -270,30 +269,22 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	private JComponent createToolBar() {
-		final JComponent leftPart = loadToolBar("ThePlugin.Bamboo.LeftToolBar");
-		final JComponent middlePart = loadToolBar("ThePlugin.Bamboo.MiddleToolBar");
-		final JComponent rightPart = loadToolBar("ThePlugin.Bamboo.RightToolBar");
+		final JPanel toolBarPanel = new JPanel(new GridBagLayout());
 
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 0.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.ToolBar"), gbc);
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.anchor = GridBagConstraints.FIRST_LINE_END;
+		searchField.setMinimumSize(searchField.getPreferredSize());
+		toolBarPanel.add(searchField, gbc);
 
-		final JPanel toolBarPanel = new JPanel(
-				new FormLayout("left:pref, left:pref, left:pref, left:pref, left:pref, right:pref:grow", "pref:grow"));
-		CellConstraints cc = new CellConstraints();
-		int col = 1;
-		if (leftPart != null) {
-			toolBarPanel.add(leftPart, cc.xy(col++, 1));
-		}
-
-		if (middlePart != null) {
-			toolBarPanel.add(new JLabel("Filter By "), cc.xy(col++, 1));
-			toolBarPanel.add(middlePart, cc.xy(col++, 1));
-		}
-
-		if (rightPart != null) {
-			toolBarPanel.add(new JLabel("Group By "), cc.xy(col++, 1));
-			toolBarPanel.add(rightPart, cc.xy(col++, 1));
-		}
-
-		toolBarPanel.add(searchField, cc.xy(col, 1));
 		return toolBarPanel;
 	}
 
