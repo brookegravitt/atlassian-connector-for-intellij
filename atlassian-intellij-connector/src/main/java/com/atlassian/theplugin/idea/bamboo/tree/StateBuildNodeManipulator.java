@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
@@ -51,7 +51,7 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BuildStatus state = getDistinctStates().get(index);
+			AdjustedBuildStatus state = getDistinctStates().get(index);
 
 			BuildStateTreeNode stateNode = new BuildStateTreeNode(state);
 			p.add(stateNode);
@@ -75,26 +75,26 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<BuildStatus> getDistinctStates() {
-		Set<BuildStatus> states = new TreeSet<BuildStatus>(COMPARATOR);
+	private List<AdjustedBuildStatus> getDistinctStates() {
+		Set<AdjustedBuildStatus> states = new TreeSet<AdjustedBuildStatus>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			states.add(build.getStatus());
+			states.add(build.getAdjustedStatus());
 		}
 
-		return new ArrayList<BuildStatus>(states);
+		return new ArrayList<AdjustedBuildStatus>(states);
 	}
 
-	private static final Comparator<BuildStatus> COMPARATOR = new Comparator<BuildStatus>() {
-		public int compare(BuildStatus lhs, BuildStatus rhs) {
+	private static final Comparator<AdjustedBuildStatus> COMPARATOR = new Comparator<AdjustedBuildStatus>() {
+		public int compare(AdjustedBuildStatus lhs, AdjustedBuildStatus rhs) {
 			return lhs.ordinal() - rhs.ordinal();
 		}
 	};
 
-	private int gentNumOfBuildsForState(BuildStatus buildStatus) {
+	private int gentNumOfBuildsForState(AdjustedBuildStatus buildStatus) {
 		int ret = 0;
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (build.getStatus() == buildStatus) {
+			if (build.getAdjustedStatus() == buildStatus) {
 				++ret;
 			}
 		}
@@ -102,12 +102,12 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForState(BuildStatus buildStatus, int index) {
+	private BambooBuildAdapterIdea getBuildForState(AdjustedBuildStatus buildStatus, int index) {
 		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
 
 		// get all builds for server
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (build.getStatus() == buildStatus) {
+			if (build.getAdjustedStatus() == buildStatus) {
 				array.add(build);
 			}
 		}

@@ -24,6 +24,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import org.jetbrains.annotations.NotNull;
 
 public class RefreshBambooPanelAction extends AnAction {
 
@@ -41,7 +42,8 @@ public class RefreshBambooPanelAction extends AnAction {
 			Task.Backgroundable refresh =
 					new Task.Backgroundable(IdeaHelper.getCurrentProject(e), "Refreshing Bamboo Panel", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
 					checker.newTimerTask().run();
 				}
 			};

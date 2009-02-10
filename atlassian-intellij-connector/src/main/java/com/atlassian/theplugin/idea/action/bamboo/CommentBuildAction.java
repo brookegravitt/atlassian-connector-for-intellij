@@ -29,8 +29,8 @@ public class CommentBuildAction extends AbstractBuildListAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (getBuild(event) == null || !getBuild(event).isBamboo2()
-				|| getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
+		final BambooBuildAdapterIdea build = getBuild(event);
+		if (build == null || !build.isBamboo2() || !build.areActionsAllowed()) {
 			event.getPresentation().setEnabled(false);
 		}
 	}

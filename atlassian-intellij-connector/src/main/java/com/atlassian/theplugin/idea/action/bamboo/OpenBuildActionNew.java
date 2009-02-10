@@ -2,14 +2,14 @@ package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
- * User: jgorycki
- * Date: Jan 7, 2009
- * Time: 1:54:36 PM
+ * @author jgorycki
  */
 public class OpenBuildActionNew extends AbstractBuildListAction {
+	@Override
 	public void actionPerformed(AnActionEvent event) {
 		IdeaHelper.getBuildToolWindow(event).showBuild(getBuild(event));
 	}
@@ -17,8 +17,8 @@ public class OpenBuildActionNew extends AbstractBuildListAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (getBuild(event) == null || !getBuild(event).isBamboo2()
-				|| getBuild(event).getState() == BambooBuildAdapterIdea.BuildState.UNKNOWN) {
+		final BambooBuildAdapterIdea build = getBuild(event);
+		if (build == null || !build.isBamboo2() || !build.areActionsAllowed()) {
 			event.getPresentation().setEnabled(false);
 		}
 	}
