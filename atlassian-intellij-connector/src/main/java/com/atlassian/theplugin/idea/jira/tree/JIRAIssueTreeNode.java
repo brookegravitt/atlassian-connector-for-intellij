@@ -44,7 +44,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		private SelectableLabel keyAndSummary;
 
 		private RendererPanel() {
-			super(new FormLayout("fill:150px:grow, right:pref", "pref"));
+			super(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
 			CellConstraints cc = new CellConstraints();
 
 			setBackground(UIUtil.getTreeTextBackground());
@@ -78,7 +78,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			gbc.weighty = 0.0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.anchor = GridBagConstraints.FIRST_LINE_END;
-			state = new SelectableLabel(true, true, null, issue.getStatus(),
+			state = new SelectableLabel(true, true, null, "    " + issue.getStatus(),
 					CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
 					SwingConstants.LEADING, ICON_HEIGHT, false, true);
 			state.setHorizontalAlignment(SwingConstants.RIGHT);
