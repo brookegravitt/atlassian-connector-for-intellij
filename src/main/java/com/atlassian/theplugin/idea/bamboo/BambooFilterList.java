@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -126,7 +126,7 @@ public class BambooFilterList extends JList {
 
 			break;
 			case STATE:
-				for (BuildStatus buildStatus : BuildStatus.values()) {
+				for (AdjustedBuildStatus buildStatus : AdjustedBuildStatus.values()) {
 					final BuildStatusFilterWrapper obj = new BuildStatusFilterWrapper(new BuildStatusFilter(buildStatus),
 							bambooModel);
 					if (!listModel.contains(obj)) {
@@ -223,15 +223,15 @@ public class BambooFilterList extends JList {
 
 	private static class BuildStatusFilter implements BambooBuildFilter {
 
-		private final BuildStatus status;
+		private final AdjustedBuildStatus status;
 
-		public BuildStatusFilter(final BuildStatus status) {
+		public BuildStatusFilter(final AdjustedBuildStatus status) {
 			this.status = status;
 		}
 
 
 		public boolean doesMatch(final BambooBuildAdapterIdea build) {
-			return status == build.getStatus();
+			return status == build.getAdjustedStatus();
 		}
 
 		@Override
@@ -347,7 +347,9 @@ public class BambooFilterList extends JList {
 				case SUCCESS:
 					return "Build Succeeded";
 				case UNKNOWN:
-					return "Unknown";
+					return "Unknown State";
+				case DISABLED:
+					return "Build Disabled";
 				default:
 					return "???";
 			}

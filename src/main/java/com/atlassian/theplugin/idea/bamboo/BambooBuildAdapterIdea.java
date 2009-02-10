@@ -18,9 +18,14 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
+
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_RED = IconLoader.getIcon("/icons/icn_plan_failed.gif");
@@ -30,67 +35,55 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_MY_BUILD_RED = IconLoader.getIcon("/actions/lightning.png");
 	private static final Icon ICON_MY_BUILD_GREEN = IconLoader.getIcon("/icons/lightning_green.png");
 
+	public BambooBuildAdapterIdea(BambooBuild build) {
+		super(build);
+	}
 
+	@Nullable
 	public Icon getMyBuildIcon() {
-		if (getState() == BuildState.FAIL && build.isMyBuild()) {
+		if (getStatus() == BuildStatus.FAILURE && build.isMyBuild()) {
 			return ICON_MY_BUILD_RED;
-		} else if (getState() == BuildState.PASS && build.isMyBuild()) {
+		} else if (getStatus() == BuildStatus.SUCCESS && build.isMyBuild()) {
 			return ICON_MY_BUILD_GREEN;
 		} else {
 			return null;
 		}
 	}
 
-	public enum BuildState {
-		PASS("Passed", ICON_GREEN), FAIL("Failed", ICON_RED), UNKNOWN("Unknown", ICON_GREY);
-		private final String name;
-		private Icon icon;
-
-		private BuildState(String name, Icon icon) {
-			this.name = name;
-			this.icon = icon;
+	@NotNull
+	public Icon getIcon() {
+		if (build.getEnabled()) {
+			switch (getStatus()) {
+				case FAILURE:
+					return ICON_RED;
+				case SUCCESS:
+					return ICON_GREEN;
+				case UNKNOWN:
+					return ICON_GREY;
+			}
 		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Icon getIcon() {
-			return icon;
-		}
+		return ICON_GREY;
 	}
 
-	public BuildState getState() {
+	@NotNull
+	public AdjustedBuildStatus getAdjustedStatus() {
 		if (build.getEnabled()) {
 			switch (build.getStatus()) {
 				case FAILURE:
-					return BuildState.FAIL;
+					return AdjustedBuildStatus.FAILURE;
 				case SUCCESS:
-					return BuildState.PASS;
+					return AdjustedBuildStatus.SUCCESS;
 				case UNKNOWN:
-				default:
-					return BuildState.UNKNOWN;
+					return AdjustedBuildStatus.UNKNOWN;
 			}
-		} else {
-			return BuildState.UNKNOWN;
 		}
+		return AdjustedBuildStatus.DISABLED;
 	}
 
-	public BambooBuildAdapterIdea(BambooBuild build) {
-		super(build);
-	}
 
-	public Icon getBuildIcon() {
-		final BuildState buildState = getState();
-		switch (buildState) {
-			case FAIL:
-				return ICON_RED;
-			case PASS:
-				return ICON_GREEN;
-			case UNKNOWN:
-			default:
-				return ICON_GREY;
-		}
+	public boolean areActionsAllowed() {
+		final AdjustedBuildStatus buildStatus = getAdjustedStatus();
+		return buildStatus != AdjustedBuildStatus.UNKNOWN && buildStatus != AdjustedBuildStatus.DISABLED;
 	}
 
 }
