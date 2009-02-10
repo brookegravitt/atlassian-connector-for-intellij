@@ -60,6 +60,8 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 					return ICON_GREEN;
 				case UNKNOWN:
 					return ICON_GREY;
+				default:
+					break;
 			}
 		}
 		return ICON_GREY;
@@ -75,6 +77,8 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 					return AdjustedBuildStatus.SUCCESS;
 				case UNKNOWN:
 					return AdjustedBuildStatus.UNKNOWN;
+				default:
+					break;
 			}
 		}
 		return AdjustedBuildStatus.DISABLED;
