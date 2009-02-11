@@ -27,6 +27,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.TextLayout;
+import java.awt.font.FontRenderContext;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -35,21 +37,31 @@ import java.util.Iterator;
  */
 public class BuildTreeNode extends AbstractBuildTreeNode {
 
-	// this is absolutely sick
-	private static final int THREE = 3;
-
 	private static final int MAX_TOOLTIP_WIDTH = 500;
 	private static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
 	private BambooBuildAdapterIdea build;
-	private static final int DATE_LABEL_WIDTH = 100;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
+	private static double reasonWidth = 0.0;
+	private static double serverWidth = 0.0;
+	private static double dateWidth = 0.0;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
 		super(build.getBuildKey(), null, null);
 
 		this.build = build;
+
+		JLabel l = new JLabel();
+		TextLayout layoutStatus =
+				new TextLayout(getBuildReasonString(), l.getFont(), new FontRenderContext(null, true, true));
+		reasonWidth = Math.max(layoutStatus.getBounds().getWidth(), reasonWidth);
+		TextLayout layoutName =
+				new TextLayout(getBuildServerString(), l.getFont(), new FontRenderContext(null, true, true));
+		serverWidth = Math.max(layoutName.getBounds().getWidth(), serverWidth);
+		TextLayout layoutDate =
+				new TextLayout(getRelativeBuildTimeString(), l.getFont(), new FontRenderContext(null, true, true));
+		dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
 	}
 
 	@Override
@@ -68,10 +80,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		JPanel p = new JPanel();
 
-		p.setLayout(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
+		p.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		CellConstraints cc = new CellConstraints();
 
 		p.setBackground(UIUtil.getTreeTextBackground());
+
+		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(build.getBuildKey());
@@ -86,10 +100,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 					.append(build.getTestsNumber())
 					.append(" Tests Failed");
 		}
-		p.add(new SelectableLabel(selected, enabled, sb.toString(), build.getIcon(),
-				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(1, 1));
+		p.add(new SelectableLabel(selected, enabled, sb.toString(), null,
+				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(3, 1));
 
-		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2, 1));
+		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2 + 2, 1));
 
 
 		final JToolTip jToolTip = p.createToolTip();
@@ -99,6 +113,23 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.setToolTipText(buildTolltip(width));
 
 		return p;
+	}
+
+	private String getBuildReasonString() {
+		StringBuilder sb = new StringBuilder();
+
+		String commiters = getCommiters();
+
+		if (!build.getBuildReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
+			sb.append(build.getBuildReason());
+		}
+
+		// commiters
+		if (commiters.length() > 0 && build.getBuildReason().equals(CODE_HAS_CHANGED)) {
+			sb.append("Changes by: ").append(commiters);
+		}
+
+		return sb.toString();
 	}
 
 	private JPanel createPanelForOtherBuildDetails(boolean selected, boolean enabled) {
@@ -115,33 +146,18 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		// gap
 		JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty1, THREE * GAP, ICON_HEIGHT);
+		setFixedComponentSize(empty1, 2 * GAP, ICON_HEIGHT);
 		p.add(empty1, gbc);
 
-		String commiters = getCommiters();
-
+		// reason
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		
-		// reason
-		if (!build.getBuildReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
-			JLabel reason = new SelectableLabel(selected, enabled, build.getBuildReason(), null,
-					SwingConstants.LEADING, ICON_HEIGHT);
-//			setFixedComponentSize(reason, REASON_LABEL_WIDTH, ICON_HEIGHT);
-			reason.setHorizontalAlignment(SwingConstants.RIGHT);
-			p.add(reason, gbc);
-		}
-
-		// commiters
-		if (commiters.length() > 0 && build.getBuildReason().equals(CODE_HAS_CHANGED)) {
-			gbc.gridx++;
-			JLabel commitersList = new SelectableLabel(selected, enabled, "Changes by: " + commiters, null,
-					SwingConstants.LEADING, ICON_HEIGHT);
-			commitersList.setHorizontalAlignment(SwingConstants.RIGHT);
-			p.add(commitersList, gbc);
-
-		}
+		JLabel reason = new SelectableLabel(selected, enabled, getBuildReasonString(), null,
+				SwingConstants.LEADING, ICON_HEIGHT);
+		setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + 1, ICON_HEIGHT);
+		reason.setHorizontalAlignment(SwingConstants.RIGHT);
+		p.add(reason, gbc);
 
 		// gap
 		gbc.gridx++;
@@ -149,7 +165,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(empty2, THREE * GAP, ICON_HEIGHT);
+		setFixedComponentSize(empty2, 2 * GAP, ICON_HEIGHT);
 		p.add(empty2, gbc);
 
 		// server
@@ -157,22 +173,31 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		JLabel server = new SelectableLabel(selected, enabled, "(" + build.getServer().getName() + ")", null,
+		JLabel server = new SelectableLabel(selected, enabled, getBuildServerString(), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
+		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + 1, ICON_HEIGHT);
 		server.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(server, gbc);
 
+
+		// gap
+		gbc.gridx++;
+		gbc.weightx = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		JLabel empty3 = new SelectableLabel(selected, enabled, "", null,
+				SwingConstants.LEADING, ICON_HEIGHT);
+		setFixedComponentSize(empty3, 2 * GAP, ICON_HEIGHT);
+		p.add(empty3, gbc);
 
 		// date
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		String relativeBuildDate =
-				DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
+		String relativeBuildDate = getRelativeBuildTimeString();
 		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(date, DATE_LABEL_WIDTH, ICON_HEIGHT);
+		setFixedComponentSize(date, Double.valueOf(dateWidth).intValue() + 1, ICON_HEIGHT);
 		date.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(date, gbc);
 
@@ -190,6 +215,14 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.add(padding, gbc);
 
 		return p;
+	}
+
+	private String getRelativeBuildTimeString() {
+		return DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
+	}
+
+	private String getBuildServerString() {
+		return "(" + build.getServer().getName() + ")";
 	}
 
 	private String getCommiters() {
@@ -241,7 +274,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Build Date:</b></td><td valign=\"top\">");
-		String date = DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
+		String date = getRelativeBuildTimeString();
 		sb.append(StringEscapeUtils.escapeHtml(date).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
 				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 
