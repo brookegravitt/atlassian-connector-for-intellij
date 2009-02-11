@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -161,7 +161,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	}
 
 
-
 	public void apply() throws ConfigurationException {
 		if (configPanel != null) {
 			// Get data from configPanel to component
@@ -191,34 +190,5 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	public void disposeUIResources() {
 		configPanel = null;
 	}
-
-//	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-//		// todo check if AppComponent need to be ConfigListener (I cannot see where it is registered)
-//		rescheduleStatusCheckers(true);
-//	}
-//
-//	public void projectUnregistered() {
-//	}
-//
-//	public void serverCredentialsUpdated(ServerId serverId) {
-//	}
-//
-//	public void serverConnectionDataChanged(ServerId serverId) {
-//	}
-//
-//	public void serverNameChanged(ServerId serverId) {
-//	}
-//
-//	public void serverAdded(ServerCfg newServer) {
-//	}
-//
-//	public void serverRemoved(ServerCfg oldServer) {
-//	}
-//
-//	public void serverEnabled(ServerId serverId) {
-//	}
-//
-//	public void serverDisabled(ServerId serverId) {
-//	}
 
 }
