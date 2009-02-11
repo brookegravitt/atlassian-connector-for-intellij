@@ -52,8 +52,8 @@ public class BuildListModelImpl implements BuildListModel {
 		final Collection<String> errors = MiscUtil.buildArrayList();
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
-				if (build.getStatus() == BuildStatus.UNKNOWN) {
-					errors.add(build.getBuildKey() + ": " + build.getMessage());
+				if (build.getStatus() == BuildStatus.UNKNOWN && build.getErrorMessage() != null) {
+					errors.add(build.getBuildKey() + ": " + build.getErrorMessage());
 					haveErrors = true;
 				}
 			}
