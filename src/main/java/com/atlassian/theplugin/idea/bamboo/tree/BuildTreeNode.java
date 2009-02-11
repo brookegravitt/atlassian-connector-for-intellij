@@ -101,7 +101,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 					.append(" Tests Failed");
 		}
 		p.add(new SelectableLabel(selected, enabled, sb.toString(), null,
-				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(3, 1));
+				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(2 + 1, 1));
 
 		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2 + 2, 1));
 
