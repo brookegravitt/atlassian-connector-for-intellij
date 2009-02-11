@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,8 +17,10 @@
 package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -71,7 +73,7 @@ public class MissingPasswordHandler implements Runnable {
 				if (server.isComplete() || serversWithoutPassword.contains(server.getServerId())) {
 					continue;
 				}
-				PasswordDialog dialog = new PasswordDialog(server, serverFacade);
+				PasswordDialog dialog = new PasswordDialog(server, serverFacade, project);
 				dialog.pack();
 				JPanel panel = dialog.getPasswordPanel();
 
