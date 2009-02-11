@@ -11,11 +11,10 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
 /**
- * User: jgorycki
- * Date: Dec 3, 2008
- * Time: 12:28:16 PM
+ * @author jgorycki
  */
 public class OpenReviewAction extends AbstractCrucibleToolbarAction {
+	@Override
 	public void actionPerformed(AnActionEvent e) {
 		Project project = IdeaHelper.getCurrentProject(e);
 
