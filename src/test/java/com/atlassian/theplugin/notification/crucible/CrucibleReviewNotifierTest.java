@@ -34,6 +34,9 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.picocontainer.PicoContainer;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
+import org.easymock.IAnswer;
 
 import java.util.*;
 
@@ -116,84 +119,23 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	}
 
 	private VersionedComment prepareVersionedComment(final PermId permId, final PermId itemId, final VersionedComment reply) {
-		return new VersionedComment() {
-
-			public PermId getPermId() {
-				return permId;
-			}
-
-			public PermId getReviewItemId() {
-				return itemId;
-			}
-
-			public boolean isToLineInfo() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public int getToStartLine() {
-				return 0;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public int getToEndLine() {
-				return 0;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isFromLineInfo() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public int getFromStartLine() {
-				return 0;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public int getFromEndLine() {
-				return 0;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public String getMessage() {
-				return "";
-			}
-
-			public boolean isDraft() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isDeleted() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isDefectRaised() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isDefectApproved() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public boolean isReply() {
-				return false;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-
-			public User getAuthor() {
-				return null;
-			}
-
-			public Date getCreateDate() {
-				return null;
-			}
-
-			public List<VersionedComment> getReplies() {
-				List<VersionedComment> replies = new ArrayList<VersionedComment>();
+		final IMocksControl niceControl = EasyMock.createNiceControl();
+		final VersionedComment mock = niceControl.createMock(VersionedComment.class);
+		EasyMock.expect(mock.getPermId()).andReturn(permId).anyTimes();
+		EasyMock.expect(mock.getReviewItemId()).andReturn(itemId).anyTimes();
+		EasyMock.expect(mock.getMessage()).andReturn("").anyTimes();
+		EasyMock.expect(mock.getReplies()).andAnswer(new IAnswer<List<VersionedComment>>() {
+			public List<VersionedComment> answer() throws Throwable {
+				final List<VersionedComment> replies = new ArrayList<VersionedComment>();
 				if (reply != null) {
 					replies.add(reply);
 				}
 				return replies;
 			}
+		});
 
-			public Map<String, CustomField> getCustomFields() {
-				return null;  //To change body of implemented methods use File | Settings | File Templates.
-			}
-		};
+		niceControl.replay();
+		return mock;
 	}
 
 	private CrucibleFileInfo prepareReviewItem(final PermId newItem) {
