@@ -84,6 +84,8 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 	public Socket create(final String host, final int port, final StringBuffer otherHeaders, final BooleanHolder useFullURL)
 			throws Exception {
 
+		PluginConfiguration config = ConfigurationFactory.getConfiguration();
+
 		int sslPort = port;
 		if (port == -1) {
 			sslPort = EasySSLProtocolSocketFactory.SSL_PORT;
@@ -94,7 +96,8 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 		//boolean hostInNonProxyList = super.isHostInNonPxyList(host, tcp.getNonProxyHosts());
 
 		Socket sslSocket;
-		if (tcp.getProxyHost().length() == 0) { // || hostInNonProxyList) {
+		if (!config.getGeneralConfigurationData().getUseIdeaProxySettings()
+				|| tcp.getProxyHost().length() == 0) { // || hostInNonProxyList) {
 			// direct SSL connection
 			sslSocket = super.createSocket(host, sslPort);
 		} else {
