@@ -42,18 +42,22 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		private SelectableLabel state;
 
 		private SelectableLabel keyAndSummary;
+		private JLabel iconLabel;
 
 		private RendererPanel() {
-			super(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
+			super(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 			CellConstraints cc = new CellConstraints();
 
 			setBackground(UIUtil.getTreeTextBackground());
 
+			iconLabel = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
+			add(iconLabel, cc.xy(1, 1));
+			
 			keyAndSummary = new SelectableLabel(true, true, issue.getKey() + ": " + issue.getSummary(),
-					CachedIconLoader.getIcon(issue.getTypeIconUrl()), SwingConstants.TRAILING, ICON_HEIGHT);
-			add(keyAndSummary, cc.xy(1, 1));
+					null, SwingConstants.TRAILING, ICON_HEIGHT);
+			add(keyAndSummary, cc.xy(2 + 1, 1));
 
-			add(createPanelForOtherIssueDetails(), cc.xy(2, 1));
+			add(createPanelForOtherIssueDetails(), cc.xy(2 + 2, 1));
 
 			setParameters(true, true);
 
@@ -139,7 +143,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 			Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
 					: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
 
-			keyAndSummary.setIcon(typeIcon);
+			iconLabel.setIcon(typeIcon);
 			keyAndSummary.setSelected(selected);
 			keyAndSummary.setEnabled(enabled);
 
