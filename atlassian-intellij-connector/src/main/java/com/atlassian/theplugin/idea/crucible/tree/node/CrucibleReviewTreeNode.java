@@ -6,11 +6,13 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.text.DateFormat;
 
 /**
@@ -19,8 +21,7 @@ import java.text.DateFormat;
  * Time: 11:40:51 AM
  */
 public class CrucibleReviewTreeNode extends ReviewTreeNode {
-	private static final int STATUS_LABEL_WIDTH = 80;
-	private static final int AUTHOR_LABEL_WIDTH = 120;
+	private static final int GAP = 10;
 
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
@@ -30,11 +31,21 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private final ReviewAdapter review;
 	private static final int MAX_LENGTH = 1000;
 	private RendererPanel renderer;
-	
+
+	private static double statusWidth = 0.0;
+	private static double nameWidth = 0.0;
+
 	public CrucibleReviewTreeNode(ReviewAdapter review) {
 		super(review.getPermId().getId(), null, null);
 		this.review = review;
 		renderer = new RendererPanel();
+		JLabel l = new JLabel();
+		TextLayout layoutStatus =
+				new TextLayout(review.getState().value(), l.getFont(), new FontRenderContext(null, true, true));
+		statusWidth = Math.max(layoutStatus.getBounds().getWidth(), statusWidth);
+		TextLayout layoutName =
+				new TextLayout(review.getAuthor().getDisplayName(), l.getFont(), new FontRenderContext(null, true, true));
+		nameWidth = Math.max(layoutName.getBounds().getWidth(), nameWidth);
 	}
 
 	@Override
@@ -54,17 +65,18 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		private SelectableLabel created;
 		private JPanel padding;
 
-		private RendererPanel() {
-			super(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
-			CellConstraints cc = new CellConstraints();
+		private JPanel otherDetails;
 
+		private RendererPanel() {
+			super();
 			setBackground(UIUtil.getTreeTextBackground());
 
 			keyAndSummary =
 					new SelectableLabel(true, true, review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
-			add(keyAndSummary, cc.xy(1, 1));
 
-			add(createPanelForOtherReviewDetails(), cc.xy(2, 1));
+			otherDetails = createPanelForOtherReviewDetails();
+
+			addComponents();
 
 			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
 			final JToolTip jToolTip = createToolTip();
@@ -74,6 +86,13 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			setToolTipText(buildTolltip(width));
 		}
 
+		private void addComponents() {
+			setLayout(new FormLayout("fill:min(pref;150px):grow, right:pref", "pref"));
+			CellConstraints cc = new CellConstraints();
+			add(keyAndSummary, cc.xy(1, 1));
+			add(otherDetails, cc.xy(2, 1));
+		}
+
 		private JPanel createPanelForOtherReviewDetails() {
 			JPanel rest = new JPanel(new GridBagLayout());
 
@@ -81,19 +100,20 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			gbc.gridx = 0;
 			gbc.gridy = 0;
 			gbc.weightx = 1.0;
+			gbc.insets = new Insets(0, 0, 0, 0);
 			gbc.fill = GridBagConstraints.HORIZONTAL;
-			state = new SelectableLabel(true, true, "    " + review.getState().value(), null,
+			state = new SelectableLabel(true, true, review.getState().value() + "    ", null,
 					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(state, STATUS_LABEL_WIDTH, ICON_HEIGHT);
+			state.setHorizontalAlignment(SwingConstants.RIGHT);
+			setFixedComponentSize(state, Double.valueOf(statusWidth).intValue() + 2 * GAP, ICON_HEIGHT);
 			rest.add(state, gbc);
 
 			gbc.gridx++;
 			gbc.weightx = 0.0;
 			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 0, 0, 0);
 			author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
 					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(author, AUTHOR_LABEL_WIDTH, ICON_HEIGHT);
+			setFixedComponentSize(author, Double.valueOf(nameWidth).intValue() + GAP, ICON_HEIGHT);
 			rest.add(author, gbc);
 
 			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
@@ -122,20 +142,26 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		}
 
 		public void setParameters(boolean selected, boolean enabled) {
+			removeAll();
+			validate();
+
+			keyAndSummary =
+					new SelectableLabel(true, true, review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
+			otherDetails = createPanelForOtherReviewDetails();
 			keyAndSummary.setSelected(selected);
 			keyAndSummary.setEnabled(enabled);
-
 			state.setSelected(selected);
 			state.setEnabled(enabled);
-
 			author.setSelected(selected);
 			author.setEnabled(enabled);
-
 			created.setSelected(selected);
 			created.setEnabled(enabled);
 
 			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+
+			addComponents();
+			validate();
 		}
 	}
 
