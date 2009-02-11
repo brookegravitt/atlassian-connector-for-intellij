@@ -261,7 +261,7 @@
 				class="com.atlassian.theplugin.idea.action.bamboo.RefreshBambooPanelAction" text="Refresh"
 				description="Refresh" icon="/actions/sync.png"/>
 		<action id="ThePlugin.Bamboo.ViewBuild" class="com.atlassian.theplugin.idea.action.bamboo.ViewBuildAction"
-				text="View in Browser" description="View in Browser" icon="/general/web.png"/>
+				text="View in Browser" description="View in Browser" icon="/icons/crucible/pin_viewinbrowser.png"/>
 		<action id="ThePlugin.Bamboo.RunBuild" class="com.atlassian.theplugin.idea.action.bamboo.RunBuildAction"
 				text="Run Build" description="Run Bamboo build" icon="/actions/execute.png">
 			<keyboard-shortcut first-keystroke="control R" keymap="$default"/>
@@ -306,7 +306,7 @@
 		<action id="ThePlugin.Build.View"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.ViewBuildAction"
 				text="View Build"
-				description="View build in the browser" icon="/general/web.png"/>
+				description="View build in the browser" icon="/icons/crucible/pin_viewinbrowser.png"/>
 		<action id="ThePlugin.Build.Run"
 				class="com.atlassian.theplugin.idea.action.bamboo.onebuild.RunBuildAction"
 				text="Run Build"
@@ -649,7 +649,7 @@
 		<action id="ThePlugin.JiraIssues.ViewIssue"
 				class="com.atlassian.theplugin.idea.action.issues.ViewIssueAction"
 				text="View in Browser"
-				icon="/general/web.png"/>
+				icon="/icons/crucible/pin_viewinbrowser.png"/>
 		<action id="ThePlugin.JiraIssues.EditIssue"
 				class="com.atlassian.theplugin.idea.action.issues.EditIssueAction"
 				text="Edit in Browser"
