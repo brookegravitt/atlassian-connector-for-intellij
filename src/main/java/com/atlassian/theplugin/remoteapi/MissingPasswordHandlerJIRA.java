@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
@@ -34,11 +35,13 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 	private static boolean isDialogShown = false;
 
 	private final JiraServerCfg server;
+	private Project project;
 	private final ProductServerFacade serverFacade;
 
-	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, JiraServerCfg server) {
+	public MissingPasswordHandlerJIRA(ProductServerFacade serverFacade, JiraServerCfg server, final Project project) {
 		this.serverFacade = serverFacade;
 		this.server = server;
+		this.project = project;
 	}
 
 	public void run() {
@@ -51,7 +54,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 //			if (server.getIsConfigInitialized()) {
 //				return; //????
 //			}
-			PasswordDialog dialog = new PasswordDialog(server, serverFacade);
+			PasswordDialog dialog = new PasswordDialog(server, serverFacade, project);
 			dialog.pack();
 			JPanel panel = dialog.getPasswordPanel();
 
