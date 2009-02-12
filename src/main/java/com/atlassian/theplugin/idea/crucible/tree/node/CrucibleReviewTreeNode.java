@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -40,11 +41,16 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		this.review = review;
 		renderer = new RendererPanel();
 		JLabel l = new JLabel();
+		// PL-1202 - argument to TextLayout must be a non-empty string
+		String state = review.getState().value();
 		TextLayout layoutStatus =
-				new TextLayout(review.getState().value(), l.getFont(), new FontRenderContext(null, true, true));
+				new TextLayout(state.length() > 0 ? state : ".", l.getFont(), new FontRenderContext(null, true, true));
 		statusWidth = Math.max(layoutStatus.getBounds().getWidth(), statusWidth);
+		User author = review.getAuthor();
+		String authorString = author != null ? author.getDisplayName() : ".";
 		TextLayout layoutName =
-				new TextLayout(review.getAuthor().getDisplayName(), l.getFont(), new FontRenderContext(null, true, true));
+				new TextLayout(authorString.length() > 0 ? authorString : ".", l.getFont(),
+						new FontRenderContext(null, true, true));
 		nameWidth = Math.max(layoutName.getBounds().getWidth(), nameWidth);
 	}
 
