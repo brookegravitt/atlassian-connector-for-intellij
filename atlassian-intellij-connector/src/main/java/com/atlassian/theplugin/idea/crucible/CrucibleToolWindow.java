@@ -19,16 +19,9 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -39,11 +32,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -54,8 +43,6 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -472,19 +459,7 @@ class DetailsPanel extends JPanel {
 		gbc2.gridy++;
 		body.add(new BoldLabel("Open"), gbc1);
 
-		DateTime now = new DateTime();
-		Period period = new Period(ra.getCreateDate().getTime(), now.getMillis());
-
-		String years = getFormattedPeriod(period.getYears(), "year");
-		String months = getFormattedPeriod(period.getMonths(), "month");
-		String days = getFormattedPeriod(period.getDays(), "day");
-
-		String text = years;
-		text += years.length() > 0 ? " and " : "";
-		text += months;
-		text += months.length() > 0 && days.length() > 0 ? " and " : "";
-		text += days;
-		body.add(new JLabel(text), gbc2);
+		body.add(new JLabel(DateUtil.getRelativeBuildTime(ra.getCreateDate())), gbc2);
 
 		gbc1.gridy++;
 		gbc2.gridy++;
@@ -536,18 +511,6 @@ class DetailsPanel extends JPanel {
 		body.add(filler, gbc1);
 
 		return body;
-	}
-
-	private String getFormattedPeriod(int value, String singName) {
-		String text = "";
-		if (value > 0) {
-			text = value + " " + singName;
-			if (value > 1) {
-				text += "s";
-			}
-		}
-
-		return text;
 	}
 
 	public static void main(String[] args) {
