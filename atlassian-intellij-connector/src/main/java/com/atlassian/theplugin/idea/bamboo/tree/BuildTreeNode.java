@@ -21,14 +21,15 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.TextLayout;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -53,14 +54,18 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		this.build = build;
 
 		JLabel l = new JLabel();
+		// PL-1202 - argument to TextLayout must be a non-empty string
+		String reason = getBuildReasonString();
 		TextLayout layoutStatus =
-				new TextLayout(getBuildReasonString(), l.getFont(), new FontRenderContext(null, true, true));
+				new TextLayout(reason.length() > 0 ? reason : ".", l.getFont(), new FontRenderContext(null, true, true));
 		reasonWidth = Math.max(layoutStatus.getBounds().getWidth(), reasonWidth);
+		String server = getBuildServerString();
 		TextLayout layoutName =
-				new TextLayout(getBuildServerString(), l.getFont(), new FontRenderContext(null, true, true));
+				new TextLayout(server.length() > 0 ? server : ".", l.getFont(), new FontRenderContext(null, true, true));
 		serverWidth = Math.max(layoutName.getBounds().getWidth(), serverWidth);
+		String date = getRelativeBuildTimeString();
 		TextLayout layoutDate =
-				new TextLayout(getRelativeBuildTimeString(), l.getFont(), new FontRenderContext(null, true, true));
+				new TextLayout(date.length() > 0 ? date : ".", l.getFont(), new FontRenderContext(null, true, true));
 		dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
 	}
 
@@ -115,6 +120,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return p;
 	}
 
+	@NotNull
 	private String getBuildReasonString() {
 		StringBuilder sb = new StringBuilder();
 
@@ -217,10 +223,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return p;
 	}
 
+	@NotNull
 	private String getRelativeBuildTimeString() {
 		return DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
 	}
 
+	@NotNull
 	private String getBuildServerString() {
 		return "(" + build.getServer().getName() + ")";
 	}
