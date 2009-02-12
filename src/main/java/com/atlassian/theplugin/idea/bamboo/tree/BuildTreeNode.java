@@ -47,6 +47,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private static double reasonWidth = 0.0;
 	private static double serverWidth = 0.0;
 	private static double dateWidth = 0.0;
+	private static final int LABEL_PADDING = 5;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
 		super(build.getBuildKey(), null, null);
@@ -161,7 +162,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		JLabel reason = new SelectableLabel(selected, enabled, getBuildReasonString(), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + 1, ICON_HEIGHT);
+		setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		reason.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(reason, gbc);
 
@@ -181,7 +182,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.anchor = GridBagConstraints.LINE_END;
 		JLabel server = new SelectableLabel(selected, enabled, getBuildServerString(), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + 1, ICON_HEIGHT);
+		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		server.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(server, gbc);
 
@@ -203,7 +204,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		String relativeBuildDate = getRelativeBuildTimeString();
 		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
-		setFixedComponentSize(date, Double.valueOf(dateWidth).intValue() + 1, ICON_HEIGHT);
+		setFixedComponentSize(date, Double.valueOf(dateWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		date.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(date, gbc);
 
