@@ -32,13 +32,10 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	private JIRATestServerFacade facade;
 
+	@Override
 	public void setUp() throws Exception {
 		facade = new JIRATestServerFacade();
 		super.setUp();
-	}
-
-	public void tearDown() throws Exception {
-		super.tearDown();
 	}
 
 	public void testAddIssuesOnUninitialized() {
@@ -94,7 +91,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		assertEquals(50, model.getIssues().size());
 	}
 
-	private boolean listenerCalled = false;
+	private boolean listenerCalled;
 
 	public void testListeners() {
 		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
@@ -146,7 +143,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	private class JIRATestServerFacade implements JIRAServerFacade {
 
-		private int idx = 0;
+		private int idx;
 		private JIRAIssueBean proto = new JIRAIssueBean();
 
 		private List<JIRAIssue> createIssueList(int size) {
