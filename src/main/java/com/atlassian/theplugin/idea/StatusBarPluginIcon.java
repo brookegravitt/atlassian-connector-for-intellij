@@ -26,11 +26,11 @@ import com.intellij.openapi.wm.WindowManager;
 import javax.swing.*;
 
 public abstract class StatusBarPluginIcon extends JLabel {
-	private StatusBar statusBar = null;
+	private StatusBar statusBar;
 	private Project project;
 	private final CfgManager cfgManager;
 
-	private boolean isIconShown = false;
+	private boolean isIconShown;
 
 	public StatusBarPluginIcon(Project aProject, CfgManager cfgManager) {
 		this.project = aProject;
