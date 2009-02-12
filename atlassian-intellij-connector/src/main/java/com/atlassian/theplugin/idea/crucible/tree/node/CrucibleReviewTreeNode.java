@@ -36,6 +36,9 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private static double statusWidth = 0.0;
 	private static double nameWidth = 0.0;
 
+	private static int currentRendererGeneration;
+	private int myRendererGeneration;
+
 	public CrucibleReviewTreeNode(ReviewAdapter review) {
 		super(review.getPermId().getId(), null, null);
 		this.review = review;
@@ -52,6 +55,8 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 				new TextLayout(authorString.length() > 0 ? authorString : ".", l.getFont(),
 						new FontRenderContext(null, true, true));
 		nameWidth = Math.max(layoutName.getBounds().getWidth(), nameWidth);
+
+		++currentRendererGeneration;
 	}
 
 	@Override
@@ -83,6 +88,8 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			otherDetails = createPanelForOtherReviewDetails();
 
 			addComponents();
+
+			myRendererGeneration = currentRendererGeneration;
 
 			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
 			final JToolTip jToolTip = createToolTip();
@@ -148,12 +155,20 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		}
 
 		public void setParameters(boolean selected, boolean enabled) {
-			removeAll();
-			validate();
+			if (myRendererGeneration != currentRendererGeneration) {
+				removeAll();
+				validate();
 
-			keyAndSummary =
-					new SelectableLabel(true, true, review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
-			otherDetails = createPanelForOtherReviewDetails();
+				keyAndSummary =	new SelectableLabel(true, true,
+						review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
+				otherDetails = createPanelForOtherReviewDetails();
+
+				addComponents();
+				validate();
+
+				myRendererGeneration = currentRendererGeneration;
+			}
+
 			keyAndSummary.setSelected(selected);
 			keyAndSummary.setEnabled(enabled);
 			state.setSelected(selected);
@@ -166,8 +181,6 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
 			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
 
-			addComponents();
-			validate();
 		}
 	}
 
