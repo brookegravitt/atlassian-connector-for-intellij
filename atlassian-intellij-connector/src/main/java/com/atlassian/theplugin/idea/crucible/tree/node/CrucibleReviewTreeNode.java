@@ -23,6 +23,7 @@ import java.text.DateFormat;
  */
 public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private static final int GAP = 10;
+	private static final int LABEL_PADDING = 5;
 
 	public static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
@@ -118,7 +119,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			state = new SelectableLabel(true, true, review.getState().value() + "    ", null,
 					SwingConstants.LEADING, ICON_HEIGHT);
 			state.setHorizontalAlignment(SwingConstants.RIGHT);
-			setFixedComponentSize(state, Double.valueOf(statusWidth).intValue() + 2 * GAP, ICON_HEIGHT);
+			setFixedComponentSize(state, Double.valueOf(statusWidth).intValue() + 2 * GAP + LABEL_PADDING, ICON_HEIGHT);
 			rest.add(state, gbc);
 
 			gbc.gridx++;
@@ -126,7 +127,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			gbc.fill = GridBagConstraints.NONE;
 			author = new SelectableLabel(true, true, review.getAuthor().getDisplayName(), null,
 					SwingConstants.LEADING, ICON_HEIGHT);
-			setFixedComponentSize(author, Double.valueOf(nameWidth).intValue() + GAP, ICON_HEIGHT);
+			setFixedComponentSize(author, Double.valueOf(nameWidth).intValue() + GAP + LABEL_PADDING, ICON_HEIGHT);
 			rest.add(author, gbc);
 
 			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
