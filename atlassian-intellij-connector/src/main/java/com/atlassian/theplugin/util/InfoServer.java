@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -87,11 +88,11 @@ public final class InfoServer {
 			STABLE,
 			UNSTABLE
 		}
-		private Version version;
+		private final Version version;
 
-		private String downloadUrl;
-		private String releaseNotes;
-		private String releaseNotesUrl;
+		private final String downloadUrl;
+		private final String releaseNotes;
+		private final String releaseNotesUrl;
 
 		/**
 		 * Only for internal use (package scope)
@@ -99,11 +100,11 @@ public final class InfoServer {
 		 * @throws VersionServiceException
 		 * @throws com.atlassian.theplugin.commons.exception.IncorrectVersionException
 		 */
-		VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
+		public VersionInfo(Document doc) throws VersionServiceException, IncorrectVersionException {
 			version = new Version(getValue("/response/version/number", doc));
-			downloadUrl = getValue("/response/version/downloadUrl", doc);
+			downloadUrl = StringUtils.trim(getValue("/response/version/downloadUrl", doc));
 			releaseNotes = getValue("/response/version/releaseNotes", doc);
-			releaseNotesUrl = getValue("/response/version/releaseNotesUrl", doc);
+			releaseNotesUrl = StringUtils.trim(getValue("/response/version/releaseNotesUrl", doc));
 		}
 
 		/**
@@ -114,6 +115,8 @@ public final class InfoServer {
 		public VersionInfo(Version version, String downloadUrl) {
 			this.version = version;
 			this.downloadUrl = downloadUrl;
+			this.releaseNotes = null;
+			this.releaseNotesUrl = null;
 		}
 
 		private String getValue(String path, Document doc) throws VersionServiceException {
