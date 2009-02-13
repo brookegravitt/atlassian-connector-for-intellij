@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -157,10 +157,10 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(4, 3, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new GridLayoutManager(4, 4, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12), null));
 		final JLabel label1 = new JLabel();
-		label1.setText("Polling Time [minutes]:");
+		label1.setText("Check every:");
 		rootComponent.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JPanel panel1 = new JPanel();
@@ -169,33 +169,34 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		pollTimeSpinner = new JSpinner();
-		panel1.add(pollTimeSpinner,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1),
-						null, 0, false));
+		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+				new Dimension(50, -1), null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		rootComponent.add(spacer1,
-				new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-						GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		rootComponent.add(spacer1, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		final Spacer spacer2 = new Spacer();
-		rootComponent.add(spacer2,
-				new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-						GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(70, 14), null, 0, false));
+		rootComponent.add(spacer2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
+				1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(70, 14), null, 0, false));
 		final JLabel label2 = new JLabel();
-		label2.setText("Show Popup:");
+		label2.setText("Popups:");
 		rootComponent.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		unreadCrucibleReviews = new JRadioButton();
-		unreadCrucibleReviews.setText("Unread Crucible Reviews Exist");
-		rootComponent.add(unreadCrucibleReviews,
-				new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		unreadCrucibleReviews.setText("When there are new Crucible reviews");
+		rootComponent.add(unreadCrucibleReviews, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		never = new JRadioButton();
 		never.setText("Never");
-		rootComponent.add(never, new GridConstraints(1, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+		rootComponent.add(never, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("minute(s)");
+		rootComponent.add(label3, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		label3.setLabelFor(pollTimeSpinner);
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(unreadCrucibleReviews);
