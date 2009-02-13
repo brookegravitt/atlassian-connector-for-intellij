@@ -1,15 +1,28 @@
 <response>
-    <version>
-        <number>${project.version}, SVN:${buildNumber}</number>
-        <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
-        <releaseNotes><![CDATA[
+	<version>
+		<number>${project.version}, SVN:${buildNumber}</number>
+		<downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip
+		</downloadUrl>
+		<releaseNotes><![CDATA[
         <html><body>
         <p>
-        With pleasure, Atlassian presents version <b>2.0 Beta 12</b> of the Atlassian IntelliJ Connector.
-		In this iteration we have focused on the Review-Crucible tab, a lot of fixes and improvements. We are close to final release 2.0.0.<br>Please upgrade, try and test beta-12 before final release. 
+        With pleasure, Atlassian presents the Atlassian IntelliJ Connector 2.0.
+        Over the past weeks, we have been working on the IntelliJ Connector and issuing regular beta releases. Now we are proud to release the final version 2.0.
+        </p>
+        <p>
+        The connector now offers the same look and feel for JIRA issues, Bamboo builds and Crucible reviews.
+        The connector's windows all open as IDEA tool windows, appearing by default at the bottom of your IDE. Take a look at the release notes, to see the new things you can do with issues, builds and reviews.
+        </p>
+        <p>
+        You can open a FishEye view directly from a file in the IDEA editor, or open files in IDEA by supplying a FishEye URL.
+        There is a new FishEye-only connection for those who do not have a Crucible server.
+        </p>
+        <p>
+        Share your server connections across your project team while retaining your own IDE settings. The connector is now also compatible with IntelliJ IDEA 8.
         </p>
         </body></html>
         ]]></releaseNotes>
-        <releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Beta+12+Release+Notes</releaseNotesUrl>
-    </version>
+		<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Release+Notes
+		</releaseNotesUrl>
+	</version>
 </response>
