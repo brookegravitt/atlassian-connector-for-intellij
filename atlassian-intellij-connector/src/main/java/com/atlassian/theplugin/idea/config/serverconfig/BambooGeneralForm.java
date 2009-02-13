@@ -177,26 +177,31 @@ public class BambooGeneralForm extends JComponent {
 		final Spacer spacer2 = new Spacer();
 		rootComponent.add(spacer2, cc.xy(5, 11, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JLabel label1 = new JLabel();
-		label1.setText("Show Popup:");
+		label1.setText("Popups:");
 		rootComponent.add(label1, cc.xy(1, 1));
 		final JLabel label2 = new JLabel();
-		label2.setText("Polling Time [minutes]:");
+		label2.setText("Check every:");
 		rootComponent.add(label2, cc.xy(1, 9));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+		panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.add(panel1, cc.xy(3, 9));
 		pollTimeSpinner = new JSpinner();
-		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0,
+		panel1.add(pollTimeSpinner, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0,
 				false));
+		final JLabel label3 = new JLabel();
+		label3.setText("minute(s)");
+		panel1.add(label3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer3 = new Spacer();
-		panel1.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+		panel1.add(spacer3, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
 		onlyMyBuilds = new JCheckBox();
 		onlyMyBuilds.setText("Only for My Builds");
 		onlyMyBuilds.setToolTipText("Shows notification popup only for builds triggered by commit of the logged in user");
 		rootComponent.add(onlyMyBuilds,
 				new CellConstraints(3, 7, 1, 1, CellConstraints.DEFAULT, CellConstraints.DEFAULT, new Insets(0, 20, 0, 0)));
+		label3.setLabelFor(pollTimeSpinner);
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(allFailuresFirstSuccess);
