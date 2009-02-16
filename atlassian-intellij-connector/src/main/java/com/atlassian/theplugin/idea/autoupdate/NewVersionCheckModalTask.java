@@ -122,7 +122,8 @@ class NewVersionCheckModalTask extends Task.Modal {
 		public void connect(ServerCfg serverCfg) throws RemoteApiException {
 			try {
 				NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
-					public void doAction(InfoServer.VersionInfo versionInfo, boolean aShowConfigPath) throws ThePluginException {
+					public void doAction(InfoServer.VersionInfo versionInfo, boolean aShowConfigPath)
+							throws ThePluginException {
 						newVersion = versionInfo;
 					}
 				}, false, config);
