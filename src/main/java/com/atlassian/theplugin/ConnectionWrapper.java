@@ -16,15 +16,17 @@
 
 package com.atlassian.theplugin;
 
-import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
+import org.jetbrains.annotations.NotNull;
 
 
 public class ConnectionWrapper extends Thread {
 
-	private String errorMessage = null;
+	private String errorMessage;
 	private Connector connector;
-	private final LoginDataProvided loginDataProvided;
+	private final ServerCfg serverCfg;
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -39,10 +41,10 @@ public class ConnectionWrapper extends Thread {
 
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
-	public ConnectionWrapper(Connector connector, LoginDataProvided loginDataProvided, String threadName) {
+	public ConnectionWrapper(Connector connector, @NotNull ServerCfg serverCfg, String threadName) {
 		super(threadName);
 		this.connector = connector;
-		this.loginDataProvided = loginDataProvided;
+		this.serverCfg = serverCfg;
 	}
 
 	/**
@@ -52,11 +54,11 @@ public class ConnectionWrapper extends Thread {
 	@Override
 	public void run() {
 		try {
-			connector.connect(loginDataProvided);
+			connector.connect(serverCfg);
 			if (connectionState != ConnectionState.INTERUPTED) {
 				connectionState = ConnectionState.SUCCEEDED;
 			}
-		} catch (ThePluginException e) {
+		} catch (RemoteApiException e) {
 			if (connectionState != ConnectionState.INTERUPTED) {
 				connectionState = ConnectionState.FAILED;
 				errorMessage = e.getMessage();

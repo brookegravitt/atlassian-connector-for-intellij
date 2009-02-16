@@ -258,11 +258,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 
 		Review review2 = prepareReview();
-		((ReviewBean) review2).setGeneralComments(new ArrayList<GeneralComment>());
+		review2.setGeneralComments(new ArrayList<GeneralComment>());
 //		((ReviewBean) review2).setVersionedComments(new ArrayList<VersionedComment>());
-		((ReviewBean) review2).setPermId(reviewId2);
-		((ReviewBean) review2).setState(state);
-		((ReviewBean) review2).setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
+		review2.setPermId(reviewId2);
+		review2.setState(state);
+		review2.setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
 
 		review2.getGeneralComments().add(prepareGeneralComment(newCommentId1, null));
 		CrucibleFileInfo file2 = prepareReviewItem(newItem1);
