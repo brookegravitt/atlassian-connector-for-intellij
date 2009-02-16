@@ -24,7 +24,6 @@ import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,18 +39,10 @@ class NewVersionCheckModalTask extends Task.Modal {
 	private InfoServer.VersionInfo newVersion;
 	private GeneralConfigurationBean config;
 	private boolean showConfigPath;
-	private Project project;
 
 	public NewVersionCheckModalTask(Component parentWindow, GeneralConfigurationBean config, final boolean showConfigPath) {
 		super(null, "Checking available updates", true);
 		this.parentWindow = parentWindow;
-		this.config = config;
-		this.showConfigPath = showConfigPath;
-	}
-
-	public NewVersionCheckModalTask(Project project, GeneralConfigurationBean config, final boolean showConfigPath) {
-		super(null, "Checking available updates", true);
-		this.project = project;
 		this.config = config;
 		this.showConfigPath = showConfigPath;
 	}
@@ -99,7 +90,7 @@ class NewVersionCheckModalTask extends Task.Modal {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							try {
-								new NewVersionConfirmHandler(parentWindow, project, config)
+								new NewVersionConfirmHandler(parentWindow, config)
 										.doAction(newVersion, showConfigPath);
 							} catch (ThePluginException e) {
 								com.intellij.openapi.ui.Messages.showMessageDialog(parentWindow, e.getMessage(),
