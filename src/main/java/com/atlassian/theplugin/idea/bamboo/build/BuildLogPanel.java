@@ -82,19 +82,24 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 						}
 					});
 				} catch (ServerPasswordNotProvidedException e) {
-					showError(e);
+					showError(consoleView, e);
 				} catch (RemoteApiException e) {
-					showError(e);
+					showError(consoleView, e);
 				}
 			}
 		};
 		buildLogTask.queue();
 	}
 
-	private void showError(final Exception e) {
+	private void showError(final ConsoleView consoleView, final Exception e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				add(new JLabel("Failed to retrieve build log: " + e.getMessage()));
+				consoleView.clear();
+				if (e.getMessage().toUpperCase().startsWith("HTTP 404")) {
+					consoleView.print("No build log available", ConsoleViewContentType.ERROR_OUTPUT);
+				} else {
+					consoleView.print(e.getMessage(), ConsoleViewContentType.ERROR_OUTPUT);
+				}
 			}
 		});
 	}
