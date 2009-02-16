@@ -26,6 +26,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -41,20 +42,17 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private transient Timer timer;
 	private boolean blinkOn = false;
 	private static final int ICON_BLINK_TIME = 1000;
-	private transient UpdateActionHandler handler = null;
+
 
 	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
 		super(project, cfgManager);
 		final GeneralConfigurationBean config = pluginConfiguration.getGeneralConfigurationData();
-		handler = new NewVersionConfirmHandler(this, project, pluginConfiguration.getGeneralConfigurationData());
 
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				stopBlinking();
-//				try {
 				// check if newer version is available since last update
-
 				// prepare data for checker
 				GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
 				updateConfig.setAnonymousFeedbackEnabled(config.getAnonymousFeedbackEnabled());
@@ -64,12 +62,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 						.getGeneralConfigurationData().getUid());
 
 				// run checker
-				ProgressManager.getInstance().run(new NewVersionCheckModalTask(project, updateConfig, false));
-
-//					handler.doAction(version, true);
-//				} catch (ThePluginException e1) {
-//					PluginUtil.getLogger().info("Error retrieving new version: " + e1.getMessage(), e1);
-//				}
+				ProgressManager.getInstance()
+						.run(new NewVersionCheckModalTask(WindowManager.getInstance().getFrame(project), updateConfig, false));
 			}
 		});
 	}

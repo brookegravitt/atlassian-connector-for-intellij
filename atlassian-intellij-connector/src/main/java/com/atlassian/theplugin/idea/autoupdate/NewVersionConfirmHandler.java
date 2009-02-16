@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.autoupdate;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.util.InfoServer;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -29,29 +28,21 @@ import java.awt.*;
  */
 public class NewVersionConfirmHandler implements UpdateActionHandler {
 	@Nullable
-	private final Project project;
 	private GeneralConfigurationBean updateConfiguration;
 	private Component parent;
 
-	public NewVersionConfirmHandler(@Nullable Component parent, @Nullable Project project,
-			GeneralConfigurationBean updateConfiguration) {
-		this.project = project;
+	public NewVersionConfirmHandler(@Nullable Component parent, GeneralConfigurationBean updateConfiguration) {
 		this.updateConfiguration = updateConfiguration;
 		this.parent = parent;
 
-		if (parent == null && project == null) {
-			throw new IllegalArgumentException("You must specify at least one not null value for parent or project");
+		if (parent == null) {
+			throw new IllegalArgumentException("You must specify not null value for parent");
 		}
 	}
 
 	public void doAction(final InfoServer.VersionInfo versionInfo, boolean showConfigPath) throws ThePluginException {
 		NewVersionInfoForm dialog;
-
-		if (project != null) {
-			dialog = new NewVersionInfoForm(project, updateConfiguration, versionInfo, showConfigPath);
-		} else {
-			dialog = new NewVersionInfoForm(parent, updateConfiguration, versionInfo, showConfigPath);
-		}
+		dialog = new NewVersionInfoForm(parent, updateConfiguration, versionInfo, showConfigPath);
 		dialog.show();
 	}
 }
