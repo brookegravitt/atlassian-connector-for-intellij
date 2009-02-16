@@ -44,6 +44,8 @@ public class PatchProducer {
 
 	public String generateUnifiedDiff() {
 		StringBuilder sb = new StringBuilder();
+		boolean firstFile = true;
+		
 		for (Change fileChange : changes) {
 			ContentRevision beforeRevision = fileChange.getBeforeRevision();
 			ContentRevision afterRevision = fileChange.getAfterRevision();
@@ -61,7 +63,10 @@ public class PatchProducer {
 				beforePath = afterPath;
 			}
 
+			if (!firstFile) {
+				sb.append("\n"); //add new line before header for all files except first
 
+			}
 			sb.append("Index: ");
 			sb.append(beforePath).append('\n');
 			sb.append("===================================================================\n");
@@ -76,6 +81,7 @@ public class PatchProducer {
 			}
 
 			generateUnifiedDiffBody(sb, diff, beforeLines, afterLines, LINES_OF_CONTEXT);
+			firstFile = false;
 
 		}
 		return sb.toString();
