@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.idea.config.serverconfig.GenericServerConfigForm;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -30,9 +29,8 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	private GenericServerConfigForm genericServerConfigurationForm;
 
 
-
 	@Override
-    protected void setUp() throws Exception {
+	protected void setUp() throws Exception {
 		super.setUp();
 		genericServerConfigurationForm = new GenericServerConfigForm(null, null);
 	}
@@ -53,12 +51,12 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		checkServerBean(outServerBean);
 	}
 
-private static ServerCfg createServerBean() {
-        ServerCfg tmp = new ServerCfg(true, "name", new ServerId()) {
-            @Override
-            public ServerType getServerType() {
-                return null;
-            }
+	private static ServerCfg createServerBean() {
+		ServerCfg tmp = new ServerCfg(true, "name", new ServerId()) {
+			@Override
+			public ServerType getServerType() {
+				return null;
+			}
 
 			@Override
 			public ServerCfg getClone() {
@@ -66,8 +64,8 @@ private static ServerCfg createServerBean() {
 			}
 		};
 		tmp.setPassword("password");
-        tmp.setPasswordStored(true);
-        tmp.setUrl("url");
+		tmp.setPasswordStored(true);
+		tmp.setUrl("url");
 		tmp.setUsername("userName");
 		return tmp;
 	}

@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.LoginDataProvided;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
@@ -42,46 +42,49 @@ import java.awt.event.ActionListener;
  */
 public class TestConnectionListener implements ActionListener {
 
+	public interface ServerCfgProvider {
+		ServerCfg getServerCfg();
+	}
+
 	private final Project project;
 	private Connector connectionTester;
-	private LoginDataProvided loginDataProvided;
+	private final ServerCfgProvider serverCfgProvider;
+	private final TestConnectionProcessor processor;
 
 	/**
 	 * @param project IDEA project
 	 * @param tester			object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
-	 * @param loginDataProvided object with methods which provide userName, password and url for connection
+	 * @param serverCfgProvider provides the data of the server to connect to
+	 * @param processor
 	 */
-	public TestConnectionListener(Project project, Connector tester, LoginDataProvided loginDataProvided) {
+	public TestConnectionListener(Project project, Connector tester, @NotNull ServerCfgProvider serverCfgProvider,
+			@NotNull TestConnectionProcessor processor) {
 		this.project = project;
 		connectionTester = tester;
-		this.loginDataProvided = loginDataProvided;
+		this.serverCfgProvider = serverCfgProvider;
+		this.processor = processor;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 
-		Task.Modal testConnectionTask = new TestConnectionTask(project, "Testing Connection", true, connectionTester,
-				loginDataProvided);
+		Task.Modal testConnectionTask = new TestConnectionTask(project, "Testing Connection", true);
 		testConnectionTask.setCancelText("Stop");
-
 		ProgressManager.getInstance().run(testConnectionTask);
 	}
 
-	private static class TestConnectionTask extends Task.Modal {
+	private class TestConnectionTask extends Task.Modal {
 
-		private ConnectionWrapper testConnector;
 		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 		private final Category log = Category.getInstance(TestConnectionTask.class);
-		private LoginDataProvided loginDataProvided;
+		private final ConnectionWrapper testConnector;
 
-		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled,
-								  @NotNull Connector tester, LoginDataProvided loginDataProvided) {
+		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled) {
 			super(currentProject, title, canBeCanceled);
-			this.loginDataProvided = loginDataProvided;
-			testConnector = new ConnectionWrapper(tester, loginDataProvided, "test thread");
+			testConnector = new ConnectionWrapper(connectionTester, serverCfgProvider.getServerCfg(), "test thread");
 		}
 
 		@Override
-		public void run(ProgressIndicator indicator) {
+		public void run(@NotNull ProgressIndicator indicator) {
 
 			if (indicator == null) {
 				PluginUtil.getLogger().error("Progress Indicator is null in TestConnectionTask!!!");
@@ -109,7 +112,7 @@ public class TestConnectionListener implements ActionListener {
 			}
 
 			ConnectionWrapper.ConnectionState state = testConnector.getConnectionState();
-			loginDataProvided.setConnectionResult(state);
+			processor.setConnectionResult(state);
 			switch (testConnector.getConnectionState()) {
 				case FAILED:
 					EventQueue.invokeLater(new Runnable() {
@@ -134,7 +137,7 @@ public class TestConnectionListener implements ActionListener {
 						public void run() {
 							showMessageDialog(getProject(), "Connected successfully", "Connection OK",
 									Messages.getInformationIcon());
-							 loginDataProvided.onSuccess();
+							 processor.onSuccess();
 						}
 					});
 					break;

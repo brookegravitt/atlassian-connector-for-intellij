@@ -66,8 +66,7 @@ public class JIRAServerCache {
 
     public boolean checkServer() {
         try {
-            jiraServerFacade.testServerConnection(server.getUrl(), server.getUsername(),
-                    server.getPassword());
+            jiraServerFacade.testServerConnection(server);
             validServer = true;
         } catch (RemoteApiException e) {
             errorMessage = e.getMessage();

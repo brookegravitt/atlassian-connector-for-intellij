@@ -15,10 +15,9 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.LoginDataProvided;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.util.Connector;
 
 public class ProductConnector implements Connector {
@@ -28,14 +27,8 @@ public class ProductConnector implements Connector {
 		this.facade = facade;
 	}
 
-	public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-		//validate();
-		try {
-			facade.testServerConnection(loginDataProvided.getServerUrl(), loginDataProvided.getUserName(),
-					loginDataProvided.getPassword());
-		} catch (RemoteApiException e) {
-			throw new ThePluginException(e.getMessage(), e);
-		}
+	public void connect(ServerCfg serverCfg) throws RemoteApiException {
+		facade.testServerConnection(serverCfg);
 	}
 
 	public void onSuccess() {
