@@ -16,17 +16,17 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.LoginDataProvided;
 import org.jetbrains.annotations.NotNull;
 
 public class CrucibleConnector implements Connector {
-	private CrucibleServerFacade facade;
-	private FishEyeServerFacade fishEyeServerFacade;
-	private boolean isFisheye;
+	private final CrucibleServerFacade facade;
+	private final FishEyeServerFacade fishEyeServerFacade;
+	private volatile boolean isFisheye;
 
 	public CrucibleConnector(@NotNull final CrucibleServerFacade facade,
 			@NotNull final FishEyeServerFacade fishEyeServerFacade) {
@@ -34,21 +34,18 @@ public class CrucibleConnector implements Connector {
 		this.fishEyeServerFacade = fishEyeServerFacade;
 	}
 
-	public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
+	public synchronized void connect(final ServerCfg serverCfg) throws RemoteApiException {
 		isFisheye = false;
+		facade.testServerConnection(serverCfg);
 		try {
-			facade.testServerConnection(loginDataProvided.getServerUrl(), loginDataProvided.getUserName(),
-					loginDataProvided.getPassword());
-			try {
-				fishEyeServerFacade.testServerConnection(loginDataProvided.getServerUrl(), loginDataProvided.getUserName(),
-						loginDataProvided.getPassword());
-				isFisheye = true;
-			} catch (RemoteApiException e) {
-				// it's apparently not a FishEye instance
-			}
-
+    		FishEyeServerCfg fishEye = new FishEyeServerCfg(true, serverCfg.getName(), serverCfg.getServerId());
+    		fishEye.setUrl(serverCfg.getUrl());
+    		fishEye.setUsername(serverCfg.getUsername());
+    		fishEye.setPassword(serverCfg.getPassword());
+    		fishEyeServerFacade.testServerConnection(fishEye);
+			isFisheye = true;
 		} catch (RemoteApiException e) {
-			throw new ThePluginException(e.getMessage(), e);
+			// it's apparently not a FishEye instance
 		}
 	}
 

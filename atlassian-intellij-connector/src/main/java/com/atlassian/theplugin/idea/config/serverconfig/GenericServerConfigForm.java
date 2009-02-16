@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *    http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.TestConnectionListener;
+import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -36,7 +36,7 @@ import java.awt.event.FocusEvent;
 /**
  * Plugin configuration form.
  */
-public class GenericServerConfigForm implements LoginDataProvided {
+public class GenericServerConfigForm implements TestConnectionProcessor {
 	private JPanel rootComponent;
 	private JTextField serverName;
 	private JTextField serverUrl;
@@ -49,14 +49,20 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 	private transient ServerCfg serverCfg;
 
-	public ServerCfg getServerCfg() {
+	synchronized ServerCfg getServerCfg() {
 		return serverCfg;
 	}
 
 	public GenericServerConfigForm(final Project project, final Connector tester) {
 
 		$$$setupUI$$$();
-		testConnection.addActionListener(new TestConnectionListener(project, tester, this));
+		testConnection.addActionListener(new TestConnectionListener(project, tester, new TestConnectionListener.ServerCfgProvider() {
+			public ServerCfg getServerCfg() {
+				synchronized (GenericServerConfigForm.this) {
+					return serverCfg;
+				}
+			}
+		}, this));
 		serverUrl.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -86,9 +92,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 
 	private void setServerState() {
 		// user name and password can be empty (for anonymous connections), do not check for them
-		boolean enabled =
-				serverName.getText().length() > 0
-						&& serverUrl.getText().length() > 0;
+		boolean enabled = serverName.getText().length() > 0 && serverUrl.getText().length() > 0;
 		cbEnabled.setSelected(enabled);
 	}
 
@@ -104,7 +108,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		return url;
 	}
 
-	public void setData(ServerCfg server) {
+	public synchronized void setData(ServerCfg server) {
 
 		username.getDocument().removeDocumentListener(listener);
 		password.getDocument().removeDocumentListener(listener);
@@ -123,7 +127,7 @@ public class GenericServerConfigForm implements LoginDataProvided {
 		password.getDocument().addDocumentListener(listener);
 	}
 
-	public void saveData() {
+	public synchronized void saveData() {
 		if (serverCfg == null) {
 			return;
 		}
