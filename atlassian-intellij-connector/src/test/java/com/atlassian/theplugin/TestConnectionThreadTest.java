@@ -16,7 +16,9 @@
 
 package com.atlassian.theplugin;
 
-import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import junit.framework.TestCase;
 
@@ -31,7 +33,7 @@ public class TestConnectionThreadTest extends TestCase {
 	public void setUp() throws Exception {
 
 		emptyConnectionTester = new Connector() {
-			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
+			public void connect(final ServerCfg serverCfg) throws RemoteApiException {
 			}
 
 			public void onSuccess() {
@@ -39,8 +41,8 @@ public class TestConnectionThreadTest extends TestCase {
 		};
 
 		failedConnectionTester = new Connector() {
-			public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-				throw new ThePluginException(ERROR_MESSAGE);
+			public void connect(final ServerCfg serverCfg) throws RemoteApiException {
+				throw new RemoteApiException(ERROR_MESSAGE);
 			}
 			public void onSuccess() {
 			}
@@ -53,28 +55,20 @@ public class TestConnectionThreadTest extends TestCase {
         super.tearDown();
     }
 
-	private static class MyLoginDataProvider implements LoginDataProvided {
-		public String getServerUrl() {
+	private final ServerCfg serverCfg = new ServerCfg(true, null, null) {
+		@Override
+		public ServerType getServerType() {
 			return null;
 		}
 
-		public String getUserName() {
+		@Override
+		public ServerCfg getClone() {
 			return null;
 		}
-
-		public String getPassword() {
-			return null;
-		}
-
-		public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
-		}
-
-		public void onSuccess() {
-		}
-	}
+	};
 
 	public void testRunInterupted() {
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, new MyLoginDataProvider(),
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverCfg,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
@@ -97,7 +91,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunSucceeded() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, new MyLoginDataProvider(),
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverCfg,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
@@ -118,7 +112,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunFailed() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, new MyLoginDataProvider(),
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, serverCfg,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());

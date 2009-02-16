@@ -16,9 +16,10 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.LoginDataProvided;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -118,12 +119,16 @@ class NewVersionCheckModalTask extends Task.Modal {
 		protected UpdateServerConnection() {
 		}
 
-		public void connect(LoginDataProvided loginDataProvided) throws ThePluginException {
-			NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
-				public void doAction(InfoServer.VersionInfo versionInfo, boolean aShowConfigPath) throws ThePluginException {
-					newVersion = versionInfo;
-				}
-			}, false, config);
+		public void connect(ServerCfg serverCfg) throws RemoteApiException {
+			try {
+				NewVersionChecker.getInstance().doRun(new UpdateActionHandler() {
+					public void doAction(InfoServer.VersionInfo versionInfo, boolean aShowConfigPath) throws ThePluginException {
+						newVersion = versionInfo;
+					}
+				}, false, config);
+			} catch (ThePluginException e) {
+				throw new RemoteApiException(e);
+			}
 		}
 
 		public void onSuccess() {
