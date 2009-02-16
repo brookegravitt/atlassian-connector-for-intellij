@@ -21,10 +21,33 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.jira.api.JIRAAction;
+import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.jira.model.FrozenModel;
+import com.atlassian.theplugin.jira.model.FrozenModelListener;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
+import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
+import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -43,7 +66,12 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +152,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						JiraIssueAdapter.clearCache();
-						JiraServerCfg srvcfg = jiraFilterTree.getSelectedServer();
+						JiraServerCfg srvcfg = getSelectedServer();
 						if (srvcfg == null) {
 //							setStatusMessage("Server not defined", true);
 							setStatusMessage("Nothing selected", false, false);
@@ -355,7 +383,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				@Override
 				public void run() {
 					try {
-						JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+						JiraServerCfg jiraServer = getSelectedServer();
 
 						if (jiraServer != null) {
 							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
@@ -391,7 +419,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void openIssue(@NotNull JIRAIssue issue) {
 		IdeaHelper.getIssueToolWindow(getProject())
-				.showIssue(jiraFilterTree.getSelectedServer(), issue, baseIssueListModel);
+				.showIssue(getSelectedServer(), issue, baseIssueListModel);
 	}
 
 	public void openIssue(@NotNull final String issueKey) {
@@ -412,7 +440,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 				@Override
 				public void onSuccess() {
-					JiraServerCfg server = jiraFilterTree.getSelectedServer();
+					JiraServerCfg server = getSelectedServer();
 					if (getProject().isDisposed()) {
 						return;
 					}
@@ -432,7 +460,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					progressIndicator.setIndeterminate(true);
 					try {
-						final JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+						final JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
 							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
@@ -453,7 +481,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			return;
 		}
 		try {
-			JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+			JiraServerCfg jiraServer = getSelectedServer();
 			if (jiraServer != null) {
 				assignIssue(issue, jiraServer.getUsername());
 			}
@@ -486,7 +514,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
 
-					JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+					JiraServerCfg jiraServer = getSelectedServer();
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
@@ -538,7 +566,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						}
 					});
 					try {
-						JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+						JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
 							jiraServerFacade.addComment(jiraServer, issue, issueCommentDialog.getComment());
 							EventQueue.invokeLater(new Runnable() {
@@ -562,7 +590,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void logWorkForIssue(final JIRAIssue issue) {
-		final JiraServerCfg jiraServer = jiraFilterTree.getSelectedServer();
+		final JiraServerCfg jiraServer = getSelectedServer();
 		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, getProject());
 		workLogCreate.show();
 		if (workLogCreate.isOK()) {
@@ -608,7 +636,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			return;
 		}
 		createChangeListAction(issue);
-		final JiraServerCfg server = jiraFilterTree.getSelectedServer();
+		final JiraServerCfg server = getSelectedServer();
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 
@@ -669,7 +697,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void refreshIssues(final boolean reload) {
 		JIRAManualFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
 		JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
-		JiraServerCfg serverCfg = jiraFilterTree.getSelectedServer();
+		JiraServerCfg serverCfg = getSelectedServer();
 		if (savedFilter != null) {
 			refreshIssues(savedFilter, serverCfg, reload);
 		} else if (manualFilter != null) {
@@ -752,7 +780,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			return;
 		}
 
-		final JiraServerCfg server = jiraFilterTree.getSelectedServer();
+		final JiraServerCfg server = getSelectedServer();
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
@@ -821,7 +849,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public JiraServerCfg getSelectedServer() {
-		return jiraFilterTree.getSelectedServer();
+		return jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
 	}
 
 
