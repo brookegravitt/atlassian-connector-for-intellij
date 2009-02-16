@@ -21,33 +21,10 @@ import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAProject;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.jira.model.FrozenModel;
-import com.atlassian.theplugin.jira.model.FrozenModelListener;
-import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
-import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
-import com.atlassian.theplugin.jira.model.SearchingJIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.SortingByPriorityJIRAIssueListModel;
+import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -66,12 +43,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -677,7 +649,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private void refreshFilterModel() {
 		try {
-			jiraFilterListModelBuilder.rebuildModel();
+			jiraFilterListModelBuilder.rebuildModel(jiraServerModel);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			//@todo show in message editPane
 			setStatusMessage("Some Jira servers did not return saved filters", true);
@@ -889,6 +861,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					setStatusMessage(serverStr + "Server data query finished");
 				}
 			} finally {
+				// todo that should be probably called in the UI thread as most frozen listeners do something with UI controls
 				jiraServerModel.setModelFrozen(false);
 			}
 		}

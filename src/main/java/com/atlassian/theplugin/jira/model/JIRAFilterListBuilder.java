@@ -13,6 +13,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -53,14 +54,14 @@ public class JIRAFilterListBuilder {
 		this.jiraWorkspaceCfg = jiraWorkspaceCfg;
 	}
 
-	public void rebuildModel() throws JIRAServerFiltersBuilderException {
+	public void rebuildModel(final JIRAServerModel jiraServerModel) throws JIRAServerFiltersBuilderException {
 		try {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
 			for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
 				try {
-					loadServerSavedFilter(jiraServer);
+					loadServerSavedFilter(jiraServer, jiraServerModel);
 				} catch (JIRAException exc) {
 					e.addException(jiraServer, exc);
 				}
@@ -76,16 +77,22 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadServerSavedFilter(final JiraServerCfg jiraServer) throws JIRAException {
+	private void loadServerSavedFilter(final JiraServerCfg jiraServer,
+			final JIRAServerModel jiraServerModel) throws JIRAException {
 
-		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
-		List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
+//		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
+		if (jiraServerModel != null) {
+			List<JIRAQueryFragment> filters = jiraServerModel.getSavedFilters(jiraServer);
+			List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
 
-		for (JIRAQueryFragment query : filters) {
-			savedFilters.add((JIRASavedFilter) query);
+			for (JIRAQueryFragment query : filters) {
+				savedFilters.add((JIRASavedFilter) query);
+			}
+
+			listModel.setSavedFilters(jiraServer, savedFilters);
+		} else {
+			PluginUtil.getLogger().warn("JiraServerModel is null. No saved filters retrieved.");
 		}
-
-		listModel.setSavedFilters(jiraServer, savedFilters);
 	}
 
 	private void loadManualFilter(final JiraServerCfg jiraServer) {
