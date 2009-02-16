@@ -65,9 +65,9 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 	public void testRebuildModel() {
 		try {
-			builder.rebuildModel();
+			builder.rebuildModel(null);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
-			fail();//we do not expect exception
+			fail(); //we do not expect exception
 		}
 		assertEquals(3, listModel.getJIRAServers().size());
 		JiraServerCfg jiraServer = savedFilters.keySet().iterator().next();
