@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
@@ -49,7 +50,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		serverInfoMap.clear();
 	}
 
-	public boolean checkServer(JiraServerCfg cfg) {
+	public boolean checkServer(JiraServerCfg cfg) throws RemoteApiException {
 		if (cfg == null) {
 			return false;
 		}

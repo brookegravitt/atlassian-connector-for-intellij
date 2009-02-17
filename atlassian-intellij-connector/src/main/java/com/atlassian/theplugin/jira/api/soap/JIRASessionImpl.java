@@ -107,13 +107,13 @@ public class JIRASessionImpl implements JIRASession {
 		this.serverUrl = serverUrl;
 	}
 
-	public void login(String userName, String password) throws RemoteApiLoginException {
+	public void login(String userName, String password) throws RemoteApiException {
 		try {
 			token = service.login(userName, password);
 		} catch (RemoteAuthenticationException e) {
 			throw new RemoteApiLoginException("Authentication failed");
 		} catch (RemoteException e) {
-	   		throw new RemoteApiLoginException(e.toString());
+	   		throw new RemoteApiException(e.toString());
 		}
 		loggedIn = true;
 	}

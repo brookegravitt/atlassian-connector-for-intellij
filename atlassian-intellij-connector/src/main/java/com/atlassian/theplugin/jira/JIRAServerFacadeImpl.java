@@ -63,12 +63,14 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		if (session == null) {
 			try {
 				session = new JIRASessionImpl(server.getUrl());
-				session.login(server.getUsername(), server.getPassword());
 			} catch (MalformedURLException e) {
 				throw new RemoteApiException(e);
 			} catch (ServiceException e) {
 				throw new RemoteApiException(e);
 			}
+
+
+			session.login(server.getUsername(), server.getPassword());
 			soapSessions.put(key, session);
 		}
 		return session;
@@ -90,15 +92,15 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
-
-        try {
-			JIRASession session = new JIRASessionImpl(url);
-			session.login(userName, password);
+		JIRASession session;
+		try {
+			session = new JIRASessionImpl(url);
 		} catch (MalformedURLException e) {
 			throw new RemoteApiException(e);
 		} catch (ServiceException e) {
 			throw new RemoteApiLoginException(e.getMessage(), e);
 		}
+		session.login(userName, password);
 	}
 
 	public ServerType getServerType() {
