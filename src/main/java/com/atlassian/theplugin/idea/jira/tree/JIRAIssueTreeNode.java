@@ -8,8 +8,8 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +52,7 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 
 			iconLabel = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
 			add(iconLabel, cc.xy(1, 1));
-			
+
 			keyAndSummary = new SelectableLabel(true, true, issue.getKey() + ": " + issue.getSummary(),
 					null, SwingConstants.TRAILING, ICON_HEIGHT);
 			add(keyAndSummary, cc.xy(2 + 1, 1));
