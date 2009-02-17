@@ -135,10 +135,7 @@ public class JIRAIssueTreeBuilder {
 			}
 		} else {
 			for (JIRAIssue issue : issueModel.getIssues()) {
-//				System.out.println("***************");
-				long start = System.currentTimeMillis();
 				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
-//				System.out.println("Executed in: " + (System.currentTimeMillis() - start));
 			}
 		}
 		treeModel.nodeStructureChanged(root);
@@ -304,7 +301,6 @@ public class JIRAIssueTreeBuilder {
 	}
 
 	private DefaultMutableTreeNode getPlace(JIRAIssue issue, DefaultMutableTreeNode root) {
-//		long start = System.currentTimeMillis();
 		String name;
 		String iconUrl = null;
 		switch (groupBy) {
@@ -333,12 +329,8 @@ public class JIRAIssueTreeBuilder {
 			name = "None";
 		}
 
-		DefaultMutableTreeNode node = treeModel.getGroupNode(issue, name, CachedIconLoader.getIcon(iconUrl),
+		return treeModel.getGroupNode(issue, name, CachedIconLoader.getIcon(iconUrl),
 				CachedIconLoader.getDisabledIcon(iconUrl));
-
-//		System.out.println("getPlace in: " + (System.currentTimeMillis() - start));
-
-		return node;
 	}
 
 	// isn't this constant defined somewhere?
