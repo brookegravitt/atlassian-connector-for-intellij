@@ -5,7 +5,6 @@ import com.atlassian.theplugin.jira.api.*;
 import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,17 +34,17 @@ public final class JIRAServerModelAsyncExecutorImpl implements JIRAServerModelAs
 		return model.getErrorMessage(config);
 	}
 
-	public void checkServer(final JIRAServerModelAsyncExecutorListener<Boolean> listener) {
-		execute(new ModelExecutor<Boolean>() {
-			public String getTitle() { return "Checking JIRA server"; }
-			public List<Boolean> execute(JIRAProject p) {
-				boolean result = model.checkServer(config);
-				final List<Boolean> list = new ArrayList<Boolean>();
-				list.add(result);
-				return list;
-			}
-		}, null, listener);
-	}
+//	public void checkServer(final JIRAServerModelAsyncExecutorListener<Boolean> listener) {
+//		execute(new ModelExecutor<Boolean>() {
+//			public String getTitle() { return "Checking JIRA server"; }
+//			public List<Boolean> execute(JIRAProject p) {
+//				boolean result = model.checkServer(config);
+//				final List<Boolean> list = new ArrayList<Boolean>();
+//				list.add(result);
+//				return list;
+//			}
+//		}, null, listener);
+//	}
 
 	public void getProjects(final JIRAServerModelAsyncExecutorListener<JIRAProject> listener) {
 		execute(new ModelExecutor<JIRAProject>() {
