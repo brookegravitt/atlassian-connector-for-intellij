@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -838,27 +839,33 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 				for (JiraServerCfg server : IdeaHelper.getCfgManager()
 						.getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()))) {
-					if (!jiraServerModel.checkServer(server)) {
+					try {
+						//returns false if no cfg is available or login failed
+						if (!jiraServerModel.checkServer(server)) {
+							setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+							EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server, project));
+							continue;
+						}//@todo remove  saved filters download or merge with existing in listModel
+
+						final String serverStr = "[" + server.getName() + "] ";
+						setStatusMessage(serverStr + "Retrieving saved filters...");
+						jiraServerModel.getSavedFilters(server);
+						setStatusMessage(serverStr + "Retrieving projects...");
+						jiraServerModel.getProjects(server);
+						setStatusMessage(serverStr + "Retrieving issue types...");
+						jiraServerModel.getIssueTypes(server, null);
+						setStatusMessage(serverStr + "Retrieving statuses...");
+						jiraServerModel.getStatuses(server);
+						setStatusMessage(serverStr + "Retrieving resolutions...");
+						jiraServerModel.getResolutions(server);
+						setStatusMessage(serverStr + "Retrieving priorities...");
+						jiraServerModel.getPriorities(server);
+						setStatusMessage(serverStr + "Retrieving projects...");
+						jiraServerModel.getProjects(server);
+						setStatusMessage(serverStr + "Server data query finished");
+					} catch (RemoteApiException e) {
 						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
-						EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server, project));
-						continue;
-					}//@todo remove  saved filters download or merge with existing in listModel
-					final String serverStr = "[" + server.getName() + "] ";
-					setStatusMessage(serverStr + "Retrieving saved filters...");
-					jiraServerModel.getSavedFilters(server);
-					setStatusMessage(serverStr + "Retrieving projects...");
-					jiraServerModel.getProjects(server);
-					setStatusMessage(serverStr + "Retrieving issue types...");
-					jiraServerModel.getIssueTypes(server, null);
-					setStatusMessage(serverStr + "Retrieving statuses...");
-					jiraServerModel.getStatuses(server);
-					setStatusMessage(serverStr + "Retrieving resolutions...");
-					jiraServerModel.getResolutions(server);
-					setStatusMessage(serverStr + "Retrieving priorities...");
-					jiraServerModel.getPriorities(server);
-					setStatusMessage(serverStr + "Retrieving projects...");
-					jiraServerModel.getProjects(server);
-					setStatusMessage(serverStr + "Server data query finished");
+					}
 				}
 			} finally {
 				// todo that should be probably called in the UI thread as most frozen listeners do something with UI controls

@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.*;
@@ -64,16 +65,24 @@ public class JIRAServerCache {
         return server;
     }
 
-    public boolean checkServer() {
+    public boolean checkServer() throws RemoteApiException {
         try {
             jiraServerFacade.testServerConnection(server);
             validServer = true;
-        } catch (RemoteApiException e) {
-            errorMessage = e.getMessage();
-            PluginUtil.getLogger().error(errorMessage);
-        }
-        return validServer;
-    }
+
+		} catch (RemoteApiLoginException e) {
+			errorMessage = e.getMessage();
+			PluginUtil.getLogger().error(errorMessage);
+			validServer = false;
+
+		} catch (RemoteApiException e) {
+			errorMessage = e.getMessage();
+			PluginUtil.getLogger().error(errorMessage);
+			validServer = false;
+			throw e;
+		}
+		return validServer;
+	}
 
     public List<JIRAProject> getProjects() {
         if (projects == null) {
