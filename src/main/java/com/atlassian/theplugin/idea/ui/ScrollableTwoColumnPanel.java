@@ -25,8 +25,8 @@ import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class ScrollableTwoColumnPanel extends JScrollPane {
 	private static final int VAL_COL = 4;
@@ -72,7 +72,9 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 		panel.removeAll();
 		if (entries == null || entries.size() == 0) {
 			panel.setLayout(new BorderLayout());
-			panel.add(new JLabel("No Custom Filter Defined", JLabel.CENTER));
+			final JLabel label = new JLabel("No Custom Filter Defined", JLabel.CENTER);
+			panel.setPreferredSize(label.getPreferredSize());
+			panel.add(label);
 			return;
 		}
 
