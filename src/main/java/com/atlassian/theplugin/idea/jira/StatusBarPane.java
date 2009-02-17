@@ -22,10 +22,10 @@ import java.awt.*;
  * @author Jacek Jaroczynski
  */
 public class StatusBarPane extends JPanel implements StatusBar {
-	private static final Color FAIL_COLOR = new Color(255, 100, 100);
+	protected static final Color FAIL_COLOR = new Color(255, 100, 100);
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final int PAD_Y = 8;
-	private final Color defaultColor = this.getBackground();
+	protected final Color defaultColor = this.getBackground();
 
 	protected JLabel pane = new JLabel();
 	protected JPanel statusPanel;
@@ -66,9 +66,11 @@ public class StatusBarPane extends JPanel implements StatusBar {
 		pane.setText(" " + message);
 		pane.setBackground(defaultColor);
 		setBackground(defaultColor);
+		statusPanel.setBackground(defaultColor);
 	}
 
 	public void setErrorMessage(String msg) {
+		statusPanel.setBackground(FAIL_COLOR);
 		pane.setHorizontalAlignment(SwingConstants.LEFT);
 		pane.setBackground(FAIL_COLOR);
 		setBackground(FAIL_COLOR);
