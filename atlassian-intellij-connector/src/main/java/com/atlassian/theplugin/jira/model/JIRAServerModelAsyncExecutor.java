@@ -8,7 +8,7 @@ import com.atlassian.theplugin.jira.api.*;
  * Time: 3:47:30 PM
  */
 public interface JIRAServerModelAsyncExecutor {
-	void checkServer(JIRAServerModelAsyncExecutorListener<Boolean> listener);
+	//void checkServer(JIRAServerModelAsyncExecutorListener<Boolean> listener);
 
 	String getErrorMessage();
 
