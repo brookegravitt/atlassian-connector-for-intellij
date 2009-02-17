@@ -60,7 +60,8 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 			}
 		}, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-		testConnectionButton.addActionListener(new TestConnectionListener(project, new ProductConnector(serverFacade), this, new TestConnectionProcessor() {
+		testConnectionButton.addActionListener(
+				new TestConnectionListener(project, new ProductConnector(serverFacade), this, new TestConnectionProcessor() {
 					public void setConnectionResult(final ConnectionWrapper.ConnectionState result) {
 					}
 
