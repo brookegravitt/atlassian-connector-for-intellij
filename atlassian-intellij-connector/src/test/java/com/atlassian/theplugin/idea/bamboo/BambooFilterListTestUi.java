@@ -115,7 +115,7 @@ public final class BambooFilterListTestUi {
 
 	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, serverCfg, name, "123", state)
+		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, serverCfg, name, 123, state)
 				.startTime(new Date())
 				.pollingTime(new Date())
 				.completionTime(new Date())

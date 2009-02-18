@@ -29,8 +29,7 @@ public abstract class AbstractBambooBuildAction extends AnAction {
 		build = getBuild(event);
 		boolean enabled = false;
 		if (build != null) {
-			if (build.getBuildKey() != null
-					&& build.getBuildNumber() != null) {
+			if (build.getBuildKey() != null && build.isValid()) {
 				enabled = true;
 			}
 		}

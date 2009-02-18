@@ -186,7 +186,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 			add(split, gbc);
 		} else {
-			add(new JLabel("No tests in build " + build.getBuildKey() + "-" + build.getBuildNumber()));
+			add(new JLabel("No tests in build " + build.getBuildKey() + "-" + build.getBuildNumberAsString()));
 		}
 	}
 

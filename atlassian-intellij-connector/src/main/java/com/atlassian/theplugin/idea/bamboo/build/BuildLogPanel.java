@@ -23,6 +23,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
@@ -65,6 +66,11 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 	}
 
 	public void fetchAndShowBuildLog(final BambooBuildAdapterIdea build, final ConsoleView consoleView) {
+		if (build.isValid() == false) {
+			Messages.showErrorDialog(project, "Cannot fetch build log for invalid build (without the number)!",
+					PluginUtil.PRODUCT_NAME);
+			return;
+		}
 
 		consoleView.clear();
 		consoleView.print("Fetching Bamboo Build Log from the server...", ConsoleViewContentType.NORMAL_OUTPUT);
@@ -73,12 +79,12 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					final byte[] log = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
+					final String log = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
 							.getBuildLogs(build.getServer(), build.getBuildKey(), build.getBuildNumber());
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							consoleView.clear();
-							consoleView.print(new String(log), ConsoleViewContentType.NORMAL_OUTPUT);
+							consoleView.print(log, ConsoleViewContentType.NORMAL_OUTPUT);
 						}
 					});
 				} catch (ServerPasswordNotProvidedException e) {

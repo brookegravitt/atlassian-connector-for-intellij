@@ -44,9 +44,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	private BambooBuildAdapterIdea build;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
-	private static double reasonWidth = 0.0;
-	private static double serverWidth = 0.0;
-	private static double dateWidth = 0.0;
+	private static double reasonWidth;
+	private static double serverWidth;
+	private static double dateWidth;
 	private static final int LABEL_PADDING = 5;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
@@ -95,8 +95,8 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(build.getBuildKey());
-		if (build.getBuildNumber().length() > 0) {
-			sb.append("-").append(build.getBuildNumber());
+		if (build.isValid()) {
+			sb.append("-").append(build.getBuildNumberAsString());
 		}
 		// failed tests
 		if (build.getStatus() == BuildStatus.FAILURE) {
@@ -254,7 +254,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
 		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
 		sb.append("<tr><td colspan='2'><b><font color='blue'>");
-		sb.append(build.getBuildKey()).append("-").append(build.getBuildNumber());
+		sb.append(build.getBuildKey());
+		if (build.isValid()) {
+			sb.append("-").append(build.getBuildNumber());
+		}
 		sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");

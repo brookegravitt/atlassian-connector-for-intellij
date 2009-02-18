@@ -39,7 +39,7 @@ public class BuildCommentForm extends DialogWrapper {
 		setTitle("Add Comment");
 
 		this.buildKeyField.setText(build.getBuildKey());
-		this.buildNumberField.setText(build.getBuildNumber());
+		this.buildNumberField.setText(build.getBuildNumberAsString());
 
 		getOKAction().putValue(Action.NAME, "Add comment");
 		getOKAction().setEnabled(false);
