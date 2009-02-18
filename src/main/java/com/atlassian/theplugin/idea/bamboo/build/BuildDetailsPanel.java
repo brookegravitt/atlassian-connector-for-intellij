@@ -76,7 +76,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN, Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 		p.add(new BoldLabel("Last Build"), gbc1);
-		p.add(new JLabel(build.getBuildNumber()), gbc2);
+		p.add(new JLabel(build.getBuildNumberAsString()), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		p.add(new BoldLabel("When"), gbc1);

@@ -103,11 +103,13 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		}
 	}
 
+	@Override
 	protected String getContentKey(ContentParameters params) {
 		BuildContentParameters bcp = (BuildContentParameters) params;
 		return bcp.build.getBuildResultUrl();
 	}
 
+	@Override
 	protected ContentPanel createContentPanel(ContentParameters params) {
 		BuildContentParameters bcp = (BuildContentParameters) params;
 		return new BuildPanel(bcp);
@@ -186,12 +188,14 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			return tdp;
 		}
 
+		@Override
 		public void unregister() {
 			timer.stop();
 		}
 
+		@Override
 		public String getTitle() {
-			return params.build.getBuildKey() + "-" + params.build.getBuildNumber();
+			return params.build.getBuildKey() + "-" + params.build.getBuildNumberAsString();
 		}
 
 		private class SummaryPanel extends JPanel {
