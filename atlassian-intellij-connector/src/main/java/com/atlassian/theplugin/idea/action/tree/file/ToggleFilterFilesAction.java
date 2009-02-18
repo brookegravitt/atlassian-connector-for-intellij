@@ -43,6 +43,7 @@ public class ToggleFilterFilesAction extends AnAction {
 		getTemplatePresentation().setText(TEXT_FILTER_ON);
 	}
 
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
 
 		CrucibleToolWindow window = IdeaHelper.getCrucibleToolWindow(e);

@@ -40,7 +40,7 @@ public class BuildLabelForm extends DialogWrapper {
 		setTitle("Add Label");
 
 		this.buildKeyField.setText(build.getBuildKey());
-		this.buildNumberKey.setText(build.getBuildNumber());
+		this.buildNumberKey.setText(build.getBuildNumberAsString());
 
 		getOKAction().putValue(Action.NAME, "Add Label");
 		labelField.addKeyListener(new KeyAdapter() {

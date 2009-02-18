@@ -150,7 +150,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 	private void fillContent(List<BambooChangeSet> commits) {
 		if (commits == null || commits.size() == 0) {
-			add(new JLabel("No changes in " + build.getBuildKey() + "-" + build.getBuildNumber()));
+			add(new JLabel("No changes in " + build.getBuildKey() + "-" + build.getBuildNumberAsString()));
 			return;
 		}
 
@@ -162,6 +162,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		listPanel.setLayout(new BorderLayout());
 
 		final JList changesList = new JList() {
+			@Override
 			public boolean getScrollableTracksViewportWidth() {
 				return true;
 			}
