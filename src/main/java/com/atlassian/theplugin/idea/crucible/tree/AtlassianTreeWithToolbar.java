@@ -63,6 +63,7 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 					}
 				};
 			}
+			tree.setShowsRootHandles(state == State.DIRED);
 			tree.setRowHeight(0);
 			if (treeUISetup != null) {
 				treeUISetup.initializeUI(tree, jScrollPane);
@@ -107,6 +108,9 @@ public class AtlassianTreeWithToolbar extends ComponentWithToolbar {
 
 	public void setState(final State state) {
 		this.state = state;
+
+		tree.setShowsRootHandles(state == State.DIRED);
+
 		triggerModelUpdated();
 	}
 
