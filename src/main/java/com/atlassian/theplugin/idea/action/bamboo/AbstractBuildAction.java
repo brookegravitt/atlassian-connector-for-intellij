@@ -69,7 +69,7 @@ public abstract class AbstractBuildAction extends AnAction {
 
 			Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
 				@Override
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
 						setStatusMessageUIThread(project, "Starting build on plan: " + build.getBuildKey());
@@ -113,11 +113,12 @@ public abstract class AbstractBuildAction extends AnAction {
 
 		Task.Backgroundable labelTask = new Task.Backgroundable(project, "Labeling Build", false) {
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				setStatusMessageUIThread(project, "Applying label on build...");
 				try {
 					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-							addLabelToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), label);
+							addLabelToBuild(build.getServer(), build.getBuildKey(),
+									build.getBuildNumber(), label);
 					setStatusMessageUIThread(project, "Label applied on build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusErrorMessageUIThread(project, "Label not applied: Password on provided for server");
@@ -149,7 +150,7 @@ public abstract class AbstractBuildAction extends AnAction {
 
 			Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
 				@Override
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 					setStatusMessageUIThread(project, "Adding comment label on build...");
 					try {
 						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
