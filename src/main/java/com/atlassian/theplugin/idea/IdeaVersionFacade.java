@@ -13,12 +13,15 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.wm.StatusBar;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.ui.LightweightHint;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -274,5 +277,65 @@ public final class IdeaVersionFacade {
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public enum OperationStatus {
+		INFO, WARNING, ERROR
+	}
+
+	public void fireNofification(Project project, JComponent content, String message, String iconName, OperationStatus status,
+			Color color) {
+/*
+		if (isIdea8) {
+			ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(project);
+			if (toolWindowManager != null) {
+				try {
+					Method notifyByBalloon = null;
+					for (Method method : toolWindowManager.getClass().getMethods()) {
+						if (method.getName().equals("notifyByBalloon")) {
+							Class<?>[] params = method.getParameterTypes();
+							if (params.length == 5) {
+								notifyByBalloon = method;
+								break;
+							}
+						}
+					}
+					if (notifyByBalloon == null) {
+						return;
+					}
+					Class messageTypeClass = Class.forName("com.intellij.openapi.ui.MessageType");
+					HyperlinkListener listener = new HyperlinkListener() {
+						public void hyperlinkUpdate(final HyperlinkEvent e) {
+							if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {
+								URL url = e.getURL();
+								BrowserUtil.launchBrowser(url.toString());
+							}
+						}
+					};
+					System.out.println("message = " + message);
+					notifyByBalloon.invoke(toolWindowManager,
+							new Object[]{PluginToolWindow.TOOL_WINDOW_NAME,
+									messageTypeClass.getField(status.toString()).get(null),
+									message, IconLoader.getIcon(iconName), listener});
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					e.printStackTrace();
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		} else {
+*/
+		final WindowManager windowManager = WindowManager.getInstance();
+		if (windowManager != null) {
+			final StatusBar statusBar = windowManager.getStatusBar(project);
+			if (statusBar != null) {
+				statusBar.fireNotificationPopup(content, color);
+			}
+		}
+//		}
 	}
 }

@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,9 @@ import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
@@ -63,7 +63,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		content.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-                pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
+				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
 			}
 		});
 
@@ -76,19 +76,21 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	public void updateBambooStatus(BuildStatus generalBuildStatus, BambooPopupInfo popupInfo) {
 		content.setText(popupInfo.toHtml());
 
+		IdeaVersionFacade.OperationStatus status;
 		switch (generalBuildStatus) {
 			case SUCCESS:
 				content.setBackground(BACKGROUND_COLOR_SUCCEED);
+				status = IdeaVersionFacade.OperationStatus.INFO;
 				break;
 			case FAILURE:
 			default:
 				content.setBackground(BACKGROUND_COLOR_FAILED);
+				status = IdeaVersionFacade.OperationStatus.ERROR;
 				break;
 		}
-
-		// fire crucible popup
 		content.setCaretPosition(0);
-		JScrollPane scrollPane = new JScrollPane(content);
-		WindowManager.getInstance().getStatusBar(projectComponent).fireNotificationPopup(scrollPane, null);
+		IdeaVersionFacade.getInstance()
+				.fireNofification(projectComponent, new JScrollPane(content), content.getText(), "/icons/bamboo-blue-16.png",
+						status, null);
 	}
 }

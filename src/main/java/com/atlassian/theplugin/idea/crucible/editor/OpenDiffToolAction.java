@@ -71,6 +71,16 @@ public class OpenDiffToolAction implements OpenDiffAction {
 		final DocumentContent displayDocumentContentFinal = new DocumentContent(project, displayDocument);
 		final DocumentContent referenceDocumentContentFinal = new DocumentContent(project, referenceDocument);
 
+		if (!displayDocument.equals(emptyDocument)) {
+			displayDocumentContentFinal.getDocument().putUserData(CommentHighlighter.CRUCIBLE_DATA_KEY, true);
+			referenceDocumentContentFinal.getDocument().putUserData(CommentHighlighter.CRUCIBLE_DATA_KEY, false);
+		} else {
+			if (!referenceDocumentContentFinal.equals(emptyDocument)) {
+				referenceDocumentContentFinal.getDocument().putUserData(CommentHighlighter.CRUCIBLE_DATA_KEY, true);
+				displayDocumentContentFinal.getDocument().putUserData(CommentHighlighter.CRUCIBLE_DATA_KEY, false);
+			}
+		}
+
 		DiffRequest request = new DiffRequest(project) {
 			@Override
 			public DiffContent[] getContents() {
