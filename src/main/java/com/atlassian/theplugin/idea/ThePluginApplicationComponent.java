@@ -20,24 +20,36 @@ import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
-import com.atlassian.theplugin.util.PicoUtil;
-import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
+import com.atlassian.theplugin.util.*;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.handler.AbstractHandler;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.Timer;
 
@@ -81,6 +93,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		ConfigurationFactory.setConfiguration(configuration);
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();
+
+		startHttpServer();
 	}
 
 	@Nls
@@ -191,4 +205,83 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		configPanel = null;
 	}
 
+	private void startHttpServer() {
+
+		// load icon
+		InputStream iconStream = ThePluginProjectComponent.class.getResourceAsStream("/icons/idea_small.png");
+
+		byte[] iconArray;
+		try {
+			int size = iconStream.available();
+			iconArray = new byte[size];
+			if (iconStream.read(iconArray, 0, size) < size) {
+				PluginUtil.getLogger().error("Failed to load icon for http server");
+				return;
+			}
+		} catch (IOException e) {
+			PluginUtil.getLogger().error("Failed to load icon for http server");
+			return;
+		}
+
+		// create and start server
+		Server httpServer = new Server(6666);
+		httpServer.setHandler(new LocalHttpHandler(iconArray));
+
+		try {
+			httpServer.start();
+		} catch (Exception e) {
+			PluginUtil.getLogger().error("Failed to start http server", e);
+		}
+	}
+
+	private class LocalHttpHandler extends AbstractHandler {
+		private byte[] icon;
+
+		public LocalHttpHandler(final byte[] iconArray) {
+			this.icon = iconArray;
+		}
+
+		public void handle(final String target, final HttpServletRequest request, final HttpServletResponse response,
+				final int dispatch) throws IOException, ServletException {
+
+			Request baseRequest = (request instanceof Request)
+					? (Request) request : HttpConnection.getCurrentConnection().getRequest();
+			baseRequest.setHandled(true);
+
+			final String method = StringUtil.removeTrailingSlashes(request.getRequestURI());
+
+			if (method.equals("ide")) {
+				writeIcon(response);
+			} else if (method.equals("file")) {
+				writeIcon(response);
+
+				final String file = request.getQueryString();
+
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						// try to open received file in all open projects
+						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+							final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
+							if (psiFile != null) {
+								psiFile.navigate(true);
+							}
+						}
+					}
+				});
+			} else {
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+				PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
+			}
+		}
+
+		private void writeIcon(final HttpServletResponse response) {
+			response.setContentType("image/png");
+			response.setStatus(HttpServletResponse.SC_OK);
+			try {
+				response.getOutputStream().write(icon);
+			} catch (IOException e) {
+				PluginUtil.getLogger().warn("Error occured when writing http response", e);
+			}
+		}
+	}
 }
