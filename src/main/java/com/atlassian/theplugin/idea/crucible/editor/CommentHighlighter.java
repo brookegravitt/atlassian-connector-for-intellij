@@ -49,6 +49,10 @@ public final class CommentHighlighter {
 	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
 
+	// key injected into document when diff view is opened
+	private static final String CRUCIBLE_DATA_KEY_NAME = "CRUCIBLE_DATA_KEY";
+	public static final Key<Boolean> CRUCIBLE_DATA_KEY = Key.create(CRUCIBLE_DATA_KEY_NAME);
+
 	private static final String CRUCIBLE_REVIEW_CONTEXT_KEY_NAME = "CRUCIBLE_REVIEW_CONTEXT";
 	public static final Key<String> CRUCIBLE_REVIEW_CONTEXT_KEY = Key.create(CRUCIBLE_REVIEW_CONTEXT_KEY_NAME);
 
@@ -64,7 +68,7 @@ public final class CommentHighlighter {
 	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	private static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
 
-	private static final String VERSIONED_COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
+	public static final String VERSIONED_COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	public static final Key<VersionedComment> VERSIONED_COMMENT_DATA_KEY = Key.create(VERSIONED_COMMENT_DATA_KEY_NAME);
 
 	private static final Key<DocumentListener> LISTENER_KEY = Key.create("CRUCIBLE_COMMENT_DOCUMENT_LISTENER");
@@ -79,33 +83,36 @@ public final class CommentHighlighter {
 			@NotNull final CrucibleFileInfo reviewItem,
 			@Nullable final OpenFileDescriptor displayFile) {
 		if (editor != null) {
-			applyHighlighters(project, editor, reviewItem);
 			Document doc = editor.getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
 			if (virtualFile != null) {
-				virtualFile.putUserData(REVIEW_DATA_KEY, review);
-				virtualFile.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
-				virtualFile.putUserData(COMMENT_DATA_KEY, true);
-				DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
-				if (documentListener == null) {
-					documentListener = new DocumentListener() {
-						public void beforeDocumentChange(final DocumentEvent event) {
-						}
+				if (doc.getUserData(CRUCIBLE_DATA_KEY) == null
+						|| doc.getUserData(CRUCIBLE_DATA_KEY) == true) {
+					applyHighlighters(project, editor, review, reviewItem);
+					virtualFile.putUserData(REVIEW_DATA_KEY, review);
+					virtualFile.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
+					virtualFile.putUserData(COMMENT_DATA_KEY, true);
+					DocumentListener documentListener = editor.getUserData(LISTENER_KEY);
+					if (documentListener == null) {
+						documentListener = new DocumentListener() {
+							public void beforeDocumentChange(final DocumentEvent event) {
+							}
 
-						public void documentChanged(final DocumentEvent event) {
-							ApplicationManager.getApplication().invokeLater(new Runnable() {
-								public void run() {
-									removeHighlighters(editor.getDocument().getMarkupModel(project));
-								}
-							});
+							public void documentChanged(final DocumentEvent event) {
+								ApplicationManager.getApplication().invokeLater(new Runnable() {
+									public void run() {
+										removeHighlighters(editor.getDocument().getMarkupModel(project));
+									}
+								});
+							}
+						};
+						doc.addDocumentListener(documentListener);
+						virtualFile.putUserData(LISTENER_KEY, documentListener);
+					}
+					if (displayFile != null) {
+						if (displayFile.canNavigateToSource()) {
+							displayFile.navigateIn(editor);
 						}
-					};
-					doc.addDocumentListener(documentListener);
-					virtualFile.putUserData(LISTENER_KEY, documentListener);
-				}
-				if (displayFile != null) {
-					if (displayFile.canNavigateToSource()) {
-						displayFile.navigateIn(editor);
 					}
 				}
 			}
@@ -128,7 +135,7 @@ public final class CommentHighlighter {
 								try {
 									for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
 										if (crucibleFileInfo.equals(file)) {
-											applyHighlighters(project, editor, crucibleFileInfo);
+											applyHighlighters(project, editor, review, crucibleFileInfo);
 											virtualFile.putUserData(REVIEW_DATA_KEY, review);
 											virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
 											virtualFile.putUserData(COMMENT_DATA_KEY, true);
@@ -203,6 +210,7 @@ public final class CommentHighlighter {
 
 	private static void applyHighlighters(@NotNull final Project project,
 			@NotNull final Editor editor,
+			@NotNull final ReviewAdapter review,
 			@NotNull final CrucibleFileInfo fileInfo) {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
@@ -236,9 +244,10 @@ public final class CommentHighlighter {
 					}
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
 							HighlighterLayer.SELECTION - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
-					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
-							+ ":</b> " + comment.getMessage());
+//					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
+//							+ ":</b> " + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
+					rh.setGutterIconRenderer(new CrucibleGutterIconRenderer(review, fileInfo, comment));
 					rh.putUserData(COMMENT_DATA_KEY, true);
 				} catch (Exception e) {
 					PluginUtil.getLogger().error(e);

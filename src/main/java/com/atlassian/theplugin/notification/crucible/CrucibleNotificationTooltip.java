@@ -24,11 +24,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleN
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.wm.StatusBar;
-import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 import thirdparty.javaworld.ClasspathHTMLEditorKit;
 
@@ -157,13 +156,15 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 						}
 					});
 					content.setCaretPosition(0); // do this to make sure scroll pane is always at the top / header
-					final WindowManager windowManager = WindowManager.getInstance();
-					if (windowManager != null) {
-						final StatusBar statusBar = windowManager.getStatusBar(project);
-						if (statusBar != null) {
-							statusBar.fireNotificationPopup(new JScrollPane(content), BACKGROUND_COLOR);
-						}
-					}
+					IdeaVersionFacade.getInstance().fireNofification(
+							project,
+							new JScrollPane(content),
+							content.getText(),
+							"/icons/crucible-blue-16.png",
+							newExceptionCount > 0
+									? IdeaVersionFacade.OperationStatus.ERROR
+									: IdeaVersionFacade.OperationStatus.INFO,
+							BACKGROUND_COLOR);
 				}
 			}
 		}
