@@ -202,13 +202,12 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 			changesCount = 0;
 			changes = new StringBuilder();
 			for (CrucibleNotification notification : notifications) {
-				CrucibleNotificationType type = notification.getType();
 				String id = "";
 				if (notification.getId() != null) {
 					id = notification.getId().getId();
 				}
 
-				switch (type) {
+				switch (notification.getType()) {
 					case EXCEPTION_RAISED:
 					case NEW_REVIEW:
 					case NOT_VISIBLE_REVIEW:
