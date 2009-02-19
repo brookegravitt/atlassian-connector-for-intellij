@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 
-	protected abstract void performUrlAction(final String url);
+	protected abstract void performUrlAction(final String url, Editor editor);
 
 	private String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final FishEyeServer fishEyeServer,
 			@NotNull final String repo, @NotNull final String projectPath, @NotNull final String fileRelativePath,
@@ -92,7 +92,7 @@ public abstract class FisheyeLinkAction extends AbstractFisheyeAction {
 		}
 		final String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
-		performUrlAction(url);
+		performUrlAction(url, editor);
 
 	}
 
