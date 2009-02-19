@@ -11,13 +11,7 @@ import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAComment;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAUserBean;
-import com.atlassian.theplugin.jira.api.JiraUserNotFoundException;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -25,11 +19,7 @@ import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
@@ -97,7 +87,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(ContentParameters params) {
 		IssueContentParameters icp = (IssueContentParameters) params;
-		return icp.server.getUrl() + icp.server.getUsername() + icp.issue.getKey();
+		return icp.server != null ? icp.server.getUrl() + icp.server.getUsername() + icp.issue.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {
@@ -113,7 +103,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	public boolean isServerEnabled(String key) {
 		IssuePanel ip = getContentPanel(key);
-		if (ip != null) {
+		if (ip != null && ip.params != null && ip.params.server != null) {
 			return ip.params.server.isEnabled();
 		}
 		return false;
@@ -250,7 +240,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		public JiraServerCfg getSelectedServer() {
-			return params.server;
+			return params != null ? params.server : null;
 		}
 
 		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
@@ -294,7 +284,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						@Override
 						public void run() {
 							try {
-								JiraServerCfg jiraServer = params.server;
+								JiraServerCfg jiraServer = params != null ? params.server : null;
 
 								if (jiraServer != null) {
 									final java.util.List<JIRAAction> actions = facade
@@ -584,7 +574,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				public void run() {
 
 					try {
-						if (params.server != null) {
+						if (params != null && params.server != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
 							params.issue = facade.getIssue(params.server, params.issue.getKey());
@@ -838,7 +828,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							try {
-								if (params.server != null) {
+								if (params != null && params.server != null) {
 									facade.addComment(params.server, params.issue, issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
@@ -885,7 +875,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			private class RefreshDescriptionAndCommentsRunnable implements Runnable {
 				public void run() {
 					try {
-						if (params.server != null) {
+						if (params != null && params.server != null) {
 							java.util.List<JIRAComment> cmts = null;
 
 							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
