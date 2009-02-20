@@ -17,14 +17,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
-import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
@@ -75,6 +68,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	 * start in the moment when shouldSaveConfiguration was false
 	 */
 	private boolean shouldSaveConfiguration;
+	private ServerCfg selectedServer;
 
 
 	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
@@ -94,7 +88,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.\n"
 						+ "If you want to preserve settings stored in your configuration, do not edit your "
 						+ PluginUtil.PRODUCT_NAME + " configuration using IDEA, but instead close the project "
-						+  "and try resolve the problem by modyfing directly the configuration file",
+						+ "and try resolve the problem by modyfing directly the configuration file",
 						e, PluginUtil.PRODUCT_NAME);
 			}
 		});
@@ -107,7 +101,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 					Messages.showErrorDialog(project, "If you see this message, something bad happend to the "
 							+ "initialization sequence of IDEA. You may encounter now various strange problems with Connector."
 							+ "\nPlease report occurence of this message to us.",
-							"Internal Error in Atlassian IntelliJ Connector");					
+							"Internal Error in Atlassian IntelliJ Connector");
 				}
 			});
 		}
@@ -226,6 +220,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	/**
 	 * Ensuring that old attributes do not break our loading
+	 *
 	 * @param root root element of XML document
 	 * @throws org.jdom.JDOMException when tree is invalid
 	 */
@@ -340,7 +335,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			configuration = setDefaultProjectConfiguration();
 		}
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
-				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(), uiTaskExecutor);
+				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(), uiTaskExecutor,
+				selectedServer);
 		return projectConfigurationPanel;
 	}
 
@@ -363,6 +359,10 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void disposeUIResources() {
 		projectConfigurationPanel = null;
+	}
+
+	public void setSelectedServer(final ServerCfg server) {
+		this.selectedServer = server;
 	}
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
