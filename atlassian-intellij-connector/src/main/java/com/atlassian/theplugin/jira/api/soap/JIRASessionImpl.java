@@ -54,13 +54,28 @@ public class JIRASessionImpl implements JIRASession {
 		if (value == null) {
 			if (AxisProperties.getProperty(name) != null) {
 				try {
-					AxisProperties.setProperty(name, null);
+					AxisProperties.setProperty(name, "");
 				} catch (NullPointerException e) {
-					Logger.getInstance(getClass().getName()).info("Setting property " + name + " to null", e);
+					Logger.getInstance(getClass().getName()).info("Setting AXIS property " + name + " to empty", e);
 				}
 			}
 		} else {
 			AxisProperties.setProperty(name, value);
+		}
+	}
+
+	private void setSystemProperty(String name, String value) {
+
+		if (value == null) {
+			//if (System.getProperty(name) != null) {
+				try {					
+					System.setProperty(name, "");
+				} catch (NullPointerException e) {
+					Logger.getInstance(getClass().getName()).info("Setting system property " + name + " to empty", e);
+				}
+			//}
+		} else {
+			System.setProperty(name, value);
 		}
 	}
 
@@ -89,12 +104,16 @@ public class JIRASessionImpl implements JIRASession {
 		//
 		setAxisProperty("http.proxyHost", host);
 		setAxisProperty("http.proxyPort", port);
-		setAxisProperty("https.proxyHost", host);
-		setAxisProperty("https.proxyPort", port);
+
+		setSystemProperty("http.proxyHost", host);
+		setSystemProperty("http.proxyPort", port);
+
 		setAxisProperty("http.proxyUser", user);
-		setAxisProperty("https.proxyUser", user);
+		setSystemProperty("http.proxyUser", user);
+
 		setAxisProperty("http.proxyPassword", password);
-		setAxisProperty("https.proxyPassword", password);
+		setSystemProperty("http.proxyPassword", password);
+
 	}
 
 	public JIRASessionImpl(String serverUrl) throws ServiceException, MalformedURLException {
