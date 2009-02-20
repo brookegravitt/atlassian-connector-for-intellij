@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,24 +47,24 @@ import java.awt.*;
 import java.util.Collection;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
-    private final ServerTreePanel serverTreePanel;
-    private BlankPanel blankPanel;
+	private final ServerTreePanel serverTreePanel;
+	private BlankPanel blankPanel;
 
 	private CardLayout editPaneCardLayout;
-    private JPanel editPane;
+	private JPanel editPane;
 	private static final String BLANK_CARD = "Blank card";
 
 	private static final float SPLIT_RATIO = 0.39f;
 
 	private Collection<ServerCfg> serverCfgs;
-    private final BambooServerConfigForm bambooServerConfigForm;
-    private final GenericServerConfigForm jiraServerConfigForm;
-    private final CrucibleServerConfigForm crucibleServerConfigForm;
+	private final BambooServerConfigForm bambooServerConfigForm;
+	private final GenericServerConfigForm jiraServerConfigForm;
+	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 
-	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs) {		
+	public ServerConfigPanel(Project project, Collection<ServerCfg> serverCfgs, final ServerCfg selectedServer) {
 		this.serverCfgs = serverCfgs;
-        this.serverTreePanel = new ServerTreePanel();
+		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -77,38 +77,39 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		fisheyeServerConfigFrom = new GenericServerConfigForm(project, new ProductConnector(fishEyeServerFacade));
 		initLayout();
 
-        serverTreePanel.setData(serverCfgs);
-        
-    }
+		serverTreePanel.setData(serverCfgs);
+		serverTreePanel.setSelectedServer(selectedServer);
+
+	}
 
 
-    public void setData(Collection<ServerCfg> aServerCfgs) {
-        serverCfgs = aServerCfgs;
-        serverTreePanel.setData(serverCfgs);
-    }
+	public void setData(Collection<ServerCfg> aServerCfgs) {
+		serverCfgs = aServerCfgs;
+		serverTreePanel.setData(serverCfgs);
+	}
 
 
-    private void initLayout() {
+	private void initLayout() {
 		GridBagLayout gbl = new GridBagLayout();
 
 		setLayout(gbl);
 
 		Splitter splitter = new Splitter(false, SPLIT_RATIO);
-        splitter.setShowDividerControls(false);
-        splitter.setFirstComponent(createSelectPane());
-        splitter.setSecondComponent(createEditPane());
-        splitter.setHonorComponentsMinimumSize(true);
+		splitter.setShowDividerControls(false);
+		splitter.setFirstComponent(createSelectPane());
+		splitter.setSecondComponent(createEditPane());
+		splitter.setHonorComponentsMinimumSize(true);
 
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 1;
 		c.weighty = 1;
 		c.insets = new Insets(Constants.DIALOG_MARGIN,
-							  Constants.DIALOG_MARGIN,
-							  Constants.DIALOG_MARGIN,
-							  Constants.DIALOG_MARGIN);
+				Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN,
+				Constants.DIALOG_MARGIN);
 		add(splitter, c);
-    }
+	}
 
 	private JComponent createSelectPane() {
 
@@ -119,58 +120,58 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		selectPane.add(serverTreePanel, BorderLayout.CENTER);
 		selectPane.setMinimumSize(new Dimension(ServerTreePanel.WIDTH, ServerTreePanel.HEIGHT));
 		return selectPane;
-    }
+	}
 
 	protected JComponent createToolbar() {
-        ActionManager actionManager = ActionManager.getInstance();
-        ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
+		ActionManager actionManager = ActionManager.getInstance();
+		ActionGroup actionGroup = (ActionGroup) actionManager.getAction("ThePlugin.ServerConfigToolBar");
 		return actionManager.createActionToolbar("ThePluginConfig", actionGroup, true).getComponent();
-    }
+	}
 
 	private JComponent createEditPane() {
-        editPane = new JPanel();
-        editPaneCardLayout = new CardLayout();
-        editPane.setLayout(editPaneCardLayout);
-        editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
-        editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
-        editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
-        editPane.add(fisheyeServerConfigFrom.getRootComponent(), "FishEye Servers");
+		editPane = new JPanel();
+		editPaneCardLayout = new CardLayout();
+		editPane.setLayout(editPaneCardLayout);
+		editPane.add(bambooServerConfigForm.getRootComponent(), "Bamboo Servers");
+		editPane.add(jiraServerConfigForm.getRootComponent(), "JIRA Servers");
+		editPane.add(crucibleServerConfigForm.getRootComponent(), "Crucible Servers");
+		editPane.add(fisheyeServerConfigFrom.getRootComponent(), "FishEye Servers");
 		editPane.add(getBlankPanel(), BLANK_CARD);
 
-        return editPane;
-    }
+		return editPane;
+	}
 
-    private JComponent getBlankPanel() {
-        if (blankPanel == null) {
-            blankPanel = new BlankPanel();
-        }
-        return blankPanel;
-    }
+	private JComponent getBlankPanel() {
+		if (blankPanel == null) {
+			blankPanel = new BlankPanel();
+		}
+		return blankPanel;
+	}
 
 
 	@Override
-    public boolean isEnabled() {
-        return true;
-    }
+	public boolean isEnabled() {
+		return true;
+	}
 
 	public String getTitle() {
-        return "Servers";
-    }
+		return "Servers";
+	}
 
 	public void addServer(ServerType serverType) {
-        serverTreePanel.addServer(serverType);
-    }
+		serverTreePanel.addServer(serverType);
+	}
 
 	public void removeServer() {
-        serverTreePanel.removeServer();
-    }
+		serverTreePanel.removeServer();
+	}
 
 	public void copyServer() {
-        serverTreePanel.copyServer();
-    }
+		serverTreePanel.copyServer();
+	}
 
 
-    public void saveData(ServerType serverType) {
+	public void saveData(ServerType serverType) {
 		switch (serverType) {
 			case BAMBOO_SERVER:
 				bambooServerConfigForm.saveData();
@@ -187,7 +188,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
-    }
+	}
 
 	public void saveData() {
 		for (ServerType serverType : ServerType.values()) {
@@ -198,8 +199,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 
 	public void editServer(ServerCfg serverCfg) {
-        ServerType serverType = serverCfg.getServerType();
-        editPaneCardLayout.show(editPane, serverType.toString());
+		ServerType serverType = serverCfg.getServerType();
+		editPaneCardLayout.show(editPane, serverType.toString());
 		switch (serverType) {
 			case BAMBOO_SERVER:
 				BambooServerCfg bambooServerCfg = (BambooServerCfg) serverCfg;
@@ -222,11 +223,11 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
-    }
+	}
 
 	public void showEmptyPanel() {
-        editPaneCardLayout.show(editPane, BLANK_CARD);
-    }
+		editPaneCardLayout.show(editPane, BLANK_CARD);
+	}
 
 	public void finalizeData() {
 		bambooServerConfigForm.finalizeData();
@@ -238,41 +239,41 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	static class BlankPanel extends JPanel {
 
-        public BlankPanel() {
-            initLayout();
-        }
+		public BlankPanel() {
+			initLayout();
+		}
 
-        private static final String TEXT_BEGIN = "Press the ";
-        private static final String TEXT_END = " button to define a new Server configuration.";
+		private static final String TEXT_BEGIN = "Press the ";
+		private static final String TEXT_END = " button to define a new Server configuration.";
 
-        private void initLayout() {
+		private void initLayout() {
 
-            setLayout(new BorderLayout());
+			setLayout(new BorderLayout());
 
-            DefaultStyledDocument doc = new DefaultStyledDocument();
-            Style s = doc.addStyle(null, null);
-            StyleConstants.setIcon(s, IconLoader.getIcon("/general/add.png"));
-            Style d = doc.addStyle(null, null);
-            StyleConstants.setFontFamily(d, getFont().getFamily());
-            StyleConstants.setFontSize(d, getFont().getSize());
-            try {
-                doc.insertString(0, TEXT_BEGIN, d);
-                doc.insertString(TEXT_BEGIN.length(), " ", s);
-                doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
-            } catch (BadLocationException e) {
-                PluginUtil.getLogger().error(e);
-            }
-            JTextPane pane = new JTextPane();
-            pane.setBackground(getBackground());
-            pane.setDocument(doc);
-            pane.setEditable(false);
-            pane.setVisible(true);
+			DefaultStyledDocument doc = new DefaultStyledDocument();
+			Style s = doc.addStyle(null, null);
+			StyleConstants.setIcon(s, IconLoader.getIcon("/general/add.png"));
+			Style d = doc.addStyle(null, null);
+			StyleConstants.setFontFamily(d, getFont().getFamily());
+			StyleConstants.setFontSize(d, getFont().getSize());
+			try {
+				doc.insertString(0, TEXT_BEGIN, d);
+				doc.insertString(TEXT_BEGIN.length(), " ", s);
+				doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
+			} catch (BadLocationException e) {
+				PluginUtil.getLogger().error(e);
+			}
+			JTextPane pane = new JTextPane();
+			pane.setBackground(getBackground());
+			pane.setDocument(doc);
+			pane.setEditable(false);
+			pane.setVisible(true);
 
-            add(pane, BorderLayout.NORTH);
-        }
+			add(pane, BorderLayout.NORTH);
+		}
 
 
-    }
+	}
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {

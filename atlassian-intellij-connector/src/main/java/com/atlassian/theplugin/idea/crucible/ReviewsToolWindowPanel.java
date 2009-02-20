@@ -22,14 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
-import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
-import com.atlassian.theplugin.crucible.model.UpdateContext;
-import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
@@ -43,11 +36,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPopupMenu;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -62,12 +51,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Collection;
 
 /**
@@ -238,6 +222,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				return reviewTree.getSelectedReview();
 			} else if (dataId.equals(Constants.REVIEW_WINDOW_ENABLED)) {
 				return reviewTree.isEnabled();
+			}
+			if (dataId.equals(Constants.SERVER)) {
+				if (reviewTree.getSelectedReview() != null) {
+					return reviewTree.getSelectedReview().getServer();
+				}
 			}
 		}
 		return null;

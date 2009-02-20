@@ -33,60 +33,60 @@ public final class ServerConfigPanelTestUi {
 	}
 
 	public static void main(String[] args) {
-        JFrame frame = new JFrame("ServerConfigPanel test");
-        final BambooServerCfg bambooServerCfg = new BambooServerCfg(false, "mybamboo2", new ServerId());
-        final Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList(
-                new BambooServerCfg(true, "mybamboo", new ServerId()),
-                bambooServerCfg,
-                new CrucibleServerCfg("Crucible EAC", new ServerId()),
-                new JiraServerCfg("My Jira Server", new ServerId()),
-                new JiraServerCfg("Second Jira", new ServerId()),
+		JFrame frame = new JFrame("ServerConfigPanel test");
+		final BambooServerCfg bambooServerCfg = new BambooServerCfg(false, "mybamboo2", new ServerId());
+		final Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList(
+				new BambooServerCfg(true, "mybamboo", new ServerId()),
+				bambooServerCfg,
+				new CrucibleServerCfg("Crucible EAC", new ServerId()),
+				new JiraServerCfg("My Jira Server", new ServerId()),
+				new JiraServerCfg("Second Jira", new ServerId()),
 				new FishEyeServerCfg("FishEye1 Server", new ServerId())
 		);
 
-        final Collection<ServerCfg> serverCfgs2 = MiscUtil.buildArrayList(
-                new BambooServerCfg(true, "2-mybamboo", new ServerId()),
-                bambooServerCfg,
-                new CrucibleServerCfg("2-Crucible EAC Very Very long name", new ServerId()),
-                new JiraServerCfg("2-My Jira Server", new ServerId()),
-                new JiraServerCfg("2-Second Jira", new ServerId())
-        );
+		final Collection<ServerCfg> serverCfgs2 = MiscUtil.buildArrayList(
+				new BambooServerCfg(true, "2-mybamboo", new ServerId()),
+				bambooServerCfg,
+				new CrucibleServerCfg("2-Crucible EAC Very Very long name", new ServerId()),
+				new JiraServerCfg("2-My Jira Server", new ServerId()),
+				new JiraServerCfg("2-Second Jira", new ServerId())
+		);
 
-        ServerConfigPanel configPanel = new ServerConfigPanel(null, serverCfgs) {
-            @Override
-            protected JComponent createToolbar() {
-                JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
-                final JButton button = new JButton("Test Only");
-                button.addActionListener(new ActionListener() {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, serverCfgs, null) {
+			@Override
+			protected JComponent createToolbar() {
+				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
+				final JButton button = new JButton("Test Only");
+				button.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(final ActionEvent e) {
-                        setData(serverCfgs2);
-                    }
-                });
-                toolbar.add(button);
-                final JButton addButton = new JButton("Add");
-                addButton.addActionListener(new ActionListener() {
+					public void actionPerformed(final ActionEvent e) {
+						setData(serverCfgs2);
+					}
+				});
+				toolbar.add(button);
+				final JButton addButton = new JButton("Add");
+				addButton.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(final ActionEvent e) {
-                        addServer(ServerType.CRUCIBLE_SERVER);
-                    }
-                });
-                toolbar.add(addButton);
-                return toolbar;
-            }
-        };
+					public void actionPerformed(final ActionEvent e) {
+						addServer(ServerType.CRUCIBLE_SERVER);
+					}
+				});
+				toolbar.add(addButton);
+				return toolbar;
+			}
+		};
 
-        frame.getContentPane().add(configPanel, BorderLayout.CENTER);
+		frame.getContentPane().add(configPanel, BorderLayout.CENTER);
 
-        //Finish setting up the frame, and show it.
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-        frame.pack();
-        frame.setVisible(true);
+		//Finish setting up the frame, and show it.
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
+		frame.pack();
+		frame.setVisible(true);
 
-    }
+	}
 }
