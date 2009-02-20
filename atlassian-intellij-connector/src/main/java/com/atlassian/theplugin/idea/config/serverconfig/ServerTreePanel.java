@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,7 +38,7 @@ import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
 	public static final String TOOLBAR_NAME = "ThePlugin.AddRemoveServerPopup";
-	
+
 	private JTree serverTree;
 	private ServerTreeModel model;
 	private DefaultMutableTreeNode selectedNode;
@@ -47,10 +47,11 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int WIDTH = 240;
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
-    private Collection<ServerCfg> servers;
+	private Collection<ServerCfg> servers;
 
 	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
+	 *
 	 * @param serverConfigPanel panel to invoke storeServer() and showEmptyPanel() on.
 	 */
 	public void setServerConfigPanel(ServerConfigPanel serverConfigPanel) {
@@ -72,16 +73,16 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	private void expandAllPaths() {
 		for (int i = 0; i < serverTree.getRowCount(); ++i) {
 			serverTree.expandRow(i);
-        }
-    }
+		}
+	}
 
 	private JTree getServerTree() {
 		if (serverTree == null) {
 			serverTree = new JTree();
 
-            serverTree.setName("Server tree");
+			serverTree.setName("Server tree");
 
-            model = new ServerTreeModel(new RootNode());
+			model = new ServerTreeModel(new RootNode());
 			serverTree.setModel(model);
 
 			serverTree.setRootVisible(false);
@@ -99,7 +100,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 	@Override
-    public void setEnabled(boolean b) {
+	public void setEnabled(boolean b) {
 		super.setEnabled(b);
 		getServerTree().setEnabled(b);
 	}
@@ -107,12 +108,12 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public String addServer(ServerType serverType) {
 
 
-        String name = ServerNameUtil.suggestNewName(servers);
-        ServerCfg newServer = createNewServer(serverType, name);
+		String name = ServerNameUtil.suggestNewName(servers);
+		ServerCfg newServer = createNewServer(serverType, name);
 
-        servers.add(newServer);
+		servers.add(newServer);
 
-        ServerNode child = ServerNodeFactory.getServerNode(newServer);
+		ServerNode child = ServerNodeFactory.getServerNode(newServer);
 		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
 		model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
 
@@ -124,9 +125,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		return newServer.getName();
 	}
 
-    private ServerCfg createNewServer(final ServerType serverType, final String name) {
-        ServerId id = new ServerId();
-			// CHECKSTYLE:OFF
+	private ServerCfg createNewServer(final ServerType serverType, final String name) {
+		ServerId id = new ServerId();
+		// CHECKSTYLE:OFF
 		switch (serverType) {
 			// CHECKSTYLE:ON
 			case BAMBOO_SERVER:
@@ -138,11 +139,11 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			case FISHEYE_SERVER:
 				return new FishEyeServerCfg(name, id);
 		}
-        throw new RuntimeException("Unhandled server type [" + serverType + "]");
-    }
+		throw new RuntimeException("Unhandled server type [" + serverType + "]");
+	}
 
 
-    public void copyServer() {
+	public void copyServer() {
 /*
 		ServerBean newServer = new ServerBean();
 		newServer.setName(suggestCopyName(ConfigurationFactory.getConfiguration()
@@ -160,14 +161,14 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 				int response = Messages.showYesNoDialog(
 						"Are you sure you want to delete the selected server?",
 						"Confirm server delete",
-						Messages.getQuestionIcon()						
-						);
+						Messages.getQuestionIcon()
+				);
 
 				if (response != 0) {
 					return;
 				}
 
-                servers.remove(selectedServerNode.getServer());
+				servers.remove(selectedServerNode.getServer());
 				TreeNode parent = selectedServerNode.getParent();
 				selectedServerNode.removeFromParent();
 				model.nodeStructureChanged(parent);
@@ -176,8 +177,8 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 	public void setData(Collection<ServerCfg> newServers) {
-        servers = newServers;
-        // jgorycki: I assume this method will only be called at the beginning of the dialog's lifecycle.
+		servers = newServers;
+		// jgorycki: I assume this method will only be called at the beginning of the dialog's lifecycle.
 		// I want to expand all paths in the tree and not select any nodes - hence showing an empty panel
 		updateTreeConfiguration();
 		if (forceExpand) {
@@ -188,48 +189,47 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 	private ServerNode updateServerTree() {
-        ServerNode firstServerNode = null;
+		ServerNode firstServerNode = null;
 
-        model = new ServerTreeModel(new RootNode());
-        serverTree.setModel(model);
+		model = new ServerTreeModel(new RootNode());
+		serverTree.setModel(model);
 
-
-            // !servers.isEmpty() because:
-			// if server list is empty, don't create server type node,
-			// otherwise create node - it would be required
+		// !servers.isEmpty() because:
+		// if server list is empty, don't create server type node,
+		// otherwise create node - it would be required
 //			ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType, !servers.isEmpty());
 //			TreePath serverNodePath = new TreePath(serverTypeNode.getPath());
 //			boolean doExpand = serverTree.isExpanded(serverNodePath);
 
-            for (ServerCfg server : servers) {
-				ServerNode child = ServerNodeFactory.getServerNode(server);
-			    ServerTypeNode serverTypeNode = model.getServerTypeNode(server.getServerType());
+		for (ServerCfg server : servers) {
+			ServerNode child = ServerNodeFactory.getServerNode(server);
+			ServerTypeNode serverTypeNode = model.getServerTypeNode(server.getServerType());
 
-				model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
+			model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
 
-                if (firstServerNode == null) {
+			if (firstServerNode == null) {
+				firstServerNode = child;
+			}
+
+			if (selectedNode != null && selectedNode instanceof ServerNode) {
+				ServerNode serverNode = (ServerNode) selectedNode;
+				if (child.getServer().getServerId().equals(serverNode.getServer().getServerId())) {
 					firstServerNode = child;
 				}
-
-				if (selectedNode != null && selectedNode instanceof ServerNode) {
-					ServerNode serverNode = (ServerNode) selectedNode;
-					if (child.getServer().getServerId().equals(serverNode.getServer().getServerId())) {
-						firstServerNode = child;
-					}
-				}
-                model.nodeStructureChanged(serverTypeNode);
 			}
+			model.nodeStructureChanged(serverTypeNode);
+		}
 
 //			if (doExpand) {
 //				serverTree.expandPath(serverNodePath);
 //			}
-        return firstServerNode;
-    }
+		return firstServerNode;
+	}
 
 
-    private void updateTreeConfiguration() {
-        //DefaultMutableTreeNode tmpNode = selectedNode;
-        selectedNode = updateServerTree();
+	private void updateTreeConfiguration() {
+		//DefaultMutableTreeNode tmpNode = selectedNode;
+		selectedNode = updateServerTree();
 		if (selectedNode != null) {
 			TreePath path = new TreePath(selectedNode.getPath());
 			serverTree.scrollPathToVisible(path);
@@ -238,18 +238,18 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		} else {
 			serverConfigPanel.showEmptyPanel();
 		}
-    }
+	}
 
-    public void valueChanged(TreeSelectionEvent e) {
-        TreePath oldPath = e.getOldLeadSelectionPath();
-        if (oldPath != null) {
-            DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
-            if (oldNode != null && oldNode instanceof ServerNode) {
-                serverConfigPanel.saveData(((ServerNode) oldNode).getServerType());
-            }
-            model.nodeChanged(oldNode);
+	public void valueChanged(TreeSelectionEvent e) {
+		TreePath oldPath = e.getOldLeadSelectionPath();
+		if (oldPath != null) {
+			DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode) oldPath.getLastPathComponent();
+			if (oldNode != null && oldNode instanceof ServerNode) {
+				serverConfigPanel.saveData(((ServerNode) oldNode).getServerType());
+			}
+			model.nodeChanged(oldNode);
 
-        }
+		}
 
 		TreePath path = e.getNewLeadSelectionPath();
 
@@ -257,7 +257,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
 			if (selectedNode instanceof ServerNode) {
 				ServerCfg server = ((ServerNode) selectedNode).getServer();
-                serverConfigPanel.editServer(server);
+				serverConfigPanel.editServer(server);
 //                else {
 //					// PL-235 show blank panel if server from tree node does not exist in configuration
 //					// it happens if you add server, click cancel and open config window again
@@ -266,7 +266,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			} else if (selectedNode instanceof ServerTypeNode) {
 				serverConfigPanel.showEmptyPanel();
 			} else if (selectedNode instanceof ServerInfoNode) {
-				serverConfigPanel.showEmptyPanel();				
+				serverConfigPanel.showEmptyPanel();
 			}
 		} else {
 			serverConfigPanel.showEmptyPanel();
@@ -292,5 +292,23 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			}
 		}
 		return null;
+	}
+
+	public void setSelectedServer(final ServerCfg selectedServer) {
+		if (selectedServer != null) {
+			for (int i = 0; i < serverTree.getRowCount(); i++) {
+				TreePath path = serverTree.getPathForRow(i);
+				Object object = path.getLastPathComponent();
+				if (object instanceof ServerNode) {
+					ServerNode node = (ServerNode) object;
+					if (node.getServer().getServerId().equals(selectedServer.getServerId())) {
+						serverTree.expandPath(path);
+						serverTree.makeVisible(path);
+						serverTree.setSelectionPath(path);
+						break;
+					}
+				}
+			}
+		}
 	}
 }

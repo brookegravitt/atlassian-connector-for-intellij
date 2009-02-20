@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.idea.AboutForm;
@@ -36,7 +37,7 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final JTabbedPane contentPanel = new JTabbedPane();
 	private final ServerConfigPanel serverConfigPanel;
 	private final ProjectDefaultsConfigurationPanel defaultsConfigurationPanel;
-   	private final AboutForm aboutBox;
+	private final AboutForm aboutBox;
 
 	private ProjectConfiguration projectConfiguration;
 	private static final int WIDTH = 800;
@@ -49,9 +50,9 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer) {
 		this.projectConfiguration = projectConfiguration;
-		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers());
+		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers(), selectedServer);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, uiTaskExecutor);
 		aboutBox = new AboutForm();
