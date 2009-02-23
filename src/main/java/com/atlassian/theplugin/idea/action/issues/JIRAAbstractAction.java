@@ -21,17 +21,15 @@ public abstract class JIRAAbstractAction extends AnAction {
 	@Override
 	public final void update(AnActionEvent event) {
 		super.update(event);
+//
+//		boolean enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
+//
+//		if (enabled) {
+//			onUpdate(event);
+//		}
+//		onUpdate(event, enabled);
 
-		boolean enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
-
-		if (enabled) {
-
-			onUpdate(event);
-		}
-
-		onUpdate(event, enabled);
-
-		enabled = false;
+		boolean enabled = false;
 		ServerCfg server = event.getData(Constants.SERVER_KEY);
 		if (server != null) {
 			Project project = event.getData(DataKeys.PROJECT);
@@ -43,5 +41,12 @@ public abstract class JIRAAbstractAction extends AnAction {
 			}
 		}
 		event.getPresentation().setEnabled(enabled);
+
+		enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
+
+		if (enabled) {
+			onUpdate(event);
+		}
+		onUpdate(event, enabled);
 	}
 }
