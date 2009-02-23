@@ -18,19 +18,10 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -88,6 +79,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
+    private  CrucibleNotificationTooltip crucibleTooltip;
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
@@ -287,21 +279,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 	}
 
-	public CrucibleReviewNotifier getCrucibleReviewNotifier() {
-		return crucibleReviewNotifier;
-	}
 
 	private void registerCrucibleNotifier() {
-		if (pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
-				!= CrucibleTooltipOption.NEVER) {
+		crucibleReviewListModel.addListener(crucibleReviewNotifier);
+		crucibleTooltip = new CrucibleNotificationTooltip(statusBarCrucibleIcon, project, toolWindow, pluginConfiguration);
 
-			crucibleReviewListModel.addListener(crucibleReviewNotifier);
-			crucibleReviewNotifier.registerListener(
-					new CrucibleNotificationTooltip(statusBarCrucibleIcon, project, toolWindow));
-		} else {
-			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
-		}
-
+		crucibleReviewNotifier.registerListener(crucibleTooltip);
 	}
 
 	public void projectOpened() {
@@ -352,6 +335,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);
 
 			EditorFactory.getInstance().removeEditorFactoryListener(crucibleEditorFactoryListener);
+
+			//remove Crucible listeners
+			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
+			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
 			created = false;
 		}
