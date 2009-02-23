@@ -222,8 +222,8 @@ public class JIRAFilterTree extends JTree {
 	}
 
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
-		JIRAManualFilter prevManualFilter = null;
-		JIRASavedFilter prevSavedFilter = null;
+		private JIRAManualFilter prevManualFilter = null;
+		private JIRASavedFilter prevSavedFilter = null;
 
 		public final void valueChanged(final TreeSelectionEvent event) {
 
