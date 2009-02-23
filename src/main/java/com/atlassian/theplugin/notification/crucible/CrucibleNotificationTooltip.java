@@ -18,11 +18,9 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.AbstractCommentNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.AbstractUpdatedCommentNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotificationType;
-import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
+import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.crucible.api.model.notification.*;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindow;
@@ -44,21 +42,24 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	private final CrucibleStatusIcon display;
 	private final Project project;
 	private final PluginToolWindow pluginToolWindow;
+	private final PluginConfiguration pluginConfiguration;
 
 	private final Map<Server, NewExceptionNotification> exceptions = new HashMap<Server, NewExceptionNotification>();
 
 	public CrucibleNotificationTooltip(@NotNull final CrucibleStatusIcon display, @NotNull final Project project,
-			@NotNull final PluginToolWindow pluginToolWindow) {
+			@NotNull final PluginToolWindow pluginToolWindow, final PluginConfiguration pluginConfiguration) {
 		this.display = display;
 		this.project = project;
 		this.pluginToolWindow = pluginToolWindow;
+		this.pluginConfiguration = pluginConfiguration;
 	}
 
 
 	//private List<CrucibleNotification>
 	public void updateNotifications(java.util.List<CrucibleNotification> notifications) {
 		boolean exceptionRaised = false;
-		if (!notifications.isEmpty()) {
+		if (!notifications.isEmpty() && pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption() !=
+				CrucibleTooltipOption.NEVER) {
 			StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 
 			int notificationCount = 0;
