@@ -1,8 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
@@ -62,7 +66,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
-		private final JiraServerCfg server;
+		private JiraServerCfg server;
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
 		private JIRAIssue issue;
 		private final JIRAIssueListModel model;
@@ -188,6 +192,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		private SummaryPanel summaryPanel;
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
+		private IssueToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
@@ -216,6 +221,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			if (params.model != null) {
 				params.model.addModelListener(this);
 			}
+
+			IdeaHelper.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 			refresh();
 		}
 
@@ -250,6 +257,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			if (params.model != null) {
 				params.model.removeModelListener(this);
 			}
+			IdeaHelper.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 		}
 
 
@@ -1197,6 +1205,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.weighty = 1.0;
 				gbc.fill = GridBagConstraints.BOTH;
 				add(console.getComponent(), gbc);
+			}
+		}
+
+		private class LocalConfigListener extends ConfigurationListenerAdapter {
+
+			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
+				params.server = (JiraServerCfg) newConfiguration.getServerCfg(params.server.getServerId());
 			}
 		}
 	}
