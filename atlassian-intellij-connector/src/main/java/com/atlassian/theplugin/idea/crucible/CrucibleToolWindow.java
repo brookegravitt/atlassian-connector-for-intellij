@@ -441,8 +441,10 @@ class DetailsPanel extends JPanel {
 //
 //
 				body.setPreferredSize(null);
+
 				body.setPreferredSize(new Dimension(scroll.getViewport().getWidth(),
 						body.getPreferredSize().height));
+
 				body.validate();
 			}
 		});
@@ -560,7 +562,7 @@ class DetailsPanel extends JPanel {
 
 	public void refresh() {
 		final JPanel panel = createBody();
-		scroll.setViewport(null);
+		//scroll.setViewport(null);
 		scroll.setViewportView(panel);
 		scroll.validate();
 		validate();
