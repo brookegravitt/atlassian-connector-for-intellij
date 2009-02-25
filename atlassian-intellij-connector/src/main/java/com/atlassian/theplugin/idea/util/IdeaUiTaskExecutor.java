@@ -52,8 +52,10 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 							uiTask.onSuccess();
 						} catch (Exception e) {
 							LoggerImpl.getInstance().warn(e);
-							DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
-									"Error while " + uiTask.getLastAction(), e, "Error");
+							if (uiTask.getComponent() != null && uiTask.getComponent().isShowing()) {
+								DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
+										"Error while " + uiTask.getLastAction(), e, "Error");
+							}
 						}
 					}
 				}, modalityState);
