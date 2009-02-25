@@ -294,7 +294,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 				}
 
 				public Component getComponent() {
-					return CrucibleCustomFilterDialog.this.getRootPane();
+					return CrucibleCustomFilterDialog.this.createCenterPanel();
 				}
 			});
 		}
@@ -396,7 +396,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setActiveUser(filter.getCreator(), creatorComboBox);
 		setActiveUser(filter.getModerator(), moderatorComboBox);
 		setActiveUser(filter.getReviewer(), reviewerComboBox);
-		if (rootPanel.getPreferredSize().getWidth() > rootPanel.getWidth()) {
+		if (isShowing() && rootPanel.getPreferredSize().getWidth() > rootPanel.getWidth()) {
 			pack();
 		}
 	}
