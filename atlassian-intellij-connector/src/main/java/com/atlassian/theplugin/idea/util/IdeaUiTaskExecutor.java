@@ -37,7 +37,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
 						public void run() {
 							uiTask.onError();
-							if (uiTask.getComponent().isShowing()) {
+							if (uiTask.getComponent() != null && uiTask.getComponent().isShowing()) {
 								DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
 										"Error while " + uiTask.getLastAction(), e, "Error");
 							}
