@@ -23,19 +23,19 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 	}
 
 	public void onUpdate(AnActionEvent event, boolean enabled) {
-		if (enabled) {
+//		if (enabled) {
 		final JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
 		event.getPresentation().setEnabled(issue != null);
 
-	    if (issue != null) {
-	        String changeListName = issue.getKey() + " - " + issue.getSummary();
+		if (issue != null) {
+			String changeListName = issue.getKey() + " - " + issue.getSummary();
 			final Project project = event.getData(DataKeys.PROJECT);
-	        if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
-	            event.getPresentation().setText("Create ChangeList");
-	        } else {
-	            event.getPresentation().setText("Activate ChangeList");
-	        }
-	    }
+			if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
+				event.getPresentation().setText("Create ChangeList");
+			} else {
+				event.getPresentation().setText("Activate ChangeList");
+			}
 		}
 	}
+//	}
 }

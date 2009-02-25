@@ -28,6 +28,6 @@ public class GroupSubtasksAction extends ToggleAction {
 
 	public void update(AnActionEvent e) {
 		super.update(e);
-		ModelFreezeUpdater.getStateAndSetPresentationEnabled(e);
+		ModelFreezeUpdater.getState(e);
 	}
 }
