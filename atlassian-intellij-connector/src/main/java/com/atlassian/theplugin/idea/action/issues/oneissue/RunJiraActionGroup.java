@@ -48,12 +48,12 @@ public class RunJiraActionGroup extends ActionGroup {
 	}
 
 	@Override
-	public void update(final AnActionEvent anActionEvent) {
+	public void update(final AnActionEvent event) {
 		boolean enabled = false;
 		if (actions.size() > 0) {
-			ServerCfg server = anActionEvent.getData(Constants.SERVER_KEY);
+			ServerCfg server = event.getData(Constants.SERVER_KEY);
 			if (server != null) {
-				Project project = anActionEvent.getData(DataKeys.PROJECT);
+				Project project = event.getData(DataKeys.PROJECT);
 				if (project != null) {
 					ServerCfg server2 = IdeaHelper.getCfgManager()
 							.getServer(CfgUtil.getProjectId(project), server.getServerId());
@@ -63,6 +63,6 @@ public class RunJiraActionGroup extends ActionGroup {
 				}
 			}
 		}
-		anActionEvent.getPresentation().setEnabled(enabled);
+		event.getPresentation().setEnabled(enabled);
 	}
 }

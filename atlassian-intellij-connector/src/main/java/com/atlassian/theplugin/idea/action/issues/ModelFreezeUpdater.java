@@ -13,7 +13,7 @@ public final class ModelFreezeUpdater {
 	private ModelFreezeUpdater() {
 	}
 
-	public static boolean getStateAndSetPresentationEnabled(AnActionEvent event) {
+	public static boolean getState(AnActionEvent event) {
 		JIRAIssueListModelBuilder issueBuilder =
 				IdeaHelper.getProjectComponent(event, JIRAIssueListModelBuilderImpl.class);
 		JIRAFilterListBuilder filterBuilder = IdeaHelper.getProjectComponent(event, JIRAFilterListBuilder.class);

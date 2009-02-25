@@ -22,7 +22,7 @@ public abstract class JIRAAbstractAction extends AnAction {
 	public final void update(AnActionEvent event) {
 		super.update(event);
 //
-//		boolean enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
+//		boolean enabled = ModelFreezeUpdater.getState(event);
 //
 //		if (enabled) {
 //			onUpdate(event);
@@ -36,13 +36,15 @@ public abstract class JIRAAbstractAction extends AnAction {
 			if (project != null) {
 				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
 				if (server2 != null && server2.isEnabled()) {
-					enabled = true;
+					if (ModelFreezeUpdater.getState(event)) {
+						enabled = true;
+					}
 				}
 			}
 		}
 		event.getPresentation().setEnabled(enabled);
 
-		enabled = ModelFreezeUpdater.getStateAndSetPresentationEnabled(event);
+//		enabled = ModelFreezeUpdater.getState(event);
 
 		if (enabled) {
 			onUpdate(event);
