@@ -58,8 +58,8 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	//private List<CrucibleNotification>
 	public void updateNotifications(java.util.List<CrucibleNotification> notifications) {
 		boolean exceptionRaised = false;
-		if (!notifications.isEmpty() && pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption() !=
-				CrucibleTooltipOption.NEVER) {
+		if (!notifications.isEmpty() && pluginConfiguration.getCrucibleConfigurationData().getCrucibleTooltipOption()
+				!= CrucibleTooltipOption.NEVER) {
 			StringBuilder sb = new StringBuilder("<table width=\"100%\">");
 
 			int notificationCount = 0;
