@@ -55,6 +55,10 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 				setFilter(manualFilter, server);
 			}
 
+			public void serverRemoved(final JIRAFilterListModel aListModel) {
+				JiraManualFilterDetailsPanel.this.listModel = aListModel;
+			}
+
 		});
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
