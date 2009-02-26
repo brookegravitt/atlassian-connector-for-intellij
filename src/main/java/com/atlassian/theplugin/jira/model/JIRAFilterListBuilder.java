@@ -59,7 +59,7 @@ public class JIRAFilterListBuilder {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-			for (JiraServerCfg jiraServer : cfgManager.getAllEnabledJiraServers(projectId)) {
+			for (JiraServerCfg jiraServer : jiraServerModel.getServers()) {
 				try {
 					loadServerSavedFilter(jiraServer, jiraServerModel);
 				} catch (JIRAException exc) {

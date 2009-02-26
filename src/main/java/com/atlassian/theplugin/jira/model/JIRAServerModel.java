@@ -1,9 +1,11 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.jira.api.*;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface JIRAServerModel extends FrozenModel {
@@ -37,4 +39,7 @@ public interface JIRAServerModel extends FrozenModel {
 	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project);
 
 
+	Collection<JiraServerCfg> getServers();
+
+	void clear(final ServerId serverId);
 }
