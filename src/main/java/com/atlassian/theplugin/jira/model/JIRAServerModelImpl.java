@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -44,6 +45,23 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		}
 
 		serverInfoMap.remove(cfg);
+	}
+
+	public synchronized void clear(ServerId serverId) {
+		if (serverId == null) {
+			return;
+		}
+
+		JiraServerCfg server = null;
+
+		for (JiraServerCfg s : serverInfoMap.keySet()) {
+			if (s.getServerId().equals(serverId)) {
+				server = s;
+				break;
+			}
+		}
+
+		serverInfoMap.remove(server);
 	}
 
 	public synchronized void clearAll() {
@@ -137,6 +155,10 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		}
 		JIRAServerCache srv = getServer(cfg);
 		return srv.getComponents(project);
+	}
+
+	public Collection<JiraServerCfg> getServers() {
+		return serverInfoMap.keySet();
 	}
 
 	public boolean isModelFrozen() {

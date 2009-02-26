@@ -1,11 +1,9 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListener;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -38,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.HyperlinkEvent;
@@ -45,10 +44,8 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Calendar;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public final class IssuesToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
@@ -827,18 +824,33 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
+		private Collection<JiraServerCfg> servers = null;
+
+		/**
+		 * Clear server model and refill it with all enabled servers' data
+		 */
 		public MetadataFetcherBackgroundableTask() {
 			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
+			servers = IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()));
+			jiraServerModel.clearAll();
+		}
+
+		/**
+		 * Add requestes server's data to the server model
+		 *
+		 * @param server server added to the model with all fetched data
+		 */
+		public MetadataFetcherBackgroundableTask(final JiraServerCfg server) {
+			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
+			this.servers = Arrays.asList(server);
 		}
 
 		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
 			try {
 				jiraServerModel.setModelFrozen(true);
-				jiraServerModel.clearAll();
 
-				for (JiraServerCfg server : IdeaHelper.getCfgManager()
-						.getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()))) {
+				for (JiraServerCfg server : servers) {
 					try {
 						//returns false if no cfg is available or login failed
 						if (!jiraServerModel.checkServer(server)) {
@@ -894,16 +906,60 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		@Override
 		public void jiraServersChanged(ProjectConfiguration newConfiguration) {
-			refreshModels();
+//			refreshModels();
 		}
 
-		//		@Override
-//		public void serverDataChanged(ServerId serverId) {
-//			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
-//			if (server.getServerType() == ServerType.JIRA_SERVER) {
-//				refreshModels();
-//			}
-//		}
+		@Override
+		public void serverConnectionDataChanged(final ServerId serverId) {
+			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
+				refreshServer(server);
+			}
+		}
+
+		@Override
+		public void serverDisabled(final ServerId serverId) {
+			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
+				removeServer(serverId);
+			}
+		}
+
+		@Override
+		public void serverRemoved(final ServerCfg oldServer) {
+			if (oldServer instanceof JiraServerCfg && oldServer.getServerType() == ServerType.JIRA_SERVER) {
+				removeServer(oldServer.getServerId());
+			}
+		}
+
+		@Override
+		public void serverEnabled(final ServerId serverId) {
+			addServer(IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId));
+		}
+
+		@Override
+		public void serverAdded(final ServerCfg newServer) {
+			addServer(newServer);
+		}
+
+		private void addServer(final ServerCfg server) {
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server);
+				ProgressManager.getInstance().run(task);
+			}
+		}
+
+		private void removeServer(final ServerId serverId) {
+			jiraServerModel.clear(serverId);
+			refreshFilterModel();
+			jiraFilterListModel.fireModelChanged();
+		}
+
+		private void refreshServer(final ServerCfg server) {
+			jiraServerModel.clear(server.getServerId());
+			Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server);
+			ProgressManager.getInstance().run(task);
+		}
 
 	}
 
