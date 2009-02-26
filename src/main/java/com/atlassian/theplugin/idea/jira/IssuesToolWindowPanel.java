@@ -211,13 +211,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		});
 
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-			public void modelChanged(final JIRAFilterListModel listModel) {
-
-			}
-
 			public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
 				// refresh issue list
 				refreshIssues(manualFilter, jiraServer, true);
+			}
+
+			public void modelChanged(final JIRAFilterListModel listModel) {
+			}
+
+			public void serverRemoved(final JIRAFilterListModel jiraFilterListModel) {
 			}
 		});
 
@@ -952,7 +954,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		private void removeServer(final ServerId serverId) {
 			jiraServerModel.clear(serverId);
 			refreshFilterModel();
-			jiraFilterListModel.fireModelChanged();
+			jiraFilterListModel.fireServerRemoved();
 		}
 
 		private void refreshServer(final ServerCfg server) {

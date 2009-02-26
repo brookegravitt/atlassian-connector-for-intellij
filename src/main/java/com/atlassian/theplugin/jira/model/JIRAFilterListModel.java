@@ -19,7 +19,7 @@ public class JIRAFilterListModel implements FrozenModel {
 	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
 //	private JiraServerCfg jiraSelectedServer;
-//
+	//
 	//	private JIRASavedFilter jiraSelectedSavedFilter;
 	//
 	//	private JIRAManualFilter jiraSelectedManualFilter;
@@ -152,12 +152,17 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
+	public void fireServerRemoved() {
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.serverRemoved(this);
+		}
+	}
+
 	public void fireManualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.manualFilterChanged(manualFilter, jiraServer);
 		}
 	}
-
 
 	public void addModelListener(JIRAFilterListModelListener listener) {
 		listeners.add(listener);

@@ -44,7 +44,7 @@ public class JIRAFilterTree extends JTree {
 		getSelectionModel().addTreeSelectionListener(localSelectionListener);
 		setCellRenderer(MY_RENDERER);
 
-		reCreateTree(listModel);
+		reCreateTree(listModel, true);
 
 		listModel.addFrozenModelListener(new FrozenModelListener() {
 
@@ -83,7 +83,7 @@ public class JIRAFilterTree extends JTree {
 		return null;
 	}
 
-	private void reCreateTree(final JIRAFilterListModel aListModel) {
+	private void reCreateTree(final JIRAFilterListModel aListModel, final boolean fireSelectionChange) {
 		// off selection listener
 		getSelectionModel().removeTreeSelectionListener(localSelectionListener);
 		DefaultTreeModel treeModel;
@@ -98,11 +98,16 @@ public class JIRAFilterTree extends JTree {
 		}
 		treeModel.nodeStructureChanged((DefaultMutableTreeNode) treeModel.getRoot());
 
-		// on selection listener
-		getSelectionModel().addTreeSelectionListener(localSelectionListener);
-
-		setSelectionFilter(jiraProjectConfiguration.getView().getViewFilterId(),
-				jiraProjectConfiguration.getView().getViewServerId());
+		if (fireSelectionChange) {
+			// on selection listener
+			getSelectionModel().addTreeSelectionListener(localSelectionListener);
+			setSelectionFilter(jiraProjectConfiguration.getView().getViewFilterId(),
+					jiraProjectConfiguration.getView().getViewServerId());
+		} else {
+			setSelectionFilter(jiraProjectConfiguration.getView().getViewFilterId(),
+					jiraProjectConfiguration.getView().getViewServerId());
+			getSelectionModel().addTreeSelectionListener(localSelectionListener);
+		}
 
 	}
 
@@ -285,7 +290,7 @@ public class JIRAFilterTree extends JTree {
 
 	private class LocalFilterListModelListener implements JIRAFilterListModelListener {
 		public void modelChanged(JIRAFilterListModel aListModel) {
-			reCreateTree(aListModel);
+			reCreateTree(aListModel, true);
 			expandAll();
 
 			//should only be used once during configuration read
@@ -298,6 +303,18 @@ public class JIRAFilterTree extends JTree {
 
 		public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
 			// we don't care about changes in manual filter
+		}
+
+		public void serverRemoved(final JIRAFilterListModel jiraFilterListModel) {
+			reCreateTree(jiraFilterListModel, false);
+			expandAll();
+
+			//should only be used once during configuration read
+			if (!isAlreadyInitialized) {
+//			setSelectionSavedFilter();
+//			setSelectionManualFilter();
+				isAlreadyInitialized = true;
+			}
 		}
 
 	}
