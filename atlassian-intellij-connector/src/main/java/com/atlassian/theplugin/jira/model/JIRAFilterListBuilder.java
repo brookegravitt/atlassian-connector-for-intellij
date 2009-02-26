@@ -56,7 +56,7 @@ public class JIRAFilterListBuilder {
 
 	public void rebuildModel(final JIRAServerModel jiraServerModel) throws JIRAServerFiltersBuilderException {
 		if (jiraServerModel == null) {
-			PluginUtil.getLogger().error("jiraServerModel should not be null");
+			PluginUtil.getLogger().error("jiraServerModel must not be null");
 			return;
 		}
 		try {
