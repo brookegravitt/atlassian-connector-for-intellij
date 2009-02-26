@@ -20,16 +20,16 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	private JIRAFilterListModel listModel;
 	private CfgManagerTest cfgManager;
 	private Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
+	private JIRAServerModelImpl serverModel;
 
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
 		facade = new JIRATestServerFacade();
 
-		JiraWorkspaceConfiguration jiraConfig = new JiraWorkspaceConfiguration();
-
 		facade = new JIRATestServerFacade();
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
+		serverModel = new JIRAServerModelImpl();
 		fillServersAndFilters(savedFilters);
 
 		cfgManager = new CfgManagerTest(savedFilters);
@@ -56,16 +56,17 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.tearDown();
 	}
 
-	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters) {
+	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters) throws RemoteApiException {
 		for (int i = 0; i < 3; i++) {
 			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
+			serverModel.getResolutions(server);
 		}
 	}
 
 	public void testRebuildModel() {
 		try {
-			builder.rebuildModel(null);
+			builder.rebuildModel(serverModel);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
 			fail(); //we do not expect exception
 		}
