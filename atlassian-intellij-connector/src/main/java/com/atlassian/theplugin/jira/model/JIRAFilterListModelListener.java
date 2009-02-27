@@ -26,4 +26,8 @@ public interface JIRAFilterListModelListener {
 	void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer);
 
 	void serverRemoved(final JIRAFilterListModel jiraFilterListModel);
+
+	void serverAdded(final JIRAFilterListModel jiraFilterListModel);
+
+	void serverNameChanged(final JIRAFilterListModel jiraFilterListModel);
 }

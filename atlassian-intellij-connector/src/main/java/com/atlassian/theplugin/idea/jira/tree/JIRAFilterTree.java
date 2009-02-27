@@ -290,15 +290,7 @@ public class JIRAFilterTree extends JTree {
 
 	private class LocalFilterListModelListener implements JIRAFilterListModelListener {
 		public void modelChanged(JIRAFilterListModel aListModel) {
-			reCreateTree(aListModel, true);
-			expandAll();
-
-			//should only be used once during configuration read
-			if (!isAlreadyInitialized) {
-//			setSelectionSavedFilter();
-//			setSelectionManualFilter();
-				isAlreadyInitialized = true;
-			}
+			rebuildTree(aListModel, true);
 		}
 
 		public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
@@ -306,17 +298,26 @@ public class JIRAFilterTree extends JTree {
 		}
 
 		public void serverRemoved(final JIRAFilterListModel jiraFilterListModel) {
-			reCreateTree(jiraFilterListModel, false);
+			rebuildTree(jiraFilterListModel, false);
+		}
+
+		public void serverAdded(final JIRAFilterListModel jiraFilterListModel) {
+			rebuildTree(jiraFilterListModel, false);
+		}
+
+		public void serverNameChanged(final JIRAFilterListModel jiraFilterListModel) {
+			rebuildTree(jiraFilterListModel, false);
+		}
+
+		private void rebuildTree(final JIRAFilterListModel jiraFilterListModel, boolean fireSelectionChange) {
+			reCreateTree(jiraFilterListModel, fireSelectionChange);
 			expandAll();
 
 			//should only be used once during configuration read
 			if (!isAlreadyInitialized) {
-//			setSelectionSavedFilter();
-//			setSelectionManualFilter();
 				isAlreadyInitialized = true;
 			}
 		}
-
 	}
 }
 

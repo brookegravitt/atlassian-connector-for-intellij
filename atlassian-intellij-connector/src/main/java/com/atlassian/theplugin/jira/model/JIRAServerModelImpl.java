@@ -64,6 +64,27 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		serverInfoMap.remove(server);
 	}
 
+	public synchronized void replace(JiraServerCfg newServer) {
+		if (newServer == null) {
+			return;
+		}
+
+		JiraServerCfg oldServer = null;
+
+		for (JiraServerCfg s : serverInfoMap.keySet()) {
+			if (s.getServerId().equals(newServer.getServerId())) {
+				oldServer = s;
+				break;
+			}
+		}
+
+		if (oldServer != null) {
+			serverInfoMap.put(newServer, serverInfoMap.get(oldServer));
+			serverInfoMap.remove(oldServer);
+		}
+	}
+
+
 	public synchronized void clearAll() {
 		serverInfoMap.clear();
 	}
