@@ -764,6 +764,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.CommentsToolBar");
 				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
+				toolbar.setTargetComponent(IssueToolWindow.IssuePanel.this);
 
 				JComponent comp = toolbar.getComponent();
 				rightPanel.add(comp, gbc);
