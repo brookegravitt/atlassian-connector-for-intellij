@@ -18,7 +18,7 @@ public class JIRAFilterListModel implements FrozenModel {
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
-//	private JiraServerCfg jiraSelectedServer;
+	//	private JiraServerCfg jiraSelectedServer;
 	//
 	//	private JIRASavedFilter jiraSelectedSavedFilter;
 	//
@@ -155,6 +155,18 @@ public class JIRAFilterListModel implements FrozenModel {
 	public void fireServerRemoved() {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.serverRemoved(this);
+		}
+	}
+
+	public void fireServerAdded() {
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.serverAdded(this);
+		}
+	}
+
+	public void fireServerNameChanged() {
+		for (JIRAFilterListModelListener listener : listeners) {
+			listener.serverNameChanged(this);
 		}
 	}
 

@@ -18,6 +18,8 @@ public class JIRAFilterListModelTest extends TestCase {
 	private int notifiedManualFilterChanged = 0;
 	final private JiraServerCfg jServer = new JiraServerCfg("DZira serwer", new ServerId());
 	private int notifiedServerRemoved;
+	private int notifiedServerAdded;
+	private int notifiedServerNameChanged;
 
 	public void setUp() throws Exception {
 		super.setUp();
@@ -25,6 +27,8 @@ public class JIRAFilterListModelTest extends TestCase {
 		notifiedModelChanged = 0;
 		notifiedManualFilterChanged = 0;
 		notifiedServerRemoved = 0;
+		notifiedServerAdded = 0;
+		notifiedServerNameChanged = 0;
 	}
 
 	public void tearDown() throws Exception {
@@ -38,6 +42,7 @@ public class JIRAFilterListModelTest extends TestCase {
 
 		listModel.addModelListener(new JIRAFilterListModelListener() {
 
+
 			public void modelChanged(final JIRAFilterListModel listModel) {
 				notifiedModelChanged++;
 			}
@@ -50,17 +55,29 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedServerRemoved++;
 			}
 
+			public void serverAdded(final JIRAFilterListModel jiraFilterListModel) {
+				notifiedServerAdded++;
+			}
+
+			public void serverNameChanged(final JIRAFilterListModel jiraFilterListModel) {
+				notifiedServerNameChanged++;
+			}
+
 		});
 
 		for (int i = 0; i < 10; i++) {
 			listModel.fireModelChanged();
 			listModel.fireManualFilterChanged(null, null);
 			listModel.fireServerRemoved();
+			listModel.fireServerAdded();
+			listModel.fireServerNameChanged();
 		}
 
 		assertEquals(notifiedModelChanged, 10);
 		assertEquals(notifiedManualFilterChanged, 10);
-		assertEquals(notifiedServerRemoved, 10);
+		assertEquals(10, notifiedServerRemoved);
+		assertEquals(10, notifiedServerAdded);
+		assertEquals(10, notifiedServerNameChanged);
 
 		listModel.setManualFilter(jServer, serverFilter1.getManualFilter());
 		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
