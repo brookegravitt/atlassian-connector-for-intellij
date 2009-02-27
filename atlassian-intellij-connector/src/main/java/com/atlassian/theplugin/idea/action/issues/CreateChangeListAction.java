@@ -30,10 +30,12 @@ public class CreateChangeListAction extends JIRAAbstractAction {
 		if (issue != null) {
 			String changeListName = issue.getKey() + " - " + issue.getSummary();
 			final Project project = event.getData(DataKeys.PROJECT);
-			if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
-				event.getPresentation().setText("Create ChangeList");
-			} else {
-				event.getPresentation().setText("Activate ChangeList");
+			if (project != null) {
+				if (ChangeListManager.getInstance(project).findChangeList(changeListName) == null) {
+					event.getPresentation().setText("Create ChangeList");
+				} else {
+					event.getPresentation().setText("Activate ChangeList");
+				}
 			}
 		}
 	}
