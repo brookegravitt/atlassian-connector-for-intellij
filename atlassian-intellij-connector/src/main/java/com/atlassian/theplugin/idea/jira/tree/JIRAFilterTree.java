@@ -198,6 +198,9 @@ public class JIRAFilterTree extends JTree {
 			return;
 		}
 
+//		List<JiraServerCfg> servers = aListModel.getJIRAServers();
+//		Collections.sort(servers);
+
 		for (JiraServerCfg server : aListModel.getJIRAServers()) {
 			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(aListModel, server);
 			createFilterNodes(server, serverNode, aListModel);
