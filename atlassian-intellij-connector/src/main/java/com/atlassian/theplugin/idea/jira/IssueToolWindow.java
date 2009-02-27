@@ -973,23 +973,42 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class UserLabel extends JLabel {
+		private class UserLabel extends JPanel {
+			private JLabel label;
+
 			UserLabel(final String serverUrl, final String userName, final String userNameId, boolean useLink) {
 				setOpaque(true);
+				setLayout(new GridBagLayout());
+				GridBagConstraints gbc = new GridBagConstraints();
+
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.weightx = 0.0;
+				gbc.weighty = 0.0;
+				gbc.fill = GridBagConstraints.NONE;
+				
+				label = new JLabel();
 				setBackground(Color.WHITE);
-				setBorder(BorderFactory.createEmptyBorder());
-				putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+				label.setBorder(BorderFactory.createEmptyBorder());
+				label.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
 				String userNameFixed = userName.replace(" ", "&nbsp;");
 				if (useLink) {
-					setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
+					label.setText("<html><body><font color=\"#0000ff\"><u>" + userNameFixed + "</u></font></body></html>");
 					addListener(serverUrl, userNameId);
 				} else {
-					setText("<html><body>" + userNameFixed + "</body></html>");
+					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
+				add(label, gbc);
+				gbc.gridx++;
+				gbc.weightx = 1.0;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+				JPanel filler = new JPanel();
+				filler.setOpaque(false);
+				add(filler, gbc);
 			}
 
 			private void addListener(final String serverUrl, final String userNameId) {
-				addMouseListener(new MouseAdapter() {
+				label.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
 					}
