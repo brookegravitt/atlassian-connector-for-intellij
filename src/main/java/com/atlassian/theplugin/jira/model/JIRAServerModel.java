@@ -42,4 +42,6 @@ public interface JIRAServerModel extends FrozenModel {
 	Collection<JiraServerCfg> getServers();
 
 	void clear(final ServerId serverId);
+
+	void replace(final JiraServerCfg server);
 }
