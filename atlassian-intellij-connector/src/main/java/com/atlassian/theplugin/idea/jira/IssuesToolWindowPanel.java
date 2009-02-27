@@ -219,7 +219,13 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void modelChanged(final JIRAFilterListModel listModel) {
 			}
 
-			public void serverRemoved(final JIRAFilterListModel jiraFilterListModel) {
+			public void serverRemoved(final JIRAFilterListModel filterListModel) {
+			}
+
+			public void serverAdded(final JIRAFilterListModel filterListModel) {
+			}
+
+			public void serverNameChanged(final JIRAFilterListModel jiraFilterListModel) {
 			}
 		});
 
@@ -827,6 +833,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
 		private Collection<JiraServerCfg> servers = null;
+		private boolean reloadAllServers = false;
 
 		/**
 		 * Clear server model and refill it with all enabled servers' data
@@ -835,6 +842,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
 			servers = IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()));
 			jiraServerModel.clearAll();
+			reloadAllServers = true;
 		}
 
 		/**
@@ -890,7 +898,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		@Override
 		public void onSuccess() {
 			refreshFilterModel();
-			jiraFilterListModel.fireModelChanged();
+			if (reloadAllServers) {
+				jiraFilterListModel.fireModelChanged();
+			} else {
+				jiraFilterListModel.fireServerAdded();
+			}
 		}
 	}
 
@@ -942,6 +954,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		@Override
 		public void serverAdded(final ServerCfg newServer) {
 			addServer(newServer);
+		}
+
+		public void serverNameChanged(final ServerId serverId) {
+			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
+			if (server instanceof JiraServerCfg) {
+				jiraServerModel.replace((JiraServerCfg) server);
+				refreshFilterModel();
+				jiraFilterListModel.fireServerNameChanged();
+			}
 		}
 
 		private void addServer(final ServerCfg server) {
