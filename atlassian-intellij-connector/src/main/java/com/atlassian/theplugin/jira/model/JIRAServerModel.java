@@ -16,7 +16,7 @@ public interface JIRAServerModel extends FrozenModel {
 	/*
 	* returns false if invalid password or login occured
 	 */
-	boolean checkServer(JiraServerCfg cfg) throws RemoteApiException;
+	Boolean checkServer(JiraServerCfg cfg) throws RemoteApiException;
 
 	String getErrorMessage(JiraServerCfg cfg);
 
