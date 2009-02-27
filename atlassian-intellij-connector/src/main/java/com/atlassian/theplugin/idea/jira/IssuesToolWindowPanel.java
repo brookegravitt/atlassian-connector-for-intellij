@@ -225,7 +225,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void serverAdded(final JIRAFilterListModel filterListModel) {
 			}
 
-			public void serverNameChanged(final JIRAFilterListModel jiraFilterListModel) {
+			public void serverNameChanged(final JIRAFilterListModel filterListModel) {
 			}
 		});
 
