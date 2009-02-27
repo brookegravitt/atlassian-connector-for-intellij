@@ -833,7 +833,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
 		private Collection<JiraServerCfg> servers = null;
-		private boolean reloadAllServers = false;
+		private boolean refreshIssueList = false;
 
 		/**
 		 * Clear server model and refill it with all enabled servers' data
@@ -842,17 +842,19 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
 			servers = IdeaHelper.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()));
 			jiraServerModel.clearAll();
-			reloadAllServers = true;
+			refreshIssueList = true;
 		}
 
 		/**
 		 * Add requestes server's data to the server model
 		 *
-		 * @param server server added to the model with all fetched data
+		 * @param server		   server added to the model with all fetched data
+		 * @param refreshIssueList refresh issue list
 		 */
-		public MetadataFetcherBackgroundableTask(final JiraServerCfg server) {
+		public MetadataFetcherBackgroundableTask(final JiraServerCfg server, boolean refreshIssueList) {
 			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
 			this.servers = Arrays.asList(server);
+			this.refreshIssueList = refreshIssueList;
 		}
 
 		@Override
@@ -898,7 +900,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		@Override
 		public void onSuccess() {
 			refreshFilterModel();
-			if (reloadAllServers) {
+			if (refreshIssueList) {
 				jiraFilterListModel.fireModelChanged();
 			} else {
 				jiraFilterListModel.fireServerAdded();
@@ -918,16 +920,24 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
-		@Override
-		public void jiraServersChanged(ProjectConfiguration newConfiguration) {
-//			refreshModels();
-		}
 
 		@Override
 		public void serverConnectionDataChanged(final ServerId serverId) {
 			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
-				refreshServer(server);
+				jiraServerModel.clear(server.getServerId());
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, true);
+				ProgressManager.getInstance().run(task);
+			}
+		}
+
+		@Override
+		public void serverNameChanged(final ServerId serverId) {
+			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
+			if (server instanceof JiraServerCfg) {
+				jiraServerModel.replace((JiraServerCfg) server);
+				refreshFilterModel();
+				jiraFilterListModel.fireServerNameChanged();
 			}
 		}
 
@@ -956,18 +966,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			addServer(newServer);
 		}
 
-		public void serverNameChanged(final ServerId serverId) {
-			ServerCfg server = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), serverId);
-			if (server instanceof JiraServerCfg) {
-				jiraServerModel.replace((JiraServerCfg) server);
-				refreshFilterModel();
-				jiraFilterListModel.fireServerNameChanged();
-			}
-		}
-
 		private void addServer(final ServerCfg server) {
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
-				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server);
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, false);
 				ProgressManager.getInstance().run(task);
 			}
 		}
@@ -977,13 +978,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			refreshFilterModel();
 			jiraFilterListModel.fireServerRemoved();
 		}
-
-		private void refreshServer(final ServerCfg server) {
-			jiraServerModel.clear(server.getServerId());
-			Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server);
-			ProgressManager.getInstance().run(task);
-		}
-
 	}
 
 	@Override
