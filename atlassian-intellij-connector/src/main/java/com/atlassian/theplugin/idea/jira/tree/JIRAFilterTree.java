@@ -232,6 +232,7 @@ public class JIRAFilterTree extends JTree {
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
 		private JIRAManualFilter prevManualFilter = null;
 		private JIRASavedFilter prevSavedFilter = null;
+		private JiraServerCfg prevServer = null;
 
 		public final void valueChanged(final TreeSelectionEvent event) {
 
@@ -239,13 +240,16 @@ public class JIRAFilterTree extends JTree {
 			JIRASavedFilter savedFilter = getSelectedSavedFilter();
 			JiraServerCfg serverCfg = getSelectedServer();
 
+
 			if (manualFilter != null) {
 				prevManualFilter = manualFilter;
 				prevSavedFilter = null;
+				prevServer = serverCfg;
 				fireSelectedManualFilterNode(manualFilter, serverCfg);
 			} else if (savedFilter != null) {
 				prevSavedFilter = savedFilter;
 				prevManualFilter = null;
+				prevServer = serverCfg;
 				fireSelectedSavedFilterNode(savedFilter, serverCfg);
 			} else if (serverCfg != null) {
 				// server selected: do not fire notification (we must ignore that action)
@@ -256,9 +260,10 @@ public class JIRAFilterTree extends JTree {
 
 				// restore previous selection
 				if (prevManualFilter != null) {
-					setSelectionManualFilter(serverCfg.getServerId().toString());
+					setSelectionManualFilter(prevServer.getServerId().toString());
+//					prevManualFilter.
 				} else if (prevSavedFilter != null) {
-					setSelectionSavedFilter(prevSavedFilter.getId(), serverCfg.getServerId().toString());
+					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId().toString());
 				}
 
 				getSelectionModel().addTreeSelectionListener(localSelectionListener);
