@@ -62,7 +62,7 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 	}
 
 	private int getAvailableWidth(DefaultMutableTreeNode obj, JTree jtree) {
-		int i1 = jtree.getInsets().left + jtree.getInsets().right + getNesting(jtree) * obj.getLevel();
+		int i1 = jtree.getInsets().left + jtree.getInsets().right + getNesting(jtree) * (obj.getLevel() + 1);
 		return jtree.getVisibleRect().width - i1 - 2;
 	}
 
