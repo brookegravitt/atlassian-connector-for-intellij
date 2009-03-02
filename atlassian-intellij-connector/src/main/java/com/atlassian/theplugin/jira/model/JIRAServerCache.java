@@ -39,13 +39,13 @@ public class JIRAServerCache {
 	private boolean validServer;
 	private String errorMessage;
 
-	private List<JIRAProject> projects;//= new ArrayList<JIRAProject>();
-	private List<JIRAConstant> statuses;// = new ArrayList<JIRAConstant>();
+	private List<JIRAProject> projects;
+	private List<JIRAConstant> statuses;
 
-	private List<JIRAQueryFragment> savedFilters;// = new ArrayList<JIRAQueryFragment>();
-	private List<JIRAConstant> priorities;// = new ArrayList<JIRAConstant>();
-	private List<JIRAResolutionBean> resolutions;// = new ArrayList<JIRAResolutionBean>();
-	private List<JIRAConstant> globalIssueTypes;// = new ArrayList<JIRAConstant>();
+	private List<JIRAQueryFragment> savedFilters;
+	private List<JIRAConstant> priorities;
+	private List<JIRAResolutionBean> resolutions;
+	private List<JIRAConstant> globalIssueTypes;
 
 	private Map<String, List<JIRAConstant>> issueTypesCache;
 	private Map<String, List<JIRAVersionBean>> serverVersionsCache;
