@@ -22,6 +22,9 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -46,18 +49,30 @@ public abstract class TwoPanePanel extends JPanel {
 
 	private static final Color FAIL_COLOR = new Color(255, 100, 100);
 	private String message;
+	private String infos;
+	private String errors;
 
 
 	private static class JDialogX extends DialogWrapper {
 
-		private JTextArea textArea;
+		private JTextPane textPane;
 
-		protected JDialogX(Component parent, boolean canBeParent, String text) {
+		protected JDialogX(Component parent, boolean canBeParent, String infos, final String errors) {
 			super(parent, canBeParent);
 			setTitle("Detailed Status Information");
-			textArea = new JTextArea(text);
-			textArea.setEditable(false);
-			textArea.setBackground(Color.WHITE);
+			textPane = new JTextPane();
+			textPane.setText(infos + errors);
+
+			// create text style "red"
+			Style style = textPane.addStyle("Red", null);
+			StyleConstants.setForeground(style, Color.red);
+
+			// apply style "red"
+			StyledDocument doc = textPane.getStyledDocument();
+			doc.setCharacterAttributes(infos.length(), errors.length(), textPane.getStyle("Red"), true);
+
+			textPane.setEditable(false);
+			textPane.setBackground(Color.WHITE);
 			init();
 			pack();
 
@@ -70,7 +85,7 @@ public abstract class TwoPanePanel extends JPanel {
 
 		@Override
 		protected JComponent createCenterPanel() {
-			JScrollPane scroll = new JScrollPane(textArea);
+			JScrollPane scroll = new JScrollPane(textPane);
 			//CHECKSTYLE:MAGIC:OFF
 			scroll.setMinimumSize(new Dimension(300, 100));
 			//CHECKSTYLE:MAGIC:ON
@@ -95,7 +110,7 @@ public abstract class TwoPanePanel extends JPanel {
 		hyperlinkLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				new JDialogX(TwoPanePanel.this, false, getMessage()).show();
+				new JDialogX(TwoPanePanel.this, false, infos, errors).show();
 			}
 		});
 
@@ -175,11 +190,11 @@ public abstract class TwoPanePanel extends JPanel {
 	/**
 	 * It can be called from the non-UI thread
 	 *
-	 * @param msg	info messages
-	 * @param errors info error messages
+	 * @param msg	 info messages
+	 * @param aErrors info error messages
 	 */
-	public void setStatusMessage(final Collection<String> msg, final Collection<String> errors) {
-		EventQueue.invokeLater(new StatusMessageRunnable(msg, errors));
+	public void setStatusMessage(final Collection<String> msg, final Collection<String> aErrors) {
+		EventQueue.invokeLater(new StatusMessageRunnable(msg, aErrors));
 	}
 
 	private JComponent createRightContent() {
@@ -207,7 +222,6 @@ public abstract class TwoPanePanel extends JPanel {
 		return leftUpperScrollPane;
 	}
 
-
 	private String getMessage() {
 		return message;
 	}
@@ -232,9 +246,16 @@ public abstract class TwoPanePanel extends JPanel {
 			for (String s : msg) {
 				sb.append(s).append("\n");
 			}
+
+			TwoPanePanel.this.infos = sb.toString();
+
+			sb = new StringBuilder();
 			for (String s : errors) {
 				sb.append(s).append("\n");
 			}
+
+			TwoPanePanel.this.errors = sb.toString();
+
 			if (msg.size() + errors.size() > 1) {
 				hyperlinkLabel.setVisible(true);
 			} else {
@@ -253,7 +274,7 @@ public abstract class TwoPanePanel extends JPanel {
 				}
 			}
 
-			message = sb.toString();
+			message = TwoPanePanel.this.infos + TwoPanePanel.this.errors;
 			statusBar.setText(oneLiner);
 			statusBarPane.revalidate();
 			statusBar.scrollRectToVisible(new Rectangle(1, statusBar.getPreferredSize().height, 1, 1));
