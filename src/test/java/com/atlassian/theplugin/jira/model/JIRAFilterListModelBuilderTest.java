@@ -27,9 +27,9 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.setUp();
 		facade = new JIRATestServerFacade();
 
-		facade = new JIRATestServerFacade();
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 		serverModel = new JIRAServerModelImpl();
+		serverModel.setFacade(facade);
 		fillServersAndFilters(savedFilters);
 
 		cfgManager = new CfgManagerTest(savedFilters);
@@ -56,11 +56,15 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.tearDown();
 	}
 
-	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters) throws RemoteApiException {
+	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters)
+			throws RemoteApiException {
 		for (int i = 0; i < 3; i++) {
 			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
-			serverModel.getResolutions(server);
+			try {
+				serverModel.getResolutions(server);
+			} catch (JIRAException e) {
+			}
 		}
 	}
 
@@ -146,7 +150,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
 		public List<JIRAResolutionBean> getResolutions(JiraServerCfg server) throws JIRAException {
-			return null;
+			return new ArrayList<JIRAResolutionBean>();
 		}
 
 		public List<JIRAAction> getAvailableActions(JiraServerCfg server, JIRAIssue issue) throws JIRAException {

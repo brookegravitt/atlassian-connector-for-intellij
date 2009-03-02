@@ -20,13 +20,13 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ColoredListCellRenderer;
@@ -130,10 +130,16 @@ public class IssueCreateDialog extends DialogWrapper {
 
 		new Thread(new Runnable() {
 			public void run() {
-				final List<JIRAProject> projects = model.getProjects(jiraServer);
+				List<JIRAProject> projects = new ArrayList<JIRAProject>();
+				try {
+					projects = model.getProjects(jiraServer);
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().error("Cannot retrieve JIRA projects:" + e.getMessage());
+				}
+				final List<JIRAProject> finalProjects = projects;
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						addProjects(projects);
+						addProjects(finalProjects);
 					}
 				});
 			}
@@ -159,7 +165,8 @@ public class IssueCreateDialog extends DialogWrapper {
 			boolean defaultSelected = false;
 
 			// select default project
-			if (jiraConfiguration != null && jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+			if (jiraConfiguration != null &&
+					jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
 				String project = jiraConfiguration.getView().getServerDefaults().
 						get(jiraServer.getServerId().toString()).getProject();
@@ -187,10 +194,17 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(false);
 		new Thread(new Runnable() {
 			public void run() {
-				final List<JIRAConstant> priorities = model.getPriorities(jiraServer);
+				List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
+				try {
+					priorities = model.getPriorities(jiraServer);
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().error("Cannot retrieve JIRa priorities:" + e.getMessage());
+				}
+
+				final List<JIRAConstant> finalPriorities = priorities;
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						addIssuePriorieties(priorities);
+						addIssuePriorieties(finalPriorities);
 					}
 				});
 			}
@@ -215,10 +229,16 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(false);
 		new Thread(new Runnable() {
 			public void run() {
-				final List<JIRAConstant> issueTypes = model.getIssueTypes(jiraServer, project);
+				List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
+				try {
+					issueTypes = model.getIssueTypes(jiraServer, project);
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().error("Cannto retrieve JIRA issue types:" + e.getMessage());
+				}
+				final List<JIRAConstant> finalIssueTypes = issueTypes;
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						addIssueTypes(issueTypes);
+						addIssueTypes(finalIssueTypes);
 					}
 				});
 			}
@@ -266,7 +286,8 @@ public class IssueCreateDialog extends DialogWrapper {
 		componentsList.setModel(listModel);
 
 		if (projectComboBox.getSelectedItem() != null && jiraConfiguration != null && jiraConfiguration.getView() != null
-				&& jiraConfiguration.getView().getServerDefaults() != null && jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+				&& jiraConfiguration.getView().getServerDefaults() != null &&
+				jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
 
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 

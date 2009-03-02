@@ -130,8 +130,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							return;
 						}
 						Map<String, String> projectMap = new HashMap<String, String>();
-						for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-							projectMap.put(p.getKey(), p.getName());
+						try {
+							for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
+								projectMap.put(p.getKey(), p.getName());
+							}
+						} catch (JIRAException e) {
+							setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
 						}
 						issueTreeBuilder.setProjectKeysToNames(projectMap);
 						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
@@ -892,6 +896,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						setStatusMessage(serverStr + "Server data query finished");
 					} catch (RemoteApiException e) {
 						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+					} catch (JIRAException e) {
+						setStatusMessage("Cannot download details:" + e.getMessage(), true);
 					}
 				}
 			} finally {
