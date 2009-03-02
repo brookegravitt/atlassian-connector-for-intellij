@@ -102,7 +102,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
 
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
-							   @NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -118,7 +118,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_COMPLETE);
 
-		Boolean isComplete = (filter.getReviewer() != null && filter.getReviewer().length() > 0) ? filter.isComplete() : filter.isAllReviewersComplete();
+		Boolean isComplete = (filter.getReviewer() != null && filter.getReviewer().length() > 0) ? filter.isComplete() : filter
+				.isAllReviewersComplete();
 		if (isComplete == null) {
 			reviewerStatusComboBox.setSelectedIndex(0);
 		} else if (!isComplete) {
@@ -229,7 +230,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		filter.setOrRoles(MATCH_ROLE_ANY.equals(role));
 
 
-
 		return filter;
 	}
 
@@ -294,7 +294,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 				}
 
 				public Component getComponent() {
-					return CrucibleCustomFilterDialog.this.createCenterPanel();
+					return CrucibleCustomFilterDialog.this.getRootPane();
 				}
 			});
 		}
