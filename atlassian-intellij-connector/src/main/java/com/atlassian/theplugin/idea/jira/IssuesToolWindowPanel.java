@@ -124,7 +124,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = getSelectedServer();
 						if (srvcfg == null) {
-//							setStatusMessage("Server not defined", true);
 							setStatusMessage("Nothing selected", false, false);
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 							return;
