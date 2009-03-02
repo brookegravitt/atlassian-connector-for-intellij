@@ -23,7 +23,9 @@ public class AssignIssueAndStartWorkAction extends JIRAAbstractAction {
 
 		if (server != null && issue != null) {
 			if (issue.getAssigneeId().equals(server.getUsername())) {
-				event.getPresentation().setEnabled(false);
+				event.getPresentation().setText("Start Working");
+			} else {
+				event.getPresentation().setText("Assign to Me and Start Working");
 			}
 		}
 	}
