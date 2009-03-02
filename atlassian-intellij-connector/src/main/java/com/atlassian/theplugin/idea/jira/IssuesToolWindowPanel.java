@@ -610,9 +610,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void startWorkingOnIssue(@NotNull final JIRAIssue issue) {
-		if (issue == null) {
-			return;
-		}
+//		if (issue == null) {
+//			return;
+//		}
+
 		createChangeListAction(issue);
 		final JiraServerCfg server = getSelectedServer();
 
@@ -620,9 +621,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-				setStatusMessage("Assigning issue " + issue.getKey() + " to me...");
 				try {
-					jiraServerFacade.setAssignee(server, issue, server.getUsername());
+					if (!issue.getAssigneeId().equals(server.getUsername())) {
+						setStatusMessage("Assigning issue " + issue.getKey() + " to me...");
+						jiraServerFacade.setAssignee(server, issue, server.getUsername());
+					}
 					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
 					boolean found = false;
 					for (JIRAAction a : actions) {
