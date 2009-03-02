@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
@@ -398,15 +399,33 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		enableFields(false);
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
-				final List<JIRAConstant> issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
-				ApplicationManager.getApplication().invokeLater(new Runnable() {
-					public void run() {
-						issueTypeList.setListData(issueTypes.toArray());
-						enableFields(true);
-					}
-				}, ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane()));
+				final ModalityState modalityState = ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane());
+				try {
+					final List<JIRAConstant> issueTypes = jiraServerModel.getIssueTypes(jiraServerCfg, null);
+					ApplicationManager.getApplication().invokeLater(new Runnable() {
+						public void run() {
+							issueTypeList.setListData(issueTypes.toArray());
+							enableFields(true);
+						}
+					}, modalityState);
+				} catch (JIRAException e) {
+					showErrorMessage(e, "Cannot retrieve issue types", modalityState);
+				}
 			}
 		});
+	}
+
+	private void showErrorMessage(final JIRAException e, final String description, final ModalityState modalityState) {
+		ApplicationManager.getApplication().invokeLater(new Runnable() {
+			public void run() {
+				if (JiraIssuesFilterPanel.this.getRootPane().isShowing()) {
+					DialogWithDetails.showExceptionDialog(JiraIssuesFilterPanel.this.getRootPane(),
+							description.length() > 0 ? description : "Cannot retrieve metadata from JIRA",
+							e,
+							"Error");
+				}
+			}
+		}, modalityState);
 	}
 
 	private void enableFields(final boolean enable) {
@@ -441,23 +460,29 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		final ModalityState modality = ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane());
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
-				final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
-				final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg,
-						currentJiraProject);
-				final List<JIRAComponentBean> components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
-				final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
-				ApplicationManager.getApplication().invokeLater(new Runnable() {
-					public void run() {
-						if (JiraIssuesFilterPanel.this.isShowing()) {
-							issueTypeList.setListData(issueType.toArray());
-							fixForList.setListData(fixForVersion.toArray());
-							componentsList.setListData(components.toArray());
-							affectsVersionsList.setListData(versions.toArray());
-							enableProjectDependentLists(true);
-							enableFields(true);
+				try {
+					final List<JIRAConstant> issueType = jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject);
+					final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg,
+							currentJiraProject);
+
+					final List<JIRAComponentBean> finalComponents = retrieveComponents(modality);
+
+					final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
+					ApplicationManager.getApplication().invokeLater(new Runnable() {
+						public void run() {
+							if (JiraIssuesFilterPanel.this.isShowing()) {
+								issueTypeList.setListData(issueType.toArray());
+								fixForList.setListData(fixForVersion.toArray());
+								componentsList.setListData(finalComponents.toArray());
+								affectsVersionsList.setListData(versions.toArray());
+								enableProjectDependentLists(true);
+								enableFields(true);
+							}
 						}
-					}
-				}, modality);
+					}, modality);
+				} catch (JIRAException e) {
+					showErrorMessage(e, "", modality);
+				}
 			}
 		});
 	}
@@ -499,6 +524,18 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 			}
 		}
 		return selection;
+	}
+
+	private List<JIRAComponentBean> retrieveComponents(ModalityState modality) {
+		List<JIRAComponentBean> components = Collections.emptyList();
+		try {
+			components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
+
+		} catch (JIRAException e) {
+			showErrorMessage(e, "Cannot retrieve components", modality);
+		}
+
+		return components;
 	}
 
 
@@ -573,53 +610,73 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 	private class SyncViewWithModelRunnable implements Runnable {
 		public void run() {
-			projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
-			final List<Integer> prjSel = getSelection(projectList.getModel(), initialFilter);
-			if (prjSel.size() == 1) {
-				currentJiraProject = (JIRAProject) projectList.getModel().getElementAt(prjSel.get(0));
-			} else {
-				currentJiraProject = null;
-			}
+			final ModalityState modality = ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane());
 
-			issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
-			statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
-			prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
-			resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg).toArray());
-			fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
-			componentsList.setListData(jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
-			affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
 
-			reporterComboBox.removeAllItems();
-			reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
-			reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+			try {
+				projectList.setListData(jiraServerModel.getProjects(jiraServerCfg).toArray());
+				final List<Integer> prjSel = getSelection(projectList.getModel(), initialFilter);
+				if (prjSel.size() == 1) {
+					currentJiraProject = (JIRAProject) projectList.getModel().getElementAt(prjSel.get(0));
+				} else {
+					currentJiraProject = null;
+				}
 
-			assigneeComboBox.removeAllItems();
-			assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
-			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-			assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject).toArray());
+				statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
+				prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
+				resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg).toArray());
+				fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
 
-			if (!isWindowClosed()) {
-				enableFields(false);
-				final ModalityState modality = ModalityState.stateForComponent(JiraIssuesFilterPanel.this.getRootPane());
+				final List<JIRAComponentBean> componentsList = retrieveComponents(modality);
+
+				JiraIssuesFilterPanel.this.componentsList.setListData(componentsList.toArray());
+				affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
+
+				reporterComboBox.removeAllItems();
+				reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
+				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+
+				assigneeComboBox.removeAllItems();
+				assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
+				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
+				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
+
+
+				if (!isWindowClosed()) {
+					enableFields(false);
+					ApplicationManager.getApplication().invokeLater(new Runnable() {
+						public void run() {
+							setListValues(projectList, prjSel);
+							setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
+							setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
+							setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
+							setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
+							setListValues(JiraIssuesFilterPanel.this.componentsList,
+									getSelection(JiraIssuesFilterPanel.this.componentsList.getModel(), initialFilter));
+							setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
+							setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
+							setComboValue(assigneeComboBox, initialFilter);
+							setComboValue(reporterComboBox, initialFilter);
+							addProjectActionListener();
+							enableFields(true);
+						}
+					}, modality);
+				}
+
+			} catch (JIRAException e) {
+				final JIRAException exception = e;
+
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
-						setListValues(projectList, prjSel);
-						setListValues(statusList, getSelection(statusList.getModel(), initialFilter));
-						setListValues(prioritiesList, getSelection(prioritiesList.getModel(), initialFilter));
-						setListValues(resolutionsList, getSelection(resolutionsList.getModel(), initialFilter));
-						setListValues(issueTypeList, getSelection(issueTypeList.getModel(), initialFilter));
-						setListValues(componentsList, getSelection(componentsList.getModel(), initialFilter));
-						setListValues(fixForList, getSelection(fixForList.getModel(), initialFilter));
-						setListValues(affectsVersionsList, getSelection(affectsVersionsList.getModel(), initialFilter));
-						setComboValue(assigneeComboBox, initialFilter);
-						setComboValue(reporterComboBox, initialFilter);
-						addProjectActionListener();
-						enableFields(true);
+						DialogWithDetails.showExceptionDialog(JiraIssuesFilterPanel.this.getContentPane(),
+								"Retrieving details from JIRA", exception, "Cannot retrieve metadata from JIRA");
 					}
 				}, modality);
 			}
 		}
 	}
-
 }
+
+
 

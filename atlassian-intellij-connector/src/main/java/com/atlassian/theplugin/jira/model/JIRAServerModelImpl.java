@@ -129,7 +129,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	}
 
 
-	public List<JIRAProject> getProjects(JiraServerCfg cfg) {
+	public List<JIRAProject> getProjects(JiraServerCfg cfg) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -137,7 +137,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getProjects();
 	}
 
-	public List<JIRAConstant> getStatuses(JiraServerCfg cfg) {
+	public List<JIRAConstant> getStatuses(JiraServerCfg cfg) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -145,7 +145,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getStatuses();
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project) {
+	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -153,7 +153,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getIssueTypes(project);
 	}
 
-	public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) {
+	public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -161,7 +161,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getSavedFilters();
 	}
 
-	public List<JIRAConstant> getPriorities(JiraServerCfg cfg) {
+	public List<JIRAConstant> getPriorities(JiraServerCfg cfg) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -169,7 +169,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getPriorities();
 	}
 
-	public List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg) {
+	public List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -177,7 +177,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getResolutions();
 	}
 
-	public List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) {
+	public List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -185,7 +185,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getVersions(project);
 	}
 
-	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project) {
+	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -193,7 +193,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getFixForVersions(project);
 	}
 
-	public List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) {
+	public List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
