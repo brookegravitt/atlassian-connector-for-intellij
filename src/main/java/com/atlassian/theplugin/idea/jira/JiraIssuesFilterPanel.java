@@ -465,7 +465,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 					final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg,
 							currentJiraProject);
 
-					final List<JIRAComponentBean> finalComponents = retrieveComponents(modality);
+					final List<JIRAComponentBean> finalComponents =
+							jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
 
 					final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject);
 					ApplicationManager.getApplication().invokeLater(new Runnable() {
@@ -525,19 +526,6 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		}
 		return selection;
 	}
-
-	private List<JIRAComponentBean> retrieveComponents(ModalityState modality) {
-		List<JIRAComponentBean> components = Collections.emptyList();
-		try {
-			components = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject);
-
-		} catch (JIRAException e) {
-			showErrorMessage(e, "Cannot retrieve components", modality);
-		}
-
-		return components;
-	}
-
 
 	public void setComboValue(JComboBox combo, List<JIRAQueryFragment> advancedQuery) {
 
@@ -628,9 +616,9 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 				resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg).toArray());
 				fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
 
-				final List<JIRAComponentBean> componentsList = retrieveComponents(modality);
+				JiraIssuesFilterPanel.this.componentsList.setListData(
+						jiraServerModel.getComponents(jiraServerCfg, currentJiraProject).toArray());
 
-				JiraIssuesFilterPanel.this.componentsList.setListData(componentsList.toArray());
 				affectsVersionsList.setListData(jiraServerModel.getVersions(jiraServerCfg, currentJiraProject).toArray());
 
 				reporterComboBox.removeAllItems();
