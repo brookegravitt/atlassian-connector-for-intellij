@@ -3,15 +3,17 @@
     <servers>
       <bamboo>
         <server-id>7dea32ca-7ea9-4220-9dbe-7db95349be1c</server-id>
-        <name>hosted2</name>
+        <name>hosted</name>
         <url>https://gdansk.bamboo2.atlassian.com</url>
         <use-favourites>false</use-favourites>
         <bamboo2>true</bamboo2>
         <plans>
+          <plan key="ACC-BT" />
           <plan key="ACC-CS" />
           <plan key="ACC-CLO" />
           <plan key="ACC-DPL" />
           <plan key="ACC-TST" />
+          <plan key="ACC-PAR" />
           <plan key="INT-CS" />
           <plan key="INT-CLO" />
           <plan key="INT-DPL" />
@@ -19,61 +21,50 @@
           <plan key="INT-FAIL3" />
           <plan key="INT-FAIL" />
           <plan key="INT-TST" />
-          <plan key="TP-LICENSE" />
-          <plan key="TP-SITE" />
         </plans>
       </bamboo>
       <crucible>
-        <server-id>3ca98432-0a34-4d7a-a5b9-6660cd09533e</server-id>
+        <server-id>bc26e443-d3a9-4df4-a7a5-dccb4eabce9c</server-id>
+        <name>EAC</name>
+        <url>https://extranet.atlassian.com/crucible</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <crucible>
+        <server-id>95cc8936-85c8-4c09-a88e-cc18469a00b3</server-id>
+        <name>Unnamed_1</name>
+        <url>https://svn.atlassian.com/atlaseye</url>
+        <isFisheyeInstance>true</isFisheyeInstance>
+      </crucible>
+      <fisheye>
+        <server-id>1820c366-06fc-4db6-96a5-a7350708f260</server-id>
+        <name>Studio</name>
+        <url>https://studio.atlassian.com/source</url>
+      </fisheye>
+      <fisheye>
+        <server-id>bd79ba71-9f3d-4602-8b30-acc0f77c967f</server-id>
         <name>lech</name>
-        <url>http://lech.atlassian.pl:8045/crucible-1.6</url>
+        <url>http://lech:8045/crucible-1.6</url>
+      </fisheye>
+      <crucible>
+        <server-id>4fb233a9-e48d-4d29-ab93-05cf76e0f898</server-id>
+        <name>lech1.6.4</name>
+        <url>https://spartez.dyndns.org/crucible-1.6.4</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <jira>
-        <server-id>bf582e72-378c-4f8a-bba5-28e2450f2399</server-id>
+        <server-id>fabd6a88-4c52-4be6-9463-58dc9ed2740d</server-id>
         <name>StAC</name>
         <url>https://studio.atlassian.com</url>
       </jira>
       <crucible>
-        <server-id>04ccded3-21f6-482a-a36e-50e07e473005</server-id>
-        <name>leszek, marek</name>
-        <url>http://lech/crucible-1.6</url>
-        <isFisheyeInstance>false</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>ba6c4173-e6cb-4145-b9ba-8d238172a096</server-id>
-        <name>leszek, 8145</name>
-        <url>http://lech:8145/crucible-1.6</url>
-        <isFisheyeInstance>false</isFisheyeInstance>
-      </crucible>
-      <crucible>
-        <server-id>984bf723-0423-49f5-918b-d69b7a784685</server-id>
-        <name>eac</name>
-        <url>https://extranet.atlassian.com/crucible</url>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <jira>
-        <server-id>c1a44d79-29b6-4c64-9bf0-4af0efa37e53</server-id>
-        <name>JAC</name>
-        <url>https://jira.atlassian.com</url>
-      </jira>
-      <crucible>
-        <server-id>f5791a98-6185-4e6d-8526-c0efa07e1d18</server-id>
-        <name>svn.atlassian.com</name>
-        <url>https://svn.atlassian.com/atlaseye</url>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <jira>
-        <server-id>5f88086a-6424-4356-a79e-e78aa7466a92</server-id>
+        <server-id>531d263b-aae8-4d99-9aac-a60f5a86d95c</server-id>
         <name>local</name>
-        <url>https://localhost:8443</url>
-      </jira>
-      <crucible>
-        <server-id>ee37b89f-a96c-4468-8c76-716c121b7882</server-id>
-        <name>SvnFishEye</name>
-        <url>http://svn.atlassian.com/fisheye</url>
-        <isFisheyeInstance>true</isFisheyeInstance>
+        <url>http://localhost:8145/crucible-1.6</url>
+        <isFisheyeInstance>false</isFisheyeInstance>
       </crucible>
     </servers>
+    <default-fisheye-server>1820c366-06fc-4db6-96a5-a7350708f260</default-fisheye-server>
+    <default-fisheye-repo>PL</default-fisheye-repo>
+    <fisheye-project-path>trunk/atlassian-intellij-connector</fisheye-project-path>
   </project-configuration>
 </atlassian-ide-plugin>
