@@ -20,23 +20,23 @@ public interface JIRAServerModel extends FrozenModel {
 
 	String getErrorMessage(JiraServerCfg cfg);
 
-	List<JIRAProject> getProjects(JiraServerCfg cfg);
+	List<JIRAProject> getProjects(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAConstant> getStatuses(JiraServerCfg cfg);
+	List<JIRAConstant> getStatuses(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project);
+	List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
-	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg);
+	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAConstant> getPriorities(JiraServerCfg cfg);
+	List<JIRAConstant> getPriorities(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg);
+	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project);
+	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
-	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project);
+	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
-	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project);
+	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
 
 	Collection<JiraServerCfg> getServers();
