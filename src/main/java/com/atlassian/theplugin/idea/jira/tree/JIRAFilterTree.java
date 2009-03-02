@@ -261,7 +261,6 @@ public class JIRAFilterTree extends JTree {
 				// restore previous selection
 				if (prevManualFilter != null) {
 					setSelectionManualFilter(prevServer.getServerId().toString());
-//					prevManualFilter.
 				} else if (prevSavedFilter != null) {
 					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId().toString());
 				}

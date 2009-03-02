@@ -56,19 +56,25 @@ public abstract class TwoPanePanel extends JPanel {
 			super(parent, canBeParent);
 			setTitle("Detailed Status Information");
 			textArea = new JTextArea(text);
+			textArea.setEditable(false);
+			textArea.setBackground(Color.WHITE);
 			init();
 			pack();
-			
+
 		}
 
 		@Override
 		protected Action[] createActions() {
-		  return new Action[]{getOKAction()};
+			return new Action[]{getOKAction()};
 		}
 
 		@Override
 		protected JComponent createCenterPanel() {
-			return new JScrollPane(textArea);
+			JScrollPane scroll = new JScrollPane(textArea);
+			//CHECKSTYLE:MAGIC:OFF
+			scroll.setMinimumSize(new Dimension(300, 100));
+			//CHECKSTYLE:MAGIC:ON
+			return scroll;
 		}
 	}
 
@@ -168,7 +174,8 @@ public abstract class TwoPanePanel extends JPanel {
 
 	/**
 	 * It can be called from the non-UI thread
-	 * @param msg info messages
+	 *
+	 * @param msg	info messages
 	 * @param errors info error messages
 	 */
 	public void setStatusMessage(final Collection<String> msg, final Collection<String> errors) {
@@ -206,7 +213,9 @@ public abstract class TwoPanePanel extends JPanel {
 	}
 
 	protected abstract JTree getRightTree();
+
 	protected abstract JComponent getToolBar();
+
 	protected abstract JComponent getLeftPanel();
 
 	private class StatusMessageRunnable implements Runnable {
