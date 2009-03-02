@@ -27,29 +27,29 @@ import com.atlassian.theplugin.util.PluginUtil;
 import java.util.*;
 
 public class JIRAServerCache {
-    private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
-    public static final int ANY_ID = -1000;
-    private static final int NO_VERSION_ID = -1;
-    private static final int RELEASED_VERSION_ID = -3;
-    private static final int UNRELEASED_VERSION_ID = -2;
-    public static final int UNKNOWN_COMPONENT_ID = -1;
-    private static final int UNRESOLVED_ID = -1;
+	private static final int VERSION_SPECIAL_VALUES_COUNT = 4;
+	public static final int ANY_ID = -1000;
+	private static final int NO_VERSION_ID = -1;
+	private static final int RELEASED_VERSION_ID = -3;
+	private static final int UNRELEASED_VERSION_ID = -2;
+	public static final int UNKNOWN_COMPONENT_ID = -1;
+	private static final int UNRESOLVED_ID = -1;
 
-    private final JiraServerCfg server;
-    private boolean validServer;
-    private String errorMessage;
+	private final JiraServerCfg server;
+	private boolean validServer;
+	private String errorMessage;
 
-    private List<JIRAProject> projects;
-    private List<JIRAConstant> statuses;
+	private List<JIRAProject> projects;//= new ArrayList<JIRAProject>();
+	private List<JIRAConstant> statuses;// = new ArrayList<JIRAConstant>();
 
-    private List<JIRAQueryFragment> savedFilters;
-    private List<JIRAConstant> priorities;
-    private List<JIRAResolutionBean> resolutions;
-	private List<JIRAConstant> globalIssueTypes;
+	private List<JIRAQueryFragment> savedFilters;// = new ArrayList<JIRAQueryFragment>();
+	private List<JIRAConstant> priorities;// = new ArrayList<JIRAConstant>();
+	private List<JIRAResolutionBean> resolutions;// = new ArrayList<JIRAResolutionBean>();
+	private List<JIRAConstant> globalIssueTypes;// = new ArrayList<JIRAConstant>();
 
 	private Map<String, List<JIRAConstant>> issueTypesCache;
-    private Map<String, List<JIRAVersionBean>> serverVersionsCache;
-    private Map<String, List<JIRAComponentBean>> componentsCache;
+	private Map<String, List<JIRAVersionBean>> serverVersionsCache;
+	private Map<String, List<JIRAComponentBean>> componentsCache;
 
 	private final JIRAServerFacade jiraServerFacade;
 
@@ -58,17 +58,17 @@ public class JIRAServerCache {
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
 		this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
-        this.server = server;
-    }
+		this.server = server;
+	}
 
-    public JiraServerCfg getServer() {
-        return server;
-    }
+	public JiraServerCfg getServer() {
+		return server;
+	}
 
-    public boolean checkServer() throws RemoteApiException {
-        try {
-            jiraServerFacade.testServerConnection(server);
-            validServer = true;
+	public boolean checkServer() throws RemoteApiException {
+		try {
+			jiraServerFacade.testServerConnection(server);
+			validServer = true;
 
 		} catch (RemoteApiLoginException e) {
 			errorMessage = e.getMessage();
@@ -84,127 +84,126 @@ public class JIRAServerCache {
 		return validServer;
 	}
 
-    public List<JIRAProject> getProjects() {
-        if (projects == null) {
-            try {
-                List<JIRAProject> retrieved = jiraServerFacade.getProjects(server);
-                projects = new ArrayList<JIRAProject>();
-                projects.add(new JIRAProjectBean(ANY_ID, "Any"));
-                projects.addAll(retrieved);
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                projects = Collections.emptyList();
-            }
-        }
-        return projects;
-    }
+	public List<JIRAProject> getProjects() throws JIRAException {
+		if (projects == null) {
+			try {
+				List<JIRAProject> retrieved = jiraServerFacade.getProjects(server);
+				projects = new ArrayList<JIRAProject>();
+				projects.add(new JIRAProjectBean(ANY_ID, "Any"));
+				projects.addAll(retrieved);
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
+		return projects;
+	}
 
-    public List<JIRAConstant> getStatuses() {
-        if (statuses == null) {
-            try {
-                List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(server);
-                statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-                statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
-                statuses.addAll(retrieved);
-                for (JIRAConstant status : statuses) {
-                    CachedIconLoader.getIcon(status.getIconUrl());
-                }
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                statuses = Collections.emptyList();
-            }
-        }
+	public List<JIRAConstant> getStatuses() throws JIRAException {
+		if (statuses == null) {
+			try {
+				List<JIRAConstant> retrieved = jiraServerFacade.getStatuses(server);
+				statuses = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				statuses.add(new JIRAStatusBean(ANY_ID, "Any", null));
+				statuses.addAll(retrieved);
+				for (JIRAConstant status : statuses) {
+					CachedIconLoader.getIcon(status.getIconUrl());
+				}
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
 
-        return statuses;
-    }
+		return statuses;
+	}
 
 	/**
-	 *	 
 	 * @return list of issue types or empty collection
 	 */
-	public List<JIRAConstant> getIssueTypes(JIRAProject project) {
+	public List<JIRAConstant> getIssueTypes(JIRAProject project) throws JIRAException {
 		List<JIRAConstant> issueTypes = project == null ? globalIssueTypes : issueTypesCache.get(project.getKey());
 
 		if (issueTypes == null) {
 			List<JIRAConstant> retrieved;
 			try {
-                if (project == null) {
-                    retrieved = jiraServerFacade.getIssueTypes(server);
-                } else {
-                    retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(project.getId()));
-                }
-                issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-                issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
-                issueTypes.addAll(retrieved);
+				if (project == null) {
+					retrieved = jiraServerFacade.getIssueTypes(server);
+				} else {
+					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(project.getId()));
+				}
+				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
+				issueTypes.addAll(retrieved);
 
-                for (JIRAConstant issueType : issueTypes) {
-                    CachedIconLoader.getIcon(issueType.getIconUrl());
-                }
+				for (JIRAConstant issueType : issueTypes) {
+					CachedIconLoader.getIcon(issueType.getIconUrl());
+				}
 
-                if (project != null) {
-                    issueTypesCache.put(project.getKey(), issueTypes);
-                } else {
-                    globalIssueTypes = issueTypes;
-                }
-            } catch (JIRAException e) {
+				if (project != null) {
+					issueTypesCache.put(project.getKey(), issueTypes);
+				} else {
+					globalIssueTypes = issueTypes;
+				}
+			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 				if (globalIssueTypes != null) {
 					issueTypes = globalIssueTypes;
 				} else {
-					issueTypes = Collections.emptyList();
+					throw e;
 				}
-            }
-        }
-        return issueTypes;
-    }
+			}
+		}
+		return issueTypes;
+	}
 
-    public List<JIRAQueryFragment> getSavedFilters() {
-        if (savedFilters == null) {
-            try {
-                savedFilters = jiraServerFacade.getSavedFilters(server);
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                savedFilters = Collections.emptyList();
-            }
-        }
-        return savedFilters;
-    }
+	public List<JIRAQueryFragment> getSavedFilters() throws JIRAException {
+		if (savedFilters == null) {
+			try {
+				savedFilters = jiraServerFacade.getSavedFilters(server);
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
+		return savedFilters;
+	}
 
-    public List<JIRAConstant> getPriorities() {
-        if (priorities == null) {
-            try {
-                List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
-                priorities = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-                priorities.add(new JIRAPriorityBean(ANY_ID, "Any", null));
-                priorities.addAll(retrieved);
-                for (JIRAConstant priority : priorities) {
-                    CachedIconLoader.getIcon(priority.getIconUrl());
-                }
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                priorities = Collections.emptyList();
-            }
-        }
-        return priorities;
-    }
+	public List<JIRAConstant> getPriorities() throws JIRAException {
+		if (priorities == null) {
+			try {
+				List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
+				priorities = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				priorities.add(new JIRAPriorityBean(ANY_ID, "Any", null));
+				priorities.addAll(retrieved);
+				for (JIRAConstant priority : priorities) {
+					CachedIconLoader.getIcon(priority.getIconUrl());
+				}
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
+		return priorities;
+	}
 
-    public List<JIRAResolutionBean> getResolutions() {
-        if (resolutions == null) {
-            try {
-                List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(server);
-                resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
-                resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
-                resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
-                resolutions.addAll(retrieved);
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                resolutions = Collections.emptyList();
-            }
-        }
-        return resolutions;
-    }
+	public List<JIRAResolutionBean> getResolutions() throws JIRAException {
+		if (resolutions == null) {
+			try {
+				List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(server);
+				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
+				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
+				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
+				resolutions.addAll(retrieved);
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
+		return resolutions;
+	}
 
-    private List<JIRAVersionBean> getAllVersions(JIRAProject project) {
+	private List<JIRAVersionBean> getAllVersions(JIRAProject project) throws JIRAException {
 		List<JIRAVersionBean> versions = null;
 		if (project != null) {
 			versions = serverVersionsCache.get(project.getKey());
@@ -220,13 +219,13 @@ public class JIRAServerCache {
 
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
-				versions = Collections.emptyList();
+				throw e;
 			}
 		}
-        return versions;
-    }
+		return versions;
+	}
 
-    public List<JIRAVersionBean> getVersions(JIRAProject project) {
+	public List<JIRAVersionBean> getVersions(JIRAProject project) throws JIRAException {
 		List<JIRAVersionBean> versions;
 		if (project != null) {
 			List<JIRAVersionBean> retrieved = getAllVersions(project);
@@ -253,10 +252,10 @@ public class JIRAServerCache {
 			versions = Collections.emptyList();
 		}
 
-        return versions;
-    }
+		return versions;
+	}
 
-    public List<JIRAFixForVersionBean> getFixForVersions(JIRAProject project) {
+	public List<JIRAFixForVersionBean> getFixForVersions(JIRAProject project) throws JIRAException {
 		List<JIRAFixForVersionBean> fixForVersions;
 		if (project != null) {
 			List<JIRAVersionBean> retrieved = getAllVersions(project);
@@ -282,42 +281,42 @@ public class JIRAServerCache {
 		} else {
 			fixForVersions = Collections.emptyList();
 		}
-        return fixForVersions;
-    }
+		return fixForVersions;
+	}
 
-    public List<JIRAComponentBean> getComponents(JIRAProject project) {
+	public List<JIRAComponentBean> getComponents(JIRAProject project) throws JIRAException {
 		List<JIRAComponentBean> components = null;
 		if (project != null) {
 			components = componentsCache.get(project.getKey());
 		}
 		if (components == null) {
-            try {
-                if (project != null) {
-                    List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, project.getKey());
+			try {
+				if (project != null) {
+					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, project.getKey());
 
-                    components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
-                    components.add(new JIRAComponentBean(ANY_ID, "Any"));
-                    components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
-                    components.addAll(retrieved);
+					components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
+					components.add(new JIRAComponentBean(ANY_ID, "Any"));
+					components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
+					components.addAll(retrieved);
 
-                    componentsCache.put(project.getKey(), components);
-                } else {
-                    components = Collections.emptyList();
-                }
-            } catch (JIRAException e) {
-                PluginUtil.getLogger().error(e.getMessage());
-                components = Collections.emptyList();
-            }
-        }
+					componentsCache.put(project.getKey(), components);
+				} else {
+					components = Collections.emptyList();
+				}
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
+			}
+		}
 
-        return components;
-    }
+		return components;
+	}
 
-    public boolean isValidServer() {
-        return validServer;
-    }
+	public boolean isValidServer() {
+		return validServer;
+	}
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+	public String getErrorMessage() {
+		return errorMessage;
+	}
 }
