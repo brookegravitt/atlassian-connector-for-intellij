@@ -406,7 +406,24 @@
                 class="com.atlassian.theplugin.idea.action.crucible.comment.gutter.PublishAction"
                 text="Publish" icon="/actions/menu-saveall.png"/>
 
-        <action id="$ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction"
+		<action id="ThePlugin.Crucible.Comment.NextComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
+				text="Next Comment"
+				icon="/icons/moveDown-cru.png"/>
+		<action id="ThePlugin.Crucible.Comment.PrevComment"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PrevCommentAction"
+				text="Previous Comment"
+				icon="/icons/moveUp-cru.png"/>
+		<action id="ThePlugin.Crucible.Comment.NextDiff"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
+				text="Next Difference"
+				icon="/actions/moveDown.png"/>
+		<action id="ThePlugin.Crucible.Comment.PrevDiff"
+				class="com.atlassian.theplugin.idea.action.crucible.comment.PrevDiffAction"
+				text="Previous Difference"
+				icon="/actions/moveUp.png"/>
+		
+		<action id="$ArcRunSelection" class="com.atlassian.theplugin.idea.action.CommentAction"
                 text="Add Crucible Comment"
                 description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
             <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
@@ -506,7 +523,12 @@
             <reference id="ThePlugin.Crucible.Comment.Reply"/>
             <reference id="ThePlugin.Crucible.Comment.Edit"/>
             <reference id="ThePlugin.Crucible.Comment.Remove"/>
-            <separator/>
+			<separator/>
+			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.PrevDiff"/>
+			<separator/>
             <reference id="ThePlugin.Tree.File.Filter"/>
         </group>
 
@@ -545,13 +567,6 @@
         <action id="ThePlugin.Crucible.AddPatchToReview"
                 class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add Patch to Review"
                 icon="/icons/fisheye-16-plus.png"/>
-
-        <action id="ThePlugin.Crucible.Comment.NextComment"
-                class="com.atlassian.theplugin.idea.action.crucible.comment.NextCommentAction"
-                text="Next Comment" icon="/actions/forward.png"/>
-        <action id="ThePlugin.Crucible.Comment.PrevComment"
-                class="com.atlassian.theplugin.idea.action.crucible.comment.PrevCommentAction"
-                text="Previous Comment" icon="/actions/back.png"/>
 
         <group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
             <reference id="ThePlugin.Crucible.GoToLocalSource"/>
