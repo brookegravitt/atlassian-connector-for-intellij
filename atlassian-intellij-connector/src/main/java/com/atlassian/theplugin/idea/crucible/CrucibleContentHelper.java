@@ -235,8 +235,7 @@ public final class CrucibleContentHelper {
 			String content = CrucibleServerFacadeImpl.getInstance().getFileContent(review.getServer(), crucibleFileInfo,
 					reviewItemContentType);
 			VirtualFile file = new VcsVirtualFile(crucibleFileInfo.getFileDescriptor().getName(), content.getBytes(), revision,
-					virtualFile.getFileSystem());//PlainTextMemoryVirtualFile(crucibleFileInfo.getFileDescriptor().getName(),
-			//content);
+					virtualFile.getFileSystem());
 			putFileInfoCache(file, virtualFile, revision);
 
 			return file;

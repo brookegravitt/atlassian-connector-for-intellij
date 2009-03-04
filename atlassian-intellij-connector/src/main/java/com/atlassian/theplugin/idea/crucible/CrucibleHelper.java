@@ -119,7 +119,9 @@ public final class CrucibleHelper {
 				try {
 					contentUrlAvailable = CrucibleServerFacadeImpl.getInstance().checkContentUrlAvailable(review.getServer());
 				} catch (RemoteApiException e) {
+					// unable to get version
 				} catch (ServerPasswordNotProvidedException e) {
+					// unable to get version					
 				}
 
 				if (contentUrlAvailable) {
@@ -144,6 +146,8 @@ public final class CrucibleHelper {
 				break;
 			case PATCH:
 				Messages.showErrorDialog(project, "Reviews based on patch upload are not supported", "Review not supported");
+				break;
+			default:
 				break;
 		}
 	}
