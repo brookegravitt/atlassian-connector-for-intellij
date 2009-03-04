@@ -16,18 +16,53 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Aug 7, 2008
- * Time: 3:35:13 PM
- * To change this template use File | Settings | File Templates.
- */
-public class NextCommentAction extends AnAction {
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+
+public class NextCommentAction extends AbstractCommentAction {
 	
 	public void actionPerformed(final AnActionEvent e) {
+		AtlassianTree tree = (AtlassianTree) getTree(e);
+		AtlassianTreeNode nextNode = getNextCommentNode(tree, getSelectedNode(e));
+		if (tree != null && nextNode != null) {
+			TreePath path = new TreePath(nextNode.getPath());
+			tree.scrollPathToVisible(path);
+			tree.setSelectionPath(path);
+			nextNode.getAtlassianClickAction().execute(nextNode, 2);
+		}
+	}
+
+	public void update(final AnActionEvent e) {
+
+		AtlassianTreeNode node = getSelectedNode(e);
+		boolean enabled = getNextCommentNode((AtlassianTree) getTree(e), node) != null;
+
+		e.getPresentation().setEnabled(enabled);
+	}
+
+	private AtlassianTreeNode getNextCommentNode(AtlassianTree tree, AtlassianTreeNode node) {
+		DefaultMutableTreeNode start = node;
+		if (tree == null) {
+			return null;
+		}
+		if (start == null) {
+			start = (DefaultMutableTreeNode) tree.getModel().getRoot();
+		}
+		AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
+		while (n != null) {
+			if (n instanceof CommentTreeNode) {
+				CommentTreeNode ctn = (CommentTreeNode) n;
+				if (!ctn.getComment().isReply()) {
+					return n;
+				}
+			}
+			n = (AtlassianTreeNode) n.getNextNode();
+		}
+		return null;
 	}
 }
