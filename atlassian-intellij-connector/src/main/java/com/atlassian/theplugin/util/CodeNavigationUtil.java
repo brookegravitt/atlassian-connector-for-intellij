@@ -93,8 +93,8 @@ public final class CodeNavigationUtil {
 			}
 			int diff = StringUtils.indexOfDifference(StringUtils.reverse(path)
 					, StringUtils.reverse(pathname));
-			if (diff >= FilenameUtils.getName(pathname).length()
-					&& (diff > difference || pathname.equals(path))) {
+			if (diff == -1 || (diff >= FilenameUtils.getName(pathname).length()
+					&& (diff > difference || pathname.equals(path)))) {
 				difference = diff;
 				bestMatch = file;
 				if (pathname.equals(path)) {

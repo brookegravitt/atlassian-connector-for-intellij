@@ -18,7 +18,22 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.FileType;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -30,15 +45,21 @@ import com.intellij.pom.PomModel;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.messages.MessageBus;
 import junit.framework.TestCase;
+import org.easymock.EasyMock;
+import org.easymock.IAnswer;
+import org.easymock.IMocksControl;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.picocontainer.PicoContainer;
-import org.easymock.EasyMock;
-import org.easymock.IMocksControl;
-import org.easymock.IAnswer;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
@@ -201,6 +222,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 			public int getNumberOfLineComments() {
 				return 0;
+			}
+
+			public RepositoryType getRepositoryType() {
+				return null;
 			}
 
 			public int getNumberOfComments() {

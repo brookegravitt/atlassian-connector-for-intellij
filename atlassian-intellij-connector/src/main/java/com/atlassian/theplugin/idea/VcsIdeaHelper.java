@@ -82,6 +82,14 @@ public final class VcsIdeaHelper {
 		return (plm != null && plm.getAllActiveVcss().length > 0);
 	}
 
+	public static String getRepositoryRootUrlForFile(Project project, VirtualFile vFile) {
+		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
+		if (plm == null) {
+			return null;
+		}
+		VirtualFile vcsRoot = plm.getVcsRootFor(vFile);
+		return getRepositoryUrlForFile(project, vcsRoot);
+	}
 
 	@Nullable
 	public static String getRepositoryUrlForFile(Project project, VirtualFile vFile) {
