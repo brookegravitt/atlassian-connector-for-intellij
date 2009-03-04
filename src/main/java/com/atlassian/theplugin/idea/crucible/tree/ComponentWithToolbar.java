@@ -46,7 +46,8 @@ public abstract class ComponentWithToolbar extends JPanel implements DataProvide
 				ActionToolbar actionToolbar = aManager.createActionToolbar(
                         TOOLBAR_PLACE, serverToolBar, true);
                 toolbar = actionToolbar.getComponent();
-            }
+				actionToolbar.setTargetComponent(this);
+			}
 
             if (toolbar != null) {
                 add(toolbar, BorderLayout.NORTH);

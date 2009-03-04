@@ -524,10 +524,10 @@
             <reference id="ThePlugin.Crucible.Comment.Edit"/>
             <reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<separator/>
-			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
-			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
+			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevDiff"/>
+			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
 			<separator/>
             <reference id="ThePlugin.Tree.File.Filter"/>
         </group>
