@@ -39,7 +39,6 @@ public abstract class AbstractCommentAction extends AnAction {
 
 		DataContext dataContext = e.getDataContext();
 		Component component = null;
-//		Component component = (AtlassianTree) dataContext.getData(Constants.CRUCIBLE_COMMENT_TREE);
 		AtlassianTreeWithToolbar twtb = (AtlassianTreeWithToolbar) dataContext.getData(Constants.FILE_TREE);
 		if (twtb != null) {
 		 	component = twtb.getTreeComponent();
