@@ -903,7 +903,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						}
 					}
 				} finally {
-					// todo that should be probably called in the UI thread as most frozen listeners do something with UI controls
+					// todo it should be probably called in the UI thread as most frozen listeners do something with UI controls
 					jiraServerModel.setModelFrozen(false);
 				}
 			}
