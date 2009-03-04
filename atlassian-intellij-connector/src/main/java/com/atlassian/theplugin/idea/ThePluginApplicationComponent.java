@@ -223,7 +223,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		// create and start server
 		try {
-			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new LocalHttpHandler(iconArray));
+			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new LocalHttpHandler(iconArray), true);
 		} catch (Exception e) {
 			PluginUtil.getLogger().error("Failed to start http server", e);
 //			e.printStackTrace();
