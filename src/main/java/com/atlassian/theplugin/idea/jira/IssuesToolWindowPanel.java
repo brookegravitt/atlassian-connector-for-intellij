@@ -865,43 +865,47 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
-			try {
-				jiraServerModel.setModelFrozen(true);
 
-				for (JiraServerCfg server : servers) {
-					try {
-						//returns false if no cfg is available or login failed
-						if (!jiraServerModel.checkServer(server)) {
+			if (servers != null) {
+				try {
+					jiraServerModel.setModelFrozen(true);
+
+					for (JiraServerCfg server : servers) {
+						try {
+							//returns false if no cfg is available or login failed
+							if (!jiraServerModel.checkServer(server)) {
+								setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server),
+										true);
+								EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server, project));
+								continue;
+							}//@todo remove  saved filters download or merge with existing in listModel
+
+							final String serverStr = "[" + server.getName() + "] ";
+							setStatusMessage(serverStr + "Retrieving saved filters...");
+							jiraServerModel.getSavedFilters(server);
+							setStatusMessage(serverStr + "Retrieving projects...");
+							jiraServerModel.getProjects(server);
+							setStatusMessage(serverStr + "Retrieving issue types...");
+							jiraServerModel.getIssueTypes(server, null);
+							setStatusMessage(serverStr + "Retrieving statuses...");
+							jiraServerModel.getStatuses(server);
+							setStatusMessage(serverStr + "Retrieving resolutions...");
+							jiraServerModel.getResolutions(server);
+							setStatusMessage(serverStr + "Retrieving priorities...");
+							jiraServerModel.getPriorities(server);
+							setStatusMessage(serverStr + "Retrieving projects...");
+							jiraServerModel.getProjects(server);
+							setStatusMessage(serverStr + "Server data query finished");
+						} catch (RemoteApiException e) {
 							setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
-							EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade, server, project));
-							continue;
-						}//@todo remove  saved filters download or merge with existing in listModel
-
-						final String serverStr = "[" + server.getName() + "] ";
-						setStatusMessage(serverStr + "Retrieving saved filters...");
-						jiraServerModel.getSavedFilters(server);
-						setStatusMessage(serverStr + "Retrieving projects...");
-						jiraServerModel.getProjects(server);
-						setStatusMessage(serverStr + "Retrieving issue types...");
-						jiraServerModel.getIssueTypes(server, null);
-						setStatusMessage(serverStr + "Retrieving statuses...");
-						jiraServerModel.getStatuses(server);
-						setStatusMessage(serverStr + "Retrieving resolutions...");
-						jiraServerModel.getResolutions(server);
-						setStatusMessage(serverStr + "Retrieving priorities...");
-						jiraServerModel.getPriorities(server);
-						setStatusMessage(serverStr + "Retrieving projects...");
-						jiraServerModel.getProjects(server);
-						setStatusMessage(serverStr + "Server data query finished");
-					} catch (RemoteApiException e) {
-						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
-					} catch (JIRAException e) {
-						setStatusMessage("Cannot download details:" + e.getMessage(), true);
+						} catch (JIRAException e) {
+							setStatusMessage("Cannot download details:" + e.getMessage(), true);
+						}
 					}
+				} finally {
+					// todo that should be probably called in the UI thread as most frozen listeners do something with UI controls
+					jiraServerModel.setModelFrozen(false);
 				}
-			} finally {
-				// todo that should be probably called in the UI thread as most frozen listeners do something with UI controls
-				jiraServerModel.setModelFrozen(false);
 			}
 		}
 
