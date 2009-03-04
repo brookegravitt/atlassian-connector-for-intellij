@@ -32,22 +32,30 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 		switch (noOfClicks) {
 			case 1:
 				if (editor != null) {
-					Document document = editor.getDocument();
-					VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-					if (virtualFile != null) {
-						OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine() - 1,
-								0);
-						if (display.canNavigateToSource()) {
-							display.navigate(false);
-						}
-					}
+					scrollFileToComment(editor, comment);
 				}
 				break;
 			case 2:
-				CrucibleHelper.openFileOnComment(project, review, file, comment);
+				if (editor != null) {
+					scrollFileToComment(editor, comment);
+				} else {
+					CrucibleHelper.openFileOnComment(project, review, file, comment);
+				}
 				break;
 			default:
 				break;
+		}
+	}
+
+	private void scrollFileToComment(final Editor editor, final VersionedComment comment) {
+		Document document = editor.getDocument();
+		VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+		if (virtualFile != null) {
+			OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, comment.getToStartLine() - 1,
+					0);
+			if (display.canNavigateToSource()) {
+				display.navigate(false);
+			}
 		}
 	}
 }
