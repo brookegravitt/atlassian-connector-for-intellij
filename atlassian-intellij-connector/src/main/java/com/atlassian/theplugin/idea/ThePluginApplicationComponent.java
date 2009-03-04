@@ -32,6 +32,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
@@ -257,12 +258,18 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 				if (file != null) {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
+							boolean found = false;
 							// try to open received file in all open projects
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
 								if (psiFile != null) {
 									psiFile.navigate(true);
+									found = true;
 								}
+							}
+
+							if (!found) {
+								Messages.showInfoMessage("Cannot find file " + file, "File open error");
 							}
 						}
 					});
