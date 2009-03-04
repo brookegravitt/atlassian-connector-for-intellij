@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
@@ -155,12 +155,10 @@ public final class CommentHighlighter {
 								final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
 										virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
 								if (fileInfo != null) {
-									VcsIdeaHelper.openFileWithDiffs(project
+									CrucibleHelper.openFileWithDiffs(project
 											, false
-											, fileInfo.getFileDescriptor().getAbsoluteUrl()
-											, fileInfo.getOldFileDescriptor().getRevision()
-											, fileInfo.getFileDescriptor().getRevision()
-											, fileInfo.getCommitType()
+											, review
+											, fileInfo
 											, 1
 											, 1
 											,
@@ -171,12 +169,10 @@ public final class CommentHighlighter {
 								CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
 										virtualFile.getPath(), files);
 								if (fileInfo != null) {
-									VcsIdeaHelper.openFileWithDiffs(project
+									CrucibleHelper.openFileWithDiffs(project
 											, false
-											, fileInfo.getFileDescriptor().getAbsoluteUrl()
-											, fileInfo.getOldFileDescriptor().getRevision()
-											, fileInfo.getFileDescriptor().getRevision()
-											, fileInfo.getCommitType()
+											, review
+											, fileInfo
 											, 1
 											, 1
 											,
