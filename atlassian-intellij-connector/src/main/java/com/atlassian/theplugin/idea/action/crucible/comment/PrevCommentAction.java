@@ -16,17 +16,48 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnAction;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-/**
- * Created by IntelliJ IDEA.
- * User: pmaruszak
- * Date: Aug 7, 2008
- * Time: 3:35:24 PM
- * To change this template use File | Settings | File Templates.
- */
-public class PrevCommentAction extends AnAction {
+import javax.swing.tree.TreePath;
+
+public class PrevCommentAction extends AbstractCommentAction {
+
 	public void actionPerformed(final AnActionEvent e) {
+		AtlassianTree tree = (AtlassianTree) getTree(e);
+		AtlassianTreeNode prevNode = getPrevCommentNode(getSelectedNode(e));
+		if (tree != null && prevNode != null) {
+			TreePath path = new TreePath(prevNode.getPath());
+			tree.scrollPathToVisible(path);
+			tree.setSelectionPath(path);
+			prevNode.getAtlassianClickAction().execute(prevNode, 2);
+		}
+	}
+
+	public void update(final AnActionEvent e) {
+
+		AtlassianTreeNode node = getSelectedNode(e);
+		boolean enabled = getPrevCommentNode(node) != null;
+
+		e.getPresentation().setEnabled(enabled);
+	}
+
+	private AtlassianTreeNode getPrevCommentNode(AtlassianTreeNode node) {
+		if (node == null) {
+			return null;
+		}
+		AtlassianTreeNode n = (AtlassianTreeNode) node.getPreviousNode();
+		while (n != null) {
+			if (n instanceof CommentTreeNode) {
+				CommentTreeNode ctn = (CommentTreeNode) n;
+				if (!ctn.getComment().isReply()) {
+					return n;
+				}
+			}
+			n = (AtlassianTreeNode) n.getPreviousNode();
+		}
+		return null;
 	}
 }
