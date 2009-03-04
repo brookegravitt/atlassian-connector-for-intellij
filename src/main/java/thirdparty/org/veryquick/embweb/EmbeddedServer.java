@@ -50,17 +50,20 @@ public final class EmbeddedServer {
 	 * Handler
 	 */
 	private HttpRequestHandler clientHandler;
+	private boolean acceptOnlyLocal;
 
 	/**
 	 * New instance
 	 *
 	 * @param serverPort
 	 * @param handler
+	 * @param acceptOnlyLocal
 	 * @return instance of http server
 	 * @throws Exception
 	 */
-	public static EmbeddedServer createInstance(int serverPort, HttpRequestHandler handler) throws Exception {
-		final EmbeddedServer server = new EmbeddedServer(serverPort, handler);
+	public static EmbeddedServer createInstance(int serverPort, HttpRequestHandler handler, boolean acceptOnlyLocal)
+			throws Exception {
+		final EmbeddedServer server = new EmbeddedServer(serverPort, handler, acceptOnlyLocal);
 		Thread thread = new Thread(
 				new Runnable() {
 					public void run() {
@@ -84,9 +87,10 @@ public final class EmbeddedServer {
 	 * @param handler
 	 * @throws Exception
 	 */
-	private EmbeddedServer(int serverPort, HttpRequestHandler handler) throws Exception {
+	private EmbeddedServer(int serverPort, HttpRequestHandler handler, boolean acceptOnlyLocal) throws Exception {
 		this.serverPort = serverPort;
 		this.clientHandler = handler;
+		this.acceptOnlyLocal = acceptOnlyLocal;
 	}
 
 	/**
@@ -106,11 +110,17 @@ public final class EmbeddedServer {
 		LOGGER.info("Server up on " + this.serverPort);
 		while (alive) {
 			Socket clientRequestSocket = serverSocket.accept();
-			Thread thread = new Thread(
-					new RequestHandler(clientRequestSocket),
-					clientRequestSocket.getInetAddress().getCanonicalHostName()
-			);
-			thread.start();
+
+			if (!acceptOnlyLocal || clientRequestSocket.getInetAddress().isLoopbackAddress()) {
+				Thread thread = new Thread(
+						new RequestHandler(clientRequestSocket),
+						clientRequestSocket.getInetAddress().getCanonicalHostName()
+				);
+				thread.start();
+			} else {
+				clientRequestSocket.getOutputStream().close();
+				clientRequestSocket.close();
+			}
 		}
 	}
 
