@@ -6,7 +6,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -77,15 +77,12 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 		if (comment != null) {
 			line = comment.getToStartLine();
 		}
-
-		VcsIdeaHelper.openFileWithDiffs(project
+		CrucibleHelper.openFileWithDiffs(project
 				, false
-				, reviewItem.getFileDescriptor().getAbsoluteUrl()
-				, reviewItem.getOldFileDescriptor().getRevision()
-				, reviewItem.getFileDescriptor().getRevision()
-				, reviewItem.getCommitType()
+				, review
+				, reviewItem
 				, line
-				, 1
-				, new UpdateEditorCurrentContentActionImpl(project, editor, review, reviewItem));
+				, 1,
+				new UpdateEditorCurrentContentActionImpl(project, editor, review, reviewItem));
 	}
 }
