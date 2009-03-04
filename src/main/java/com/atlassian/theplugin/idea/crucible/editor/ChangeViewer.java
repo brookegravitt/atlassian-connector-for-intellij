@@ -37,7 +37,7 @@ import java.util.List;
 
 public final class ChangeViewer {
 
-	private static final Key<Collection<RangeHighlighter>> CRUCIBLE_RANGES = Key.create("crucible_ranges");
+	public static final Key<Collection<RangeHighlighter>> CRUCIBLE_RANGES = Key.create("crucible_ranges");
 //	private static final Key<DocumentListener> DOCUMENT_LISTENER_KEY = Key.create("crucible_document_change_listener");
 
 
