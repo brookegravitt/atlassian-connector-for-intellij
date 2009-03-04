@@ -49,6 +49,9 @@ import java.util.Map;
 
 public final class CrucibleContentHelper {
 
+	private CrucibleContentHelper() {
+	}
+
 	// CHECKSTYLE:OFF
 	public static void openFileWithDiffs(final Project project, final boolean modal,
 			@NotNull final ReviewAdapter review, @NotNull final CrucibleFileInfo reviewItem,
@@ -81,11 +84,14 @@ public final class CrucibleContentHelper {
 	/**
 	 * Must be run from UI thread!
 	 *
-	 * @param project	 project
-	 * @param virtualFile file to fetch from VCS
-	 * @param line		line to go to
-	 * @param column	  column to go to
-	 * @param action	  action to execute upon sucsessful completion of the fetching
+	 * @param project		  project
+	 * @param modal			modal window or task in status bar
+	 * @param review		   review
+	 * @param crucibleFileInfo review file
+	 * @param virtualFile	  file to fetch from VCS
+	 * @param line			 line to go to
+	 * @param column		   column to go to
+	 * @param action		   action to execute upon sucsessful completion of the fetching
 	 */
 	// CHECKSTYLE:OFF
 	public static void fetchAndOpenFileWithDiffs(final Project project, final boolean modal,
@@ -96,7 +102,6 @@ public final class CrucibleContentHelper {
 
 		final String fromRevision = crucibleFileInfo.getOldFileDescriptor().getRevision();
 		final String toRevision = crucibleFileInfo.getFileDescriptor().getRevision();
-		final String filePath = crucibleFileInfo.getFileDescriptor().getAbsoluteUrl();
 
 		String niceFileMessage;
 		switch (crucibleFileInfo.getCommitType()) {
@@ -130,8 +135,8 @@ public final class CrucibleContentHelper {
 	}
 
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {
-		private OpenFileDescriptor displayDescriptor;
-		private VirtualFile referenceVirtualFile;
+		private OpenFileDescriptor displayDescriptor = null;
+		private VirtualFile referenceVirtualFile = null;
 
 		private VcsException exception;
 		private final Project project;
@@ -162,8 +167,6 @@ public final class CrucibleContentHelper {
 			this.column = column;
 			this.action = action;
 			this.modal = modal;
-			displayDescriptor = null;
-			referenceVirtualFile = null;
 		}
 
 		@Override
@@ -172,7 +175,7 @@ public final class CrucibleContentHelper {
 		}
 
 		@Override
-		public void run(ProgressIndicator indicator) {
+		public void run(@NotNull ProgressIndicator indicator) {
 			indicator.setIndeterminate(false);
 			VirtualFile displayVirtualFile = null;
 			try {
@@ -181,18 +184,18 @@ public final class CrucibleContentHelper {
 					case Moved:
 					case Copied:
 						if (!StringUtils.isEmpty(fromRevision)) {
-							referenceVirtualFile = getVcsVirtualFile(project, virtualFile, review, crucibleFileInfo,
+							referenceVirtualFile = getCrucibleVirtualFile(virtualFile, review, crucibleFileInfo,
 									fromRevision, ReviewItemContentType.OldContent);
 						}
-						displayVirtualFile = getVcsVirtualFile(project, virtualFile, review, crucibleFileInfo, toRevision,
+						displayVirtualFile = getCrucibleVirtualFile(virtualFile, review, crucibleFileInfo, toRevision,
 								ReviewItemContentType.NewContent);
 						break;
 					case Added:
-						displayVirtualFile = getVcsVirtualFile(project, virtualFile, review, crucibleFileInfo, toRevision,
+						displayVirtualFile = getCrucibleVirtualFile(virtualFile, review, crucibleFileInfo, toRevision,
 								ReviewItemContentType.NewContent);
 						break;
 					case Deleted:
-						referenceVirtualFile = getVcsVirtualFile(project, virtualFile, review, crucibleFileInfo, fromRevision,
+						referenceVirtualFile = getCrucibleVirtualFile(virtualFile, review, crucibleFileInfo, fromRevision,
 								ReviewItemContentType.OldContent);
 						break;
 					default:
@@ -200,9 +203,6 @@ public final class CrucibleContentHelper {
 				}
 				if (displayVirtualFile != null) {
 					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line - 1, column);
-				} else {
-					// we cannot open such file (just for clarity as by default displayDescriptor = null)
-					displayDescriptor = null;
 				}
 			} catch (VcsException e) {
 				exception = e;
@@ -222,7 +222,7 @@ public final class CrucibleContentHelper {
 		}
 	}
 
-	private static VirtualFile getFromCacheOrFetch(@NotNull Project project, @NotNull VirtualFile virtualFile,
+	private static VirtualFile getFromCacheOrFetch(@NotNull VirtualFile virtualFile,
 			ReviewAdapter review, CrucibleFileInfo crucibleFileInfo,
 			@NotNull String revision,
 			@NotNull ReviewItemContentType reviewItemContentType) throws VcsException {
@@ -237,9 +237,8 @@ public final class CrucibleContentHelper {
 			VirtualFile file = new VcsVirtualFile(crucibleFileInfo.getFileDescriptor().getName(), content.getBytes(), revision,
 					virtualFile.getFileSystem());//PlainTextMemoryVirtualFile(crucibleFileInfo.getFileDescriptor().getName(),
 			//content);
-			if (file != null) {
-				putFileInfoCache(file, virtualFile, revision);
-			}
+			putFileInfoCache(file, virtualFile, revision);
+
 			return file;
 		} catch (RemoteApiException e) {
 			throw new RuntimeException(e);
@@ -268,11 +267,11 @@ public final class CrucibleContentHelper {
 	}
 
 	@Nullable
-	private static VirtualFile getVcsVirtualFile(Project project, VirtualFile virtualFile,
+	private static VirtualFile getCrucibleVirtualFile(VirtualFile virtualFile,
 			ReviewAdapter review, CrucibleFileInfo crucibleFileInfo,
 			String revision, ReviewItemContentType reviewItemContentType) throws VcsException {
 
-		VirtualFile vcvf = getFromCacheOrFetch(project, virtualFile, review, crucibleFileInfo, revision, reviewItemContentType);
+		VirtualFile vcvf = getFromCacheOrFetch(virtualFile, review, crucibleFileInfo, revision, reviewItemContentType);
 		if (vcvf != null && !FileDocumentManager.getInstance().isFileModified(virtualFile)) {
 			try {
 				byte[] currentContent = virtualFile.contentsToByteArray();
