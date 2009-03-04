@@ -207,6 +207,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		// load icon
 		InputStream iconStream = ThePluginProjectComponent.class.getResourceAsStream("/icons/idea_small.png");
 
+		if (iconStream == null) {
+			PluginUtil.getLogger().error("Failed to load icon for http server");
+			return;
+		}
+
 		// convert icon to byte array
 		byte[] iconArray;
 		try {
