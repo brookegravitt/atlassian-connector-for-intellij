@@ -3,18 +3,8 @@ package com.atlassian.theplugin.idea.crucible.editor;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.codeInsight.hint.EditorFragmentComponent;
 import com.intellij.ide.highlighter.HighlighterFactory;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionPlaces;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.diff.DiffColors;
-import com.intellij.openapi.diff.DiffContent;
-import com.intellij.openapi.diff.DiffManager;
-import com.intellij.openapi.diff.DiffRequest;
-import com.intellij.openapi.diff.DocumentContent;
-import com.intellij.openapi.diff.FragmentContent;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.diff.*;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.ScrollType;
@@ -42,6 +32,7 @@ import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.EventObject;
 import java.util.Iterator;
@@ -140,6 +131,13 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 		return true;
 	}
 
+	public Range getLastRange() {
+		if (ranges.size() > 0) {
+			return ranges.get(ranges.size() - 1);
+		}
+		return null;
+	}
+
 	public Range getNextRange(Range aRange) {
 		int j = ranges.indexOf(aRange);
 		if (j == ranges.size() - 1) {
@@ -151,7 +149,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 	public Range getPrevRange(Range aRange) {
 		int j = ranges.indexOf(aRange);
-		if (j == 0) {
+		if (j <= 0) {
 			return null;
 		} else {
 			return ranges.get(j - 1);
@@ -375,8 +373,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 		DefaultActionGroup group = new DefaultActionGroup();
 
-		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
-		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
+		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.NextDiff");
+		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.PrevDiff");
 
 		final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(aRange),
 				anEditor, displayDocument);
