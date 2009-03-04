@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenDiffToolAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.intellij.openapi.application.ApplicationManager;
@@ -34,8 +35,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,32 +61,91 @@ public final class CrucibleHelper {
 	public static void showVirtualFileWithComments(final Project project,
 			final ReviewAdapter review,
 			final CrucibleFileInfo reviewItem) {
-
-		VcsIdeaHelper.openFileWithDiffs(project
+		openFileWithDiffs(project
 				, true
-				, reviewItem.getFileDescriptor().getAbsoluteUrl()
-				, reviewItem.getOldFileDescriptor().getRevision()
-				, reviewItem.getFileDescriptor().getRevision()
-				, reviewItem.getCommitType()
+				, review
+				, reviewItem
 				, 1
 				, 1
 				, new OpenEditorDiffActionImpl(project, review, reviewItem, true));
 	}
 
-	public static void showRevisionDiff(final Project project, final CrucibleFileInfo reviewItem) {
-
-		final String filename = reviewItem.getFileDescriptor().getAbsoluteUrl();
-		final String fileRevision = reviewItem.getOldFileDescriptor().getRevision();
-		final String toRevision = reviewItem.getFileDescriptor().getRevision();
-		VcsIdeaHelper.openFileWithDiffs(project
+	public static void showRevisionDiff(final Project project, final ReviewAdapter review, final CrucibleFileInfo reviewItem) {
+		openFileWithDiffs(project
 				, true
-				, filename
-				, fileRevision
-				, toRevision
-				, reviewItem.getCommitType()
+				, review
+				, reviewItem
 				, 1
 				, 1
-				, new OpenDiffToolAction(project, filename, fileRevision, toRevision));
+				, new OpenDiffToolAction(project, reviewItem.getFileDescriptor().getAbsoluteUrl(), "", ""));
+	}
+
+	public static void openFileOnComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
+			final VersionedComment comment) {
+
+		ApplicationManager.getApplication().runReadAction(new Runnable() {
+			public void run() {
+				int line;
+				switch (file.getCommitType()) {
+					case Deleted:
+						line = comment.getFromStartLine() - 1;
+						break;
+					default:
+						line = comment.getToStartLine() - 1;
+						break;
+				}
+
+				openFileWithDiffs(project
+						, true
+						, review
+						, file
+						, comment.getToStartLine()
+						, 0
+						, new OpenEditorDiffActionImpl(project, review, file, line, 0, true)
+				);
+			}
+		});
+	}
+
+	// CHECKSTYLE:OFF
+	public static void openFileWithDiffs(final Project project, final boolean modal,
+			@NotNull final ReviewAdapter review, @NotNull final CrucibleFileInfo reviewItem,
+			final int line, final int col, @Nullable final OpenDiffAction action) {
+		// CHECKSTYLE:ON
+
+		switch (reviewItem.getRepositoryType()) {
+			case SCM:
+				boolean contentUrlAvailable = false;
+				try {
+					contentUrlAvailable = CrucibleServerFacadeImpl.getInstance().checkContentUrlAvailable(review.getServer());
+				} catch (RemoteApiException e) {
+				} catch (ServerPasswordNotProvidedException e) {
+				}
+
+				if (contentUrlAvailable) {
+					CrucibleContentHelper.openFileWithDiffs(project, modal, review, reviewItem, line, col, action);
+				} else {
+					final String filename = reviewItem.getFileDescriptor().getAbsoluteUrl();
+					final String fileRevision = reviewItem.getOldFileDescriptor().getRevision();
+					final String toRevision = reviewItem.getFileDescriptor().getRevision();
+					VcsIdeaHelper.openFileWithDiffs(project
+							, true
+							, filename
+							, fileRevision
+							, toRevision
+							, reviewItem.getCommitType()
+							, 1
+							, 1
+							, action);
+				}
+				break;
+			case UPLOAD:
+				CrucibleContentHelper.openFileWithDiffs(project, modal, review, reviewItem, line, col, action);
+				break;
+			case PATCH:
+				Messages.showErrorDialog(project, "Reviews based on patch upload are not supported", "Review not supported");
+				break;
+		}
 	}
 
 	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project,
@@ -118,35 +180,5 @@ public final class CrucibleHelper {
 			}
 		}
 		return null;
-	}
-
-	public static void openFileOnComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedComment comment) {
-
-		ApplicationManager.getApplication().runReadAction(new Runnable() {
-			public void run() {
-				int line;
-				switch (file.getCommitType()) {
-					case Deleted:
-						line = comment.getFromStartLine() - 1;
-						break;
-					default:
-						line = comment.getToStartLine() - 1;
-						break;
-				}
-
-				VcsIdeaHelper.openFileWithDiffs(project
-						, true
-						, file.getFileDescriptor().getAbsoluteUrl()
-						, file.getOldFileDescriptor().getRevision()
-						, file.getFileDescriptor().getRevision()
-						, file.getCommitType()
-						, comment.getToStartLine()
-						, 0
-						, new OpenEditorDiffActionImpl(project, review, file, line, 0, true)
-				);
-			}
-		});
-
 	}
 }
