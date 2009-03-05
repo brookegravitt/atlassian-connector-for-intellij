@@ -22,17 +22,10 @@ import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 
 public abstract class AbstractCrucibleCreatePreCommitReviewForm extends CrucibleReviewCreateForm {
@@ -54,29 +47,10 @@ public abstract class AbstractCrucibleCreatePreCommitReviewForm extends Crucible
 
 	protected Review createReviewImpl(final CrucibleServerCfg server, final ReviewProvider reviewProvider,
 			final Collection<Change> changes) throws RemoteApiException, ServerPasswordNotProvidedException {
-		Collection<UploadItem> uploadItems = new ArrayList<UploadItem>();
-		for (Change change : changes) {
-			try {
-				FilePath path = change.getBeforeRevision().getFile();
-				String fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, path.getVirtualFile());
-
-				try {
-					URL url = new URL(fileUrl);
-					fileUrl = url.getPath();
-				} catch (MalformedURLException e) {
-					String rootUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, path.getVirtualFile());
-					fileUrl = StringUtils.difference(rootUrl, fileUrl);
-				}
-
-				uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent(),
-						change.getAfterRevision().getContent(), change.getBeforeRevision().getRevisionNumber().asString()));
-			} catch (VcsException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
+		Collection<UploadItem> uploadItems = CrucibleHelper.getUploadItemsFromChanges(project, changes);
 		return crucibleServerFacade
-				.createReviewFromUpload(server, reviewProvider, uploadItems.toArray(new UploadItem[uploadItems.size()]));
+				.createReviewFromUpload(server, reviewProvider, uploadItems);
 	}
+
 
 }
