@@ -39,7 +39,7 @@ import java.text.DateFormat;
 
 import org.jetbrains.annotations.NotNull;
 
-class ReviewCommentPanel extends JPanel {
+public class ReviewCommentPanel extends JPanel {
 	private Rectangle moreBounds;
 	private static final int MIN_TEXT_WIDTH = 200;
 	private final JLabel reviewerAndAuthorLabel;
@@ -269,7 +269,7 @@ class ReviewCommentPanel extends JPanel {
 	}
 
 
-	private static String getRankingString(Comment comment) {
+	public static String getRankingString(Comment comment) {
 		StringBuilder sb = new StringBuilder();
 		if (comment.getCustomFields().size() > 0) {
 			sb.append("(");
