@@ -10,7 +10,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.changes.Change;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.committed.CommittedChangesTreeBrowser;
+import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.StatusBar;
@@ -29,6 +32,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 public final class IdeaVersionFacade {
 
@@ -109,6 +113,32 @@ public final class IdeaVersionFacade {
 			e.printStackTrace();
 		}
 		return psiFiles;
+	}
+
+	public MultipleChangeListBrowser getChangesListBorwser(Project project, ChangeListManager changeListManager) {
+		try {
+			if (isIdea8) {
+				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
+				Constructor[] constructors = browserClass.getConstructors();
+				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
+						new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true, null);
+			} else {
+				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
+				Constructor[] constructors = browserClass.getConstructors();
+				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
+						new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public void showEditorHints(LightweightHint lightweightHint, Editor anEditor, Point point) {
