@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -30,12 +30,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import static java.lang.System.arraycopy;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,6 +56,7 @@ public class BambooPlansForm extends JPanel {
 	private JSpinner spinnerTimeZoneDifference;
 	private SpinnerModel timezoneOffsetSpinnerModel = new SpinnerNumberModel(0, MIN_TIMEZONE_DIFF, MAX_TIMEZONE_DIFF, 1);
 	private JPanel timezonePanel;
+	private JLabel bambooVersionNumberInfo;
 	private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
 	private DefaultListModel model;
@@ -119,6 +115,8 @@ public class BambooPlansForm extends JPanel {
 		});
 
 		spinnerTimeZoneDifference.setModel(timezoneOffsetSpinnerModel);
+		bambooVersionNumberInfo.setEnabled(false);
+		bambooVersionNumberInfo.setEnabled(true);
 	}
 
 	private void refreshServerPlans() {
@@ -256,10 +254,12 @@ public class BambooPlansForm extends JPanel {
 						}
 						msg.append("Build plans updated based on stored configuration");
 						serverPlans.put(key, plansForServer);
+
 					} else {
 						msg.append("Build plans updated based on cached values");
 					}
 				} finally {
+					setBambooVersionNumberInfo(queryServer);
 					progressAnimation.stopProgressAnimation();
 					final String message = msg.toString();
 					EventQueue.invokeLater(new Runnable() {
@@ -271,6 +271,19 @@ public class BambooPlansForm extends JPanel {
 
 			}
 		}, "atlassian-idea-plugin bamboo panel retrieve plans").start();
+	}
+
+	private void setBambooVersionNumberInfo(BambooServerCfg serverCfg) {
+		if (serverCfg.isBamboo2()) {
+			bambooVersionNumberInfo.setEnabled(false);
+			bambooVersionNumberInfo.setVisible(false);
+			bambooVersionNumberInfo.setText("Server version number >= 2.0");
+		} else {
+			bambooVersionNumberInfo.setEnabled(true);
+			bambooVersionNumberInfo.setVisible(true);
+			bambooVersionNumberInfo
+					.setText("Server version number is < 2.0. Some plugin features are disabled (i.e. re-run failed tests)");
+		}
 	}
 
 	/**
