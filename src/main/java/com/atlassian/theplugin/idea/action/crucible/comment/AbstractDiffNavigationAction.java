@@ -170,7 +170,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 				CrucibleDiffGutterRenderer renderer
 						= (CrucibleDiffGutterRenderer) ranges.iterator().next().getLineMarkerRenderer();
 				if (renderer != null) {
-					renderer.moveToRange(r, e, e.getDocument());
+					renderer.moveToRange(r, e, e.getDocument(), false);
 				}
 			}
 		}
