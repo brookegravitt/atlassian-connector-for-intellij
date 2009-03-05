@@ -533,6 +533,22 @@ public class BambooPlansForm extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 12, 0, 0);
 		timezonePanel.add(label4, gbc);
+		bambooVersionNumberInfo = new JLabel();
+		bambooVersionNumberInfo.setEnabled(false);
+		bambooVersionNumberInfo.setFocusTraversalPolicyProvider(true);
+		bambooVersionNumberInfo.setFocusable(false);
+		bambooVersionNumberInfo.setFont(
+				new Font(bambooVersionNumberInfo.getFont().getName(), bambooVersionNumberInfo.getFont().getStyle(), 10));
+		bambooVersionNumberInfo.setForeground(new Color(-3407872));
+		bambooVersionNumberInfo.setText("Server version number >= 2.0");
+		bambooVersionNumberInfo.setVisible(true);
+		gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.gridwidth = 3;
+		gbc.anchor = GridBagConstraints.WEST;
+		gbc.insets = new Insets(4, 12, 4, 0);
+		timezonePanel.add(bambooVersionNumberInfo, gbc);
 	}
 
 	/**
