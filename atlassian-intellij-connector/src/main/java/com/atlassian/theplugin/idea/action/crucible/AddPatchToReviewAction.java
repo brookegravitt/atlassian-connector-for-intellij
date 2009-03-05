@@ -17,9 +17,8 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.crucible.PatchProducer;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelperForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
@@ -34,8 +33,7 @@ public class AddPatchToReviewAction extends Crucible16RepositoryAction {
 			return;
 		}
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
-		PatchProducer patchProducer = new PatchProducer(project, changes[0].getChanges());
-		String patch = patchProducer.generateUnifiedDiff();
-		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), patch, IdeaHelper.getCfgManager()).show();
+		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), changes[0].getChanges(),
+				IdeaHelper.getCfgManager()).show();
 	}
 }

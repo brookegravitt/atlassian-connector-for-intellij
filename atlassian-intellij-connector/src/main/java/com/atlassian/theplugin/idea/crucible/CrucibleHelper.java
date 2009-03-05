@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -36,11 +37,18 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.FilePath;
+import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class CrucibleHelper {
@@ -184,5 +192,29 @@ public final class CrucibleHelper {
 			}
 		}
 		return null;
+	}
+
+	public static Collection<UploadItem> getUploadItemsFromChanges(final Project project, final Collection<Change> changes) {
+		Collection<UploadItem> uploadItems = new ArrayList<UploadItem>();
+		for (Change change : changes) {
+			try {
+				FilePath path = change.getBeforeRevision().getFile();
+				String fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, path.getVirtualFile());
+
+				try {
+					URL url = new URL(fileUrl);
+					fileUrl = url.getPath();
+				} catch (MalformedURLException e) {
+					String rootUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, path.getVirtualFile());
+					fileUrl = StringUtils.difference(rootUrl, fileUrl);
+				}
+
+				uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent(),
+						change.getAfterRevision().getContent(), change.getBeforeRevision().getRevisionNumber().asString()));
+			} catch (VcsException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return uploadItems;
 	}
 }
