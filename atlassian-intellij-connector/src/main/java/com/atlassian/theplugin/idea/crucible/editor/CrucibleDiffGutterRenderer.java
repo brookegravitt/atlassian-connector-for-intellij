@@ -225,7 +225,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 	}
 
 
-	public void moveToRange(final Range aRange, final Editor anEditor, final Document aDisplayDocument) {
+	public void moveToRange(final Range aRange, final Editor anEditor,
+							final Document aDisplayDocument, final boolean showHint) {
 		final int firstOffset = aDisplayDocument
 				.getLineStartOffset(Math.min(aRange.getOffset1(), aDisplayDocument.getLineCount() - 1));
 		anEditor.getCaretModel().moveToOffset(firstOffset);
@@ -237,7 +238,9 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 				JComponent jcomponent = anEditor.getContentComponent();
 				javax.swing.JLayeredPane jlayeredpane = jcomponent.getRootPane().getLayeredPane();
 				point = SwingUtilities.convertPoint(jcomponent, 0, point.y, jlayeredpane);
-				showActiveHint(aRange, anEditor, point);
+				if (showHint) {
+					showActiveHint(aRange, anEditor, point);
+				}
 			}
 		});
 	}
@@ -272,7 +275,7 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 		@Override
 		protected void actionPerformed(VcsContext vcscontext) {
-			moveToRange(range, editor, document);
+			moveToRange(range, editor, document, true);
 		}
 	}
 
