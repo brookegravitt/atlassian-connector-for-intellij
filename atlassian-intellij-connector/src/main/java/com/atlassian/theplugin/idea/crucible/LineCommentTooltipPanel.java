@@ -658,10 +658,15 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			return false;
 		}
 
-		public Review createReviewFromUpload(CrucibleServerCfg server, Review review, UploadItem[] uploadItems)
-				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return null;
-		}
+        public Review createReviewFromUpload(CrucibleServerCfg server, Review review, Collection<UploadItem> uploadItems)
+                throws RemoteApiException, ServerPasswordNotProvidedException {
+            return null;
+        }
+
+        public Review addItemsToReview(CrucibleServerCfg server, PermId permId, Collection<UploadItem> items)
+                throws RemoteApiException, ServerPasswordNotProvidedException {
+            return null;
+        }
 
 		public String getFileContent(@NotNull CrucibleServerCfg server, @NotNull CrucibleFileInfo file,
 									 @NotNull ReviewItemContentType type)
