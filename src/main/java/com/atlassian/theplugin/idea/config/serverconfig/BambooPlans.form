@@ -171,6 +171,21 @@
               <text value="hours ahead, negative number denotes hours behind."/>
             </properties>
           </component>
+          <component id="e36e6" class="javax.swing.JLabel" binding="bambooVersionNumberInfo">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <gridbag top="4" left="12" bottom="4" right="0" weightx="0.0" weighty="0.0"/>
+            </constraints>
+            <properties>
+              <enabled value="false"/>
+              <focusTraversalPolicyProvider value="true"/>
+              <focusable value="false"/>
+              <font size="10"/>
+              <foreground color="-3407872"/>
+              <text value="Server version number &gt;= 2.0"/>
+              <visible value="true"/>
+            </properties>
+          </component>
         </children>
       </grid>
     </children>
