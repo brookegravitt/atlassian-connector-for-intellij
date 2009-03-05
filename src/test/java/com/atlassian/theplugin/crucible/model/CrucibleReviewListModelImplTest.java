@@ -530,13 +530,18 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public Review createReviewFromUpload(final CrucibleServerCfg server, final Review review,
-				final UploadItem[] uploadItems)
+				final Collection<UploadItem> uploadItems)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
 
 		public String getFileContent(@NotNull final CrucibleServerCfg server, @NotNull final CrucibleFileInfo file,
 				@NotNull final ReviewItemContentType type) throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review addItemsToReview(final CrucibleServerCfg server, final PermId permId, final Collection<UploadItem> items)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return null;
 		}
 
