@@ -12,6 +12,9 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
+import com.atlassian.theplugin.idea.ui.ShowHideButton;
+import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
@@ -28,10 +31,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
-import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
-import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -711,37 +712,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class ScrollablePanel extends JPanel implements Scrollable {
-			private static final int A_LOT = 100000;
-
-			// cheating obviously but this seems to do the right thing, so whatever :)
-			public Dimension getPreferredScrollableViewportSize() {
-				return new Dimension(1, A_LOT);
-			}
-
-			public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-				return 1;
-			}
-
-			public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-				return 1;
-			}
-
-			public boolean getScrollableTracksViewportWidth() {
-				return true;
-			}
-
-			public boolean getScrollableTracksViewportHeight() {
-				return false;
-			}
-		}
-
 		private class DescriptionAndCommentsPanel extends JPanel {
 
 			private final Splitter splitPane = new Splitter(false, PluginToolWindowPanel.PANEL_SPLIT_RATIO);
 
-			private ScrollablePanel comments = new ScrollablePanel();
 			private JScrollPane scroll = new JScrollPane();
+			private ScrollablePanel comments = new ScrollablePanel();
 
 			private Border border = BorderFactory.createTitledBorder("Comments");
 			private final JTabbedPane tabs;
@@ -929,50 +905,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		private class ShowHideButton extends JLabel {
-			private JComponent body;
-			private JComponent container;
-
-			private Icon right = IconLoader.findIcon("/icons/navigate_right_10.gif");
-			private Icon down = IconLoader.findIcon("/icons/navigate_down_10.gif");
-			private boolean shown = true;
-
-			public void setState(boolean visible) {
-				shown = visible;
-				setIcon(shown ? down : right);
-				setComponentVisible(shown);
-			}
-
-			public void click() {
-				shown = !shown;
-				setState(shown);
-			}
-
-			public ShowHideButton(JComponent body, JComponent container) {
-				this.body = body;
-				this.container = container;
-
-				setHorizontalAlignment(0);
-				setIcon(down);
-				addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						click();
-					}
-				});
-			}
-
-			protected void setComponentVisible(boolean visible) {
-				body.setVisible(visible);
-				container.validate();
-				container.getParent().validate();
-			}
-
-			protected String getTooltip() {
-				return "Collapse/Expand";
-			}
-		}
-
 		private class UserLabel extends JPanel {
 			private JLabel label;
 
@@ -1021,12 +953,6 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						setCursor(Cursor.getDefaultCursor());
 					}
 				});
-			}
-		}
-
-		private class WhiteLabel extends JLabel {
-			public WhiteLabel() {
-				setForeground(UIUtil.getTableForeground());
 			}
 		}
 
