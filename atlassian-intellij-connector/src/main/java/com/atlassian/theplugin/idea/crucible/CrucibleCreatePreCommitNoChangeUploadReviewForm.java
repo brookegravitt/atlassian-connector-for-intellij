@@ -21,30 +21,27 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.intellij.openapi.actionSystem.DataKey;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DataSink;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
-import com.intellij.openapi.vcs.changes.ChangeList;
-import org.jetbrains.annotations.NonNls;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCreatePreCommitReviewForm
-		implements DataProvider {
-	public static final String LOCAL_CHANGES_BROWSER = "theplugin.crucible.localchangesbrowser";
-	public static final DataKey<CrucibleCreatePostCommitReviewForm> COMMITTED_CHANGES_BROWSER_KEY = DataKey
-			.create(LOCAL_CHANGES_BROWSER);
+public class CrucibleCreatePreCommitNoChangeUploadReviewForm extends AbstractCrucibleCreatePreCommitReviewForm {
+	private MultipleChangeListBrowser changesBrowser;
 
-	private final Collection<Change> changes;
-
-	public CrucibleCreatePreCommitUploadReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
-			Collection<Change> changes,
+	public CrucibleCreatePreCommitNoChangeUploadReviewForm(final Project project,
+			final CrucibleServerFacade crucibleServerFacade,
 			@NotNull final CfgManager cfgManager) {
 		super(project, crucibleServerFacade, "", cfgManager);
-		this.changes = changes;
+
+		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+		changesBrowser = new MultipleChangeListBrowser(project, changeListManager.getChangeLists(),
+				new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true, null);
+		setCustomComponent(changesBrowser);
 
 		setTitle("Create Review");
 		pack();
@@ -53,35 +50,7 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 	@Override
 	protected Review createReview(final CrucibleServerCfg server, final ReviewProvider reviewProvider)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
+		List<Change> changes = changesBrowser.getCurrentIncludedChanges();
 		return createReviewImpl(server, reviewProvider, changes);
-	}
-
-/*
-	@Override
-	protected Review createReview(CrucibleServerCfg server, ReviewProvider reviewProvider) throws RemoteApiException,
-			ServerPasswordNotProvidedException {
-		return crucibleServerFacade.createReviewFromUpload(server, reviewProvider, uploadItems);
-	}
-	
-	 */
-
-
-	public Object getData(@NonNls final String dataId) {
-		if (dataId.equals(LOCAL_CHANGES_BROWSER)) {
-			return this;
-		}
-		return null;
-	}
-
-	private class MyDataSink implements DataSink {
-		public ChangeList[] getChanges() {
-			return changes;
-		}
-
-		private ChangeList[] changes;
-
-		public <T> void put(final DataKey<T> key, final T data) {
-			changes = (ChangeList[]) data;
-		}
 	}
 }
