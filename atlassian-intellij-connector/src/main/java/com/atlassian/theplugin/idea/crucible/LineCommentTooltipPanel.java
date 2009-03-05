@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * User: jgorycki
@@ -143,7 +142,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private CommentPanel(final VersionedComment comment) {
 			setOpaque(true);
 			setBackground(Color.WHITE);
-
 			int pad = comment == null || comment.isReply() ? REPLY_PADDING : 0;
 
 			setLayout(new GridBagLayout());
