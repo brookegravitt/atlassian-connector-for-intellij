@@ -18,22 +18,14 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.CommitSession;
-import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 
 @SuppressWarnings("deprecation")
@@ -64,30 +56,9 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	}
 
 	public void execute(Collection<Change> changes, String commitMessage) {
-		Collection<UploadItem> uploadItems = new ArrayList<UploadItem>();
-		for (Change change : changes) {
-			try {
-				FilePath path = change.getBeforeRevision().getFile();
-				String fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, path.getVirtualFile());
-
-				try {
-					URL url = new URL(fileUrl);
-					fileUrl = url.getPath();
-				} catch (MalformedURLException e) {
-					String rootUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, path.getVirtualFile());
-					fileUrl = StringUtils.difference(rootUrl, fileUrl);
-				}
-
-				uploadItems.add(new UploadItem(fileUrl, change.getBeforeRevision().getContent(),
-						change.getAfterRevision().getContent(), change.getBeforeRevision().getRevisionNumber().asString()));
-			} catch (VcsException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		ApplicationManager.getApplication().invokeAndWait(
-				new CruciblePatchUploader(project, crucibleServerFacade, commitMessage,
-						uploadItems.toArray(new UploadItem[uploadItems.size()]), cfgManager),
+				new CruciblePatchUploader(project, crucibleServerFacade,
+						changes, cfgManager),
 				ModalityState.defaultModalityState());
 
 	}
