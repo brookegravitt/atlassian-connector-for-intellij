@@ -116,7 +116,7 @@ public class QuickSearchReviewAction extends AnAction {
 		}
 	}
 
-	private class ReviewListPopup extends BaseListPopupStep<ReviewAdapter> {
+	private final class ReviewListPopup extends BaseListPopupStep<ReviewAdapter> {
 		private Project project;
 		private static final int LENGHT = 30;
 
@@ -134,7 +134,7 @@ public class QuickSearchReviewAction extends AnAction {
 
 
 			if (value.getName().length() > LENGHT) {
-				text.append(value.getName().substring(0, LENGHT - 3)).append("...");
+				text.append(value.getName().substring(0, LENGHT - (2 + 1))).append("...");
 			} else {
 				text.append(value.getName());
 			}
@@ -142,7 +142,7 @@ public class QuickSearchReviewAction extends AnAction {
 			text.append(" (");
 
 			if (value.getServer().getName().length() > LENGHT) {
-				text.append(value.getServer().getName().substring(0, LENGHT - 3));
+				text.append(value.getServer().getName().substring(0, LENGHT - (2 + 1)));
 			} else {
 				text.append(value.getServer().getName());
 			}
