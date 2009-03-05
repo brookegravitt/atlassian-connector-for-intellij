@@ -21,11 +21,17 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -37,22 +43,27 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.Action;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
-	ADDPATCH
+	ADDITEMS
 }
 
 public class CrucibleHelperForm extends DialogWrapper {
@@ -65,6 +76,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private JTextArea descriptionArea;
 	private JTextField statusField;
 	private JComboBox repositoryComboBox;
+	private JPanel customComponentPanel;
+	private JLabel repositoryLabel;
 
 	private CrucibleServerFacade crucibleServerFacade;
 	private ChangeList[] changes;
@@ -74,6 +87,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private final CfgManager cfgManager;
 	private AddMode mode;
 	private CrucibleServerCfg server;
+	private Collection<Change> localChanges;
+	private MultipleChangeListBrowser changesBrowser;
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
 			ChangeList[] changes, final CfgManager cfgManager) {
@@ -85,12 +100,17 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			String patch, final CfgManager cfgManager) {
+			Collection<Change> changes, final CfgManager cfgManager) {
 		this(project, crucibleServerFacade, cfgManager);
-		this.patch = patch;
-		this.mode = AddMode.ADDPATCH;
-		setTitle("Add patch");
-		getOKAction().putValue(Action.NAME, "Add patch...");
+		localChanges = changes;
+		this.mode = AddMode.ADDITEMS;
+		this.repositoryLabel.setVisible(false);
+		this.repositoryComboBox.setVisible(false);
+		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBorwser(project, changeListManager);
+		setCustomComponent(changesBrowser);
+		setTitle("Add files");
+		getOKAction().putValue(Action.NAME, "Add files...");
 	}
 
 	private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
@@ -181,7 +201,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		// the combos could have been populated by another thread
 		repositoryComboBox.removeAllItems();
 
-		if (this.mode == AddMode.ADDPATCH) {
+		if (this.mode == AddMode.ADDITEMS) {
 			repositoryComboBox.addItem(""); // repo is not required for instance for patch review
 		}
 		if (!repositories.isEmpty()) {
@@ -226,7 +246,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new FormLayout("fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow"));
+		rootComponent.setLayout(new FormLayout("fill:d:grow",
+				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		rootComponent.setBackground(UIManager.getColor("Button.background"));
 		rootComponent.setEnabled(false);
 		rootComponent.setMinimumSize(new Dimension(600, 300));
@@ -274,9 +295,9 @@ public class CrucibleHelperForm extends DialogWrapper {
 		panel1.add(label5, cc.xy(1, 11));
 		repositoryComboBox = new JComboBox();
 		panel1.add(repositoryComboBox, cc.xy(3, 13));
-		final JLabel label6 = new JLabel();
-		label6.setText("Repository:");
-		panel1.add(label6, cc.xy(1, 13));
+		repositoryLabel = new JLabel();
+		repositoryLabel.setText("Repository:");
+		panel1.add(repositoryLabel, cc.xy(1, 13));
 		final JScrollPane scrollPane1 = new JScrollPane();
 		panel1.add(scrollPane1, cc.xy(3, 15, CellConstraints.FILL, CellConstraints.FILL));
 		descriptionArea = new JTextArea();
@@ -286,12 +307,15 @@ public class CrucibleHelperForm extends DialogWrapper {
 		descriptionArea.setLineWrap(true);
 		descriptionArea.setWrapStyleWord(true);
 		scrollPane1.setViewportView(descriptionArea);
+		final JLabel label6 = new JLabel();
+		label6.setText("<html>Statement <br>of Objectives:</html>");
+		panel1.add(label6, cc.xy(1, 15, CellConstraints.DEFAULT, CellConstraints.TOP));
 		final JLabel label7 = new JLabel();
-		label7.setText("<html>Statement <br>of Objectives:</html>");
-		panel1.add(label7, cc.xy(1, 15, CellConstraints.DEFAULT, CellConstraints.TOP));
-		final JLabel label8 = new JLabel();
-		label8.setText("Review:");
-		panel1.add(label8, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.CENTER));
+		label7.setText("Review:");
+		panel1.add(label7, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.CENTER));
+		customComponentPanel = new JPanel();
+		customComponentPanel.setLayout(new BorderLayout(0, 0));
+		rootComponent.add(customComponentPanel, cc.xy(1, 5));
 	}
 
 	/**
@@ -390,6 +414,13 @@ public class CrucibleHelperForm extends DialogWrapper {
 		return getRootComponent();
 	}
 
+	protected void setCustomComponent(JComponent component) {
+		customComponentPanel.removeAll();
+		if (component != null) {
+			customComponentPanel.add(component);
+			customComponentPanel.validate();
+		}
+	}
 
 	@Override
 	protected void doOKAction() {
@@ -422,8 +453,10 @@ public class CrucibleHelperForm extends DialogWrapper {
 							crucibleServerFacade
 									.addRevisionsToReview(server, permId, repoName, new ArrayList<String>(revisions));
 							break;
-						case ADDPATCH:
-							crucibleServerFacade.addPatchToReview(server, permId, repoName, patch);
+						case ADDITEMS:
+							Collection<UploadItem> uploadItems = CrucibleHelper
+									.getUploadItemsFromChanges(project, localChanges);
+							crucibleServerFacade.addItemsToReview(server, permId, uploadItems);
 							break;
 					}
 				} catch (final Throwable e) {
