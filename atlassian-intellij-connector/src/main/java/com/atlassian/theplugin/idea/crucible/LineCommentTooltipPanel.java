@@ -1,7 +1,15 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
@@ -9,19 +17,21 @@ import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.HyperlinkLabel;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ComponentEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 
 /**
  * User: jgorycki
@@ -31,6 +41,7 @@ import java.util.Map;
 public abstract class LineCommentTooltipPanel extends JPanel {
 	private final ReviewAdapter review;
 	private MyReviewListener listener;
+	private final CrucibleFileInfo file;
 	private final VersionedComment thisLineComment;
 	private final boolean useTextTwixie;
 
@@ -39,12 +50,16 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	private static final int FRAME_WIDTH = 600;
 	private static final int FRAME_HEIGHT = 400;
 
-	public LineCommentTooltipPanel(ReviewAdapter review, VersionedComment thisLineComment) {
-		this(review, thisLineComment, false);
+	private List<VersionedComment> replyList = new ArrayList<VersionedComment>();
+
+	public LineCommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, VersionedComment thisLineComment) {
+		this(review, file, thisLineComment, false);
 	}
 
-	public LineCommentTooltipPanel(ReviewAdapter review, VersionedComment thisLineComment, boolean useTextTwixie) {
+	public LineCommentTooltipPanel(final ReviewAdapter review, CrucibleFileInfo file,
+								   VersionedComment thisLineComment, boolean useTextTwixie) {
 		super(new BorderLayout());
+		this.file = file;
 		this.thisLineComment = thisLineComment;
 		this.useTextTwixie = useTextTwixie;
 		listener = new MyReviewListener();
@@ -69,15 +84,22 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		if (replies != null) {
 			for (VersionedComment reply : replies) {
 				commentsPanel.add(new CommentPanel(reply));
+				replyList.add(reply);
 			}
 		}
+		review.addReviewListener(listener);
+		addComponentListener(new ComponentAdapter() {
+			public void componentHidden(ComponentEvent e) {
+				review.removeReviewListener(listener);
+			}
+		});
 	}
 
 	private void addNewCommentPanel() {
 		CommentPanel newComment = new CommentPanel();
 		commentsPanel.add(newComment);
 		validate();
-		scroll.getVerticalScrollBar().setValue(ScrollablePanel.A_LOT);
+		scrollDown();
 	}
 
 	private void removeCommentPanel(CommentPanel panel) {
@@ -85,8 +107,25 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		validate();
 	}
 
+	private void updateCommentPanel(VersionedComment comment) {
+	}
+
+	private void addCommentReplyPanel(VersionedComment reply) {
+		commentsPanel.add(new CommentPanel(reply));
+		replyList.add(reply);
+		validate();
+	}
+
+	private void updateCommentReplyPanel(VersionedComment comment) {
+	}
+
+
 	protected ReviewAdapter getReview() {
 		return review;
+	}
+
+	private void scrollDown() {
+		scroll.getVerticalScrollBar().setValue(ScrollablePanel.A_LOT);
 	}
 
 	private final class CommentPanel extends JPanel {
@@ -170,6 +209,12 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
 					add(defect, gbc);
 				}
+			} else {
+				gbc.gridx++;
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
+				JLabel underContruction = new JLabel("Comment under construction");
+				underContruction.setFont(underContruction.getFont().deriveFont(Font.ITALIC));
+				add(underContruction, gbc);
 			}
 
 			// filler
@@ -279,16 +324,15 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	private void addOrUpdateCommentForReview(CommentPanel panel, VersionedComment comment, String text) {
 
 		if (comment == null) {
-			System.out.println("creating new reply for " + thisLineComment.getPermId().getId());
 			removeCommentPanel(panel);
-			addNewReply(text);
+			addNewReply(thisLineComment, text);
 		} else {
 			System.out.println("updating comment " + comment.getPermId().getId());
 			updateComment(comment, text);
 		}
 	}
 
-	protected abstract void addNewReply(String text);
+	protected abstract void addNewReply(VersionedComment parent, String text);
 	protected abstract void updateComment(VersionedComment comment, String text);
 
 	private static String getRankingString(Comment comment) {
@@ -311,18 +355,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		return sb.toString();
 	}
 
-	public void setVisible(boolean visible) {
-		super.setVisible(visible);
-
-		if (review != null) {
-			if (visible) {
-				review.addReviewListener(listener);
-			} else {
-				review.removeReviewListener(listener);
-			}
-		}
-	}
-
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 		public void createdOrEditedVersionedCommentReply(ReviewAdapter rev, PermId file,
 														 VersionedComment parentComment, VersionedComment comment) {
@@ -334,7 +366,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				return;
 			}
 
-			for (VersionedComment reply : thisLineComment.getReplies()) {
+			for (VersionedComment reply : replyList) {
 				if (comment.getPermId().getId().equals(reply.getPermId().getId())) {
 					updateCommentReplyPanel(comment);
 					return;
@@ -356,23 +388,17 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 	}
 
-	private void updateCommentPanel(VersionedComment comment) {
-		//To change body of created methods use File | Settings | File Templates.
-	}
-
-	private void addCommentReplyPanel(VersionedComment comment) {
-		//To change body of created methods use File | Settings | File Templates.
-	}
-
-	private void updateCommentReplyPanel(VersionedComment comment) {
-		//To change body of created methods use File | Settings | File Templates.
-	}
+	private static int replyCount = 0;
 
 	public static void main(String[] args) {
 		ReviewBean rev = new ReviewBean("test");
-		ReviewAdapter ra = new ReviewAdapter(rev, null);
-		VersionedCommentBean comment = new VersionedCommentBean();
+		rev.setPermId(new PermIdBean("MyReview"));
+		final ReviewAdapter ra = new ReviewAdapter(rev, null);
+		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
+		ra.setFacade(new MyNullFacade());
+		final VersionedCommentBean comment = new VersionedCommentBean();
 		User author = new UserBean("zenon", "Zenon User");
+
 		comment.setAuthor(author);
 		comment.setCreateDate(new Date());
 		comment.setMessage(
@@ -390,30 +416,264 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		comment.getCustomFields().put("Defect class", cf);
 		if (args.length > 0) {
 			int replyNr = Integer.valueOf(args[0]);
-			java.util.List<VersionedComment> replies = new ArrayList<VersionedComment>();
 			for (int i = 0; i < replyNr; ++i) {
-				VersionedCommentBean reply = new VersionedCommentBean();
-				User replyAuthor = new UserBean("juzef", "Juzef Morda");
-				reply.setAuthor(replyAuthor);
-				reply.setMessage("reply #" + (i + 1)
+				createReply(comment, "reply #" + (i + 1)
 					+ "      - Nice sizeable test message for you to look at"
 					+ "Nice sizeable test message for you to look at"
 					+ "Nice sizeable test message for you to look at"
 					+ "Nice sizeable test message for you to look at");
-				reply.setCreateDate(new Date());
-				reply.setReply(true);
-				reply.setPermId(new PermIdBean("Reply #" + i));
-				replies.add(reply);
 			}
-			comment.setReplies(replies);
 		}
 
-		SwingAppRunner.run(new LineCommentTooltipPanel(ra, comment, true) {
-			protected void addNewReply(String text) {
+		SwingAppRunner.run(new LineCommentTooltipPanel(ra, file, comment, true) {
+			protected void addNewReply(VersionedComment parent, String text) {
+				try {
+					VersionedCommentBean reply = createReply(comment, text);
+					ra.addVersionedCommentReply(file, parent, reply);
+				} catch (RemoteApiException e) {
+					e.printStackTrace();
+				} catch (ServerPasswordNotProvidedException e) {
+					e.printStackTrace();
+				}
 			}
 
 			protected void updateComment(VersionedComment comment, String text) {
 			}
 		}, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
+	}
+
+	private static VersionedCommentBean createReply(VersionedComment parent, String txt) {
+		VersionedCommentBean reply = new VersionedCommentBean();
+		User replyAuthor = new UserBean("juzef", "Juzef Morda");
+		reply.setAuthor(replyAuthor);
+		reply.setMessage(txt);
+		reply.setCreateDate(new Date());
+		reply.setReply(true);
+		parent.getReplies().add(reply);
+		reply.setPermId(new PermIdBean("Reply #" + (++replyCount)));
+		return reply;
+	}
+
+	private static class MyNullFacade implements CrucibleServerFacade {
+		public Review createReview(CrucibleServerCfg server, Review review)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review createReviewFromRevision(CrucibleServerCfg server, Review review, List<String> revisions)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review addRevisionsToReview(CrucibleServerCfg server, PermId permId, String repository,
+										   List<String> revisions)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review addPatchToReview(CrucibleServerCfg server, PermId permId, String repository, String patch)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<Reviewer> getReviewers(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public void addReviewers(CrucibleServerCfg server, PermId permId, Set<String> userName)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public void removeReviewer(CrucibleServerCfg server, PermId permId, String userName)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public Review approveReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review submitReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review summarizeReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review abandonReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review closeReview(CrucibleServerCfg server, PermId permId, String summary)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review recoverReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review reopenReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public void completeReview(CrucibleServerCfg server, PermId permId, boolean complete)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public List<Review> getAllReviews(CrucibleServerCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<Review> getReviewsForFilter(CrucibleServerCfg server, PredefinedFilter filter)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<Review> getReviewsForCustomFilter(CrucibleServerCfg server, CustomFilter filter)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review getReview(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Review createReviewFromPatch(CrucibleServerCfg server, Review review, String patch)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public Set<CrucibleFileInfo> getFiles(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<GeneralComment> getGeneralComments(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<VersionedComment> getVersionedComments(CrucibleServerCfg server, PermId permId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<VersionedComment> getVersionedComments(CrucibleServerCfg server, PermId permId, PermId reviewItemId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public GeneralComment addGeneralComment(CrucibleServerCfg server, PermId permId, GeneralComment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public VersionedComment addVersionedComment(CrucibleServerCfg server, PermId permId, PermId riId,
+													VersionedComment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public void updateComment(CrucibleServerCfg server, PermId id, Comment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public void publishComment(CrucibleServerCfg server, PermId reviewId, PermId commentId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public void publishAllCommentsForReview(CrucibleServerCfg server, PermId reviewId)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public GeneralComment addGeneralCommentReply(CrucibleServerCfg server, PermId id,
+													 PermId cId, GeneralComment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId,
+														 VersionedComment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			VersionedCommentBean bean = (VersionedCommentBean) comment;
+			bean.setAuthor(new UserBean("alojzy", "Alojzy Jarguz"));
+			return bean;
+		}
+
+		public void removeComment(CrucibleServerCfg server, PermId id, Comment comment)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+		}
+
+		public List<User> getUsers(CrucibleServerCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<CrucibleProject> getProjects(CrucibleServerCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<Repository> getRepositories(CrucibleServerCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public SvnRepository getRepository(CrucibleServerCfg server, String repoName)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public List<CustomFieldDef> getMetrics(CrucibleServerCfg server, int version)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public void setCallback(HttpSessionCallback callback) {
+		}
+
+		@Nullable
+		public String getDisplayName(@NotNull CrucibleServerCfg server, @NotNull String username) {
+			return null;
+		}
+
+		@Nullable
+		public CrucibleProject getProject(@NotNull CrucibleServerCfg server, @NotNull String projectKey)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public boolean checkContentUrlAvailable(CrucibleServerCfg server)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return false;
+		}
+
+		public Review createReviewFromUpload(CrucibleServerCfg server, Review review, UploadItem[] uploadItems)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public String getFileContent(@NotNull CrucibleServerCfg server, @NotNull CrucibleFileInfo file,
+									 @NotNull ReviewItemContentType type)
+				throws RemoteApiException, ServerPasswordNotProvidedException {
+			return null;
+		}
+
+		public void testServerConnection(ServerCfg serverCfg) throws RemoteApiException {
+		}
+
+		public ServerType getServerType() {
+			return null;
+		}
 	}
 }
