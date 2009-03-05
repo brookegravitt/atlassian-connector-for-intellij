@@ -21,13 +21,13 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CrucibleCreatePreCommitNoChangeUploadReviewForm extends AbstractCrucibleCreatePreCommitReviewForm {
@@ -39,8 +39,7 @@ public class CrucibleCreatePreCommitNoChangeUploadReviewForm extends AbstractCru
 		super(project, crucibleServerFacade, "", cfgManager);
 
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
-		changesBrowser = new MultipleChangeListBrowser(project, changeListManager.getChangeLists(),
-				new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true, null);
+		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBorwser(project, changeListManager);
 		setCustomComponent(changesBrowser);
 
 		setTitle("Create Review");
