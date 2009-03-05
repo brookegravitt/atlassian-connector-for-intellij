@@ -134,8 +134,7 @@ public final class IdeaVersionFacade {
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
-		}
-		catch (InstantiationException e) {
+		} catch (InstantiationException e) {
 			e.printStackTrace();
 		}
 		return null;
