@@ -15,7 +15,9 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
@@ -331,6 +333,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			}
 		};
 		ProgressManager.getInstance().run(refresh);
+	}
+
+	public Collection<CrucibleServerCfg> getServers() {
+		return projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 	}
 
 	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
