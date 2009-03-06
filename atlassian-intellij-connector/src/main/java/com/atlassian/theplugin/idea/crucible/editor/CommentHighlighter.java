@@ -46,7 +46,7 @@ import java.awt.*;
 import java.util.Set;
 
 public final class CommentHighlighter {
-	private static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
+	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
 
 	// key injected into document when diff view is opened

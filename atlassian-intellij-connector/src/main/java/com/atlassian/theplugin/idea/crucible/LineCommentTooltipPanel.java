@@ -6,6 +6,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
@@ -21,11 +22,8 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * User: jgorycki
@@ -44,6 +42,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	private JLabel statusLabel = new JLabel(" ");
 
 	private List<CommentPanel> commentPanelList = new ArrayList<CommentPanel>();
+	private static final int PANEL_WIDTH = 600;
+	private static final int PANEL_HEIGHT = 300;
 
 	public LineCommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, VersionedComment thisLineComment) {
 		this(review, file, thisLineComment, false);
@@ -90,6 +90,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				review.removeReviewListener(listener);
 			}
 		});
+		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 	}
 
 	private void addCommentReplyPanel(VersionedComment reply) {
@@ -209,7 +210,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				btnReply.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						setButtonsVisible(false);
-						btnEdit.setVisible(false);
+						if (btnEdit != null) {
+							btnEdit.setVisible(false);
+						}
 						addCommentReplyPanel(null);
 					}
 				});
@@ -332,16 +335,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 
 		private void setCommentDate() {
-			DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
-			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-			String t;
-			try {
-				t = dfo.format(df.parse(comment.getCreateDate().toString()));
-			} catch (java.text.ParseException e) {
-				t = "Invalid date: " + comment.getCreateDate().toString();
-			}
-
-			creationDate.setText(t);
+			creationDate.setText(CommentDateUtil.getDateText(comment.getCreateDate()));
 		}
 	}
 
@@ -354,7 +348,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			pane.selectAll();
 		}
 		pane.setBorder(BorderFactory.createEmptyBorder(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
-		pane.setBackground(editable ? Color.YELLOW : Color.WHITE);
+		pane.setBackground(editable ? CommentHighlighter.VERSIONED_COMMENT_BACKGROUND_COLOR : Color.WHITE);
 	}
 
 	public void setAllButtonsVisible() {
@@ -387,55 +381,66 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	protected abstract void updateComment(VersionedComment comment, String text);
 
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
-		public void createdOrEditedVersionedCommentReply(ReviewAdapter rev, PermId file,
-														 VersionedComment parentComment, VersionedComment comment) {
-			if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
-				return;
-			}
+		public void createdOrEditedVersionedCommentReply(final ReviewAdapter rev,
+														 final PermId file,
+														 final VersionedComment parentComment,
+														 final VersionedComment comment) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
+						return;
+					}
 
-            if (!file.getId().equals(fileInfo.getPermId().getId())) {
-                return;
-            }
+					if (!file.getId().equals(fileInfo.getPermId().getId())) {
+						return;
+					}
 
-			if (!parentComment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
-				return;
-			}
+					if (!parentComment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
+						return;
+					}
 
-			for (CommentPanel panel : commentPanelList) {
-				VersionedComment reply = panel.getComment();
-				if (comment.getPermId().getId().equals(reply.getPermId().getId())) {
-					setStatusText("Comment reply updated");
+					for (CommentPanel panel : commentPanelList) {
+						VersionedComment reply = panel.getComment();
+						if (comment.getPermId().getId().equals(reply.getPermId().getId())) {
+							setStatusText("Comment reply updated");
+							setAllButtonsVisible();
+							panel.setComment(comment);
+							return;
+						}
+					}
+					setStatusText("Comment reply added");
 					setAllButtonsVisible();
-					panel.setComment(comment);
-					return;
+					addCommentReplyPanel(comment);
 				}
-			}
-			setStatusText("Comment reply added");
-			setAllButtonsVisible();
-			addCommentReplyPanel(comment);
+			});
 		}
 
-		public void createdOrEditedVersionedComment(ReviewAdapter rev, PermId file, VersionedComment comment) {
-			if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
-				return;
-			}
+		public void createdOrEditedVersionedComment(final ReviewAdapter rev, final PermId file,
+													final VersionedComment comment) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
+						return;
+					}
 
-            if (!file.getId().equals(fileInfo.getPermId().getId())) {
-                return;
-            }
+					if (!file.getId().equals(fileInfo.getPermId().getId())) {
+						return;
+					}
 
-			if (!comment.isReply()) {
-				if (!comment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
-					return;
+					if (!comment.isReply()) {
+						if (!comment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
+							return;
+						}
+
+						CommentPanel panel = commentPanelList.get(0);
+						setStatusText("Comment updated");
+						setAllButtonsVisible();
+						panel.setComment(comment);
+					} else {
+						createdOrEditedVersionedCommentReply(rev, file, thisLineComment, comment);
+					}
 				}
-
-				CommentPanel panel = commentPanelList.get(0);
-				setStatusText("Comment updated");
-				setAllButtonsVisible();
-				panel.setComment(comment);
-			} else {
-				createdOrEditedVersionedCommentReply(rev, file, thisLineComment, comment);
-			}
+			});
 		}
 	}
 }
