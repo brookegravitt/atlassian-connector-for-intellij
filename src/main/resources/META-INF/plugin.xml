@@ -439,12 +439,12 @@
             <add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
         </action>
 
-        <action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"
-                class="com.atlassian.theplugin.idea.action.crucible.review.PreCommitReviewFromEditor"
-                text="Create Pre-commit Review"
-                description="Create Pre-commit review" icon="/icons/add_crucible-pre.png">
-            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-        </action>
+        <!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
+        <!--class="com.atlassian.theplugin.idea.action.crucible.review.PreCommitReviewFromEditor"-->
+        <!--text="Create Pre-commit Review"-->
+        <!--description="Create Pre-commit review" icon="/icons/add_crucible-pre.png">-->
+        <!--<add-to-group group-id="EditorPopupMenu" anchor="last"/>-->
+        <!--</action>-->
 
         <action id="OpenFisheyeLink" class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInBrowserAction"
                 text="Open FishEye Link in Browser"
