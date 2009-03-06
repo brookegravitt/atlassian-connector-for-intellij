@@ -85,6 +85,6 @@ public abstract class AbstractOpenDiffToolAction implements OpenDiffAction {
 		DiffManager.getInstance().getDiffTool().show(request);
 	}
 
-	protected abstract DiffRequest getDiffRequest(final Project project, final DocumentContent referenceDoc,
+	protected abstract DiffRequest getDiffRequest(final Project aProject, final DocumentContent referenceDoc,
 			final DocumentContent displayDoc);
 }
