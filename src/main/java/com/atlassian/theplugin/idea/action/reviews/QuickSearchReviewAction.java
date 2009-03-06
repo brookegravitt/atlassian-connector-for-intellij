@@ -42,11 +42,14 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.util.containers.HashSet;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
@@ -72,25 +75,30 @@ public class QuickSearchReviewAction extends AnAction {
 			return;
 		}
 
-		final SearchReviewDialog dialog = new SearchReviewDialog(project, reviewsWindow.getServers());
+		final SearchReviewDialog dialog = new SearchReviewDialog(project, reviewsWindow.getServers(),
+				reviewsWindow.getCrucibleConfiguration().getView());
 		dialog.show();
 
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+
+			// find reviews in the local list
+			final List<ReviewAdapter> localReviews = reviewsWindow.getReviews(dialog.getSearchKey());
 
 			final Collection<CrucibleServerCfg> servers = dialog.getSelectedServers();
 
 			if (servers.size() > 0) {
 
 				ProgressManager.getInstance().run(new Task.Modal(project, "Searching review", true) {
-					private List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+					private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
 
 					public void run(final ProgressIndicator indicator) {
+						// find serverReviews on all selected servers
 						for (CrucibleServerCfg server : servers) {
 							try {
 								Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-										server, new PermIdBean(dialog.getSearchTerm()));
+										server, new PermIdBean(dialog.getSearchKey()));
 								if (review != null) {
-									reviews.add(new ReviewAdapter(review, server));
+									serverReviews.add(new ReviewAdapter(review, server));
 								}
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
@@ -103,24 +111,44 @@ public class QuickSearchReviewAction extends AnAction {
 					}
 
 					public void onSuccess() {
-						if (reviews.size() == 1) {
-							IdeaHelper.getCrucibleToolWindow(project).showReview(reviews.iterator().next());
-						} else if (reviews.size() > 1) {
-							ListPopup popup = JBPopupFactory.getInstance().createListPopup(
-									new ReviewListPopup(reviews, project));
-							popup.show(e.getInputEvent().getComponent());
-						}
+						List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
+						showPopup(reviews, project, e.getInputEvent().getComponent(), reviewsWindow, dialog.getSearchKey());
 					}
 				});
+			} else {
+				showPopup(localReviews, project, e.getInputEvent().getComponent(), reviewsWindow, dialog.getSearchKey());
 			}
 		}
 	}
 
-	private final class ReviewListPopup extends BaseListPopupStep<ReviewAdapter> {
-		private Project project;
-		private static final int LENGHT = 30;
+	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component e,
+			final ReviewsToolWindowPanel reviewsWindow, final String searchKey) {
+		if (reviews.size() == 0) {
+			reviewsWindow.setStatusMessage("Review " + searchKey + " not found.");
+		} else if (reviews.size() == 1) {
+			IdeaHelper.getCrucibleToolWindow(project).showReview(reviews.iterator().next());
+		} else if (reviews.size() > 1) {
+			ListPopup popup = JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, project));
+			popup.show(e);
+		}
+	}
 
-		private ReviewListPopup(final List<ReviewAdapter> reviews, final Project project) {
+	private List<ReviewAdapter> mergeReviewList(final List<ReviewAdapter> localReviews,
+			final List<ReviewAdapter> serverReviews) {
+
+		Set<ReviewAdapter> reviews = new HashSet<ReviewAdapter>();
+
+		reviews.addAll(localReviews);
+		reviews.addAll(serverReviews);
+
+		return new ArrayList<ReviewAdapter>(reviews);
+	}
+
+	private final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
+		private Project project;
+		private static final int LENGHT = 40;
+
+		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final Project project) {
 			super("Select Review To Open", reviews, IconLoader.getIcon("/icons/crucible-16.png"));
 			this.project = project;
 		}
@@ -131,7 +159,6 @@ public class QuickSearchReviewAction extends AnAction {
 			StringBuilder text = new StringBuilder();
 
 			text.append(value.getPermId().getId()).append(": ");
-
 
 			if (value.getName().length() > LENGHT) {
 				text.append(value.getName().substring(0, LENGHT - (2 + 1))).append("...");
@@ -158,4 +185,5 @@ public class QuickSearchReviewAction extends AnAction {
 			return null;
 		}
 	}
+
 }

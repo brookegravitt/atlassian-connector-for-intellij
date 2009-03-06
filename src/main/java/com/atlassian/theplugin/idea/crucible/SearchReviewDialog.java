@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.configuration.CrucibleViewConfigurationBean;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -12,6 +13,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -21,13 +25,16 @@ public class SearchReviewDialog extends DialogWrapper {
 	private JPanel ctrlServersPanel;
 	private JLabel ctrlLocalInfoLabel;
 	private Collection<CrucibleServerCfg> selectedServers = new HashSet<CrucibleServerCfg>();
+	private CrucibleViewConfigurationBean crucibleViewConfiguration;
 
 	public Collection<CrucibleServerCfg> getSelectedServers() {
 		return selectedServers;
 	}
 
-	public SearchReviewDialog(Project project, final Collection<CrucibleServerCfg> servers) {
+	public SearchReviewDialog(Project project, final Collection<CrucibleServerCfg> servers,
+			final CrucibleViewConfigurationBean crucibleViewConfiguration) {
 		super(project, true);
+		this.crucibleViewConfiguration = crucibleViewConfiguration;
 
 		$$$setupUI$$$();
 		init();
@@ -35,8 +42,37 @@ public class SearchReviewDialog extends DialogWrapper {
 
 		setTitle("Search Review");
 		getOKAction().putValue(Action.NAME, "Search");
+		getOKAction().setEnabled(false);
 
 		addServersCheckboxes(servers);
+		if (selectedServers.size() != 0) {
+			ctrlLocalInfoLabel.setVisible(false);
+		}
+
+		ctrlReviewSearch.addKeyListener(new KeyAdapter() {
+			public void keyReleased(final KeyEvent e) {
+				if (ctrlReviewSearch.getText().length() == 0) {
+					getOKAction().setEnabled(false);
+				} else {
+					getOKAction().setEnabled(true);
+				}
+			}
+		});
+	}
+
+	protected void doOKAction() {
+
+		if (crucibleViewConfiguration != null) {
+
+			Collection<String> searchServers = new ArrayList<String>();
+
+			for (CrucibleServerCfg server : selectedServers) {
+				searchServers.add(server.getServerId().toString());
+			}
+			crucibleViewConfiguration.setSearchServers(searchServers);
+		}
+
+		super.doOKAction();
 	}
 
 	public JComponent getPreferredFocusedComponent() {
@@ -52,6 +88,12 @@ public class SearchReviewDialog extends DialogWrapper {
 				final CrucibleServerCheckbox checkbox = new CrucibleServerCheckbox(server);
 				ctrlServersPanel.add(checkbox);
 
+				if (crucibleViewConfiguration != null && crucibleViewConfiguration.getSearchServers() != null
+						&& crucibleViewConfiguration.getSearchServers().contains(server.getServerId().toString())) {
+					checkbox.setSelected(true);
+					selectedServers.add(server);
+				}
+
 				checkbox.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
 						if (checkbox.isSelected()) {
@@ -61,6 +103,7 @@ public class SearchReviewDialog extends DialogWrapper {
 							selectedServers.remove(server);
 							if (selectedServers.size() == 0) {
 								ctrlLocalInfoLabel.setVisible(true);
+								pack();
 							}
 						}
 					}
@@ -78,7 +121,7 @@ public class SearchReviewDialog extends DialogWrapper {
 		return rootPane;
 	}
 
-	public String getSearchTerm() {
+	public String getSearchKey() {
 		return ctrlReviewSearch.getText();
 	}
 
@@ -91,10 +134,10 @@ public class SearchReviewDialog extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootPane = new JPanel();
-		rootPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
+		rootPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 0, 10), -1, -1));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 0, 0), -1, -1));
-		rootPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		panel1.setLayout(new GridLayoutManager(3, 2, new Insets(0, 0, 10, 0), -1, -1));
+		rootPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		final JLabel label1 = new JLabel();
@@ -103,7 +146,7 @@ public class SearchReviewDialog extends DialogWrapper {
 		label1.setText("Server(s): ");
 		label1.setVerticalAlignment(0);
 		label1.setVerticalTextPosition(0);
-		panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
+		panel1.add(label1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
 		panel1.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
@@ -114,7 +157,7 @@ public class SearchReviewDialog extends DialogWrapper {
 				new Dimension(150, -1), null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setHorizontalAlignment(4);
-		label2.setText("Search Term: ");
+		label2.setText("Review Key: ");
 		panel1.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		ctrlServersPanel = new JPanel();
@@ -122,14 +165,10 @@ public class SearchReviewDialog extends DialogWrapper {
 		panel1.add(ctrlServersPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		final JLabel label3 = new JLabel();
-		label3.setIcon(new ImageIcon(getClass().getResource("/icons/crucible-16.png")));
-		label3.setText("Quick Search (enter review key)");
-		rootPane.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		ctrlLocalInfoLabel = new JLabel();
 		ctrlLocalInfoLabel.setText("No selection. Only local list of reviews will be searched");
-		rootPane.add(ctrlLocalInfoLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+		ctrlLocalInfoLabel.setVerticalAlignment(0);
+		rootPane.add(ctrlLocalInfoLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
