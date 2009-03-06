@@ -9,17 +9,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReview
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -173,23 +164,23 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return notifications;
 	}
 
-	public synchronized void setSelectedReview(ReviewAdapter review) {
-		if (review == null || getReviews().contains(review)) {
-			selectedReview = review;
-		}
-	}
+//	public synchronized void setSelectedReview(ReviewAdapter review) {
+//		if (review == null || getReviews().contains(review)) {
+//			selectedReview = review;
+//		}
+//	}
 
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return reviews.get(PredefinedFilter.OpenInIde);
 	}
 
-	@Nullable
-	public synchronized ReviewAdapter getSelectedReview() {
-		if (getReviews().contains(selectedReview)) {
-			return selectedReview;
-		}
-		return null;
-	}
+//	@Nullable
+//	public synchronized ReviewAdapter getSelectedReview() {
+//		if (getReviews().contains(selectedReview)) {
+//			return selectedReview;
+//		}
+//		return null;
+//	}
 
 	public void addListener(CrucibleReviewListModelListener listener) {
 		if (!modelListeners.contains(listener)) {

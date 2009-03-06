@@ -97,13 +97,13 @@ public abstract class CrucibleReviewListModelListenerHolder
 		return parent.updateReviews(epoch, updatedReviews, updateReason);
 	}
 
-	public ReviewAdapter getSelectedReview() {
-		return parent.getSelectedReview();
-	}
+//	public ReviewAdapter getSelectedReview() {
+//		return parent.getSelectedReview();
+//	}
 
-	public void setSelectedReview(ReviewAdapter review) {
-		parent.setSelectedReview(review);
-	}
+//	public void setSelectedReview(ReviewAdapter review) {
+//		parent.setSelectedReview(review);
+//	}
 
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return parent.getOpenInIdeReviews();
