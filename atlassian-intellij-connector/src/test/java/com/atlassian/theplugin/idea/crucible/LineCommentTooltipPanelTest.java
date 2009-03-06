@@ -1,23 +1,23 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.api.UploadItem;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
-
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * User: kalamon
@@ -33,7 +33,11 @@ public class LineCommentTooltipPanelTest {
     public static void main(String[] args) {
         ReviewBean rev = new ReviewBean("test");
         rev.setPermId(new PermIdBean("MyReview"));
-        final ReviewAdapter ra = new ReviewAdapter(rev, null);
+        final ReviewAdapter ra = new ReviewAdapter(rev, new CrucibleServerCfg("test", new ServerId()) {
+			public String getUsername() {
+				return "zenon";
+			}
+		});
         final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
         ra.setFacade(new MyNullFacade());
         final VersionedCommentBean comment = new VersionedCommentBean();
@@ -78,7 +82,16 @@ public class LineCommentTooltipPanelTest {
             }
 
             protected void updateComment(VersionedComment comment, String text) {
-            }
+				try {
+					VersionedCommentBean vcb = (VersionedCommentBean) comment;
+					vcb.setMessage(text);
+					ra.editVersionedComment(file, comment);
+				} catch (RemoteApiException e) {
+					e.printStackTrace();
+				} catch (ServerPasswordNotProvidedException e) {
+					e.printStackTrace();
+				}
+			}
         }, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
     }
 
@@ -246,7 +259,7 @@ public class LineCommentTooltipPanelTest {
                                                          VersionedComment comment)
                 throws RemoteApiException, ServerPasswordNotProvidedException {
             VersionedCommentBean bean = (VersionedCommentBean) comment;
-            bean.setAuthor(new UserBean("alojzy", "Alojzy Jarguz"));
+            bean.setAuthor(new UserBean("zenon", "Zenon User"));
             return bean;
         }
 
