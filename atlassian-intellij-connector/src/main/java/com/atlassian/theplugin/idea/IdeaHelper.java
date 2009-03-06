@@ -26,6 +26,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -132,8 +133,9 @@ public final class IdeaHelper {
 	public static void handleRemoteApiException(final Project project, final RemoteApiException e) {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
-				Messages.showErrorDialog(project, "The following error has occurred while using remote service:\n"
-						+ e.getMessage(), "Error while using remote service");
+				DialogWithDetails.showExceptionDialog(project, "The following error has occurred while using remote service:\n"
+						+ e.getMessage(), DialogWithDetails.getExceptionString(e)
+						+ (e.getServerStackTrace() != null ? e.getServerStackTrace() : ""), PluginUtil.PRODUCT_NAME);
 			}
 		});
 	}
