@@ -161,7 +161,6 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 					.setTitle("Comment")
 					.setResizable(true)
 					.setCancelKeyEnabled(true)
-					.setModalContext(true)
 					.createPopup().showInBestPositionFor(anActionEvent.getDataContext());
 		}
 	}
