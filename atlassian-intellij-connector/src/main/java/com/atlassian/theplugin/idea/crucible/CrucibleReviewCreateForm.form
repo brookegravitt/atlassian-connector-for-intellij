@@ -104,7 +104,7 @@
             </constraints>
             <properties/>
           </component>
-          <component id="2f663" class="javax.swing.JLabel">
+          <component id="2f663" class="javax.swing.JLabel" binding="repositoryLabel">
             <constraints>
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
               <forms defaultalign-vert="false"/>
