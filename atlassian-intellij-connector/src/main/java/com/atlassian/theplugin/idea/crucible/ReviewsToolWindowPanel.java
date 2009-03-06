@@ -54,7 +54,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Jacek Jaroczynski
@@ -79,6 +81,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
+	private CrucibleReviewListModel currentReviewListModel;
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
@@ -96,6 +99,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		this.reviewListModel = reviewListModel;
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
 		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
+		currentReviewListModel = searchingReviewListModel;
 		init(Constants.DIALOG_MARGIN / 2);
 		this.reviewListModel.addListener(new LocalCrucibleReviewListModelListener());
 		filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
@@ -280,7 +284,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTree = new ReviewTree(new ReviewTreeModel(searchingReviewListModel));
+			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel));
 
 		}
 		return reviewTree;
@@ -337,6 +341,21 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public Collection<CrucibleServerCfg> getServers() {
 		return projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+	}
+
+	public List<ReviewAdapter> getReviews(final String searchKey) {
+		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+		for (ReviewAdapter review : currentReviewListModel.getReviews()) {
+			if (searchKey.toUpperCase().equals(review.getPermId().getId().toUpperCase())) {
+				reviews.add(review);
+			}
+		}
+
+		return reviews;
+	}
+
+	public CrucibleProjectConfiguration getCrucibleConfiguration() {
+		return crucibleProjectConfiguration;
 	}
 
 	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
