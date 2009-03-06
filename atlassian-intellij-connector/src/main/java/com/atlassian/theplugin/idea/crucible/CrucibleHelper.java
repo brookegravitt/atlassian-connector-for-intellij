@@ -27,8 +27,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.editor.OpenCrucibleDiffToolAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
-import com.atlassian.theplugin.idea.crucible.editor.OpenDiffToolAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
@@ -85,7 +85,7 @@ public final class CrucibleHelper {
 				, reviewItem
 				, 1
 				, 1
-				, new OpenDiffToolAction(project, reviewItem.getFileDescriptor().getAbsoluteUrl(), "", ""));
+				, new OpenCrucibleDiffToolAction(project, reviewItem, "", ""));
 	}
 
 	public static void openFileOnComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
