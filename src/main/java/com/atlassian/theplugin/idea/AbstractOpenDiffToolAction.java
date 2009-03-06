@@ -1,7 +1,8 @@
-package com.atlassian.theplugin.idea.crucible.editor;
+package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
+import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
 import com.intellij.openapi.diff.DiffContent;
 import com.intellij.openapi.diff.DiffManager;
 import com.intellij.openapi.diff.DiffRequest;
@@ -13,18 +14,17 @@ import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.openapi.vfs.VirtualFile;
 import org.jetbrains.annotations.NotNull;
 
-public class OpenDiffToolAction implements OpenDiffAction {
+public abstract class AbstractOpenDiffToolAction implements OpenDiffAction {
 	private final Document emptyDocument = new DocumentImpl("");
 	private final Project project;
-	private final String filename;
-	private final String fromRevision;
-	private final String toRevision;
+	protected final String filename;
+	protected final String fromRevision;
+	protected final String toRevision;
 
-	public OpenDiffToolAction(final Project project, final String filename, final String fromRevision,
+	public AbstractOpenDiffToolAction(final Project project, final String filename, final String fromRevision,
 			final String toRevision) {
 		this.project = project;
 		this.filename = filename;
@@ -81,31 +81,10 @@ public class OpenDiffToolAction implements OpenDiffAction {
 			}
 		}
 
-		DiffRequest request = new DiffRequest(project) {
-			@Override
-			public DiffContent[] getContents() {
-				return (new DiffContent[]{
-						referenceDocumentContentFinal,
-						displayDocumentContentFinal
-				});
-			}
-
-			@Override
-			public String[] getContentTitles() {
-				return (new String[]{
-						VcsBundle.message("diff.content.title.repository.version",
-								fromRevision),
-						VcsBundle.message("diff.content.title.repository.version",
-								toRevision)
-				});
-			}
-
-			@Override
-			public String getWindowTitle() {
-				return filename;
-			}
-		};
+		DiffRequest request = getDiffRequest(project, referenceDocumentContentFinal, displayDocumentContentFinal);
 		DiffManager.getInstance().getDiffTool().show(request);
 	}
-}
 
+	protected abstract DiffRequest getDiffRequest(final Project project, final DocumentContent referenceDoc,
+			final DocumentContent displayDoc);
+}
