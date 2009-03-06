@@ -19,7 +19,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,10 +43,10 @@ public interface CrucibleReviewListModel {
 	List<CrucibleNotification> updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews,
 			final UpdateReason updateReason);
 
-	@Nullable
-	ReviewAdapter getSelectedReview();
+//	@Nullable
+//	ReviewAdapter getSelectedReview();
 
-	void setSelectedReview(ReviewAdapter review);
+//	void setSelectedReview(ReviewAdapter review);
 
 	Collection<ReviewAdapter> getOpenInIdeReviews();
 
