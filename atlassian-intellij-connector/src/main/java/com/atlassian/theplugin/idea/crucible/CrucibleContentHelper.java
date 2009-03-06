@@ -240,9 +240,9 @@ public final class CrucibleContentHelper {
 
 			return file;
 		} catch (RemoteApiException e) {
-			throw new RuntimeException(e);
+			throw new VcsException(e);
 		} catch (ServerPasswordNotProvidedException e) {
-			throw new RuntimeException(e);
+			throw new VcsException(e);
 		}
 	}
 
