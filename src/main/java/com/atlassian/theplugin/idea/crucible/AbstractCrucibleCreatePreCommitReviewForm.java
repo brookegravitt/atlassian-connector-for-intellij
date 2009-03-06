@@ -45,6 +45,11 @@ public abstract class AbstractCrucibleCreatePreCommitReviewForm extends Crucible
 		return false;
 	}
 
+	@Override
+	protected boolean shouldShowRepo() {
+		return false;
+	}
+
 	protected Review createReviewImpl(final CrucibleServerCfg server, final ReviewProvider reviewProvider,
 			final Collection<Change> changes) throws RemoteApiException, ServerPasswordNotProvidedException {
 		Collection<UploadItem> uploadItems = CrucibleHelper.getUploadItemsFromChanges(project, changes);
