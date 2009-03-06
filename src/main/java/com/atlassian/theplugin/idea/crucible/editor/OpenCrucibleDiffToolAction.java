@@ -17,9 +17,9 @@ public class OpenCrucibleDiffToolAction extends AbstractOpenDiffToolAction {
 		this.reviewItem = reviewItem;
 	}
 
-	protected DiffRequest getDiffRequest(final Project project, final DocumentContent referenceDoc,
+	protected DiffRequest getDiffRequest(final Project aProject, final DocumentContent referenceDoc,
 			final DocumentContent displayDoc) {
-		return new DiffRequest(project) {
+		return new DiffRequest(aProject) {
 			@Override
 			public DiffContent[] getContents() {
 				return (new DiffContent[]{
