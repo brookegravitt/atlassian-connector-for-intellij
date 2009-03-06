@@ -102,6 +102,9 @@ public final class CodeNavigationUtil {
 				}
 			}
 		}
+		if (difference < StringUtils.reverse(path).indexOf('/')) {
+			return null;
+		}
 		return bestMatch;
 	}
 

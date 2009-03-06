@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.action.bamboo.changes;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.atlassian.theplugin.idea.crucible.editor.OpenDiffToolAction;
+import com.atlassian.theplugin.idea.bamboo.OpenBambooDiffToolAction;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -61,7 +61,7 @@ public class ShowDiffWithPreviousAction extends AbstractBambooFileActions {
 					VcsIdeaHelper.openFileWithDiffs(project, true, virtualFile.getPath(),
 							prevRevision, bambooFileNode.getRevision(),
 							CommitType.Modified, 1, 1,
-							new OpenDiffToolAction(project, bambooFileNode.getName(), prevRevision,
+							new OpenBambooDiffToolAction(project, bambooFileNode.getName(), prevRevision,
 									bambooFileNode.getRevision()) {
 
 							});
