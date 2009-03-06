@@ -13,6 +13,7 @@ import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.HyperlinkLabel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -220,50 +221,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				add(btnReply, gbc);
 			}
 			if (comment == null || review.getServer().getUsername().equals(comment.getAuthor().getUserName())) {
-				gbc.gridx++;
-				btnEdit = new HyperlinkLabel(comment != null ? EDIT : APPLY);
-				final HyperlinkLabel btnCancel = new HyperlinkLabel("Cancel");
-				btnEdit.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						if (commentBody.isEditable()) {
-							commentBody.setBackground(Color.GRAY);
-							commentBody.setEnabled(false);
-							btnEdit.setVisible(false);
-							addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText());
-							btnEdit.setHyperlinkText(EDIT);
-						} else {
-							setButtonsVisible(false);
-							btnEdit.setHyperlinkText(APPLY);
-							btnShowHide.setState(true);
-							lastCommentBody = commentBody.getText();
-						}
-						btnCancel.setVisible(!commentBody.isEditable());
-						setCommentBodyEditable(commentBody, !commentBody.isEditable());
-					}
-				});
-				btnEdit.setOpaque(false);
-				add(btnEdit, gbc);
-				gbc.gridx++;
-				btnCancel.addHyperlinkListener(new HyperlinkListener() {
-					public void hyperlinkUpdate(HyperlinkEvent e) {
-						btnCancel.setVisible(false);
-						btnEdit.setHyperlinkText(EDIT);
-
-						setButtonsVisible(true);
-
-						if (lastCommentBody != null) {
-							commentBody.setText(lastCommentBody);
-						}
-						if (comment != null) {
-							setCommentBodyEditable(commentBody, false);
-						} else {
-							removeCommentReplyPanel(CommentPanel.this);
-						}
-					}
-				});
-				btnCancel.setOpaque(false);
-				btnCancel.setVisible(comment == null);
-				add(btnCancel, gbc);
+				createEditButtons(gbc);
 			}
 
 			int gridwidth = gbc.gridx + 1;
@@ -288,6 +246,54 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			add(commentBody, gbc);
 
 			addMouseListener(headerListener);
+		}
+
+		private void createEditButtons(@NotNull GridBagConstraints gbc) {
+			gbc.gridx++;
+			btnEdit = new HyperlinkLabel(comment != null ? EDIT : APPLY);
+			final HyperlinkLabel btnCancel = new HyperlinkLabel("Cancel");
+			btnEdit.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					if (commentBody.isEditable()) {
+						commentBody.setBackground(Color.GRAY);
+						commentBody.setEnabled(false);
+						btnEdit.setVisible(false);
+						addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText());
+						btnEdit.setHyperlinkText(EDIT);
+					} else {
+						setStatusText(" ");
+						setButtonsVisible(false);
+						btnEdit.setHyperlinkText(APPLY);
+						btnShowHide.setState(true);
+						lastCommentBody = commentBody.getText();
+					}
+					btnCancel.setVisible(!commentBody.isEditable());
+					setCommentBodyEditable(commentBody, !commentBody.isEditable());
+				}
+			});
+			btnEdit.setOpaque(false);
+			add(btnEdit, gbc);
+			gbc.gridx++;
+			btnCancel.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					btnCancel.setVisible(false);
+					btnEdit.setHyperlinkText(EDIT);
+
+					setButtonsVisible(true);
+
+					if (lastCommentBody != null) {
+						commentBody.setText(lastCommentBody);
+					}
+					if (comment != null) {
+						setCommentBodyEditable(commentBody, false);
+					} else {
+						removeCommentReplyPanel(CommentPanel.this);
+					}
+				}
+			});
+			btnCancel.setOpaque(false);
+			btnCancel.setVisible(comment == null);
+			add(btnCancel, gbc);
 		}
 
 		public VersionedComment getComment() {
