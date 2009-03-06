@@ -187,12 +187,14 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		if (node instanceof CrucibleFileNode && alsoThis) {
 			return (CrucibleFileNode) node;
 		}
-		AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
-		while (n != null) {
-			if (n instanceof CrucibleFileNode) {
-				return (CrucibleFileNode) n;
+		if (start != null) {
+			AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
+			while (n != null) {
+				if (n instanceof CrucibleFileNode) {
+					return (CrucibleFileNode) n;
+				}
+				n = (AtlassianTreeNode) n.getNextNode();
 			}
-			n = (AtlassianTreeNode) n.getNextNode();
 		}
 		return null;
 	}
