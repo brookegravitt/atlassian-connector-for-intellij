@@ -113,13 +113,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 
 			LineCommentTooltipPanel lctp = new LineCommentTooltipPanel(review, fileInfo, comment) {
 				protected void addNewReply(final VersionedComment parent, String text) {
-					final VersionedCommentBean reply = new VersionedCommentBean();
-					reply.setMessage(text);
-					reply.setAuthor(new UserBean(review.getServer().getUsername()));
-					reply.setDefectRaised(false);
-					reply.setDefectApproved(false);
-					reply.setDeleted(false);
-					reply.setDraft(false);
+					final VersionedCommentBean reply = createReplyBean(text);
 
 					Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 							"Adding new comment reply", false) {
@@ -163,8 +157,20 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 					.setCancelKeyEnabled(true)
 					.createPopup().showInBestPositionFor(anActionEvent.getDataContext());
 		}
+
 	}
 
+	private VersionedCommentBean createReplyBean(String text) {
+		final VersionedCommentBean reply = new VersionedCommentBean();
+		reply.setMessage(text);
+		reply.setAuthor(new UserBean(review.getServer().getUsername()));
+		reply.setDefectRaised(false);
+		reply.setDefectApproved(false);
+		reply.setDeleted(false);
+		reply.setDraft(false);
+		return reply;
+	}
+	
 	protected boolean checkIfDraftAndAuthor() {
 		if (checkIfUserAnAuthor() && comment.isDraft()) {
 			return true;
