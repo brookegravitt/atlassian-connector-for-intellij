@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -30,10 +31,11 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -81,6 +83,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private JCheckBox allowCheckBox;
 	private JCheckBox leaveAsDraftCheckBox;
 	private JPanel customComponentPanel;
+	private JLabel repositoryLabel;
 	private DefaultListModel model;
 	private UserListCellRenderer cellRenderer = new UserListCellRenderer();
 
@@ -106,12 +109,19 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		$$$setupUI$$$();
 		init();
+
+		if (!shouldShowRepo()) {
+			repositoryLabel.setVisible(false);
+			repoComboBox.setVisible(false);
+		}
+
 		customComponentPanel.setLayout(new BorderLayout());
 		titleText.setText(commitMessage);
 		getOKAction().putValue(Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null && crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
+				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
+						crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem) {
 					final ServerComboBoxItem boxItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 					fillServerRelatedCombos(boxItem.getServer());
 				}
@@ -257,15 +267,15 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		panel1.add(label3, cc.xy(1, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		projectsComboBox = new JComboBox();
 		panel1.add(projectsComboBox, cc.xy(3, 3));
+		repositoryLabel = new JLabel();
+		repositoryLabel.setText("Repository:");
+		panel1.add(repositoryLabel, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		final JLabel label4 = new JLabel();
-		label4.setText("Repository:");
-		panel1.add(label4, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.CENTER));
+		label4.setText("Moderator:");
+		panel1.add(label4, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		final JLabel label5 = new JLabel();
-		label5.setText("Moderator:");
-		panel1.add(label5, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
-		final JLabel label6 = new JLabel();
-		label6.setText("Author:");
-		panel1.add(label6, cc.xy(1, 9, CellConstraints.DEFAULT, CellConstraints.CENTER));
+		label5.setText("Author:");
+		panel1.add(label5, cc.xy(1, 9, CellConstraints.DEFAULT, CellConstraints.CENTER));
 		repoComboBox = new JComboBox();
 		panel1.add(repoComboBox, cc.xy(3, 5));
 		moderatorComboBox = new JComboBox();
@@ -282,12 +292,12 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		final JScrollPane scrollPane1 = new JScrollPane();
 		panel2.add(scrollPane1, BorderLayout.CENTER);
 		scrollPane1.setViewportView(reviewersList);
+		final JLabel label6 = new JLabel();
+		label6.setText("Reviewers:");
+		panel1.add(label6, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
 		final JLabel label7 = new JLabel();
-		label7.setText("Reviewers:");
-		panel1.add(label7, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-		final JLabel label8 = new JLabel();
-		label8.setText("Statement of Objectives:");
-		rootComponent.add(label8, cc.xy(1, 7));
+		label7.setText("Statement of Objectives:");
+		rootComponent.add(label7, cc.xy(1, 7));
 		final JScrollPane scrollPane2 = new JScrollPane();
 		rootComponent.add(scrollPane2, cc.xy(1, 9, CellConstraints.FILL, CellConstraints.FILL));
 		statementArea = new JTextArea();
@@ -302,8 +312,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		rootComponent.add(leaveAsDraftCheckBox, cc.xy(1, 13));
 		label1.setLabelFor(titleText);
 		label2.setLabelFor(crucibleServersComboBox);
-		label6.setLabelFor(scrollPane1);
-		label8.setLabelFor(statementArea);
+		label5.setLabelFor(scrollPane1);
+		label7.setLabelFor(statementArea);
 	}
 
 	/**
@@ -438,7 +448,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
 		projectsComboBox.removeAllItems();
-		repoComboBox.removeAllItems();
+		if (shouldShowRepo()) {
+			repoComboBox.removeAllItems();
+		}
 		authorComboBox.removeAllItems();
 		moderatorComboBox.removeAllItems();
 		model.removeAllElements();
@@ -455,9 +467,12 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 					try {
 						projects = crucibleServerFacade.getProjects(server);
-						repositories = crucibleServerFacade.getRepositories(server);
+						if (shouldShowRepo()) {
+							repositories = crucibleServerFacade.getRepositories(server);
+						}
 						users = crucibleServerFacade.getUsers(server);
-					} catch (final Exception e) {
+					}
+					catch (final Exception e) {
 						if (CrucibleReviewCreateForm.this.getRootComponent().isShowing()) {
 							ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 								public void run() {
@@ -523,7 +538,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		// we are doing here once more, as it's executed by a separate thread and meantime
 		// the combos could have been populated by another thread
 		projectsComboBox.removeAllItems();
-		repoComboBox.removeAllItems();
+		if (shouldShowRepo()) {
+			repoComboBox.removeAllItems();
+		}
 		authorComboBox.removeAllItems();
 		moderatorComboBox.removeAllItems();
 		model.removeAllElements();
@@ -554,36 +571,37 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 					}
 				}
 			}
-
-
 		}
-		repoComboBox.addItem(""); // repo is not required for instance for patch review
-		if (!crucibleServerData.getRepositories().isEmpty()) {
-			for (Repository repo : crucibleServerData.getRepositories()) {
-				repoComboBox.addItem(new RepositoryComboBoxItem(repo));
-			}
 
-			// setting default repo if such is defined
+		if (shouldShowRepo()) {
+			repoComboBox.addItem(""); // repo is not required for instance for patch review
+			if (!crucibleServerData.getRepositories().isEmpty()) {
+				for (Repository repo : crucibleServerData.getRepositories()) {
+					repoComboBox.addItem(new RepositoryComboBoxItem(repo));
+				}
 
-			if (prjCfg != null) {
-				final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
-				if (defaultRepo != null) {
-					for (int i = 0; i < repoComboBox.getItemCount(); ++i) {
-						if (repoComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {
-							if (((RepositoryComboBoxItem) repoComboBox.getItemAt(i)).getRepository().getName()
-									.equals(defaultRepo)) {
-								repoComboBox.setSelectedIndex(i);
-								break;
+				// setting default repo if such is defined
+
+				if (prjCfg != null) {
+					final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
+					if (defaultRepo != null) {
+						for (int i = 0; i < repoComboBox.getItemCount(); ++i) {
+							if (repoComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {
+								if (((RepositoryComboBoxItem) repoComboBox.getItemAt(i)).getRepository().getName()
+										.equals(defaultRepo)) {
+									repoComboBox.setSelectedIndex(i);
+									break;
+								}
 							}
 						}
 					}
 				}
+				getOKAction().setEnabled(true);
 			}
-			getOKAction().setEnabled(true);
-		}
-		// if only one repository
-		if (shouldAutoSelectRepo(crucibleServerData)) {
-			repoComboBox.setSelectedIndex(repoComboBox.getItemCount() - 1);
+			// if only one repository
+			if (shouldAutoSelectRepo(crucibleServerData)) {
+				repoComboBox.setSelectedIndex(repoComboBox.getItemCount() - 1);
+			}
 		}
 		authorComboBox.addItem("");
 		moderatorComboBox.addItem("");
@@ -608,6 +626,10 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		getOKAction().setEnabled(isValidForm());
 
+	}
+
+	protected boolean shouldShowRepo() {
+		return true;
 	}
 
 
@@ -710,7 +732,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 
-	protected abstract Review createReview(CrucibleServerCfg server, ReviewProvider reviewProvider) throws RemoteApiException,
+	protected abstract Review createReview(CrucibleServerCfg server, ReviewProvider reviewProvider)
+			throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
 	@Override
@@ -761,12 +784,23 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 														+ "Leaving review in draft state.", "Permission denied");
 									}
 								}
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+							}
+							catch (ValueNotYetInitialized valueNotYetInitialized) {
 								Messages.showErrorDialog(project,
 										"Unable to change review state. Leaving review in draft state.", "Permission denied");
 							}
 						}
-					} catch (final Throwable e) {
+
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+							public void run() {
+								final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
+								if (panel != null) {
+									panel.refresh(UpdateReason.REFRESH);
+								}
+							}
+						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
+					}
+					catch (final Throwable e) {
 						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 							public void run() {
 								String message = "Error creating review: " + server.getUrl();
@@ -791,7 +825,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private boolean isValidForm() {
 		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem && titleText.getText().length() > 0
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
-				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem && moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem &&
+				moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 			final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 			return isValid(new ReviewProvider(selectedItem.getServer()));
 		} else {
