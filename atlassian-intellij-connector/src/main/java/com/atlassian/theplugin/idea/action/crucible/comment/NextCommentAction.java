@@ -57,15 +57,17 @@ public class NextCommentAction extends AbstractCommentAction {
 		if (start == null) {
 			start = (DefaultMutableTreeNode) tree.getModel().getRoot();
 		}
-		AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
-		while (n != null) {
-			if (n instanceof CommentTreeNode) {
-				CommentTreeNode ctn = (CommentTreeNode) n;
-				if (!ctn.getComment().isReply()) {
-					return n;
+		if (start != null) {
+			AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
+			while (n != null) {
+				if (n instanceof CommentTreeNode) {
+					CommentTreeNode ctn = (CommentTreeNode) n;
+					if (!ctn.getComment().isReply()) {
+						return n;
+					}
 				}
+				n = (AtlassianTreeNode) n.getNextNode();
 			}
-			n = (AtlassianTreeNode) n.getNextNode();
 		}
 		return null;
 	}
