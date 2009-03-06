@@ -53,6 +53,18 @@ public class DialogWithDetails extends DialogWrapper {
 		init();
 	}
 
+	protected DialogWithDetails(Project project, String description, String question, String exceptionString, String title,
+			String exceptionTitle, boolean showExceptionTitle) {
+		super(project, false);
+		this.description = description;
+		this.question = question;
+		this.showExceptionTitle = showExceptionTitle;
+		this.exceptionStr = exceptionString;
+		this.exceptionTitle = exceptionTitle;
+		setTitle(title);
+		init();
+	}
+
 	protected DialogWithDetails(Component parent, String description, String question, Throwable exception, String title,
 			boolean showExceptionTitle) {
 		super(parent, false);
@@ -66,13 +78,30 @@ public class DialogWithDetails extends DialogWrapper {
 
 		init();
 	}
-
 	public static int showYesNoDialog(Project project, String description,
 			String question, Throwable exception, String title) {
 		DialogWithDetails dialog = new DialogWithDetails(project, description, question, exception, title, true);
 		dialog.show();
 		return dialog.getExitCode();
 	}
+
+	public static int showExceptionDialog(Project project, String description,
+			String details, String title) {
+		final DialogWithDetails dialog = new DialogWithDetails(project, description, null, details, title, null, false) {
+			@Override
+			protected Action[] createActions() {
+				return new Action[]{getOKAction(), getDetailsAction()};
+			}
+
+			@Override
+			protected Icon getIcon() {
+				return Messages.getErrorIcon();
+			}
+		};
+		dialog.show();
+		return dialog.getExitCode();
+	}
+
 
 	public static int showExceptionDialog(Project project, String description,
 			Throwable exception, String title) {
@@ -166,7 +195,7 @@ public class DialogWithDetails extends DialogWrapper {
 		return new Action[]{new DetailsAction(), getOKAction(), getCancelAction()};
 	}
 
-	private static String getExceptionString(Throwable t) {
+	public static String getExceptionString(Throwable t) {
 		StringWriter sw = new StringWriter();
 		t.printStackTrace(new PrintWriter(sw));
 		return sw.getBuffer().toString();
