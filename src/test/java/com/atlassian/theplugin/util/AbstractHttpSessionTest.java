@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
@@ -114,13 +115,15 @@ public class AbstractHttpSessionTest extends TestCase {
 	private class TestHttpSession extends AbstractHttpSession {
 
 		@Override
-		protected Document retrieveGetResponse(String urlString) throws IOException, JDOMException, RemoteApiSessionExpiredException {
-			return super.retrieveGetResponse(urlString);	//To change body of overridden methods use File | Settings | File Templates.
+		protected Document retrieveGetResponse(String urlString)
+				throws IOException, JDOMException, RemoteApiSessionExpiredException {
+			return super.retrieveGetResponse(urlString);
 		}
 
 		@Override
-		protected Document retrievePostResponse(String urlString, Document request) throws IOException, JDOMException, RemoteApiSessionExpiredException {
-			return super.retrievePostResponse(urlString, request);	//To change body of overridden methods use File | Settings | File Templates.
+		protected Document retrievePostResponse(String urlString, Document request) throws IOException, JDOMException,
+				RemoteApiException {
+			return super.retrievePostResponse(urlString, request);
 		}
 
 
