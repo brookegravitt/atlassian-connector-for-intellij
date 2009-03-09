@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -24,6 +25,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class EditorCloseAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
-		IdeaHelper.getCrucibleToolWindow(event).closeToolWindow(event);
+		ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(event);
+		if (panel != null) {
+			panel.closeReviewDetailsWindow(event);
+		}
 	}
 }

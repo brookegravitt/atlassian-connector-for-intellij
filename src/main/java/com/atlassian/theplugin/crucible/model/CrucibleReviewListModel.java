@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
@@ -43,18 +44,13 @@ public interface CrucibleReviewListModel {
 	List<CrucibleNotification> updateReviews(final long epoch, final Map<CrucibleFilter, ReviewNotificationBean> reviews,
 			final UpdateReason updateReason);
 
-//	@Nullable
-//	ReviewAdapter getSelectedReview();
-
-//	void setSelectedReview(ReviewAdapter review);
-
 	Collection<ReviewAdapter> getOpenInIdeReviews();
-
-//	ReviewAdapter getActiveReview();
-
-//	void setActiveReview(ReviewAdapter review);
 
 	void rebuildModel(UpdateReason updateReason);
 
 	boolean isRequestObsolete(long epoch);
+
+	void addSingleReview(final PredefinedFilter filter, final ReviewAdapter review, final UpdateReason updateReason);
+
+	void clearOpenInIde(UpdateReason updateReason);
 }

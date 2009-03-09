@@ -150,10 +150,16 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public void openReview(final ReviewAdapter review) {
-		reviewListModel.getOpenInIdeReviews().clear();
+//		reviewListModel.getOpenInIdeReviews().clear();
 		CommentHighlighter.removeCommentsInEditors(project);
-		reviewListModel.getOpenInIdeReviews().add(review);
+//		reviewListModel.getOpenInIdeReviews().add(review);
+		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
 		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
+	}
+
+	public void closeReviewDetailsWindow(final AnActionEvent event) {
+		IdeaHelper.getCrucibleToolWindow(project).closeToolWindow(event);
+		reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
 	}
 
 	private void addReviewTreeListeners() {
@@ -299,11 +305,11 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return filterTree;
 	}
 
+
 	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
 	}
-
 
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
 		this.groupBy = groupBy;
@@ -356,6 +362,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public CrucibleProjectConfiguration getCrucibleConfiguration() {
 		return crucibleProjectConfiguration;
+	}
+
+	public void addReview(final ReviewAdapter selectedValue) {
+		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
 	}
 
 	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
