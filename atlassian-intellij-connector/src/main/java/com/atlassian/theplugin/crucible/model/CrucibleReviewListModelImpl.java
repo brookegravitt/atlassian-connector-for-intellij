@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
-	private ReviewAdapter selectedReview;
+	//	private ReviewAdapter selectedReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
 
 	private AtomicLong epoch = new AtomicLong(0);
@@ -35,9 +35,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		Set<ReviewAdapter> plainReviews = new HashSet<ReviewAdapter>();
 
 		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
-			if (crucibleFilter != PredefinedFilter.OpenInIde) {
-				plainReviews.addAll(reviews.get(crucibleFilter));
-			}
+//			if (crucibleFilter != PredefinedFilter.OpenInIde) {
+			plainReviews.addAll(reviews.get(crucibleFilter));
+//			}
 		}
 		return plainReviews;
 	}
@@ -114,6 +114,12 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			}
 		}
 
+		// todo remove that limitation when we handle multiple open reviews in IDE
+		// clear OpenInIde filter and notify if review removed
+		if (crucibleFilter != null && crucibleFilter == PredefinedFilter.OpenInIde) {
+			clearOpenInIde();
+		}
+
 		if (existingReview != null) {
 			notifications = existingReview.fillReview(review);
 			getCollectionForFilter(reviews, crucibleFilter).add(review);
@@ -125,7 +131,64 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			notifications.add(new NewReviewNotification(review));
 			notifyReviewAdded(new UpdateContext(updateReason, review, notifications));
 		}
+
 		return notifications;
+	}
+
+
+	/**
+	 * Add review to the model and fires start/finish update model notifications.
+	 * For params description see {@link #addReview(com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter,
+	 * com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter, UpdateReason)}
+	 *
+	 * @param filter
+	 * @param reviewAdapter
+	 * @param updateReason
+	 */
+	public void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
+			final UpdateReason updateReason) {
+
+//		start notifiaction;
+		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
+
+		List<CrucibleNotification> notifications = addReview(filter, reviewAdapter, updateReason);
+
+//		finish notification;
+		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, notifications));
+
+	}
+
+	public void clearOpenInIde(UpdateReason updateReason) {
+		// start notifiaction
+		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
+
+		clearOpenInIde();
+
+		// finish notification
+		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, null));
+	}
+
+	private void clearOpenInIde() {
+		HashSet<ReviewAdapter> openInIde = new HashSet<ReviewAdapter>(getOpenInIdeReviews());
+
+		// check if review from OpenInIde filter exists in any other filter
+		for (ReviewAdapter r : openInIde) {
+			boolean found = false;
+			for (CrucibleFilter filter : reviews.keySet()) {
+				if (filter != PredefinedFilter.OpenInIde) {
+					if (reviews.get(filter).contains(r)) {
+						found = true;
+						break;
+					}
+				}
+			}
+
+			getOpenInIdeReviews().remove(r);
+
+			if (!found) {
+				notifyReviewRemoved(new UpdateContext(UpdateReason.OPEN_IN_IDE, r, null));
+			}
+		}
 	}
 
 	private Set<ReviewAdapter> getCollectionForFilter(final Map<CrucibleFilter, Set<ReviewAdapter>> r,
@@ -163,23 +226,18 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 		return notifications;
 	}
-
-//	public synchronized void setSelectedReview(ReviewAdapter review) {
 //		if (review == null || getReviews().contains(review)) {
 //			selectedReview = review;
-//		}
+
 //	}
 
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return reviews.get(PredefinedFilter.OpenInIde);
 	}
-
-//	@Nullable
 //	public synchronized ReviewAdapter getSelectedReview() {
 //		if (getReviews().contains(selectedReview)) {
-//			return selectedReview;
 //		}
-//		return null;
+
 //	}
 
 	public void addListener(CrucibleReviewListModelListener listener) {

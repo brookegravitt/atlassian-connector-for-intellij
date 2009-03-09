@@ -25,7 +25,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -68,10 +67,9 @@ public class QuickSearchReviewAction extends AnAction {
 			return;
 		}
 
-		final CrucibleToolWindow crucibleWindow = IdeaHelper.getCrucibleToolWindow(project);
 		final ReviewsToolWindowPanel reviewsWindow = IdeaHelper.getReviewsToolWindowPanel(e);
 
-		if (crucibleWindow == null || reviewsWindow == null) {
+		if (reviewsWindow == null) {
 			return;
 		}
 
@@ -112,24 +110,26 @@ public class QuickSearchReviewAction extends AnAction {
 
 					public void onSuccess() {
 						List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
-						showPopup(reviews, project, e.getInputEvent().getComponent(), reviewsWindow, dialog.getSearchKey());
+						showPopup(reviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
 					}
 				});
 			} else {
-				showPopup(localReviews, project, e.getInputEvent().getComponent(), reviewsWindow, dialog.getSearchKey());
+				showPopup(localReviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
 			}
 		}
 	}
 
-	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component e,
-			final ReviewsToolWindowPanel reviewsWindow, final String searchKey) {
+	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component component,
+			final String searchKey, final ReviewsToolWindowPanel reviewsWindow) {
 		if (reviews.size() == 0) {
-			reviewsWindow.setStatusMessage("Review " + searchKey + " not found.");
+			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian IntelliJ Connector");
+//			reviewsWindow.setStatusMessage("Review " + searchKey + " not found.");
 		} else if (reviews.size() == 1) {
-			IdeaHelper.getCrucibleToolWindow(project).showReview(reviews.iterator().next());
+			reviewsWindow.openReview(reviews.iterator().next());
 		} else if (reviews.size() > 1) {
-			ListPopup popup = JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, project));
-			popup.show(e);
+			ListPopup popup =
+					JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, project, reviewsWindow));
+			popup.show(component);
 		}
 	}
 
@@ -146,11 +146,14 @@ public class QuickSearchReviewAction extends AnAction {
 
 	private final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
 		private Project project;
+		private ReviewsToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
-		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final Project project) {
+		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final Project project,
+				final ReviewsToolWindowPanel reviewsWindow) {
 			super("Select Review To Open", reviews, IconLoader.getIcon("/icons/crucible-16.png"));
 			this.project = project;
+			this.reviewsWindow = reviewsWindow;
 		}
 
 		@NotNull
@@ -181,7 +184,11 @@ public class QuickSearchReviewAction extends AnAction {
 
 		@Override
 		public PopupStep onChosen(final ReviewAdapter selectedValue, final boolean finalChoice) {
-			IdeaHelper.getCrucibleToolWindow(project).showReview(selectedValue);
+			// add review to the model (to show it in the main list)
+			reviewsWindow.openReview(selectedValue);
+
+			// open review
+//			IdeaHelper.getCrucibleToolWindow(project).showReview(selectedValue);
 			return null;
 		}
 	}
