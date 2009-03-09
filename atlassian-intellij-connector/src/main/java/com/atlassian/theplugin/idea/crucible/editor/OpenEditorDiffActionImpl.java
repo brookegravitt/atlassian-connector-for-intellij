@@ -46,6 +46,14 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 		this.focusOnOpen = focusOnOpen;
 	}
 
+	public Project getProject() {
+		return project;
+	}
+
+	public boolean isFocusOnOpen() {
+		return focusOnOpen;
+	}
+
 	public void run(OpenFileDescriptor displayFile, VirtualFile referenceFile, CommitType commitType) {
 		FileEditorManager fem = FileEditorManager.getInstance(project);
 		switch (commitType) {
