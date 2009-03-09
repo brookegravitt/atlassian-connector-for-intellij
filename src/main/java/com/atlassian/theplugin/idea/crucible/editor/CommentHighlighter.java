@@ -20,20 +20,19 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigationAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.MarkupModel;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -89,6 +88,8 @@ public final class CommentHighlighter {
 				if (doc.getUserData(CRUCIBLE_DATA_KEY) == null
 						|| doc.getUserData(CRUCIBLE_DATA_KEY) == true) {
 					applyHighlighters(project, editor, review, reviewItem);
+
+					registerKeyboardActions(editor);
 					virtualFile.putUserData(REVIEW_DATA_KEY, review);
 					virtualFile.putUserData(REVIEWITEM_DATA_KEY, reviewItem);
 					virtualFile.putUserData(COMMENT_DATA_KEY, true);
@@ -119,6 +120,18 @@ public final class CommentHighlighter {
 		}
 	}
 
+	private static void registerKeyboardActions(Editor editor) {
+		final AnAction showNextAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.NextDiff");
+		final AnAction showPrevAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.PrevDiff");
+
+		if (showNextAction instanceof AbstractDiffNavigationAction) {
+			((AbstractDiffNavigationAction) showNextAction).registerShortcutsInEditor(editor);
+		}
+
+		if (showPrevAction instanceof AbstractDiffNavigationAction) {
+			((AbstractDiffNavigationAction) showPrevAction).registerShortcutsInEditor(editor);
+		}
+	}
 
 	public static void updateCommentsInEditors(@NotNull final Project project,
 			@NotNull final ReviewAdapter review) {

@@ -375,8 +375,8 @@ public class CrucibleDiffGutterRenderer implements ActiveGutterRenderer {
 
 		DefaultActionGroup group = new DefaultActionGroup();
 
-		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.NextDiff");
-		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Comment.PrevDiff");
+		final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
+		final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
 
 		final ShowPrevChangeMarkerAction localShowPrevAction = new ShowPrevChangeMarkerAction(getPrevRange(aRange),
 				anEditor, displayDocument);
