@@ -36,6 +36,8 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction;
+import com.atlassian.theplugin.idea.action.crucible.comment.PrevDiffAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleFilteredModelProvider;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
@@ -53,6 +55,7 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -90,6 +93,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private TreeUISetup treeUISetup;
+	private static final String THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR = "ThePlugin.Crucible.ReviewFileListToolBar";
 
 	public synchronized ReviewAdapter getCrucibleReview() {
 		return crucibleReview;
@@ -121,12 +125,30 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		if (reviewFilesAndCommentsTree == null) {
 			final ReviewCommentRenderer renderer = new ReviewCommentRenderer();
 			treeUISetup = new TreeUISetup(renderer);
-			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar("ThePlugin.Crucible.ReviewFileListToolBar",
+			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR,
 					treeUISetup, new AtlassianTree.ViewStateListener() {
 						public void setViewState(AtlassianTreeWithToolbar.ViewState state) {
 							setCommentsState(state);
 						}
 					});
+
+			final ActionGroup group = (ActionGroup) ActionManager.getInstance()
+					.getAction(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR);
+			final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
+			final AnAction globalShowPrevAction = ActionManager.getInstance().getAction("VcsShowPrevChangeMarker");
+
+			AnAction[] actions = group.getChildren(null);
+			for (AnAction a : actions) {
+				if (a instanceof NextDiffAction) {
+					a.copyShortcutFrom(globalShowNextAction);
+					a.registerCustomShortcutSet(a.getShortcutSet(), reviewFilesAndCommentsTree);
+				}
+				if (a instanceof PrevDiffAction) {
+					a.copyShortcutFrom(globalShowPrevAction);
+					a.registerCustomShortcutSet(a.getShortcutSet(), reviewFilesAndCommentsTree);
+				}
+			}
+
 			new ReviewDetailsTreeMouseListener(reviewFilesAndCommentsTree.getTreeComponent(), renderer, treeUISetup);
 			reviewFilesAndCommentsTree.setRootVisible(false);
 			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
