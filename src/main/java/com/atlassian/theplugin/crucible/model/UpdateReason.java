@@ -17,5 +17,5 @@
 package com.atlassian.theplugin.crucible.model;
 
 public enum UpdateReason {
-	TIMER_FIRED, REFRESH, FILTER_CHANGED, SEARCH
+	TIMER_FIRED, REFRESH, FILTER_CHANGED, OPEN_IN_IDE, SEARCH
 }

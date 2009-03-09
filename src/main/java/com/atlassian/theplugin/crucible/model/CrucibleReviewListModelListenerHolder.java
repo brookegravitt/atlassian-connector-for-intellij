@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
@@ -97,15 +98,15 @@ public abstract class CrucibleReviewListModelListenerHolder
 		return parent.updateReviews(epoch, updatedReviews, updateReason);
 	}
 
-//	public ReviewAdapter getSelectedReview() {
-//		return parent.getSelectedReview();
-//	}
-
-//	public void setSelectedReview(ReviewAdapter review) {
-//		parent.setSelectedReview(review);
-//	}
-
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return parent.getOpenInIdeReviews();
+	}
+
+	public void addSingleReview(final PredefinedFilter filter, final ReviewAdapter review, final UpdateReason updateReason) {
+		parent.addSingleReview(filter, review, updateReason);
+	}
+
+	public void clearOpenInIde(UpdateReason updateReason) {
+		parent.clearOpenInIde(updateReason);
 	}
 }
