@@ -83,9 +83,9 @@ public class PluginToolWindow {
 	}
 
 	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
-							@NotNull BambooToolWindowPanel bambooToolWindowPanel,
-							@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-							@NotNull IssuesToolWindowPanel issuesToolWindowPanel) {
+			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
+			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
+			@NotNull IssuesToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
@@ -127,7 +127,9 @@ public class PluginToolWindow {
 		//stopTabChangeListener();
 
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project)).size() == 0) {
+		if (cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project)).size() == 0
+				&& cfgManager.getAllEnabledJiraServers(CfgUtil.getProjectId(project)).size() == 0
+				&& cfgManager.getAllEnabledBambooServers(CfgUtil.getProjectId(project)).size() == 0) {
 			// no servers defined, show config panel
 			if (contentManager.findContent(CONFIGURE_TAB_NAME) == null) {
 				final Content content = contentManager.getFactory().createContent(
@@ -294,7 +296,7 @@ public class PluginToolWindow {
 
 	@Nullable
 	private Content createContent(final ToolWindowPanels component) {
-		switch (component) {			
+		switch (component) {
 			case BUILDS:
 				return createBamboo2Content();
 			case CRUCIBLE:
