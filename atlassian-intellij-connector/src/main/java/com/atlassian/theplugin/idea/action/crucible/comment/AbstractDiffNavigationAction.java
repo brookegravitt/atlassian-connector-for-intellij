@@ -55,7 +55,11 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		}
 	}
 
-	protected Editor getEditorForNode(@NotNull CrucibleFileNode node) {
+	protected Editor getEditorForNode(CrucibleFileNode node) {
+		if (node == null) {
+			return null;
+		}
+
 		String ourUrl = node.getFile().getFileDescriptor().getAbsoluteUrl();
 
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
