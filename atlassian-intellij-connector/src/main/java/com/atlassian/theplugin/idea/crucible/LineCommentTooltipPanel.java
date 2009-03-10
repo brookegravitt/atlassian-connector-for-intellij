@@ -1,17 +1,18 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.ui.popup.JBPopup;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ui.HyperlinkLabel;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,8 +46,30 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	private List<CommentPanel> commentPanelList = new ArrayList<CommentPanel>();
 	private static final int PANEL_WIDTH = 600;
 	private static final int PANEL_HEIGHT = 300;
+	private JBPopup popup;
+	private AnActionEvent anActionEvent;
 
-	public LineCommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, VersionedComment thisLineComment) {
+	public static void showCommentTooltipPopup(AnActionEvent anActionEvent, LineCommentTooltipPanel lctp) {
+		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
+				.setRequestFocus(true)
+				.setCancelOnClickOutside(true)
+				.setCancelOnOtherWindowOpen(false)
+				.setMovable(true)
+				.setTitle("Comment")
+				.setResizable(true)
+				.setCancelKeyEnabled(true)
+				.createPopup();
+		lctp.setParentPopup(popup);
+		lctp.setEvent(anActionEvent);
+		popup.showInBestPositionFor(anActionEvent.getDataContext());
+	}
+
+	private void setEvent(AnActionEvent anActionEvent) {
+		this.anActionEvent = anActionEvent;
+	}
+
+	public LineCommentTooltipPanel(ReviewAdapter review,
+								   CrucibleFileInfo file, VersionedComment thisLineComment) {
 		this(review, file, thisLineComment, false);
 	}
 
@@ -116,6 +139,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		scroll.getVerticalScrollBar().setValue(ScrollablePanel.A_LOT);
 	}
 
+	public void setParentPopup(JBPopup popup) {
+		this.popup = popup;
+	}
+
 	private final class CommentPanel extends JPanel {
 		private ShowHideButton btnShowHide;
 		private static final int REPLY_PADDING = Constants.DIALOG_MARGIN * 2;
@@ -123,11 +150,17 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private String lastCommentBody;
 		private static final String EDIT = "Edit";
 		private static final String APPLY = "Apply";
+		private static final String PUBLISH = "Publish";
+		private static final String DELETE = "Remove";
+
 		private VersionedComment comment;
 		private HyperlinkLabel btnEdit;
 		private HyperlinkLabel btnReply;
 		private JLabel creationDate;
 		private JEditorPane commentBody;
+		private HyperlinkLabel btnDelete;
+		private HyperlinkLabel btnPublish;
+		private JLabel draftLabel;
 
 		private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
@@ -177,6 +210,16 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				gbc.insets = new Insets(0, 0, 0, 0);
 				add(creationDate, gbc);
 
+				if (comment.isDraft()) {
+					draftLabel = new WhiteLabel();
+					draftLabel.setForeground(Color.GRAY);
+					draftLabel.setText("(Draft)");
+					draftLabel.setFont(draftLabel.getFont().deriveFont(Font.ITALIC));
+					gbc.gridx++;
+					gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
+					add(draftLabel, gbc);
+
+				}
 				if (comment.isDefectRaised()) {
 					JLabel defect = new WhiteLabel();
 					defect.setForeground(Color.RED);
@@ -220,8 +263,14 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				btnReply.setOpaque(false);
 				add(btnReply, gbc);
 			}
-			if (comment == null || review.getServer().getUsername().equals(comment.getAuthor().getUserName())) {
+			if (comment == null || isOwner(comment)) {
 				createEditButtons(gbc);
+			}
+			if (comment != null && isOwner(comment)) {
+				if (comment.isDraft()) {
+					createPublishButtons(gbc);
+				}
+				createDeleteButtons(gbc);
 			}
 
 			int gridwidth = gbc.gridx + 1;
@@ -246,6 +295,39 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			add(commentBody, gbc);
 
 			addMouseListener(headerListener);
+		}
+
+		private boolean isOwner(VersionedComment comment) {
+			return review.getServer().getUsername().equals(comment.getAuthor().getUserName());
+		}
+
+		private void createPublishButtons(GridBagConstraints gbc) {
+			gbc.gridx++;
+			btnPublish = new HyperlinkLabel(PUBLISH);
+			btnPublish.setOpaque(false);
+			btnPublish.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					publishComment(comment);
+				}
+			});
+			add(btnPublish, gbc);
+		}
+
+		private void createDeleteButtons(GridBagConstraints gbc) {
+			gbc.gridx++;
+			btnDelete = new HyperlinkLabel(DELETE);
+			btnDelete.setOpaque(false);
+			btnDelete.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					popup.cancel();
+					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
+					showCommentTooltipPopup(anActionEvent, LineCommentTooltipPanel.this);
+					if (agreed) {
+						removeComment(comment);
+					}
+				}
+			});
+			add(btnDelete, gbc);
 		}
 
 		private void createEditButtons(@NotNull GridBagConstraints gbc) {
@@ -385,29 +467,32 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 	protected abstract void addNewReply(VersionedComment parent, String text);
 	protected abstract void updateComment(VersionedComment comment, String text);
+	protected abstract void removeComment(VersionedComment comment);
+	protected abstract void publishComment(VersionedComment comment);
 
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
+
 		public void createdOrEditedVersionedCommentReply(final ReviewAdapter rev,
 														 final PermId file,
 														 final VersionedComment parentComment,
 														 final VersionedComment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
+					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
 
-					if (!file.getId().equals(fileInfo.getPermId().getId())) {
+					if (!file.equals(fileInfo.getPermId())) {
 						return;
 					}
 
-					if (!parentComment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
+					if (!isTheSameComment(thisLineComment, parentComment)) {
 						return;
 					}
 
 					for (CommentPanel panel : commentPanelList) {
 						VersionedComment reply = panel.getComment();
-						if (comment.getPermId().getId().equals(reply.getPermId().getId())) {
+						if (isTheSameComment(reply, comment)) {
 							setStatusText("Comment reply updated");
 							setAllButtonsVisible();
 							panel.setComment(comment);
@@ -425,16 +510,16 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 													final VersionedComment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					if (!rev.getPermId().getId().equals(review.getPermId().getId())) {
+					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
 
-					if (!file.getId().equals(fileInfo.getPermId().getId())) {
+					if (!file.equals(fileInfo.getPermId())) {
 						return;
 					}
 
 					if (!comment.isReply()) {
-						if (!comment.getPermId().getId().equals(thisLineComment.getPermId().getId())) {
+						if (!isTheSameComment(thisLineComment, comment)) {
 							return;
 						}
 
@@ -447,6 +532,75 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					}
 				}
 			});
+		}
+
+		public void removedComment(final ReviewAdapter rev, final Comment comment) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!(comment instanceof VersionedComment)) {
+						return;
+					}
+
+					if (!rev.getPermId().equals(review.getPermId())) {
+						return;
+					}
+
+					if (!comment.isReply()) {
+						if (isTheSameComment(thisLineComment, (VersionedComment) comment)) {
+							popup.cancel();
+						}
+						return;
+					}
+					for (CommentPanel panel : commentPanelList) {
+						VersionedComment reply = panel.getComment();
+						if (isTheSameComment(reply, (VersionedComment) comment)) {
+							setStatusText("Comment reply removed");
+							removeCommentReplyPanel(panel);
+							return;
+						}
+					}
+				}
+			});
+		}
+
+		public void publishedVersionedComment(final ReviewAdapter rev,
+											  final PermId file, final VersionedComment comment) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!rev.getPermId().equals(review.getPermId())) {
+						return;
+					}
+
+					if (!file.equals(fileInfo.getPermId())) {
+						return;
+					}
+
+					for (CommentPanel panel : commentPanelList) {
+						VersionedComment cmt = panel.getComment();
+						if (isTheSameComment(cmt, comment)) {
+							setStatusText("Comment published");
+							((VersionedCommentBean) cmt).setDraft(false);
+							panel.draftLabel.setVisible(false);
+							panel.btnPublish.setVisible(false);
+							return;
+						}
+					}
+
+				}
+			});
+		}
+
+		private boolean isTheSameComment(VersionedComment lhs, VersionedComment rhs) {
+			if (lhs == null && rhs == null) {
+				return true;
+			}
+			if (lhs == null || rhs == null) {
+				return false;
+			}
+			PermId lhsId = lhs.getPermId();
+			PermId rhsId = rhs.getPermId();
+
+			return lhsId == null && rhsId == null || !(lhsId == null || rhsId == null) && lhsId.equals(rhsId);
 		}
 	}
 }
