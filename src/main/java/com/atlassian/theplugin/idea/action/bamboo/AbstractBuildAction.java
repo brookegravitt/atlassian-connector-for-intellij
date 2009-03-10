@@ -65,17 +65,17 @@ public abstract class AbstractBuildAction extends AnAction {
 		final Project project = IdeaHelper.getCurrentProject(e);
 		final BambooBuildAdapterIdea build = getBuild(e);
 
-		if (project != null && build != null && build.getBuildKey() != null) {
+		if (project != null && build != null && build.getPlanKey() != null) {
 
 			Task.Backgroundable executeTask = new Task.Backgroundable(project, "Starting Build", false) {
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
-						setStatusMessageUIThread(project, "Starting build on plan: " + build.getBuildKey());
+						setStatusMessageUIThread(project, "Starting build on plan: " + build.getPlanKey());
 						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-								executeBuild(build.getServer(), build.getBuildKey());
-						setStatusMessageUIThread(project, "Build executed on plan: " + build.getBuildKey());
+								executeBuild(build.getServer(), build.getPlanKey());
+						setStatusMessageUIThread(project, "Build executed on plan: " + build.getPlanKey());
 					} catch (ServerPasswordNotProvidedException e) {
 						setStatusErrorMessageUIThread(project, "Build not executed: Password not provided for server");
 					} catch (RemoteApiException e) {
@@ -92,7 +92,7 @@ public abstract class AbstractBuildAction extends AnAction {
 		final BambooBuildAdapterIdea build = getBuild(e);
 
 		if (build != null) {
-			BrowserUtil.launchBrowser(build.getBuildResultUrl());
+			BrowserUtil.launchBrowser(build.getResultUrl());
 		}
 	}
 
@@ -117,8 +117,8 @@ public abstract class AbstractBuildAction extends AnAction {
 				setStatusMessageUIThread(project, "Applying label on build...");
 				try {
 					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-							addLabelToBuild(build.getServer(), build.getBuildKey(),
-									build.getBuildNumber(), label);
+							addLabelToBuild(build.getServer(), build.getPlanKey(),
+									build.getNumber(), label);
 					setStatusMessageUIThread(project, "Label applied on build");
 				} catch (ServerPasswordNotProvidedException e) {
 					setStatusErrorMessageUIThread(project, "Label not applied: Password on provided for server");
@@ -154,7 +154,7 @@ public abstract class AbstractBuildAction extends AnAction {
 					setStatusMessageUIThread(project, "Adding comment label on build...");
 					try {
 						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-								addCommentToBuild(build.getServer(), build.getBuildKey(), build.getBuildNumber(), commentText);
+								addCommentToBuild(build.getServer(), build.getPlanKey(), build.getNumber(), commentText);
 						setStatusMessageUIThread(project, "Comment added to build");
 					} catch (ServerPasswordNotProvidedException e) {
 						setStatusErrorMessageUIThread(project, "Comment not added: Password not provided for server");
