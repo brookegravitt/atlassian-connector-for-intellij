@@ -69,7 +69,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
-				if (psi != null && psi.getVirtualFile() == virtualFile) {
+				if (psi != null && isSameFile(psi, virtualFile)) {
 					return editor;
 				}
 			}
@@ -77,9 +77,22 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		return null;
 	}
 
-	protected boolean selectFileNode(AnActionEvent e, VirtualFile file) {
-		if (file == null) {
+	private boolean isSameFile(PsiFile psi, VirtualFile virtualFile) {
+		VirtualFile vf = psi.getVirtualFile();
+		if (vf == null && virtualFile != null) {
 			return false;
+		}
+		if (vf == null) {
+			return true;
+		}
+		String lhs = vf.getUrl();
+		String rhs = virtualFile.getUrl();
+		return lhs.equals(rhs);
+	}
+
+	protected CrucibleFileNode getNodeForFile(AnActionEvent e, VirtualFile file) {
+		if (file == null) {
+			return null;
 		}
 		CrucibleFileNode node = null;
 		do {
@@ -87,12 +100,11 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 			if (node != null) {
 				String nodeUrl = node.getFile().getFileDescriptor().getAbsoluteUrl();
 				PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(IdeaHelper.getCurrentProject(e), nodeUrl);
-				if (psi != null && psi.getVirtualFile() == file) {
-					selectNode((AtlassianTree) getTree(e), node);
-					return true;
+				if (psi != null && isSameFile(psi, file)) {
+					return node;
 				}
 			} else {
-				return false;
+				return null;
 			}
 		} while (true);
 	}
@@ -167,36 +179,85 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		return null;
 	}
 
-	public void update(AnActionEvent anactionevent) {
-		updateForEditor(anactionevent);
+	public void actionPerformed(final AnActionEvent e) {
+		AtlassianTree tree = (AtlassianTree) getTree(e);
+		if (tree != null) {
+			CrucibleFileNode node = getSubsequentFileNode(tree, getSelectedNode(e), true);
+			if (node != null) {
+				selectNode(tree, node);
+				Editor ed = getEditorForNode(node);
+				if (ed == null) {
+					openFileNode(e, node, wantLastNode());
+				} else {
+					Range r = getSubsequentRange(ed);
+					if (r != null) {
+						openFileAndSelectRange(e, node, r);
+					} else {
+						node = getSubsequentFileNode(tree, getSelectedNode(e), false);
+						if (node != null) {
+							selectNode(tree, node);
+							openFileNode(e, node, wantLastNode());
+						}
+					}
+				}
+			}
+		}
 	}
 
-	protected void updateForEditor(AnActionEvent e) {
+	public void update(AnActionEvent e) {
+		updateForTree(e);
+		if (e.getData(DataKeys.EDITOR) != null) {
+			e.getPresentation().setVisible(updateForEditor(e) && e.getPresentation().isEnabled());
+		}
+	}
+
+	protected boolean updateForEditor(AnActionEvent e) {
 		AtlassianTreeNode node = getSelectedNode(e);
 		VirtualFile vf = getVirtualFile(e);
-		boolean enabled = true;
+		CrucibleFileNode fileNode = null;
 		if (vf != null && node != null && node instanceof CrucibleFileNode) {
 			PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(IdeaHelper.getCurrentProject(e),
 					((CrucibleFileNode) node).getFile().getFileDescriptor().getAbsoluteUrl());
 
-			if (psi != null && psi.getVirtualFile() != vf) {
-				enabled = selectFileNode(e, vf);
+			if (psi != null && isSameFile(psi, vf)) {
+				fileNode = getNodeForFile(e, vf);
 			}
-		} else {
-			enabled = selectFileNode(e, vf);
 		}
-		if (enabled) {
-			updateForTree(e);
-		} 
-		if (vf != null) {
-			e.getPresentation().setVisible(enabled && e.getPresentation().isEnabled());
-		}
+
+		return fileNode != null;
 	}
 
-	protected abstract void updateForTree(AnActionEvent e);
+	private void updateForTree(final AnActionEvent e) {
+
+		boolean enabled = false;
+
+		AtlassianTreeNode node = getSelectedNode(e);
+		CrucibleFileNode fileNode = getSubsequentFileNode((AtlassianTree) getTree(e), node, true);
+		if (fileNode != null) {
+			Editor ed = getEditorForNode(fileNode);
+			if (ed != null) {
+				Range r = getSubsequentRange(ed);
+				enabled = r != null;
+			}
+			if (!enabled) {
+				fileNode = getSubsequentFileNode((AtlassianTree) getTree(e), node, false);
+				enabled = fileNode != null;
+			}
+		}
+		e.getPresentation().setEnabled(enabled);
+	}
+
 
 	protected VirtualFile getVirtualFile(AnActionEvent e) {
-		Editor editor = e.getData(DataKeys.EDITOR);
+		Project p = IdeaHelper.getCurrentProject(e);
+		if (p == null) {
+			return null;
+		}
+		FileEditorManager fem = FileEditorManager.getInstance(p);
+		if (fem == null) {
+			return null;
+		}
+		Editor editor = fem.getSelectedTextEditor();
 		if (editor == null) {
 			return null;
 		}
@@ -215,7 +276,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 	}
 
 
-	protected void selectFirstDiff(@NotNull CrucibleFileNode node) {
+	protected void selectFirstDiff(CrucibleFileNode node) {
 		Editor e = getEditorForNode(node);
 		if (e != null) {
 			Range r = getFirstRange(e);
@@ -223,7 +284,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		}
 	}
 
-	protected void selectNextDiff(@NotNull CrucibleFileNode node) {
+	protected void selectNextDiff(CrucibleFileNode node) {
 		Editor e = getEditorForNode(node);
 		if (e != null) {
 			Range r = getNextRange(e);
@@ -239,8 +300,8 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		}
 	}
 
-	private void selectRange(@NotNull Editor e, Range r) {
-		if (r != null) {
+	private void selectRange(Editor e, Range r) {
+		if (e != null && r != null) {
 			Collection<RangeHighlighter> ranges = e.getDocument().getUserData(ChangeViewer.CRUCIBLE_RANGES);
 			if (ranges != null && !ranges.isEmpty()) {
 				CrucibleDiffGutterRenderer renderer
@@ -348,4 +409,12 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 	}
 
 	public abstract void registerShortcutsInEditor(Editor editor);
+
+	protected abstract boolean wantLastNode();
+
+	protected abstract Range getSubsequentRange(Editor ed);
+
+	protected abstract CrucibleFileNode getSubsequentFileNode(AtlassianTree tree,
+															  AtlassianTreeNode selectedNode, boolean alsoThis);
+
 }
