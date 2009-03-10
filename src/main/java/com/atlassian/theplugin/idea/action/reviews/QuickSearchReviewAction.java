@@ -100,10 +100,10 @@ public class QuickSearchReviewAction extends AnAction {
 								}
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
-								// todo notify user somehow
+								// todo we could notify user somehow
 							} catch (ServerPasswordNotProvidedException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
-								// todo notify user somehow
+								// todo we could notify user somehow
 							}
 						}
 					}
@@ -128,7 +128,7 @@ public class QuickSearchReviewAction extends AnAction {
 			reviewsWindow.openReview(reviews.iterator().next());
 		} else if (reviews.size() > 1) {
 			ListPopup popup =
-					JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, project, reviewsWindow));
+					JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, reviewsWindow));
 			popup.show(component);
 		}
 	}
@@ -145,14 +145,11 @@ public class QuickSearchReviewAction extends AnAction {
 	}
 
 	private final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
-		private Project project;
 		private ReviewsToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
-		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final Project project,
-				final ReviewsToolWindowPanel reviewsWindow) {
+		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final ReviewsToolWindowPanel reviewsWindow) {
 			super("Select Review To Open", reviews, IconLoader.getIcon("/icons/crucible-16.png"));
-			this.project = project;
 			this.reviewsWindow = reviewsWindow;
 		}
 
@@ -184,11 +181,9 @@ public class QuickSearchReviewAction extends AnAction {
 
 		@Override
 		public PopupStep onChosen(final ReviewAdapter selectedValue, final boolean finalChoice) {
-			// add review to the model (to show it in the main list)
+			// add review to the model (to show it in the main list) and open the review
 			reviewsWindow.openReview(selectedValue);
 
-			// open review
-//			IdeaHelper.getCrucibleToolWindow(project).showReview(selectedValue);
 			return null;
 		}
 	}

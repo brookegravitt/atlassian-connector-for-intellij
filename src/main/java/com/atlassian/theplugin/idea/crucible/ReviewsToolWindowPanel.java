@@ -150,17 +150,25 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	public void openReview(final ReviewAdapter review) {
-//		reviewListModel.getOpenInIdeReviews().clear();
 		CommentHighlighter.removeCommentsInEditors(project);
-//		reviewListModel.getOpenInIdeReviews().add(review);
-		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
+		new Thread(new Runnable() {
+			public void run() {
+				reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
+			}
+		}).start();
+
 		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
 		IdeaHelper.getCrucibleToolWindow(project).closeToolWindow(event);
-		reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
+		new Thread(new Runnable() {
+			public void run() {
+				reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
+			}
+		}).start();
 	}
+
 
 	private void addReviewTreeListeners() {
 		reviewTree.addKeyListener(new KeyAdapter() {
