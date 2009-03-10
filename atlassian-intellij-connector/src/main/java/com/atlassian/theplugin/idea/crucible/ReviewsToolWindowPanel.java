@@ -172,8 +172,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	private void addReviewTreeListeners() {
 		reviewTree.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyPressed(final KeyEvent e) {
 				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
 					openReview(review);
