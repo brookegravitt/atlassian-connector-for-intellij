@@ -35,9 +35,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.util.Icons;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,7 +81,7 @@ public class RemoveAction extends AbstractCommentAction {
 				return;
 			}
 
-			if (userAgreed(project)) {
+			if (RemoveCommentConfirmation.userAgreed(project)) {
 				removeGeneralComment(project, review, comment);
 			}
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
@@ -97,7 +95,7 @@ public class RemoveAction extends AbstractCommentAction {
 				return;
 			}
 
-			if (userAgreed(project)) {
+			if (RemoveCommentConfirmation.userAgreed(project)) {
 				removeVersionedComment(project, review, comment, file);
 			}
 		}
@@ -142,17 +140,6 @@ public class RemoveAction extends AbstractCommentAction {
 		};
 
 		ProgressManager.getInstance().run(task);
-	}
-
-	private boolean userAgreed(Project project) {
-		int result = Messages.showYesNoDialog(project,
-				"Are you sure you want remove your comment?", "Confirmation required", Icons.TASK_ICON);
-
-		if (result == DialogWrapper.OK_EXIT_CODE) {
-			return true;
-		}
-
-		return false;
 	}
 
 }

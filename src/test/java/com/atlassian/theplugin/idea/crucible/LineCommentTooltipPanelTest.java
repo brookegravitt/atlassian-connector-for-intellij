@@ -74,10 +74,8 @@ public class LineCommentTooltipPanelTest {
                 try {
                     VersionedCommentBean reply = createReply(comment, text);
                     ra.addVersionedCommentReply(file, parent, reply);
-                } catch (RemoteApiException e) {
-                    e.printStackTrace();
-                } catch (ServerPasswordNotProvidedException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+					e.printStackTrace();
                 }
             }
 
@@ -86,13 +84,27 @@ public class LineCommentTooltipPanelTest {
 					VersionedCommentBean vcb = (VersionedCommentBean) comment;
 					vcb.setMessage(text);
 					ra.editVersionedComment(file, comment);
-				} catch (RemoteApiException e) {
-					e.printStackTrace();
-				} catch (ServerPasswordNotProvidedException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-        }, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
+
+			protected void removeComment(VersionedComment comment) {
+				try {
+					ra.removeVersionedComment(comment, file);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			protected void publishComment(VersionedComment comment) {
+				try {
+					ra.publisVersionedComment(file, comment);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
     }
 
     private static VersionedCommentBean createReply(VersionedComment parent, String txt) {
