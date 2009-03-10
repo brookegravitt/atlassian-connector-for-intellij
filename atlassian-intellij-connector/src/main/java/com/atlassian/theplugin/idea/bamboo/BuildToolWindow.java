@@ -106,7 +106,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	@Override
 	protected String getContentKey(ContentParameters params) {
 		BuildContentParameters bcp = (BuildContentParameters) params;
-		return bcp.build.getBuildResultUrl();
+		return bcp.build.getResultUrl();
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	public void viewBuildInBrowser(String key) {
 		BuildPanel bp = getContentPanel(key);
 		if (bp != null) {
-			BrowserUtil.launchBrowser(bp.params.build.getBuildResultUrl());
+			BrowserUtil.launchBrowser(bp.params.build.getResultUrl());
 		}
 	}
 
@@ -195,7 +195,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		@Override
 		public String getTitle() {
-			return params.build.getBuildKey() + "-" + params.build.getBuildNumberAsString();
+			return params.build.getPlanKey() + "-" + params.build.getBuildNumberAsString();
 		}
 
 		private class SummaryPanel extends JPanel {
@@ -249,8 +249,8 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 			public void setSummaryText() {
 				String txt = "<html><body><a href=\"" + params.build.getBuildUrl() + "\">"
-						+ params.build.getBuildKey() + "</a> "
-						+ params.build.getProjectName() + " - " + params.build.getBuildName() + "</body></html>";
+						+ params.build.getPlanKey() + "</a> "
+						+ params.build.getProjectName() + " - " + params.build.getPlanName() + "</body></html>";
 				summary.setText(txt);
 			}
 

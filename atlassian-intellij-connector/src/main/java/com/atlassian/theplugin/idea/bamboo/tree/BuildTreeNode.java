@@ -50,7 +50,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private static final int LABEL_PADDING = 5;
 
 	public BuildTreeNode(final BambooBuildAdapterIdea build) {
-		super(build.getBuildKey(), null, null);
+		super(build.getPlanKey(), null, null);
 
 		this.build = build;
 
@@ -77,7 +77,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	@Override
 	public String toString() {
-		return build.getBuildKey();
+		return build.getPlanKey();
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
 		StringBuilder sb = new StringBuilder();
-		sb.append(build.getBuildKey());
+		sb.append(build.getPlanKey());
 		if (build.isValid()) {
 			sb.append("-").append(build.getBuildNumberAsString());
 		}
@@ -127,12 +127,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 		String commiters = getCommiters();
 
-		if (!build.getBuildReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
-			sb.append(build.getBuildReason());
+		if (!build.getReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
+			sb.append(build.getReason());
 		}
 
 		// commiters
-		if (commiters.length() > 0 && build.getBuildReason().equals(CODE_HAS_CHANGED)) {
+		if (commiters.length() > 0 && build.getReason().equals(CODE_HAS_CHANGED)) {
 			sb.append("Changes by: ").append(commiters);
 		}
 
@@ -226,7 +226,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	@NotNull
 	private String getRelativeBuildTimeString() {
-		return DateUtil.getRelativeBuildTime(build.getBuildCompletedDate());
+		return DateUtil.getRelativeBuildTime(build.getCompletionDate());
 	}
 
 	@NotNull
@@ -254,15 +254,15 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
 		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
 		sb.append("<tr><td colspan='2'><b><font color='blue'>");
-		sb.append(build.getBuildKey());
+		sb.append(build.getPlanKey());
 		if (build.isValid()) {
-			sb.append("-").append(build.getBuildNumber());
+			sb.append("-").append(build.getNumber());
 		}
 		sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
 
-		sb.append(StringEscapeUtils.escapeHtml(build.getBuildName()));
+		sb.append(StringEscapeUtils.escapeHtml(build.getPlanName()));
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Project:</b></td><td valign=\"top\">");
@@ -272,7 +272,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Reason:</b></td><td valign=\"top\">");
-		sb.append(build.getBuildReason());
+		sb.append(build.getReason());
 		sb.append("</td></tr>");
 
 		if (getCommiters().length() > 0) {

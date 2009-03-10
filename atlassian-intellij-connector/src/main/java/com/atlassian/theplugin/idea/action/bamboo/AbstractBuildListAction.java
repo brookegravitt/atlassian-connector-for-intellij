@@ -33,7 +33,7 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
 		super.update(event);
 		BambooBuildAdapterIdea build = getBuild(event);
 		event.getPresentation().setEnabled(build != null
-				&& build.isEnabled() && build.getBuildKey() != null && build.isValid());
+				&& build.isEnabled() && build.getPlanKey() != null && build.isValid());
 	}
 
 	@Override

@@ -80,7 +80,7 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					final String log = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
-							.getBuildLogs(build.getServer(), build.getBuildKey(), build.getBuildNumber());
+							.getBuildLogs(build.getServer(), build.getPlanKey(), build.getNumber());
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							consoleView.clear();

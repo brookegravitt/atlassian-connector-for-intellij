@@ -38,12 +38,13 @@ public class BuildCommentForm extends DialogWrapper {
 		pack();
 		setTitle("Add Comment");
 
-		this.buildKeyField.setText(build.getBuildKey());
+		this.buildKeyField.setText(build.getPlanKey());
 		this.buildNumberField.setText(build.getBuildNumberAsString());
 
 		getOKAction().putValue(Action.NAME, "Add comment");
 		getOKAction().setEnabled(false);
 		commentArea.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyTyped(KeyEvent event) {
 				if (!"".equals(commentArea.getText())) {
 					getOKAction().setEnabled(true);
@@ -59,6 +60,7 @@ public class BuildCommentForm extends DialogWrapper {
 		return commentArea.getText();
 	}
 
+	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
 		return mainPanel;
