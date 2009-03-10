@@ -16,19 +16,19 @@ import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created by IntelliJ IDEA.
  * User: mwent
  * Date: Mar 10, 2009
  * Time: 12:00:06 PM
- * To change this template use File | Settings | File Templates.
  */
-public class FisheyeUrlHelper {
+public final class FisheyeUrlHelper {
 
 	private FisheyeUrlHelper() {
 	}
 
+	@Nullable
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
 		final ProjectId projectId = CfgUtil.getProjectId(project);
@@ -64,11 +64,11 @@ public class FisheyeUrlHelper {
 					"Error");
 			return null;
 		}
-		String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+		return buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
-		return url;
 	}
 
+	@Nullable
 	public static String getFisheyeUrl(final PsiElement psiElement,
 			final Project project) {
 
@@ -91,6 +91,9 @@ public class FisheyeUrlHelper {
 		int offset = psiElement.getTextRange().getStartOffset();
 		VirtualFile virtualFile = psiElement.getContainingFile().getVirtualFile();
 
+		if (virtualFile == null) {
+			return null;
+		}
 		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
 		Document document = fileDocumentManager.getDocument(virtualFile);
 
@@ -103,9 +106,8 @@ public class FisheyeUrlHelper {
 		if (rev == null) {
 			return null;
 		}
-		String url = buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+		return buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
-		return url;
 	}
 
 	private static String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final FishEyeServer fishEyeServer,
