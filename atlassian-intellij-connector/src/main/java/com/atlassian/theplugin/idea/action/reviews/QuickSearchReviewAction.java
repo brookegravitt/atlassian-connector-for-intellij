@@ -28,7 +28,6 @@ import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -53,7 +52,7 @@ import java.util.Set;
 /**
  * @author Jacek Jaroczynski
  */
-public class QuickSearchReviewAction extends AnAction {
+public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 	public void actionPerformed(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());

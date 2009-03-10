@@ -31,7 +31,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		reviews.put(PredefinedFilter.OpenInIde, new HashSet<ReviewAdapter>());
 	}
 
-	public synchronized Collection<ReviewAdapter> getReviews() {
+	public Collection<ReviewAdapter> getReviews() {
 		Set<ReviewAdapter> plainReviews = new HashSet<ReviewAdapter>();
 
 		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
@@ -99,7 +99,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 	}
 
-	public synchronized List<CrucibleNotification> addReview(CrucibleFilter crucibleFilter,
+	public List<CrucibleNotification> addReview(CrucibleFilter crucibleFilter,
 			ReviewAdapter review, UpdateReason updateReason) {
 		List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 		ReviewAdapter existingReview = null;
@@ -145,7 +145,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	 * @param reviewAdapter
 	 * @param updateReason
 	 */
-	public synchronized void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
+	public void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
 			final UpdateReason updateReason) {
 
 		// start notifiaction;
@@ -158,7 +158,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 	}
 
-	public synchronized void clearOpenInIde(UpdateReason updateReason) {
+	public void clearOpenInIde(UpdateReason updateReason) {
 		// start notifiaction
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
@@ -199,19 +199,19 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return r.get(crucibleFilter);
 	}
 
-	private synchronized void addReviewToCategory(CrucibleFilter crucibleFilter, ReviewAdapter review) {
+	private void addReviewToCategory(CrucibleFilter crucibleFilter, ReviewAdapter review) {
 		if (!reviews.containsKey(crucibleFilter)) {
 			reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
 		}
 		reviews.get(crucibleFilter).add(review);
 	}
 
-	private synchronized void removeReviewFromCategory(CrucibleFilter crucibleFilter,
+	private void removeReviewFromCategory(CrucibleFilter crucibleFilter,
 			ReviewAdapter review) {
 		reviews.get(crucibleFilter).remove(review);
 	}
 
-	public synchronized List<CrucibleNotification> removeReview(ReviewAdapter review, UpdateReason updateReason) {
+	public List<CrucibleNotification> removeReview(ReviewAdapter review, UpdateReason updateReason) {
 		List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 		for (CrucibleFilter filter : reviews.keySet()) {
 			if (reviews.get(filter).contains(review)) {
@@ -241,7 +241,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		modelListeners.remove(listener);
 	}
 
-	public synchronized List<CrucibleNotification> updateReviews(final long executedEpoch,
+	public List<CrucibleNotification> updateReviews(final long executedEpoch,
 			final Map<CrucibleFilter, ReviewNotificationBean> updatedReviews,
 			final UpdateReason updateReason) {
 		if (executedEpoch != this.epoch.get()) {
