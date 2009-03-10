@@ -73,6 +73,7 @@ public class SearchReviewDialog extends DialogWrapper {
 		}
 
 		super.doOKAction();
+//		close(OK_EXIT_CODE);
 	}
 
 	public JComponent getPreferredFocusedComponent() {
