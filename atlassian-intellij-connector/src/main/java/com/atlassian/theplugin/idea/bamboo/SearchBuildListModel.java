@@ -41,7 +41,7 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 		}
 		List<BambooBuildAdapterIdea> list = new ArrayList<BambooBuildAdapterIdea>();
 		for (BambooBuildAdapterIdea r : col) {
-			if ((r.getBuildKey() + "-" + r.getBuildNumberAsString()).toLowerCase().indexOf(searchTerm) > -1) {
+			if ((r.getPlanKey() + "-" + r.getBuildNumberAsString()).toLowerCase().indexOf(searchTerm) > -1) {
 				list.add(r);
 			}
 		}

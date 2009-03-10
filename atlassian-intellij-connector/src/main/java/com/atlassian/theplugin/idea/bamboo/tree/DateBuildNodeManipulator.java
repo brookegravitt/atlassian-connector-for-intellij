@@ -80,7 +80,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		Set<DatePeriod> dates = new TreeSet<DatePeriod>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			dates.add(DatePeriod.getBuilDate(build.getBuildCompletedDate()));
+			dates.add(DatePeriod.getBuilDate(build.getCompletionDate()));
 		}
 
 		return new ArrayList<DatePeriod>(dates);
@@ -95,7 +95,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 	private int gentNumOfBuildsForDate(DatePeriod date) {
 		int ret = 0;
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (DatePeriod.getBuilDate(build.getBuildCompletedDate()) == date) {
+			if (DatePeriod.getBuilDate(build.getCompletionDate()) == date) {
 				++ret;
 			}
 		}
@@ -108,7 +108,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 
 		// get all builds for date
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (DatePeriod.getBuilDate(build.getBuildCompletedDate()) == date) {
+			if (DatePeriod.getBuilDate(build.getCompletionDate()) == date) {
 				array.add(build);
 			}
 		}

@@ -39,11 +39,12 @@ public class BuildLabelForm extends DialogWrapper {
 		pack();
 		setTitle("Add Label");
 
-		this.buildKeyField.setText(build.getBuildKey());
+		this.buildKeyField.setText(build.getPlanKey());
 		this.buildNumberKey.setText(build.getBuildNumberAsString());
 
 		getOKAction().putValue(Action.NAME, "Add Label");
 		labelField.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyTyped(KeyEvent event) {
 				if (!"".equals(labelField.getText())) {
 					getOKAction().setEnabled(true);

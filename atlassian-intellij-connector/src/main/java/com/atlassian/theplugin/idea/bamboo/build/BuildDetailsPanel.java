@@ -89,7 +89,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc1.gridy++;
 		gbc2.gridy++;
 
-		StringBuilder reason = new StringBuilder(build.getBuildReason());
+		StringBuilder reason = new StringBuilder(build.getReason());
 		Collection<String> committers = build.getCommiters();
 		// bleeeee, ugly ugly
 		if (committers.size() > 0 && reason.toString().equals(BuildTreeNode.CODE_HAS_CHANGED)) {
@@ -130,6 +130,6 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private void refreshBuildRelativeTime() {
-		relativeBuildTime.setText(DateUtil.getRelativeBuildTime(build.getBuildCompletedDate()));
+		relativeBuildTime.setText(DateUtil.getRelativeBuildTime(build.getCompletionDate()));
 	}
 }
