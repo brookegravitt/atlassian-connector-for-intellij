@@ -16,7 +16,6 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -108,56 +107,103 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private class ClickAction extends AnAction {
 		private static final String ADDING_COMMENT_FAILED = "Adding comment failed: ";
 		private static final String UPDATING_COMMENT_FAILED = "Updating comment failed: ";
+		private static final String REMOVING_COMMENT_FAILED = "Removing comment failed: ";
+		private static final String PUBLISHING_COMMENT_FAILED = "Publishing comment failed: ";
 
 		public void actionPerformed(final AnActionEvent anActionEvent) {
 
 			LineCommentTooltipPanel lctp = new LineCommentTooltipPanel(review, fileInfo, comment) {
 				protected void addNewReply(final VersionedComment parent, String text) {
 					final VersionedCommentBean reply = createReplyBean(text);
-
-					Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-							"Adding new comment reply", false) {
-						public void run(ProgressIndicator progressIndicator) {
-							try {
-								review.addVersionedCommentReply(fileInfo, parent, reply);
-							} catch (RemoteApiException e) {
-								setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
-							} catch (ServerPasswordNotProvidedException e) {
-								setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
-							}
-						}
-					};
-					ProgressManager.getInstance().run(task);
+					runAddReplyTask(parent, reply, anActionEvent, this);
 				}
 
 				protected void updateComment(final VersionedComment cmt, String text) {
 					final VersionedCommentBean commentBean = (VersionedCommentBean) cmt;
 					commentBean.setMessage(text);
-					Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-							"Updating comment", false) {
-						public void run(ProgressIndicator progressIndicator) {
-							try {
-								review.editVersionedComment(fileInfo, commentBean);
-							} catch (RemoteApiException e) {
-								setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
-							} catch (ServerPasswordNotProvidedException e) {
-								setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
-							}
-						}
-					};
-					ProgressManager.getInstance().run(task);
+					runUpdateCommandTask(commentBean, anActionEvent, this);
+				}
+
+				protected void removeComment(final VersionedComment comment) {
+					runRemoveCommentTask(comment, anActionEvent, this);
+				}
+
+				protected void publishComment(VersionedComment comment) {
+					runPublishCommentTask(comment, anActionEvent, this);
 				}
 			};
-			JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
-					.setRequestFocus(true)
-					.setCancelOnClickOutside(true)
-					.setMovable(true)
-					.setTitle("Comment")
-					.setResizable(true)
-					.setCancelKeyEnabled(true)
-					.createPopup().showInBestPositionFor(anActionEvent.getDataContext());
+			LineCommentTooltipPanel.showCommentTooltipPopup(anActionEvent, lctp);
 		}
 
+		private void runRemoveCommentTask(final VersionedComment comment, final AnActionEvent anActionEvent,
+										  final LineCommentTooltipPanel panel) {
+			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
+					"Removing comment", false) {
+				public void run(ProgressIndicator progressIndicator) {
+					try {
+						review.removeVersionedComment(comment, fileInfo);
+					} catch (RemoteApiException e) {
+						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
+					} catch (ServerPasswordNotProvidedException e) {
+						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
+					} catch (ValueNotYetInitialized e) {
+						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
+					}
+				}
+			};
+			ProgressManager.getInstance().run(task);
+		}
+
+		private void runUpdateCommandTask(final VersionedCommentBean commentBean, final AnActionEvent anActionEvent,
+										  final LineCommentTooltipPanel panel) {
+			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
+					"Updating comment", false) {
+				public void run(ProgressIndicator progressIndicator) {
+					try {
+						review.editVersionedComment(fileInfo, commentBean);
+					} catch (RemoteApiException e) {
+						panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
+					} catch (ServerPasswordNotProvidedException e) {
+						panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
+					}
+				}
+			};
+			ProgressManager.getInstance().run(task);
+		}
+
+		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
+									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
+			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
+					"Adding new comment reply", false) {
+				public void run(ProgressIndicator progressIndicator) {
+					try {
+						review.addVersionedCommentReply(fileInfo, parent, reply);
+					} catch (RemoteApiException e) {
+						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
+					} catch (ServerPasswordNotProvidedException e) {
+						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
+					}
+				}
+			};
+			ProgressManager.getInstance().run(task);
+		}
+
+		private void runPublishCommentTask(final VersionedComment comment, AnActionEvent anActionEvent,
+										   final LineCommentTooltipPanel panel) {
+			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
+					"Publishing comment", false) {
+				public void run(ProgressIndicator progressIndicator) {
+					try {
+						review.publisVersionedComment(fileInfo, comment);
+					} catch (RemoteApiException e) {
+						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
+					} catch (ServerPasswordNotProvidedException e) {
+						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
+					}
+				}
+			};
+			ProgressManager.getInstance().run(task);
+		}
 	}
 
 	private VersionedCommentBean createReplyBean(String text) {
@@ -172,10 +218,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	}
 	
 	protected boolean checkIfDraftAndAuthor() {
-		if (checkIfUserAnAuthor() && comment.isDraft()) {
-			return true;
-		}
-		return false;
+		return checkIfUserAnAuthor() && comment.isDraft();
 	}
 
 	protected boolean checkIfUserAnAuthor() {
