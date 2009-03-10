@@ -145,20 +145,20 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	 * @param reviewAdapter
 	 * @param updateReason
 	 */
-	public void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
+	public synchronized void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
 			final UpdateReason updateReason) {
 
-//		start notifiaction;
+		// start notifiaction;
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
 		List<CrucibleNotification> notifications = addReview(filter, reviewAdapter, updateReason);
 
-//		finish notification;
+		// finish notification;
 		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, notifications));
 
 	}
 
-	public void clearOpenInIde(UpdateReason updateReason) {
+	public synchronized void clearOpenInIde(UpdateReason updateReason) {
 		// start notifiaction
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
@@ -199,14 +199,14 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		return r.get(crucibleFilter);
 	}
 
-	public synchronized void addReviewToCategory(CrucibleFilter crucibleFilter, ReviewAdapter review) {
+	private synchronized void addReviewToCategory(CrucibleFilter crucibleFilter, ReviewAdapter review) {
 		if (!reviews.containsKey(crucibleFilter)) {
 			reviews.put(crucibleFilter, new HashSet<ReviewAdapter>());
 		}
 		reviews.get(crucibleFilter).add(review);
 	}
 
-	public synchronized void removeReviewFromCategory(CrucibleFilter crucibleFilter,
+	private synchronized void removeReviewFromCategory(CrucibleFilter crucibleFilter,
 			ReviewAdapter review) {
 		reviews.get(crucibleFilter).remove(review);
 	}
@@ -226,19 +226,10 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 		return notifications;
 	}
-//		if (review == null || getReviews().contains(review)) {
-//			selectedReview = review;
-
-//	}
 
 	public Collection<ReviewAdapter> getOpenInIdeReviews() {
 		return reviews.get(PredefinedFilter.OpenInIde);
 	}
-//	public synchronized ReviewAdapter getSelectedReview() {
-//		if (getReviews().contains(selectedReview)) {
-//		}
-
-//	}
 
 	public void addListener(CrucibleReviewListModelListener listener) {
 		if (!modelListeners.contains(listener)) {
