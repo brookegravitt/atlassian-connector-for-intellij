@@ -53,7 +53,7 @@ public class BuildListModelImpl implements BuildListModel {
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN && build.getErrorMessage() != null) {
-					errors.add(build.getBuildKey() + ": " + build.getErrorMessage());
+					errors.add(build.getPlanKey() + ": " + build.getErrorMessage());
 					haveErrors = true;
 				}
 			}

@@ -85,7 +85,7 @@ public class BuildTree extends AbstractTree {
 			Object object = path.getLastPathComponent();
 			if (object instanceof BuildTreeNode) {
 				BuildTreeNode node = (BuildTreeNode) object;
-				if (node.getBuild().getBuildKey().equals(build.getBuildKey())) {
+				if (node.getBuild().getPlanKey().equals(build.getPlanKey())) {
 					expandPath(path);
 					makeVisible(path);
 					setSelectionPath(path);

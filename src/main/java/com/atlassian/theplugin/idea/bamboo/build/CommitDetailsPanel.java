@@ -69,7 +69,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 				try {
 					BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+							build.getServer(), build.getPlanKey(), build.getNumber());
 					final List<BambooChangeSet> commits = details.getCommitInfo();
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
@@ -150,7 +150,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 	private void fillContent(List<BambooChangeSet> commits) {
 		if (commits == null || commits.size() == 0) {
-			add(new JLabel("No changes in " + build.getBuildKey() + "-" + build.getBuildNumberAsString()));
+			add(new JLabel("No changes in " + build.getPlanKey() + "-" + build.getBuildNumberAsString()));
 			return;
 		}
 
@@ -197,7 +197,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		fileTreePanel.add(new JLabel("Changed Files"), BorderLayout.NORTH);
 
 		fileTree.setRootVisible(false);
-		fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(build.getBuildKey()));
+		fileTree.getTreeComponent().addMouseListener(new NavigateToCodeHandler(build.getPlanKey()));
 		fileTreePanel.add(fileTree, BorderLayout.CENTER);
 
 		split.setSecondComponent(fileTreePanel);

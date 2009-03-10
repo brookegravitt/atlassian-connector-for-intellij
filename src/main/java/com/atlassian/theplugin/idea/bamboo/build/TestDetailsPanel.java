@@ -85,7 +85,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getBuildKey(), build.getBuildNumber());
+							build.getServer(), build.getPlanKey(), build.getNumber());
 					failedTests = details.getFailedTestDetails();
 					succeededTests = details.getSuccessfulTestDetails();
 					SwingUtilities.invokeLater(new Runnable() {
@@ -186,7 +186,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 			add(split, gbc);
 		} else {
-			add(new JLabel("No tests in build " + build.getBuildKey() + "-" + build.getBuildNumberAsString()));
+			add(new JLabel("No tests in build " + build.getPlanKey() + "-" + build.getBuildNumberAsString()));
 		}
 	}
 
