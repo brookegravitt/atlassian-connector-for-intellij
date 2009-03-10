@@ -5,19 +5,20 @@ import com.intellij.ide.SelectInContext;
 import com.intellij.ide.SelectInTarget;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Created by IntelliJ IDEA.
  * User: mwent
  * Date: Mar 10, 2009
  * Time: 10:56:15 AM
- * To change this template use File | Settings | File Templates.
  */
 public class SelectInFisheyeTarget implements SelectInTarget {
+	@Nullable
 	public String getToolWindowId() {
 		return null;
 	}
 
+	@Nullable
 	public String getMinorViewId() {
 		return null;
 	}
@@ -37,11 +38,11 @@ public class SelectInFisheyeTarget implements SelectInTarget {
 		return findFisheyeLink(selector, project) != null;
 	}
 
+	@Nullable
 	private String findFisheyeLink(final Object selector, final Project project) {
 		if (selector instanceof PsiElement) {
 			PsiElement psiElement = (PsiElement) selector;
-			String url = FisheyeUrlHelper.getFisheyeUrl(psiElement, project);
-			return url;
+			return FisheyeUrlHelper.getFisheyeUrl(psiElement, project);
 		}
 		return null;
 	}
