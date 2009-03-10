@@ -26,6 +26,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FisheyeUrlHelper {
 
+	private FisheyeUrlHelper() {
+	}
+
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
 		final ProjectId projectId = CfgUtil.getProjectId(project);
