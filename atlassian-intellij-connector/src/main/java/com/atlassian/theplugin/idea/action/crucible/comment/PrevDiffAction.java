@@ -3,9 +3,8 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.vcs.ex.Range;
 
@@ -18,49 +17,17 @@ import javax.swing.*;
  */
 public class PrevDiffAction extends AbstractDiffNavigationAction {
 
-	public void actionPerformed(final AnActionEvent e) {
-		AtlassianTree tree = (AtlassianTree) getTree(e);
-		if (tree != null) {
-			CrucibleFileNode node = getPrevFileNode(tree, getSelectedNode(e), true);
-			if (node != null) {
-				selectNode(tree, node);
-				Editor ed = getEditorForNode(node);
-				if (ed == null) {
-					openFileNode(e, node, true);
-				} else {
-					Range r = getPrevRange(ed);
-					if (r != null) {
-						openFileAndSelectRange(e, node, r);
-					} else {
-						node = getPrevFileNode(tree, getSelectedNode(e), false);
-						if (node != null) {
-							selectNode(tree, node);
-							openFileNode(e, node, true);
-						}
-					}
-				}
-			}
-		}
+	protected Range getSubsequentRange(Editor ed) {
+		return getPrevRange(ed);
 	}
 
-	protected void updateForTree(final AnActionEvent e) {
+	protected CrucibleFileNode getSubsequentFileNode(AtlassianTree tree,
+													 AtlassianTreeNode selectedNode, boolean alsoThis) {
+		return getPrevFileNode(tree, selectedNode, alsoThis);
+	}
 
-		boolean enabled = false;
-
-		AtlassianTreeNode node = getSelectedNode(e);
-		CrucibleFileNode fileNode = getPrevFileNode((AtlassianTree) getTree(e), node, true);
-		if (fileNode != null) {
-			Editor ed = getEditorForNode(fileNode);
-			if (ed != null) {
-				Range r = getPrevRange(ed);
-				enabled = r != null;
-			}
-			if (!enabled) {
-				fileNode = getPrevFileNode((AtlassianTree) getTree(e), node, false);
-				enabled = fileNode != null;
-			}
-		}
-		e.getPresentation().setEnabled(enabled);
+	protected boolean wantLastNode() {
+		return true;
 	}
 
 	public void registerShortcutsInEditor(Editor editor) {
