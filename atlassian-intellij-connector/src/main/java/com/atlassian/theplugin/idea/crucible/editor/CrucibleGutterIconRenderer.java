@@ -1,7 +1,12 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -11,7 +16,11 @@ import com.atlassian.theplugin.idea.action.crucible.comment.gutter.RemoveAction;
 import com.atlassian.theplugin.idea.action.crucible.comment.gutter.ReplyAction;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.LineCommentTooltipPanel;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -43,18 +52,18 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	public String getTooltipText() {
 		StringBuilder s = new StringBuilder();
 		s.append("<html><b>")
-			.append(comment.getAuthor().getDisplayName())
-			.append("</b> said <i>on ")
-			.append(CommentDateUtil.getDateText(comment.getCreateDate()))
-			.append("</i>:<br>")
-			.append(comment.getMessage().replace("\n", "<br>"));
+				.append(comment.getAuthor().getDisplayName())
+				.append("</b> said <i>on ")
+				.append(CommentDateUtil.getDateText(comment.getCreateDate()))
+				.append("</i>:<br>")
+				.append(comment.getMessage().replace("\n", "<br>"));
 		for (VersionedComment versionedComment : comment.getReplies()) {
 			s.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>")
-				.append(versionedComment.getAuthor().getDisplayName())
-				.append("</b> replied <i> on ")
+					.append(versionedComment.getAuthor().getDisplayName())
+					.append("</b> replied <i> on ")
 					.append(CommentDateUtil.getDateText(versionedComment.getCreateDate()))
-				.append("</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;")
-				.append(versionedComment.getMessage().replace("\n", "<br>"));
+					.append("</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;")
+					.append(versionedComment.getMessage().replace("\n", "<br>"));
 		}
 		s.append("</html>");
 		return s.toString();
@@ -124,24 +133,24 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 					runUpdateCommandTask(commentBean, anActionEvent, this);
 				}
 
-				protected void removeComment(final VersionedComment comment) {
-					runRemoveCommentTask(comment, anActionEvent, this);
+				protected void removeComment(final VersionedComment aComment) {
+					runRemoveCommentTask(aComment, anActionEvent, this);
 				}
 
-				protected void publishComment(VersionedComment comment) {
-					runPublishCommentTask(comment, anActionEvent, this);
+				protected void publishComment(VersionedComment aComment) {
+					runPublishCommentTask(aComment, anActionEvent, this);
 				}
 			};
 			LineCommentTooltipPanel.showCommentTooltipPopup(anActionEvent, lctp);
 		}
 
-		private void runRemoveCommentTask(final VersionedComment comment, final AnActionEvent anActionEvent,
-										  final LineCommentTooltipPanel panel) {
+		private void runRemoveCommentTask(final VersionedComment aComment, final AnActionEvent anActionEvent,
+				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Removing comment", false) {
 				public void run(ProgressIndicator progressIndicator) {
 					try {
-						review.removeVersionedComment(comment, fileInfo);
+						review.removeVersionedComment(aComment, fileInfo);
 					} catch (RemoteApiException e) {
 						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
 					} catch (ServerPasswordNotProvidedException e) {
@@ -155,7 +164,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		}
 
 		private void runUpdateCommandTask(final VersionedCommentBean commentBean, final AnActionEvent anActionEvent,
-										  final LineCommentTooltipPanel panel) {
+				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Updating comment", false) {
 				public void run(ProgressIndicator progressIndicator) {
@@ -172,7 +181,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		}
 
 		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
-									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
+				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Adding new comment reply", false) {
 				public void run(ProgressIndicator progressIndicator) {
@@ -188,13 +197,13 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 			ProgressManager.getInstance().run(task);
 		}
 
-		private void runPublishCommentTask(final VersionedComment comment, AnActionEvent anActionEvent,
-										   final LineCommentTooltipPanel panel) {
+		private void runPublishCommentTask(final VersionedComment aComment, AnActionEvent anActionEvent,
+				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Publishing comment", false) {
 				public void run(ProgressIndicator progressIndicator) {
 					try {
-						review.publisVersionedComment(fileInfo, comment);
+						review.publisVersionedComment(fileInfo, aComment);
 					} catch (RemoteApiException e) {
 						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
 					} catch (ServerPasswordNotProvidedException e) {
@@ -216,7 +225,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		reply.setDraft(false);
 		return reply;
 	}
-	
+
 	protected boolean checkIfDraftAndAuthor() {
 		return checkIfUserAnAuthor() && comment.isDraft();
 	}
