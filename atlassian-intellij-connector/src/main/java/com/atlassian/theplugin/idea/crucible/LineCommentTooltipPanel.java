@@ -163,6 +163,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private HyperlinkLabel btnPublish;
 		private HyperlinkLabel btnSaveDraft;
 		private JLabel draftLabel;
+		private JPanel defectClassificationPanel;
 
 		private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
@@ -276,6 +277,18 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				createDeleteButton(gbc);
 			}
 
+			gbc.insets = new Insets(0, pad, 0, 0);
+
+			createCommentBody(comment, pad, gbc);
+
+			if (comment != null && !comment.isReply()) {
+				createDefectClassificationPanel(gbc);
+			}
+
+			addMouseListener(headerListener);
+		}
+
+		private void createCommentBody(final VersionedComment comment, int pad, GridBagConstraints gbc) {
 			int gridwidth = gbc.gridx + 1;
 
 			commentBody.setOpaque(true);
@@ -285,19 +298,33 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			commentBody.setRequestFocusEnabled(true);
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					setCommentBodyEditable(commentBody, comment == null);
+					setCommentBodyEditable(CommentPanel.this, comment == null);
 				}
 			});
 			gbc.gridx = 0;
-			gbc.gridy = 1;
+			gbc.gridy++;
 			gbc.gridwidth = gridwidth;
 			gbc.weightx = 1.0;
 			gbc.weighty = 1.0;
 			gbc.fill = GridBagConstraints.BOTH;
-			gbc.insets = new Insets(0, pad, 0, 0);
 			add(commentBody, gbc);
+		}
 
-			addMouseListener(headerListener);
+		private void createDefectClassificationPanel(GridBagConstraints gbc) {
+			gbc.gridy++;
+			gbc.gridx = 0;
+			gbc.weightx = 1.0;
+			gbc.weighty = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.anchor = GridBagConstraints.LINE_END;
+			JCheckBox boxIsDefect = new JCheckBox("Defect");
+			JComboBox classification = new JComboBox();
+			defectClassificationPanel = new JPanel();
+			defectClassificationPanel.add(boxIsDefect);
+			defectClassificationPanel.add(classification);
+			defectClassificationPanel.setOpaque(false);
+			add(defectClassificationPanel, gbc);
+			defectClassificationPanel.setVisible(false);
 		}
 
 		private boolean isOwner(VersionedComment cmt) {
@@ -340,6 +367,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (commentBody.isEditable()) {
+						if (!validateText(commentBody.getText())) {
+							return;
+						}
 						commentBody.setBackground(Color.GRAY);
 						commentBody.setEnabled(false);
 						btnEdit.setVisible(false);
@@ -363,7 +393,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 						lastCommentBody = commentBody.getText();
 					}
 					btnCancel.setVisible(!commentBody.isEditable());
-					setCommentBodyEditable(commentBody, !commentBody.isEditable());
+					setCommentBodyEditable(CommentPanel.this, !commentBody.isEditable());
 				}
 			});
 			btnEdit.setOpaque(false);
@@ -374,12 +404,15 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				btnSaveDraft.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
 						if (commentBody.isEditable()) {
+							if (!validateText(commentBody.getText())) {
+								return;
+							}
 							commentBody.setBackground(Color.GRAY);
 							commentBody.setEnabled(false);
 							btnSaveDraft.setVisible(false);
 							addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(), true);
 							btnCancel.setVisible(false);
-							setCommentBodyEditable(commentBody, false);
+							setCommentBodyEditable(CommentPanel.this, false);
 							btnEdit.setHyperlinkText(EDIT);
 						}
 					}
@@ -403,7 +436,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 						commentBody.setText(lastCommentBody);
 					}
 					if (comment != null) {
-						setCommentBodyEditable(commentBody, false);
+						setCommentBodyEditable(CommentPanel.this, false);
 					} else {
 						removeCommentReplyPanel(CommentPanel.this);
 					}
@@ -426,8 +459,12 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			commentBody.setEnabled(true);
 			btnEdit.setEnabled(true);
 
-			draftLabel.setVisible(comment.isDraft());
-			btnPublish.setVisible(comment.isDraft());
+			if (draftLabel != null) {
+				draftLabel.setVisible(comment.isDraft());
+			}
+			if (btnPublish != null) {
+				btnPublish.setVisible(comment.isDraft());
+			}
 		}
 
 		public HyperlinkLabel getBtnEdit() {
@@ -476,7 +513,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				}
 				JComponent publish = panel.getBtnPublish();
 				if (publish != null) {
-					publish.setVisible(visible);
+					publish.setVisible(visible && panel.comment.isDraft());
 				}
 			}
 		}
@@ -486,7 +523,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 	}
 
-	private static void setCommentBodyEditable(JEditorPane pane, boolean editable) {
+	private static void setCommentBodyEditable(LineCommentTooltipPanel.CommentPanel commentPanel, boolean editable) {
+		JEditorPane pane = commentPanel.commentBody;
 		pane.setEditable(editable);
 		if (editable) {
 			pane.requestFocusInWindow();
@@ -496,6 +534,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 		pane.setBorder(BorderFactory.createEmptyBorder(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
 		pane.setBackground(editable ? CommentHighlighter.VERSIONED_COMMENT_BACKGROUND_COLOR : Color.WHITE);
+
+		if (commentPanel.defectClassificationPanel != null) {
+			commentPanel.defectClassificationPanel.setVisible(editable);
+		}
 	}
 
 	public void setAllButtonsVisible() {
@@ -523,6 +565,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			setStatusText("Updating comment...");
 			updateComment(comment, text);
 		}
+	}
+
+	private static boolean validateText(String text) {
+		return !(text == null || text.length() == 0);
 	}
 
 	protected abstract void addNewReply(VersionedComment parent, String text, boolean draft);
