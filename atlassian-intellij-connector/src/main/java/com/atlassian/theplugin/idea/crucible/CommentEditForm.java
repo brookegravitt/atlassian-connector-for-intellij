@@ -16,7 +16,12 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -25,7 +30,6 @@ import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.Action;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,7 +73,7 @@ public class CommentEditForm extends DialogWrapper {
 		for (CustomFieldDef metric : metrics) {
 			final JLabel label = new JLabel(metric.getLabel());
 			final JComboBox combo = new JComboBox();
-			final String metricName = metric.getName();
+			final String metricName = metric.getLabel();
 			combo.addItem("Select " + metricName);
 			for (CustomFieldValue value : metric.getValues()) {
 				combo.addItem(value.getName());
