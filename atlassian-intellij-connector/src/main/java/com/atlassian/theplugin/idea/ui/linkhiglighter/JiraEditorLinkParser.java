@@ -40,9 +40,8 @@ import java.util.regex.Pattern;
 /**
  * User: pmaruszak
  */
-final public class JiraEditorLinkParser {
+public final class JiraEditorLinkParser {
 	static Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
-	static Pattern JIRA_ISSUE_LINK_REPLACE_PATTERN = Pattern.compile("https://studio.atlassian.com/browse/$1");
 	private final Project project;
 
 	JiraEditorLinkParser(Project project) {

@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> highlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
-	JiraEditorLinkParser jiraEditorLinkParser;
+	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
 
 
@@ -72,7 +72,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			if (psiFile != null) {
 				Editor editor = editorManager.getSelectedTextEditor();
 				if (editor != null) {
-					addHighlighter(newFile, psiFile, editor, jiraEditorLinkParser);
+					addHighlighter(newFile, psiFile, editor);
 				}
 			}
 		}
@@ -83,8 +83,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		///@todo: implement
 	}
 
-	private void addHighlighter(final VirtualFile newFile, final PsiFile psiFile, final Editor editor,
-			JiraEditorLinkParser jiraEditorLinkParser) {
+	private void addHighlighter(final VirtualFile newFile, final PsiFile psiFile, final Editor editor) {
 		JiraLinkHighlighter highlighter = new JiraLinkHighlighter(newFile, psiFile, editor, jiraEditorLinkParser);
 		highlighter.startListeninig();
 		highlighters.put(newFile, highlighter);
