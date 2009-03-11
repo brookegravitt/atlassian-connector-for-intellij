@@ -32,7 +32,11 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.editor.markup.HighlighterLayer;
+import com.intellij.openapi.editor.markup.HighlighterTargetArea;
+import com.intellij.openapi.editor.markup.MarkupModel;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -86,7 +90,7 @@ public final class CommentHighlighter {
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
 			if (virtualFile != null) {
 				if (doc.getUserData(CRUCIBLE_DATA_KEY) == null
-						|| doc.getUserData(CRUCIBLE_DATA_KEY) == true) {
+						|| doc.getUserData(CRUCIBLE_DATA_KEY)) {
 					applyHighlighters(project, editor, review, reviewItem);
 
 					registerKeyboardActions(editor);
@@ -137,65 +141,63 @@ public final class CommentHighlighter {
 			@NotNull final ReviewAdapter review) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			Document document = editor.getDocument();
-			if (document != null) {
-				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-				if (virtualFile != null) {
-					if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
-						final ReviewAdapter data = virtualFile.getUserData(REVIEW_DATA_KEY);
-						final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
-						if (data != null && file != null) {
-							if (data.getPermId().equals(review.getPermId())) {
-								try {
-									for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
-										if (crucibleFileInfo.equals(file)) {
-											applyHighlighters(project, editor, review, crucibleFileInfo);
-											virtualFile.putUserData(REVIEW_DATA_KEY, review);
-											virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
-											virtualFile.putUserData(COMMENT_DATA_KEY, true);
-										}
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			if (virtualFile != null) {
+				if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
+					final ReviewAdapter data = virtualFile.getUserData(REVIEW_DATA_KEY);
+					final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
+					if (data != null && file != null) {
+						if (data.getPermId().equals(review.getPermId())) {
+							try {
+								for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
+									if (crucibleFileInfo.equals(file)) {
+										applyHighlighters(project, editor, review, crucibleFileInfo);
+										virtualFile.putUserData(REVIEW_DATA_KEY, review);
+										virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+										virtualFile.putUserData(COMMENT_DATA_KEY, true);
 									}
-								} catch (ValueNotYetInitialized valueNotYetInitialized) {
-									throw new RuntimeException(valueNotYetInitialized);
 								}
-							} else {
-								removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
+								throw new RuntimeException(valueNotYetInitialized);
+							}
+						} else {
+							removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
+						}
+					}
+				} else {
+					try {
+						Set<CrucibleFileInfo> files = review.getFiles();
+						if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
+							final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+									virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
+							if (fileInfo != null) {
+								CrucibleHelper.openFileWithDiffs(project
+										, false
+										, review
+										, fileInfo
+										, 1
+										, 1
+										,
+										new UpdateEditorWithContextActionImpl(project, editor, review,
+												fileInfo));
+							}
+						} else {
+							CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+									virtualFile.getPath(), files);
+							if (fileInfo != null) {
+								CrucibleHelper.openFileWithDiffs(project
+										, false
+										, review
+										, fileInfo
+										, 1
+										, 1
+										,
+										new UpdateEditorCurrentContentActionImpl(project, editor, review,
+												fileInfo));
 							}
 						}
-					} else {
-						try {
-							Set<CrucibleFileInfo> files = review.getFiles();
-							if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
-								final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-										virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
-								if (fileInfo != null) {
-									CrucibleHelper.openFileWithDiffs(project
-											, false
-											, review
-											, fileInfo
-											, 1
-											, 1
-											,
-											new UpdateEditorWithContextActionImpl(project, editor, review,
-													fileInfo));
-								}
-							} else {
-								CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-										virtualFile.getPath(), files);
-								if (fileInfo != null) {
-									CrucibleHelper.openFileWithDiffs(project
-											, false
-											, review
-											, fileInfo
-											, 1
-											, 1
-											,
-											new UpdateEditorCurrentContentActionImpl(project, editor, review,
-													fileInfo));
-								}
-							}
-						} catch (ValueNotYetInitialized valueNotYetInitialized) {
-							// don't do anything - should not happen, but even if happens - we don't want to break file opening
-						}
+					} catch (ValueNotYetInitialized valueNotYetInitialized) {
+						// don't do anything - should not happen, but even if happens - we don't want to break file opening
 					}
 				}
 			}
@@ -206,12 +208,10 @@ public final class CommentHighlighter {
 	public static void removeCommentsInEditors(@NotNull final Project project) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			Document document = editor.getDocument();
-			if (document != null) {
-				VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-				if (virtualFile != null) {
-					if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
-						removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
-					}
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			if (virtualFile != null) {
+				if (virtualFile.getUserData(COMMENT_DATA_KEY) != null) {
+					removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
 				}
 			}
 		}
