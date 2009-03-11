@@ -41,7 +41,7 @@ import java.util.regex.Pattern;
  * User: pmaruszak
  */
 public final class JiraEditorLinkParser {
-	private final static Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
+	private static final Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
 	private final Project project;
 
 	JiraEditorLinkParser(Project project) {
