@@ -98,6 +98,10 @@ public class ProjectConfigurationPanel extends JPanel {
 			Messages.showInfoMessage(this, "Default Crucible server settings have been cleared.", "Information");
 		}
 
+		if (!projectConfiguration.isDefaultJiraServerValid()) {
+			projectConfiguration.setDefaultJiraServerId(null);
+			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
+		}
 
 	}
 
