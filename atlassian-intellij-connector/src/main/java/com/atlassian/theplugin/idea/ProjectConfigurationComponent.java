@@ -88,8 +88,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				DialogWithDetails.showExceptionDialog(theProject, CFG_LOAD_ERROR_MSG + "\nEmpty configuration will be used.\n"
 						+ "If you want to preserve settings stored in your configuration, do not edit your "
 						+ PluginUtil.PRODUCT_NAME + " configuration using IDEA, but instead close the project "
-						+ "and try resolve the problem by modyfing directly the configuration file",
-						e, PluginUtil.PRODUCT_NAME);
+						+ "and try resolve the problem by modyfing directly the configuration file", e);
 			}
 		});
 	}
