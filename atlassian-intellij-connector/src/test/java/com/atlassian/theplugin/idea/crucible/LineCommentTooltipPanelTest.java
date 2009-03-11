@@ -70,10 +70,11 @@ public class LineCommentTooltipPanelTest {
         }
 
         SwingAppRunner.run(new LineCommentTooltipPanel(ra, file, comment, true) {
-            protected void addNewReply(VersionedComment parent, String text) {
+            protected void addNewReply(VersionedComment parent, String text, boolean draft) {
                 try {
                     VersionedCommentBean reply = createReply(comment, text);
-                    ra.addVersionedCommentReply(file, parent, reply);
+					reply.setDraft(draft);
+					ra.addVersionedCommentReply(file, parent, reply);
                 } catch (Exception e) {
 					e.printStackTrace();
                 }
