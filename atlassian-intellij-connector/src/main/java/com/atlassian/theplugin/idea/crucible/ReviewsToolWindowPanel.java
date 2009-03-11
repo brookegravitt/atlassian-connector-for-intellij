@@ -163,6 +163,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	private void addReviewTreeListeners() {
 		reviewTree.addKeyListener(new KeyAdapter() {
+			@Override
 			public void keyPressed(final KeyEvent e) {
 				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
@@ -398,7 +399,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {
-		private Exception exception = null;
+		private Exception exception;
 
 		@Override
 		public void reviewListUpdateStarted(UpdateContext updateContext) {
