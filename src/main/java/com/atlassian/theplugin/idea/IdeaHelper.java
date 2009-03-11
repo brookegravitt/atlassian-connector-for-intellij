@@ -135,7 +135,7 @@ public final class IdeaHelper {
 			public void run() {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occurred while using remote service:\n"
 						+ e.getMessage(), DialogWithDetails.getExceptionString(e)
-						+ (e.getServerStackTrace() != null ? e.getServerStackTrace() : ""), PluginUtil.PRODUCT_NAME);
+						+ (e.getServerStackTrace() != null ? e.getServerStackTrace() : ""));
 			}
 		});
 	}
