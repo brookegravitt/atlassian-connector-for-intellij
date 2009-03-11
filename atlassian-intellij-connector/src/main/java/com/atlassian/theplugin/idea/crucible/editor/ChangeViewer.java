@@ -19,6 +19,8 @@ package com.atlassian.theplugin.idea.crucible.editor;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
 import com.intellij.openapi.editor.markup.HighlighterLayer;
@@ -26,10 +28,13 @@ import com.intellij.openapi.editor.markup.HighlighterTargetArea;
 import com.intellij.openapi.editor.markup.LineMarkerRenderer;
 import com.intellij.openapi.editor.markup.MarkupEditorFilterFactory;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
 import com.intellij.openapi.vcs.ex.Range;
 import com.intellij.openapi.vcs.ex.RangesBuilder;
+import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,6 +83,22 @@ public final class ChangeViewer {
 		}
 	}
 
+	public static void removeHighlightersInEditors(@NotNull final Project project) {
+		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
+			Document document = editor.getDocument();
+			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			if (virtualFile != null) {
+				Collection<RangeHighlighter> ranges = document.getUserData(ChangeViewer.CRUCIBLE_RANGES);
+				document.putUserData(ChangeViewer.CRUCIBLE_RANGES, null);
+				if (ranges == null) {
+					continue;
+				}
+				for (RangeHighlighter rangeHighlighter : ranges) {
+					document.getMarkupModel(project).removeHighlighter(rangeHighlighter);
+				}
+			}
+		}
+	}
 
 	private static void removeHighlighters(Project project, Document displayDoc) {
 		Collection<RangeHighlighter> ranges = displayDoc.getUserData(CRUCIBLE_RANGES);
