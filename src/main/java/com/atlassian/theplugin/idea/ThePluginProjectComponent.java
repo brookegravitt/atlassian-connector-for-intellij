@@ -38,6 +38,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -46,6 +47,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -79,7 +81,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
-    private  CrucibleNotificationTooltip crucibleTooltip;
+	private CrucibleNotificationTooltip crucibleTooltip;
 
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
@@ -104,6 +106,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private ConfigurationListenerImpl configurationListener;
 
 	private CrucibleEditorFactoryListener crucibleEditorFactoryListener;
+	private FileEditorListenerImpl fileEditorListener;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
@@ -131,10 +134,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindow = pluginToolWindow;
 		/*
 
-
-										WARNING!!!
-
-
+										WARNING!!!                                                
 		BEFORE ADDING SOME INITIALIZATION CODE TO COSTRUCTOR THINK TWICE
                                          st
 		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
@@ -158,6 +158,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public void initComponent() {
 		LoggerImpl.getInstance().info("Init ThePlugin project component.");
+		this.fileEditorListener = new FileEditorListenerImpl(project);
 	}
 
 	public void disposeComponent() {
@@ -275,7 +276,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					.addEditorFactoryListener(crucibleEditorFactoryListener);
 
 			registerCrucibleNotifier();
-
 		}
 	}
 
@@ -291,6 +291,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// content moved to StartupManager to wait until
 		// here we have guarantee that IDEA splash screen will not obstruct our window
 		askForUserStatistics();
+		FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
 	}
 
 	private void askForUserStatistics() {
@@ -340,6 +341,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
+			FileEditorManager.getInstance(project).removeFileEditorManagerListener(fileEditorListener);
 			created = false;
 		}
 	}
