@@ -18,13 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -287,7 +281,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		builder.add(fshHelp2, cc.xy(4, 21));
 
 		builder.addSeparator("Jira", cc.xyw(1, 23, ALL_COLUMNS));
-		JLabel jiraHelp = new JLabel(CRUCIBLE_HELP_TEXT);
+		JLabel jiraHelp = new JLabel(JIRA_HELP_TEXT);
 		jiraHelp.setFont(jiraHelp.getFont().deriveFont(10.0f));
 		// jgorycki: well, it seems like FormLayout doesn't give a shit about JLabel's maximum width. However,
 		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
