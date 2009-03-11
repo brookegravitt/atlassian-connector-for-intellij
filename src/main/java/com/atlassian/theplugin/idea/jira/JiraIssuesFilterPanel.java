@@ -326,8 +326,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
+		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -420,9 +420,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 			public void run() {
 				if (JiraIssuesFilterPanel.this.getRootPane().isShowing()) {
 					DialogWithDetails.showExceptionDialog(JiraIssuesFilterPanel.this.getRootPane(),
-							description.length() > 0 ? description : "Cannot retrieve metadata from JIRA",
-							e,
-							"Error");
+							description.length() > 0 ? description : "Cannot retrieve metadata from JIRA", e);
 				}
 			}
 		}, modalityState);
@@ -658,7 +656,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 				ApplicationManager.getApplication().invokeLater(new Runnable() {
 					public void run() {
 						DialogWithDetails.showExceptionDialog(JiraIssuesFilterPanel.this.getContentPane(),
-								"Retrieving details from JIRA", exception, "Cannot retrieve metadata from JIRA");
+								"Cannot retrieve metadata from JIRA", exception);
 					}
 				}, modality);
 			}

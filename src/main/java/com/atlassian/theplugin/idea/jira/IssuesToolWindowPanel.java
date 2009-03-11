@@ -428,7 +428,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					if (exception != null) {
 						final String serverName = server != null ? server.getName() : "[UNDEFINED!]";
 						DialogWithDetails.showExceptionDialog(getProject(),
-								"Cannot fetch issue " + issueKey + " from server " + serverName, exception, "Error");
+								"Cannot fetch issue " + issueKey + " from server " + serverName, exception);
 						return;
 					}
 					if (issue != null) {
