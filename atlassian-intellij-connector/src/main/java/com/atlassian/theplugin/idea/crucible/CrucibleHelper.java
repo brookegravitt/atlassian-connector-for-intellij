@@ -139,7 +139,7 @@ public final class CrucibleHelper {
 					final String fileRevision = reviewItem.getOldFileDescriptor().getRevision();
 					final String toRevision = reviewItem.getFileDescriptor().getRevision();
 					VcsIdeaHelper.openFileWithDiffs(project
-							, true
+							, modal
 							, filename
 							, fileRevision
 							, toRevision
