@@ -41,7 +41,10 @@ public class ShowProjectSettingsAction extends AnAction {
 			ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
 			ServerCfg server = event.getData(Constants.SERVER_KEY);
 			component.setSelectedServer(server);
-			ShowSettingsUtil.getInstance().editConfigurable(project, component);
+			final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
+			if (settingsUtil != null) {
+				settingsUtil.editConfigurable(project, component);
+			}
 		}
 	}
 
