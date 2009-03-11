@@ -1,8 +1,11 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.project.Project;
 
 /**
  * User: jgorycki
@@ -11,8 +14,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public abstract class AbstractCrucibleToolbarAction extends AnAction {
 
-	protected boolean onUpdate(AnActionEvent e) { return true; }
-	protected void onUpdateFinished(AnActionEvent e, boolean enabled) { }
+	protected boolean onUpdate(AnActionEvent e) {
+		return true;
+	}
+
+	protected void onUpdateFinished(AnActionEvent e, boolean enabled) {
+	}
 
 	@Override
 	public final void update(AnActionEvent e) {
@@ -21,6 +28,15 @@ public abstract class AbstractCrucibleToolbarAction extends AnAction {
 		boolean result = false;
 		if (windowEnabled != null && windowEnabled) {
 			result = onUpdate(e);
+		}
+
+		Project project = e.getData(DataKeys.PROJECT);
+		if (project != null) {
+			if (!VcsIdeaHelper.isUnderVcsControl(e)) {
+				result = false;
+			}
+		} else {
+			result = false;
 		}
 
 		e.getPresentation().setEnabled(result);
