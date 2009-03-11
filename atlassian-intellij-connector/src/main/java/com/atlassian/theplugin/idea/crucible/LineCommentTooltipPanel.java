@@ -9,10 +9,11 @@ import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.ui.HyperlinkLabel;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,10 +21,7 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +33,7 @@ import java.util.List;
 public abstract class LineCommentTooltipPanel extends JPanel {
 	private final ReviewAdapter review;
 	private MyReviewListener listener;
+	private final Project project;
 	private final CrucibleFileInfo fileInfo;
 	private final VersionedComment thisLineComment;
 	private final boolean useTextTwixie;
@@ -68,14 +67,15 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		this.anActionEvent = e;
 	}
 
-	public LineCommentTooltipPanel(ReviewAdapter review,
+	public LineCommentTooltipPanel(Project project, ReviewAdapter review,
 								   CrucibleFileInfo file, VersionedComment thisLineComment) {
-		this(review, file, thisLineComment, false);
+		this(project, review, file, thisLineComment, false);
 	}
 
-	public LineCommentTooltipPanel(final ReviewAdapter review, CrucibleFileInfo file,
+	public LineCommentTooltipPanel(Project project, final ReviewAdapter review, CrucibleFileInfo file,
 								   VersionedComment thisLineComment, boolean useTextTwixie) {
 		super(new BorderLayout());
+		this.project = project;
 		this.fileInfo = file;
 		this.thisLineComment = thisLineComment;
 		this.useTextTwixie = useTextTwixie;
@@ -164,6 +164,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private HyperlinkLabel btnSaveDraft;
 		private JLabel draftLabel;
 		private JPanel defectClassificationPanel;
+		private JCheckBox boxIsDefect;
+		private JLabel defectLabel;
 
 		private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
@@ -224,14 +226,13 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					add(draftLabel, gbc);
 
 				}
-				if (comment.isDefectRaised()) {
-					JLabel defect = new WhiteLabel();
-					defect.setForeground(Color.RED);
-					defect.setText("DEFECT: " + ReviewCommentPanel.getRankingString(comment));
-					gbc.gridx++;
-					gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
-					add(defect, gbc);
-				}
+
+				defectLabel = new WhiteLabel();
+				defectLabel.setForeground(Color.RED);
+				gbc.gridx++;
+				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
+				add(defectLabel, gbc);
+				updateDefectField();
 			} else {
 				gbc.gridx++;
 				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
@@ -279,7 +280,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 			gbc.insets = new Insets(0, pad, 0, 0);
 
-			createCommentBody(comment, pad, gbc);
+			createCommentBody(gbc);
 
 			if (comment != null && !comment.isReply()) {
 				createDefectClassificationPanel(gbc);
@@ -288,7 +289,12 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			addMouseListener(headerListener);
 		}
 
-		private void createCommentBody(final VersionedComment comment, int pad, GridBagConstraints gbc) {
+		private void updateDefectField() {
+			defectLabel.setText("DEFECT: " + ReviewCommentPanel.getRankingString(comment));
+			defectLabel.setVisible(comment.isDefectRaised());
+		}
+
+		private void createCommentBody(GridBagConstraints gbc) {
 			int gridwidth = gbc.gridx + 1;
 
 			commentBody.setOpaque(true);
@@ -315,15 +321,43 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			gbc.gridx = 0;
 			gbc.weightx = 1.0;
 			gbc.weighty = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.anchor = GridBagConstraints.LINE_END;
-			JCheckBox boxIsDefect = new JCheckBox("Defect");
-			JComboBox classification = new JComboBox();
-			defectClassificationPanel = new JPanel();
-			defectClassificationPanel.add(boxIsDefect);
-			defectClassificationPanel.add(classification);
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			gbc.anchor = GridBagConstraints.LINE_START;
+			boxIsDefect = new JCheckBox("Mark as Defect");
+			boxIsDefect.setSelected(comment.isDefectRaised());
+
+			defectClassificationPanel = new JPanel(new GridBagLayout());
+			GridBagConstraints gbc2 = new GridBagConstraints();
+			gbc2.gridx = 0;
+			gbc2.gridy = 0;
+			defectClassificationPanel.add(boxIsDefect, gbc2);
+			gbc2.gridx++;
+			gbc2.weightx = 1.0;
+			gbc2.fill = GridBagConstraints.HORIZONTAL;
+			JPanel filler = new JPanel();
+			filler.setOpaque(false);
+			defectClassificationPanel.add(filler, gbc2);
+			gbc2.gridx++;
+			gbc2.weightx = 0.0;
+			gbc2.fill = GridBagConstraints.NONE;
+
+			JPanel combosPanel = new JPanel(new FlowLayout());
+			combosPanel.setOpaque(false);
+			List<CustomFieldDef> metrics = CrucibleHelper.getMetricsForReview(project, review);
+			final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(
+					review, (CommentBean) comment, metrics, combosPanel);
+			combos.showMetricCombos(comment.isDefectRaised());
+
 			defectClassificationPanel.setOpaque(false);
+			defectClassificationPanel.add(combosPanel, gbc2);
 			add(defectClassificationPanel, gbc);
+
+			boxIsDefect.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent event) {
+					combos.showMetricCombos(boxIsDefect.isSelected());
+				}
+			});
+
 			defectClassificationPanel.setVisible(false);
 		}
 
@@ -377,7 +411,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							((VersionedCommentBean) comment).setDraft(false);
 						}
 						addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(),
-								comment != null && comment.isDraft());
+								comment != null && comment.isDraft(), boxIsDefect != null && boxIsDefect.isSelected());
 						btnEdit.setHyperlinkText(EDIT);
 						if (btnSaveDraft != null) {
 							btnSaveDraft.setVisible(false);
@@ -410,7 +444,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							commentBody.setBackground(Color.GRAY);
 							commentBody.setEnabled(false);
 							btnSaveDraft.setVisible(false);
-							addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(), true);
+							addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(), true,
+									boxIsDefect != null && boxIsDefect.isSelected());
 							btnCancel.setVisible(false);
 							setCommentBodyEditable(CommentPanel.this, false);
 							btnEdit.setHyperlinkText(EDIT);
@@ -451,10 +486,12 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			return comment;
 		}
 
-		public void setComment(VersionedComment comment) {
-			this.comment = comment;
+		public void setComment(VersionedComment cmt) {
+			this.comment = cmt;
 			setCommentText();
 			setCommentDate();
+			updateDefectField();
+			
 			commentBody.setBackground(Color.WHITE);
 			commentBody.setEnabled(true);
 			btnEdit.setEnabled(true);
@@ -537,6 +574,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 		if (commentPanel.defectClassificationPanel != null) {
 			commentPanel.defectClassificationPanel.setVisible(editable);
+			commentPanel.defectClassificationPanel.validate();
 		}
 	}
 
@@ -555,7 +593,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	 * @param text - new comment body
 	 * @param draft - is the comment a draft?
 	 */
-	private void addOrUpdateCommentForReview(CommentPanel panel, VersionedComment comment, String text, boolean draft) {
+	private void addOrUpdateCommentForReview(CommentPanel panel, VersionedComment comment,
+											 String text, boolean draft, boolean defect) {
 
 		if (comment == null) {
 			removeCommentReplyPanel(panel);
@@ -563,6 +602,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			addNewReply(thisLineComment, text, draft);
 		} else {
 			setStatusText("Updating comment...");
+			((CommentBean) comment).setDefectRaised(defect);
 			updateComment(comment, text);
 		}
 	}
