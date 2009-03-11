@@ -65,7 +65,11 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
 			Document document = editor.getDocument();
 
-			PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(editor.getProject(), ourUrl);
+			final Project project = editor.getProject();
+			if (project == null) {
+				continue;
+			}
+			PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(project, ourUrl);
 
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
@@ -357,7 +361,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		private final CrucibleFileNode node;
 
 		public OpenEditorAndMoveToFirstDiff(CrucibleFileNode n, Project p, ReviewAdapter r,
-											CrucibleFileInfo f, boolean focusOnOpen) {
+				CrucibleFileInfo f, boolean focusOnOpen) {
 			super(p, r, f, focusOnOpen);
 			this.node = n;
 		}
@@ -373,7 +377,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		private final CrucibleFileNode node;
 
 		public OpenEditorAndMoveToLastDiff(CrucibleFileNode n, Project p, ReviewAdapter r,
-										   CrucibleFileInfo f, boolean focusOnOpen) {
+				CrucibleFileInfo f, boolean focusOnOpen) {
 			super(p, r, f, focusOnOpen);
 			this.node = n;
 		}
@@ -391,7 +395,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		private final Range range;
 
 		public OpenEditorAndSelectRange(Range range, Project p, ReviewAdapter r,
-										CrucibleFileInfo f, boolean focusOnOpen) {
+				CrucibleFileInfo f, boolean focusOnOpen) {
 			super(p, r, f, focusOnOpen);
 			this.range = range;
 		}
@@ -415,6 +419,6 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 	protected abstract Range getSubsequentRange(Editor ed);
 
 	protected abstract CrucibleFileNode getSubsequentFileNode(AtlassianTree tree,
-															  AtlassianTreeNode selectedNode, boolean alsoThis);
+			AtlassianTreeNode selectedNode, boolean alsoThis);
 
 }
