@@ -213,7 +213,7 @@ public final class CrucibleContentHelper {
 		public void onSuccess() {
 			if (exception != null) {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
-						+ niceFileMessage + ":\n" + exception.getMessage(), exception, "Error fetching file");
+						+ niceFileMessage + ":\n" + exception.getMessage(), exception);
 				return;
 			}
 			if (action != null) {

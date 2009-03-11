@@ -22,11 +22,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -54,12 +50,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
@@ -175,8 +167,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 					if (CrucibleHelperForm.this.getRootComponent().isShowing()) {
 						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 							public void run() {
-								DialogWithDetails.showExceptionDialog(project, "Cannot retrieve data from Crucible server",
-										e, "Error");
+								DialogWithDetails.showExceptionDialog(project, "Cannot retrieve data from Crucible server", e);
 							}
 						}, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
 					}
@@ -462,9 +453,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 				} catch (final Throwable e) {
 					ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 						public void run() {
-							DialogWithDetails
-									.showExceptionDialog(project, "Cannot add revision to review. Check selected repository.",
-											e, "Error");
+							DialogWithDetails.showExceptionDialog(project,
+									"Cannot add revision to review. Check selected repository.", e);
 						}
 					}, ModalityState.stateForComponent(CrucibleHelperForm.this.getRootComponent()));
 				}

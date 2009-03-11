@@ -30,12 +30,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.CommittedChangesProvider;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextFactory;
 import com.intellij.openapi.vcs.changes.BinaryContentRevision;
 import com.intellij.openapi.vcs.changes.ContentRevision;
@@ -181,7 +176,6 @@ public final class VcsIdeaHelper {
 		virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.FALSE);
 		return vcvf;
 	}
-
 
 	// not used method causing incompatibility 7.0 -> 8.0
 	/*
@@ -473,7 +467,7 @@ public final class VcsIdeaHelper {
 		public void onSuccess() {
 			if (exception != null) {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
-						+ niceFileMessage + ":\n" + exception.getMessage(), exception, "Error fetching file");
+						+ niceFileMessage + ":\n" + exception.getMessage(), exception);
 				return;
 			}
 			if (action != null) {
@@ -533,7 +527,7 @@ public final class VcsIdeaHelper {
 		public void onSuccess() {
 			if (exception != null) {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occured while fetching "
-						+ niceFileMessage + ":\n" + exception.getMessage(), exception, "Error fetching file");
+						+ niceFileMessage + ":\n" + exception.getMessage(), exception);
 				return;
 			}
 			if (ofd != null) {

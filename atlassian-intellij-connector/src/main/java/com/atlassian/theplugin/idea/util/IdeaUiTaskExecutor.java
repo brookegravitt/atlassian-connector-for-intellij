@@ -39,7 +39,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 							uiTask.onError();
 							if (uiTask.getComponent() != null && uiTask.getComponent().isShowing()) {
 								DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
-										"Error while " + uiTask.getLastAction(), e, "Error");
+										"Error while " + uiTask.getLastAction(), e);
 							}
 						}
 					}, modalityState);
@@ -54,7 +54,7 @@ public class IdeaUiTaskExecutor implements UiTaskExecutor {
 							LoggerImpl.getInstance().warn(e);
 							if (uiTask.getComponent() != null && uiTask.getComponent().isShowing()) {
 								DialogWithDetails.showExceptionDialog(uiTask.getComponent(),
-										"Error while " + uiTask.getLastAction(), e, "Error");
+										"Error while " + uiTask.getLastAction(), e);
 							}
 						}
 					}
