@@ -53,8 +53,6 @@ public class CommentEditForm extends DialogWrapper {
 	private final CommentBean comment;
 
 	private boolean saveAsDraft = false;
-	private static final String RANK_FIELD = "Ranking";
-	private static final String CLASSIFICATION_FIELD = "Classification";
 
 	private Map<String, JComboBox> combos = new HashMap<String, JComboBox>();
 
