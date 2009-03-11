@@ -122,8 +122,9 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		public void actionPerformed(final AnActionEvent anActionEvent) {
 
 			LineCommentTooltipPanel lctp = new LineCommentTooltipPanel(review, fileInfo, comment) {
-				protected void addNewReply(final VersionedComment parent, String text) {
+				protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
 					final VersionedCommentBean reply = createReplyBean(text);
+					reply.setDraft(draft);
 					runAddReplyTask(parent, reply, anActionEvent, this);
 				}
 
