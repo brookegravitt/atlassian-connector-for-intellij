@@ -18,7 +18,13 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
@@ -48,11 +54,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
 	private JComboBox defaultFishEyeServerCombo = new JComboBox();
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
+	private JComboBox defaultJiraServerCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
+	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_NONE = new CrucibleProjectWrapper(null);
@@ -211,6 +219,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	private static final String CRUCIBLE_HELP_TEXT = "<html>Default values for the Crucible review creation dialog";
 
+	private static final String JIRA_HELP_TEXT = "<html>Default values for the Jira assigned for project";
+
 	private static final String FISHEYE_HELP_TEXT_1 = "<html>The values below will be used for "
 			+ "the construction of FishEye code pointer links, "
 			+ "available in popup menus in your source code editor.";
@@ -233,8 +243,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
-			"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
-			"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); // rows
+				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", // columns
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); // rows
 
 		//CHECKSTYLE:MAGIC:OFF
 //		layout.setRowGroups(new int[][]{{11, 13, 15}});
@@ -274,6 +284,17 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		fshHelp2.setFont(fshHelp2.getFont().deriveFont(10.0f));
 		fshHelp2.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
 		builder.add(fshHelp2, cc.xy(4, 21));
+
+		builder.addSeparator("Jira", cc.xyw(1, 23, ALL_COLUMNS));
+		JLabel jiraHelp = new JLabel(CRUCIBLE_HELP_TEXT);
+		jiraHelp.setFont(jiraHelp.getFont().deriveFont(10.0f));
+		// jgorycki: well, it seems like FormLayout doesn't give a shit about JLabel's maximum width. However,
+		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
+		// of producing one long line
+		jiraHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
+		builder.add(jiraHelp, cc.xyw(1, 25, ALL_COLUMNS));
+		builder.addLabel("Default Server:", cc.xy(2, 27));
+		builder.add(defaultJiraServerCombo, cc.xy(4, 27));
 		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
@@ -316,6 +337,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		defaultFishEyeRepositoryCombo.setModel(fishRepositoryModel);
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 
+		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
 	}
 
 
@@ -470,6 +492,68 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 			int i = 1;
 			for (FishEyeServerWrapper server : getServers()) {
+				if (i == index) {
+					return server;
+				}
+				i++;
+			}
+			return null;
+		}
+
+		public int getSize() {
+			return getServers().size() + 1;
+		}
+
+	}
+
+	private class JiraServerComboBoxModel extends AbstractListModel implements ComboBoxModel {
+		private Collection<JiraServerCfgWrapper> data;
+
+		private Collection<JiraServerCfgWrapper> getServers() {
+			if (data == null) {
+				data = MiscUtil.buildArrayList();
+				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
+					if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg.isEnabled()) {
+						data.add(new JiraServerCfgWrapper((JiraServerCfg) serverCfg));
+					}
+				}
+			}
+			return data;
+		}
+
+		public Object getSelectedItem() {
+			for (JiraServerCfgWrapper server : getServers()) {
+				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultJiraServerId())) {
+					return server;
+				}
+			}
+			return JIRA_SERVER_NONE;
+		}
+
+		public void setSelectedItem(final Object anItem) {
+			final Object selectedItem = getSelectedItem();
+			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
+				if (anItem != null) {
+					JiraServerCfgWrapper item = (JiraServerCfgWrapper) anItem;
+					final JiraServerCfg wrapped = item.getWrapped();
+					if (wrapped != null) {
+						projectConfiguration.setDefaultJiraServerId(wrapped.getServerId());
+					} else {
+						projectConfiguration.setDefaultJiraServerId(null);
+					}
+				} else {
+					projectConfiguration.setDefaultJiraServerId(null);
+				}
+				fireContentsChanged(this, -1, -1);
+			}
+		}
+
+		public Object getElementAt(final int index) {
+			if (index == 0) {
+				return JIRA_SERVER_NONE;
+			}
+			int i = 1;
+			for (JiraServerCfgWrapper server : getServers()) {
 				if (i == index) {
 					return server;
 				}
