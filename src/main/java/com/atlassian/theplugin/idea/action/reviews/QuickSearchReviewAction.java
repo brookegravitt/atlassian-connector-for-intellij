@@ -99,9 +99,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 								}
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
+								reviewsWindow.setStatusMessage(e.getMessage(), true);
 								// todo we could notify user somehow
 							} catch (ServerPasswordNotProvidedException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
+								reviewsWindow.setStatusMessage(e.getMessage(), true);
 								// todo we could notify user somehow
 							}
 						}
