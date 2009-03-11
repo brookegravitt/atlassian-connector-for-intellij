@@ -95,7 +95,7 @@ public class JiraLinkHighlighter {
 		docAdapter = new DocumentAdapter() {
 
 			public void beforeDocumentChange(final DocumentEvent event) {
-				if (event.getNewLength() < event.getOldLength()) {//deletion
+				if (event.getNewLength() < event.getOldLength()) { //deletion
 					forgetDocumentRanges(event.getOffset(), event.getOffset() + event.getOldLength());
 				}
 				super.beforeDocumentChange(event);
@@ -178,7 +178,7 @@ public class JiraLinkHighlighter {
 		return intersecting;
 	}
 
-	static public int getEndLineOffset(final Editor editor, final int o) {
+	public static int getEndLineOffset(final Editor editor, final int o) {
 		final int textLength = editor.getDocument().getTextLength();
 		int offset = Math.max(Math.min(o, Math.max(0, textLength)), Math.min(0, textLength));
 		int lineCount = editor.getDocument().getLineCount();
@@ -214,7 +214,7 @@ public class JiraLinkHighlighter {
 		}
 	}
 
-	static public int getStartLineOffset(final Editor editor, final int o) {
+	public static int getStartLineOffset(final Editor editor, final int o) {
 		final int textLength = editor.getDocument().getTextLength();
 		int offset = Math.max(Math.min(o, Math.max(0, textLength)), Math.min(0, textLength));
 		int lineCount = editor.getDocument().getLineCount();
