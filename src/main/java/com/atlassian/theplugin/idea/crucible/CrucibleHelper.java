@@ -160,7 +160,7 @@ public final class CrucibleHelper {
 		}
 	}
 
-	public static List<CustomFieldDef> getMetricsForReview(@NotNull final Project project,
+	public static List<CustomFieldDef> getMetricsForReview(final Project project,
 			@NotNull final ReviewAdapter review) {
 		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
 		try {

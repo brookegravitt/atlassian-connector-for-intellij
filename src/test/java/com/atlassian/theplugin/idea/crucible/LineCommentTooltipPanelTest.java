@@ -71,7 +71,7 @@ public class LineCommentTooltipPanelTest {
             }
         }
 
-        SwingAppRunner.run(new LineCommentTooltipPanel(ra, file, comment, true) {
+        SwingAppRunner.run(new LineCommentTooltipPanel(null, ra, file, comment, true) {
             @Override
 			protected void addNewReply(VersionedComment parent, String text, boolean draft) {
                 try {
