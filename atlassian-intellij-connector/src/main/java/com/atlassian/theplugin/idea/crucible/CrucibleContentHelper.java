@@ -135,8 +135,8 @@ public final class CrucibleContentHelper {
 	}
 
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {
-		private OpenFileDescriptor displayDescriptor = null;
-		private VirtualFile referenceVirtualFile = null;
+		private OpenFileDescriptor displayDescriptor;
+		private VirtualFile referenceVirtualFile;
 
 		private VcsException exception;
 		private final Project project;
@@ -232,9 +232,9 @@ public final class CrucibleContentHelper {
 		}
 
 		try {
-			String content = CrucibleServerFacadeImpl.getInstance().getFileContent(review.getServer(), crucibleFileInfo,
+			byte[] content = CrucibleServerFacadeImpl.getInstance().getFileContent(review.getServer(), crucibleFileInfo,
 					reviewItemContentType);
-			VirtualFile file = new VcsVirtualFile(crucibleFileInfo.getFileDescriptor().getName(), content.getBytes(), revision,
+			VirtualFile file = new VcsVirtualFile(crucibleFileInfo.getFileDescriptor().getName(), content, revision,
 					virtualFile.getFileSystem());
 			putFileInfoCache(file, virtualFile, revision);
 
