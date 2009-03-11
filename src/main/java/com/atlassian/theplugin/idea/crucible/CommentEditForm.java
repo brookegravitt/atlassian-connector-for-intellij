@@ -16,12 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -33,9 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class CommentEditForm extends DialogWrapper {
@@ -49,18 +42,15 @@ public class CommentEditForm extends DialogWrapper {
 	private JPanel comboPanel;
 	private JPanel toolPanel;
 
-	private final ReviewAdapter review;
 	private final CommentBean comment;
 
 	private boolean saveAsDraft = false;
 
-	private Map<String, JComboBox> combos = new HashMap<String, JComboBox>();
-
 	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean comment,
-			List<CustomFieldDef> metrics) {
+						   List<CustomFieldDef> metrics) {
+
 		super(project, false);
 
-		this.review = review;
 		this.comment = comment;
 
 		$$$setupUI$$$();
@@ -68,23 +58,7 @@ public class CommentEditForm extends DialogWrapper {
 
 		comboPanel.setLayout(new FlowLayout());
 
-		for (CustomFieldDef metric : metrics) {
-			final JLabel label = new JLabel(metric.getLabel());
-			final JComboBox combo = new JComboBox();
-			final String metricName = metric.getLabel();
-			combo.addItem("Select " + metricName);
-			for (CustomFieldValue value : metric.getValues()) {
-				combo.addItem(value.getName());
-			}
-			combo.addActionListener(new ActionListener() {
-				public void actionPerformed(final ActionEvent event) {
-					setMetricField(combo, metricName);
-				}
-			});
-			combos.put(metricName, combo);
-			comboPanel.add(label);
-			comboPanel.add(combo);
-		}
+		final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(review, comment, metrics, comboPanel);
 
 		postButton.setAction(getOKAction());
 		postButton.setMnemonic('P');
@@ -96,17 +70,17 @@ public class CommentEditForm extends DialogWrapper {
 		defectCheckBox.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent event) {
-				showMetricCombo(comment, defectCheckBox.isSelected());
+				combos.showMetricCombos(defectCheckBox.isSelected());
 				pack();
 			}
 		});
 
 		if (comment.isDefectRaised()) {
 			defectCheckBox.setSelected(true);
-			showMetricCombo(comment, true);
+			combos.showMetricCombos(true);
 		} else {
 			defectCheckBox.setSelected(false);
-			showMetricCombo(comment, false);
+			combos.showMetricCombos(false);
 		}
 
 		if (comment.isReply()) {
@@ -138,29 +112,6 @@ public class CommentEditForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Post");
 	}
 
-	private void setMetricField(JComboBox combo, String field) {
-		CustomField oldCf = comment.getCustomFields().get(field);
-		if (oldCf != null) {
-			comment.getCustomFields().remove(oldCf);
-		}
-		if (combo.getSelectedIndex() > 0) {
-			CustomFieldBean cf = new CustomFieldBean();
-			cf.setConfigVersion(review.getMetricsVersion());
-			cf.setValue((String) combo.getSelectedItem());
-			comment.getCustomFields().put(field, cf);
-		}
-	}
-
-	private void showMetricCombo(CommentBean comment, boolean visible) {
-		for (String key : comment.getCustomFields().keySet()) {
-			if (combos.get(key) != null) {
-				combos.get(key).setSelectedItem(comment.getCustomFields().get(key).getValue());
-				combos.get(key).setVisible(visible);
-			}
-		}
-		comboPanel.setVisible(visible);
-	}
-
 	public JComponent getPreferredFocusedComponent() {
 		return commentText;
 	}
@@ -178,10 +129,6 @@ public class CommentEditForm extends DialogWrapper {
 	protected void doOKAction() {
 		comment.setDraft(saveAsDraft);
 		comment.setDefectRaised(defectCheckBox.isSelected());
-//		if (comment.isDefectRaised()) {
-//			setMetricField(rankComboBox, RANK_FIELD);
-//			setMetricField(classificationComboBox, CLASSIFICATION_FIELD);
-//		}
 		comment.setMessage(commentText.getText());
 		super.doOKAction();
 	}

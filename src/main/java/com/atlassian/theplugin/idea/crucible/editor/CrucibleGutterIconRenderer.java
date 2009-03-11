@@ -1,12 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -16,11 +11,7 @@ import com.atlassian.theplugin.idea.action.crucible.comment.gutter.RemoveAction;
 import com.atlassian.theplugin.idea.action.crucible.comment.gutter.ReplyAction;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.LineCommentTooltipPanel;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -119,30 +110,35 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		private static final String REMOVING_COMMENT_FAILED = "Removing comment failed: ";
 		private static final String PUBLISHING_COMMENT_FAILED = "Publishing comment failed: ";
 
-		public void actionPerformed(final AnActionEvent anActionEvent) {
+		public void actionPerformed(final AnActionEvent e) {
 
-			LineCommentTooltipPanel lctp = new LineCommentTooltipPanel(review, fileInfo, comment) {
+			LineCommentTooltipPanel lctp =
+					new LineCommentTooltipPanel(IdeaHelper.getCurrentProject(e), review, fileInfo, comment) {
 				protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
 					final VersionedCommentBean reply = createReplyBean(text);
 					reply.setDraft(draft);
-					runAddReplyTask(parent, reply, anActionEvent, this);
+					runAddReplyTask(parent, reply, e, this);
 				}
 
 				protected void updateComment(final VersionedComment cmt, String text) {
 					final VersionedCommentBean commentBean = (VersionedCommentBean) cmt;
 					commentBean.setMessage(text);
-					runUpdateCommandTask(commentBean, anActionEvent, this);
+//					commentBean.getCustomFields().clear();
+//					for (String key : cmt.getCustomFields().keySet()) {
+//						commentBean.getCustomFields().put(key, cmt.getCustomFields().get(key));
+//					}
+					runUpdateCommandTask(commentBean, e, this);
 				}
 
 				protected void removeComment(final VersionedComment aComment) {
-					runRemoveCommentTask(aComment, anActionEvent, this);
+					runRemoveCommentTask(aComment, e, this);
 				}
 
 				protected void publishComment(VersionedComment aComment) {
-					runPublishCommentTask(aComment, anActionEvent, this);
+					runPublishCommentTask(aComment, e, this);
 				}
 			};
-			LineCommentTooltipPanel.showCommentTooltipPopup(anActionEvent, lctp);
+			LineCommentTooltipPanel.showCommentTooltipPopup(e, lctp);
 		}
 
 		private void runRemoveCommentTask(final VersionedComment aComment, final AnActionEvent anActionEvent,
