@@ -148,7 +148,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Removing comment", false) {
-				public void run(ProgressIndicator progressIndicator) {
+				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.removeVersionedComment(aComment, fileInfo);
 					} catch (RemoteApiException e) {
@@ -167,7 +167,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Updating comment", false) {
-				public void run(ProgressIndicator progressIndicator) {
+				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.editVersionedComment(fileInfo, commentBean);
 					} catch (RemoteApiException e) {
@@ -184,7 +184,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Adding new comment reply", false) {
-				public void run(ProgressIndicator progressIndicator) {
+				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.addVersionedCommentReply(fileInfo, parent, reply);
 					} catch (RemoteApiException e) {
@@ -201,7 +201,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Publishing comment", false) {
-				public void run(ProgressIndicator progressIndicator) {
+				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.publisVersionedComment(fileInfo, aComment);
 					} catch (RemoteApiException e) {
