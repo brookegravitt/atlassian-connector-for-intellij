@@ -47,7 +47,6 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -106,6 +105,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private ConfigurationListenerImpl configurationListener;
 
 	private CrucibleEditorFactoryListener crucibleEditorFactoryListener;
+
 	private FileEditorListenerImpl fileEditorListener;
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
@@ -134,7 +134,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindow = pluginToolWindow;
 		/*
 
-										WARNING!!!                                                
+										WARNING!!!
 		BEFORE ADDING SOME INITIALIZATION CODE TO COSTRUCTOR THINK TWICE
                                          st
 		...MAYBE YOU SHOULD PUT IT INTO THE initializePlugin METHOD
@@ -190,7 +190,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
 					PluginUtil.getLogger());
 
-			// DependencyValidationManager.getHolder(project, "", )			
+			// DependencyValidationManager.getHolder(project, "", )
 
 			issuesToolWindowPanel.refreshModels();
 
@@ -279,7 +279,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 	}
 
-
 	private void registerCrucibleNotifier() {
 		crucibleReviewListModel.addListener(crucibleReviewNotifier);
 		crucibleTooltip = new CrucibleNotificationTooltip(statusBarCrucibleIcon, project, toolWindow, pluginConfiguration);
@@ -287,11 +286,16 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		crucibleReviewNotifier.registerListener(crucibleTooltip);
 	}
 
+
 	public void projectOpened() {
 		// content moved to StartupManager to wait until
 		// here we have guarantee that IDEA splash screen will not obstruct our window
 		askForUserStatistics();
-		FileEditorManager.getInstance(project).addFileEditorManagerListener(fileEditorListener);
+		fileEditorListener.startListening();
+	}
+
+	public FileEditorListenerImpl getFileEditorListener() {
+		return fileEditorListener;
 	}
 
 	private void askForUserStatistics() {
@@ -341,7 +345,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
-			FileEditorManager.getInstance(project).removeFileEditorManagerListener(fileEditorListener);
+			fileEditorListener.projectClosed();
 			created = false;
 		}
 	}
