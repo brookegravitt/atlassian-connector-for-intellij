@@ -26,7 +26,7 @@ import java.awt.*;
  */
 public class JiraURLTextRange {
 	public static final Color LINK_COLOR = new Color(76, 104, 137);
-	public static final TextAttributes ISSUE_LINK_TEXT_ATTRIBUTES =
+	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
 
 	private int startOffset;
@@ -37,6 +37,8 @@ public class JiraURLTextRange {
 	private boolean active;
 
 	private int hash = 0;
+
+	RangeHighlighter rangeHighlighter = null;
 
 	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
 
@@ -71,10 +73,22 @@ public class JiraURLTextRange {
 
 	public void addLinkHighlighter(final Editor editor) {
 		MarkupModel markupModel = editor.getMarkupModel();
-		RangeHighlighter rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
-				HighlighterLayer.ERROR, ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
+		if (rangeHighlighter != null) {
+			markupModel.removeHighlighter(rangeHighlighter);
+		}
+		rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
+				HighlighterLayer.ERROR, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
 		rangeHighlighter.setErrorStripeMarkColor(LINK_COLOR);
 		rangeHighlighter.putUserData(JIRA_ISSUE_LINK_HIGHLIGHTER_KEY, this);
+	}
+
+	public void removeLinkHighlighter(final Editor editor) {
+		MarkupModel markupModel = editor.getMarkupModel();
+		if (rangeHighlighter != null) {
+			markupModel.removeHighlighter(rangeHighlighter);
+			rangeHighlighter = null;
+		}
+
 	}
 
 	public static JiraURLTextRange getFrom(final RangeHighlighter rangeHighlighter) {
