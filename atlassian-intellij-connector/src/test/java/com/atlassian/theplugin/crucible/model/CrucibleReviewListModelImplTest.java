@@ -120,7 +120,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		// require rethink
 		model.addSingleReview(PredefinedFilter.OpenInIde, ra, UpdateReason.OPEN_IN_IDE);
 
-		assertEquals(2, model.getReviews().size());
+		assertEquals(1, model.getReviews().size());
 	}
 
 	public void testAddingReviewWithDifferentPermId() throws Exception {
