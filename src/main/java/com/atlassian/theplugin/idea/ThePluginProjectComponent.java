@@ -291,7 +291,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		// content moved to StartupManager to wait until
 		// here we have guarantee that IDEA splash screen will not obstruct our window
 		askForUserStatistics();
-		fileEditorListener.startListening();
+		fileEditorListener.projectOpen();
 	}
 
 	public FileEditorListenerImpl getFileEditorListener() {
