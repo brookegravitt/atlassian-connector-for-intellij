@@ -102,7 +102,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		new ScanningJiraLinksTask(project, this).queue();
 	}
 
-	private void startListening() {
+	private synchronized void startListening() {
 
 		removeAllLinkHighlighers();
 		scanOpenEditors();
@@ -128,7 +128,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 
 	private void removeHighlighter(final VirtualFile oldFile) {
-		JiraLinkHighlighter hl = linkHighlighters.remove(oldFile);
+		JiraLinkHighlighter hl = linkHighlighters.get(oldFile);
 		if (hl != null) {
 			hl.stopListening();
 		}
@@ -159,6 +159,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		for (VirtualFile vf : linkHighlighters.keySet()) {
 			removeHighlighter(vf);
 		}
+		linkHighlighters.clear();
 
 	}
 
