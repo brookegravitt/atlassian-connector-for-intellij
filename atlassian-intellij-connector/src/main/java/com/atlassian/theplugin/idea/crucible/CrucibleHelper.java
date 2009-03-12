@@ -19,12 +19,10 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.editor.OpenCrucibleDiffToolAction;
@@ -49,7 +47,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public final class CrucibleHelper {
 	private CrucibleHelper() {
@@ -158,20 +155,6 @@ public final class CrucibleHelper {
 			default:
 				break;
 		}
-	}
-
-	public static List<CustomFieldDef> getMetricsForReview(final Project project,
-			@NotNull final ReviewAdapter review) {
-		java.util.List<CustomFieldDef> metrics = new ArrayList<CustomFieldDef>();
-		try {
-			metrics = CrucibleServerFacadeImpl.getInstance()
-					.getMetrics(review.getServer(), review.getMetricsVersion());
-		} catch (RemoteApiException e) {
-			IdeaHelper.handleRemoteApiException(project, e);
-		} catch (ServerPasswordNotProvidedException e) {
-			IdeaHelper.handleMissingPassword(e);
-		}
-		return metrics;
 	}
 
 	public static Editor getEditorForCrucibleFile(ReviewAdapter review, CrucibleFileInfo file) {

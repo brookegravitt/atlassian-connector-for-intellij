@@ -17,16 +17,26 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.*;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -131,8 +141,7 @@ public class AddAction extends AbstractCommentAction {
 
 	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -163,8 +172,7 @@ public class AddAction extends AbstractCommentAction {
 			final CrucibleFileInfo file, final VersionedComment comment) {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -200,8 +208,7 @@ public class AddAction extends AbstractCommentAction {
 			final GeneralComment parentComment) {
 		final GeneralCommentBean newComment = new GeneralCommentBean();
 		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();

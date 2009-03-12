@@ -15,29 +15,30 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.idea.ui.IconPaths;
+import com.atlassian.theplugin.util.ui.IconProvider;
 import com.intellij.ui.SimpleColoredComponent;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.ui.UIUtil;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.util.ui.IconProvider;
-import com.atlassian.theplugin.idea.ui.IconPaths;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.text.StyledDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
-import javax.swing.text.StyleContext;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 import java.awt.*;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Map;
 import java.text.DateFormat;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
 
 public class ReviewCommentPanel extends JPanel {
 	private Rectangle moreBounds;
@@ -98,7 +99,8 @@ public class ReviewCommentPanel extends JPanel {
 	private final JLabel moreLabel;
 	private Font font;
 
-	public void update(@NotNull Comment comment, int width, boolean isExpanded, boolean isSelected, Font newFont) {
+	public void update(@NotNull ReviewAdapter review, @NotNull Comment comment, int width, boolean isExpanded,
+			boolean isSelected, Font newFont) {
 		final boolean fontChanged = !newFont.equals(font);
 		if (fontChanged) {
 			font = newFont;
@@ -121,7 +123,7 @@ public class ReviewCommentPanel extends JPanel {
 		} else {
 			setOpaque(false);
 		}
-		updateMessageBody(comment, isSelected);
+		updateMessageBody(review, comment, isSelected);
 		int queryWidth = Math.max(width - otherColumnsWidth - lastColumnWidth, MIN_TEXT_WIDTH);
 		int preferredHeight = getPreferredHeight(messageBody, queryWidth);
 		if (preferredHeight > oneLineHeight) {
@@ -140,7 +142,7 @@ public class ReviewCommentPanel extends JPanel {
 			messageBody.setPreferredSize(new Dimension(queryWidth, preferredHeight));
 			singleLineLabel.setVisible(false);
 		} else {
-			updateSingleLineComponent(comment, isSelected);
+			updateSingleLineComponent(review, comment, isSelected);
 			singleLineLabel.setFont(font);
 			messageBody.setVisible(false);
 			singleLineLabel.setVisible(true);
@@ -269,28 +271,40 @@ public class ReviewCommentPanel extends JPanel {
 	}
 
 
-	public static String getRankingString(Comment comment) {
+	public static String getRankingString(ReviewAdapter review, Comment comment) {
 		StringBuilder sb = new StringBuilder();
-		if (comment.getCustomFields().size() > 0) {
-			sb.append("(");
-		}
-		for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
-			if (sb.length() > 1) {
-				sb.append(", ");
-			}
-			sb.append(elem.getKey()).append(": ");
-			sb.append(elem.getValue().getValue());
-		}
 
-		if (comment.getCustomFields().size() > 0) {
-			sb.append(")");
+		if (!comment.getCustomFields().isEmpty()) {
+
+			if (comment.getCustomFields().size() > 0) {
+				sb.append("(");
+			}
+
+			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
+				String label = elem.getKey();
+				for (CustomFieldDef metric : review.getMetricDefinitions()) {
+					if (metric.getName().equals(elem.getKey())) {
+						label = metric.getLabel();
+						break;
+					}
+				}
+				if (sb.length() > 1) {
+					sb.append(", ");
+				}
+				sb.append(label).append(": ");
+				sb.append(elem.getValue().getValue());
+			}
+
+			if (comment.getCustomFields().size() > 0) {
+				sb.append(")");
+			}
 		}
 
 		return sb.toString();
 	}
 
 
-	private void updateSingleLineComponent(@NotNull Comment comment, boolean isSelected) {
+	private void updateSingleLineComponent(@NotNull ReviewAdapter review, @NotNull Comment comment, boolean isSelected) {
 		singleLineLabel.clear();
 		final String lineInfoLabel = getLineInfoLabel(comment);
 		if (lineInfoLabel.length() > 0) {
@@ -301,8 +315,9 @@ public class ReviewCommentPanel extends JPanel {
 
 		singleLineLabel.append(message + " ", new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN,
 				isSelected ? UIUtil.getTreeSelectionForeground() : null));
-		singleLineLabel.append(" " + getRankingString(comment), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC,
-				isSelected ? UIUtil.getTreeSelectionForeground() : Color.GRAY));
+		singleLineLabel
+				.append(" " + getRankingString(review, comment), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC,
+						isSelected ? UIUtil.getTreeSelectionForeground() : Color.GRAY));
 
 		if (comment.isDraft()) {
 			StringBuilder drafInfo = new StringBuilder();
@@ -314,7 +329,7 @@ public class ReviewCommentPanel extends JPanel {
 		}
 	}
 
-	private void updateMessageBody(Comment vc, boolean isSelected) {
+	private void updateMessageBody(ReviewAdapter review, Comment vc, boolean isSelected) {
 		final StyledDocument doc = messageBody.getStyledDocument();
 		try {
 			doc.remove(0, doc.getLength());
@@ -325,7 +340,7 @@ public class ReviewCommentPanel extends JPanel {
 			}
 			doc.insertString(doc.getLength(), vc.getMessage() + " ",
 					doc.getStyle(isSelected ? "regular-selected" : "regular"));
-			doc.insertString(doc.getLength(), " " + getRankingString(vc),
+			doc.insertString(doc.getLength(), " " + getRankingString(review, vc),
 					doc.getStyle(isSelected ? "defect-selected" : "defect"));
 			if (vc.isDraft()) {
 				StringBuilder drafInfo = new StringBuilder();

@@ -53,7 +53,7 @@ public class ReviewCommentRenderer extends DefaultTreeCellRenderer implements Tr
 			boolean leaf, int row, boolean aHasFocus) {
 		if (value instanceof CommentTreeNode) {
 			final CommentTreeNode node = (CommentTreeNode) value;
-			reviewCommentPanel.update(node.getComment(), getAvailableWidth(node, tree),
+			reviewCommentPanel.update(node.getReview(), node.getComment(), getAvailableWidth(node, tree),
 					node.isExpanded(), isSelected, tree.getFont());
 			return reviewCommentPanel;
 		} else {
