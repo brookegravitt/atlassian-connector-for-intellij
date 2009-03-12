@@ -168,7 +168,6 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 				Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 				ProgressManager.getInstance().run(task);
-				//FileEditorListenerImpl.this.startListening();
 
 			} else {
 				FileEditorListenerImpl.this.stopListening();
