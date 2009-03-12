@@ -106,6 +106,7 @@ public class DialogWithDetails extends DialogWrapper {
 		ctrlDescription.setIcon(getIcon());
 
 		ctrlDetailsText.setText(exceptionStr);
+		ctrlDetailsText.setCaretPosition(0);
 
 		ctrlDetailsPane.setVisible(false);
 	}
