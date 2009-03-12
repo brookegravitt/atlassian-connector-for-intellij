@@ -32,6 +32,9 @@ public class ConnectionWrapper extends Thread {
 	}
 
 	public String getErrorMessage() {
+		if (exception == null) {
+			return null;
+		}
 		return exception.getMessage();
 	}
 
