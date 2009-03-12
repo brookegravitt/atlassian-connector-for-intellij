@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
@@ -151,8 +151,7 @@ public class CommentAction extends AnAction {
 			}
 
 			final VersionedCommentBean newComment = new VersionedCommentBean();
-			CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-					CrucibleHelper.getMetricsForReview(project, review));
+			CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 			dialog.pack();
 			dialog.setModal(true);
 			dialog.show();
