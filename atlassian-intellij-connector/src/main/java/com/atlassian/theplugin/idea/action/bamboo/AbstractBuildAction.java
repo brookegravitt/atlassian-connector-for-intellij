@@ -22,6 +22,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildCommentForm;
 import com.atlassian.theplugin.idea.bamboo.BuildLabelForm;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -56,6 +57,7 @@ public abstract class AbstractBuildAction extends AnAction {
 	}
 
 	protected abstract void setStatusMessage(final Project project, final String message);
+
 	protected abstract void setStatusErrorMessage(final Project project, final String message);
 
 	protected abstract BambooBuildAdapterIdea getBuild(final AnActionEvent event);
@@ -80,6 +82,7 @@ public abstract class AbstractBuildAction extends AnAction {
 						setStatusErrorMessageUIThread(project, "Build not executed: Password not provided for server");
 					} catch (RemoteApiException e) {
 						setStatusErrorMessageUIThread(project, "Build not executed: " + e.getMessage());
+						DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 					}
 				}
 			};
@@ -124,6 +127,7 @@ public abstract class AbstractBuildAction extends AnAction {
 					setStatusErrorMessageUIThread(project, "Label not applied: Password on provided for server");
 				} catch (RemoteApiException e) {
 					setStatusErrorMessageUIThread(project, "Label not applied: " + e.getMessage());
+					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 				}
 			}
 		};
@@ -145,25 +149,26 @@ public abstract class AbstractBuildAction extends AnAction {
 		}
 	}
 
-		private void commentBuild(@NotNull final Project project,
-				@NotNull final BambooBuildAdapterIdea build, final String commentText) {
+	private void commentBuild(@NotNull final Project project,
+			@NotNull final BambooBuildAdapterIdea build, final String commentText) {
 
-			Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
-				@Override
-				public void run(@NotNull final ProgressIndicator indicator) {
-					setStatusMessageUIThread(project, "Adding comment label on build...");
-					try {
-						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-								addCommentToBuild(build.getServer(), build.getPlanKey(), build.getNumber(), commentText);
-						setStatusMessageUIThread(project, "Comment added to build");
-					} catch (ServerPasswordNotProvidedException e) {
-						setStatusErrorMessageUIThread(project, "Comment not added: Password not provided for server");
-					} catch (RemoteApiException e) {
-						setStatusErrorMessageUIThread(project, "Comment not added: " + e.getMessage());
-					}
+		Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
+			@Override
+			public void run(@NotNull final ProgressIndicator indicator) {
+				setStatusMessageUIThread(project, "Adding comment label on build...");
+				try {
+					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+							addCommentToBuild(build.getServer(), build.getPlanKey(), build.getNumber(), commentText);
+					setStatusMessageUIThread(project, "Comment added to build");
+				} catch (ServerPasswordNotProvidedException e) {
+					setStatusErrorMessageUIThread(project, "Comment not added: Password not provided for server");
+				} catch (RemoteApiException e) {
+					setStatusErrorMessageUIThread(project, "Comment not added: " + e.getMessage());
+					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 				}
-			};
+			}
+		};
 
-			ProgressManager.getInstance().run(commentTask);
-		}
+		ProgressManager.getInstance().run(commentTask);
+	}
 }

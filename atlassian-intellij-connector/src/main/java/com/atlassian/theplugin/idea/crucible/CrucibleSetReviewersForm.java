@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -147,7 +148,8 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		if (!users.isEmpty()) {
 			for (User user : users) {
 				if (!user.getUserName().equals(server.getUsername())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) && !user.getUserName().equals(reviewData.getModerator().getUserName())) {
+						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) &&
+						!user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
 						if (reviewer.getUserName().equals(user.getUserName())) {
@@ -219,7 +221,9 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				}
 			}
 		} catch (RemoteApiException e) {
-			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
+			DialogWithDetails.showExceptionDialog(project,
+					e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), e);
+//			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
 		} catch (ServerPasswordNotProvidedException e) {
 			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
 		}

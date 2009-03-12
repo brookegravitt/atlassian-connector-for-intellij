@@ -18,15 +18,14 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showDialog;
 import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import org.apache.log4j.Category;
 import org.jetbrains.annotations.NotNull;
@@ -52,7 +51,7 @@ public class TestConnectionListener implements ActionListener {
 	private final TestConnectionProcessor processor;
 
 	/**
-	 * @param project IDEA project
+	 * @param project		   IDEA project
 	 * @param tester			object which provide testConnection method specific to the product (Bamboo/Crucible, etc.)
 	 * @param serverCfgProvider provides the data of the server to connect to
 	 * @param processor
@@ -117,15 +116,8 @@ public class TestConnectionListener implements ActionListener {
 				case FAILED:
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							if (showDialog(
-									getProject(),
-									testConnector.getErrorMessage(),
-									"Connection Error",
-									new String[]{ "OK", "Help" },
-									0,
-									Messages.getErrorIcon()) == 1) {
-								BrowserUtil.launchBrowser(HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
-							}
+							DialogWithDetails.showExceptionDialog(getProject(), testConnector.getErrorMessage(),
+									testConnector.getException(), HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
 						}
 					});
 					break;
@@ -137,7 +129,7 @@ public class TestConnectionListener implements ActionListener {
 						public void run() {
 							showMessageDialog(getProject(), "Connected successfully", "Connection OK",
 									Messages.getInformationIcon());
-							 processor.onSuccess();
+							processor.onSuccess();
 						}
 					});
 					break;
