@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
@@ -15,6 +14,8 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.HyperlinkLabel;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -145,7 +146,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 	private final class CommentPanel extends JPanel {
 		private ShowHideButton btnShowHide;
-		private static final int REPLY_PADDING = Constants.DIALOG_MARGIN * 2;
 
 		private String lastCommentBody;
 		private static final String EDIT = "Edit";
@@ -167,6 +167,22 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private JCheckBox boxIsDefect;
 		private JLabel defectLabel;
 
+		private static final int TWIXIE_1_POS = 1;
+		private static final int TWIXIE_2_POS = 2;
+		private static final int USER_POS = 3;
+		private static final int HYPHEN_POS = 5;
+		private static final int DATE_POS = 7;
+		private static final int DRAFT_POS = 9;
+		private static final int DEFECT_POS = 11;
+		private static final int REPLY_POS = 12;
+		private static final int EDIT_POS = 13;
+		private static final int SAVE_DRAFT_POS = 14;
+		private static final int CANCEL_POS = 15;
+		private static final int PUBLISH_POS = 16;
+		private static final int DELETE_POS = 17;
+		private static final int WIDTH_INDENTED = 15;
+		private static final int WIDTH_ALL = 16;
+
 		private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
 				btnShowHide.click();
@@ -177,84 +193,59 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			this.comment = comment;
 			setOpaque(true);
 			setBackground(Color.WHITE);
-			int pad = comment == null || comment.isReply() ? REPLY_PADDING : 0;
+			boolean indent = comment == null || comment.isReply();
 
-			setLayout(new GridBagLayout());
-			GridBagConstraints gbc;
+			setLayout(new FormLayout(
+					"max(8dlu;p), max(8dlu;d), d, 2dlu, d, 2dlu, d, 2dlu, d, 2dlu, d, r:p:g, r:p, r:p, r:p, r:p, r:p",
+					"p, p:g, p"
+			));
+			CellConstraints cc = new CellConstraints();
 
 			commentBody = new JEditorPane();
 			btnShowHide = new ShowHideButton(commentBody, this, useTextTwixie);
 			HeaderListener headerListener = new HeaderListener();
 
-			gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.anchor = GridBagConstraints.WEST;
-
-			gbc.insets = new Insets(0, pad + Constants.DIALOG_MARGIN / 2, 0, 0);
-			add(btnShowHide, gbc);
+			add(btnShowHide, cc.xy(indent ? TWIXIE_2_POS : TWIXIE_1_POS, 1));
 
 			if (comment != null) {
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
 				JLabel user = new JLabel(comment.getAuthor().getDisplayName());
 				user.setFont(user.getFont().deriveFont(Font.BOLD));
-				add(user, gbc);
+				user.setMinimumSize(new Dimension(0, 0));
+				add(user, cc.xy(indent ? USER_POS : TWIXIE_2_POS, 1));
 
 				final JLabel hyphen = new WhiteLabel();
 				hyphen.setText("-");
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, Constants.DIALOG_MARGIN / 2);
-				add(hyphen, gbc);
+				add(hyphen, cc.xy(HYPHEN_POS, 1));
 
 				creationDate = new WhiteLabel();
 				creationDate.setForeground(Color.GRAY);
 				creationDate.setFont(creationDate.getFont().deriveFont(Font.ITALIC));
+				creationDate.setMinimumSize(new Dimension(0, 0));
 
 				setCommentDate();
-				gbc.gridx++;
-				gbc.insets = new Insets(0, 0, 0, 0);
-				add(creationDate, gbc);
+				add(creationDate, cc.xy(DATE_POS, 1));
 
 				if (comment.isDraft()) {
 					draftLabel = new WhiteLabel();
 					draftLabel.setForeground(Color.GRAY);
 					draftLabel.setText("(Draft)");
 					draftLabel.setFont(draftLabel.getFont().deriveFont(Font.ITALIC));
-					gbc.gridx++;
-					gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
-					add(draftLabel, gbc);
-
+					draftLabel.setMinimumSize(new Dimension(0, 0));
+					add(draftLabel, cc.xy(DRAFT_POS, 1));
 				}
 
 				defectLabel = new WhiteLabel();
 				defectLabel.setForeground(Color.RED);
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
-				add(defectLabel, gbc);
+				defectLabel.setMinimumSize(new Dimension(0, 0));
+				add(defectLabel, cc.xy(DEFECT_POS, 1));
 				updateDefectField();
 			} else {
-				gbc.gridx++;
-				gbc.insets = new Insets(0, Constants.DIALOG_MARGIN / 2, 0, 0);
 				JLabel underContruction = new JLabel("Comment under construction");
 				underContruction.setFont(underContruction.getFont().deriveFont(Font.ITALIC));
-				add(underContruction, gbc);
+				add(underContruction, cc.xy(3, 1));
 			}
 
-			// filler
-			gbc.gridx++;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.weightx = 1.0;
-			JPanel filler = new JPanel();
-			filler.setBackground(Color.WHITE);
-			filler.setOpaque(true);
-			gbc.insets = new Insets(0, 0, 0, 0);
-			add(filler, gbc);
-
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.weightx = 0.0;
 			if (comment != null && !comment.isReply()) {
-				gbc.gridx++;
 				btnReply = new HyperlinkLabel("Reply");
 				btnReply.addHyperlinkListener(new HyperlinkListener() {
 					public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -266,27 +257,26 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					}
 				});
 				btnReply.setOpaque(false);
-				add(btnReply, gbc);
+				add(btnReply, cc.xy(REPLY_POS, 1));
 			}
 			if (comment == null || isOwner(comment)) {
-				createCommentEditButtons(gbc);
+				createCommentEditButtons(cc);
 			}
 			if (comment != null && isOwner(comment)) {
 				if (comment.isDraft()) {
-					createPublishButtons(gbc);
+					createPublishButtons(cc);
 				}
-				createDeleteButton(gbc);
+				createDeleteButton(cc);
 			}
 
-			gbc.insets = new Insets(0, pad, 0, 0);
-
-			createCommentBody(gbc);
+			createCommentBody(cc, indent);
 
 			if (comment != null && !comment.isReply()) {
-				createDefectClassificationPanel(gbc);
+				createDefectClassificationPanel(cc);
 			}
 
 			addMouseListener(headerListener);
+			validate();
 		}
 
 		private void updateDefectField() {
@@ -294,9 +284,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			defectLabel.setVisible(comment.isDefectRaised());
 		}
 
-		private void createCommentBody(GridBagConstraints gbc) {
-			int gridwidth = gbc.gridx + 1;
-
+		private void createCommentBody(CellConstraints cc, boolean indent) {
 			commentBody.setOpaque(true);
 			commentBody.setContentType("text/plain");
 			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -307,39 +295,27 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					setCommentBodyEditable(CommentPanel.this, comment == null);
 				}
 			});
-			gbc.gridx = 0;
-			gbc.gridy++;
-			gbc.gridwidth = gridwidth;
-			gbc.weightx = 1.0;
-			gbc.weighty = 1.0;
-			gbc.fill = GridBagConstraints.BOTH;
-			add(commentBody, gbc);
+			add(commentBody, cc.xyw(indent ? USER_POS : TWIXIE_2_POS, TWIXIE_2_POS, indent ? WIDTH_INDENTED : WIDTH_ALL));
 		}
 
-		private void createDefectClassificationPanel(GridBagConstraints gbc) {
-			gbc.gridy++;
-			gbc.gridx = 0;
-			gbc.weightx = 1.0;
-			gbc.weighty = 0.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.anchor = GridBagConstraints.LINE_START;
+		private void createDefectClassificationPanel(CellConstraints cc) {
 			boxIsDefect = new JCheckBox("Mark as Defect");
 			boxIsDefect.setSelected(comment.isDefectRaised());
 
 			defectClassificationPanel = new JPanel(new GridBagLayout());
-			GridBagConstraints gbc2 = new GridBagConstraints();
-			gbc2.gridx = 0;
-			gbc2.gridy = 0;
-			defectClassificationPanel.add(boxIsDefect, gbc2);
-			gbc2.gridx++;
-			gbc2.weightx = 1.0;
-			gbc2.fill = GridBagConstraints.HORIZONTAL;
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			defectClassificationPanel.add(boxIsDefect, gbc);
+			gbc.gridx++;
+			gbc.weightx = 1.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
 			JPanel filler = new JPanel();
 			filler.setOpaque(false);
-			defectClassificationPanel.add(filler, gbc2);
-			gbc2.gridx++;
-			gbc2.weightx = 0.0;
-			gbc2.fill = GridBagConstraints.NONE;
+			defectClassificationPanel.add(filler, gbc);
+			gbc.gridx++;
+			gbc.weightx = 0.0;
+			gbc.fill = GridBagConstraints.NONE;
 
 			JPanel combosPanel = new JPanel(new FlowLayout());
 			combosPanel.setOpaque(false);
@@ -349,8 +325,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			combos.showMetricCombos(comment.isDefectRaised());
 
 			defectClassificationPanel.setOpaque(false);
-			defectClassificationPanel.add(combosPanel, gbc2);
-			add(defectClassificationPanel, gbc);
+			defectClassificationPanel.add(combosPanel, gbc);
+
+			add(defectClassificationPanel, cc.xyw(TWIXIE_2_POS, 2 + 1, WIDTH_ALL));
 
 			boxIsDefect.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
@@ -365,8 +342,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			return review.getServer().getUsername().equals(cmt.getAuthor().getUserName());
 		}
 
-		private void createPublishButtons(GridBagConstraints gbc) {
-			gbc.gridx++;
+		private void createPublishButtons(CellConstraints cc) {
 			btnPublish = new HyperlinkLabel(PUBLISH);
 			btnPublish.setOpaque(false);
 			btnPublish.addHyperlinkListener(new HyperlinkListener() {
@@ -374,11 +350,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					publishComment(comment);
 				}
 			});
-			add(btnPublish, gbc);
+			add(btnPublish, cc.xy(PUBLISH_POS, 1));
 		}
 
-		private void createDeleteButton(GridBagConstraints gbc) {
-			gbc.gridx++;
+		private void createDeleteButton(CellConstraints cc) {
 			btnDelete = new HyperlinkLabel(DELETE);
 			btnDelete.setOpaque(false);
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
@@ -391,11 +366,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					}
 				}
 			});
-			add(btnDelete, gbc);
+			add(btnDelete, cc.xy(DELETE_POS, 1));
 		}
 
-		private void createCommentEditButtons(@NotNull GridBagConstraints gbc) {
-			gbc.gridx++;
+		private void createCommentEditButtons(@NotNull CellConstraints cc) {
 			btnEdit = new HyperlinkLabel(comment != null ? EDIT : APPLY);
 			final HyperlinkLabel btnCancel = new HyperlinkLabel("Cancel");
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
@@ -431,8 +405,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 				}
 			});
 			btnEdit.setOpaque(false);
-			add(btnEdit, gbc);
-			gbc.gridx++;
+			add(btnEdit, cc.xy(EDIT_POS, 1));
 			if (comment == null || comment.isDraft()) {
 				btnSaveDraft = new HyperlinkLabel(APPLY_DRAFT);
 				btnSaveDraft.addHyperlinkListener(new HyperlinkListener() {
@@ -453,10 +426,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					}
 				});
 				btnSaveDraft.setOpaque(false);
-				add(btnSaveDraft, gbc);
+				add(btnSaveDraft, cc.xy(SAVE_DRAFT_POS, 1));
 				btnSaveDraft.setVisible(comment == null);
 			}
-			gbc.gridx++;
 			btnCancel.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					btnCancel.setVisible(false);
@@ -479,7 +451,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			});
 			btnCancel.setOpaque(false);
 			btnCancel.setVisible(comment == null);
-			add(btnCancel, gbc);
+			add(btnCancel, cc.xy(CANCEL_POS, 1));
 		}
 
 		public VersionedComment getComment() {
@@ -569,7 +541,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			pane.setCaretPosition(0);
 			pane.selectAll();
 		}
-		pane.setBorder(BorderFactory.createEmptyBorder(0, 2 * Constants.DIALOG_MARGIN, 0, 0));
 		pane.setBackground(editable ? CommentHighlighter.VERSIONED_COMMENT_BACKGROUND_COLOR : Color.WHITE);
 
 		if (commentPanel.defectClassificationPanel != null) {
@@ -592,6 +563,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	 * @param comment - null to create new reply
 	 * @param text - new comment body
 	 * @param draft - is the comment a draft?
+	 * @param defect - is this comment a defect?
 	 */
 	private void addOrUpdateCommentForReview(CommentPanel panel, VersionedComment comment,
 											 String text, boolean draft, boolean defect) {
