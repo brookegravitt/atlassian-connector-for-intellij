@@ -24,6 +24,9 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerEvent;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -31,6 +34,7 @@ import com.intellij.psi.PsiManager;
 import com.intellij.util.containers.HashMap;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.Map;
 
 /**
@@ -92,17 +96,23 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 				.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
 	}
 
-	public synchronized void startListening() {
-		if (!isRegistered) {
-			FileEditorManager.getInstance(project).addFileEditorManagerListener(this);
-			IdeaHelper.getCfgManager()
-					.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
-			isRegistered = true;
+	public void projectOpen() {
+		IdeaHelper.getCfgManager()
+				.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		new ScanningJiraLinksTask(project, this).queue();
+	}
 
+	private void startListening() {
+
+		removeAllLinkHighlighers();
+		scanOpenEditors();
+		if (!isRegistered) {
+			FileEditorManager.getInstance(project).addFileEditorManagerListener(FileEditorListenerImpl.this);
+			isRegistered = true;
 		}
 	}
 
-	private synchronized void stopListening() {
+	private void stopListening() {
 		removeAllLinkHighlighers();
 		FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
 		isRegistered = false;
@@ -155,12 +165,34 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 			if (aProjectConfiguration.getDefaultJiraServer() != null) {
-				removeAllLinkHighlighers();
-				scanOpenEditors();
-				FileEditorListenerImpl.this.startListening();
+
+				Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+				ProgressManager.getInstance().run(task);
+				//FileEditorListenerImpl.this.startListening();
+
 			} else {
 				FileEditorListenerImpl.this.stopListening();
 			}
 		}
+	}
+
+
+	private class ScanningJiraLinksTask extends Task.Backgroundable {
+		private final FileEditorListenerImpl fileEditor;
+
+		public ScanningJiraLinksTask(@org.jetbrains.annotations.Nullable Project project,
+				final FileEditorListenerImpl fileEditor) {
+			super(project, "Scanning files for JIRA issues links", false);
+			this.fileEditor = fileEditor;
+		}
+
+		public void run(final ProgressIndicator progressIndicator) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					fileEditor.startListening();
+				}
+			});
+		}
+
 	}
 }
