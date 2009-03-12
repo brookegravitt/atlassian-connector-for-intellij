@@ -122,12 +122,6 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			}
 		}
 
-		// todo remove that limitation when we handle multiple open reviews in IDE
-		// clear OpenInIde filter and notify if review removed
-//		if (crucibleFilter != null && crucibleFilter == PredefinedFilter.OpenInIde) {
-//			clearOpenInIde();
-//		}
-
 		if (existingReview != null) {
 			notifications = existingReview.fillReview(review);
 			getCollectionForFilter(reviews, crucibleFilter).add(review);
@@ -158,6 +152,12 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		// start notifiaction;
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
+
+		// todo remove that limitation when we handle multiple open reviews in IDE
+		// clear OpenInIde filter and notify if review removed
+		if (filter != null && filter == PredefinedFilter.OpenInIde) {
+			clearOpenInIde();
+		}
 
 		List<CrucibleNotification> notifications = addReview(filter, reviewAdapter, updateReason);
 
