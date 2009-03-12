@@ -54,6 +54,9 @@ public class JiraLinkHighlighter {
 		editor.removeEditorMouseMotionListener(inputEditorInputHandler);
 		editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
 		editor.getDocument().removeDocumentListener(docAdapter);
+		for (JiraURLTextRange range : ranges) {
+			range.removeLinkHighlighter(editor);
+		}
 	}
 
 	public void startListeninig() {

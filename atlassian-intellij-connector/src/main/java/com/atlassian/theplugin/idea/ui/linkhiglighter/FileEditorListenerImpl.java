@@ -15,6 +15,10 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -33,15 +37,19 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class FileEditorListenerImpl implements FileEditorManagerListener {
-	private final Map<VirtualFile, JiraLinkHighlighter> highlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
+	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
+	private boolean isRegistered = false;
+	private LocalConfigurationListener localConfigurationListener;
 
 
 	public FileEditorListenerImpl(@NotNull Project project) {
 
 		this.project = project;
 		jiraEditorLinkParser = new JiraEditorLinkParser(project);
+		localConfigurationListener = new LocalConfigurationListener();
+
 	}
 
 	public void fileOpened(final FileEditorManager fileEditorManager, final VirtualFile virtualFile) {
@@ -67,7 +75,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		if (oldFile != null && newFile == null) {
 			removeHighlighter(oldFile);
 
-		} else if (newFile != null && !highlighters.containsKey(newFile)) {
+		} else if (newFile != null && !linkHighlighters.containsKey(newFile)) {
 			PsiFile psiFile = PsiManager.getInstance(project).findFile(newFile);
 			if (psiFile != null) {
 				Editor editor = editorManager.getSelectedTextEditor();
@@ -76,42 +84,83 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 				}
 			}
 		}
-		checkTabLimitReached(editorManager, newFile);
 	}
 
-	private void checkTabLimitReached(final FileEditorManager editorManager, final VirtualFile newFile) {
-		///@todo: implement
+	public void projectClosed() {
+		stopListening();
+		IdeaHelper.getCfgManager()
+				.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+	}
+
+	public synchronized void startListening() {
+		if (!isRegistered) {
+			FileEditorManager.getInstance(project).addFileEditorManagerListener(this);
+			IdeaHelper.getCfgManager()
+					.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+			isRegistered = true;
+
+		}
+	}
+
+	private synchronized void stopListening() {
+		removeAllLinkHighlighers();
+		FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+		isRegistered = false;
 	}
 
 	private void addHighlighter(final VirtualFile newFile, final PsiFile psiFile, final Editor editor) {
 		JiraLinkHighlighter highlighter = new JiraLinkHighlighter(newFile, psiFile, editor, jiraEditorLinkParser);
 		highlighter.startListeninig();
-		highlighters.put(newFile, highlighter);
+		linkHighlighters.put(newFile, highlighter);
 		highlighter.reparseAll();
 		highlighter.checkComments();
 	}
 
 
 	private void removeHighlighter(final VirtualFile oldFile) {
-		JiraLinkHighlighter hl = highlighters.remove(oldFile);
+		JiraLinkHighlighter hl = linkHighlighters.remove(oldFile);
 		if (hl != null) {
 			hl.stopListening();
 		}
+
 	}
 
 	public void scanOpenEditors() {
-		for (JiraLinkHighlighter highlighter : highlighters.values()) {
-			highlighter.reparseAll();
-			highlighter.checkComments();
-		}
-	}
+		final FileEditorManager editorManager = FileEditorManager.getInstance(project);
+		for (VirtualFile openFile : editorManager.getOpenFiles()) {
+			if (!linkHighlighters.containsKey(openFile)) {
+				PsiFile psiFile = PsiManager.getInstance(project).findFile(openFile);
+				if (psiFile != null) {
+					Editor editor = editorManager.getSelectedTextEditor();
+					if (editor != null) {
+						addHighlighter(openFile, psiFile, editor);
+					}
+				}
 
-	public void projectClosed() {
-		if (project != null) {
-			for (VirtualFile vf : highlighters.keySet()) {
-				removeHighlighter(vf);
+			} else {
+				linkHighlighters.get(openFile).reparseAll();
+				linkHighlighters.get(openFile).checkComments();
 			}
 		}
-		project = null;
+
+	}
+
+	public void removeAllLinkHighlighers() {
+		for (VirtualFile vf : linkHighlighters.keySet()) {
+			removeHighlighter(vf);
+		}
+
+	}
+
+	class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
+			if (aProjectConfiguration.getDefaultJiraServer() != null) {
+				removeAllLinkHighlighers();
+				scanOpenEditors();
+				FileEditorListenerImpl.this.startListening();
+			} else {
+				FileEditorListenerImpl.this.stopListening();
+			}
+		}
 	}
 }

@@ -82,7 +82,6 @@ public final class JiraEditorLinkParser {
 		}
 
 		return newRanges;
-
 	}
 
 	public static boolean isComment(final PsiFile psiFile, final int startOffset) {
