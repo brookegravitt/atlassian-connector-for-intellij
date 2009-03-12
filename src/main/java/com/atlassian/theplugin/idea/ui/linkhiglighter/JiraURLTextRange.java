@@ -38,7 +38,7 @@ public class JiraURLTextRange {
 
 	private int hash = 0;
 
-	RangeHighlighter rangeHighlighter = null;
+	private RangeHighlighter rangeHighlighter = null;
 
 	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
 
