@@ -1,7 +1,14 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
@@ -22,7 +29,12 @@ import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,12 +81,12 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	}
 
 	public LineCommentTooltipPanel(Project project, ReviewAdapter review,
-								   CrucibleFileInfo file, VersionedComment thisLineComment) {
+			CrucibleFileInfo file, VersionedComment thisLineComment) {
 		this(project, review, file, thisLineComment, false);
 	}
 
 	public LineCommentTooltipPanel(Project project, final ReviewAdapter review, CrucibleFileInfo file,
-								   VersionedComment thisLineComment, boolean useTextTwixie) {
+			VersionedComment thisLineComment, boolean useTextTwixie) {
 		super(new BorderLayout());
 		this.project = project;
 		this.fileInfo = file;
@@ -98,13 +110,13 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		add(scroll, BorderLayout.CENTER);
 		add(statusLabel, BorderLayout.SOUTH);
 
-		CommentPanel cmtPanel = new CommentPanel(thisLineComment);
+		CommentPanel cmtPanel = new CommentPanel(review, thisLineComment);
 		commentsPanel.add(cmtPanel);
 		commentPanelList.add(cmtPanel);
 		java.util.List<VersionedComment> replies = thisLineComment.getReplies();
 		if (replies != null) {
 			for (VersionedComment reply : replies) {
-				CommentPanel replyPanel = new CommentPanel(reply);
+				CommentPanel replyPanel = new CommentPanel(review, reply);
 				commentsPanel.add(replyPanel);
 				commentPanelList.add(replyPanel);
 			}
@@ -118,8 +130,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 	}
 
-	private void addCommentReplyPanel(VersionedComment reply) {
-		CommentPanel cmt = new CommentPanel(reply);
+	private void addCommentReplyPanel(ReviewAdapter review, VersionedComment reply) {
+		CommentPanel cmt = new CommentPanel(review, reply);
 		commentsPanel.add(cmt);
 		commentPanelList.add(cmt);
 		validate();
@@ -155,6 +167,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private static final String DELETE = "Remove";
 
 		private VersionedComment comment;
+		private ReviewAdapter review;
+
 		private HyperlinkLabel btnEdit;
 		private HyperlinkLabel btnReply;
 		private JLabel creationDate;
@@ -189,7 +203,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			}
 		}
 
-		private CommentPanel(final VersionedComment comment) {
+		private CommentPanel(final ReviewAdapter review, final VersionedComment comment) {
+			this.review = review;
 			this.comment = comment;
 			setOpaque(true);
 			setBackground(Color.WHITE);
@@ -253,7 +268,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 						if (btnEdit != null) {
 							btnEdit.setVisible(false);
 						}
-						addCommentReplyPanel(null);
+						addCommentReplyPanel(review, null);
 					}
 				});
 				btnReply.setOpaque(false);
@@ -280,7 +295,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 
 		private void updateDefectField() {
-			defectLabel.setText("DEFECT: " + ReviewCommentPanel.getRankingString(comment));
+			defectLabel.setText("DEFECT: " + ReviewCommentPanel.getRankingString(review, comment));
 			defectLabel.setVisible(comment.isDefectRaised());
 		}
 
@@ -319,9 +334,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 			JPanel combosPanel = new JPanel(new FlowLayout());
 			combosPanel.setOpaque(false);
-			List<CustomFieldDef> metrics = CrucibleHelper.getMetricsForReview(project, review);
+			List<CustomFieldDef> metrics = review.getMetricDefinitions();
 			final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(
-					review, (CommentBean) comment, metrics, combosPanel);
+					(CommentBean) comment, metrics, combosPanel);
 			combos.showMetricCombos(comment.isDefectRaised());
 
 			defectClassificationPanel.setOpaque(false);
@@ -463,7 +478,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			setCommentText();
 			setCommentDate();
 			updateDefectField();
-			
+
 			commentBody.setBackground(Color.WHITE);
 			commentBody.setEnabled(true);
 			btnEdit.setEnabled(true);
@@ -558,15 +573,14 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	}
 
 	/**
-	 *
-	 * @param panel - panel that this invocation came from
+	 * @param panel   - panel that this invocation came from
 	 * @param comment - null to create new reply
-	 * @param text - new comment body
-	 * @param draft - is the comment a draft?
-	 * @param defect - is this comment a defect?
+	 * @param text	- new comment body
+	 * @param draft   - is the comment a draft?
+	 * @param defect  - is this comment a defect?
 	 */
 	private void addOrUpdateCommentForReview(CommentPanel panel, VersionedComment comment,
-											 String text, boolean draft, boolean defect) {
+			String text, boolean draft, boolean defect) {
 
 		if (comment == null) {
 			removeCommentReplyPanel(panel);
@@ -584,16 +598,19 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	}
 
 	protected abstract void addNewReply(VersionedComment parent, String text, boolean draft);
+
 	protected abstract void updateComment(VersionedComment comment, String text);
+
 	protected abstract void removeComment(VersionedComment comment);
+
 	protected abstract void publishComment(VersionedComment comment);
 
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 
 		public void createdOrEditedVersionedCommentReply(final ReviewAdapter rev,
-														 final PermId file,
-														 final VersionedComment parentComment,
-														 final VersionedComment comment) {
+				final PermId file,
+				final VersionedComment parentComment,
+				final VersionedComment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {
@@ -619,13 +636,13 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					}
 					setStatusText("Comment reply added");
 					setAllButtonsVisible();
-					addCommentReplyPanel(comment);
+					addCommentReplyPanel(review, comment);
 				}
 			});
 		}
 
 		public void createdOrEditedVersionedComment(final ReviewAdapter rev, final PermId file,
-													final VersionedComment comment) {
+				final VersionedComment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {
@@ -682,7 +699,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 
 		public void publishedVersionedComment(final ReviewAdapter rev,
-											  final PermId file, final VersionedComment comment) {
+				final PermId file, final VersionedComment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {

@@ -6,7 +6,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -22,8 +21,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 		final Project project = anActionEvent.getData(DataKeys.PROJECT);
 		final VersionedCommentBean newComment = new VersionedCommentBean();
 		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();

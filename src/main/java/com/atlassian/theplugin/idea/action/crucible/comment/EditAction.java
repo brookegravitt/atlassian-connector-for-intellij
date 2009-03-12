@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,16 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
@@ -80,8 +83,7 @@ public class EditAction extends AbstractCommentAction {
 
 	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment) {
 
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -108,8 +110,7 @@ public class EditAction extends AbstractCommentAction {
 	private void editVersionedComment(final Project project, final ReviewAdapter review,
 			final CrucibleFileInfo file, final VersionedComment comment) {
 
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();

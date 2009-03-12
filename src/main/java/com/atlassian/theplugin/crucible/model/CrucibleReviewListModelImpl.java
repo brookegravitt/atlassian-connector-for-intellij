@@ -10,7 +10,15 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibl
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -116,9 +124,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		// todo remove that limitation when we handle multiple open reviews in IDE
 		// clear OpenInIde filter and notify if review removed
-		if (crucibleFilter != null && crucibleFilter == PredefinedFilter.OpenInIde) {
-			clearOpenInIde();
-		}
+//		if (crucibleFilter != null && crucibleFilter == PredefinedFilter.OpenInIde) {
+//			clearOpenInIde();
+//		}
 
 		if (existingReview != null) {
 			notifications = existingReview.fillReview(review);

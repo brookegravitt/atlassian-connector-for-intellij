@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -28,7 +29,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 
 public class CommentEditForm extends DialogWrapper {
@@ -46,8 +46,7 @@ public class CommentEditForm extends DialogWrapper {
 
 	private boolean saveAsDraft = false;
 
-	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean comment,
-						   List<CustomFieldDef> metrics) {
+	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean comment) {
 
 		super(project, false);
 
@@ -58,7 +57,8 @@ public class CommentEditForm extends DialogWrapper {
 
 		comboPanel.setLayout(new FlowLayout());
 
-		final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(review, comment, metrics, comboPanel);
+		final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(comment, review.getMetricDefinitions(),
+				comboPanel);
 
 		postButton.setAction(getOKAction());
 		postButton.setMnemonic('P');

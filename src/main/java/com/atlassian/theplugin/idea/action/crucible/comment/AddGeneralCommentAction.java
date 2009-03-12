@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -36,10 +35,9 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
-
-import org.jetbrains.annotations.NotNull;
 
 public class AddGeneralCommentAction extends AbstractCommentAction {
 
@@ -86,8 +84,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 
 	private void addGeneralComment(final Project project, final ReviewAdapter review) {
 		final GeneralCommentBean newComment = new GeneralCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment,
-				CrucibleHelper.getMetricsForReview(project, review));
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
 		dialog.setTitle("Add General Comment");
 		dialog.pack();
 		dialog.setModal(true);
