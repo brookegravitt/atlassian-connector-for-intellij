@@ -23,12 +23,16 @@ import com.atlassian.theplugin.util.Connector;
 
 public class ConnectionWrapper extends Thread {
 
-	private String errorMessage;
 	private Connector connector;
 	private final ServerCfg serverCfg;
+	private Exception exception;
+
+	public Exception getException() {
+		return exception;
+	}
 
 	public String getErrorMessage() {
-		return errorMessage;
+		return exception.getMessage();
 	}
 
 	public enum ConnectionState {
@@ -60,10 +64,9 @@ public class ConnectionWrapper extends Thread {
 		} catch (RemoteApiException e) {
 			if (connectionState != ConnectionState.INTERUPTED) {
 				connectionState = ConnectionState.FAILED;
-				errorMessage = e.getMessage();
+				exception = e;
 			}
 		}
-
 		// at this point we should have connection in state INTERUPTED, SUCCEEDED or FAILED
 	}
 
@@ -80,5 +83,4 @@ public class ConnectionWrapper extends Thread {
 	public ConnectionState getConnectionState() {
 		return connectionState;
 	}
-
 }

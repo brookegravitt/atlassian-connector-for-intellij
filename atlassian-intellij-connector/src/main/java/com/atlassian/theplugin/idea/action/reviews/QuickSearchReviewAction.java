@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -100,11 +101,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
 								reviewsWindow.setStatusMessage(e.getMessage(), true);
-								// todo we could notify user somehow
+								DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 							} catch (ServerPasswordNotProvidedException e) {
 								PluginUtil.getLogger().warn("Error getting review", e);
 								reviewsWindow.setStatusMessage(e.getMessage(), true);
-								// todo we could notify user somehow
+								DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 							}
 						}
 					}
