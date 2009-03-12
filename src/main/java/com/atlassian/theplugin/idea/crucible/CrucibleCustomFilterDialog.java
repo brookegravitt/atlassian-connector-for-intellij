@@ -135,8 +135,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
-		setSelectedServer(serverCfg);
-		fillServerRelatedCombos(serverCfg);
+		CrucibleServerCfg selectedServer = setSelectedServer(serverCfg);
+		fillServerRelatedCombos(selectedServer);
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
@@ -233,13 +233,24 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		return filter;
 	}
 
-	private void setSelectedServer(CrucibleServerCfg serverCfg) {
+	private CrucibleServerCfg setSelectedServer(CrucibleServerCfg serverCfg) {
+
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
 			if (serverComboBox.getItemAt(i) instanceof CrucibleServerCfgWrapper &&
 					((CrucibleServerCfgWrapper) serverComboBox.getItemAt(i)).getWrapped().equals(serverCfg)) {
 				serverComboBox.setSelectedItem(serverComboBox.getItemAt(i));
+				return serverCfg;
 			}
 		}
+
+		if (serverComboBox.getItemCount() > 0) {
+			if (serverComboBox.getItemAt(0) instanceof CrucibleServerCfgWrapper) {
+				serverComboBox.setSelectedItem(serverComboBox.getItemAt(0));
+				return ((CrucibleServerCfgWrapper) serverComboBox.getItemAt(0)).getWrapped();
+			}
+		}
+
+		return null;
 	}
 
 	private void fillInCrucibleServers() {
