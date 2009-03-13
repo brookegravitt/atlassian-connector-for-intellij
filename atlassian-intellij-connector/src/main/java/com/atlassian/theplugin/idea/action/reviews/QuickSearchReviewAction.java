@@ -88,7 +88,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 				ProgressManager.getInstance().run(new Task.Modal(project, "Searching review", true) {
 					private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
-					public boolean failed = false;
+					private boolean failed = false;
 
 					public void run(final ProgressIndicator indicator) {
 
