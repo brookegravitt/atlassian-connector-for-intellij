@@ -191,6 +191,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				}
 			}
 
+			r.clearContentCache();
 			getOpenInIdeReviews().remove(r);
 
 			if (!found) {
