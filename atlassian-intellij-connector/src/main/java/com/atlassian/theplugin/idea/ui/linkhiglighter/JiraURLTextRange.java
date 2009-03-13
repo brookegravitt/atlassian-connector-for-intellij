@@ -25,9 +25,10 @@ import java.awt.*;
  * User: pmaruszak
  */
 public class JiraURLTextRange {
-	public static final Color LINK_COLOR = new Color(76, 104, 137);
+	public static final Color LINK_COLOR = Color.BLUE;
 	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
+
 
 	private int startOffset;
 	private int endOffset;
@@ -84,7 +85,8 @@ public class JiraURLTextRange {
 
 	public void removeLinkHighlighter(final Editor editor) {
 		MarkupModel markupModel = editor.getMarkupModel();
-		if (rangeHighlighter != null) {
+
+		if (rangeHighlighter != null && rangeHighlighter.isValid()) {
 			markupModel.removeHighlighter(rangeHighlighter);
 			rangeHighlighter = null;
 		}

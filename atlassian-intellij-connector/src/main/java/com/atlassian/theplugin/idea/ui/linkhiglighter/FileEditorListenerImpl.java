@@ -48,6 +48,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private boolean isRegistered = false;
 	private LocalConfigurationListener localConfigurationListener;
 	private JiraServerCfg lastDefaultJiraServer = null;
+	private boolean isProjectClosed = false;
 
 
 	public FileEditorListenerImpl(@NotNull Project project) {
@@ -93,9 +94,12 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		stopListening();
-		IdeaHelper.getCfgManager()
-				.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		if (!isProjectClosed) {
+			stopListening();
+			IdeaHelper.getCfgManager()
+					.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+			isProjectClosed = true;
+		}
 	}
 
 	public void projectOpen() {
@@ -114,9 +118,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		}
 	}
 
-	private void stopListening() {
-		removeAllLinkHighlighers();
-		FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+	private synchronized void stopListening() {
+		FileEditorManager.getInstance(project).removeFileEditorManagerListener(FileEditorListenerImpl.this);
 		isRegistered = false;
 	}
 
@@ -191,11 +194,13 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 				final FileEditorListenerImpl fileEditor) {
 			super(project, "Scanning files for JIRA issues links", false);
 			this.fileEditor = fileEditor;
+
 		}
 
 		public void run(final ProgressIndicator progressIndicator) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
+					processSentToBackground();
 					fileEditor.startListening();
 				}
 			});
