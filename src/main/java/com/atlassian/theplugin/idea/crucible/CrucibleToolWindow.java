@@ -108,6 +108,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		super.closeToolWindow(TOOL_WINDOW_TITLE, event);
 		CommentHighlighter.removeCommentsInEditors(project);
 		ChangeViewer.removeHighlightersInEditors(project);
+		this.contentParams.reviewAdapter.clearContentCache();
 	}
 
 	public Object getData(@NonNls final String dataId) {
