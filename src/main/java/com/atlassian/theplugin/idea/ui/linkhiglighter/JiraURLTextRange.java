@@ -49,7 +49,7 @@ public class JiraURLTextRange {
 
 	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
 
-	public JiraURLTextRange(final @NotNull Project project,
+	public JiraURLTextRange(@NotNull final Project project,
 			final int startOffset, final int endOffset, final String url, final boolean isActive) {
 		this.project = project;
 		this.startOffset = startOffset;
