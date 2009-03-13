@@ -11,9 +11,9 @@ import com.intellij.openapi.vcs.VcsBundle;
 public class OpenCrucibleDiffToolAction extends AbstractOpenDiffToolAction {
 	private final CrucibleFileInfo reviewItem;
 
-	public OpenCrucibleDiffToolAction(final Project project, final CrucibleFileInfo reviewItem, final String fromRevision,
-			final String toRevision) {
-		super(project, reviewItem.getFileDescriptor().getAbsoluteUrl(), fromRevision, toRevision);
+	public OpenCrucibleDiffToolAction(final Project project, final CrucibleFileInfo reviewItem) {
+		super(project, reviewItem.getFileDescriptor().getAbsoluteUrl(), reviewItem.getOldFileDescriptor().getRevision(),
+				reviewItem.getFileDescriptor().getRevision());
 		this.reviewItem = reviewItem;
 	}
 

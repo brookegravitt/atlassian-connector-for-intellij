@@ -143,7 +143,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingTwoReviewsWithTheSamePermId() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-
 		ServerId id = new ServerId();
 		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
 		ReviewBean r = new ReviewBean("test");
