@@ -50,10 +50,12 @@ public class JiraLinkHighlighter {
 	}
 
 	public void stopListening() {
-		editor.removeEditorMouseListener(inputEditorInputHandler);
-		editor.removeEditorMouseMotionListener(inputEditorInputHandler);
 		editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
 		editor.getDocument().removeDocumentListener(docAdapter);
+		editor.removeEditorMouseListener(inputEditorInputHandler);
+		editor.removeEditorMouseMotionListener(inputEditorInputHandler);
+
+
 		for (JiraURLTextRange range : ranges) {
 			range.removeLinkHighlighter(editor);
 		}
