@@ -50,7 +50,7 @@ public class CrucibleReviewMetricsCombos {
 		parent.setVisible(visible);
 	}
 
-	private class CustomFieldValueWrapper extends CustomFieldValue {
+	private final class CustomFieldValueWrapper extends CustomFieldValue {
 		private CustomFieldValueWrapper(final String name, final Object value) {
 			super(name, value);
 		}
@@ -61,11 +61,11 @@ public class CrucibleReviewMetricsCombos {
 		}
 	}
 
-	private class CustomFieldComboBoxModel extends AbstractListModel implements ComboBoxModel {
+	private final class CustomFieldComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Collection<CustomFieldValueWrapper> data;
 		private final Comment comment;
 		private CustomFieldDef customFieldDef;
-		private CustomFieldValueWrapper NONE = new CustomFieldValueWrapper("None", "none");
+		private CustomFieldValueWrapper noneCustomField = new CustomFieldValueWrapper("None", "none");
 
 		private CustomFieldComboBoxModel(Comment comment, CustomFieldDef customFieldDef) {
 			this.comment = comment;
@@ -89,7 +89,7 @@ public class CrucibleReviewMetricsCombos {
 					CustomFieldValue item = (CustomFieldValue) anItem;
 					setMetricField(customFieldDef, item);
 				} else {
-					setMetricField(customFieldDef, NONE);
+					setMetricField(customFieldDef, noneCustomField);
 				}
 				fireContentsChanged(this, -1, -1);
 			}
@@ -103,7 +103,7 @@ public class CrucibleReviewMetricsCombos {
 			if (oldCf != null) {
 				comment.getCustomFields().remove(customFieldDef.getName());
 			}
-			if (!value.getName().equals(NONE.getName())) {
+			if (!value.getName().equals(noneCustomField.getName())) {
 				CustomFieldBean newField = new CustomFieldBean();
 				newField.setConfigVersion(field.getConfigVersion());
 				newField.setValue(value.getName());
@@ -116,12 +116,12 @@ public class CrucibleReviewMetricsCombos {
 			if (v != null) {
 				return new CustomFieldValueWrapper(v.getValue(), v.getValue());
 			}
-			return NONE;
+			return noneCustomField;
 		}
 
 		public Object getElementAt(final int index) {
 			if (index == 0) {
-				return NONE;
+				return noneCustomField;
 			}
 			int i = 1;
 			for (CustomFieldValue value : getCustomFields()) {
