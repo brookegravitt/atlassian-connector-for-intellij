@@ -22,7 +22,12 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -50,8 +55,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 enum AddMode {
 	ADDREVISION,
@@ -82,6 +91,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private Collection<Change> localChanges;
 	private MultipleChangeListBrowser changesBrowser;
 
+	private RepositoryComboBoxItem NON_REPO;
+
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
 			ChangeList[] changes, final CfgManager cfgManager) {
 		this(project, crucibleServerFacade, cfgManager);
@@ -111,6 +122,11 @@ public class CrucibleHelperForm extends DialogWrapper {
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
 		this.cfgManager = cfgManager;
+
+		RepositoryBean repo = new RepositoryBean();
+		repo.setName("");
+		NON_REPO = new RepositoryComboBoxItem(repo);
+
 		$$$setupUI$$$();
 		init();
 
@@ -193,7 +209,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		repositoryComboBox.removeAllItems();
 
 		if (this.mode == AddMode.ADDITEMS) {
-			repositoryComboBox.addItem(""); // repo is not required for instance for patch review
+			repositoryComboBox.addItem(NON_REPO); // repo is not required for instance for patch review
 		}
 		if (!repositories.isEmpty()) {
 			for (Repository repo : repositories) {
