@@ -158,8 +158,9 @@ public class DialogWithDetails extends DialogWrapper {
 		rootPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
 		ctrlDescription = new JLabel();
 		ctrlDescription.setText("Label");
-		rootPane.add(ctrlDescription, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		rootPane.add(ctrlDescription, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTHWEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null,
+				0, false));
 		ctrlDetailsPane = new JScrollPane();
 		rootPane.add(ctrlDetailsPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
