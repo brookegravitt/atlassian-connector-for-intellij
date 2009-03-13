@@ -47,8 +47,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private Project project;
 	private boolean isRegistered = false;
 	private LocalConfigurationListener localConfigurationListener;
-	private JiraServerCfg lastDefaultJiraServer = null;
-	private boolean isProjectClosed = false;
+	private JiraServerCfg lastJiraServer = null;
 
 
 	public FileEditorListenerImpl(@NotNull Project project) {
@@ -94,34 +93,41 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		if (!isProjectClosed) {
-			stopListening();
-			IdeaHelper.getCfgManager()
-					.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
-			isProjectClosed = true;
+		IdeaHelper.getCfgManager()
+				.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		deactivate();
+	}
+
+	public void projectOpened() {
+		IdeaHelper.getCfgManager()
+				.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		activate();
+		if (IdeaHelper.getCfgManager()
+				.getProjectConfiguration(CfgUtil.getProjectId(project)).getDefaultJiraServer() != null) {
+			Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+			ProgressManager.getInstance().run(task);
 		}
 	}
 
-	public void projectOpen() {
-		IdeaHelper.getCfgManager()
-				.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
-		new ScanningJiraLinksTask(project, this).queue();
+	public void deactivate() {
+		FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+		isRegistered = false;
 	}
 
-	private synchronized void startListening() {
+	public void activate() {
 
-		removeAllLinkHighlighers();
-		scanOpenEditors();
 		if (!isRegistered) {
 			FileEditorManager.getInstance(project).addFileEditorManagerListener(FileEditorListenerImpl.this);
 			isRegistered = true;
 		}
+
 	}
 
-	private synchronized void stopListening() {
-		FileEditorManager.getInstance(project).removeFileEditorManagerListener(FileEditorListenerImpl.this);
-		isRegistered = false;
+	private synchronized void startListening() {
+
+		new ScanningJiraLinksTask(project, this).queue();
 	}
+
 
 	private void addHighlighter(final VirtualFile newFile, final PsiFile psiFile, final Editor editor) {
 		JiraLinkHighlighter highlighter = new JiraLinkHighlighter(newFile, psiFile, editor, jiraEditorLinkParser);
@@ -136,6 +142,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 		JiraLinkHighlighter hl = linkHighlighters.get(oldFile);
 		if (hl != null) {
 			hl.stopListening();
+			hl.removeAllRanges();
 		}
 
 	}
@@ -170,20 +177,21 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 	class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-			final JiraServerCfg currentDefaultJiraServerCfg = aProjectConfiguration.getDefaultJiraServer();
 
-			if (currentDefaultJiraServerCfg != null && !currentDefaultJiraServerCfg.equals(lastDefaultJiraServer)) {
+			final JiraServerCfg currentJiraServer = aProjectConfiguration.getDefaultJiraServer();
+			if (currentJiraServer == null) {
+				FileEditorListenerImpl.this.deactivate();
+				removeAllLinkHighlighers();
 
+
+			} else if (!currentJiraServer.equals(lastJiraServer)) {
 				Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 				ProgressManager.getInstance().run(task);
-
-			} else if (currentDefaultJiraServerCfg == null) {
-				FileEditorListenerImpl.this.stopListening();
 			}
 
-			lastDefaultJiraServer = currentDefaultJiraServerCfg;
-		}
+			lastJiraServer = currentJiraServer;
 
+		}
 	}
 
 
@@ -194,14 +202,12 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 				final FileEditorListenerImpl fileEditor) {
 			super(project, "Scanning files for JIRA issues links", false);
 			this.fileEditor = fileEditor;
-
 		}
 
 		public void run(final ProgressIndicator progressIndicator) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					processSentToBackground();
-					fileEditor.startListening();
+					fileEditor.scanOpenEditors();
 				}
 			});
 		}
