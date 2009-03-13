@@ -88,8 +88,12 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 				ProgressManager.getInstance().run(new Task.Modal(project, "Searching review", true) {
 					private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
+					public boolean failed = false;
 
 					public void run(final ProgressIndicator indicator) {
+
+						indicator.setFraction(0);
+
 						// find serverReviews on all selected servers
 						for (CrucibleServerCfg server : servers) {
 							try {
@@ -98,27 +102,37 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 								if (review != null) {
 									serverReviews.add(new ReviewAdapter(review, server));
 								}
-							} catch (RemoteApiException e) {
-								PluginUtil.getLogger().warn("Error getting review", e);
-								reviewsWindow.setStatusMessage(e.getMessage(), true);
-								DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
-							} catch (ServerPasswordNotProvidedException e) {
-								PluginUtil.getLogger().warn("Error getting review", e);
-								reviewsWindow.setStatusMessage(e.getMessage(), true);
-								DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+							} catch (final RemoteApiException e) {
+								failed = true;
+								reportProblem(e, reviewsWindow, project);
+							} catch (final ServerPasswordNotProvidedException e) {
+								failed = true;
+								reportProblem(e, reviewsWindow, project);
 							}
 						}
 					}
 
 					public void onSuccess() {
-						List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
-						showPopup(reviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
+						if (!failed) {
+							List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
+							showPopup(reviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
+						}
 					}
 				});
 			} else {
 				showPopup(localReviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
 			}
 		}
+	}
+
+	private void reportProblem(final Throwable e, final ReviewsToolWindowPanel reviewsWindow, final Project project) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				PluginUtil.getLogger().warn("Error getting review", e);
+				reviewsWindow.setStatusMessage(e.getMessage(), true);
+				DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+			}
+		});
 	}
 
 	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component component,
