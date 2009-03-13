@@ -314,6 +314,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public void projectClosed() {
 		if (created) {
+			fileEditorListener.projectClosed();
 			// remove icon from status bar
 			statusBarBambooIcon.hideIcon();
 			statusBarBambooIcon = null;
@@ -345,7 +346,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
-			fileEditorListener.projectClosed();
+
 			created = false;
 		}
 	}
