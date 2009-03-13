@@ -22,7 +22,6 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -156,14 +155,11 @@ public class DialogWithDetails extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootPane = new JPanel();
-		rootPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
+		rootPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
 		ctrlDescription = new JLabel();
 		ctrlDescription.setText("Label");
 		rootPane.add(ctrlDescription, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		final Spacer spacer1 = new Spacer();
-		rootPane.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-				GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		ctrlDetailsPane = new JScrollPane();
 		rootPane.add(ctrlDetailsPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
