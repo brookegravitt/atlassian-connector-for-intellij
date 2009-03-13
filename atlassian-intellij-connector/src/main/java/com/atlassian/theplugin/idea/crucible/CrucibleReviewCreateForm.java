@@ -817,8 +817,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private boolean isValidForm() {
 		if (crucibleServersComboBox.getSelectedItem() instanceof ServerComboBoxItem && titleText.getText().length() > 0
 				&& projectsComboBox.getSelectedItem() instanceof ProjectComboBoxItem
-				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem &&
-				moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
+				&& authorComboBox.getSelectedItem() instanceof UserComboBoxItem
+				&& moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 			final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 			return isValid(new ReviewProvider(selectedItem.getServer()));
 		} else {
