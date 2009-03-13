@@ -366,6 +366,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 			public void run() {
 				List<ReviewAdapter> drafts = MiscUtil.buildArrayList();
 				List<ReviewAdapter> outForReview = MiscUtil.buildArrayList();
+				List<ReviewAdapter> toSummarize = MiscUtil.buildArrayList();
 
 				Collection<CrucibleServerCfg> servers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 				for (CrucibleServerCfg server : servers) {
@@ -374,6 +375,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Drafts), server);
 						addToReviewAdapterList(outForReview,
 								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.OutForReview), server);
+						addToReviewAdapterList(toSummarize,
+								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.ToSummarize), server);
 					}
 					catch (RemoteApiException e) {
 						// nothing can be done here
@@ -382,10 +385,11 @@ public class CrucibleHelperForm extends DialogWrapper {
 						// nothing can be done here
 					}
 				}
-				final List<ReviewAdapter> reviews = MiscUtil.buildArrayList(drafts.size() + outForReview.size());
+				final List<ReviewAdapter> reviews = MiscUtil
+						.buildArrayList(drafts.size() + outForReview.size() + toSummarize.size());
 				reviews.addAll(drafts);
 				reviews.addAll(outForReview);
-
+				reviews.addAll(toSummarize);
 
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
