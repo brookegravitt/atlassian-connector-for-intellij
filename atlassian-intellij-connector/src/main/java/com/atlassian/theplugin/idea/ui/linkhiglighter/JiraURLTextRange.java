@@ -15,9 +15,15 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.markup.*;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 
@@ -29,7 +35,7 @@ public class JiraURLTextRange {
 	public static final TextAttributes ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES =
 			new TextAttributes(LINK_COLOR, null, LINK_COLOR, EffectType.LINE_UNDERSCORE, Font.PLAIN);
 
-
+	private final Project project;
 	private int startOffset;
 	private int endOffset;
 
@@ -43,16 +49,27 @@ public class JiraURLTextRange {
 
 	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
 
-	public JiraURLTextRange(
+	public JiraURLTextRange(final @NotNull Project project,
 			final int startOffset, final int endOffset, final String url, final boolean isActive) {
+		this.project = project;
 		this.startOffset = startOffset;
 		this.endOffset = endOffset;
 		this.url = url;
 		active = isActive;
 	}
 
+	private String getDefaultJiraServerUrl() {
+		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager()
+				.getProjectConfiguration(CfgUtil.getProjectId(project));
+		final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
+		if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {
+			return defaultServer.getUrl();
+		}
+		return "";
+	}
+
 	public String getUrl() {
-		return url;
+		return getDefaultJiraServerUrl() + url;
 	}
 
 	public int getStartOffset() {
@@ -85,8 +102,7 @@ public class JiraURLTextRange {
 
 	public void removeLinkHighlighter(final Editor editor) {
 		MarkupModel markupModel = editor.getMarkupModel();
-
-		if (rangeHighlighter != null && rangeHighlighter.isValid()) {
+		if (rangeHighlighter != null) {
 			markupModel.removeHighlighter(rangeHighlighter);
 			rangeHighlighter = null;
 		}
