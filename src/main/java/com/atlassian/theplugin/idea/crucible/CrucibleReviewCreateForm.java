@@ -30,6 +30,7 @@ import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -729,9 +730,18 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
 
+					ModalityState modalityState = ModalityState
+							.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
+
 					try {
 						final Review draftReview = createReview(server, new ReviewProvider(server));
 						if (draftReview == null) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									Messages.showErrorDialog(
+											project, "Review not created. Null returned.", PluginUtil.PRODUCT_NAME);
+								}
+							});
 							return;
 						}
 
@@ -767,8 +777,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 														+ "Leaving review in draft state.", "Permission denied");
 									}
 								}
-							}
-							catch (ValueNotYetInitialized valueNotYetInitialized) {
+							} catch (ValueNotYetInitialized valueNotYetInitialized) {
 								Messages.showErrorDialog(project,
 										"Unable to change review state. Leaving review in draft state.", "Permission denied");
 							}
@@ -781,9 +790,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 									panel.refresh(UpdateReason.REFRESH);
 								}
 							}
-						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
-					}
-					catch (final Throwable e) {
+						}, modalityState);
+					} catch (final Throwable e) {
+
 						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 							public void run() {
 								String message = "Error creating review: " + server.getUrl();
@@ -792,7 +801,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 								}
 								DialogWithDetails.showExceptionDialog(project, message, e);
 							}
-						}, ModalityState.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent()));
+						}, modalityState);
 					}
 				}
 			};
