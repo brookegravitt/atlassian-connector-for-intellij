@@ -30,7 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 public abstract class AbstractCrucibleCreatePostCommitReviewForm extends CrucibleReviewCreateForm {
-	public AbstractCrucibleCreatePostCommitReviewForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
+	public AbstractCrucibleCreatePostCommitReviewForm(Project project, CrucibleServerFacade crucibleServerFacade,
+			String commitMessage,
 			@NotNull final CfgManager cfgManager) {
 		super(project, crucibleServerFacade, commitMessage, cfgManager, "Create Post-Commit Review");
 	}
@@ -60,7 +61,13 @@ public abstract class AbstractCrucibleCreatePostCommitReviewForm extends Crucibl
 				}
 			}
 		}
-		return crucibleServerFacade.createReviewFromRevision(server, reviewProvider, revisions);
+
+		if (revisions.isEmpty()) {
+			return crucibleServerFacade.createReview(server, reviewProvider);
+		} else {
+			return crucibleServerFacade.createReviewFromRevision(server, reviewProvider, revisions);
+		}
+
 	}
 
 }
