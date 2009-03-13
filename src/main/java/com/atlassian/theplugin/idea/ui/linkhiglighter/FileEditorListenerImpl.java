@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -46,6 +47,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private Project project;
 	private boolean isRegistered = false;
 	private LocalConfigurationListener localConfigurationListener;
+	private JiraServerCfg lastDefaultJiraServer = null;
 
 
 	public FileEditorListenerImpl(@NotNull Project project) {
@@ -165,15 +167,20 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 	class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
-			if (aProjectConfiguration.getDefaultJiraServer() != null) {
+			final JiraServerCfg currentDefaultJiraServerCfg = aProjectConfiguration.getDefaultJiraServer();
+
+			if (currentDefaultJiraServerCfg != null && !currentDefaultJiraServerCfg.equals(lastDefaultJiraServer)) {
 
 				Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 				ProgressManager.getInstance().run(task);
 
-			} else {
+			} else if (currentDefaultJiraServerCfg == null) {
 				FileEditorListenerImpl.this.stopListening();
 			}
+
+			lastDefaultJiraServer = currentDefaultJiraServerCfg;
 		}
+
 	}
 
 
