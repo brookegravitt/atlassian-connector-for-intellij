@@ -50,15 +50,18 @@ public class JiraLinkHighlighter {
 	}
 
 	public void stopListening() {
-		editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
-		editor.getDocument().removeDocumentListener(docAdapter);
 		editor.removeEditorMouseListener(inputEditorInputHandler);
 		editor.removeEditorMouseMotionListener(inputEditorInputHandler);
+		editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
+		editor.getDocument().removeDocumentListener(docAdapter);
+	}
 
-
+	public void removeAllRanges() {
 		for (JiraURLTextRange range : ranges) {
-			range.removeLinkHighlighter(editor);
+			range.setActive(false);
 		}
+		highlightLink(ranges);
+		ranges.clear();
 	}
 
 	public void startListeninig() {
@@ -166,7 +169,7 @@ public class JiraLinkHighlighter {
 			if (!rangesToRemember.isEmpty()) {
 				ranges.addAll(rangesToRemember);
 				highlightLink(ranges);
-				//@todo add to cache
+
 			}
 		}
 
@@ -209,6 +212,7 @@ public class JiraLinkHighlighter {
 			JiraURLTextRange jiraRange = JiraURLTextRange.getFrom(h);
 			if (jiraRange != null && rangesList.contains(jiraRange) && !jiraRange.isActive()) {
 				editor.getMarkupModel().removeHighlighter(h);
+
 			}
 		}
 
