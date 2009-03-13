@@ -130,8 +130,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 	}
 
-	private void addCommentReplyPanel(ReviewAdapter review, VersionedComment reply) {
-		CommentPanel cmt = new CommentPanel(review, reply);
+	private void addCommentReplyPanel(ReviewAdapter aReview, VersionedComment reply) {
+		CommentPanel cmt = new CommentPanel(aReview, reply);
 		commentsPanel.add(cmt);
 		commentPanelList.add(cmt);
 		validate();
