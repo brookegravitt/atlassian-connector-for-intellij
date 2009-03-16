@@ -41,11 +41,12 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 	}
 
 	public IdeaReviewFileContent getContent(final ReviewAdapter review,
-			final VersionedVirtualFile fileInfo) throws ReviewFileContentException {
+			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
 		try {
 			byte[] content = CrucibleServerFacadeImpl.getInstance()
-					.getFileContent(review.getServer(), fileInfo.getContentUrl());
-			VirtualFile file = new VcsVirtualFile(fileInfo.getContentUrl(), content, fileInfo.getRevision(),
+					.getFileContent(review.getServer(), versionedVirtualFile.getContentUrl());
+			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getContentUrl(), content,
+					versionedVirtualFile.getRevision(),
 					virtualFile.getFileSystem());
 
 			return new IdeaReviewFileContent(file, null);
