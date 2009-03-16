@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -27,10 +28,16 @@ import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
 public class CrucibleWebContentProvider implements ReviewFileContentProvider {
+	private final CrucibleFileInfo fileInfo;
 	private final VirtualFile virtualFile;
 
-	public CrucibleWebContentProvider(VirtualFile virtualFile) {
+	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
+		this.fileInfo = fileInfo;
 		this.virtualFile = virtualFile;
+	}
+
+	public CrucibleFileInfo getFileInfo() {
+		return fileInfo;
 	}
 
 	public IdeaReviewFileContent getContent(final ReviewAdapter review,
