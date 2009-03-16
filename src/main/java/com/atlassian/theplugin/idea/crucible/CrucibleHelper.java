@@ -260,11 +260,10 @@ public final class CrucibleHelper {
 		}
 
 		if (contentUrlAvailable) {
-			review.setContentProvider(new CrucibleWebContentProvider(virtualFile));
+			review.addContentProvider(new CrucibleWebContentProvider(crucibleFileInfo, virtualFile));
 		} else {
-			review.setContentProvider(new CrucibleVcsContentProvider(project, virtualFile));
+			review.addContentProvider(new CrucibleVcsContentProvider(project, crucibleFileInfo, virtualFile));
 		}
-
 
 		new FetchingTwoFilesTask(project, modal, niceFileMessage, review, crucibleFileInfo, line, column, action)
 				.queue();
