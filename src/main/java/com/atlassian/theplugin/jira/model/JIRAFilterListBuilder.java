@@ -87,7 +87,8 @@ public class JIRAFilterListBuilder {
 //		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
 		if (jiraServerModel != null) {
 			List<JIRAQueryFragment> filters = jiraServerModel.getSavedFilters(jiraServer);
-			List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters.size());
+
+			List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters != null ? filters.size() : 0);
 
 			for (JIRAQueryFragment query : filters) {
 				savedFilters.add((JIRASavedFilter) query);
