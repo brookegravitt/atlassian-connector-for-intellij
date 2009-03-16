@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
@@ -33,11 +34,17 @@ import com.intellij.vcsUtil.VcsUtil;
 
 public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 	private final Project project;
+	private final CrucibleFileInfo fileInfo;
 	private final VirtualFile virtualFile;
 
-	public CrucibleVcsContentProvider(Project project, VirtualFile virtualFile) {
+	public CrucibleVcsContentProvider(Project project, CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
 		this.project = project;
+		this.fileInfo = fileInfo;
 		this.virtualFile = virtualFile;
+	}
+
+	public CrucibleFileInfo getFileInfo() {
+		return fileInfo;
 	}
 
 	public IdeaReviewFileContent getContent(final ReviewAdapter review,
