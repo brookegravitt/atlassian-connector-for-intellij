@@ -90,8 +90,10 @@ public class JIRAFilterListBuilder {
 
 			List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>(filters != null ? filters.size() : 0);
 
-			for (JIRAQueryFragment query : filters) {
-				savedFilters.add((JIRASavedFilter) query);
+			if (filters != null) {
+				for (JIRAQueryFragment query : filters) {
+					savedFilters.add((JIRASavedFilter) query);
+				}
 			}
 
 			listModel.setSavedFilters(jiraServer, savedFilters);
