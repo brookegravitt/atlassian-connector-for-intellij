@@ -48,15 +48,16 @@ public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 	}
 
 	public IdeaReviewFileContent getContent(final ReviewAdapter review,
-			final VersionedVirtualFile fileInfo) throws ReviewFileContentException {
+			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
 		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 		if (vcs == null) {
 			return null;
 		}
-		VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(fileInfo.getRevision());
+		VcsRevisionNumber vcsRevisionNumber = vcs.parseRevisionNumber(versionedVirtualFile.getRevision());
 		if (vcsRevisionNumber == null) {
-			throw new ReviewFileContentException("Cannot parse revision number [" + fileInfo.getRevision() + "] for file ["
-					+ virtualFile.getPath() + "]");
+			throw new ReviewFileContentException(
+					"Cannot parse revision number [" + versionedVirtualFile.getRevision() + "] for file ["
+							+ virtualFile.getPath() + "]");
 		}
 
 		DiffProvider diffProvider = vcs.getDiffProvider();
