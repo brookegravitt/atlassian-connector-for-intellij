@@ -96,7 +96,7 @@ public final class JiraEditorLinkParser {
 		List<JiraURLTextRange> ranges = new ArrayList<JiraURLTextRange>();
 		String defaultServerurl = getDefaultJiraServerUrl();
 		if (defaultServerurl.length() > 0) {
-			Pattern replacePattern = Pattern.compile("/browse/$1");
+			Pattern replacePattern = Pattern.compile("$1");
 			Matcher matcher = JIRA_ISSUE_LINK_SEARCH_PATTERN.matcher(text);
 			while (matcher.find()) {
 				String url = JIRA_ISSUE_LINK_SEARCH_PATTERN.matcher(matcher.group()).replaceAll(replacePattern.toString());
