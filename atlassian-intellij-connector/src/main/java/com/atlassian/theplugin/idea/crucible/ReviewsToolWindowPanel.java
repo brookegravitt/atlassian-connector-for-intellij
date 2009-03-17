@@ -397,8 +397,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			if (!found) {
 
 				// search servers
-				for (CrucibleServerCfg server :
-						projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
+				for (CrucibleServerCfg server
+						: projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
 					if (server.getServerId().toString().equals(recentlyOpenReview.getServerId())) {
 						try {
 							Review r = CrucibleServerFacadeImpl.getInstance().getReview(
