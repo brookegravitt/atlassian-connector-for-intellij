@@ -16,14 +16,12 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
@@ -32,19 +30,15 @@ import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by IntelliJ IDEA.
- * User: lguminski
- * Date: Jul 23, 2008
- * Time: 3:49:59 PM
- * To change this template use File | Settings | File Templates.
- */
+
 public class EditAction extends AbstractCommentAction {
 	private static final String EDIT_TEXT = "Edit";
 
@@ -73,17 +67,26 @@ public class EditAction extends AbstractCommentAction {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			GeneralComment comment = node.getComment();
-			editGeneralComment(project, node.getReview(), comment);
+			editGeneralComment(project, node.getReview(), comment, null, null);
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			VersionedComment comment = node.getComment();
-			editVersionedComment(project, node.getReview(), node.getFile(), comment);
+			editVersionedComment(project, node.getReview(), node.getFile(), comment, null, null);
 		}
 	}
 
-	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment) {
+	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment,
+			GeneralCommentBean localCopy,
+			final String errorMessage) {
 
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment);
+		final GeneralCommentBean localData;
+		if (localCopy == null) {
+			localData = new GeneralCommentBean(comment);
+		} else {
+			localData = localCopy;
+		}
+
+		final CommentEditForm dialog = new CommentEditForm(project, review, localData, errorMessage);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -91,14 +94,17 @@ public class EditAction extends AbstractCommentAction {
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Editing General Comment", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
-						review.editGeneralComment(comment);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
+						review.editGeneralComment(localData);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								editGeneralComment(project, review, comment, localData, e.getMessage());
+							}
+						});
 					}
 				}
 			};
@@ -107,10 +113,18 @@ public class EditAction extends AbstractCommentAction {
 		}
 	}
 
+	// PL-25
 	private void editVersionedComment(final Project project, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment) {
+			final CrucibleFileInfo file, final VersionedComment comment, VersionedCommentBean localCopy, String errorMessage) {
 
-		CommentEditForm dialog = new CommentEditForm(project, review, (CommentBean) comment);
+		final VersionedCommentBean localData;
+		if (localCopy == null) {
+			localData = new VersionedCommentBean(comment);
+		} else {
+			localData = localCopy;
+		}
+
+		CommentEditForm dialog = new CommentEditForm(project, review, localData, errorMessage);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -118,14 +132,17 @@ public class EditAction extends AbstractCommentAction {
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Editing File Comment", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
-						review.editVersionedComment(file, comment);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
+						review.editVersionedComment(file, localData);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								editVersionedComment(project, review, file, comment, localData, e.getMessage());
+							}
+						});
 					}
 				}
 			};

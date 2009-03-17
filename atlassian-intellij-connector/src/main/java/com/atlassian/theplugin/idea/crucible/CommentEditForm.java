@@ -41,23 +41,29 @@ public class CommentEditForm extends DialogWrapper {
 	private JButton cancelButton;
 	private JPanel comboPanel;
 	private JPanel toolPanel;
+	private JPanel errorPanel;
+	private JLabel errorLabel;
 
-	private final CommentBean comment;
 
 	private boolean saveAsDraft = false;
+	private final CommentBean comment;
 
 	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean comment) {
 
 		super(project, false);
-
 		this.comment = comment;
+
 
 		$$$setupUI$$$();
 		init();
 
+		this.errorPanel.setVisible(false);
+
+
 		comboPanel.setLayout(new FlowLayout());
 
-		final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(comment, review.getMetricDefinitions(),
+		final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(comment.getCustomFields(),
+				review.getMetricDefinitions(),
 				comboPanel);
 
 		postButton.setAction(getOKAction());
@@ -65,6 +71,8 @@ public class CommentEditForm extends DialogWrapper {
 		saveAsDraftButton.setAction(getDraftAction());
 		saveAsDraftButton.setMnemonic('D');
 		cancelButton.setAction(getCancelAction());
+
+
 		commentText.setText(comment.getMessage());
 
 		defectCheckBox.addActionListener(new ActionListener() {
@@ -112,6 +120,14 @@ public class CommentEditForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Post");
 	}
 
+	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean data, final String errorMessage) {
+		this(project, review, data);
+		if (errorMessage != null) {
+			this.errorPanel.setVisible(true);
+			this.errorLabel.setText(errorMessage);
+		}
+	}
+
 	public JComponent getPreferredFocusedComponent() {
 		return commentText;
 	}
@@ -156,8 +172,9 @@ public class CommentEditForm extends DialogWrapper {
 	private void createUIComponents() {
 	}
 
-	public CommentBean getComment() {
-		return comment;
+	public void setErrorMessage(String errorMessage) {
+		this.errorLabel.setText(errorMessage);
+		this.errorPanel.setVisible(true);
 	}
 
 	/**
@@ -169,10 +186,10 @@ public class CommentEditForm extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
 		rootComponent.setMinimumSize(new Dimension(650, 300));
 		commentPane = new JScrollPane();
-		rootComponent.add(commentPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		rootComponent.add(commentPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		commentText = new JTextArea();
@@ -182,7 +199,7 @@ public class CommentEditForm extends DialogWrapper {
 		commentPane.setViewportView(commentText);
 		toolPanel = new JPanel();
 		toolPanel.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(toolPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		rootComponent.add(toolPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		defectCheckBox = new JCheckBox();
@@ -192,19 +209,22 @@ public class CommentEditForm extends DialogWrapper {
 				null, null, null, 0, false));
 		postButton = new JButton();
 		postButton.setText("Post");
-		toolPanel.add(postButton, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		toolPanel.add(postButton,
+				new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		saveAsDraftButton = new JButton();
 		saveAsDraftButton.setText("Save as draft");
-		toolPanel.add(saveAsDraftButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		toolPanel.add(saveAsDraftButton,
+				new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		cancelButton = new JButton();
 		cancelButton.setText("Cancel");
-		toolPanel.add(cancelButton, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		toolPanel.add(cancelButton,
+				new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
 		toolPanel.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -213,6 +233,15 @@ public class CommentEditForm extends DialogWrapper {
 		toolPanel.add(comboPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		errorPanel = new JPanel();
+		errorPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+		rootComponent.add(errorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		errorLabel = new JLabel();
+		errorLabel.setText("");
+		errorPanel.add(errorLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**
