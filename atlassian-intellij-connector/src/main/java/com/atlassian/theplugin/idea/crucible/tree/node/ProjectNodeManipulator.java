@@ -67,7 +67,7 @@ public class ProjectNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewForProject(p.getProject().getKey(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
 			p.add(node);
 
 			return node;
