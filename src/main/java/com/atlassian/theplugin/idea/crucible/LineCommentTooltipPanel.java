@@ -594,7 +594,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		commentPanel.btnEdit.setHyperlinkText(CommentPanel.APPLY);
 		commentPanel.btnEdit.setVisible(editable);
 		commentPanel.btnCancel.setVisible(editable);
-		commentPanel.btnSaveDraft.setVisible(comment.isDraft());
+		if (commentPanel.btnSaveDraft != null) {
+			commentPanel.btnSaveDraft.setVisible(comment.isDraft());
+		}
 		setCommentBodyEditable(commentPanel, editable);
 	}
 
