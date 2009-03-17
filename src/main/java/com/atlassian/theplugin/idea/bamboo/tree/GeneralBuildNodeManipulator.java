@@ -47,7 +47,7 @@ public class GeneralBuildNodeManipulator extends BuildNodeManipulator {
 					return p.getChildAt(index);
 				}
 
-				AbstractBuildTreeNode n = new BuildTreeNode(build);
+				AbstractBuildTreeNode n = new BuildTreeNode(buildModel, build);
 				p.add(n);
 				return n;
 			}
