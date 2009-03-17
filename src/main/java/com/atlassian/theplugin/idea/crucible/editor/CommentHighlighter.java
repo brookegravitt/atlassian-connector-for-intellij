@@ -69,7 +69,7 @@ public final class CommentHighlighter {
 	public static final Key<Boolean> REVIEWITEM_CURRENT_CONTENT_KEY = Key.create(REVIEWITEM_CURRENT_CONTENT_KEY_NAME);
 
 	private static final String COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
-	private static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
+	public static final Key<Boolean> COMMENT_DATA_KEY = Key.create(COMMENT_DATA_KEY_NAME);
 
 	public static final String VERSIONED_COMMENT_DATA_KEY_NAME = "CRUCIBLE_COMMENT_DATA_KEY";
 	public static final Key<VersionedComment> VERSIONED_COMMENT_DATA_KEY = Key.create(VERSIONED_COMMENT_DATA_KEY_NAME);
@@ -258,6 +258,7 @@ public final class CommentHighlighter {
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
 					rh.setGutterIconRenderer(new CrucibleGutterIconRenderer(review, fileInfo, comment));
 					rh.putUserData(COMMENT_DATA_KEY, true);
+					rh.putUserData(VERSIONED_COMMENT_DATA_KEY, comment);
 				} catch (Exception e) {
 					PluginUtil.getLogger().error(e);
 				}
