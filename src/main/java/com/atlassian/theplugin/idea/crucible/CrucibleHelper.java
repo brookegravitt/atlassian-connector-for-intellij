@@ -392,9 +392,9 @@ public final class CrucibleHelper {
 									if (comment.getPermId() != null) {
 										String[] permTokens = comment.getPermId().getId().split(":");
 										if (permTokens.length == 2) {
-											return review.getServer().getUrl() + "/cru/" +
-													review.getPermId().getId() +
-													"/#c" + permTokens[1];
+											return review.getServer().getUrl() + "/cru/"
+													+ review.getPermId().getId()
+													+ "/#c" + permTokens[1];
 										}
 									}
 								}
