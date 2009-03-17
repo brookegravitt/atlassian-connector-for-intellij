@@ -651,11 +651,9 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
-
 					if (!file.equals(fileInfo.getPermId())) {
 						return;
 					}
-
 					if (!isTheSameComment(thisLineComment, parentComment)) {
 						return;
 					}
@@ -669,8 +667,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							return;
 						}
 					}
-
-
 					CommentPanel underConstructionPanel = null;
 					for (CommentPanel panel : commentPanelList) {
 						if (panel.comment == null) {
@@ -683,7 +679,6 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							removeCommentReplyPanel(underConstructionPanel);
 						}
 					}
-
 					setStatusText("Comment reply added");
 					setAllButtonsVisible();
 					addCommentReplyPanel(review, comment);
