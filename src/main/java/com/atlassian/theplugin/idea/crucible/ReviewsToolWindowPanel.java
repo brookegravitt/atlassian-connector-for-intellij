@@ -19,11 +19,12 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.ReviewRecentlyOpenBean;
 import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -38,6 +39,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -82,6 +84,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	private static final int ONE_SECOND = 1000;
 	private CrucibleReviewListModel currentReviewListModel;
+
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
@@ -153,6 +156,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		CommentHighlighter.removeCommentsInEditors(project);
 		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
 		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
+		crucibleProjectConfiguration.addRecentlyOpenReview(review);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
@@ -365,6 +369,55 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public void addReview(final ReviewAdapter selectedValue) {
 		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
+	}
+
+	public List<ReviewAdapter> getReviewAdapters(final List<ReviewRecentlyOpenBean> recentlyOpenReviews) {
+
+		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
+
+		if (recentlyOpenReviews == null || recentlyOpenReviews.isEmpty()) {
+			return reviews;
+		}
+
+		for (ReviewRecentlyOpenBean recentlyOpenReview : recentlyOpenReviews) {
+			boolean found = false;
+
+			// search local list for recently open reviews
+			if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
+				for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
+					if (localReview.getPermId().getId().equals(recentlyOpenReview.getReviewId())
+							&& localReview.getServer().getServerId().toString().equals(recentlyOpenReview.getServerId())) {
+						reviews.add(localReview);
+						found = true;
+						break;
+					}
+				}
+			}
+
+			if (!found) {
+
+				// search servers
+				for (CrucibleServerCfg server :
+						projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
+					if (server.getServerId().toString().equals(recentlyOpenReview.getServerId())) {
+						try {
+							Review r = CrucibleServerFacadeImpl.getInstance().getReview(
+									server, new PermIdBean(recentlyOpenReview.getReviewId()));
+							reviews.add(new ReviewAdapter(r, server));
+						} catch (RemoteApiException e) {
+							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+							setStatusMessage("Cannot get review from the server: " + e.getMessage(), true);
+						} catch (ServerPasswordNotProvidedException e) {
+							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+							setStatusMessage("Cannot get review from the server: " + e.getMessage(), true);
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		return reviews;
 	}
 
 	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
