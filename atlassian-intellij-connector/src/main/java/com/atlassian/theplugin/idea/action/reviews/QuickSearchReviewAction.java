@@ -160,11 +160,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		return new ArrayList<ReviewAdapter>(reviews);
 	}
 
-	private final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
+	public static final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
 		private ReviewsToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
-		private ReviewListPopupStep(final List<ReviewAdapter> reviews, final ReviewsToolWindowPanel reviewsWindow) {
+		public ReviewListPopupStep(final List<ReviewAdapter> reviews, final ReviewsToolWindowPanel reviewsWindow) {
 			super("Select Review To Open", reviews, IconLoader.getIcon("/icons/crucible-16.png"));
 			this.reviewsWindow = reviewsWindow;
 		}
