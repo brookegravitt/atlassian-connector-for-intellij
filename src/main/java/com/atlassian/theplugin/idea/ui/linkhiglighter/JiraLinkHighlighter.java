@@ -20,8 +20,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.DocumentAdapter;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.List;
  * User: pmaruszak
  */
 public class JiraLinkHighlighter {
+	private final Project project;
 	private final VirtualFile newFile;
 	private final PsiFile psiFile;
 	private final Editor editor;
@@ -37,10 +40,12 @@ public class JiraLinkHighlighter {
 	private final List<JiraURLTextRange> ranges = new ArrayList<JiraURLTextRange>();
 	private EditorInputHandler inputEditorInputHandler = null;
 	private DocumentAdapter docAdapter = null;
+	private boolean isListening = false;
 
-	public JiraLinkHighlighter(final VirtualFile newFile,
+	public JiraLinkHighlighter(@NotNull final Project project, final VirtualFile newFile,
 			final PsiFile psiFile,
 			final Editor editor, JiraEditorLinkParser jiraEditorLinkParser) {
+		this.project = project;
 
 
 		this.newFile = newFile;
@@ -50,10 +55,13 @@ public class JiraLinkHighlighter {
 	}
 
 	public void stopListening() {
-		editor.removeEditorMouseListener(inputEditorInputHandler);
-		editor.removeEditorMouseMotionListener(inputEditorInputHandler);
-		editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
-		editor.getDocument().removeDocumentListener(docAdapter);
+		if (isListening) {
+			editor.removeEditorMouseListener(inputEditorInputHandler);
+			editor.removeEditorMouseMotionListener(inputEditorInputHandler);
+			editor.getContentComponent().removeKeyListener(inputEditorInputHandler);
+			editor.getDocument().removeDocumentListener(docAdapter);
+			isListening = false;
+		}
 	}
 
 	public void removeAllRanges() {
@@ -67,6 +75,7 @@ public class JiraLinkHighlighter {
 	public void startListeninig() {
 		listenOnDocument();
 		listenOnInput();
+		isListening = true;
 	}
 
 	public void reparseAll() {
@@ -92,7 +101,7 @@ public class JiraLinkHighlighter {
 	}
 
 	private void listenOnInput() {
-		inputEditorInputHandler = new EditorInputHandler(editor, psiFile, jiraEditorLinkParser);
+		inputEditorInputHandler = new EditorInputHandler(project, editor, psiFile, jiraEditorLinkParser);
 		editor.getContentComponent().addKeyListener(inputEditorInputHandler);
 		editor.addEditorMouseMotionListener(inputEditorInputHandler);
 		editor.addEditorMouseListener(inputEditorInputHandler);

@@ -123,14 +123,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 	}
 
-	private synchronized void startListening() {
-
-		new ScanningJiraLinksTask(project, this).queue();
-	}
-
-
 	private void addHighlighter(final VirtualFile newFile, final PsiFile psiFile, final Editor editor) {
-		JiraLinkHighlighter highlighter = new JiraLinkHighlighter(newFile, psiFile, editor, jiraEditorLinkParser);
+		JiraLinkHighlighter highlighter = new JiraLinkHighlighter(project, newFile, psiFile, editor, jiraEditorLinkParser);
 		highlighter.startListeninig();
 		linkHighlighters.put(newFile, highlighter);
 		highlighter.reparseAll();
