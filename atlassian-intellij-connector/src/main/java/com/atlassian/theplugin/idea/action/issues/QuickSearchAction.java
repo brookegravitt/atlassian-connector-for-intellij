@@ -31,7 +31,7 @@ public class QuickSearchAction extends JIRAAbstractAction {
 					"Search", IconLoader.getIcon("/actions/find.png"));
 			if (query != null) {
 				if (query.matches("[A-Z]+\\-\\d+")) {
-					panel.openIssue(query);
+					panel.openIssue(query, server);
 
 				} else {
 					BrowserUtil.launchBrowser(server.getUrl()

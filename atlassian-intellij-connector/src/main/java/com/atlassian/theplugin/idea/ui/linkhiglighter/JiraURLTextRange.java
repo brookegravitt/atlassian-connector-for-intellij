@@ -39,7 +39,7 @@ public class JiraURLTextRange {
 	private int startOffset;
 	private int endOffset;
 
-	private final String url;
+	private final String issueKey;
 
 	private boolean active;
 
@@ -50,11 +50,11 @@ public class JiraURLTextRange {
 	private static final Key<JiraURLTextRange> JIRA_ISSUE_LINK_HIGHLIGHTER_KEY = Key.create("JiraIssueLinkHighlighter");
 
 	public JiraURLTextRange(@NotNull final Project project,
-			final int startOffset, final int endOffset, final String url, final boolean isActive) {
+			final int startOffset, final int endOffset, final String issueKey, final boolean isActive) {
 		this.project = project;
 		this.startOffset = startOffset;
 		this.endOffset = endOffset;
-		this.url = url;
+		this.issueKey = issueKey;
 		active = isActive;
 	}
 
@@ -68,8 +68,12 @@ public class JiraURLTextRange {
 		return "";
 	}
 
-	public String getUrl() {
-		return getDefaultJiraServerUrl() + url;
+	public String getBrowserUrl() {
+		return getDefaultJiraServerUrl() + "/browse/" + issueKey;
+	}
+
+	public String getIssueKey() {
+		return issueKey;
 	}
 
 	public int getStartOffset() {
@@ -135,7 +139,7 @@ public class JiraURLTextRange {
 		if (startOffset != that.startOffset) {
 			return false;
 		}
-		if (!url.equals(that.url)) {
+		if (!issueKey.equals(that.issueKey)) {
 			return false;
 		}
 
@@ -147,7 +151,7 @@ public class JiraURLTextRange {
 		if (hash == 0) {
 			result = startOffset;
 			result = 31 * result + endOffset;
-			result = 31 * result + url.hashCode();
+			result = 31 * result + issueKey.hashCode();
 			hash = result;
 		}
 		return hash;
