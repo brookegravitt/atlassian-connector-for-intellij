@@ -14,8 +14,8 @@ import java.awt.*;
 public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	protected static final int GAP = 6;
 	protected static final int ICON_WIDTH = 16;
-    protected static final int ICON_HEIGHT = 16;
-    protected static final int RIGHT_PADDING = 10;
+	protected static final int ICON_HEIGHT = 16;
+	protected static final int RIGHT_PADDING = 10;
 	protected String name;
 	protected Icon iconOpen;
 	protected Icon iconClosed;
@@ -46,8 +46,11 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 
 	@Override
 	public abstract String toString();
+
 	public abstract JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus);
-	public abstract void onSelect();
+
+	public void onSelect() {
+	}
 
 	private static final class RendererPanel extends JPanel {
 
