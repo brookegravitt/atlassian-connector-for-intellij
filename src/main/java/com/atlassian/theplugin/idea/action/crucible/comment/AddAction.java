@@ -25,9 +25,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
@@ -40,11 +37,14 @@ import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -100,6 +100,7 @@ public class AddAction extends AbstractCommentAction {
 		return true;
 	}
 
+	@Nullable
 	private ReviewAdapter getReview(final AtlassianTreeNode node) {
 		if (node instanceof CommentTreeNode) {
 			final CommentTreeNode cNode = (CommentTreeNode) node;
@@ -126,40 +127,49 @@ public class AddAction extends AbstractCommentAction {
 	private void addComment(Project project, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
-			addReplyToGeneralComment(project, node.getReview(), node.getComment());
+			addReplyToGeneralComment(project, node.getReview(), node.getComment(), null, null);
 		} else if (treeNode instanceof FileNameNode) {
 			FileNameNode node = (FileNameNode) treeNode;
-			addCommentToFile(project, node.getReview(), node.getFile());
+			addCommentToFile(project, node.getReview(), node.getFile(), null, null);
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-			addReplyToVersionedComment(project, node.getReview(), node.getFile(), node.getComment());
+			addReplyToVersionedComment(project, node.getReview(), node.getFile(), node.getComment(), null, null);
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
-			addCommentToFile(project, node.getReview(), node.getFile());
+			addCommentToFile(project, node.getReview(), node.getFile(), null, null);
 		}
 	}
 
-	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
-		final VersionedCommentBean newComment = new VersionedCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
+	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
+			final VersionedCommentBean localCopy, final String errorMessage) {
+		final VersionedCommentBean newComment;
+		if (localCopy != null) {
+			newComment = new VersionedCommentBean(localCopy);
+		} else {
+			newComment = new VersionedCommentBean();
+			newComment.setCreateDate(new Date());
+			newComment.setReviewItemId(review.getPermId());
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+		}
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			newComment.setCreateDate(new Date());
-			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
 						review.addVersionedComment(file, newComment);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								addCommentToFile(project, review, file, newComment, e.getMessage());
+							}
+						});
 					}
 				}
 			};
@@ -169,14 +179,14 @@ public class AddAction extends AbstractCommentAction {
 	}
 
 	private void addReplyToVersionedComment(final Project project, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment) {
-		final VersionedCommentBean newComment = new VersionedCommentBean();
-		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+			final CrucibleFileInfo file, final VersionedComment comment, final VersionedCommentBean localCopy,
+			final String erroMessage) {
+		final VersionedCommentBean newComment;
+		if (localCopy != null) {
+			newComment = new VersionedCommentBean(localCopy);
+		} else {
+			newComment = new VersionedCommentBean();
+			newComment.setReply(true);
 			newComment.setFromLineInfo(comment.isFromLineInfo());
 			newComment.setFromStartLine(comment.getFromStartLine());
 			newComment.setFromEndLine(comment.getFromEndLine());
@@ -186,16 +196,27 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
 			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+		}
+
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, erroMessage);
+		dialog.pack();
+		dialog.setModal(true);
+		dialog.show();
+		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding File Comment Reply", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
 						review.addVersionedCommentReply(file, comment, newComment);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								addReplyToVersionedComment(project, review, file, comment, newComment, e.getMessage());
+							}
+						});
+
 					}
 				}
 			};
@@ -205,10 +226,16 @@ public class AddAction extends AbstractCommentAction {
 	}
 
 	private void addReplyToGeneralComment(final Project project, final ReviewAdapter review,
-			final GeneralComment parentComment) {
-		final GeneralCommentBean newComment = new GeneralCommentBean();
-		newComment.setReply(true);
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
+			final GeneralComment parentComment, final GeneralCommentBean localCopy, final String errorMessage) {
+		final GeneralCommentBean newComment;
+		if (localCopy != null) {
+			newComment = new GeneralCommentBean(localCopy);
+		} else {
+			newComment = new GeneralCommentBean();
+			newComment.setReply(true);
+		}
+
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -218,16 +245,17 @@ public class AddAction extends AbstractCommentAction {
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment Reply", false) {
 
-				public void run(final ProgressIndicator indicator) {
+				public void run(@NotNull final ProgressIndicator indicator) {
 
 					try {
 						review.addGeneralCommentReply(parentComment, newComment);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						IdeaHelper.handleError(project, valueNotYetInitialized);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								addReplyToGeneralComment(project, review, parentComment, newComment, e.getMessage());
+							}
+						});
 					}
 				}
 			};

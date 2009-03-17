@@ -1,17 +1,17 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.action.crucible.comment.gutter.EditAction;
-import com.atlassian.theplugin.idea.action.crucible.comment.gutter.PublishAction;
-import com.atlassian.theplugin.idea.action.crucible.comment.gutter.RemoveAction;
-import com.atlassian.theplugin.idea.action.crucible.comment.gutter.ReplyAction;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.LineCommentTooltipPanel;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -60,7 +60,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		return s.toString();
 	}
 
-	@Override
+/*	@Override
 	public ActionGroup getPopupMenuActions() {
 		final ActionManager actionManager = ActionManager.getInstance();
 		DefaultActionGroup defaultactiongroup = new DefaultActionGroup();
@@ -97,7 +97,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 			defaultactiongroup.add(publishAction);
 		}
 		return defaultactiongroup;
-	}
+	}*/
 
 	@Override
 	public AnAction getClickAction() {
@@ -113,31 +113,31 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		public void actionPerformed(final AnActionEvent e) {
 
 			LineCommentTooltipPanel lctp =
-					new LineCommentTooltipPanel(IdeaHelper.getCurrentProject(e), review, fileInfo, comment) {
-				protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
-					final VersionedCommentBean reply = createReplyBean(text);
-					reply.setDraft(draft);
-					runAddReplyTask(parent, reply, e, this);
-				}
+					new LineCommentTooltipPanel(review, fileInfo, comment) {
+						protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
+							final VersionedCommentBean reply = createReplyBean(text);
+							reply.setDraft(draft);
+							runAddReplyTask(parent, reply, e, this);
+						}
 
-				protected void updateComment(final VersionedComment cmt, String text) {
-					final VersionedCommentBean commentBean = (VersionedCommentBean) cmt;
-					commentBean.setMessage(text);
+						protected void updateComment(final VersionedComment cmt, String text) {
+							final VersionedCommentBean commentBean = (VersionedCommentBean) cmt;
+							commentBean.setMessage(text);
 //					commentBean.getCustomFields().clear();
 //					for (String key : cmt.getCustomFields().keySet()) {
 //						commentBean.getCustomFields().put(key, cmt.getCustomFields().get(key));
 //					}
-					runUpdateCommandTask(commentBean, e, this);
-				}
+							runUpdateCommandTask(commentBean, e, this);
+						}
 
-				protected void removeComment(final VersionedComment aComment) {
-					runRemoveCommentTask(aComment, e, this);
-				}
+						protected void removeComment(final VersionedComment aComment) {
+							runRemoveCommentTask(aComment, e, this);
+						}
 
-				protected void publishComment(VersionedComment aComment) {
-					runPublishCommentTask(aComment, e, this);
-				}
-			};
+						protected void publishComment(VersionedComment aComment) {
+							runPublishCommentTask(aComment, e, this);
+						}
+					};
 			LineCommentTooltipPanel.showCommentTooltipPopup(e, lctp);
 		}
 
@@ -148,11 +148,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.removeVersionedComment(aComment, fileInfo);
-					} catch (RemoteApiException e) {
-						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
-					} catch (ServerPasswordNotProvidedException e) {
-						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
-					} catch (ValueNotYetInitialized e) {
+					} catch (Exception e) {
 						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
 					}
 				}
@@ -167,10 +163,9 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.editVersionedComment(fileInfo, commentBean);
-					} catch (RemoteApiException e) {
+					} catch (Exception e) {
 						panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
-					} catch (ServerPasswordNotProvidedException e) {
-						panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
+						panel.resumeEditing(commentBean);
 					}
 				}
 			};
@@ -184,10 +179,9 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.addVersionedCommentReply(fileInfo, parent, reply);
-					} catch (RemoteApiException e) {
+					} catch (Exception e) {
 						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
-					} catch (ServerPasswordNotProvidedException e) {
-						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
+						panel.resumeAdding(reply);
 					}
 				}
 			};
@@ -201,10 +195,9 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
 						review.publisVersionedComment(fileInfo, aComment);
-					} catch (RemoteApiException e) {
+					} catch (Exception e) {
 						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
-					} catch (ServerPasswordNotProvidedException e) {
-						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
+						panel.setAllButtonsVisible();
 					}
 				}
 			};

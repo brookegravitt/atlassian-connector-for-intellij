@@ -23,8 +23,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
@@ -33,6 +31,7 @@ import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -150,32 +149,40 @@ public class CommentAction extends AnAction {
 				return;
 			}
 
-			final VersionedCommentBean newComment = new VersionedCommentBean();
-			CommentEditForm dialog = new CommentEditForm(project, review, newComment);
-			dialog.pack();
-			dialog.setModal(true);
-			dialog.show();
-			if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-				newComment.setCreateDate(new Date());
-				newComment.setAuthor(new UserBean(review.getServer().getUsername()));
-				if (file.getCommitType() == CommitType.Deleted) {
-					newComment.setFromStartLine(start);
-					newComment.setFromEndLine(end);
-				} else {
-					newComment.setToStartLine(start);
-					newComment.setToEndLine(end);
-				}
+			createLineComment(project, review, file, start, end, null, null);
+		}
+	}
 
-				Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
-					public void run(@NotNull final ProgressIndicator indicator) {
-						try {
-							review.addVersionedComment(file, newComment);
-						} catch (RemoteApiException e1) {
-							IdeaHelper.handleRemoteApiException(project, e1);
-						} catch (ServerPasswordNotProvidedException e1) {
-							IdeaHelper.handleMissingPassword(e1);
-						}
+	private void createLineComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
+			final int start, final int end, final VersionedCommentBean localCopy, final String errorMessage) {
 
+		final VersionedCommentBean newComment;
+		if (localCopy != null) {
+			newComment = new VersionedCommentBean(localCopy);
+		} else {
+			newComment = new VersionedCommentBean();
+			newComment.setCreateDate(new Date());
+			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			if (file.getCommitType() == CommitType.Deleted) {
+				newComment.setFromStartLine(start);
+				newComment.setFromEndLine(end);
+				newComment.setFromLineInfo(true);
+			} else {
+				newComment.setToStartLine(start);
+				newComment.setToEndLine(end);
+				newComment.setToLineInfo(true);
+			}
+		}
+
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		dialog.pack();
+		dialog.setModal(true);
+		dialog.show();
+		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
+				public void run(@NotNull final ProgressIndicator indicator) {
+					try {
+						review.addVersionedComment(file, newComment);
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
 								Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
@@ -184,12 +191,18 @@ public class CommentAction extends AnAction {
 								}
 							}
 						});
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
+							public void run() {
+								createLineComment(project, review, file, start, end, newComment, e.getMessage());
+							}
+						});
 					}
-				};
+				}
+			};
 
-				ProgressManager.getInstance().run(task);
-			}
+			ProgressManager.getInstance().run(task);
 		}
 	}
 }
