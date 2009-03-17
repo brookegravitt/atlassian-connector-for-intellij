@@ -67,7 +67,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 
 
 			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving recently open reviews", true) {
-				List<ReviewAdapter> reviews;
+				private List<ReviewAdapter> reviews;
 
 				public void run(final ProgressIndicator indicator) {
 					reviews = reviewsWindow.getReviewAdapters(recentlyOpenReviews);
