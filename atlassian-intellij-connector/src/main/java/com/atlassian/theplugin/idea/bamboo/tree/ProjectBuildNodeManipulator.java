@@ -66,7 +66,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 			}
 
 			BambooBuildAdapterIdea build = getBuildForProject(p.getProject(), index);
-			BuildTreeNode node = new BuildTreeNode(build);
+			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
 			return node;

@@ -67,7 +67,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 			}
 
 			BambooBuildAdapterIdea build = getBuildForDate(p.getDate(), index);
-			BuildTreeNode node = new BuildTreeNode(build);
+			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
 			return node;
