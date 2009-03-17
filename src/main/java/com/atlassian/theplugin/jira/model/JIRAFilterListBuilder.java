@@ -16,10 +16,7 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -63,13 +60,27 @@ public class JIRAFilterListBuilder {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
+			Collection<JiraServerCfg> serversToAdd = new ArrayList<JiraServerCfg>();
+
 			for (JiraServerCfg jiraServer : jiraServerModel.getServers()) {
 				try {
-					loadServerSavedFilter(jiraServer, jiraServerModel);
+					if (jiraServerModel.getServers().contains(jiraServer)) {
+						loadServerSavedFilter(jiraServer, jiraServerModel);
+					} else {
+						serversToAdd.add(jiraServer);
+					}
 				} catch (JIRAException exc) {
 					e.addException(jiraServer, exc);
 				}
 				loadManualFilter(jiraServer);
+			}
+			//add non existing servers
+			for (JiraServerCfg newServer : serversToAdd) {
+				try {
+					loadServerSavedFilter(newServer, jiraServerModel);
+				} catch (JIRAException e1) {
+					e.addException(newServer, e1);
+				}
 			}
 
 			if (!e.getExceptions().isEmpty()) {
@@ -94,9 +105,10 @@ public class JIRAFilterListBuilder {
 				for (JIRAQueryFragment query : filters) {
 					savedFilters.add((JIRASavedFilter) query);
 				}
+				listModel.setSavedFilters(jiraServer, savedFilters);
 			}
 
-			listModel.setSavedFilters(jiraServer, savedFilters);
+
 		} else {
 			PluginUtil.getLogger().warn("JiraServerModel is null. No saved filters retrieved.");
 		}
