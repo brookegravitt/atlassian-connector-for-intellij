@@ -6,6 +6,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -34,30 +35,40 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 	private static final int MAX_LENGTH = 1000;
 	private RendererPanel renderer;
 
-	private static double statusWidth = 0.0;
-	private static double nameWidth = 0.0;
+	private double statusWidth = 0.0;
+	private double nameWidth = 0.0;
 
 	private static int currentRendererGeneration;
 	private int myRendererGeneration;
 
-	public CrucibleReviewTreeNode(ReviewAdapter review) {
+	public CrucibleReviewTreeNode(CrucibleReviewListModel reviewListModel, ReviewAdapter review) {
 		super(review.getPermId().getId(), null, null);
 		this.review = review;
 		renderer = new RendererPanel();
-		JLabel l = new JLabel();
-		// PL-1202 - argument to TextLayout must be a non-empty string
-		String state = review.getState().value();
-		TextLayout layoutStatus =
-				new TextLayout(state.length() > 0 ? state : ".", l.getFont(), new FontRenderContext(null, true, true));
-		statusWidth = Math.max(layoutStatus.getBounds().getWidth(), statusWidth);
-		User author = review.getAuthor();
-		String authorString = author != null ? author.getDisplayName() : ".";
-		TextLayout layoutName =
-				new TextLayout(authorString.length() > 0 ? authorString : ".", l.getFont(),
-						new FontRenderContext(null, true, true));
-		nameWidth = Math.max(layoutName.getBounds().getWidth(), nameWidth);
+
+		recalculateColumnWidths(reviewListModel);
 
 		++currentRendererGeneration;
+	}
+
+	private void recalculateColumnWidths(CrucibleReviewListModel reviewListModel) {
+		JLabel l = new JLabel();
+
+		statusWidth = 0.0;
+		nameWidth = 0.0;
+
+		for (ReviewAdapter rev : reviewListModel.getReviews()) {
+			// PL-1202 - argument to TextLayout must be a non-empty string
+			String state = rev.getState().value();
+			TextLayout layoutStatus = new TextLayout(state.length() > 0 ? state : ".",
+					l.getFont(), new FontRenderContext(null, true, true));
+			statusWidth = Math.max(layoutStatus.getBounds().getWidth(), statusWidth);
+			User author = rev.getAuthor();
+			String authorString = author != null ? author.getDisplayName() : ".";
+			TextLayout layoutName = new TextLayout(authorString.length() > 0 ? authorString : ".",
+					l.getFont(), new FontRenderContext(null, true, true));
+			nameWidth = Math.max(layoutName.getBounds().getWidth(), nameWidth);
+		}
 	}
 
 	@Override

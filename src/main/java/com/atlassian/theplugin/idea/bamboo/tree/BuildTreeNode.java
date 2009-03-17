@@ -61,9 +61,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private void recalculateColumnWidths(final BuildListModel buildModel) {
 		JLabel l = new JLabel();
 
-		reasonWidth = 0;
-		serverWidth = 0;
-		dateWidth = 0;
+		reasonWidth = 0.0;
+		serverWidth = 0.0;
+		dateWidth = 0.0;
 
 		for (BambooBuildAdapterIdea b : buildModel.getBuilds()) {
 			// PL-1202 - argument to TextLayout must be a non-empty string
