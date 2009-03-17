@@ -31,7 +31,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 			if (index == 0) {
 				// My Reviews node
 				if (index < p.getChildCount()) {
-						return p.getChildAt(index);
+					return p.getChildAt(index);
 				}
 
 				CrucibleMyReviewsTreeNode node = new CrucibleMyReviewsTreeNode(reviewListModel);
@@ -48,6 +48,15 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 						new CrucibleCustomFilterTreeNode(filterModel.getCustomFilter(), reviewListModel);
 				p.add(node);
 				return node;
+			} else if (index == getNumberOfCustomFilters() + 1) {
+				// Recently Open Reviews node
+				if (index < p.getChildCount()) {
+					return p.getChildAt(index);
+				}
+
+				CrucibleRecentlyOpenFilterTreeNode node = new CrucibleRecentlyOpenFilterTreeNode();
+				p.add(node);
+				return node;
 			}
 		} else if (parent instanceof CrucibleMyReviewsTreeNode && index < filterModel.getPredefinedFilters().size()) {
 			// Predefined Filter node
@@ -55,17 +64,17 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 
 			PredefinedFilter predefinedFilter = (PredefinedFilter) (filterModel.getPredefinedFilters()).toArray()[index];
 
-				if (predefinedFilter != null) {
+			if (predefinedFilter != null) {
 
-					if (index < p.getChildCount()) {
-						return p.getChildAt(index);
-					}
-
-					CruciblePredefinedFilterTreeNode n =
-							new CruciblePredefinedFilterTreeNode(predefinedFilter, reviewListModel);
-					p.add(n);
-					return n;
+				if (index < p.getChildCount()) {
+					return p.getChildAt(index);
 				}
+
+				CruciblePredefinedFilterTreeNode n =
+						new CruciblePredefinedFilterTreeNode(predefinedFilter, reviewListModel);
+				p.add(n);
+				return n;
+			}
 		}
 		return null;
 	}
@@ -73,8 +82,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 	@Override
 	public int getChildCount(Object parent) {
 		if (parent == root) {
-			// (My Filters node) +  (Custom Filters)
-			return 1 + getNumberOfCustomFilters();
+			// (My Filters node) +  (Custom Filters) + (Recently Open)
+			return 1 + getNumberOfCustomFilters() + 1;
 		} else if (parent instanceof CrucibleMyReviewsTreeNode) {
 			return filterModel.getPredefinedFilters().size();
 		}
@@ -87,7 +96,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 		return super.getRoot();
 	}
 
-		@Override
+	@Override
 	public boolean isLeaf(Object node) {
 		if (node == super.getRoot()
 				|| node instanceof CrucibleMyReviewsTreeNode) {
