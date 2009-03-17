@@ -45,7 +45,8 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 		try {
 			byte[] content = CrucibleServerFacadeImpl.getInstance()
 					.getFileContent(review.getServer(), versionedVirtualFile.getContentUrl());
-			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getContentUrl(), content,
+
+			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
 					versionedVirtualFile.getRevision(),
 					virtualFile.getFileSystem());
 

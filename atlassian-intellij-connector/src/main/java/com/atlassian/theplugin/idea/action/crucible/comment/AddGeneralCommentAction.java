@@ -21,8 +21,6 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
@@ -30,12 +28,14 @@ import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -45,7 +45,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	public void actionPerformed(AnActionEvent e) {
 		Project currentProject = e.getData(DataKeys.PROJECT);
 		if (currentProject != null && getReview(e) != null) {
-			addGeneralComment(currentProject, getReview(e));
+			addGeneralComment(currentProject, getReview(e), null, null);
 		}
 	}
 
@@ -59,6 +59,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 		}
 	}
 
+	@Nullable
 	private ReviewAdapter getReview(final AnActionEvent e) {
 		CrucibleToolWindow crucibleDetailsWindow = IdeaHelper.getProjectComponent(e, CrucibleToolWindow.class);
 		if (crucibleDetailsWindow != null) {
@@ -82,9 +83,16 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 		return true;
 	}
 
-	private void addGeneralComment(final Project project, final ReviewAdapter review) {
-		final GeneralCommentBean newComment = new GeneralCommentBean();
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment);
+	private void addGeneralComment(final Project project, final ReviewAdapter review, final GeneralCommentBean localCopy,
+			final String errorMessage) {
+		final GeneralCommentBean newComment;
+		if (localCopy != null) {
+			newComment = new GeneralCommentBean(localCopy);
+		} else {
+			newComment = new GeneralCommentBean();
+		}
+
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
 		dialog.setTitle("Add General Comment");
 		dialog.pack();
 		dialog.setModal(true);
@@ -99,12 +107,13 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 				public void run(@NotNull final ProgressIndicator indicator) {
 					try {
 						review.addGeneralComment(newComment);
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						IdeaHelper.handleError(project, valueNotYetInitialized);
-					} catch (RemoteApiException e) {
-						IdeaHelper.handleRemoteApiException(project, e);
-					} catch (ServerPasswordNotProvidedException e) {
-						IdeaHelper.handleMissingPassword(e);
+					} catch (final Exception e) {
+						ApplicationManager.getApplication().invokeLater(new Runnable() {
+
+							public void run() {
+								addGeneralComment(project, review, newComment, e.getMessage());
+							}
+						});
 					}
 				}
 			};

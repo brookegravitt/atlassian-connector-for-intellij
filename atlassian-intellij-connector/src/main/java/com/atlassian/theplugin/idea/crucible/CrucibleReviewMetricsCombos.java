@@ -1,12 +1,11 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldValue;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.Collection;
@@ -21,18 +20,18 @@ import java.util.Map;
 public class CrucibleReviewMetricsCombos {
 
 	private Map<String, JComboBox> combos = new HashMap<String, JComboBox>();
-
-	private final CommentBean comment;
+	private final Map<String, CustomField> customFields;
 	private final JPanel parent;
 
-	public CrucibleReviewMetricsCombos(CommentBean comment,
-			Collection<CustomFieldDef> metrics, JPanel parent) {
-		this.comment = comment;
+	public CrucibleReviewMetricsCombos(final Map<String, CustomField> customFields,
+			final Collection<CustomFieldDef> metrics, JPanel parent) {
+		this.customFields = customFields;
+
 		this.parent = parent;
 		for (CustomFieldDef metric : metrics) {
 			final JLabel label = new JLabel(metric.getLabel());
 			final JComboBox combo = new JComboBox();
-			combo.setModel(new CustomFieldComboBoxModel(comment, metric));
+			combo.setModel(new CustomFieldComboBoxModel(customFields, metric));
 			final String metricName = metric.getLabel();
 			combos.put(metricName, combo);
 			parent.add(label);
@@ -41,9 +40,9 @@ public class CrucibleReviewMetricsCombos {
 	}
 
 	public void showMetricCombos(boolean visible) {
-		for (String key : comment.getCustomFields().keySet()) {
+		for (String key : customFields.keySet()) {
 			if (combos.get(key) != null) {
-				combos.get(key).setSelectedItem(comment.getCustomFields().get(key).getValue());
+				combos.get(key).setSelectedItem(customFields.get(key).getValue());
 				combos.get(key).setVisible(visible);
 			}
 		}
@@ -63,12 +62,12 @@ public class CrucibleReviewMetricsCombos {
 
 	private final class CustomFieldComboBoxModel extends AbstractListModel implements ComboBoxModel {
 		private Collection<CustomFieldValueWrapper> data;
-		private final Comment comment;
+		private final Map<String, CustomField> customFields;
 		private CustomFieldDef customFieldDef;
 		private CustomFieldValueWrapper noneCustomField = new CustomFieldValueWrapper("None", "none");
 
-		private CustomFieldComboBoxModel(Comment comment, CustomFieldDef customFieldDef) {
-			this.comment = comment;
+		private CustomFieldComboBoxModel(Map<String, CustomField> customFields, CustomFieldDef customFieldDef) {
+			this.customFields = customFields;
 			this.customFieldDef = customFieldDef;
 		}
 
@@ -96,29 +95,29 @@ public class CrucibleReviewMetricsCombos {
 		}
 
 		private void setMetricField(CustomFieldDef field, CustomFieldValue value) {
-			if (comment == null) {
-				return;
-			}
-			CustomField oldCf = comment.getCustomFields().get(customFieldDef.getName());
+			CustomField oldCf = customFields.get(customFieldDef.getName());
 			if (oldCf != null) {
-				comment.getCustomFields().remove(customFieldDef.getName());
+				customFields.remove(customFieldDef.getName());
 			}
 			if (!value.getName().equals(noneCustomField.getName())) {
 				CustomFieldBean newField = new CustomFieldBean();
 				newField.setConfigVersion(field.getConfigVersion());
 				newField.setValue(value.getName());
-				comment.getCustomFields().put(field.getName(), newField);
+				customFields.put(field.getName(), newField);
+			} else {
+				customFields.remove(field.getName());
 			}
 		}
 
 		public Object getSelectedItem() {
-			CustomField v = comment.getCustomFields().get(customFieldDef.getName());
+			CustomField v = customFields.get(customFieldDef.getName());
 			if (v != null) {
 				return new CustomFieldValueWrapper(v.getValue(), v.getValue());
 			}
 			return noneCustomField;
 		}
 
+		@Nullable
 		public Object getElementAt(final int index) {
 			if (index == 0) {
 				return noneCustomField;
