@@ -16,7 +16,6 @@ import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -46,7 +45,6 @@ import java.util.List;
 public abstract class LineCommentTooltipPanel extends JPanel {
 	private final ReviewAdapter review;
 	private MyReviewListener listener;
-	private final Project project;
 	private final CrucibleFileInfo fileInfo;
 	private final VersionedComment thisLineComment;
 	private final boolean useTextTwixie;
@@ -80,15 +78,14 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		this.anActionEvent = e;
 	}
 
-	public LineCommentTooltipPanel(Project project, ReviewAdapter review,
+	public LineCommentTooltipPanel(ReviewAdapter review,
 			CrucibleFileInfo file, VersionedComment thisLineComment) {
-		this(project, review, file, thisLineComment, false);
+		this(review, file, thisLineComment, false);
 	}
 
-	public LineCommentTooltipPanel(Project project, final ReviewAdapter review, CrucibleFileInfo file,
+	public LineCommentTooltipPanel(final ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment thisLineComment, boolean useTextTwixie) {
 		super(new BorderLayout());
-		this.project = project;
 		this.fileInfo = file;
 		this.thisLineComment = thisLineComment;
 		this.useTextTwixie = useTextTwixie;
@@ -156,6 +153,32 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		this.popup = pop;
 	}
 
+	public void resumeEditing(final VersionedCommentBean comment) {
+		CommentPanel panel = null;
+		for (CommentPanel commentPanel : commentPanelList) {
+			if (commentPanel.comment.getPermId().equals(comment.getPermId())) {
+				panel = commentPanel;
+				break;
+			}
+		}
+		if (panel != null) {
+			setCommentEditable(comment, panel, true);
+		}
+	}
+
+	public void resumeAdding(final VersionedCommentBean comment) {
+		CommentPanel panel = null;
+		for (CommentPanel commentPanel : commentPanelList) {
+			if (commentPanel.comment == null) {
+				panel = commentPanel;
+				break;
+			}
+		}
+		if (panel != null) {
+			setCommentEditable(comment, panel, true);
+		}
+	}
+
 	private final class CommentPanel extends JPanel {
 		private ShowHideButton btnShowHide;
 
@@ -170,6 +193,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		private ReviewAdapter review;
 
 		private HyperlinkLabel btnEdit;
+		private HyperlinkLabel btnCancel;
 		private HyperlinkLabel btnReply;
 		private JLabel creationDate;
 		private JEditorPane commentBody;
@@ -336,7 +360,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			combosPanel.setOpaque(false);
 			List<CustomFieldDef> metrics = review.getMetricDefinitions();
 			final CrucibleReviewMetricsCombos combos = new CrucibleReviewMetricsCombos(
-					(CommentBean) comment, metrics, combosPanel);
+					comment.getCustomFields(), metrics, combosPanel);
 			combos.showMetricCombos(comment.isDefectRaised());
 
 			defectClassificationPanel.setOpaque(false);
@@ -386,7 +410,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 		private void createCommentEditButtons(@NotNull CellConstraints cc) {
 			btnEdit = new HyperlinkLabel(comment != null ? EDIT : APPLY);
-			final HyperlinkLabel btnCancel = new HyperlinkLabel("Cancel");
+			btnCancel = new HyperlinkLabel("Cancel");
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (commentBody.isEditable()) {
@@ -547,7 +571,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 	}
 
-	private static void setCommentBodyEditable(LineCommentTooltipPanel.CommentPanel commentPanel, boolean editable) {
+	private void setCommentBodyEditable(LineCommentTooltipPanel.CommentPanel commentPanel, boolean editable) {
 		JEditorPane pane = commentPanel.commentBody;
 		pane.setEditable(editable);
 		if (editable) {
@@ -562,6 +586,16 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			commentPanel.defectClassificationPanel.setVisible(editable);
 			commentPanel.defectClassificationPanel.validate();
 		}
+	}
+
+	private void setCommentEditable(final VersionedCommentBean comment, LineCommentTooltipPanel.CommentPanel commentPanel,
+			boolean editable) {
+		commentPanel.commentBody.setEnabled(editable);
+		commentPanel.btnEdit.setHyperlinkText(CommentPanel.APPLY);
+		commentPanel.btnEdit.setVisible(editable);
+		commentPanel.btnCancel.setVisible(editable);
+		commentPanel.btnSaveDraft.setVisible(comment.isDraft());
+		setCommentBodyEditable(commentPanel, editable);
 	}
 
 	public void setAllButtonsVisible() {
@@ -583,7 +617,8 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			String text, boolean draft, boolean defect) {
 
 		if (comment == null) {
-			removeCommentReplyPanel(panel);
+			//removeCommentReplyPanel(panel);
+			setCommentBodyEditable(panel, false);
 			setStatusText("Adding new reply...");
 			addNewReply(thisLineComment, text, draft);
 		} else {
@@ -634,6 +669,21 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							return;
 						}
 					}
+
+
+					CommentPanel underConstructionPanel = null;
+					for (CommentPanel panel : commentPanelList) {
+						if (panel.comment == null) {
+							underConstructionPanel = panel;
+							break;
+						}
+					}
+					if (underConstructionPanel != null) {
+						if (underConstructionPanel.commentBody.getText().equals(comment.getMessage())) {
+							removeCommentReplyPanel(underConstructionPanel);
+						}
+					}
+
 					setStatusText("Comment reply added");
 					setAllButtonsVisible();
 					addCommentReplyPanel(review, comment);
