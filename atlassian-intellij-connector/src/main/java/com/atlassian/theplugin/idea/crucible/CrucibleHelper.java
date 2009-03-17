@@ -38,7 +38,9 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.markup.RangeHighlighter;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
@@ -48,6 +50,7 @@ import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -358,5 +361,49 @@ public final class CrucibleHelper {
 				action.run(displayDescriptor, referenceVirtualFile, crucibleFileInfo.getCommitType());
 			}
 		}
+	}
+
+
+	@Nullable
+	public static String getCommentUrl(Project project, PsiElement psiElement) {
+		VirtualFile vf = psiElement.getContainingFile().getVirtualFile();
+
+		Document doc;
+		if (vf != null) {
+			doc = FileDocumentManager.getInstance().getDocument(vf);
+
+			RangeHighlighter[] highlighters = doc.getMarkupModel(project).getAllHighlighters();
+
+			Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+			if (editor != null) {
+				int offset = editor.getCaretModel().getOffset();
+
+				for (RangeHighlighter highlighter : highlighters) {
+					if (highlighter.getUserData(CommentHighlighter.COMMENT_DATA_KEY) != null) {
+
+						int start = highlighter.getStartOffset();
+						int end = highlighter.getEndOffset();
+
+						if (offset > start && offset < end) {
+							VersionedComment comment = highlighter.getUserData(CommentHighlighter.VERSIONED_COMMENT_DATA_KEY);
+							ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+							if (review != null) {
+								if (comment != null) {
+									if (comment.getPermId() != null) {
+										String[] permTokens = comment.getPermId().getId().split(":");
+										if (permTokens.length == 2) {
+											return review.getServer().getUrl() + "/cru/" +
+													review.getPermId().getId() +
+													"/#c" + permTokens[1];
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return null;
 	}
 }
