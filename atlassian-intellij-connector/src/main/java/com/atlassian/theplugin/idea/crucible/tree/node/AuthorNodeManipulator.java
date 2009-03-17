@@ -67,7 +67,7 @@ public class AuthorNodeManipulator extends NodeManipulator {
 			}
 
 			ReviewAdapter review = getReviewForAuthor(p.getAuthor(), index);
-			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(review);
+			CrucibleReviewTreeNode node = new CrucibleReviewTreeNode(reviewListModel, review);
 			p.add(node);
 
 			return node;
