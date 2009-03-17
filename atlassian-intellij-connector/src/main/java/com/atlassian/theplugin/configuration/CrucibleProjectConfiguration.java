@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,16 +18,18 @@ package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
+import com.intellij.util.xmlb.annotations.Transient;
+
+import java.util.LinkedList;
 
 public class CrucibleProjectConfiguration {
 
 	private CrucibleViewConfigurationBean view = new CrucibleViewConfigurationBean();
-
 	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
-
-	private ProjectToolWindowTableConfiguration tableConfiguration =
-			new ProjectToolWindowTableConfiguration();
+	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
+	private LinkedList<ReviewRecentlyOpenBean> recentlyOpenReviews = new LinkedList<ReviewRecentlyOpenBean>();
 
 	public CrucibleProjectConfiguration() {
 	}
@@ -56,10 +58,19 @@ public class CrucibleProjectConfiguration {
 		this.tableConfiguration = tableConfiguration;
 	}
 
+	public LinkedList<ReviewRecentlyOpenBean> getRecentlyOpenReviews() {
+		return recentlyOpenReviews;
+	}
+
+	public void setRecentlyOpenReviews(final LinkedList<ReviewRecentlyOpenBean> recentlyOpenReviews) {
+		this.recentlyOpenReviews = recentlyOpenReviews;
+	}
+
 	public void copyConfiguration(CrucibleProjectConfiguration crucibleConfiguration) {
 		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
 		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
 		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
+		recentlyOpenReviews = crucibleConfiguration.getRecentlyOpenReviews();
 
 		final CustomFilterBean manualFilter = crucibleFilters.getManualFilter();
 		// support just for transition perdiod, as State used to be kept as String and now its normal domain object
@@ -70,8 +81,25 @@ public class CrucibleProjectConfiguration {
 				}
 			}
 		}
-        crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
+		crucibleFilters.setPredefinedFilters(crucibleConfiguration.getCrucibleFilters().getPredefinedFilters());
 		view.copyConfiguration(crucibleConfiguration.getView());
 	}
 
+	@Transient
+	public void addRecentlyOpenReview(final ReviewAdapter review) {
+		if (review != null) {
+			String reviewId = review.getPermId().getId();
+			String serverId = review.getServer().getServerId().toString();
+
+			// add element and make sure it is not duplicated and it is insterted at the top
+			ReviewRecentlyOpenBean r = new ReviewRecentlyOpenBean(serverId, reviewId);
+
+			recentlyOpenReviews.remove(r);
+			recentlyOpenReviews.addFirst(r);
+
+			while (recentlyOpenReviews.size() > 10) {
+				recentlyOpenReviews.removeLast();
+			}
+		}
+	}
 }
