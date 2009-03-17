@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
@@ -28,13 +29,13 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.font.FontRenderContext;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * @author Jacek Jaroczynski
+ * @author Jacek Jaroczynski, but totally messed up by jgorycki :)
  */
 public class BuildTreeNode extends AbstractBuildTreeNode {
 
@@ -44,30 +45,41 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	private BambooBuildAdapterIdea build;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
-	private static double reasonWidth;
-	private static double serverWidth;
-	private static double dateWidth;
+	private double reasonWidth;
+	private double serverWidth;
+	private double dateWidth;
 	private static final int LABEL_PADDING = 5;
 
-	public BuildTreeNode(final BambooBuildAdapterIdea build) {
+	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapterIdea build) {
 		super(build.getPlanKey(), null, null);
 
 		this.build = build;
 
+		recalculateColumnWidths(buildModel);
+	}
+
+	private void recalculateColumnWidths(final BuildListModel buildModel) {
 		JLabel l = new JLabel();
-		// PL-1202 - argument to TextLayout must be a non-empty string
-		String reason = getBuildReasonString();
-		TextLayout layoutStatus =
-				new TextLayout(reason.length() > 0 ? reason : ".", l.getFont(), new FontRenderContext(null, true, true));
-		reasonWidth = Math.max(layoutStatus.getBounds().getWidth(), reasonWidth);
-		String server = getBuildServerString();
-		TextLayout layoutName =
-				new TextLayout(server.length() > 0 ? server : ".", l.getFont(), new FontRenderContext(null, true, true));
-		serverWidth = Math.max(layoutName.getBounds().getWidth(), serverWidth);
-		String date = getRelativeBuildTimeString();
-		TextLayout layoutDate =
-				new TextLayout(date.length() > 0 ? date : ".", l.getFont(), new FontRenderContext(null, true, true));
-		dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
+
+		reasonWidth = 0;
+		serverWidth = 0;
+		dateWidth = 0;
+
+		for (BambooBuildAdapterIdea b : buildModel.getBuilds()) {
+			// PL-1202 - argument to TextLayout must be a non-empty string
+			String reason = getBuildReasonString(b);
+			TextLayout layoutStatus = new TextLayout(reason.length() > 0 ? reason : ".",
+					l.getFont(), new FontRenderContext(null, true, true));
+			reasonWidth = Math.max(layoutStatus.getBounds().getWidth(), reasonWidth);
+			String server = getBuildServerString(b);
+			TextLayout layoutName = new TextLayout(server.length() > 0 ? server : ".",
+					l.getFont(), new FontRenderContext(null, true, true));
+			serverWidth = Math.max(layoutName.getBounds().getWidth(), serverWidth);
+			String date = getRelativeBuildTimeString(b);
+			TextLayout layoutDate =	new TextLayout(date.length() > 0 ? date : ".",
+					l.getFont(), new FontRenderContext(null, true, true));
+			dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
+		}
 	}
 
 	@Override
@@ -81,7 +93,8 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@Override
-	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
+	public JComponent getRenderer(final JComponent c, final boolean selected,
+							   final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
 		JPanel p = new JPanel();
@@ -122,10 +135,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@NotNull
-	private String getBuildReasonString() {
+	private static String getBuildReasonString(BambooBuildAdapterIdea build) {
 		StringBuilder sb = new StringBuilder();
 
-		String commiters = getCommiters();
+		String commiters = getCommiters(build);
 
 		if (!build.getReason().equals(CODE_HAS_CHANGED) || commiters.length() == 0) {
 			sb.append(build.getReason());
@@ -160,7 +173,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel reason = new SelectableLabel(selected, enabled, getBuildReasonString(), null,
+		JLabel reason = new SelectableLabel(selected, enabled, getBuildReasonString(build), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		reason.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -180,7 +193,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		JLabel server = new SelectableLabel(selected, enabled, getBuildServerString(), null,
+		JLabel server = new SelectableLabel(selected, enabled, getBuildServerString(build), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		server.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -201,7 +214,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		String relativeBuildDate = getRelativeBuildTimeString();
+		String relativeBuildDate = getRelativeBuildTimeString(build);
 		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(date, Double.valueOf(dateWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
@@ -225,16 +238,16 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@NotNull
-	private String getRelativeBuildTimeString() {
+	private static String getRelativeBuildTimeString(BambooBuildAdapterIdea build) {
 		return DateUtil.getRelativeBuildTime(build.getCompletionDate());
 	}
 
 	@NotNull
-	private String getBuildServerString() {
+	private static String getBuildServerString(BambooBuildAdapterIdea build) {
 		return "(" + build.getServer().getName() + ")";
 	}
 
-	private String getCommiters() {
+	private static String getCommiters(BambooBuildAdapterIdea build) {
 		StringBuilder commiters = new StringBuilder();
 
 		Collection<String> c = build.getCommiters();
@@ -275,9 +288,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append(build.getReason());
 		sb.append("</td></tr>");
 
-		if (getCommiters().length() > 0) {
+		if (getCommiters(build).length() > 0) {
 			sb.append("<tr><td valign=\"top\"><b>Commiters:</b></td><td valign=\"top\">");
-			sb.append(getCommiters());
+			sb.append(getCommiters(build));
 			sb.append("</td></tr>");
 		}
 
@@ -286,7 +299,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		sb.append("</td></tr>");
 
 		sb.append("<tr><td valign=\"top\"><b>Build Date:</b></td><td valign=\"top\">");
-		String date = getRelativeBuildTimeString();
+		String date = getRelativeBuildTimeString(build);
 		sb.append(StringEscapeUtils.escapeHtml(date).replace("\n", Util.HTML_NEW_LINE).replace(" ", "&nbsp;")
 				.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
 

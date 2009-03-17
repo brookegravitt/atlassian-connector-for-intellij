@@ -66,7 +66,7 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 			}
 
 			BambooBuildAdapterIdea build = getBuildForState(p.getStatus(), index);
-			BuildTreeNode node = new BuildTreeNode(build);
+			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
 			return node;
