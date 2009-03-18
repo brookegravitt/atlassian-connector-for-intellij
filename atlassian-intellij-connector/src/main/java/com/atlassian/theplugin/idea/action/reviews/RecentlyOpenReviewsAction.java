@@ -77,7 +77,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 					ListPopup popup =
 							JBPopupFactory.getInstance()
 									.createListPopup(new QuickSearchReviewAction.ReviewListPopupStep(reviews, reviewsWindow));
-					popup.show(e.getInputEvent().getComponent());
+					popup.showCenteredInCurrentWindow(project);
 				}
 			});
 
