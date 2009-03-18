@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -387,19 +388,25 @@ public final class CrucibleHelper {
 						if (offset > start && offset < end) {
 							VersionedComment comment = highlighter.getUserData(CommentHighlighter.VERSIONED_COMMENT_DATA_KEY);
 							ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-							if (review != null) {
-								if (comment != null) {
-									if (comment.getPermId() != null) {
-										String[] permTokens = comment.getPermId().getId().split(":");
-										if (permTokens.length == 2) {
-											return review.getServer().getUrl() + "/cru/"
-													+ review.getPermId().getId()
-													+ "/#c" + permTokens[1];
-										}
-									}
-								}
-							}
+							return getCommentUrl(review, comment);
 						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	public static String getCommentUrl(final ReviewAdapter review, final Comment comment) {
+		if (review != null) {
+			if (comment != null) {
+				if (comment.getPermId() != null) {
+					String[] permTokens = comment.getPermId().getId().split(":");
+					if (permTokens.length == 2) {
+						return review.getServer().getUrl() + "/cru/"
+								+ review.getPermId().getId()
+								+ "/#c" + permTokens[1];
 					}
 				}
 			}
