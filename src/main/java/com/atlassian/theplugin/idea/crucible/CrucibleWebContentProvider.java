@@ -43,8 +43,22 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 	public IdeaReviewFileContent getContent(final ReviewAdapter review,
 			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
 		try {
+
+			// doggy workaround - PL-1287
+			String serverUrl = review.getServer().getUrl();
+			String contentUrl = versionedVirtualFile.getContentUrl();
+
+			String[] serverTokens = serverUrl.split("/");
+			String[] contentTokens = contentUrl.split("/");
+
+			if (serverTokens.length > 0 && contentTokens.length > 0) {
+				if (serverTokens[serverTokens.length - 1].equals(contentTokens[0])) {
+					contentUrl = contentUrl.substring(contentTokens[0].length(), contentUrl.length());
+				}
+			}
+
 			byte[] content = CrucibleServerFacadeImpl.getInstance()
-					.getFileContent(review.getServer(), versionedVirtualFile.getContentUrl());
+					.getFileContent(review.getServer(), contentUrl);
 
 			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
 					versionedVirtualFile.getRevision(),
