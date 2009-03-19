@@ -54,7 +54,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 					return p.getChildAt(index);
 				}
 
-				CrucibleRecentlyOpenFilterTreeNode node = new CrucibleRecentlyOpenFilterTreeNode();
+				CrucibleRecentlyOpenFilterTreeNode node = new CrucibleRecentlyOpenFilterTreeNode(
+						filterModel.getRecentlyOpenReviewsFilter(), reviewListModel);
 				p.add(node);
 				return node;
 			}
