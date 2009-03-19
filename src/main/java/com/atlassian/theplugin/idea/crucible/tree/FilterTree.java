@@ -358,8 +358,8 @@ public class FilterTree extends JTree {
 			if (recentlyOpenFilter != null && (prevRecentlyOpenFilterSelected == null || !prevRecentlyOpenFilterSelected)) {
 				prevRecentlyOpenFilterSelected = true;
 				fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
-			} else if (recentlyOpenFilter == null &&
-					(prevRecentlyOpenFilterSelected == null || prevRecentlyOpenFilterSelected)) {
+			} else if (recentlyOpenFilter == null
+					&& (prevRecentlyOpenFilterSelected == null || prevRecentlyOpenFilterSelected)) {
 				prevRecentlyOpenFilterSelected = false;
 				fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
 			}
