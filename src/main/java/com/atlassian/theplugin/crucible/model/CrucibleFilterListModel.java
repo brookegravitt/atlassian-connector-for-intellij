@@ -2,6 +2,7 @@ package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,14 +13,16 @@ import java.util.Collection;
 public class CrucibleFilterListModel {
 	private Collection<PredefinedFilter> predefinedFilters = new ArrayList<PredefinedFilter>();
 	private CustomFilter customFilter;
+	private RecentlyOpenReviewsFilter recentlyOpenFilter;
 
-	public CrucibleFilterListModel(CustomFilter customFilter) {
+	public CrucibleFilterListModel(CustomFilter customFilter, RecentlyOpenReviewsFilter recentlyOpenFilter) {
 		for (PredefinedFilter predefinedFilter : PredefinedFilter.values()) {
 			if (predefinedFilter.isRemote()) {
 				predefinedFilters.add(predefinedFilter);
 			}
 		}
 		this.customFilter = customFilter;
+		this.recentlyOpenFilter = recentlyOpenFilter;
 	}
 
 
@@ -29,5 +32,9 @@ public class CrucibleFilterListModel {
 
 	public CustomFilter getCustomFilter() {
 		return customFilter;
+	}
+
+	public RecentlyOpenReviewsFilter getRecentlyOpenReviewsFilter() {
+		return recentlyOpenFilter;
 	}
 }
