@@ -7,12 +7,16 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
+import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
@@ -58,18 +62,10 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		this.setBorder(BorderFactory.createTitledBorder("Custom Filter"));
 		this.add(buttonPanel, BorderLayout.SOUTH);
 
-		CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListener() {
-			public void filterSelectionChanged() {
-			}
+		CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListenerAdapter() {
 
 			public void selectedCustomFilter(CustomFilter customFilter) {
 				updateDetails((CustomFilterBean) customFilter);
-			}
-
-			public void selectedPredefinedFilters(Collection<PredefinedFilter> selectedPredefinedFilter) {
-			}
-
-			public void unselectedCustomFilter() {
 			}
 		};
 
