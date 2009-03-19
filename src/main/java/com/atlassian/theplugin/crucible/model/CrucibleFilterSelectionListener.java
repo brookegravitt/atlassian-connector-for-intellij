@@ -26,9 +26,11 @@ import java.util.Collection;
 public interface CrucibleFilterSelectionListener {
 	void filterSelectionChanged();
 
-	void selectedCustomFilter(CustomFilter customFilter);
+	void selectionChangedRecentlyOpenFilter();
 
-	void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters);
+	void selectionChangedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters);
+
+	void selectedCustomFilter(CustomFilter customFilter);
 
 	void unselectedCustomFilter();
 }

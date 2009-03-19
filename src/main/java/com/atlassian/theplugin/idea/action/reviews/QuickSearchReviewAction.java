@@ -143,8 +143,8 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		} else if (reviews.size() == 1) {
 			reviewsWindow.openReview(reviews.iterator().next());
 		} else if (reviews.size() > 1) {
-			ListPopup popup =
-					JBPopupFactory.getInstance().createListPopup(new ReviewListPopupStep(reviews, reviewsWindow));
+			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
+					new ReviewListPopupStep("Found " + reviews.size() + " reviews", reviews, reviewsWindow));
 			popup.show(component);
 		}
 	}
@@ -164,8 +164,9 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		private ReviewsToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
-		public ReviewListPopupStep(final List<ReviewAdapter> reviews, final ReviewsToolWindowPanel reviewsWindow) {
-			super("Select Review To Open", reviews, IconLoader.getIcon("/icons/crucible-16.png"));
+		public ReviewListPopupStep(final String title, final List<ReviewAdapter> reviews,
+				final ReviewsToolWindowPanel reviewsWindow) {
+			super(title, reviews, IconLoader.getIcon("/icons/crucible-16.png"));
 			this.reviewsWindow = reviewsWindow;
 		}
 
