@@ -3,10 +3,7 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
@@ -40,12 +37,15 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 
 		final Boolean[] predefinedFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
 		final CustomFilter customFilter = crucibleProjectConfiguration.getCrucibleFilters().getManualFilter();
+		final RecentlyOpenReviewsFilter recentlyOpenFilter =
+				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter();
+
 
 		final CrucibleQueryExecutor crucibleQueryExecutor =
 				new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler,
 						crucibleReviewListModel);
 		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
-				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, epoch);
+				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, recentlyOpenFilter, epoch);
 
 
 		Collection<ReviewAdapter> active = crucibleReviewListModel.getOpenInIdeReviews();
