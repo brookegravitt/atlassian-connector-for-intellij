@@ -33,9 +33,6 @@ public class CruciblePredefinedFilterTreeNode extends AbstractTreeNode {
 		return new SelectableLabel(selected, c.isEnabled(), c.getFont(), "<html>" + toString(), ICON_HEIGHT);
 	}
 
-	public void onSelect() {
-	}
-
 	public PredefinedFilter getFilter() {
 		return filter;
 	}
