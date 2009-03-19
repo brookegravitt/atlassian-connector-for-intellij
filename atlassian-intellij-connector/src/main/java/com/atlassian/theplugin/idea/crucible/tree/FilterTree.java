@@ -80,8 +80,25 @@ public class FilterTree extends JTree {
 	}
 
 	private void fireSelectionChangedPredefinedFilter(Collection<PredefinedFilter> filters) {
-		for (CrucibleFilterSelectionListener listener : listeners) {
-			listener.selectedPredefinedFilters(filters);
+
+		if (crucibleConfiguration.getCrucibleFilters() != null
+				&& crucibleConfiguration.getCrucibleFilters().getPredefinedFilters() != null) {
+
+			Boolean[] confFilters = crucibleConfiguration.getCrucibleFilters().getPredefinedFilters();
+
+			// clear all predefined filters from configuration
+			for (int i = 0; i < confFilters.length; ++i) {
+				confFilters[i] = false;
+			}
+
+			// rember the filters selection in plugin configuration
+			for (PredefinedFilter filter : filters) {
+				confFilters[filter.ordinal()] = true;
+			}
+
+			for (CrucibleFilterSelectionListener listener : listeners) {
+				listener.selectionChangedPredefinedFilters(filters);
+			}
 		}
 	}
 
@@ -96,8 +113,9 @@ public class FilterTree extends JTree {
 				crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter().setEnabled(true);
 			}
 
-			// currently we don't need to inform listeners about selected/unselected predefined filter
-			// selectionChanged event is enough
+			for (CrucibleFilterSelectionListener listener : listeners) {
+				listener.selectionChangedRecentlyOpenFilter();
+			}
 		}
 	}
 
@@ -134,6 +152,7 @@ public class FilterTree extends JTree {
 		}
 
 		boolean customFilter = false;
+		boolean recenltyOpenFilter = false;
 		Collection<PredefinedFilter> selectedPredefinedFilters = new ArrayList<PredefinedFilter>();
 
 		if (crucibleConfiguration.getCrucibleFilters().getManualFilter() != null
@@ -142,6 +161,11 @@ public class FilterTree extends JTree {
 			customFilter = true;
 		}
 
+		if (crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter() != null
+				&& crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter().isEnabled()) {
+
+			recenltyOpenFilter = true;
+		}
 
 		if (crucibleConfiguration.getCrucibleFilters().getPredefinedFilters() != null) {
 
@@ -157,10 +181,12 @@ public class FilterTree extends JTree {
 		}
 
 		// select nodes
-		selectNodes(selectedPredefinedFilters, customFilter);
+		selectNodes(selectedPredefinedFilters, customFilter, recenltyOpenFilter);
 	}
 
-	private void selectNodes(Collection<PredefinedFilter> predefinedFilters, final boolean customFilter) {
+	private void selectNodes(Collection<PredefinedFilter> predefinedFilters,
+			final boolean customFilter, final boolean recenltyOpenFilter) {
+
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (getModel().getRoot()));
 		if (rootNode == null) {
 			return;
@@ -216,6 +242,17 @@ public class FilterTree extends JTree {
 			}
 		}
 
+		// create path for RecenltyOpenFilter
+		if (recenltyOpenFilter) {
+			for (int i = rootNode.getChildCount() - 1; i >= 0; --i) {
+				if (rootNode.getChildAt(i) instanceof CrucibleRecentlyOpenFilterTreeNode) {
+					CrucibleRecentlyOpenFilterTreeNode node = (CrucibleRecentlyOpenFilterTreeNode) rootNode.getChildAt(i);
+					selectedPaths.add(new TreePath(node.getPath()));
+					break;
+				}
+			}
+		}
+
 		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
 	}
 
@@ -250,13 +287,15 @@ public class FilterTree extends JTree {
 		}
 	}
 
-	private class LocalTreeSelectionListener implements TreeSelectionListener {
+	private final class LocalTreeSelectionListener implements TreeSelectionListener {
 
 		private Set<TreePath> prevSelection = new HashSet<TreePath>();
-		private Set<TreePath> prevPredefinedFilterSelection = new HashSet<TreePath>();
+		private Set<PredefinedFilter> prevPredefinedFilterSelection = null;
+		private Boolean prevCustomFilterSelected = null;
+		private Boolean prevRecentlyOpenFilterSelected = null;
 
 		public void valueChanged(TreeSelectionEvent e) {
-			Collection<PredefinedFilter> predefinedFilters =
+			Set<PredefinedFilter> predefinedFilters =
 					new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
 
 			CustomFilter customFilter = null;
@@ -264,7 +303,6 @@ public class FilterTree extends JTree {
 			boolean allMyReviews = false;
 
 			TreePath[] selectionPaths = getSelectionPaths();
-//			Set<TreePath> predefinedFilterSelection = new HashSet<TreePath>();
 
 			if (selectionPaths != null) {
 				for (TreePath selectionPath : selectionPaths) {
@@ -273,7 +311,6 @@ public class FilterTree extends JTree {
 							PredefinedFilter filter = ((CruciblePredefinedFilterTreeNode)
 									selectionPath.getLastPathComponent()).getFilter();
 							predefinedFilters.add(filter);
-//							predefinedFilterSelection.add(selectionPath);
 						} else if (selectionPath.getLastPathComponent() instanceof CrucibleCustomFilterTreeNode) {
 							customFilter = ((CrucibleCustomFilterTreeNode)
 									selectionPath.getLastPathComponent()).getFilter();
@@ -283,7 +320,6 @@ public class FilterTree extends JTree {
 							recentlyOpenFilter = ((CrucibleRecentlyOpenFilterTreeNode) selectionPath.getLastPathComponent()).
 									getRecentlyOpenReviewsFilter();
 						}
-
 					}
 				}
 			}
@@ -304,21 +340,31 @@ public class FilterTree extends JTree {
 				prevSelection = new HashSet<TreePath>(Arrays.asList(getSelectionPaths()));
 			}
 
-//			if (!prevPredefinedFilterSelection.equals(predefinedFilterSelection)) {
-			fireSelectionChangedPredefinedFilter(predefinedFilters);
-//				prevPredefinedFilterSelection = predefinedFilterSelection;
-//			}
+			if (prevPredefinedFilterSelection == null || !prevPredefinedFilterSelection.equals(predefinedFilters)) {
+				prevPredefinedFilterSelection = predefinedFilters;
+				fireSelectionChangedPredefinedFilter(predefinedFilters);
+			}
 
-			if (customFilter != null) {
+			// custom filter selection change notification
+			if (customFilter != null && (prevCustomFilterSelected == null || !prevCustomFilterSelected)) {
+				prevCustomFilterSelected = true;
 				fireSelectedCustomFilter(customFilter);
-			} else {
+			} else if (customFilter == null && (prevCustomFilterSelected == null || prevCustomFilterSelected)) {
+				prevCustomFilterSelected = false;
 				fireUnselectedCustomFilter();
 			}
 
-//			if (recentlyOpenFilter CHANGED) {
-			fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
-//			}
+			// recenlty open filter selection change notification
+			if (recentlyOpenFilter != null && (prevRecentlyOpenFilterSelected == null || !prevRecentlyOpenFilterSelected)) {
+				prevRecentlyOpenFilterSelected = true;
+				fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
+			} else if (recentlyOpenFilter == null &&
+					(prevRecentlyOpenFilterSelected == null || prevRecentlyOpenFilterSelected)) {
+				prevRecentlyOpenFilterSelected = false;
+				fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
+			}
 
+			// selection changed general notification
 			fireSelectionChanged();
 
 			redrawNodes();

@@ -420,7 +420,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return reviews;
 	}
 
-	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
+	private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {
 		public void filterSelectionChanged() {
 			// restart checker
 			refresh(UpdateReason.FILTER_CHANGED);
@@ -428,20 +428,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		public void selectedCustomFilter(CustomFilter customFilter) {
 			showManualFilterPanel(true);
-		}
-
-		public void selectedPredefinedFilters(Collection<PredefinedFilter> predefinedFilters) {
-			Boolean[] confFilters = crucibleProjectConfiguration.getCrucibleFilters().getPredefinedFilters();
-
-			// clear all predefined filters from configuration
-			for (int i = 0; i < confFilters.length; ++i) {
-				confFilters[i] = false;
-			}
-
-			// rember the filters selection in plugin configuration
-			for (PredefinedFilter filter : predefinedFilters) {
-				confFilters[filter.ordinal()] = true;
-			}
 		}
 
 		public void unselectedCustomFilter() {
