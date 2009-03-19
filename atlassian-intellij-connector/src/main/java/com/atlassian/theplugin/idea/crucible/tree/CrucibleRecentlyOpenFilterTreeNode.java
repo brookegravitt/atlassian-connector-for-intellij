@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
+import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
@@ -26,21 +27,23 @@ import javax.swing.*;
  */
 public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 	private static final String NAME = "Recently Open Reviews";
-	private final CrucibleReviewListModel reviewListModel = null;
+	private final CrucibleReviewListModel reviewListModel;
+	private RecentlyOpenReviewsFilter recenltyOpenFilter;
 
-	public CrucibleRecentlyOpenFilterTreeNode() {
+	public CrucibleRecentlyOpenFilterTreeNode(final RecentlyOpenReviewsFilter recentlyOpenReviewsFilter,
+			CrucibleReviewListModel reviewListModel) {
 		super(NAME, null, null);
-//		this.reviewListModel = reviewListModel;
+		this.reviewListModel = reviewListModel;
+		this.recenltyOpenFilter = recentlyOpenReviewsFilter;
 	}
 
 	public String toString() {
-//		int cnt = reviewListModel.getPredefinedFiltersReviewCount();
-//		String txt = NAME;
-//		if (cnt > -1) {
-//			txt += " (" + cnt + ")";
-//		}
-//		return txt;
-		return NAME;
+		int cnt = reviewListModel.getReviewCount(recenltyOpenFilter);
+		String txt = NAME;
+		if (cnt > -1) {
+			txt += " (" + cnt + ")";
+		}
+		return txt;
 	}
 
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
@@ -48,4 +51,7 @@ public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
 		return new SelectableLabel(selected, c.isEnabled(), c.getFont(), txt, ICON_HEIGHT);
 	}
 
+	public RecentlyOpenReviewsFilter getRecentlyOpenReviewsFilter() {
+		return recenltyOpenFilter;
+	}
 }
