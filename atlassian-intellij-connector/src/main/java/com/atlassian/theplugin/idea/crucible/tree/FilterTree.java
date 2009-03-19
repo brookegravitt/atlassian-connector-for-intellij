@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
@@ -78,9 +79,31 @@ public class FilterTree extends JTree {
 		listeners.remove(listener);
 	}
 
-	private void fireSelectedPredefinedFilter(Collection<PredefinedFilter> filters) {
+	private void fireSelectionChangedPredefinedFilter(Collection<PredefinedFilter> filters) {
 		for (CrucibleFilterSelectionListener listener : listeners) {
 			listener.selectedPredefinedFilters(filters);
+		}
+	}
+
+
+	private void fireSelectionChangedRecentlyOpenFilter(final RecentlyOpenReviewsFilter recentlyOpenFilter) {
+		if (crucibleConfiguration.getCrucibleFilters() != null
+				&& crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter() != null) {
+
+			if (recentlyOpenFilter == null) {
+				crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter().setEnabled(false);
+			} else {
+				crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter().setEnabled(true);
+			}
+
+			// currently we don't need to inform listeners about selected/unselected predefined filter
+			// selectionChanged event is enough
+		}
+	}
+
+	private void fireSelectionChanged() {
+		for (CrucibleFilterSelectionListener listener : listeners) {
+			listener.filterSelectionChanged();
 		}
 	}
 
@@ -230,15 +253,18 @@ public class FilterTree extends JTree {
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
 
 		private Set<TreePath> prevSelection = new HashSet<TreePath>();
+		private Set<TreePath> prevPredefinedFilterSelection = new HashSet<TreePath>();
 
 		public void valueChanged(TreeSelectionEvent e) {
 			Collection<PredefinedFilter> predefinedFilters =
 					new HashSet<PredefinedFilter>(PredefinedFilter.values().length + 1, 1);
 
 			CustomFilter customFilter = null;
+			RecentlyOpenReviewsFilter recentlyOpenFilter = null;
 			boolean allMyReviews = false;
 
 			TreePath[] selectionPaths = getSelectionPaths();
+//			Set<TreePath> predefinedFilterSelection = new HashSet<TreePath>();
 
 			if (selectionPaths != null) {
 				for (TreePath selectionPath : selectionPaths) {
@@ -247,11 +273,15 @@ public class FilterTree extends JTree {
 							PredefinedFilter filter = ((CruciblePredefinedFilterTreeNode)
 									selectionPath.getLastPathComponent()).getFilter();
 							predefinedFilters.add(filter);
+//							predefinedFilterSelection.add(selectionPath);
 						} else if (selectionPath.getLastPathComponent() instanceof CrucibleCustomFilterTreeNode) {
 							customFilter = ((CrucibleCustomFilterTreeNode)
 									selectionPath.getLastPathComponent()).getFilter();
 						} else if (selectionPath.getLastPathComponent() instanceof CrucibleMyReviewsTreeNode) {
 							allMyReviews = true;
+						} else if (selectionPath.getLastPathComponent() instanceof CrucibleRecentlyOpenFilterTreeNode) {
+							recentlyOpenFilter = ((CrucibleRecentlyOpenFilterTreeNode) selectionPath.getLastPathComponent()).
+									getRecentlyOpenReviewsFilter();
 						}
 
 					}
@@ -274,13 +304,22 @@ public class FilterTree extends JTree {
 				prevSelection = new HashSet<TreePath>(Arrays.asList(getSelectionPaths()));
 			}
 
-			fireSelectedPredefinedFilter(predefinedFilters);
+//			if (!prevPredefinedFilterSelection.equals(predefinedFilterSelection)) {
+			fireSelectionChangedPredefinedFilter(predefinedFilters);
+//				prevPredefinedFilterSelection = predefinedFilterSelection;
+//			}
 
 			if (customFilter != null) {
 				fireSelectedCustomFilter(customFilter);
 			} else {
 				fireUnselectedCustomFilter();
 			}
+
+//			if (recentlyOpenFilter CHANGED) {
+			fireSelectionChangedRecentlyOpenFilter(recentlyOpenFilter);
+//			}
+
+			fireSelectionChanged();
 
 			redrawNodes();
 		}

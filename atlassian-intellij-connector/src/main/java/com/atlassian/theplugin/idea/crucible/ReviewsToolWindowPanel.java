@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.configuration.ReviewRecentlyOpenBean;
 import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -97,7 +96,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
 		filterListModel = new CrucibleFilterListModel(
-				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter());
+				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter(),
+				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
 		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, reviewListModel);
 		this.reviewListModel = reviewListModel;
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
@@ -156,7 +156,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		CommentHighlighter.removeCommentsInEditors(project);
 		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
 		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
-		crucibleProjectConfiguration.addRecentlyOpenReview(review);
+		crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(review);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
@@ -421,8 +421,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 	private class LocalCrucibleFilterListModelListener implements CrucibleFilterSelectionListener {
-		public void filterChanged() {
-
+		public void filterSelectionChanged() {
+			// restart checker
+			refresh(UpdateReason.FILTER_CHANGED);
 		}
 
 		public void selectedCustomFilter(CustomFilter customFilter) {
@@ -441,9 +442,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			for (PredefinedFilter filter : predefinedFilters) {
 				confFilters[filter.ordinal()] = true;
 			}
-
-			// restart checker
-			refresh(UpdateReason.FILTER_CHANGED);
 		}
 
 		public void unselectedCustomFilter() {
