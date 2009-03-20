@@ -69,6 +69,43 @@ public final class FisheyeUrlHelper {
 	}
 
 	@Nullable
+	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		if (projectCfg == null) {
+			return null;
+		}
+
+		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		if (fishEyeServer == null) {
+			Messages.showInfoMessage(project,
+					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",
+					"Configuration problem");
+			return null;
+		}
+
+
+		String fisheyeProjPath = projectCfg.getFishEyeProjectPath();
+		if (fisheyeProjPath == null) {
+			fisheyeProjPath = "";
+		}
+
+		final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
+		if (relativePath == null) {
+			Messages.showErrorDialog(project, "Cannot determine relative path to file " + virtualFile.getName(),
+					"Error");
+			return null;
+		}
+		if (revision == null) {
+			Messages.showErrorDialog(project, "File " + virtualFile.getName() + " is not under version control!",
+					"Error");
+			return null;
+		}
+		return buildRemoteUrl(revision, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+				relativePath, 1);
+	}
+
+	@Nullable
 	public static String getFisheyeUrl(final PsiElement psiElement,
 			final Project project) {
 
