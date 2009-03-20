@@ -267,11 +267,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 								SwingUtilities.invokeLater(new Runnable() {
 
 									public void run() {
-										WindowManager.getInstance().getFrame(finalProject).setVisible(true);
-//										WindowManager.getInstance().getFrame(finalProject).toFront();
+										WindowManager.getInstance().getFrame(finalProject).setVisible(true);										
 //										WindowManager.getInstance().getFrame(finalProject).repaint();
 										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(true);
 										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(false);
+                                        WindowManager.getInstance().getFrame(finalProject).toFront();
 									}
 								});
 
