@@ -565,8 +565,7 @@
         </action>
 
         <action id="ThePlugin.Crucible.PostCommitReview"
-                class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"
-                icon="/icons/add_crucible.png"/>
+                class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewAction" text="Create Review"/>
         <action id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"
                 class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewActionNoRevisionSelected"
                 text="Create Post-Commit Review"/>
