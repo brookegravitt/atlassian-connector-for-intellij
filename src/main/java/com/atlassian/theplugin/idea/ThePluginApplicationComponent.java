@@ -24,7 +24,11 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.*;
+import com.atlassian.theplugin.util.CodeNavigationUtil;
+import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
+import com.atlassian.theplugin.util.PicoUtil;
+import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
@@ -48,8 +52,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
@@ -266,14 +274,14 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 								WindowManager.getInstance().getFrame(project).setVisible(true);
 
 //										WindowManager.getInstance().getFrame(finalProject).repaint();
-								String os_name = System.getProperty("os.name");
-								os_name = os_name.toLowerCase();
+								String osName = System.getProperty("os.name");
+								osName = osName.toLowerCase();
 
-								if (os_name.contains("windows") || os_name.contains("mac os x")) {
+								if (osName.contains("windows") || osName.contains("mac os x")) {
 									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
 									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
 
-								} else {//for linux
+								} else { //for linux
 									WindowManager.getInstance().getFrame(project).toFront();
 
 								}
