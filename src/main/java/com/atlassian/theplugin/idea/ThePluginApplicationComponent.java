@@ -264,10 +264,20 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
 								WindowManager.getInstance().getFrame(project).setVisible(true);
+
 //										WindowManager.getInstance().getFrame(finalProject).repaint();
-								WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
-								WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
-								WindowManager.getInstance().getFrame(project).toFront();
+								String os_name = System.getProperty("os.name");
+								os_name = os_name.toLowerCase();
+
+								if (os_name.contains("windows") || os_name.contains("mac os x")) {
+									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
+									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
+
+								} else {//for linux
+									WindowManager.getInstance().getFrame(project).toFront();
+
+								}
+
 
 								if (psiFile != null) {
 									psiFile.navigate(true);
