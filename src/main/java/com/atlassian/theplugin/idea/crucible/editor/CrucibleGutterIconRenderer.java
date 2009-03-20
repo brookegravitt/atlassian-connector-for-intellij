@@ -1,12 +1,7 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.LineCommentTooltipPanel;
@@ -117,6 +112,15 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 						protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
 							final VersionedCommentBean reply = createReplyBean(text);
 							reply.setDraft(draft);
+
+							boolean fail = false;
+							// test of PL-1285
+//							String test = System.getProperty("PL-1285");
+//							if (test != null && test.equals("yes")) {
+//								fail = true;
+//							}
+
+//							runAddReplyTask(parent, reply, e, this, fail);
 							runAddReplyTask(parent, reply, e, this);
 						}
 
@@ -172,13 +176,22 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 			ProgressManager.getInstance().run(task);
 		}
 
+//		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
+//									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel,
+//									 final boolean fail) {
 		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
-				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
+									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Adding new comment reply", false) {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					try {
-						review.addVersionedCommentReply(fileInfo, parent, reply);
+//						if (fail) {
+//							throw new Exception(
+//									"Very Very Long Comment, Very Very Long Comment, "
+//									+ "Very Very Long Comment, Very Very Long Comment");
+//						} else {
+							review.addVersionedCommentReply(fileInfo, parent, reply);
+//						}
 					} catch (Exception e) {
 						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
 						panel.resumeAdding(reply);
@@ -237,6 +250,5 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		}
 		return true;
 	}
-
 }
 

@@ -80,6 +80,7 @@ public class LineCommentTooltipPanelTest {
 					ra.addVersionedCommentReply(file, parent, reply);
 				} catch (Exception e) {
 					e.printStackTrace();
+					setStatusText(e.getMessage());
 				}
 			}
 
@@ -130,9 +131,18 @@ public class LineCommentTooltipPanelTest {
 
 		public VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId,
 				VersionedComment comment) throws RemoteApiException, ServerPasswordNotProvidedException {
-			VersionedCommentBean bean = (VersionedCommentBean) comment;
-			bean.setAuthor(new UserBean("zenon", "Zenon User"));
-			return bean;
+
+			String throwException = System.getProperty("LCTPT.throw");
+
+			if (throwException != null && throwException.equals("yes")) {
+				throw new RemoteApiException(
+						"Very Very Long Comment, Very Very Long Comment, "
+						+ "Very Very Long Comment, Very Very Long Comment");
+			} else {
+				VersionedCommentBean bean = (VersionedCommentBean) comment;
+				bean.setAuthor(new UserBean("zenon", "Zenon User"));
+				return bean;
+			}
 		}
 	}
 }

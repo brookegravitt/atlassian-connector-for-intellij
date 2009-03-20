@@ -28,14 +28,16 @@ public class CrucibleReviewMetricsCombos {
 		this.customFields = customFields;
 
 		this.parent = parent;
-		for (CustomFieldDef metric : metrics) {
-			final JLabel label = new JLabel(metric.getLabel());
-			final JComboBox combo = new JComboBox();
-			combo.setModel(new CustomFieldComboBoxModel(customFields, metric));
-			final String metricName = metric.getLabel();
-			combos.put(metricName, combo);
-			parent.add(label);
-			parent.add(combo);
+		if (metrics != null) {
+			for (CustomFieldDef metric : metrics) {
+				final JLabel label = new JLabel(metric.getLabel());
+				final JComboBox combo = new JComboBox();
+				combo.setModel(new CustomFieldComboBoxModel(customFields, metric));
+				final String metricName = metric.getLabel();
+				combos.put(metricName, combo);
+				parent.add(label);
+				parent.add(combo);
+			}
 		}
 	}
 
