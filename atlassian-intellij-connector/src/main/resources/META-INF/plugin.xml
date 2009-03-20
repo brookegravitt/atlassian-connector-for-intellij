@@ -580,6 +580,10 @@
                 class="com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetAction"
                 text="View Changeset in Fisheye"
                 icon="/icons/fisheye-16.png"/>
+        <action id="ThePlugin.Crucible.ViewFisheyeChangesetItem"
+                class="com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction"
+                text="View in Fisheye"
+                icon="/icons/fisheye-16.png"/>
         <action id="ThePlugin.Crucible.PreCommitReview"
                 class="com.atlassian.theplugin.idea.action.crucible.PreCommitReview" text="Pre-commit Review"
                 icon="/icons/add_crucible-pre.png"/>
@@ -629,6 +633,12 @@
             <reference id="ThePlugin.Crucible.ViewFisheyeChangeset"/>
             <add-to-group anchor="last" group-id="IncomingChangesToolbar"/>
         </group>
+
+        <group id="ThePlugin.Fisheye.IncomingDetail" popup="false" text="Fisheye">
+            <reference id="ThePlugin.Crucible.ViewFisheyeChangesetItem"/>
+            <add-to-group anchor="last" group-id="RepositoryChangesBrowserToolbar"/>
+        </group>
+
 
         <group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
 

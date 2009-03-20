@@ -64,4 +64,13 @@ public final class ChangeListUtil {
 		return null;
 	}
 
+	public static Change getChangeItem(AnActionEvent event) {
+		final Change[] changes = DataKeys.CHANGES.getData(event.getDataContext());
+		if (changes != null && changes.length == 1) {
+			for (Change change : changes) {
+				return change;
+			}
+		}
+		return null;
+	}
 }
