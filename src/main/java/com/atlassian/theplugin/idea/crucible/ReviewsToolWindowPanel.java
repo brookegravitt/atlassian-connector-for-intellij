@@ -367,9 +367,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return crucibleProjectConfiguration;
 	}
 
-	public void addReview(final ReviewAdapter selectedValue) {
-		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
-	}
+//	public void addReview(final ReviewAdapter selectedValue) {
+//		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
+//	}
 
 	public List<ReviewAdapter> getReviewAdapters(final List<ReviewRecentlyOpenBean> recentlyOpenReviews) {
 

@@ -10,15 +10,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibl
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -43,9 +35,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		Set<ReviewAdapter> plainReviews = new HashSet<ReviewAdapter>();
 
 		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
-//			if (crucibleFilter != PredefinedFilter.OpenInIde) {
-			plainReviews.addAll(reviews.get(crucibleFilter));
-//			}
+			if (crucibleFilter != PredefinedFilter.OpenInIde) {
+				plainReviews.addAll(reviews.get(crucibleFilter));
+			}
 		}
 		return plainReviews;
 	}
@@ -63,7 +55,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			return -1;
 		}
 		for (CrucibleFilter crucibleFilter : reviews.keySet()) {
-			if (crucibleFilter instanceof PredefinedFilter) {
+			if (crucibleFilter instanceof PredefinedFilter && crucibleFilter != PredefinedFilter.OpenInIde) {
 				combined.addAll(reviews.get(crucibleFilter));
 			}
 		}
