@@ -86,6 +86,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 	public LineCommentTooltipPanel(final ReviewAdapter review, CrucibleFileInfo file,
 			VersionedComment thisLineComment, boolean useTextTwixie) {
 		super(new BorderLayout());
+
 		this.fileInfo = file;
 		this.thisLineComment = thisLineComment;
 		this.useTextTwixie = useTextTwixie;
@@ -105,7 +106,10 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 
 		add(scroll, BorderLayout.CENTER);
-		add(statusLabel, BorderLayout.SOUTH);
+		JPanel wrap = new JPanel(new FormLayout("p:g", "p"));
+		CellConstraints cc = new CellConstraints();
+		wrap.add(statusLabel, cc.xy(1, 1));
+		add(wrap, BorderLayout.SOUTH);
 
 		CommentPanel cmtPanel = new CommentPanel(review, thisLineComment);
 		commentsPanel.add(cmtPanel);
@@ -293,6 +297,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 							btnEdit.setVisible(false);
 						}
 						addCommentReplyPanel(review, null);
+						setStatusText(" ");
 					}
 				});
 				btnReply.setOpaque(false);
@@ -486,6 +491,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 					} else {
 						removeCommentReplyPanel(CommentPanel.this);
 					}
+					setStatusText(" ");
 				}
 			});
 			btnCancel.setOpaque(false);
@@ -606,6 +612,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 
 	public void setStatusText(String txt) {
 		statusLabel.setText(txt);
+		statusLabel.setPreferredSize(new Dimension(0, statusLabel.getHeight()));
 	}
 
 	/**
@@ -677,7 +684,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 						}
 					}
 					if (underConstructionPanel != null) {
-						if (underConstructionPanel.commentBody.getText().equals(comment.getMessage())) {
+						if (underConstructionPanel.commentBody.getText().trim().equals(comment.getMessage().trim())) {
 							removeCommentReplyPanel(underConstructionPanel);
 						}
 					}
