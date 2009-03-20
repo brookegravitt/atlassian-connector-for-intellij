@@ -2,11 +2,14 @@ package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
+import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 
@@ -23,11 +26,14 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	//	private ReviewAdapter selectedReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
+	private CrucibleProjectConfiguration crucibleProjectConfiguration;
 
 	private AtomicLong epoch = new AtomicLong(0);
 
-	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder) {
+	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
+			final ProjectConfigurationBean projectConfigurationBean) {
 		this.reviewListModelBuilder = reviewListModelBuilder;
+		this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
 		reviews.put(PredefinedFilter.OpenInIde, new HashSet<ReviewAdapter>());
 	}
 
@@ -135,23 +141,26 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	 * For params description see {@link #addReview(com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter,
 	 * com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter, UpdateReason)}
 	 *
-	 * @param filter
 	 * @param reviewAdapter
 	 * @param updateReason
 	 */
-	public void addSingleReview(final PredefinedFilter filter, final ReviewAdapter reviewAdapter,
-			final UpdateReason updateReason) {
+	public void openReview(final ReviewAdapter reviewAdapter, final UpdateReason updateReason) {
 
 		// start notifiaction;
 		notifyReviewListUpdateStarted(new UpdateContext(updateReason, null, null));
 
 		// todo remove that limitation when we handle multiple open reviews in IDE
 		// clear OpenInIde filter and notify if review removed
-		if (filter != null && filter == PredefinedFilter.OpenInIde) {
-			clearOpenInIde();
-		}
+		clearOpenInIde();
 
-		List<CrucibleNotification> notifications = addReview(filter, reviewAdapter, updateReason);
+		List<CrucibleNotification> notifications = addReview(PredefinedFilter.OpenInIde, reviewAdapter, updateReason);
+
+		final RecentlyOpenReviewsFilter recentlyOpenFilter =
+				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter();
+
+		if (recentlyOpenFilter != null && recentlyOpenFilter.isEnabled()) {
+			notifications.addAll(addReview(recentlyOpenFilter, reviewAdapter, updateReason));
+		}
 
 		// finish notification;
 		notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, notifications));
