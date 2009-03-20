@@ -39,6 +39,7 @@ public final class IdeaVersionFacade {
 
 	private static final int IDEA_8_0 = 8000;
 	private boolean isIdea8;
+	private static final int IDEA_8_0_1 = 9164;
 
 	private IdeaVersionFacade() {
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
@@ -129,7 +130,7 @@ public final class IdeaVersionFacade {
 			}
 			String ver = ApplicationInfo.getInstance().getBuildNumber();
 			int v = Integer.parseInt(ver);
-			if (v > 9164) {
+			if (v > IDEA_8_0_1) {
 				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 				Constructor[] constructors = browserClass.getConstructors();
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
