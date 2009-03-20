@@ -15,11 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.ui.IconPaths;
 import com.atlassian.theplugin.util.ui.IconProvider;
@@ -29,15 +25,12 @@ import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
-import javax.swing.text.StyledDocument;
+import javax.swing.text.*;
 import java.awt.*;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class ReviewCommentPanel extends JPanel {
@@ -282,10 +275,13 @@ public class ReviewCommentPanel extends JPanel {
 
 			for (Map.Entry<String, CustomField> elem : comment.getCustomFields().entrySet()) {
 				String label = elem.getKey();
-				for (CustomFieldDef metric : review.getMetricDefinitions()) {
-					if (metric.getName().equals(elem.getKey())) {
-						label = metric.getLabel();
-						break;
+				List<CustomFieldDef> metrics = review.getMetricDefinitions();
+				if (metrics != null) {
+					for (CustomFieldDef metric : metrics) {
+						if (metric.getName().equals(elem.getKey())) {
+							label = metric.getLabel();
+							break;
+						}
 					}
 				}
 				if (sb.length() > 1) {
