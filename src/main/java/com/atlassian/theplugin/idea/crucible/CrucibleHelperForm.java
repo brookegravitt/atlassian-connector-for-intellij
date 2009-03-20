@@ -110,7 +110,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		this.repositoryLabel.setVisible(false);
 		this.repositoryComboBox.setVisible(false);
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
-		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBorwser(project, changeListManager);
+		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBorwser(project, changeListManager, changes);
 		setCustomComponent(changesBrowser);
 		setTitle("Add files");
 		getOKAction().putValue(Action.NAME, "Add files...");
