@@ -154,9 +154,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 	public void openReview(final ReviewAdapter review) {
 		CommentHighlighter.removeCommentsInEditors(project);
-		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, review, UpdateReason.OPEN_IN_IDE);
-		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
 		crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(review);
+		reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
+		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
@@ -368,7 +368,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	}
 
 //	public void addReview(final ReviewAdapter selectedValue) {
-//		reviewListModel.addSingleReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
+//		reviewListModel.openReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
 //	}
 
 	public List<ReviewAdapter> getReviewAdapters(final List<ReviewRecentlyOpenBean> recentlyOpenReviews) {
