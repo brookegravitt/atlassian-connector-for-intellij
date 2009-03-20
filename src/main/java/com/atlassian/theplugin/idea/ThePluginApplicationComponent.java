@@ -276,7 +276,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							}
 
 							if (!found) {
-								Messages.showInfoMessage("Cannot find file " + file, "File open error");
+								Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
 							}
 						}
 					});
