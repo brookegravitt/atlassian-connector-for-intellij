@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public final class IdeaVersionFacade {
 
@@ -115,18 +116,28 @@ public final class IdeaVersionFacade {
 		return psiFiles;
 	}
 
-	public MultipleChangeListBrowser getChangesListBorwser(Project project, ChangeListManager changeListManager) {
+	public MultipleChangeListBrowser getChangesListBorwser(Project project, ChangeListManager changeListManager,
+			final Collection<Change> changes) {
 		try {
+
+			final ArrayList<Change> changeList;
+			if (changes == null) {
+				changeList = new ArrayList<Change>(
+						changeListManager.getDefaultChangeList().getChanges());
+			} else {
+				changeList = new ArrayList<Change>(changes);
+			}
+
 			if (isIdea8) {
 				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 				Constructor[] constructors = browserClass.getConstructors();
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
-						new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true, null);
+						changeList, null, true, true, null);
 			} else {
 				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 				Constructor[] constructors = browserClass.getConstructors();
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
-						new ArrayList<Change>(changeListManager.getDefaultChangeList().getChanges()), null, true, true);
+						changeList, null, true, true);
 			}
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
