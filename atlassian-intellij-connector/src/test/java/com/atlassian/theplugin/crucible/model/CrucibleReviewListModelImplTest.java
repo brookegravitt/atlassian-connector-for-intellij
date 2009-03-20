@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
 
@@ -54,13 +55,13 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		assertEquals(1, model.getReviews().size());
 	}
 
-//	public void testAddingSingleReview() throws Exception {
-//		model = new CrucibleReviewListModelImplAdapter();
-//
-//		model.addSingleReview(PredefinedFilter.OpenInIde, new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
-//
-//		assertEquals(1, model.getReviews().size());
-//	}
+	public void testAddingSingleReview() throws Exception {
+		model = new CrucibleReviewListModelImplAdapter();
+
+		model.openReview(new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
+
+		assertEquals(0, model.getReviews().size());
+	}
 
 	public void testAddingSingleReviewTwice() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
@@ -73,35 +74,35 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		ReviewAdapter ra = new ReviewAdapter(r, cfg);
 
 		model.addReview(ra);
-		model.addSingleReview(PredefinedFilter.OpenInIde, ra, UpdateReason.OPEN_IN_IDE);
+		model.openReview(ra, UpdateReason.OPEN_IN_IDE);
 
 		assertEquals(1, model.getReviews().size());
 	}
 
-//	public void testAddingTwoSingleReviews() throws Exception {
-//		model = new CrucibleReviewListModelImplAdapter();
-//
-//		ServerId id = new ServerId();
-//		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
-//		ReviewBean r = new ReviewBean("test");
-//		r.setPermId(new PermIdBean("test"));
-//		r.setState(State.REVIEW);
-//		ReviewAdapter ra = new ReviewAdapter(r, cfg);
-//
-//		// add standard review
-//		model.addReview(ra);
-//		assertEquals(1, model.getReviews().size());
-//
-//		// add new review as open in ide
-//		model.addSingleReview(PredefinedFilter.OpenInIde, new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
-//		assertEquals(2, model.getReviews().size());
-//
-//		// open the firsr review in ide (the review opened in ide before should disappear)
-//		// require rethink
-//		model.addSingleReview(PredefinedFilter.OpenInIde, ra, UpdateReason.OPEN_IN_IDE);
-//
-//		assertEquals(1, model.getReviews().size());
-//	}
+	public void testAddingTwoSingleReviews() throws Exception {
+		model = new CrucibleReviewListModelImplAdapter();
+
+		ServerId id = new ServerId();
+		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ReviewBean r = new ReviewBean("test");
+		r.setPermId(new PermIdBean("test"));
+		r.setState(State.REVIEW);
+		ReviewAdapter ra = new ReviewAdapter(r, cfg);
+
+		// add standard review
+		model.addReview(ra);
+		assertEquals(1, model.getReviews().size());
+
+		// add new review as open in ide
+		model.openReview(new ReviewAdapter(null, null), UpdateReason.OPEN_IN_IDE);
+		assertEquals(1, model.getReviews().size());
+
+		// open the firsr review in ide (the review opened in ide before should disappear)
+		// require rethink
+		model.openReview(ra, UpdateReason.OPEN_IN_IDE);
+
+		assertEquals(1, model.getReviews().size());
+	}
 
 	public void testAddingReviewWithDifferentPermId() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
@@ -530,7 +531,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Map<CrucibleFilter, ReviewNotificationBean> updatedReviews = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
 		public CrucibleReviewListModelImplAdapter() {
-			super(null);
+			super(null, new ProjectConfigurationBean());
 			final ReviewNotificationBean bean = new ReviewNotificationBean();
 			updatedReviews.put(PredefinedFilter.Open, bean);
 			bean.setReviews(new ArrayList<ReviewAdapter>());
