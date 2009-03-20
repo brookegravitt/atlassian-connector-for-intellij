@@ -1,11 +1,13 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
+import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.editor.ChangeViewer;
+import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleDiffGutterRenderer;
 import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
@@ -49,7 +51,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		if (p != null) {
 			ReviewAdapter r = node.getReview();
 			CrucibleFileInfo f = node.getFile();
-			CrucibleHelper.openFileWithDiffs(p, true, r, f, 1, 1,
+			CrucibleHelper.openFileWithDiffs(p, true, r, f, 1, 0,
 					goToLast ? new OpenEditorAndMoveToLastDiff(node, p, r, f, true)
 							: new OpenEditorAndMoveToFirstDiff(node, p, r, f, true));
 		}
@@ -74,7 +76,14 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
 				if (psi != null && isSameFile(psi, virtualFile)) {
-					return editor;
+					final String fileUrl = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_URL);
+					final String fileRevision = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_REVISION);
+					if (fileUrl != null && fileRevision != null) {
+						VersionedVirtualFile file = node.getFile().getFileDescriptor();
+						if (fileUrl.equals(file.getAbsoluteUrl()) && fileRevision.equals(file.getRevision())) {
+							return editor;
+						}
+					}
 				}
 			}
 		}
