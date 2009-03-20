@@ -7,8 +7,11 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vfs.VirtualFile;
+
+import javax.swing.*;
 
 /**
  * User: mwent
@@ -16,6 +19,8 @@ import com.intellij.openapi.vfs.VirtualFile;
  * Time: 7:06:58 PM
  */
 public class ViewFisheyeChangesetItemAction extends AbstractFisheyeAction {
+	private final Icon icon = IconLoader.getIcon("/icons/fisheye-16.png");
+
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		FishEyeServer cfg = getFishEyeServerCfg(event);
@@ -28,11 +33,6 @@ public class ViewFisheyeChangesetItemAction extends AbstractFisheyeAction {
 			if (change.getAfterRevision() != null) {
 				virtualFile = change.getAfterRevision().getFile().getVirtualFile();
 				url = FisheyeUrlHelper.getFisheyeUrl(project, virtualFile, change.getAfterRevision().getRevisionNumber());
-			} else {
-				if (change.getBeforeRevision() != null) {
-					virtualFile = change.getBeforeRevision().getFile().getVirtualFile();
-					url = FisheyeUrlHelper.getFisheyeUrl(project, virtualFile, change.getBeforeRevision().getRevisionNumber());
-				}
 			}
 			if (url != null) {
 				BrowserUtil.launchBrowser(url);
@@ -43,13 +43,18 @@ public class ViewFisheyeChangesetItemAction extends AbstractFisheyeAction {
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
+		if (event.getPresentation().getIcon() == null) {
+			event.getPresentation().setIcon(icon);
+		}
+		boolean enabled = false;
 		final Change[] changes = DataKeys.CHANGES.getData(event.getDataContext());
 		if (changes != null && changes.length == 1) {
-			if (event.getPresentation().isVisible()) {
-				event.getPresentation().setEnabled(ChangeListUtil.getRevision(event) != null);
+			if (changes[0].getAfterRevision() != null) {
+				if (event.getPresentation().isVisible()) {
+					enabled = true;
+				}
 			}
-		} else {
-			event.getPresentation().setEnabled(false);
 		}
+		event.getPresentation().setEnabled(enabled);
 	}
 }

@@ -635,12 +635,6 @@
             <add-to-group anchor="last" group-id="IncomingChangesToolbar"/>
         </group>
 
-        <group id="ThePlugin.Fisheye.IncomingDetail" popup="false" text="Fisheye">
-            <reference id="ThePlugin.Crucible.ViewFisheyeChangesetItem"/>
-            <add-to-group anchor="last" group-id="RepositoryChangesBrowserToolbar"/>
-        </group>
-
-
         <group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
 
         <group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
