@@ -127,8 +127,9 @@ public final class IdeaVersionFacade {
 			} else {
 				changeList = new ArrayList<Change>(changes);
 			}
-
-			if (isIdea8) {
+			String ver = ApplicationInfo.getInstance().getBuildNumber();
+			int v = Integer.parseInt(ver);
+			if (v > 9164) {
 				Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
 				Constructor[] constructors = browserClass.getConstructors();
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
