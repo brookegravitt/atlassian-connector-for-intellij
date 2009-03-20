@@ -76,6 +76,12 @@ public final class CommentHighlighter {
 
 	private static final Key<DocumentListener> LISTENER_KEY = Key.create("CRUCIBLE_COMMENT_DOCUMENT_LISTENER");
 
+	private static final String FILE_URL = "REVIEW_FILE_URL";
+	public static final Key<String> REVIEW_FILE_URL = Key.create(FILE_URL);
+
+	private static final String FILE_REVISION = "REVIEW_FILE_REVISION";
+	public static final Key<String> REVIEW_FILE_REVISION = Key.create(FILE_REVISION);
+
 
 	private CommentHighlighter() {
 	}
@@ -269,6 +275,8 @@ public final class CommentHighlighter {
 	private static void removeHighlighters(@NotNull final MarkupModel markupModel) {
 		for (RangeHighlighter rh : markupModel.getAllHighlighters()) {
 			if (rh.getUserData(COMMENT_DATA_KEY) != null) {
+				rh.putUserData(COMMENT_DATA_KEY, null);
+				rh.putUserData(VERSIONED_COMMENT_DATA_KEY, null);
 				markupModel.removeHighlighter(rh);
 			}
 		}
