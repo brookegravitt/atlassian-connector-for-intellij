@@ -343,13 +343,46 @@ public final class CrucibleHelper {
 		}
 
 		private VirtualFile getVirtualFile(VersionedVirtualFile fileInfo) throws ReviewFileContentException {
+
+			// check if requested file is already opened
+			// doesn't have to be in cache :)
+			VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
+			if (virtualFile != null) {
+				return virtualFile;
+			}
+
 			ReviewFileContent content = review.getFileContent(fileInfo);
 			if (content instanceof IdeaReviewFileContent) {
-				return ((IdeaReviewFileContent) content).getVirtualFile();
+				virtualFile = ((IdeaReviewFileContent) content).getVirtualFile();
+				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
+				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
+
+				return virtualFile;
 			} else {
 				return null;
 			}
 		}
+
+		private VirtualFile getEditorForRevisionFile(VersionedVirtualFile fileInfo) {
+			Editor[] editors = EditorFactory.getInstance().getAllEditors();
+			for (Editor editor : editors) {
+				final Document document = editor.getDocument();
+				if (document != null) {
+					final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+					if (virtualFile != null) {
+						final String fileUrl = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_URL);
+						final String fileRevision = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_REVISION);
+						if (fileUrl != null && fileRevision != null) {
+							if (fileInfo.getAbsoluteUrl().equals(fileUrl) && fileInfo.getRevision().equals(fileRevision)) {
+								return virtualFile;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
+
 
 		@Override
 		public void onSuccess() {
