@@ -34,6 +34,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -262,6 +263,19 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							// try to open received file in all open projects
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
+								final Project finalProject = project;
+								SwingUtilities.invokeLater(new Runnable() {
+
+									public void run() {
+										WindowManager.getInstance().getFrame(finalProject).setVisible(true);
+//										WindowManager.getInstance().getFrame(finalProject).toFront();
+//										WindowManager.getInstance().getFrame(finalProject).repaint();
+										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(true);
+										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(false);
+									}
+								});
+
+
 								if (psiFile != null) {
 									psiFile.navigate(true);
 									found = true;
