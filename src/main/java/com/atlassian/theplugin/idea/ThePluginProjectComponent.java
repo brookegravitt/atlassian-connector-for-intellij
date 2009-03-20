@@ -18,7 +18,15 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -28,6 +36,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -43,6 +52,8 @@ import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.components.ProjectComponent;
@@ -274,6 +285,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					crucibleReviewListModel);
 			EditorFactory.getInstance()
 					.addEditorFactoryListener(crucibleEditorFactoryListener);
+
+			// added here not in plugin.xml - only for Idea 8
+			ActionManager aManager = ActionManager.getInstance();
+			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
+			if (changesToolBar != null) {
+				changesToolBar.add(new ViewFisheyeChangesetItemAction(), aManager);
+			}
 
 			registerCrucibleNotifier();
 		}
