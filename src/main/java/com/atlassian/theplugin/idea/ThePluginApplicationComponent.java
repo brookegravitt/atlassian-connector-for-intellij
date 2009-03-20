@@ -263,18 +263,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							// try to open received file in all open projects
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
-								final Project finalProject = project;
-								SwingUtilities.invokeLater(new Runnable() {
-
-									public void run() {
-										WindowManager.getInstance().getFrame(finalProject).setVisible(true);										
+								WindowManager.getInstance().getFrame(project).setVisible(true);
 //										WindowManager.getInstance().getFrame(finalProject).repaint();
-										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(true);
-										WindowManager.getInstance().getFrame(finalProject).setAlwaysOnTop(false);
-                                        WindowManager.getInstance().getFrame(finalProject).toFront();
-									}
-								});
-
+								WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
+								WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
+								WindowManager.getInstance().getFrame(project).toFront();
 
 								if (psiFile != null) {
 									psiFile.navigate(true);
