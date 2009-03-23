@@ -24,11 +24,7 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.CodeNavigationUtil;
-import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
-import com.atlassian.theplugin.util.PicoUtil;
-import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.*;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
@@ -52,12 +48,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class ThePluginApplicationComponent implements ApplicationComponent, Configurable {
 
@@ -285,7 +277,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 									WindowManager.getInstance().getFrame(project).toFront();
 
 								}
-
 
 								if (psiFile != null) {
 									psiFile.navigate(true);

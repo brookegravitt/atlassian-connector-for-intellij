@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import org.jetbrains.annotations.NotNull;
@@ -18,11 +18,11 @@ import java.util.*;
  * User: pmaruszak
  */
 public class FilterTree extends JTree {
-	private CrucibleProjectConfiguration crucibleConfiguration;
+	private CrucibleWorkspaceConfiguration crucibleConfiguration;
 	private Collection<CrucibleFilterSelectionListener> listeners = new ArrayList<CrucibleFilterSelectionListener>();
 	private FilterTree.LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
 
-	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleProjectConfiguration crucibleConfiguration) {
+	public FilterTree(CrucibleFilterTreeModel filterTreeModel, CrucibleWorkspaceConfiguration crucibleConfiguration) {
 		super(filterTreeModel);
 
 		this.crucibleConfiguration = crucibleConfiguration;

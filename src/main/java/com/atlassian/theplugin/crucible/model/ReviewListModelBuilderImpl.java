@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
-	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
+	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final Project project;
 	private final MissingPasswordHandler missingPasswordHandler;
