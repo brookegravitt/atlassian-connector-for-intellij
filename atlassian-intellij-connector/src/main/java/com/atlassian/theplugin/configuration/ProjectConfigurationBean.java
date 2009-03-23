@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
 	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
-	private CrucibleProjectConfiguration crucibleConfiguration = new CrucibleProjectConfiguration();
+	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
 
 	public ProjectConfigurationBean() {
 
@@ -40,11 +40,11 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 		this.bambooConfiguration = bambooConfiguration;
 	}
 
-	public CrucibleProjectConfiguration getCrucibleConfiguration() {
+	public CrucibleWorkspaceConfiguration getCrucibleConfiguration() {
 		return crucibleConfiguration;
 	}
 
-	public void setCrucibleConfiguration(CrucibleProjectConfiguration crucibleConfiguration) {
+	public void setCrucibleConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
 		this.crucibleConfiguration = crucibleConfiguration;
 	}
 
