@@ -8,7 +8,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleN
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
@@ -26,7 +26,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	//	private ReviewAdapter selectedReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
-	private CrucibleProjectConfiguration crucibleProjectConfiguration;
+	private CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 
 	private AtomicLong epoch = new AtomicLong(0);
 

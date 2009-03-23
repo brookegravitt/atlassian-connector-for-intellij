@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
@@ -67,7 +67,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
-	private final CrucibleProjectConfiguration crucibleProjectConfiguration;
+	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
 	private CrucibleFilterListModel filterListModel;
 	private CrucibleFilterTreeModel filterTreeModel;
@@ -363,7 +363,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return reviews;
 	}
 
-	public CrucibleProjectConfiguration getCrucibleConfiguration() {
+	public CrucibleWorkspaceConfiguration getCrucibleConfiguration() {
 		return crucibleProjectConfiguration;
 	}
 
