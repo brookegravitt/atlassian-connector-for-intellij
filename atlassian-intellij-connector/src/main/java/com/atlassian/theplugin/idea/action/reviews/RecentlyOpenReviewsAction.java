@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
@@ -56,7 +56,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 			return;
 		}
 
-		final CrucibleProjectConfiguration crucibleConf = projectConf.getCrucibleConfiguration();
+		final CrucibleWorkspaceConfiguration crucibleConf = projectConf.getCrucibleConfiguration();
 		if (crucibleConf == null) {
 			return;
 		}

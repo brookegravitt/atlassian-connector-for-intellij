@@ -14,7 +14,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.configuration.CrucibleProjectConfiguration;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
@@ -39,14 +39,14 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CustomFilterBean filter;
 	private ScrollableTwoColumnPanel panel;
 	private final ProjectCfgManager projectCfgManager;
-	private final CrucibleProjectConfiguration projectCrucibleCfg;
+	private final CrucibleWorkspaceConfiguration projectCrucibleCfg;
 	private final Project project;
 	private final CrucibleServerFacade crucibleFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
 	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final ProjectCfgManager projectCfgManager,
-			final CrucibleProjectConfiguration crucibleCfg, final FilterTree tree,
+			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
 			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(new BorderLayout());
 		this.projectCfgManager = projectCfgManager;
