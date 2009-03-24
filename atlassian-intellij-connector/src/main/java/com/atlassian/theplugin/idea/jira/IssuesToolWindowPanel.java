@@ -161,16 +161,13 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		});
 
 		currentIssueListModel.addFrozenModelListener(new FrozenModelListener() {
-
 			public void modelFrozen(FrozenModel model, boolean frozen) {
 				if (getStatusBarPane() != null) {
 					getStatusBarPane().setEnabled(!frozen);
 				}
-
 				if (getSearchField() != null) {
 					getSearchField().setEnabled(!frozen);
 				}
-
 			}
 		});
 
@@ -238,7 +235,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void serverNameChanged(final JIRAFilterListModel filterListModel) {
 			}
 		});
-
 	}
 
 	protected void showManualFilterPanel(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
@@ -871,8 +867,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			// search enabled servers
 			if (!found) {
-				for (JiraServerCfg server :
-						projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+				for (JiraServerCfg server
+						: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 					if (server.getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
 						try {
 							JIRAIssue issue = jiraServerFacade.getIssue(server, recentlyOpenIssue.getIssueKey());
