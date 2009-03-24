@@ -33,6 +33,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
+	static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -78,7 +79,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 			recentlyOpenIssues.remove(r);
 			recentlyOpenIssues.addFirst(r);
 
-			while (recentlyOpenIssues.size() > 10) {
+			while (recentlyOpenIssues.size() > RECENLTY_OPEN_ISSUES_LIMIT) {
 				recentlyOpenIssues.removeLast();
 			}
 		}
