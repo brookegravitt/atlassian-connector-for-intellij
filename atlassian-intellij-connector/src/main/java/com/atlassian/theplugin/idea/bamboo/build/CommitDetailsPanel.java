@@ -249,7 +249,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		fileTree.expandAll();
 	}
 
-	private static final class NavigateToCodeHandler extends MouseAdapter {
+	private final class NavigateToCodeHandler extends MouseAdapter {
 
 		private String place;
 
@@ -331,7 +331,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 			if (menu == null) {
 				return;
 			}
-			aManager.createActionPopupMenu(place, menu).getComponent().show(e.getComponent(), e.getX(), e.getY());
+			aManager.createActionPopupMenu(place, menu).getComponent().show(fileTree, e.getX(), e.getY());
 		}
 	}
 }

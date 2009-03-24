@@ -344,6 +344,9 @@
 		<action id="ThePlugin.Bamboo.Changes.OpenRepoVersion"
 				class="com.atlassian.theplugin.idea.action.bamboo.changes.OpenRepoVersionAction"
 				text="Open Repository Version" icon="/objectBrowser/showEditorHighlighting.png"/>
+		<action id="ThePlugin.Bamboo.Changes.JumpToFisheye"
+				class="com.atlassian.theplugin.idea.action.bamboo.changes.JumpToFisheyeAction"
+				text="Open File in Fisheye" icon="/icons/fisheye-16.png"/>
 
 
 		<action id="ThePlugin.Tree.File.Filter"
@@ -469,8 +472,7 @@
 		<action id="OpenFisheyeLinkInEditor"
 				class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInEditorAction"
 				text="Open FishEye URL"
-				description="Open FishEye URL in Editor"
-				icon="/icons/fisheye-16.png">
+				description="Open FishEye URL in Editor">
 		</action>
 
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
@@ -528,6 +530,7 @@
 			<reference id="ThePlugin.Bamboo.Changes.DiffWithLocal"/>
 			<reference id="ThePlugin.Bamboo.Changes.DiffWithPrevious"/>
 			<reference id="ThePlugin.Bamboo.Changes.OpenRepoVersion"/>
+			<reference id="ThePlugin.Bamboo.Changes.JumpToFisheye"/>
 			<separator/>
 		</group>
 
