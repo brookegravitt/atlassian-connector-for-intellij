@@ -16,12 +16,15 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.util.xmlb.annotations.Transient;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 @State(name = "atlassian-ide-plugin-workspace-issues",
@@ -29,6 +32,7 @@ import java.util.Map;
 public class JiraWorkspaceConfiguration implements PersistentStateComponent<JiraWorkspaceConfiguration> {
 	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
+	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -36,6 +40,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
 		this.filters = jiraConfiguration.filters;
 		this.view = jiraConfiguration.view;
+		this.recentlyOpenIssues = jiraConfiguration.recentlyOpenIssues;
 	}
 
 	public Map<String, JiraFilterConfigurationBean> getFilters() {
@@ -52,6 +57,31 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
 	public void setView(final JiraViewConfigurationBean view) {
 		this.view = view;
+	}
+
+	public LinkedList<IssueRecentlyOpenBean> getRecentlyOpenIssues() {
+		return recentlyOpenIssues;
+	}
+
+	public void setRecentlyOpenIssues(final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues) {
+		this.recentlyOpenIssues = recentlyOpenIssues;
+	}
+
+	public void addRecentlyOpenIssue(final JIRAIssue issue, ServerCfg jiraServer) {
+		if (issue != null) {
+			String issueKey = issue.getKey();
+			String serverId = jiraServer.getServerId().toString();
+
+			// add element and make sure it is not duplicated and it is insterted at the top
+			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);
+
+			recentlyOpenIssues.remove(r);
+			recentlyOpenIssues.addFirst(r);
+
+			while (recentlyOpenIssues.size() > 10) {
+				recentlyOpenIssues.removeLast();
+			}
+		}
 	}
 
 	@Transient
