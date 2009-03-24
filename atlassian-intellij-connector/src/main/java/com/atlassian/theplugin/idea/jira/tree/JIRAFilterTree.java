@@ -24,16 +24,16 @@ import java.util.HashSet;
 public class JIRAFilterTree extends JTree {
 
 	private static final JIRAFilterTreeRenderer MY_RENDERER = new JIRAFilterTreeRenderer();
-	private JiraWorkspaceConfiguration jiraProjectConfiguration;
+	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 	//	private JIRAFilterListModel listModel;
 	private boolean isAlreadyInitialized = false;
 	private Collection<JiraFilterTreeSelectionListener> selectionListeners = new HashSet<JiraFilterTreeSelectionListener>();
 	private LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
 
-	public JIRAFilterTree(@NotNull final JiraWorkspaceConfiguration jiraProjectConfiguration,
+	public JIRAFilterTree(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final JIRAFilterListModel listModel) {
 
-		this.jiraProjectConfiguration = jiraProjectConfiguration;
+		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 //		this.listModel = listModel;
 
 		listModel.addModelListener(new LocalFilterListModelListener());
@@ -59,7 +59,8 @@ public class JIRAFilterTree extends JTree {
 		if (selectionPath != null) {
 			if (selectionPath.getLastPathComponent() instanceof JIRAServerTreeNode) {
 				return ((JIRAServerTreeNode) (selectionPath.getLastPathComponent())).getJiraServer();
-			} else {
+			} else if (selectionPath.getLastPathComponent() instanceof JIRASavedFilterTreeNode
+					|| selectionPath.getLastPathComponent() instanceof JIRAManualFilterTreeNode) {
 				return ((JIRAServerTreeNode) (
 						(DefaultMutableTreeNode) selectionPath.getLastPathComponent()).getParent()).getJiraServer();
 			}
@@ -83,6 +84,17 @@ public class JIRAFilterTree extends JTree {
 		return null;
 	}
 
+
+	private boolean isRecentlyOpenSelected() {
+		TreePath selectionPath = getSelectionModel().getSelectionPath();
+		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JiraRecentlyOpenTreeNode) {
+			return true;
+		}
+
+		return false;
+	}
+
+
 	private void reCreateTree(final JIRAFilterListModel aListModel, final boolean fireSelectionChange) {
 		// off selection listener
 		getSelectionModel().removeTreeSelectionListener(localSelectionListener);
@@ -96,16 +108,17 @@ public class JIRAFilterTree extends JTree {
 		if (aListModel != null) {
 			createServerNodes(aListModel, (DefaultMutableTreeNode) treeModel.getRoot());
 		}
+		rootNode.add(new JiraRecentlyOpenTreeNode());
 		treeModel.nodeStructureChanged((DefaultMutableTreeNode) treeModel.getRoot());
 
 		if (fireSelectionChange) {
 			// on selection listener
 			getSelectionModel().addTreeSelectionListener(localSelectionListener);
-			setSelectionFilter(jiraProjectConfiguration.getView().getViewFilterId(),
-					jiraProjectConfiguration.getView().getViewServerId());
+			setSelectionFilter(jiraWorkspaceConfiguration.getView().getViewFilterId(),
+					jiraWorkspaceConfiguration.getView().getViewServerId());
 		} else {
-			setSelectionFilter(jiraProjectConfiguration.getView().getViewFilterId(),
-					jiraProjectConfiguration.getView().getViewServerId());
+			setSelectionFilter(jiraWorkspaceConfiguration.getView().getViewFilterId(),
+					jiraWorkspaceConfiguration.getView().getViewServerId());
 			getSelectionModel().addTreeSelectionListener(localSelectionListener);
 		}
 
@@ -202,7 +215,7 @@ public class JIRAFilterTree extends JTree {
 //		Collections.sort(servers);
 
 		for (JiraServerCfg server : aListModel.getJIRAServers()) {
-			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(aListModel, server);
+			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(server);
 			createFilterNodes(server, serverNode, aListModel);
 			rootNode.add(serverNode);
 		}
@@ -239,6 +252,7 @@ public class JIRAFilterTree extends JTree {
 			JIRAManualFilter manualFilter = getSelectedManualFilter();
 			JIRASavedFilter savedFilter = getSelectedSavedFilter();
 			JiraServerCfg serverCfg = getSelectedServer();
+			boolean recentlyOpenSelected = isRecentlyOpenSelected();
 
 
 			if (manualFilter != null) {
@@ -267,6 +281,9 @@ public class JIRAFilterTree extends JTree {
 
 				getSelectionModel().addTreeSelectionListener(localSelectionListener);
 
+			} else if (recentlyOpenSelected) {
+				prevSavedFilter = null;
+				prevManualFilter = null;
 			} else {
 				// all nodes unselected
 				prevSavedFilter = null;

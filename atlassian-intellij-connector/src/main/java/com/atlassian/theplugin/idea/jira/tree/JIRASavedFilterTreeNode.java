@@ -31,12 +31,6 @@ public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 		return new JLabel("Incorrect renderer");
 	}
 
-	public void onSelect() {
-//		onSelect (listModel != null && savedFilter != null) {
-//			listModel.selectSavedFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), savedFilter);
-//		}
-	}
-
 	public JiraServerCfg getJiraServerCfg() {
 		return jiraServerCfg;
 	}
