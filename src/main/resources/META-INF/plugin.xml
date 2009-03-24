@@ -572,7 +572,7 @@
 				icon="/icons/add_crucible.png"/>
 		<action id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"
 				class="com.atlassian.theplugin.idea.action.crucible.PostCommitReviewActionNoRevisionSelected"
-				text="Create Review"
+				text="Create Post-commit Review"
 				icon="/icons/add_crucible.png"/>
 		<action id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"
 				class="com.atlassian.theplugin.idea.action.crucible.PreCommitReviewActionNoChangeSelected"
@@ -597,11 +597,18 @@
 				class="com.atlassian.theplugin.idea.action.crucible.AddPatchToReviewAction" text="Add Patch to Review"
 				icon="/icons/fisheye-16-plus.png"/>
 
-		<!--<group id="ThePlugin.CreateCrucibleReview" popup="true" icon="/general/ideOptions.png" text="Create Review"-->
-		<!--description="Create Crucible Review">-->
-		<!--<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>-->
-		<!--<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>-->
-		<!--</group>-->
+		<action id="ThePlugin.Crucible.CreateCrucibleReview"
+				class="com.atlassian.theplugin.idea.action.crucible.CreateCrucibleReviewAction"
+				text="Create Review"
+				icon="/icons/add_crucible.png"/>
+
+		<group id="ThePlugin.Crucible.CreateCrucibleReviewGroup" 
+			   popup="true"
+			   text="Create Review"
+				description="Create Crucible Review">
+			<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>
+			<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
+		</group>
 
 		<group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
@@ -1015,9 +1022,9 @@
 			<reference id="ThePlugin.Reviews.GetComments"/>
 			<reference id="ThePlugin.Reviews.ViewReview"/>
 			<separator/>
-			<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>
-			<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
-			<!--<reference id="ThePlugin.CreateCrucibleReview"/>-->
+			<!--<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>-->
+			<!--<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>-->
+			<reference id="ThePlugin.Crucible.CreateCrucibleReview"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<separator/>
 			<reference id="ThePlugin.HelpCrucible"/>
