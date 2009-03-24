@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.util.ui.UIUtil;
 
@@ -16,11 +15,9 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 	private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
 	private JiraServerCfg jiraServer;
-	private JIRAFilterListModel listModel;
 
-	public JIRAServerTreeNode(final JIRAFilterListModel listModel, JiraServerCfg jiraServer) {
+	public JIRAServerTreeNode(JiraServerCfg jiraServer) {
 		super(jiraServer.getName(), null, null);
-		this.listModel = listModel;
 		this.jiraServer = jiraServer;
 
 	}
@@ -47,16 +44,5 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 
 	public JiraServerCfg getJiraServer() {
 		return jiraServer;
-	}
-
-	public void onSelect() {
-//		if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.SAVED) {
-//
-//			listModel.selectSavedFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedSavedFilter());
-//		} else if (listModel.getFilterTypeSlection() == JIRAFilterListModel.TypeOfFilterSelected.MANUAL) {
-//			listModel.selectManualFilter(listModel.getJiraSelectedServer(), listModel.getJiraSelectedManualFilter());
-//
-//		}
-
 	}
 }

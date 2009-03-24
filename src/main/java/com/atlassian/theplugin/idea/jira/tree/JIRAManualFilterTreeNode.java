@@ -30,13 +30,6 @@ public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 		return new JLabel("Incorrect renderer");
 	}
 
-	public void onSelect() {
-//		if (listModel != null) {
-//			listModel.selectManualFilter(((JIRAServerTreeNode) getParent()).getJiraServer(), manualFilter);
-//
-//		}
-	}
-
 	public JiraServerCfg getJiraServerCfg() {
 		return jiraServerCfg;
 	}
