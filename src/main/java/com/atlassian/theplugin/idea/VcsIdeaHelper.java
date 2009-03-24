@@ -145,7 +145,7 @@ public final class VcsIdeaHelper {
 		if (vcvf != null) {
 			return vcvf;
 		}
-		System.out.println("NOT FOUND IN CACHE");
+//		System.out.println("NOT FOUND IN CACHE");
 		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 		if (vcs == null) {
 			return null;

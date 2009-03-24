@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.action.bamboo.changes;
 
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -51,10 +52,10 @@ public abstract class AbstractBambooFileActions extends AnAction {
     private TreePath getSelectedTreePath(AnActionEvent e) {
         DataContext dataContext = e.getDataContext();
         Component component = DataKeys.CONTEXT_COMPONENT.getData(dataContext);
-        if (!(component instanceof JTree)) {
+        if (!(component instanceof AtlassianTreeWithToolbar)) {
             return null;
         }
-        final JTree theTree = (JTree) component;
+		final JTree theTree = ((AtlassianTreeWithToolbar) component).getTreeComponent();
         return theTree.getSelectionPath();
     }
 
