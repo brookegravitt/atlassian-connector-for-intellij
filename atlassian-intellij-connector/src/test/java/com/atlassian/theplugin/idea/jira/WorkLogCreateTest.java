@@ -31,35 +31,35 @@ public class WorkLogCreateTest extends TestCase {
     }
 
     public void testGetFormatedDurationStringForNow() {
-		String res = WorkLogCreate.getFormatedDurationString(new Date());
+		String res = WorkLogCreateAndMaybeDeactivate.getFormatedDurationString(new Date());
 	    assertTrue(res.length() == 0);
     }
 
 	public void testGetFormatedDurationStringForHourAgo() {
 		Date d = new Date();
 		d.setTime(d.getTime() - 1000 * 3600);
-		String res = WorkLogCreate.getFormatedDurationString(d);
+		String res = WorkLogCreateAndMaybeDeactivate.getFormatedDurationString(d);
 		assertEquals(res, "1h");
 	}
 
 	public void testGetFormatedDurationStringForHalfAnHourAgo() {
 		Date d = new Date();
 		d.setTime(d.getTime() - 1000 * 1800);
-		String res = WorkLogCreate.getFormatedDurationString(d);
+		String res = WorkLogCreateAndMaybeDeactivate.getFormatedDurationString(d);
 		assertEquals(res, "30m");
 	}
 
 	public void testGetFormatedDurationStringForTwoAndAHalfAnHourAgo() {
 		Date d = new Date();
 		d.setTime(d.getTime() - 1000 * (1800 + 2 * 3600));
-		String res = WorkLogCreate.getFormatedDurationString(d);
+		String res = WorkLogCreateAndMaybeDeactivate.getFormatedDurationString(d);
 		assertEquals(res, "2h 30m");
 	}
 
 	public void testGetFormatedDurationStringForTooLongTimeAgo() {
 		Date d = new Date();
 		d.setTime(d.getTime() - 1000 * 3600 * 24);
-		String res = WorkLogCreate.getFormatedDurationString(d);
+		String res = WorkLogCreateAndMaybeDeactivate.getFormatedDurationString(d);
 		assertTrue(res.length() == 0);
 	}
 
