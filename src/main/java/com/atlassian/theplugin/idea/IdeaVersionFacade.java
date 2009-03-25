@@ -117,7 +117,7 @@ public final class IdeaVersionFacade {
 		return psiFiles;
 	}
 
-	public MultipleChangeListBrowser getChangesListBorwser(Project project, ChangeListManager changeListManager,
+	public MultipleChangeListBrowser getChangesListBrowser(Project project, ChangeListManager changeListManager,
 			final Collection<Change> changes) {
 		try {
 

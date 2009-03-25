@@ -45,7 +45,7 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 		super(project, crucibleServerFacade, "", cfgManager);
 
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
-		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBorwser(project, changeListManager, changes);
+		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBrowser(project, changeListManager, changes);
 
 		setCustomComponent(changesBrowser);
 
