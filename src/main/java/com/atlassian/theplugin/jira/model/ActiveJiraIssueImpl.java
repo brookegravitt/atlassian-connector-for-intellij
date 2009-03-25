@@ -34,8 +34,8 @@ public class ActiveJiraIssueImpl implements ActiveJiraIssue {
 	private final Project project;
 	private final JiraServerCfg server;
 	private final JIRAIssueBean issue;
-	JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-	boolean active = false;
+	private JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+	private boolean active = false;
 
 	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssueBean issue,
 			DateTime lastStartTime, long secondsSpent) {
