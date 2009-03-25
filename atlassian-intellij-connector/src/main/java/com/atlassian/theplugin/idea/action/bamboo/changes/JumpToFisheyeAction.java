@@ -21,7 +21,7 @@ public class JumpToFisheyeAction extends AbstractBambooFileActions {
 		if (bfn != null && currentProject != null) {
 			PsiFile file = guessPsiFile(currentProject, bfn);
 			if (file != null) {
-				String url = FisheyeUrlHelper.getFisheyeUrl(file, currentProject);
+				String url = FisheyeUrlHelper.getFisheyeUrlForRevision(file, bfn.getRevision(), currentProject);
 				if (url != null) {
 					BrowserUtil.launchBrowser(url);
 				}
@@ -39,7 +39,7 @@ public class JumpToFisheyeAction extends AbstractBambooFileActions {
 			if (bfn != null && currentProject != null) {
 				PsiFile file = guessPsiFile(currentProject, bfn);
 				if (file != null) {
-					String url = FisheyeUrlHelper.getFisheyeUrl(file, currentProject);
+					String url = FisheyeUrlHelper.getFisheyeUrlForRevision(file, bfn.getRevision(), currentProject);
 					if (url != null) {
 						enabled = true;
 					}
