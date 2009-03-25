@@ -18,4 +18,11 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 	protected Comparator<JIRAIssue> getComparator() {
 		return PRIORITY_ORDER;
 	}
+
+	public void setActiveJiraIssue(final ActiveJiraIssue issue) {
+	}
+
+	public ActiveJiraIssue getActiveJiraIssue() {
+		return null;
+	}
 }

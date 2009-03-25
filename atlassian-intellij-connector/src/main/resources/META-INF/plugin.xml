@@ -475,6 +475,23 @@
 				description="Open FishEye URL in Editor">
 		</action>
 
+		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.ActiveJiraIssueLabel"
+				text="PL-1234"
+				icon="/icons/jira-blue-16.png">
+		</action>
+		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.ActivateJiraIssue"
+				text="Activate Issue"
+				icon="/actions/include.png">
+
+		</action>
+		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.DeactivateJiraIssue"
+				text="Deactivate Issue"
+				icon="/actions/exclude.png">
+
+		</action>
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink"/>
 			<reference id="CopyFisheyeLink"/>
@@ -485,6 +502,9 @@
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
 			<reference id="OpenFisheyeLinkInEditor"/>
+			<separator/>
+			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
@@ -602,10 +622,10 @@
 				text="Create Review"
 				icon="/icons/add_crucible.png"/>
 
-		<group id="ThePlugin.Crucible.CreateCrucibleReviewGroup" 
+		<group id="ThePlugin.Crucible.CreateCrucibleReviewGroup"
 			   popup="true"
 			   text="Create Review"
-				description="Create Crucible Review">
+			   description="Create Crucible Review">
 			<reference id="ThePlugin.Crucible.PreCommitReviewNoChangeSelected"/>
 			<reference id="ThePlugin.Crucible.PostCommitReviewNoRevisionSelected"/>
 		</group>
@@ -808,6 +828,8 @@
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
 			<separator/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+			<separator/>
 			<reference id="ThePlugin.HelpJIRA"/>
 			<separator/>
 		</group>
@@ -832,6 +854,9 @@
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
+			<separator/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
 			<separator/>

@@ -796,7 +796,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						ApplicationManager.getApplication().invokeAndWait(new Runnable() {
 							public void run() {
 								String message = "Error creating review: " + server.getUrl();
-								if (e.getMessage().contains("Specified change set id does not exist")) {
+								if (e != null && e.getMessage() != null &&
+										e.getMessage().contains("Specified change set id does not exist")) {
 									message += "\nSpecified change set could not be found on server. Check selected repository";
 								}
 								DialogWithDetails.showExceptionDialog(project, message, e);
