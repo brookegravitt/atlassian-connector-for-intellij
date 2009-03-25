@@ -84,8 +84,7 @@ public class JIRAFilterTree extends JTree {
 		return null;
 	}
 
-
-	private boolean isRecentlyOpenSelected() {
+	public boolean isRecentlyOpenSelected() {
 		TreePath selectionPath = getSelectionModel().getSelectionPath();
 		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JiraRecentlyOpenTreeNode) {
 			return true;
@@ -93,7 +92,6 @@ public class JIRAFilterTree extends JTree {
 
 		return false;
 	}
-
 
 	private void reCreateTree(final JIRAFilterListModel aListModel, final boolean fireSelectionChange) {
 		// off selection listener
@@ -148,12 +146,12 @@ public class JIRAFilterTree extends JTree {
 		}
 	}
 
+
 	public void collapseAll() {
 		for (int i = 0; i < this.getRowCount(); i++) {
 			this.collapseRow(i);
 		}
 	}
-
 
 	public boolean setSelectionSavedFilter(final long savedFilterId, final String serverId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
@@ -207,6 +205,7 @@ public class JIRAFilterTree extends JTree {
 		return false;
 	}
 
+
 	private boolean setSelectionRecentlyOpen() {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
 		if (rootNode == null) {
@@ -222,7 +221,6 @@ public class JIRAFilterTree extends JTree {
 		}
 		return false;
 	}
-
 
 	private void createServerNodes(JIRAFilterListModel aListModel, DefaultMutableTreeNode rootNode) {
 
