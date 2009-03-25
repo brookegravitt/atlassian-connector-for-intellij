@@ -10,9 +10,20 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ExpandIssuesAction extends JIRAAbstractAction {
 	public void actionPerformed(final AnActionEvent e) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
-		panel.expandAllRightTreeNodes();
+		if (panel != null) {
+			panel.expandAllRightTreeNodes();
+		}
 	}
 
 	public void onUpdate(AnActionEvent event) {
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		boolean enabled = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
+		event.getPresentation().setEnabled(enabled);
+	}
+
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
+		if (ModelFreezeUpdater.getState(event)) {
+			onUpdate(event);
+		}
 	}
 }
