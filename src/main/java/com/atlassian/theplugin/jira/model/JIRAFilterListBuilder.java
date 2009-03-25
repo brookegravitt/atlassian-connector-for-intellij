@@ -120,7 +120,7 @@ public class JIRAFilterListBuilder {
 
 			List<JiraFilterEntryBean> filter =
 					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
-							.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+							.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER);
 
 			List<JIRAQueryFragment> query;
 			if (filter != null) {

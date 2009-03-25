@@ -7,6 +7,7 @@ import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.intellij.openapi.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +100,39 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			if (model != null) {
 				model.fireModelChanged();
 				model.fireIssuesLoaded(l != null ? l.size() : 0);
+				model.setModelFrozen(false);
+			}
+		}
+	}
+
+	public synchronized void addIssuesToModel(List<Pair<JIRAIssue, JiraServerCfg>> recentlyOpenIssues, int size,
+			boolean reload) throws JIRAException {
+		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
+		try {
+			model.setModelFrozen(true);
+			if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
+				if (model != null) {
+					model.clear();
+					model.fireModelChanged();
+				}
+				return;
+			}
+
+			if (reload) {
+				startFrom = 0;
+				model.clear();
+			}
+
+			for (Pair<JIRAIssue, JiraServerCfg> issue : recentlyOpenIssues) {
+				l.add(issue.getFirst());
+			}
+			model.addIssues(l);
+
+			startFrom += l.size();
+		} finally {
+			if (model != null) {
+				model.fireModelChanged();
+				model.fireIssuesLoaded(l.size());
 				model.setModelFrozen(false);
 			}
 		}
