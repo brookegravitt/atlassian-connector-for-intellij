@@ -66,7 +66,7 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 	 */
 	public Collection<JIRAIssue> getIssuesNoSubtasks() {
 		List<JIRAIssue> result = new ArrayList<JIRAIssue>();
-		
+
 		Collection<JIRAIssue> issues = parent.getIssues();
 		for (JIRAIssue i : issues) {
 			if (!i.isSubTask()) {
@@ -93,5 +93,12 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 
 	public JIRAIssue findIssue(String key) {
 		return parent.findIssue(key);
+	}
+
+	public void setActiveJiraIssue(final ActiveJiraIssue issue) {
+	}
+
+	public ActiveJiraIssue getActiveJiraIssue() {
+		return null;
 	}
 }

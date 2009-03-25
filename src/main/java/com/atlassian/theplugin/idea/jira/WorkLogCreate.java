@@ -430,7 +430,7 @@ public class WorkLogCreate extends DialogWrapper {
 	}
 
 	public WorkLogCreate(final JiraServerCfg jiraServer, final JIRAServerFacade jiraFacade, final JIRAIssue issue,
-			Project project) {
+			Project project, final String timeSpent) {
 		super(false);
 
 		this.facade = jiraFacade;
@@ -443,6 +443,7 @@ public class WorkLogCreate extends DialogWrapper {
 		timeSpentListener = new WdhmInputListener(timeSpentField);
 		remainingEstimateListener = new WdhmInputListener(remainingEstimateField);
 
+		timeSpentField.setText(timeSpent);
 		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
 
 		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(jiraServer, issue);
