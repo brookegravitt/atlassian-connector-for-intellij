@@ -71,15 +71,23 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 
 	private JIRAServerFacade jiraServerFacade;
+
 	private JIRAIssueListModel currentIssueListModel;
+
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
 	private JIRAServerModel jiraServerModel;
+
 	private ConfigurationListener configListener = new LocalConfigurationListener();
+
 	private boolean groupSubtasksUnderParent;
+
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
+
 	private JTree issueTree;
+
 	private JIRAIssueListModel baseIssueListModel;
+
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
@@ -291,6 +299,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		});
 		timer.setRepeats(false);
 		timer.start();
+	}
+
+	public JIRAIssueListModel getBaseIssueListModel() {
+		return baseIssueListModel;
 	}
 
 
@@ -580,9 +592,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void logWorkForIssue(final JIRAIssue issue) {
-		final JiraServerCfg jiraServer = getSelectedServer();
-		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, getProject());
+	public void logWorkForIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog) {
+		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, getProject(), initialLog);
 		workLogCreate.show();
 		if (workLogCreate.isOK()) {
 
