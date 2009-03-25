@@ -569,9 +569,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void logWorkForIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog) {
-		final WorkLogCreate workLogCreate = new WorkLogCreate(jiraServer, jiraServerFacade, issue, getProject(), initialLog);
-		workLogCreate.show();
-		if (workLogCreate.isOK()) {
+		final WorkLogCreateAndMaybeDeactivate workLogCreateAndMaybeDeactivate =
+				new WorkLogCreateAndMaybeDeactivate(jiraServer, jiraServerFacade, issue, getProject(), initialLog, false);
+		workLogCreateAndMaybeDeactivate.show();
+		if (workLogCreateAndMaybeDeactivate.isOK()) {
 
 			Task.Backgroundable logWork = new Task.Backgroundable(getProject(), "Logging Work", false) {
 				@Override
@@ -579,20 +580,19 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
 					try {
 						Calendar cal = Calendar.getInstance();
-						cal.setTime(workLogCreate.getStartDate());
-
+						cal.setTime(workLogCreateAndMaybeDeactivate.getStartDate());
 
 						if (jiraServer != null) {
-							String newRemainingEstimate = workLogCreate.getUpdateRemainingManually()
-									? workLogCreate.getRemainingEstimateString() : null;
-							jiraServerFacade.logWork(jiraServer, issue, workLogCreate.getTimeSpentString(),
-									cal, workLogCreate.getComment(),
-									!workLogCreate.getLeaveRemainingUnchanged(), newRemainingEstimate);
+							String newRemainingEstimate = workLogCreateAndMaybeDeactivate.getUpdateRemainingManually()
+									? workLogCreateAndMaybeDeactivate.getRemainingEstimateString() : null;
+							jiraServerFacade.logWork(jiraServer, issue, workLogCreateAndMaybeDeactivate.getTimeSpentString(),
+									cal, workLogCreateAndMaybeDeactivate.getComment(),
+									!workLogCreateAndMaybeDeactivate.getLeaveRemainingUnchanged(), newRemainingEstimate);
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
-							if (workLogCreate.isStopProgressSelected()) {
+							if (workLogCreateAndMaybeDeactivate.isStopProgressSelected()) {
 								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
 								jiraServerFacade.progressWorkflowAction(jiraServer, issue,
-										workLogCreate.getStopProgressAction());
+										workLogCreateAndMaybeDeactivate.getStopProgressAction());
 								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
 								jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
 							} else {
