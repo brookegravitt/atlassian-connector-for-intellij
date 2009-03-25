@@ -22,7 +22,7 @@ import java.util.*;
 
 public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHolder implements JIRAIssueListModel, FrozenModel {
 
-	private Map<String, JIRAIssue> issues;
+	private Set<JIRAIssue> issues;
 
 	private JIRAIssue selectedIssue;
 	private boolean modelFrozen = false;
@@ -30,7 +30,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	private JIRAIssueListModelImpl() {
 		super(null);
-		issues = new HashMap<String, JIRAIssue>();
+		issues = new HashSet<JIRAIssue>();
 	}
 
 	public static JIRAIssueListModel createInstance() {
@@ -42,7 +42,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public void addIssue(JIRAIssue issue) {
-		issues.put(issue.getKey(), issue);
+		issues.add(issue);
 	}
 
 	public void addIssues(Collection<JIRAIssue> list) {
@@ -53,7 +53,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	public void setIssue(JIRAIssue issue) {
 		if (issue != null) {
-			issues.put(issue.getKey(), issue);
+			issues.add(issue);
 			if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
 				selectedIssue = issue;
 			}
@@ -69,13 +69,13 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public Collection<JIRAIssue> getIssues() {
-		return issues.values();
+		return issues;
 	}
 
 	public Collection<JIRAIssue> getIssuesNoSubtasks() {
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 
-		for (JIRAIssue i : issues.values()) {
+		for (JIRAIssue i : issues) {
 			if (!i.isSubTask()) {
 				list.add(i);
 			}
@@ -115,7 +115,12 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public JIRAIssue findIssue(String key) {
-		return issues.get(key);
+		for (JIRAIssue issue : issues) {
+			if (issue.getKey().equals(key)) {
+				return issue;
+			}
+		}
+		return null;
 	}
 
 	public void fireModelChanged() {
@@ -148,7 +153,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	}
 
 	public void setSeletedIssue(JIRAIssue issue) {
-		if (issue != null && issues.containsValue(issue)) {
+		if (issue != null && issues.contains(issue)) {
 			selectedIssue = issue;
 		} else {
 			selectedIssue = null;

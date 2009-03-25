@@ -208,7 +208,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void selectedManualFilterNode(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
 				showManualFilterPanel(manualFilter, jiraServerCfg);
 				jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
-				jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL);
+				jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER);
 
 				refreshIssues(manualFilter, jiraServerCfg, true);
 			}
@@ -222,6 +222,16 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				jiraWorkspaceConfiguration.getView().setViewFilterId("");
 
 				jiraIssueListModelBuilder.reset();
+			}
+
+			public void selectedRecentlyOpenNode() {
+				hideManualFilterPanel();
+
+				// refresh issues view
+				refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
+
+				jiraWorkspaceConfiguration.getView().setViewServerId("");
+				jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);
 			}
 		});
 
@@ -244,6 +254,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 	}
+
 
 	protected void showManualFilterPanel(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
 		getSplitLeftPane().setOrientation(true);
@@ -417,8 +428,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	//		jiraIssueListModelBuilder.setSavedFilter(savedFilter);
 
 	public void openIssue(final JIRAIssue issue, final JiraServerCfg server) {
-		jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue, server);
-		IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
+		if (server != null) {
+			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue, server);
+			IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
+		}
 	}
 
 	public void openIssue(@NotNull JIRAIssue issue) {
@@ -745,6 +758,26 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProgressManager.getInstance().run(task);
 	}
 
+
+	private void refreshIssues(final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues, final boolean reload) {
+		if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
+			return;
+		}
+		Task.Backgroundable task = new Task.Backgroundable(getProject(), "Retrieving issues", false) {
+			@Override
+			public void run(@NotNull final ProgressIndicator indicator) {
+				try {
+					getStatusBarPane().setMessage("Loading issues...", false);
+					jiraIssueListModelBuilder.addIssuesToModel(getIssues(recentlyOpenIssues),
+							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+				} catch (JIRAException e) {
+					setStatusMessage(e.getMessage(), true);
+				}
+			}
+		};
+		ProgressManager.getInstance().run(task);
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 		refreshModels();
@@ -868,6 +901,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			if (baseIssueListModel != null && baseIssueListModel.getIssues().size() > 0) {
 				for (JIRAIssue localIssue : baseIssueListModel.getIssues()) {
 					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
+							&& getSelectedServer() != null
 							&& getSelectedServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
 						issues.add(new Pair<JIRAIssue, JiraServerCfg>(localIssue, getSelectedServer()));
 						found = true;
