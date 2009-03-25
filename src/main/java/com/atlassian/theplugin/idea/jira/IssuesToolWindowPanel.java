@@ -196,44 +196,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		init(0);
 
-		jiraFilterTree.addSelectionListener(new JiraFilterTreeSelectionListener() {
-
-			public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg) {
-				hideManualFilterPanel();
-				refreshIssues(savedFilter, jiraServerCfg, true);
-				jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
-				jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
-			}
-
-			public void selectedManualFilterNode(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
-				showManualFilterPanel(manualFilter, jiraServerCfg);
-				jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
-				jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER);
-
-				refreshIssues(manualFilter, jiraServerCfg, true);
-			}
-
-			public void selectionCleared() {
-				hideManualFilterPanel();
-
-				enableGetMoreIssues(false);
-
-				jiraWorkspaceConfiguration.getView().setViewServerId("");
-				jiraWorkspaceConfiguration.getView().setViewFilterId("");
-
-				jiraIssueListModelBuilder.reset();
-			}
-
-			public void selectedRecentlyOpenNode() {
-				hideManualFilterPanel();
-
-				// refresh issues view
-				refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
-
-				jiraWorkspaceConfiguration.getView().setViewServerId("");
-				jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);
-			}
-		});
+		jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
 
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
@@ -1113,4 +1076,42 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		return PLACE_PREFIX + this.getProject().getName();
 	}
 
+	private class LocalJiraFilterTreeSelectionListener implements JiraFilterTreeSelectionListener {
+
+		public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg) {
+			hideManualFilterPanel();
+			refreshIssues(savedFilter, jiraServerCfg, true);
+			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
+			jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
+		}
+
+		public void selectedManualFilterNode(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
+			showManualFilterPanel(manualFilter, jiraServerCfg);
+			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
+			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER);
+
+			refreshIssues(manualFilter, jiraServerCfg, true);
+		}
+
+		public void selectionCleared() {
+			hideManualFilterPanel();
+
+			enableGetMoreIssues(false);
+
+			jiraWorkspaceConfiguration.getView().setViewServerId("");
+			jiraWorkspaceConfiguration.getView().setViewFilterId("");
+
+			jiraIssueListModelBuilder.reset();
+		}
+
+		public void selectedRecentlyOpenNode() {
+			hideManualFilterPanel();
+
+			// refresh issues view
+			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
+
+			jiraWorkspaceConfiguration.getView().setViewServerId("");
+			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);
+		}
+	}
 }
