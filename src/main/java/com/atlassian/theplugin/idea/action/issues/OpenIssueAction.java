@@ -20,13 +20,17 @@ public class OpenIssueAction extends JIRAAbstractAction {
 
 	@Override
 	public void onUpdate(AnActionEvent event) {
-
 	}
 
 	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
-		if (enabled) {
-			event.getPresentation().setEnabled(event.getData(Constants.ISSUE_KEY) != null);
+		JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
+		if (enabled && issue != null) {
+			event.getPresentation().setEnabled(true);
+		} else if (ModelFreezeUpdater.getState(event) && issue != null) {
+			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+			boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
+			event.getPresentation().setEnabled(e);
 		}
 	}
 }
