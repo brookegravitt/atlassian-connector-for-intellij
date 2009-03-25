@@ -48,7 +48,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 					System.out.println("current project is null");
 					LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot determine current project");
 				}
-				
+
 			}
 		});
 		return cwl;
@@ -66,11 +66,14 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
 		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
-			jComboBox.setEnabled(enabled);
-			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 			updateSelection(panel, jComboBox);
+			if (ModelFreezeUpdater.getState(event)) {
+				boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
+				jComboBox.setEnabled(e);
+			}
 		}
 	}
 
@@ -79,4 +82,4 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 			combo.setSelectedItem(panel.getGroupBy());
 		}
 	}
- }
+}
