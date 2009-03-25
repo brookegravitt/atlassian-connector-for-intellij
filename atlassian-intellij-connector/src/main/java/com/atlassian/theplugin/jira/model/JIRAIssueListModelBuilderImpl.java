@@ -1,15 +1,17 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
-import com.intellij.openapi.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
@@ -105,8 +107,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addIssuesToModel(List<Pair<JIRAIssue, JiraServerCfg>> recentlyOpenIssues, int size,
-			boolean reload) throws JIRAException {
+	public synchronized void addIssuesToModel(LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,
+			final Collection<JiraServerCfg> allEnabledJiraServers, int size, boolean reload) throws JIRAException {
 		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
 		try {
 			model.setModelFrozen(true);
@@ -123,9 +125,16 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.clear();
 			}
 
-			for (Pair<JIRAIssue, JiraServerCfg> issue : recentlyOpenIssues) {
-				l.add(issue.getFirst());
+			for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
+				for (JiraServerCfg server : allEnabledJiraServers) {
+					if (server.getServerId().toString().equals(recentIssue.getServerId())) {
+						JIRAIssue issue = facade.getIssue(server, recentIssue.getIssueKey());
+						l.add(issue);
+						break;
+					}
+				}
 			}
+
 			model.addIssues(l);
 
 			startFrom += l.size();
