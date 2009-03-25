@@ -114,7 +114,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
 					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
-							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER_LABEL,
+							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER,
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
 					listModel.fireManualFilterChanged(manualFilter, jiraServer);
 				}

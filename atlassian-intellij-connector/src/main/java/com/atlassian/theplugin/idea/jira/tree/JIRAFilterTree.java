@@ -126,8 +126,10 @@ public class JIRAFilterTree extends JTree {
 
 	private void setSelectionFilter(final String viewFilterId, final String viewServerId) {
 		boolean filterFound = false;
-		if (JiraFilterConfigurationBean.MANUAL_FILTER_LABEL.equals(viewFilterId)) {
+		if (JiraFilterConfigurationBean.MANUAL_FILTER.equals(viewFilterId)) {
 			filterFound = setSelectionManualFilter(viewServerId);
+		} else if (JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER.equals(viewFilterId)) {
+			filterFound = setSelectionRecentlyOpen();
 		} else if (viewFilterId != null && viewFilterId.length() > 0) {
 			try {
 				filterFound = setSelectionSavedFilter(Long.parseLong(viewFilterId), viewServerId);
@@ -205,6 +207,23 @@ public class JIRAFilterTree extends JTree {
 		return false;
 	}
 
+	private boolean setSelectionRecentlyOpen() {
+		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
+		if (rootNode == null) {
+			return false;
+		}
+		for (int i = 0; i < rootNode.getChildCount(); i++) {
+			if (rootNode.getChildAt(i) instanceof JiraRecentlyOpenTreeNode) {
+				JiraRecentlyOpenTreeNode node = (JiraRecentlyOpenTreeNode) rootNode.getChildAt(i);
+				setSelectionPath(new TreePath(node.getPath()));
+				scrollPathToVisible(new TreePath(node.getPath()));
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	private void createServerNodes(JIRAFilterListModel aListModel, DefaultMutableTreeNode rootNode) {
 
 		if (aListModel == null) {
@@ -246,6 +265,7 @@ public class JIRAFilterTree extends JTree {
 		private JIRAManualFilter prevManualFilter = null;
 		private JIRASavedFilter prevSavedFilter = null;
 		private JiraServerCfg prevServer = null;
+		private boolean prevRecentlyOpen = false;
 
 		public final void valueChanged(final TreeSelectionEvent event) {
 
@@ -258,11 +278,13 @@ public class JIRAFilterTree extends JTree {
 			if (manualFilter != null) {
 				prevManualFilter = manualFilter;
 				prevSavedFilter = null;
+				prevRecentlyOpen = false;
 				prevServer = serverCfg;
 				fireSelectedManualFilterNode(manualFilter, serverCfg);
 			} else if (savedFilter != null) {
 				prevSavedFilter = savedFilter;
 				prevManualFilter = null;
+				prevRecentlyOpen = false;
 				prevServer = serverCfg;
 				fireSelectedSavedFilterNode(savedFilter, serverCfg);
 			} else if (serverCfg != null) {
@@ -277,6 +299,8 @@ public class JIRAFilterTree extends JTree {
 					setSelectionManualFilter(prevServer.getServerId().toString());
 				} else if (prevSavedFilter != null) {
 					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId().toString());
+				} else if (prevRecentlyOpen) {
+					setSelectionRecentlyOpen();
 				}
 
 				getSelectionModel().addTreeSelectionListener(localSelectionListener);
@@ -284,6 +308,8 @@ public class JIRAFilterTree extends JTree {
 			} else if (recentlyOpenSelected) {
 				prevSavedFilter = null;
 				prevManualFilter = null;
+				prevRecentlyOpen = true;
+				fireSelectedRecentlyOpenNode();
 			} else {
 				// all nodes unselected
 				prevSavedFilter = null;
@@ -310,7 +336,14 @@ public class JIRAFilterTree extends JTree {
 			}
 		}
 
+		private void fireSelectedRecentlyOpenNode() {
+			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
+				listener.selectedRecentlyOpenNode();
+			}
+		}
+
 	}
+
 
 	private class LocalFilterListModelListener implements JIRAFilterListModelListener {
 		public void modelChanged(JIRAFilterListModel aListModel) {

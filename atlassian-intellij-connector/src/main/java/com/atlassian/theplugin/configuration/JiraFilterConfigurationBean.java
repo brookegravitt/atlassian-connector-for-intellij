@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 public class JiraFilterConfigurationBean {
-	public static final String MANUAL_FILTER_LABEL = "manualFilter";
+	public static final String MANUAL_FILTER = "manualFilter";
+	public static final String RECENTLY_OPEN_FILTER = "recenltyOpen";
 
 	private Map<String, List<JiraFilterEntryBean>> manualFilter = new HashMap<String, List<JiraFilterEntryBean>>();
 
