@@ -680,6 +680,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			refreshIssues(savedFilter, serverCfg, reload);
 		} else if (manualFilter != null) {
 			refreshIssues(manualFilter, serverCfg, reload);
+		} else if (jiraFilterTree.isRecentlyOpenSelected()) {
+			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
 		}
 	}
 
@@ -731,7 +733,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					getStatusBarPane().setMessage("Loading issues...", false);
-					jiraIssueListModelBuilder.addIssuesToModel(getIssues(recentlyOpenIssues),
+					jiraIssueListModelBuilder.addIssuesToModel(recentlyOpenIssues,
+							projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project)),
 							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
@@ -848,6 +851,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public JiraServerCfg getSelectedServer() {
 		return jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
+	}
+
+	public boolean isRecentlyOpenFilterSelected() {
+		return jiraFilterTree != null ? jiraFilterTree.isRecentlyOpenSelected() : false;
 	}
 
 	public List<Pair<JIRAIssue, JiraServerCfg>> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {

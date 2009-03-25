@@ -18,7 +18,13 @@ public class RefreshIssuesAction extends JIRAAbstractAction {
 
 	public void onUpdate(AnActionEvent event) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		boolean enabled = panel != null && panel.getSelectedServer() != null;
+		boolean enabled = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 		event.getPresentation().setEnabled(enabled);
+	}
+
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
+		if (ModelFreezeUpdater.getState(event)) {
+			onUpdate(event);
+		}
 	}
 }
