@@ -29,4 +29,6 @@ public interface JiraFilterTreeSelectionListener {
 	void selectedManualFilterNode(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg);
 
 	void selectionCleared();
+
+	void selectedRecentlyOpenNode();
 }
