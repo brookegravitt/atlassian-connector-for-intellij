@@ -64,7 +64,7 @@ public final class FisheyeUrlHelper {
 					"Error");
 			return null;
 		}
-		return buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+		return buildRemoteUrl(rev.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
 	}
 
@@ -84,7 +84,6 @@ public final class FisheyeUrlHelper {
 			return null;
 		}
 
-
 		String fisheyeProjPath = projectCfg.getFishEyeProjectPath();
 		if (fisheyeProjPath == null) {
 			fisheyeProjPath = "";
@@ -101,13 +100,12 @@ public final class FisheyeUrlHelper {
 					"Error");
 			return null;
 		}
-		return buildRemoteUrl(revision, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+		return buildRemoteUrl(revision.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, 1);
 	}
 
 	@Nullable
-	public static String getFisheyeUrl(final PsiElement psiElement,
-			final Project project) {
+	public static String getFisheyeUrl(final PsiElement psiElement, final Project project) {
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
@@ -143,11 +141,47 @@ public final class FisheyeUrlHelper {
 		if (rev == null) {
 			return null;
 		}
-		return buildRemoteUrl(rev, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+		return buildRemoteUrl(rev.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
 				relativePath, lineNumber);
 	}
 
-	private static String buildRemoteUrl(final VcsRevisionNumber rev, @NotNull final FishEyeServer fishEyeServer,
+	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
+
+		final ProjectId projectId = CfgUtil.getProjectId(project);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		if (projectCfg == null) {
+			return null;
+		}
+
+		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		if (fishEyeServer == null) {
+			return null;
+		}
+
+		String fisheyeProjPath = projectCfg.getFishEyeProjectPath();
+		if (fisheyeProjPath == null) {
+			fisheyeProjPath = "";
+		}
+
+		int offset = psiElement.getTextRange().getStartOffset();
+		VirtualFile virtualFile = psiElement.getContainingFile().getVirtualFile();
+
+		if (virtualFile == null) {
+			return null;
+		}
+		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
+		Document document = fileDocumentManager.getDocument(virtualFile);
+
+		final int lineNumber = document.getLineNumber(offset) + 1;
+		final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
+		if (relativePath == null) {
+			return null;
+		}
+		return buildRemoteUrl(revision, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
+				relativePath, lineNumber);
+	}
+
+	private static String buildRemoteUrl(final String rev, @NotNull final FishEyeServer fishEyeServer,
 			@NotNull final String repo, @NotNull final String projectPath, @NotNull final String fileRelativePath,
 			final int lineNumber) {
 
@@ -163,7 +197,7 @@ public final class FisheyeUrlHelper {
 		sb.append(fileRelativePath);
 		if (rev != null) {
 			sb.append("?r=");
-			sb.append(rev.asString());
+			sb.append(rev);
 			sb.append("#l");
 			sb.append(lineNumber);
 		}
