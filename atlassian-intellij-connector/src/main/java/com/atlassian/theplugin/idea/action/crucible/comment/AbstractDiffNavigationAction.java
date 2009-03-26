@@ -27,7 +27,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.ex.Range;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -75,7 +74,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
-				if (psi != null && isSameFile(psi, virtualFile)) {
+				if (psi != null) {
 					final String fileUrl = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_URL);
 					final String fileRevision = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_REVISION);
 					if (fileUrl != null && fileRevision != null) {
@@ -90,19 +89,6 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		return null;
 	}
 
-	private boolean isSameFile(PsiFile psi, VirtualFile virtualFile) {
-		VirtualFile vf = psi.getVirtualFile();
-		if (vf == null && virtualFile != null) {
-			return false;
-		}
-		if (vf == null) {
-			return true;
-		}
-		String lhs = vf.getUrl();
-		String rhs = virtualFile.getUrl();
-		return lhs.equals(rhs);
-	}
-
 	protected CrucibleFileNode getNodeForFile(AnActionEvent e, VirtualFile file) {
 		if (file == null) {
 			return null;
@@ -113,7 +99,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 			if (node != null) {
 				String nodeUrl = node.getFile().getFileDescriptor().getAbsoluteUrl();
 				PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(IdeaHelper.getCurrentProject(e), nodeUrl);
-				if (psi != null && isSameFile(psi, file)) {
+				if (psi != null) {
 					return node;
 				}
 			} else {
@@ -122,7 +108,10 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		} while (true);
 	}
 
-	protected Range getFirstRange(@NotNull Editor editor) {
+	protected Range getFirstRange(Editor editor) {
+		if (editor == null) {
+			return null;
+		}
 		Collection<RangeHighlighter> ranges = editor.getDocument().getUserData(ChangeViewer.CRUCIBLE_RANGES);
 		if (ranges != null) {
 			for (RangeHighlighter rangeHighlighter : ranges) {
@@ -136,7 +125,10 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 		return null;
 	}
 
-	protected Range getNextRange(@NotNull Editor editor) {
+	protected Range getNextRange(Editor editor) {
+		if (editor == null) {
+			return null;
+		}
 		Collection<RangeHighlighter> ranges = editor.getDocument().getUserData(ChangeViewer.CRUCIBLE_RANGES);
 		if (ranges != null) {
 			for (RangeHighlighter rangeHighlighter : ranges) {
@@ -165,6 +157,9 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 	}
 
 	protected Range getPrevRange(Editor editor) {
+		if (editor == null) {
+			return null;
+		}
 		Collection<RangeHighlighter> ranges = editor.getDocument().getUserData(ChangeViewer.CRUCIBLE_RANGES);
 		if (ranges != null) {
 			for (RangeHighlighter rangeHighlighter : ranges) {
@@ -232,7 +227,7 @@ public abstract class AbstractDiffNavigationAction extends AbstractCommentAction
 			PsiFile psi = CodeNavigationUtil.guessCorrespondingPsiFile(IdeaHelper.getCurrentProject(e),
 					((CrucibleFileNode) node).getFile().getFileDescriptor().getAbsoluteUrl());
 
-			if (psi != null && isSameFile(psi, vf)) {
+			if (psi != null) {
 				fileNode = getNodeForFile(e, vf);
 			}
 		}
