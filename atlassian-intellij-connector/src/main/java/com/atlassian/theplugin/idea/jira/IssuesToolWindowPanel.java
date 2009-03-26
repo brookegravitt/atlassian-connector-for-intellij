@@ -147,7 +147,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 							return;
 						}
-
 						Map<String, String> projectMap = new HashMap<String, String>();
 						try {
 							for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
