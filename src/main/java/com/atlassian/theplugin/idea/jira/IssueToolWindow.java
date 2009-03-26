@@ -264,7 +264,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 		public void refresh() {
 			for (JIRAIssue i : params.model.getIssues()) {
-				if (i.getKey().equals(params.issue.getKey())) {
+				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(params.server.getUrl())) {
 					params.issue = i;
 					break;
 				}
@@ -918,7 +918,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				gbc.weightx = 0.0;
 				gbc.weighty = 0.0;
 				gbc.fill = GridBagConstraints.NONE;
-				
+
 				label = new JLabel();
 				setBackground(Color.WHITE);
 				label.setBorder(BorderFactory.createEmptyBorder());
