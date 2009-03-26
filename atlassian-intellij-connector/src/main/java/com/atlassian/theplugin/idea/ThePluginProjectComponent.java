@@ -162,12 +162,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			}
 		});
 
-		jiraWorkspaceConfiguration.init();
 	}
 
 	public void initComponent() {
 		LoggerImpl.getInstance().info("Init ThePlugin project component.");
 		this.fileEditorListener = new FileEditorListenerImpl(project);
+		//jiraWorkspaceConfiguration.init();
 	}
 
 	public void disposeComponent() {
