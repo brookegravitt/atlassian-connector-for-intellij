@@ -543,8 +543,14 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void addCommentToIssue() {
+	public void addCommentToSelectedIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+		if (issue != null) {
+			addCommentToIssue(issue);
+		}
+	}
+
+	public void addCommentToIssue(final JIRAIssue issue) {
 		final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issue.getKey());
 		issueCommentDialog.show();
 		if (issueCommentDialog.isOK()) {
@@ -581,40 +587,85 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog,
-			boolean deactivateIssue) {
-		final WorkLogCreateAndMaybeDeactivateDialog workLogCreateAndMaybeDeactivate =
-				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, jiraServerFacade, issue, getProject(), initialLog,
-						deactivateIssue);
-		workLogCreateAndMaybeDeactivate.show();
-		if (workLogCreateAndMaybeDeactivate.isOK()) {
+			final boolean deactivateIssue) {
+		final WorkLogCreateAndMaybeDeactivateDialog dialog =
+				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog, deactivateIssue);
+		dialog.show();
+		if (dialog.isOK()) {
 
 			Task.Backgroundable logWork = new Task.Backgroundable(getProject(), "Logging Work", false) {
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
-					setStatusMessage("Logging work for issue " + issue.getKey() + "...");
 					try {
+
+						setStatusMessage("Logging work for issue " + issue.getKey() + "...");
 						Calendar cal = Calendar.getInstance();
-						cal.setTime(workLogCreateAndMaybeDeactivate.getStartDate());
+						cal.setTime(dialog.getStartDate());
 
 						if (jiraServer != null) {
-							String newRemainingEstimate = workLogCreateAndMaybeDeactivate.getUpdateRemainingManually()
-									? workLogCreateAndMaybeDeactivate.getRemainingEstimateString() : null;
-							jiraServerFacade.logWork(jiraServer, issue, workLogCreateAndMaybeDeactivate.getTimeSpentString(),
-									cal, workLogCreateAndMaybeDeactivate.getComment(),
-									!workLogCreateAndMaybeDeactivate.getLeaveRemainingUnchanged(), newRemainingEstimate);
-							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
-							if (workLogCreateAndMaybeDeactivate.isStopProgressSelected()) {
-								setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
-								jiraServerFacade.progressWorkflowAction(jiraServer, issue,
-										workLogCreateAndMaybeDeactivate.getStopProgressAction());
-								setStatusMessage("Work logged and progress stopped for issue " + issue.getKey());
-								jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
-							} else {
+							if (dialog.isLogTime()) {
+								String newRemainingEstimate = dialog.getUpdateRemainingManually()
+										? dialog.getRemainingEstimateString() : null;
+								jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
+										cal, dialog.getComment(),
+										!dialog.getLeaveRemainingUnchanged(), newRemainingEstimate);
+								JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
 								setStatusMessage("Logged work for issue " + issue.getKey());
+							}
+							if (deactivateIssue) {
+								JIRAAction stopProgressAction = null;
+								setStatusMessage("Checking workflow actions for issue " + issue.getKey() + "...");
+
+								List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
+								for (JIRAAction a : actions) {
+									if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+										List<JIRAActionField> fields =
+												jiraServerFacade.getFieldsForAction(jiraServer, issue, a);
+										if (fields.isEmpty()) {
+											stopProgressAction = a;
+										}
+										break;
+									}
+								}
+								if (stopProgressAction != null) {
+									setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+									jiraServerFacade.progressWorkflowAction(jiraServer, issue, stopProgressAction);
+								}
+
+								if (dialog.isCommitChanges()) {
+									final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+									final LocalChangeList list = dialog.getCurrentChangeList();
+									list.setComment(dialog.getComment());
+
+									SwingUtilities.invokeLater(new Runnable() {
+										public void run() {
+											setStatusMessage("Committing changes...");
+											changeListManager.commitChanges(list, dialog.getSelectedChanges());
+											setStatusMessage("Deactivated issue " + issue.getKey());
+										}
+									});
+
+									if (dialog.isDeactivateCurrentChangeList()) {
+										List<LocalChangeList> chLists = changeListManager.getChangeLists();
+										for (LocalChangeList chl : chLists) {
+											if ("Default".equals(chl.getName())) {
+												changeListManager.setDefaultChangeList(chl);
+												break;
+											}
+										}
+									}
+								}
+
+								setStatusMessage("Deactivated issue " + issue.getKey());
+								jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
 							}
 						}
 					} catch (JIRAException e) {
-						setStatusMessage("Work not logged: " + e.getMessage(), true);
+						if (deactivateIssue) {
+							setStatusMessage("Issue not deactivated: " + e.getMessage(), true);
+						} else {
+							setStatusMessage("Work not logged: " + e.getMessage(), true);
+						}
 					}
 				}
 			};
@@ -622,7 +673,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			ProgressManager.getInstance().run(logWork);
 		}
 
-		return workLogCreateAndMaybeDeactivate.isOK();
+		return dialog.isOK();
 	}
 
 

@@ -472,7 +472,8 @@
 		<action id="OpenFisheyeLinkInEditor"
 				class="com.atlassian.theplugin.idea.action.fisheye.OpenFisheyeLinkInEditorAction"
 				text="Open FishEye URL"
-				description="Open FishEye URL in Editor">
+				description="Open FishEye URL in Editor"
+				icon="/icons/fisheye-16.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
@@ -483,19 +484,24 @@
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Activate Issue"
-				icon="/actions/include.png">
+				icon="/actions/execute.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
 				text="Deactivate Issue"
-				icon="/actions/exclude.png">
+				icon="/actions/suspend.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueLogWorkAction"
 				text="Log Work"
 				icon="/general/todoDefault.png">
+		</action>
 
+		<action id="ThePlugin.ActiveTaskBar.ActiveIssueComment"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueCommentAction"
+				text="Log Work"
+				icon="/general/add.png">
 		</action>
 
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
@@ -512,6 +518,8 @@
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
+
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
