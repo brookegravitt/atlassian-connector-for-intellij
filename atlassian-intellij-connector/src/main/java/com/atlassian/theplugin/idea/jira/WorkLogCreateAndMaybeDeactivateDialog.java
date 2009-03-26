@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
@@ -28,9 +29,13 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
+import com.intellij.openapi.vcs.changes.LocalChangeList;
+//import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.util.ui.UIUtil;
 import net.sf.nachocalendar.CalendarFactory;
 import net.sf.nachocalendar.components.CalendarPanel;
 import net.sf.nachocalendar.model.DateSelectionModel;
@@ -53,7 +58,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-public class WorkLogCreate extends DialogWrapper {
+public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	private JPanel contentPane;
 	private JTextArea comment;
 	private JButton endDateChange;
@@ -66,11 +71,22 @@ public class WorkLogCreate extends DialogWrapper {
 	private JRadioButton btnAutoUpdate;
 	private JRadioButton btnUpdateManually;
 	private JTextField remainingEstimateField;
-	private JLabel remainingEstimateLabel;
 	private JTextPane anEstimateOfHowTextPane;
+	private JPanel endTimePanel;
+	private JCheckBox chkDeactivateChangeSet;
+	private JPanel changesetPanel;
+	private JPanel changesPanel;
+	private JPanel timePanel;
+	private JPanel commentPanel;
+	private JPanel optionsPanel;
+	private JCheckBox chkLogWork;
+	private JCheckBox chkCommitChanges;
+	private JPanel stopProgressPanel;
 	private boolean haveIssueStopProgressInfo;
 	private JIRAAction stopProgressAction;
 	private JIRAServerFacade facade;
+	private final Project project;
+	private final boolean deactivateActiveIssue;
 	private Date endTime = Calendar.getInstance().getTime();
 
 	private WdhmInputListener timeSpentListener;
@@ -189,15 +205,11 @@ public class WorkLogCreate extends DialogWrapper {
 		gbc.gridy = 5;
 		gbc.anchor = GridBagConstraints.WEST;
 		panel1.add(btnUpdateManually, gbc);
-		remainingEstimateLabel = new JLabel();
-		remainingEstimateLabel.setEnabled(false);
-		remainingEstimateLabel.setText("New Remaining Estimate:");
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.gridy = 6;
 		gbc.anchor = GridBagConstraints.WEST;
 		gbc.insets = new Insets(0, 24, 0, 12);
-		panel1.add(remainingEstimateLabel, gbc);
 		final JPanel panel2 = new JPanel();
 		panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		gbc = new GridBagConstraints();
@@ -385,6 +397,14 @@ public class WorkLogCreate extends DialogWrapper {
 //				BrowserUtil.launchBrowser(helpUrl);
 //			}
 //		});
+
+		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
+		LocalChangeList chList = changeListManager.getDefaultChangeList();
+		changesPanel = IdeaVersionFacade.getInstance()
+				.getChangesListBrowser(project, changeListManager, chList.getChanges());
+
+		// todo: use this to know what to commit
+//		((MultipleChangeListBrowser)changesPanel).getCurrentIncludedChanges()
 	}
 
 	private void updateOKAction() {
@@ -392,7 +412,7 @@ public class WorkLogCreate extends DialogWrapper {
 		if (remainingEstimateField.isEnabled() && enable) {
 			enable = remainingEstimateListener.isOk();
 		}
-		setOKActionEnabled(enable);
+		setOKActionEnabled(enable || (deactivateActiveIssue && !chkLogWork.isSelected()));
 	}
 
 	private static final long MILLIS_IN_HOUR = 1000 * 3600;
@@ -429,16 +449,24 @@ public class WorkLogCreate extends DialogWrapper {
 		return result;
 	}
 
-	public WorkLogCreate(final JiraServerCfg jiraServer, final JIRAServerFacade jiraFacade, final JIRAIssue issue,
-			Project project, final String timeSpent) {
+	public WorkLogCreateAndMaybeDeactivateDialog(final JiraServerCfg jiraServer, final JIRAServerFacade jiraFacade,
+										   final JIRAIssue issue, Project project, final String timeSpent,
+										   boolean deactivateActiveIssue) {
 		super(false);
 
 		this.facade = jiraFacade;
+		this.project = project;
+		this.deactivateActiveIssue = deactivateActiveIssue;
 
 		$$$setupUI$$$();
-		setTitle("Add Worklog for " + issue.getKey());
+		if (deactivateActiveIssue) {
+			setTitle("Deactivate Issue " + issue.getKey());
+			getOKAction().putValue(Action.NAME, "Deactivate Issue");
+		} else {
+			setTitle("Add Worklog for " + issue.getKey());
+			getOKAction().putValue(Action.NAME, "Add Worklog");
+		}
 		setOKActionEnabled(false);
-		getOKAction().putValue(Action.NAME, "Add Worklog");
 
 		timeSpentListener = new WdhmInputListener(timeSpentField);
 		remainingEstimateListener = new WdhmInputListener(remainingEstimateField);
@@ -480,7 +508,6 @@ public class WorkLogCreate extends DialogWrapper {
 			public void stateChanged(ChangeEvent e) {
 				boolean b = btnUpdateManually.isSelected();
 				remainingEstimateField.setEnabled(b);
-				remainingEstimateLabel.setEnabled(b);
 				updateOKAction();
 			}
 		});
@@ -505,8 +532,7 @@ public class WorkLogCreate extends DialogWrapper {
 							break;
 						}
 					}
-				}
-				catch (JIRAException e) {
+				} catch (JIRAException e) {
 					// well, let's ignore, this is an optional functionality anyway...
 				}
 				haveIssueStopProgressInfo = true;
@@ -514,7 +540,52 @@ public class WorkLogCreate extends DialogWrapper {
 			}
 		}).start();
 
+
+		chkLogWork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UIUtil.setEnabled(timePanel, chkLogWork.isSelected(), true);
+				setCommentsPanelVisible();
+				if (timePanel.isEnabled()) {
+					remainingEstimateField.setEnabled(btnUpdateManually.isSelected());
+					stopProgress.setEnabled(stopProgressAction != null);
+					stopProgressLabel.setEnabled(stopProgressAction != null);
+				}
+			}
+		});
+		chkCommitChanges.addActionListener((new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				UIUtil.setEnabled(changesetPanel, chkCommitChanges.isSelected(), true);
+				setCommentsPanelVisible();
+			}
+		}));
+
 		init();
+		setChangelistPanelVisible();
+	}
+
+	private void setChangelistPanelVisible() {
+		chkCommitChanges.setVisible(deactivateActiveIssue);
+		chkLogWork.setVisible(deactivateActiveIssue);
+		if (!deactivateActiveIssue) {
+			changesetPanel.getParent().remove(changesetPanel);
+			timePanel.setBorder(BorderFactory.createEmptyBorder());
+			int width = changesetPanel.getWidth();
+			contentPane.setSize(contentPane.getWidth() - width, contentPane.getHeight());
+			contentPane.setPreferredSize(contentPane.getSize());
+		}
+		stopProgressPanel.setVisible(!deactivateActiveIssue);
+		endTimePanel.setVisible(!deactivateActiveIssue);
+		pack();
+	}
+
+	private void setCommentsPanelVisible() {
+		boolean wasVisible = commentPanel.isVisible();
+		commentPanel.setVisible(chkLogWork.isSelected() || chkCommitChanges.isSelected());
+		if (wasVisible != commentPanel.isVisible()) {
+			int height = commentPanel.getHeight();
+			int plusminus = commentPanel.isVisible() ? 1 : -1;
+			contentPane.setSize(contentPane.getWidth(), contentPane.getHeight() + height * plusminus);
+		}
 	}
 
 	public String getTimeSpentString() {

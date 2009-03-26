@@ -569,8 +569,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void logWorkForIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog) {
-		final WorkLogCreateAndMaybeDeactivate workLogCreateAndMaybeDeactivate =
-				new WorkLogCreateAndMaybeDeactivate(jiraServer, jiraServerFacade, issue, getProject(), initialLog, false);
+		final WorkLogCreateAndMaybeDeactivateDialog workLogCreateAndMaybeDeactivate =
+				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, jiraServerFacade, issue, getProject(), initialLog, false);
 		workLogCreateAndMaybeDeactivate.show();
 		if (workLogCreateAndMaybeDeactivate.isOK()) {
 
