@@ -140,25 +140,24 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
 							setStatusMessage("Nothing selected", false, false);
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-							return;
 						} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
 							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 							issueTreeBuilder.setProjectKeysToNames(Collections.<String, String>emptyMap());
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-							return;
-						}
-						Map<String, String> projectMap = new HashMap<String, String>();
-						try {
-							for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-								projectMap.put(p.getKey(), p.getName());
+						} else {
+							Map<String, String> projectMap = new HashMap<String, String>();
+							try {
+								for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
+									projectMap.put(p.getKey(), p.getName());
+								}
+							} catch (JIRAException e) {
+								setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
 							}
-						} catch (JIRAException e) {
-							setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+							issueTreeBuilder.setProjectKeysToNames(projectMap);
+							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+							expandAllRightTreeNodes();
+							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 						}
-						issueTreeBuilder.setProjectKeysToNames(projectMap);
-						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-						expandAllRightTreeNodes();
-						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 					}
 				});
 			}
