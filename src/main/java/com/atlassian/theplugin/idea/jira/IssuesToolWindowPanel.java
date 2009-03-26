@@ -218,7 +218,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		});
 	}
 
-
 	protected void showManualFilterPanel(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
 		getSplitLeftPane().setOrientation(true);
 		manualFilterEditDetailsPanel.setFilter(manualFilter, jiraServerCfg);
@@ -578,9 +577,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void logWorkForIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog) {
+	public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog,
+			boolean deactivateIssue) {
 		final WorkLogCreateAndMaybeDeactivateDialog workLogCreateAndMaybeDeactivate =
-				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, jiraServerFacade, issue, getProject(), initialLog, false);
+				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, jiraServerFacade, issue, getProject(), initialLog,
+						deactivateIssue);
 		workLogCreateAndMaybeDeactivate.show();
 		if (workLogCreateAndMaybeDeactivate.isOK()) {
 
@@ -617,6 +618,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			ProgressManager.getInstance().run(logWork);
 		}
+
+		return workLogCreateAndMaybeDeactivate.isOK();
 	}
 
 

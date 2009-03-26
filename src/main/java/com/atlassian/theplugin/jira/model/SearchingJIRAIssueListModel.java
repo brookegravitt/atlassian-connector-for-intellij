@@ -95,10 +95,10 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 		return parent.findIssue(key);
 	}
 
-	public void setActiveJiraIssue(final ActiveJiraIssue issue) {
+	public void setActiveJiraIssue(final ActiveJiraIssueImpl issue) {
 	}
 
-	public ActiveJiraIssue getActiveJiraIssue() {
+	public ActiveJiraIssueImpl getActiveJiraIssue() {
 		return null;
 	}
 }

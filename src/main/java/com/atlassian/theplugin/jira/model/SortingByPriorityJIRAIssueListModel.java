@@ -19,10 +19,10 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 		return PRIORITY_ORDER;
 	}
 
-	public void setActiveJiraIssue(final ActiveJiraIssue issue) {
+	public void setActiveJiraIssue(final ActiveJiraIssueImpl issue) {
 	}
 
-	public ActiveJiraIssue getActiveJiraIssue() {
+	public ActiveJiraIssueImpl getActiveJiraIssue() {
 		return null;
 	}
 }

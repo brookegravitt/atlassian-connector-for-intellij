@@ -18,15 +18,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusListener;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusTooltipListener;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
+import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -34,6 +26,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction;
@@ -106,6 +99,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
+	private final JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
@@ -127,7 +121,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull BuildListModelImpl bambooModel,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
-			@NotNull final CrucibleReviewListModel crucibleReviewListModel) {
+			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
+			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 //        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
@@ -140,6 +135,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
+		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
@@ -165,6 +161,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				LoggerImpl.getInstance().info("End: Project initialized");
 			}
 		});
+
+		jiraWorkspaceConfiguration.init();
 	}
 
 	public void initComponent() {
