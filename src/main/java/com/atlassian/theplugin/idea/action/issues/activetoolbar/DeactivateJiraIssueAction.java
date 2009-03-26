@@ -55,15 +55,10 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		});
 	}
 
-	public void onUpdate
-			(
-					final AnActionEvent event) {
+	public void onUpdate(final AnActionEvent event) {
 	}
 
-	public void onUpdate
-			(
-					final AnActionEvent event,
-					final boolean enabled) {
+	public void onUpdate(final AnActionEvent event,	final boolean enabled) {
 		event.getPresentation().setEnabled(enabled);
 	}
 }
