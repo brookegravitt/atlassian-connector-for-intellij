@@ -623,13 +623,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	public void startWorkingOnIssue(@NotNull final JIRAIssue issue) {
+	public void startWorkingOnIssue(@NotNull final JIRAIssue issue, final JiraServerCfg server) {
 //		if (issue == null) {
 //			return;
 //		}
 
 		createChangeListAction(issue);
-		final JiraServerCfg server = getSelectedServer();
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 
