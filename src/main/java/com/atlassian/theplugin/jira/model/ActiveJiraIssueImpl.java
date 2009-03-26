@@ -18,6 +18,7 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.project.Project;
 import org.joda.time.DateTime;
@@ -56,12 +57,14 @@ public class ActiveJiraIssueImpl implements ActiveJiraIssue {
 
 	public void activate() {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+		final IssuesToolWindowPanel issuesToolWindowPanel = IdeaHelper.getIssuesToolWindowPanel(project);
 		if (conf != null) {
 			conf.setActiveJiraIssue(this);
 		}
-		if (!active) {
+		if (!active && issuesToolWindowPanel != null) {
 			//assign to me and start working
-			//IdeaHelper.getIssuesToolWindowPanel(project).startWorkingOnIssue(issue);
+			issuesToolWindowPanel.startWorkingOnIssue(issue, server);
+			issuesToolWindowPanel.createChangeListAction(issue);
 			active = true;
 		}
 	}
@@ -82,8 +85,6 @@ public class ActiveJiraIssueImpl implements ActiveJiraIssue {
 		Period nextPeriod = new Period(lastStartTime, now, PeriodType.seconds());
 		timeSpent = timeSpent.withSeconds(nextPeriod.getSeconds() + timeSpent.getSeconds());
 		lastStartTime = now;
-		//facade.logWork(server, issue, StringUtil.generateJiraLogTimeString(timeSpent), );
-
 	}
 
 

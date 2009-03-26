@@ -13,7 +13,7 @@ public class AssignIssueAndStartWorkAction extends JIRAAbstractAction {
 		final JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (issue != null && panel != null) {
-			panel.startWorkingOnIssue(issue);
+			panel.startWorkingOnIssue(issue, panel.getSelectedServer());
 		}
 	}
 
