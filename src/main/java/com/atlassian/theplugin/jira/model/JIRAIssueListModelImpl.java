@@ -26,7 +26,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	private JIRAIssue selectedIssue;
 	private boolean modelFrozen = false;
-	private ActiveJiraIssue activeIssue = null;
 
 	private JIRAIssueListModelImpl() {
 		super(null);
@@ -58,14 +57,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 				selectedIssue = issue;
 			}
 		}
-	}
-
-	public void setActiveJiraIssue(final ActiveJiraIssue issue) {
-		this.activeIssue = issue;
-	}
-
-	public ActiveJiraIssue getActiveJiraIssue() {
-		return activeIssue;
 	}
 
 	public Collection<JIRAIssue> getIssues() {

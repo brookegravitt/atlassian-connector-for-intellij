@@ -32,4 +32,6 @@ public interface ActiveJiraIssue {
 	Period getTimeSpent();
 
 	JiraServerCfg getServer();
+
+	void resetTimeSpent();
 }

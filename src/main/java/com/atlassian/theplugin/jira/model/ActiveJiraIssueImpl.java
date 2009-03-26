@@ -16,10 +16,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import com.intellij.openapi.project.Project;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -30,68 +29,94 @@ import org.joda.time.PeriodType;
  */
 public class ActiveJiraIssueImpl implements ActiveJiraIssue {
 	private DateTime lastStartTime;
-	private Period secondsSpent;
+	private Period timeSpent;
 	private final Project project;
-	private final JiraServerCfg server;
-	private final JIRAIssueBean issue;
-	private JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+	private JiraServerCfg server;
+	private JIRAIssue issue;
 	private boolean active = false;
 
-	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssueBean issue,
-			DateTime lastStartTime, long secondsSpent) {
+	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssue issue,
+			DateTime lastStartTime, long timeSpent) {
 		this.project = project;
 		this.server = server;
 		this.issue = issue;
 		this.lastStartTime = lastStartTime;
-		this.secondsSpent = new Period(secondsSpent, PeriodType.seconds());
+		this.timeSpent = new Period(timeSpent, PeriodType.seconds());
 	}
 
-	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssueBean issue,
+	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssue issue,
 			DateTime lastStartTime) {
 		this(project, server, issue, lastStartTime, 0);
 
 	}
 
-	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssueBean issue) {
+	public ActiveJiraIssueImpl(final Project project, final JiraServerCfg server, final JIRAIssue issue) {
 		this(project, server, issue, new DateTime(), 0);
 	}
 
 	public void activate() {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+		if (conf != null) {
+			conf.setActiveJiraIssue(this);
+		}
 		if (!active) {
 			//assign to me and start working
 			//IdeaHelper.getIssuesToolWindowPanel(project).startWorkingOnIssue(issue);
 			active = true;
-			showInTaskbar();
 		}
 	}
 
 	public void deactivate() {
 		active = false;
-		hideInTaskbar();
+		recalculateTimeSpent();
+
+	}
+
+	public void resetTimeSpent() {
+		timeSpent = new Period(0);
+	}
+
+
+	private void recalculateTimeSpent() {
 		DateTime now = new DateTime();
 		Period nextPeriod = new Period(lastStartTime, now, PeriodType.seconds());
-		secondsSpent = secondsSpent.withSeconds(nextPeriod.getSeconds());
-		//facade.logWork(server, issue, StringUtil.generateJiraLogTimeString(secondsSpent), );
+		timeSpent = timeSpent.withSeconds(nextPeriod.getSeconds() + timeSpent.getSeconds());
+		lastStartTime = now;
+		//facade.logWork(server, issue, StringUtil.generateJiraLogTimeString(timeSpent), );
+
 	}
+
 
 	public JIRAIssue getIssue() {
 		return issue;
 	}
 
 	public Period getTimeSpent() {
-		return secondsSpent;
+		recalculateTimeSpent();
+		return timeSpent;
 	}
 
 	public JiraServerCfg getServer() {
 		return server;
 	}
 
-	private void showInTaskbar() {
-
+	public void setTimeSpent(final Period timeSpent) {
+		this.timeSpent = timeSpent;
 	}
 
-	private void hideInTaskbar() {
-
+	public void setActive(final boolean active) {
+		this.active = active;
 	}
 
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setIssue(final JIRAIssue issue) {
+		this.issue = issue;
+	}
+
+	public void setServer(final JiraServerCfg server) {
+		this.server = server;
+	}
 }

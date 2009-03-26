@@ -476,7 +476,7 @@
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
-				class="com.atlassian.theplugin.idea.action.issues.ActiveJiraIssueLabel"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueLabel"
 				text="PL-1234"
 				icon="/icons/jira-blue-16.png">
 		</action>
@@ -484,14 +484,20 @@
 				class="com.atlassian.theplugin.idea.action.issues.ActivateJiraIssue"
 				text="Activate Issue"
 				icon="/actions/include.png">
-
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
-				class="com.atlassian.theplugin.idea.action.issues.DeactivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
 				text="Deactivate Issue"
 				icon="/actions/exclude.png">
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueLogWorkAction"
+				text="Log Work"
+				icon="/general/todoDefault.png">
 
 		</action>
+
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink"/>
 			<reference id="CopyFisheyeLink"/>
@@ -505,6 +511,7 @@
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
