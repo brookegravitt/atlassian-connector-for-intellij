@@ -481,7 +481,7 @@
 				icon="/icons/jira-blue-16.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
-				class="com.atlassian.theplugin.idea.action.issues.ActivateJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Activate Issue"
 				icon="/actions/include.png">
 		</action>
