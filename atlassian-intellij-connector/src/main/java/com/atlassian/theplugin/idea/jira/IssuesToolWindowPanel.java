@@ -138,11 +138,17 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					public void run() {
 						JiraIssueAdapter.clearCache();
 						JiraServerCfg srvcfg = getSelectedServer();
-						if (srvcfg == null) {
+						if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
 							setStatusMessage("Nothing selected", false, false);
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 							return;
+						} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
+							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
+							issueTreeBuilder.setProjectKeysToNames(Collections.<String, String>emptyMap());
+							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+							return;
 						}
+
 						Map<String, String> projectMap = new HashMap<String, String>();
 						try {
 							for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
@@ -866,7 +872,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public boolean isRecentlyOpenFilterSelected() {
-		return jiraFilterTree != null ? jiraFilterTree.isRecentlyOpenSelected() : false;
+		return jiraFilterTree != null && jiraFilterTree.isRecentlyOpenSelected();
 	}
 
 	public List<Pair<JIRAIssue, JiraServerCfg>> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {
