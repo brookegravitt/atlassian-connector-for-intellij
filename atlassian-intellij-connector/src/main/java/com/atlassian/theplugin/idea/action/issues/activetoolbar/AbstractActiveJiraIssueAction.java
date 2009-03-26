@@ -15,23 +15,28 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 /**
  * User: pmaruszak
  */
 public abstract class AbstractActiveJiraIssueAction extends AnAction {
-	public void actionPerformed(final AnActionEvent event) {
-
-	}
+	private JIRAIssue jiraIssue = null;
 
 	public abstract void onUpdate(AnActionEvent event);
 
@@ -47,7 +52,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		onUpdate(event, enabled);
 	}
 
-	protected ActiveJiraIssue getActiveJiraIssue(final AnActionEvent event) {
+	protected ActiveJiraIssueBean getActiveJiraIssue(final AnActionEvent event) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
@@ -61,7 +66,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
-			conf.setActiveJiraIssue(issue);
+			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
 		}
 	}
 
@@ -69,14 +74,6 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		return event.getData(Constants.ISSUE_KEY);
 	}
 
-	protected JIRAIssue getJiraIssue(final AnActionEvent event) {
-		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
-		if (activeIssue != null) {
-			return activeIssue.getIssue();
-		}
-
-		return null;
-	}
 
 	protected JiraServerCfg getSelectedJiraServer(final AnActionEvent event) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
@@ -84,5 +81,33 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 			return panel.getSelectedServer();
 		}
 		return null;
+	}
+
+	//invokeLater necessary
+	protected JIRAIssue getJIRAIssue(final AnActionEvent event) {
+		JiraServerCfg jiraServer = getJiraServer(event);
+
+		if (jiraServer != null) {
+
+			final ActiveJiraIssueBean issue = getActiveJiraIssue(event);
+			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+			jiraIssue = null;
+
+			try {
+				jiraIssue = facade.getIssue(jiraServer, issue.getIssueKey());
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+			}
+		}
+		return jiraIssue;
+	}
+
+	protected JiraServerCfg getJiraServer(final AnActionEvent event) {
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		final Project project = IdeaHelper.getCurrentProject(event);
+		final ActiveJiraIssueBean issue = getActiveJiraIssue(event);
+
+		JiraServerCfg jiraServer = CfgUtil.getJiraServerCfg(project, panel.getProjectCfgManager(), issue.getServerId());
+		return jiraServer;
 	}
 }

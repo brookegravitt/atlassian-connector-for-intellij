@@ -500,7 +500,7 @@
 
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueComment"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueCommentAction"
-				text="Log Work"
+				text="Add Comment"
 				icon="/general/add.png">
 		</action>
 

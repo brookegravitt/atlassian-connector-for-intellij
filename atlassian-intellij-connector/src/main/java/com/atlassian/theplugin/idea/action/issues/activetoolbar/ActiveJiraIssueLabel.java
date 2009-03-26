@@ -18,8 +18,12 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.project.Project;
+
+import javax.swing.*;
 
 /**
  * User: pmaruszak
@@ -30,13 +34,17 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 	}
 
 	public void actionPerformed(final AnActionEvent event) {
-		JIRAIssue issue = getJiraIssue(event);
-		if (issue != null) {
-			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-			if (panel != null) {
-				panel.openIssue(issue);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				JIRAIssue issue = getJIRAIssue(event);
+				if (issue != null) {
+					IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+					if (panel != null) {
+						panel.openIssue(issue);
+					}
+				}
 			}
-		}
+		});
 
 	}
 
@@ -45,10 +53,11 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		Presentation presentation = event.getPresentation();
-		if (enabled) {
-			JIRAIssue issue = getJiraIssue(event);
+		final Project project = IdeaHelper.getCurrentProject(event);
+		if (enabled && project != null) {
+			ActiveJiraIssueBean issue = getActiveJiraIssue(event);
 			if (issue != null) {
-				presentation.setText(issue.getKey());
+				presentation.setText(issue.getIssueKey());
 			}
 			presentation.setEnabled(true);
 		} else {
