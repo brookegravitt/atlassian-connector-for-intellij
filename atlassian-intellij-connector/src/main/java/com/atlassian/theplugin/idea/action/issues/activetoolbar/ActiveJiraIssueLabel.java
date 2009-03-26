@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.action.issues;
+package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
