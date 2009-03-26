@@ -39,7 +39,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 	static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
-	private ActiveJiraIssue activeJiraIssue;
+	private ActiveJiraIssueImpl activeJiraIssue;
 	private final Project project;
 
 	public JiraWorkspaceConfiguration() {
@@ -121,12 +121,14 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		copyConfiguration(jiraProjectConfiguration);
 	}
 
+	@Transient
 	public ActiveJiraIssue getActiveJiraIssue() {
 		return activeJiraIssue;
 	}
 
+	@Transient
 	public void setActiveJiraIssue(final ActiveJiraIssue activeJiraIssue) {
-		this.activeJiraIssue = activeJiraIssue;
+		this.activeJiraIssue = (ActiveJiraIssueImpl) activeJiraIssue;
 	}
 
 	public void init() {
