@@ -398,7 +398,17 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void openIssue(@NotNull JIRAIssue issue) {
-		openIssue(issue, getSelectedServer());
+		if (getSelectedServer() != null) {
+			openIssue(issue, getSelectedServer());
+		} else if (isRecentlyOpenFilterSelected()) {
+			for (JiraServerCfg server :
+					projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+				if (server.getUrl().equals(issue.getServerUrl())) {
+					openIssue(issue, server);
+					break;
+				}
+			}
+		}
 	}
 
 	public void openIssue(@NotNull final String issueKey, final JiraServerCfg jiraServer) {
