@@ -15,23 +15,13 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import org.joda.time.Period;
-
 /**
  * User: pmaruszak
  */
 public interface ActiveJiraIssue {
-	void activate();
+	String getIssueKey();
 
-	void deactivate();
+	long getSecondsSpent();
 
-	JIRAIssue getIssue();
-
-	Period getTimeSpent();
-
-	JiraServerCfg getServer();
-
-	void resetTimeSpent();
+	String getServerId();
 }

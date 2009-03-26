@@ -18,8 +18,10 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+
+import javax.swing.*;
 
 /**
  * User: pmaruszak
@@ -28,18 +30,23 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 
 
 	public void actionPerformed(final AnActionEvent event) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
-		if (activeIssue != null && panel != null) {
-			boolean isOk = panel.logWorkOrDeactivateIssue(activeIssue.getIssue(),
-					activeIssue.getServer(),
-					StringUtil.generateJiraLogTimeString(activeIssue.getTimeSpent()),
-					false);
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+				final ActiveJiraIssueBean activeIssue = getActiveJiraIssue(event);
+				activeIssue.recalculateTimeSpent();
+				if (activeIssue != null && panel != null) {
+					boolean isOk = panel.logWorkOrDeactivateIssue(getJIRAIssue(event),
+							getJiraServer(event),
+							StringUtil.generateJiraLogTimeString(activeIssue.getSecondsSpent()),
+							false);
 
-			if (isOk) {
-				activeIssue.resetTimeSpent();
+					if (isOk) {
+						activeIssue.resetTimeSpent();
+					}
+				}
 			}
-		}
+		});
 	}
 
 	public void onUpdate(final AnActionEvent event) {

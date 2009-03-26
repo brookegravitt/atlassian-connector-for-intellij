@@ -19,7 +19,7 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
@@ -35,16 +35,17 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 				if (conf != null) {
-					ActiveJiraIssue activeIssue = conf.getActiveJiraIssue();
+					ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
 					if (activeIssue != null) {
 						final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 						if (panel != null) {
-							boolean isOk = panel.logWorkOrDeactivateIssue(activeIssue.getIssue(),
-									activeIssue.getServer(),
-									StringUtil.generateJiraLogTimeString(activeIssue.getTimeSpent()),
+
+
+							boolean isOk = panel.logWorkOrDeactivateIssue(getJIRAIssue(event),
+									getJiraServer(event),
+									StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 									true);
 							if (isOk) {
-								activeIssue.deactivate();
 								conf.setActiveJiraIssue(null);
 							}
 						}
@@ -58,7 +59,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void onUpdate(final AnActionEvent event) {
 	}
 
-	public void onUpdate(final AnActionEvent event,	final boolean enabled) {
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		event.getPresentation().setEnabled(enabled);
 	}
 }

@@ -18,15 +18,13 @@ package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssueImpl;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.annotations.Transient;
 import org.jetbrains.annotations.NotNull;
-import org.joda.time.DateTime;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,11 +37,22 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 	static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
-	private ActiveJiraIssueImpl activeJiraIssue;
+	private ActiveJiraIssueBean activeJiraIssue;
 	private final Project project;
+
+	private boolean zupa = true;
 
 	public JiraWorkspaceConfiguration() {
 		project = null;
+
+	}
+
+	public boolean isZupa() {
+		return zupa;
+	}
+
+	public void setZupa(final boolean zupa) {
+		this.zupa = zupa;
 	}
 
 	public JiraWorkspaceConfiguration(@NotNull Project project) {
@@ -121,23 +130,12 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		copyConfiguration(jiraProjectConfiguration);
 	}
 
-	@Transient
-	public ActiveJiraIssue getActiveJiraIssue() {
+
+	public ActiveJiraIssueBean getActiveJiraIssue() {
 		return activeJiraIssue;
 	}
 
-	@Transient
-	public void setActiveJiraIssue(final ActiveJiraIssue activeJiraIssue) {
-		this.activeJiraIssue = (ActiveJiraIssueImpl) activeJiraIssue;
-	}
-
-	public void init() {
-		if (activeJiraIssue != null) {
-			//restart timer
-			final ActiveJiraIssueImpl issue = new ActiveJiraIssueImpl(project,
-					activeJiraIssue.getServer(), activeJiraIssue.getIssue(), new DateTime(),
-					activeJiraIssue.getTimeSpent().getSeconds());
-			setActiveJiraIssue(issue);
-		}
+	public void setActiveJiraIssue(final ActiveJiraIssueBean activeJiraIssue) {
+		this.activeJiraIssue = activeJiraIssue;
 	}
 }
