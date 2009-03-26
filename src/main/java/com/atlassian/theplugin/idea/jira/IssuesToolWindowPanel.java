@@ -234,6 +234,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 	}
 
+	public ProjectCfgManager getProjectCfgManager() {
+		return projectCfgManager;
+	}
+
 	@Override
 	protected void addSearchBoxListener() {
 		getSearchField().addDocumentListener(new DocumentListener() {
@@ -1118,7 +1122,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		private final boolean deactivateIssue;
 
 		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
-								 JiraServerCfg jiraServer, boolean deactivateIssue) {
+				JiraServerCfg jiraServer, boolean deactivateIssue) {
 			super(IssuesToolWindowPanel.this.getProject(), "Logging Work", false);
 			this.issue = issue;
 			this.dialog = dialog;

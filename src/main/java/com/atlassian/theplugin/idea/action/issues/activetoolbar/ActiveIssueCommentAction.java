@@ -13,7 +13,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(AnActionEvent event) {
-		JIRAIssue issue = getJiraIssue(event);
+		JIRAIssue issue = getJIRAIssue(event);
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (issue != null && panel != null) {
 			panel.addCommentToIssue(issue);
@@ -21,5 +21,9 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 	}
 
 	public void onUpdate(AnActionEvent event) {
+	}
+
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
+		event.getPresentation().setEnabled(enabled);
 	}
 }
