@@ -125,7 +125,11 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 			return "No Server configuration";
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return srv.getErrorMessage();
+		if (srv != null) {
+			return srv.getErrorMessage();
+		}
+
+		return "";
 	}
 
 
