@@ -90,7 +90,7 @@ public final class Constants {
 	public static final String HELP_JIRA = "theplugin.jira";
 	public static final String HELP_BAMBOO = "theplugin.bamboo";
 	public static final String HELP_CRUCIBLE = "theplugin.crucible";
-//	public static final String HELP_JIRA_WORKLOG = "theplugin.jira.worklog";
+	//	public static final String HELP_JIRA_WORKLOG = "theplugin.jira.worklog";
 	public static final String HELP_TEST_CONNECTION = "theplugin.testconnection";
 
 	public static final String HELP_ISSUE = "theplugin.issue";
@@ -106,4 +106,7 @@ public final class Constants {
 	public static final Icon BAMBOO_COMMITS_ICON = IconLoader.getIcon("/icons/bamboo-commits.png");
 	public static final Icon CRUCIBLE_REVIEW_TAB_ICON = IconLoader.getIcon("/icons/tab_crucible-white.png");
 	public static final Icon CRUCIBLE_REVIEW_PANEL_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
+
+	public static final String ACTIVE_TOOLBAR_NAME = "ThePlugin.ActiveToolbar";
 }
+

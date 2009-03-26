@@ -45,6 +45,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 									new DateTime());
 					setActiveJiraIssue(event, activeIssue);
 					activate(event, activeIssue);
+					registerToolbar(event);
 				}
 			}
 		});
@@ -71,5 +72,22 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		event.getPresentation().setEnabled(!enabled);
+	}
+
+	private void registerToolbar(final AnActionEvent event) {
+
+//		ActionManager aManager = ActionManager.getInstance();
+//			ActionGroup menu = (ActionGroup) aManager.getAction(Constants.ACTIVE_TOOLBAR_NAME);
+//			DefaultActionGroup mainToolBar = (DefaultActionGroup) aManager.getAction("MainToolBar");
+//
+//
+//			if (menu != null && mainToolBar != null) {
+//				//aManager.createActionToolbar("ActionToolbar", menu, true);
+//				mainToolBar.add(new ActiveJiraIssueLabel(), Constraints.LAST, aManager);
+//				mainToolBar.add(new DeactivateJiraIssueAction(), Constraints.LAST, aManager);
+//				mainToolBar.add(new ActiveIssueLogWorkAction(), Constraints.LAST, aManager);
+//				mainToolBar.add(new ActiveIssueCommentAction(), Constraints.LAST, aManager);
+//			}
+
 	}
 }
