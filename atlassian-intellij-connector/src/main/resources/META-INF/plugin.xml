@@ -511,16 +511,20 @@
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</group>
 
+
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
 			<reference id="OpenFisheyeLinkInEditor"/>
+			<add-to-group group-id="GoToMenu" anchor="last"/>
+			<add-to-group group-id="MainToolBar" anchor="last"/>
+		</group>
+
+		<group id="ThePlugin.ActiveToolbar">
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
-
-			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
 
