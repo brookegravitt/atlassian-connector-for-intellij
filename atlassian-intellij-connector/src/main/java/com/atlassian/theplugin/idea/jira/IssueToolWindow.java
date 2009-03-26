@@ -11,22 +11,23 @@ import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
-import com.atlassian.theplugin.idea.ui.BoldLabel;
-import com.atlassian.theplugin.idea.ui.ScrollablePanel;
-import com.atlassian.theplugin.idea.ui.ShowHideButton;
-import com.atlassian.theplugin.idea.ui.WhiteLabel;
+import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
@@ -269,10 +270,35 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					break;
 				}
 			}
-			descriptionAndCommentsPanel.refreshDescriptionAndComments();
-			detailsPanel.refresh();
-			summaryPanel.refresh();
-			reloadAvailableActions();
+
+			if (params.issue != null && params.server != null) {
+				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
+					private boolean retrieved = false;
+
+					public void run(final ProgressIndicator indicator) {
+						try {
+							params.issue = facade.getIssue(params.server, params.issue.getKey());
+							retrieved = true;
+						} catch (final JIRAException e) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									PluginUtil.getLogger().warn("Error retrieving issue in details panel", e);
+									DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+								}
+							});
+						}
+					}
+
+					public void onSuccess() {
+						if (retrieved) {
+							descriptionAndCommentsPanel.refreshDescriptionAndComments();
+							detailsPanel.refresh();
+							summaryPanel.refresh();
+							reloadAvailableActions();
+						}
+					}
+				});
+			}
 		}
 
 		void reloadAvailableActions() {
@@ -586,7 +612,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						if (params != null && params.server != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
-							params.issue = facade.getIssue(params.server, params.issue.getKey());
+//							params.issue = facade.getIssue(params.server, params.issue.getKey());
 
 							final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
@@ -863,11 +889,15 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						if (params != null && params.server != null) {
 							java.util.List<JIRAComment> cmts = null;
 
-							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
-							if (oneIssue != null) {
-								descriptionPanel.setDescription(oneIssue.getDescription());
-								cmts = oneIssue.getComments();
-							}
+//							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
+//							if (oneIssue != null) {
+//								descriptionPanel.setDescription(oneIssue.getDescription());
+//								cmts = oneIssue.getComments();
+//							}
+
+							descriptionPanel.setDescription(params.issue.getDescription());
+							cmts = params.issue.getComments();
+
 							if (cmts == null) {
 								// oh well, no comments in XML - can it even happen? Fall back to SOAP
 								cmts = facade.getComments(params.server, params.issue);
