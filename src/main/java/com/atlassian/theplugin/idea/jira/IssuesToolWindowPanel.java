@@ -69,7 +69,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private final JiraManualFilterDetailsPanel manualFilterEditDetailsPanel;
 	private JIRAFilterTree jiraFilterTree;
 
-
 	private JIRAServerFacade jiraServerFacade;
 
 	private JIRAIssueListModel currentIssueListModel;
