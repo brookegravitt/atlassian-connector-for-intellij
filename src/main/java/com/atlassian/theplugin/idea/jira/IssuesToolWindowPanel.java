@@ -527,7 +527,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public boolean createChangeListAction(@NotNull final JIRAIssue issue) {
 		String changeListName = issue.getKey() + " - " + issue.getSummary();
 		final ChangeListManager changeListManager = ChangeListManager.getInstance(getProject());
-		ChangesetCreate c = null;
+		ChangesetCreate c;
 
 		LocalChangeList changeList = changeListManager.findChangeList(changeListName);
 		if (changeList == null) {
@@ -545,9 +545,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		} else {
 			changeListManager.setDefaultChangeList(changeList);
+			return true;
 		}
 
-		return c != null && c.isOK();
+		return c.isOK();
 	}
 
 	public void addCommentToSelectedIssue() {
