@@ -36,8 +36,6 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +50,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JComboBox defaultJiraServerCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
-	private JTextField defaultLoginEdit = new JTextField();
-	private JTextField defaultPasswordEdit = new JPasswordField();
-	private JButton testDefaultCredentialsButton = new JButton("Test Connections");
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
@@ -64,7 +59,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
 	private static final CrucibleProjectWrapper CRUCIBLE_PROJECT_NONE = new CrucibleProjectWrapper(null);
 	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_NONE = new GenericComboBoxItemWrapper<String>(null);
-
 	private static final GenericComboBoxItemWrapper<String> FISHEYE_REPO_FETCHING
 			= new GenericComboBoxItemWrapper<String>(null) {
 		@Override
@@ -80,14 +74,15 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 	};
+
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_FETCHING = new CrucibleRepoWrapper(null) {
 		@Override
 		public String toString() {
 			return "Fetching...";
 		}
 	};
-
 	private static final CrucibleRepoWrapper CRUCIBLE_REPO_NONE = new CrucibleRepoWrapper(null);
+
 	private final MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg> crucProjectModel
 			= new MyModel<CrucibleProjectWrapper, CrucibleProject, CrucibleServerCfg>(
 			CRUCIBLE_PROJECT_FETCHING, CRUCIBLE_PROJECT_NONE, "projects", "Crucible") {
@@ -128,7 +123,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			return getCurrentCrucibleServerCfg();
 		}
 	};
-	private static final String DEFAULT_CREDENTIALS_TEXT = "Default credentials for all servers";
 
 
 	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
@@ -238,14 +232,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		this.fishEyeServerFacade = fishEyeServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 
-
-		testDefaultCredentialsButton.addActionListener(new ActionListener() {
-
-			public void actionPerformed(final ActionEvent e) {
-				//Messages.showOkCancelDialog(, "testing", "default credentials", )
-			}
-		});
-
 		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
 				+ "E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
 //		panel.setPreferredSize(new Dimension(300, 200));
@@ -253,7 +239,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
 				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu,"
 						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
@@ -305,19 +290,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		builder.add(jiraHelp, cc.xyw(1, 25, ALL_COLUMNS));
 		builder.addLabel("Default Server:", cc.xy(2, 27));
 		builder.add(defaultJiraServerCombo, cc.xy(4, 27));
-
-		builder.addSeparator("Default Credentials",  cc.xyw(1, 29, ALL_COLUMNS));
-		JLabel defaultCredentaialsHelp = new JLabel(DEFAULT_CREDENTIALS_TEXT);
-		defaultCredentaialsHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		defaultCredentaialsHelp.setFont(defaultCredentaialsHelp.getFont().deriveFont(10.0f));
-		builder.add(defaultCredentaialsHelp, cc.xyw(1,31, ALL_COLUMNS));
-		JLabel userNameLabel = new JLabel("Username:");
-		builder.add(userNameLabel, cc.xy(2, 33));
-		builder.add(defaultLoginEdit, cc.xy(4, 33));
-		JLabel passwordLabel = new JLabel("Password:");
-		builder.add(passwordLabel, cc.xy(2, 35));
-		builder.add(defaultPasswordEdit, cc.xy(4, 35));
-		builder.add(testDefaultCredentialsButton, cc.xy(4, 37));
 		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
@@ -349,36 +321,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 		});
 
-
-		defaultLoginEdit.getDocument().addDocumentListener(new DocumentListener() {
-
-			public void insertUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-
-			public void removeUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-
-			public void changedUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-		});
-
-		defaultPasswordEdit.getDocument().addDocumentListener(new DocumentListener() {
-
-			public void insertUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-
-			public void removeUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-
-			public void changedUpdate(final DocumentEvent e) {
-				projectConfiguration.setDefaultUser(new UserCfg(defaultLoginEdit.getText(), defaultPasswordEdit.getText()));
-			}
-		});
 	}
 
 	private void initializeControls() {
@@ -391,12 +333,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 
 		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
-		
-		final UserCfg user = projectConfiguration.getDefaultUser();
-		if (user != null) {
-			defaultLoginEdit.setText(user.getUserName());
-			defaultPasswordEdit.setText(user.getPassword());
-		}
 	}
 
 
