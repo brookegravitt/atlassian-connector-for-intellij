@@ -839,8 +839,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							try {
-								if (params != null && params.server != null) {
-									facade.addComment(params.server, params.issue, issueCommentDialog.getComment());
+								if (params != null && params.server != null && params.issue != null) {
+									facade.addComment(params.server, params.issue.getKey(), issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
 											refreshDescriptionAndComments();

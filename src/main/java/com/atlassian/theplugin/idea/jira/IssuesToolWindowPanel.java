@@ -554,12 +554,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void addCommentToSelectedIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue != null) {
-			addCommentToIssue(issue);
+			addCommentToIssue(issue.getKey(), getSelectedServer());
 		}
 	}
 
-	public void addCommentToIssue(final JIRAIssue issue) {
-		final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issue.getKey());
+	public void addCommentToIssue(final String issueKey, final JiraServerCfg jiraServer) {
+		final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issueKey);
 		issueCommentDialog.show();
 		if (issueCommentDialog.isOK()) {
 			Task.Backgroundable comment = new Task.Backgroundable(getProject(), "Commenting Issue", false) {
@@ -567,16 +567,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				public void run(@NotNull final ProgressIndicator indicator) {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							setStatusMessage("Commenting issue " + issue.getKey() + "...");
+							setStatusMessage("Commenting issue " + issueKey + "...");
 						}
 					});
 					try {
-						JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
-							jiraServerFacade.addComment(jiraServer, issue, issueCommentDialog.getComment());
+							jiraServerFacade.addComment(jiraServer, issueKey, issueCommentDialog.getComment());
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
-									setStatusMessage("Commented issue " + issue.getKey());
+									setStatusMessage("Commented issue " + issueKey);
 								}
 							});
 						}

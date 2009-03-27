@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -68,11 +68,11 @@ public class JIRASessionImpl implements JIRASession {
 
 		if (value == null) {
 			//if (System.getProperty(name) != null) {
-				try {					
-					System.setProperty(name, "");
-				} catch (NullPointerException e) {
-					Logger.getInstance(getClass().getName()).info("Setting system property " + name + " to empty", e);
-				}
+			try {
+				System.setProperty(name, "");
+			} catch (NullPointerException e) {
+				Logger.getInstance(getClass().getName()).info("Setting system property " + name + " to empty", e);
+			}
 			//}
 		} else {
 			System.setProperty(name, value);
@@ -132,7 +132,7 @@ public class JIRASessionImpl implements JIRASession {
 		} catch (RemoteAuthenticationException e) {
 			throw new RemoteApiLoginException("Authentication failed");
 		} catch (RemoteException e) {
-	   		throw new RemoteApiException(e.toString());
+			throw new RemoteApiException(e.toString());
 		}
 		loggedIn = true;
 	}
@@ -149,7 +149,7 @@ public class JIRASessionImpl implements JIRASession {
 	}
 
 	public void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
-						boolean updateEstimate, String newEstimate)
+			boolean updateEstimate, String newEstimate)
 			throws RemoteApiException {
 		RemoteWorklog workLog = new RemoteWorklog();
 		workLog.setStartDate(startDate);
@@ -158,7 +158,7 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			if (updateEstimate) {
 				if (newEstimate != null) {
-					service.addWorklogWithNewRemainingEstimate(token, issue.getKey(), workLog, newEstimate);	
+					service.addWorklogWithNewRemainingEstimate(token, issue.getKey(), workLog, newEstimate);
 				} else {
 					service.addWorklogAndAutoAdjustRemainingEstimate(token, issue.getKey(), workLog);
 				}
@@ -248,11 +248,11 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
-	public void addComment(JIRAIssue issue, String comment) throws RemoteApiException {
+	public void addComment(String issueKey, String comment) throws RemoteApiException {
 		try {
 			RemoteComment rComment = new RemoteComment();
 			rComment.setBody(comment);
-			service.addComment(token, issue.getKey(), rComment);
+			service.addComment(token, issueKey, rComment);
 		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
 		}
@@ -413,9 +413,9 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-    public List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException {
-        try {
-            RemoteNamedObject[] actions = service.getAvailableActions(token, issue.getKey());
+	public List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException {
+		try {
+			RemoteNamedObject[] actions = service.getAvailableActions(token, issue.getKey());
 			List<JIRAAction> actionList = new ArrayList<JIRAAction>(actions != null ? actions.length : 0);
 			if (actions != null) {
 				for (RemoteNamedObject action : actions) {
@@ -423,10 +423,10 @@ public class JIRASessionImpl implements JIRASession {
 				}
 			}
 			return actionList;
-        } catch (RemoteException e) {
-            throw new RemoteApiException(e.toString(), e);
-        }
-    }
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
 
 	public List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException {
 		try {

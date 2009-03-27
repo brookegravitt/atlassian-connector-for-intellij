@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,10 @@ public interface JIRASession {
 	void logout();
 
 	void logWork(JIRAIssue issue, String timeSpent, Calendar startDate, String comment,
-				 boolean updateEstimate, String newEstimate)
+			boolean updateEstimate, String newEstimate)
 			throws RemoteApiException;
 
-	void addComment(JIRAIssue issue, String comment) throws RemoteApiException;
+	void addComment(String issueKey, String comment) throws RemoteApiException;
 
 	JIRAIssue createIssue(JIRAIssue issue) throws RemoteApiException;
 
@@ -41,7 +41,7 @@ public interface JIRASession {
 	List<JIRAConstant> getIssueTypes() throws RemoteApiException;
 
 	List<JIRAConstant> getIssueTypesForProject(String project) throws RemoteApiException;
-	
+
 	List<JIRAConstant> getStatuses() throws RemoteApiException;
 
 	List<JIRAComponentBean> getComponents(String projectKey) throws RemoteApiException;
@@ -54,7 +54,7 @@ public interface JIRASession {
 
 	List<JIRAQueryFragment> getSavedFilters() throws RemoteApiException;
 
-    List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException;
+	List<JIRAAction> getAvailableActions(JIRAIssue issue) throws RemoteApiException;
 
 	List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException;
 
