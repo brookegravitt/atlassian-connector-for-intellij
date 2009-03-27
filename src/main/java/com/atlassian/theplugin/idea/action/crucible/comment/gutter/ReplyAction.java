@@ -21,7 +21,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 		createComment(project, null, null);
 	}
 
-	private void createComment(final Project project, final VersionedCommentBean localCopy, String errorMessage) {
+	private void createComment(final Project project, final VersionedCommentBean localCopy, Throwable error) {
 		final VersionedCommentBean newComment;
 
 		if (localCopy != null) {
@@ -40,7 +40,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -54,7 +54,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								createComment(project, newComment, e.getMessage());
+								createComment(project, newComment, e);
 							}
 						});
 					}

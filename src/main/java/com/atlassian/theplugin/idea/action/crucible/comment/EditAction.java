@@ -71,8 +71,7 @@ public class EditAction extends AbstractCommentAction {
 	}
 
 	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment,
-			GeneralCommentBean localCopy,
-			final String errorMessage) {
+			GeneralCommentBean localCopy, final Throwable error) {
 
 		final GeneralCommentBean localData;
 		if (localCopy == null) {
@@ -81,7 +80,7 @@ public class EditAction extends AbstractCommentAction {
 			localData = localCopy;
 		}
 
-		final CommentEditForm dialog = new CommentEditForm(project, review, localData, errorMessage);
+		final CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -97,7 +96,7 @@ public class EditAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								editGeneralComment(project, review, comment, localData, e.getMessage());
+								editGeneralComment(project, review, comment, localData, e);
 							}
 						});
 					}
@@ -110,7 +109,8 @@ public class EditAction extends AbstractCommentAction {
 
 	// PL-25
 	private void editVersionedComment(final Project project, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment, VersionedCommentBean localCopy, String errorMessage) {
+			final CrucibleFileInfo file, final VersionedComment comment,
+			VersionedCommentBean localCopy, Throwable error) {
 
 		final VersionedCommentBean localData;
 		if (localCopy == null) {
@@ -119,7 +119,7 @@ public class EditAction extends AbstractCommentAction {
 			localData = localCopy;
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, localData, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -135,7 +135,7 @@ public class EditAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								editVersionedComment(project, review, file, comment, localData, e.getMessage());
+								editVersionedComment(project, review, file, comment, localData, e);
 							}
 						});
 					}
