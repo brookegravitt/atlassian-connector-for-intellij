@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -127,5 +128,39 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		}
 
 		return jiraServer;
+	}
+
+	protected boolean activate(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
+		final Project project = IdeaHelper.getCurrentProject(event);
+		boolean isOk = false;
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		final JiraServerCfg jiraServer = getJiraServer(event, activeIssue);
+		final JIRAIssue issue = getJIRAIssue(jiraServer, activeIssue);
+
+		if (panel != null && issue != null && jiraServer != null) {
+			//assign to me and start working
+			isOk = panel.startWorkingOnIssue(issue, jiraServer);
+		}
+		return isOk;
+	}
+
+	protected boolean deactivate(final AnActionEvent event) {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+		if (conf != null) {
+			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
+			if (activeIssue != null) {
+				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+				if (panel != null) {
+					boolean isOk = panel.logWorkOrDeactivateIssue(getJIRAIssue(event),
+							getJiraServer(event),
+							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
+							true);
+					return isOk;
+
+				}
+
+			}
+		}
+		return true;
 	}
 }
