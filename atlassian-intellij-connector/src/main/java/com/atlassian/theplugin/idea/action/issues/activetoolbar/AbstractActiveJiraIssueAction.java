@@ -52,7 +52,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		onUpdate(event, enabled);
 	}
 
-	protected ActiveJiraIssueBean getActiveJiraIssue(final AnActionEvent event) {
+	protected ActiveJiraIssue getActiveJiraIssue(final AnActionEvent event) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
@@ -86,15 +86,24 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	//invokeLater necessary
 	protected JIRAIssue getJIRAIssue(final AnActionEvent event) {
 		JiraServerCfg jiraServer = getJiraServer(event);
-
 		if (jiraServer != null) {
+			final ActiveJiraIssue issue = getActiveJiraIssue(event);
+			jiraIssue = null;
 
-			final ActiveJiraIssueBean issue = getActiveJiraIssue(event);
+			jiraIssue = getJIRAIssue(jiraServer, issue);
+		}
+		return jiraIssue;
+	}
+
+	//invokeLater necessary
+	protected JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue) {
+		if (jiraServer != null && activeIssue != null) {
+
 			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 			jiraIssue = null;
 
 			try {
-				jiraIssue = facade.getIssue(jiraServer, issue.getIssueKey());
+				jiraIssue = facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 			}
@@ -102,12 +111,21 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		return jiraIssue;
 	}
 
+
 	protected JiraServerCfg getJiraServer(final AnActionEvent event) {
+		final ActiveJiraIssue issue = getActiveJiraIssue(event);
+		return getJiraServer(event, issue);
+	}
+
+	public JiraServerCfg getJiraServer(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		final Project project = IdeaHelper.getCurrentProject(event);
-		final ActiveJiraIssueBean issue = getActiveJiraIssue(event);
+		JiraServerCfg jiraServer = null;
 
-		JiraServerCfg jiraServer = CfgUtil.getJiraServerCfg(project, panel.getProjectCfgManager(), issue.getServerId());
+		if (panel != null && activeIssue != null) {
+			jiraServer = CfgUtil.getJiraServerCfg(project, panel.getProjectCfgManager(), activeIssue.getServerId());
+		}
+
 		return jiraServer;
 	}
 }

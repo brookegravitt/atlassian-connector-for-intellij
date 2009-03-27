@@ -20,6 +20,7 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -63,7 +64,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		final JIRAIssue issue = getSelectedJiraIssue(event);
-		final ActiveJiraIssueBean activeIssue = getActiveJiraIssue(event);
+		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
 		event.getPresentation().setEnabled((issue == null && activeIssue != null) || (issue != null
 				&& activeIssue != null
 				&& issue.getKey().equals(activeIssue.getIssueKey())));

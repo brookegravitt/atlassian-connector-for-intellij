@@ -524,13 +524,14 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProgressManager.getInstance().run(assign);
 	}
 
-	public void createChangeListAction(@NotNull final JIRAIssue issue) {
+	public boolean createChangeListAction(@NotNull final JIRAIssue issue) {
 		String changeListName = issue.getKey() + " - " + issue.getSummary();
 		final ChangeListManager changeListManager = ChangeListManager.getInstance(getProject());
+		ChangesetCreate c = null;
 
 		LocalChangeList changeList = changeListManager.findChangeList(changeListName);
 		if (changeList == null) {
-			ChangesetCreate c = new ChangesetCreate(issue.getKey());
+			c = new ChangesetCreate(issue.getKey());
 			c.setChangesetName(changeListName);
 			c.setChangestComment(changeListName + "\n");
 			c.setActive(true);
@@ -545,6 +546,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		} else {
 			changeListManager.setDefaultChangeList(changeList);
 		}
+
+		return c != null && c.isOK();
 	}
 
 	public void addCommentToSelectedIssue() {
@@ -604,12 +607,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	public void startWorkingOnIssue(@NotNull final JIRAIssue issue, final JiraServerCfg server) {
+	public boolean startWorkingOnIssue(@NotNull final JIRAIssue issue, final JiraServerCfg server) {
 //		if (issue == null) {
 //			return;
 //		}
 
-		createChangeListAction(issue);
+		boolean isOk = createChangeListAction(issue);
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
 
@@ -646,7 +649,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		};
 
-		ProgressManager.getInstance().run(startWorkOnIssue);
+		if (isOk) {
+			ProgressManager.getInstance().run(startWorkOnIssue);
+		}
+
+		return isOk;
 	}
 
 	private void refreshFilterModel() {
