@@ -37,7 +37,6 @@ import com.intellij.openapi.project.Project;
  * User: pmaruszak
  */
 public abstract class AbstractActiveJiraIssueAction extends AnAction {
-	private JIRAIssue jiraIssue = null;
 
 	public abstract void onUpdate(AnActionEvent event);
 
@@ -89,27 +88,27 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		JiraServerCfg jiraServer = getJiraServer(event);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(event);
-			jiraIssue = null;
 
-			jiraIssue = getJIRAIssue(jiraServer, issue);
+
+			return getJIRAIssue(jiraServer, issue);
 		}
-		return jiraIssue;
+		return null;
 	}
 
 	//invokeLater necessary
-	protected JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue) {
+	private JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue) {
 		if (jiraServer != null && activeIssue != null) {
 
 			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-			jiraIssue = null;
+
 
 			try {
-				jiraIssue = facade.getIssue(jiraServer, activeIssue.getIssueKey());
+				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 			}
 		}
-		return jiraIssue;
+		return null;
 	}
 
 

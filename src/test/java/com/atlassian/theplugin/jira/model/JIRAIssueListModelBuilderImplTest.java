@@ -228,7 +228,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 				throws JIRAException {
 		}
 
-		public void addComment(JiraServerCfg server, JIRAIssue issue, String comment) throws JIRAException {
+		public void addComment(JiraServerCfg server, String issueKey, String comment) throws JIRAException {
 		}
 
 		public JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
