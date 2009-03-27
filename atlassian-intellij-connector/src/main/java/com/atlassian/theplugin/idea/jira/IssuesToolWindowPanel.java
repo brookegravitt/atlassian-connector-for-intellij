@@ -637,7 +637,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							break;
 						}
 					}
-					if (!found) {
+					if (!found && !issue.getStatusConstant().equals(Constants.JiraActionId.START_PROGRESS)) {
 						setStatusMessage("Progress on "
 								+ issue.getKey()
 								+ "  not started - no such workflow action available");
