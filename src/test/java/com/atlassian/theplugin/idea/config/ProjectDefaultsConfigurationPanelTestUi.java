@@ -148,7 +148,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
 		frame.getContentPane().setLayout(new GridLayout(1, 1));
-		frame.getContentPane().add(panel);
+		frame.getContentPane().add(panel);		
 
 		//Finish setting up the frame, and show it.
 		frame.addWindowListener(new WindowAdapter() {
