@@ -485,13 +485,13 @@
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Activate Issue"
-				icon="/actions/execute.png">
+				icon="/icons/pin_assignandstart.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Activate Issue"
-				icon="/actions/execute.png">
+				icon="/icons/pin_assignandstart.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
@@ -804,10 +804,10 @@
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
 				icon="/icons/pin_assignuser.png"
 				text="Assign to User"/>
-		<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"
-				class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"
-				icon="/icons/pin_assignandstart.png"
-				text="Assign to Me and Start Working"/>
+		<!--<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"-->
+		<!--class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"-->
+		<!--icon="/icons/pin_assignandstart.png"-->
+		<!--text="Assign to Me and Start Working"/>-->
 		<action id="ThePlugin.JiraIssues.AddComment"
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
 				text="Add Comment"
@@ -886,7 +886,6 @@
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
-			<reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>
@@ -911,12 +910,12 @@
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
-			<reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"/>
+
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.RunActionGroup"/>
-			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.EditorRefresh"/>
 			<reference id="ThePlugin.JiraIssues.EditorClose"/>
