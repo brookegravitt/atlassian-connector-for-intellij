@@ -30,6 +30,7 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -167,7 +168,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public void initComponent() {
 		LoggerImpl.getInstance().info("Init ThePlugin project component.");
 		this.fileEditorListener = new FileEditorListenerImpl(project);
-		//jiraWorkspaceConfiguration.init();
+		ActivateJiraIssueAction.showToolbar(project);
 	}
 
 	public void disposeComponent() {

@@ -478,7 +478,7 @@
 
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueLabel"
-				text="PL-1234"
+				text=""
 				icon="/icons/jira-blue-16.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
@@ -490,6 +490,13 @@
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
 				text="Deactivate Issue"
 				icon="/actions/pause.png">
+		</action>
+
+
+		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
+				text="Deactivate Issue"
+				icon="/actions/suspend.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
@@ -525,7 +532,7 @@
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
-			<add-to-group group-id="MainToolBar" anchor="last"/>
+			<!--<add-to-group group-id="MainToolBar" anchor="last"/>-->
 		</group>
 
 		<action id="ThePlugin.CommittedChanges.Refresh"
@@ -875,7 +882,7 @@
 			<reference id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
-			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
 			<separator/>
