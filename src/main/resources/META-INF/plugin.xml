@@ -487,6 +487,12 @@
 				text="Activate Issue"
 				icon="/actions/execute.png">
 		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
+				text="Activate Issue"
+				icon="/actions/execute.png">
+		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
 				text="Deactivate Issue"
@@ -910,6 +916,7 @@
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.RunActionGroup"/>
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"/>
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.EditorRefresh"/>
 			<reference id="ThePlugin.JiraIssues.EditorClose"/>

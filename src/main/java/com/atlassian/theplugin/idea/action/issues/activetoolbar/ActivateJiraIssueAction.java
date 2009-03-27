@@ -40,14 +40,14 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
+
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
 					JiraServerCfg jiraServerCfg = getSelectedJiraServer(event);
 					final ActiveJiraIssue activeIssue =
 							new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
 									new DateTime());
-					boolean isAlreadyActive = getActiveJiraIssue(event) != null;
-
+					boolean isAlreadyActive = activeIssue != null;
 
 					if (deactivate(event) && activate(event, activeIssue)) {
 						setActiveJiraIssue(event, activeIssue);
@@ -65,12 +65,16 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 
 	public void onUpdate(final AnActionEvent event) {
+		final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
+		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
+		final JiraServerCfg selectedServer = getSelectedJiraServer(event);
 
-	}
+		if (selectedIssue != null && activeIssue != null && selectedServer != null) {
 
-	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		//event.getPresentation().setEnabled(!enabled);
-
+			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
+					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
+			event.getPresentation().setEnabled(!equals);
+		}
 	}
 
 	private static void registerToolbar() {
