@@ -18,14 +18,19 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,13 +47,14 @@ public class CommentEditForm extends DialogWrapper {
 	private JPanel comboPanel;
 	private JPanel toolPanel;
 	private JPanel errorPanel;
-	private JLabel errorLabel;
+	private HyperlinkLabel errorLabel;
 
 
 	private boolean saveAsDraft = false;
 	private final CommentBean comment;
+	private Throwable lastError;
 
-	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean comment) {
+	public CommentEditForm(final Project project, final ReviewAdapter review, final CommentBean comment) {
 
 		super(project, false);
 		this.comment = comment;
@@ -58,7 +64,17 @@ public class CommentEditForm extends DialogWrapper {
 		init();
 
 		this.errorPanel.setVisible(false);
-
+		errorPanel.add(new JLabel("Comment submission failed - "));
+		errorLabel = new HyperlinkLabel("click here for details");
+		errorLabel.setOpaque(false);
+		errorLabel.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (lastError != null) {
+					DialogWithDetails.showExceptionDialog(project, lastError.getMessage(), lastError);
+				}
+			}
+		});
+		errorPanel.add(errorLabel);
 
 		comboPanel.setLayout(new FlowLayout());
 
@@ -120,11 +136,12 @@ public class CommentEditForm extends DialogWrapper {
 		getOKAction().putValue(Action.NAME, "Post");
 	}
 
-	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean data, final String errorMessage) {
+	public CommentEditForm(Project project, final ReviewAdapter review, final CommentBean data, final Throwable error) {
 		this(project, review, data);
-		if (errorMessage != null) {
-			this.errorPanel.setVisible(true);
-			this.errorLabel.setText(errorMessage);
+		if (error != null) {
+			errorPanel.setBackground(Constants.FAIL_COLOR);
+			errorPanel.setVisible(true);
+			lastError = error;
 		}
 	}
 
@@ -170,11 +187,6 @@ public class CommentEditForm extends DialogWrapper {
 	};
 
 	private void createUIComponents() {
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorLabel.setText(errorMessage);
-		this.errorPanel.setVisible(true);
 	}
 
 	/**
@@ -238,10 +250,6 @@ public class CommentEditForm extends DialogWrapper {
 		rootComponent.add(errorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		errorLabel = new JLabel();
-		errorLabel.setText("");
-		errorPanel.add(errorLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**
