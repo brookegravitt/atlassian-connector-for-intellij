@@ -35,7 +35,6 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
 
-
 			public void run() {
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
@@ -43,9 +42,12 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 					final ActiveJiraIssue activeIssue =
 							new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
 									new DateTime());
-					setActiveJiraIssue(event, activeIssue);
-					activate(event, activeIssue);
-					registerToolbar(event);
+
+
+					if (activate(event, activeIssue)) {
+						setActiveJiraIssue(event, activeIssue);
+						registerToolbar(event);
+					}
 				}
 			}
 		});
@@ -53,17 +55,18 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	}
 
-	private void activate(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
+	private boolean activate(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
 		final Project project = IdeaHelper.getCurrentProject(event);
-
+		boolean isOk = false;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JiraServerCfg jiraServer = getJiraServer(event);
-		final JIRAIssue issue = getJIRAIssue(event);
+		final JiraServerCfg jiraServer = getJiraServer(event, activeIssue);
+		final JIRAIssue issue = getJIRAIssue(jiraServer, activeIssue);
 		if (panel != null && issue != null && jiraServer != null) {
 			//assign to me and start working
-			panel.startWorkingOnIssue(issue, jiraServer);
-			panel.createChangeListAction(issue);
+			isOk = panel.startWorkingOnIssue(issue, jiraServer);
 		}
+
+		return isOk;
 	}
 
 

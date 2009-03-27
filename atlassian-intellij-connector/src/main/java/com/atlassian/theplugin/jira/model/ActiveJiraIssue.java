@@ -24,4 +24,8 @@ public interface ActiveJiraIssue {
 	long getSecondsSpent();
 
 	String getServerId();
+
+	void resetTimeSpent();
+
+	long recalculateTimeSpent();
 }

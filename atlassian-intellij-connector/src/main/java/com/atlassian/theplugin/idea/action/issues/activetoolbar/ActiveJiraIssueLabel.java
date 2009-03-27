@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
@@ -55,7 +55,7 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 		Presentation presentation = event.getPresentation();
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (enabled && project != null) {
-			ActiveJiraIssueBean issue = getActiveJiraIssue(event);
+			ActiveJiraIssue issue = getActiveJiraIssue(event);
 			if (issue != null) {
 				presentation.setText(issue.getIssueKey());
 			}
