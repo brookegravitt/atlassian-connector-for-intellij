@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -56,13 +57,16 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (enabled && project != null) {
 			ActiveJiraIssue issue = getActiveJiraIssue(event);
-			if (issue != null) {
-				presentation.setText(issue.getIssueKey());
+			issue.recalculateTimeSpent();
+			String jiraTimeSpent = StringUtil.generateJiraLogTimeString(issue.getSecondsSpent());
+			if (jiraTimeSpent.length() > 0) {
+				jiraTimeSpent += ":" + jiraTimeSpent;
 			}
+
+			presentation.setText("Active Issue:"
+					+ issue.getIssueKey()
+					+ jiraTimeSpent);
 			presentation.setEnabled(true);
-		} else {
-			presentation.setText("No Active Issue");
-			presentation.setEnabled(false);
 		}
 
 	}
