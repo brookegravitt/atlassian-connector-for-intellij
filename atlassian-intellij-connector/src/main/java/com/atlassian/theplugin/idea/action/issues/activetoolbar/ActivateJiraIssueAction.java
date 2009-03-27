@@ -27,6 +27,8 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import org.joda.time.DateTime;
 
 import javax.swing.*;
@@ -44,13 +46,24 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
 					JiraServerCfg jiraServerCfg = getSelectedJiraServer(event);
-					final ActiveJiraIssue activeIssue =
+					final ActiveJiraIssue newActiveIssue =
 							new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
 									new DateTime());
+					final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
 					boolean isAlreadyActive = activeIssue != null;
+					boolean isDeactivated = true;
+					if (isAlreadyActive) {
 
-					if (deactivate(event) && activate(event, activeIssue)) {
-						setActiveJiraIssue(event, activeIssue);
+						isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+								activeIssue.getIssueKey()
+										+ " is active. Would you like to deactivate it first and proceed?",
+								"Deactivating current issue",
+								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+
+					}
+
+					if (isDeactivated && deactivate(event) && activate(event, newActiveIssue)) {
+						setActiveJiraIssue(event, newActiveIssue);
 
 						if (!isAlreadyActive) {
 							registerToolbar();
@@ -65,6 +78,9 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 
 	public void onUpdate(final AnActionEvent event) {
+	}
+
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
 		final JiraServerCfg selectedServer = getSelectedJiraServer(event);
@@ -74,6 +90,8 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
 			event.getPresentation().setEnabled(!equals);
+		} else {
+			event.getPresentation().setEnabled(true);
 		}
 	}
 
