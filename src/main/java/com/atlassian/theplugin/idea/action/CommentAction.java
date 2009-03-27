@@ -154,7 +154,7 @@ public class CommentAction extends AnAction {
 	}
 
 	private void createLineComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
-			final int start, final int end, final VersionedCommentBean localCopy, final String errorMessage) {
+			final int start, final int end, final VersionedCommentBean localCopy, final Throwable error) {
 
 		final VersionedCommentBean newComment;
 		if (localCopy != null) {
@@ -174,7 +174,7 @@ public class CommentAction extends AnAction {
 			}
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -195,7 +195,7 @@ public class CommentAction extends AnAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								createLineComment(project, review, file, start, end, newComment, e.getMessage());
+								createLineComment(project, review, file, start, end, newComment, e);
 							}
 						});
 					}

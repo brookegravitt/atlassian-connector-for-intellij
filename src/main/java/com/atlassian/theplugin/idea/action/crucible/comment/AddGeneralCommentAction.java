@@ -84,7 +84,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	}
 
 	private void addGeneralComment(final Project project, final ReviewAdapter review, final GeneralCommentBean localCopy,
-			final String errorMessage) {
+			final Throwable error) {
 		final GeneralCommentBean newComment;
 		if (localCopy != null) {
 			newComment = new GeneralCommentBean(localCopy);
@@ -92,7 +92,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 			newComment = new GeneralCommentBean();
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.setTitle("Add General Comment");
 		dialog.pack();
 		dialog.setModal(true);
@@ -111,7 +111,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								addGeneralComment(project, review, newComment, e.getMessage());
+								addGeneralComment(project, review, newComment, e);
 							}
 						});
 					}

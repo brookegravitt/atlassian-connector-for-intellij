@@ -27,6 +27,7 @@ import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 import java.util.Collection;
+import java.awt.*;
 
 public final class Constants {
 
@@ -46,6 +47,8 @@ public final class Constants {
 
 		private long id;
 	}
+
+	public static final Color FAIL_COLOR = new Color(255, 100, 100);
 
 	public static final String FILE_TREE = "theplugin.tree";
 	public static final String CRUCIBLE_COMMENT_TREE = "theplugin.crucible.comment.tree";
