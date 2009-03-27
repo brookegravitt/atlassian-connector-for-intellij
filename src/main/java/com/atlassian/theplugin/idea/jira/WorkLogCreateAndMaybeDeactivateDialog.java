@@ -490,27 +490,24 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		init();
 		updateOKAction();
 		setCommentText();
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				setChangelistPanelVisible();
-			}
-		});
+		validate();
+		setChangelistPanelVisible();
 	}
 
 	private void setChangelistPanelVisible() {
 		chkCommitChanges.setVisible(deactivateActiveIssue);
 		chkLogWork.setVisible(deactivateActiveIssue);
 		if (!deactivateActiveIssue) {
-			int width = changesetPanel.getWidth();
 			wrapperPanel.remove(changesetPanel);
 			timePanel.setBorder(BorderFactory.createEmptyBorder());
-			Dimension newSize = new Dimension(contentPane.getWidth() - width, (int) contentPane.getMinimumSize().getHeight());
+			validate();
+			Dimension newSize = new Dimension(
+					(int) timePanel.getMinimumSize().getWidth(), (int) contentPane.getMinimumSize().getHeight());
 			contentPane.setPreferredSize(newSize);
 			contentPane.setMinimumSize(newSize);
 			contentPane.setSize(contentPane.getMinimumSize());
 		}
 		endTimePanel.setVisible(!deactivateActiveIssue);
-		pack();
 	}
 
 	private void setCommentText() {
