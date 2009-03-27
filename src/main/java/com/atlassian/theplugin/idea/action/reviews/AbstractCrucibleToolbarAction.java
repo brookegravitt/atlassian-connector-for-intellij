@@ -32,7 +32,7 @@ public abstract class AbstractCrucibleToolbarAction extends AnAction {
 
 		Project project = e.getData(DataKeys.PROJECT);
 		if (project != null) {
-			if (!VcsIdeaHelper.isUnderVcsControl(e)) {
+			if (!VcsIdeaHelper.isUnderVcsControl(e) && !result) {
 				result = false;
 			}
 		} else {

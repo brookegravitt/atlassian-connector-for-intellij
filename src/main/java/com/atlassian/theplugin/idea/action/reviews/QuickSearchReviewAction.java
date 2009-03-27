@@ -61,11 +61,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			return;
 		}
 
-		if (!VcsIdeaHelper.isUnderVcsControl(e)) {
-			Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
-					CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
-			return;
-		}
+//		if (!VcsIdeaHelper.isUnderVcsControl(e) &&) {
+//			Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
+//					CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
+//			return;
+//		}
 
 		final ReviewsToolWindowPanel reviewsWindow = IdeaHelper.getReviewsToolWindowPanel(e);
 
