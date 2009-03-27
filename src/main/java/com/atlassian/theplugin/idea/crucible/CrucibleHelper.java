@@ -419,21 +419,25 @@ public final class CrucibleHelper {
 
 			Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
 			if (editor != null) {
+				ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+
 				int offset = editor.getCaretModel().getOffset();
 
 				for (RangeHighlighter highlighter : highlighters) {
 					if (highlighter.getUserData(CommentHighlighter.COMMENT_DATA_KEY) != null) {
 
 						int start = highlighter.getStartOffset();
-						int end = highlighter.getEndOffset();
+						int end = highlighter.getEndOffset() + 1;
 
-						if (offset > start && offset < end) {
+
+						if (offset >= start && offset <= end) {
 							VersionedComment comment = highlighter.getUserData(CommentHighlighter.VERSIONED_COMMENT_DATA_KEY);
-							ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
 							return getCommentUrl(review, comment);
 						}
 					}
 				}
+
+				return getVersionedFileUrl(review, vf.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY));
 			}
 		}
 		return null;
@@ -441,17 +445,20 @@ public final class CrucibleHelper {
 
 	@Nullable
 	public static String getCommentUrl(final ReviewAdapter review, final Comment comment) {
-		if (review != null) {
-			if (comment != null) {
-				if (comment.getPermId() != null) {
-					String[] permTokens = comment.getPermId().getId().split(":");
-					if (permTokens.length == 2) {
-						return review.getServer().getUrl() + "/cru/"
-								+ review.getPermId().getId()
-								+ "/#c" + permTokens[1];
-					}
-				}
+		if (review != null && comment != null && comment.getPermId() != null) {
+			String[] permTokens = comment.getPermId().getId().split(":");
+			if (permTokens.length == 2) {
+				return review.getServer().getUrl() + "/cru/"
+						+ review.getPermId().getId() + "/#c" + permTokens[1];
 			}
+		}
+		return null;
+	}
+
+	public static String getVersionedFileUrl(final ReviewAdapter review, final CrucibleFileInfo file) {
+		if (review != null && file != null && file.getPermId() != null) {
+			return review.getServer().getUrl() + "/cru/"
+					+ review.getPermId().getId() + "/viewfile/" + file.getPermId().getId();
 		}
 		return null;
 	}
