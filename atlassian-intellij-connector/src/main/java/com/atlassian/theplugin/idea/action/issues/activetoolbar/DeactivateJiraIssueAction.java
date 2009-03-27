@@ -15,12 +15,9 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -36,26 +33,11 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
+				boolean isOk = deactivate(event);
 				final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-
-				if (conf != null) {
-					ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
-					if (activeIssue != null) {
-						final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-						if (panel != null) {
-
-
-							boolean isOk = panel.logWorkOrDeactivateIssue(getJIRAIssue(event),
-									getJiraServer(event),
-									StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-									true);
-							if (isOk) {
-								conf.setActiveJiraIssue(null);
-								setInvisibleToolbar();
-							}
-						}
-
-					}
+				if (isOk) {
+					conf.setActiveJiraIssue(null);
+					setInvisibleToolbar();
 				}
 			}
 		});

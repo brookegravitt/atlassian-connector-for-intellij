@@ -19,7 +19,6 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -47,11 +46,15 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 					final ActiveJiraIssue activeIssue =
 							new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
 									new DateTime());
+					boolean isAlreadyActive = getActiveJiraIssue(event) != null;
 
 
-					if (activate(event, activeIssue)) {
+					if (deactivate(event) && activate(event, activeIssue)) {
 						setActiveJiraIssue(event, activeIssue);
-						registerToolbar();
+
+						if (!isAlreadyActive) {
+							registerToolbar();
+						}
 					}
 				}
 			}
@@ -60,27 +63,13 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	}
 
-	private boolean activate(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
-		final Project project = IdeaHelper.getCurrentProject(event);
-		boolean isOk = false;
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JiraServerCfg jiraServer = getJiraServer(event, activeIssue);
-		final JIRAIssue issue = getJIRAIssue(jiraServer, activeIssue);
-		if (panel != null && issue != null && jiraServer != null) {
-			//assign to me and start working
-			isOk = panel.startWorkingOnIssue(issue, jiraServer);
-		}
-
-		return isOk;
-	}
-
 
 	public void onUpdate(final AnActionEvent event) {
 
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		event.getPresentation().setEnabled(!enabled);
+		//event.getPresentation().setEnabled(!enabled);
 
 	}
 
