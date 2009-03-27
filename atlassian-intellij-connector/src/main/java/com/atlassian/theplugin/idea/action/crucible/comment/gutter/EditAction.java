@@ -20,7 +20,7 @@ public class EditAction extends AbstractGutterCommentAction {
 	}
 
 	private void editComment(final Project project, final VersionedComment comment, final VersionedCommentBean localCopy,
-			final String message) {
+			final Throwable error) {
 
 		final VersionedCommentBean newComment;
 		if (localCopy != null) {
@@ -29,7 +29,7 @@ public class EditAction extends AbstractGutterCommentAction {
 			newComment = new VersionedCommentBean(comment);
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, message);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -45,7 +45,7 @@ public class EditAction extends AbstractGutterCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								editComment(project, newComment, newComment, e.getMessage());
+								editComment(project, newComment, newComment, e);
 							}
 						});
 					}

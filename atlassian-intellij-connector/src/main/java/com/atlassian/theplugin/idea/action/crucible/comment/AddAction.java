@@ -141,7 +141,7 @@ public class AddAction extends AbstractCommentAction {
 	}
 
 	private void addCommentToFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
-			final VersionedCommentBean localCopy, final String errorMessage) {
+			final VersionedCommentBean localCopy, final Throwable error) {
 		final VersionedCommentBean newComment;
 		if (localCopy != null) {
 			newComment = new VersionedCommentBean(localCopy);
@@ -151,7 +151,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setReviewItemId(review.getPermId());
 			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 		}
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -167,7 +167,7 @@ public class AddAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								addCommentToFile(project, review, file, newComment, e.getMessage());
+								addCommentToFile(project, review, file, newComment, e);
 							}
 						});
 					}
@@ -180,7 +180,7 @@ public class AddAction extends AbstractCommentAction {
 
 	private void addReplyToVersionedComment(final Project project, final ReviewAdapter review,
 			final CrucibleFileInfo file, final VersionedComment comment, final VersionedCommentBean localCopy,
-			final String erroMessage) {
+			final Throwable error) {
 		final VersionedCommentBean newComment;
 		if (localCopy != null) {
 			newComment = new VersionedCommentBean(localCopy);
@@ -198,7 +198,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, erroMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -213,7 +213,7 @@ public class AddAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								addReplyToVersionedComment(project, review, file, comment, newComment, e.getMessage());
+								addReplyToVersionedComment(project, review, file, comment, newComment, e);
 							}
 						});
 
@@ -226,7 +226,7 @@ public class AddAction extends AbstractCommentAction {
 	}
 
 	private void addReplyToGeneralComment(final Project project, final ReviewAdapter review,
-			final GeneralComment parentComment, final GeneralCommentBean localCopy, final String errorMessage) {
+			final GeneralComment parentComment, final GeneralCommentBean localCopy, final Throwable error) {
 		final GeneralCommentBean newComment;
 		if (localCopy != null) {
 			newComment = new GeneralCommentBean(localCopy);
@@ -235,7 +235,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setReply(true);
 		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, errorMessage);
+		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.show();
@@ -253,7 +253,7 @@ public class AddAction extends AbstractCommentAction {
 						ApplicationManager.getApplication().invokeLater(new Runnable() {
 
 							public void run() {
-								addReplyToGeneralComment(project, review, parentComment, newComment, e.getMessage());
+								addReplyToGeneralComment(project, review, parentComment, newComment, e);
 							}
 						});
 					}

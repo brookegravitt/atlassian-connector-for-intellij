@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.idea.Constants;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -22,7 +24,6 @@ import java.awt.*;
  * @author Jacek Jaroczynski
  */
 public class StatusBarPane extends JPanel implements StatusBar {
-	protected static final Color FAIL_COLOR = new Color(255, 100, 100);
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
 	private static final int PAD_Y = 8;
 	protected final Color defaultColor = this.getBackground();
@@ -70,10 +71,10 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	}
 
 	public void setErrorMessage(String msg) {
-		statusPanel.setBackground(FAIL_COLOR);
+		statusPanel.setBackground(Constants.FAIL_COLOR);
 		pane.setHorizontalAlignment(SwingConstants.LEFT);
-		pane.setBackground(FAIL_COLOR);
-		setBackground(FAIL_COLOR);
+		pane.setBackground(Constants.FAIL_COLOR);
+		setBackground(Constants.FAIL_COLOR);
 		pane.setText(" " + msg);
 	}
 }
