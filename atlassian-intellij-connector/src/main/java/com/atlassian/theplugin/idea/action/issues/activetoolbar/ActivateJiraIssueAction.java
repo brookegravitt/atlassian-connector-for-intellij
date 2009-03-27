@@ -16,12 +16,17 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.project.Project;
 import org.joda.time.DateTime;
 
@@ -46,7 +51,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 					if (activate(event, activeIssue)) {
 						setActiveJiraIssue(event, activeIssue);
-						registerToolbar(event);
+						registerToolbar();
 					}
 				}
 			}
@@ -71,26 +76,29 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 
 	public void onUpdate(final AnActionEvent event) {
+
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		event.getPresentation().setEnabled(!enabled);
+
 	}
 
-	private void registerToolbar(final AnActionEvent event) {
+	private static void registerToolbar() {
+		ActionManager aManager = ActionManager.getInstance();
+		ActionGroup newActionGroup = (ActionGroup) aManager.getAction(Constants.ACTIVE_TOOLBAR_NAME);
+		DefaultActionGroup mainToolBar = (DefaultActionGroup) aManager.getAction("MainToolBar");
 
-//		ActionManager aManager = ActionManager.getInstance();
-//			ActionGroup menu = (ActionGroup) aManager.getAction(Constants.ACTIVE_TOOLBAR_NAME);
-//			DefaultActionGroup mainToolBar = (DefaultActionGroup) aManager.getAction("MainToolBar");
-//
-//
-//			if (menu != null && mainToolBar != null) {
-//				//aManager.createActionToolbar("ActionToolbar", menu, true);
-//				mainToolBar.add(new ActiveJiraIssueLabel(), Constraints.LAST, aManager);
-//				mainToolBar.add(new DeactivateJiraIssueAction(), Constraints.LAST, aManager);
-//				mainToolBar.add(new ActiveIssueLogWorkAction(), Constraints.LAST, aManager);
-//				mainToolBar.add(new ActiveIssueCommentAction(), Constraints.LAST, aManager);
-//			}
+		if (newActionGroup != null && mainToolBar != null) {
+			mainToolBar.add(newActionGroup);
+		}
+	}
 
+	public static void showToolbar(final Project project) {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+
+		if (conf != null && conf.getActiveJiraIssue() != null) {
+			registerToolbar();
+		}
 	}
 }
