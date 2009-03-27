@@ -60,7 +60,7 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 			issue.recalculateTimeSpent();
 			String jiraTimeSpent = StringUtil.generateJiraLogTimeString(issue.getSecondsSpent());
 			if (jiraTimeSpent.length() > 0) {
-				jiraTimeSpent += ":" + jiraTimeSpent;
+				jiraTimeSpent = ":" + jiraTimeSpent;
 			}
 
 			presentation.setText("Active Issue:"
