@@ -501,7 +501,7 @@
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueComment"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueCommentAction"
 				text="Add Comment"
-				icon="/general/add.png">
+				icon="/icons/icn_comment.gif">
 		</action>
 
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
@@ -797,7 +797,7 @@
 		<action id="ThePlugin.JiraIssues.AddComment"
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
 				text="Add Comment"
-				icon="/general/add.png"/>
+				icon="/icons/icn_comment.gif"/>
 		<action id="ThePlugin.JiraIssues.LogWork"
 				class="com.atlassian.theplugin.idea.action.issues.LogWorkAction"
 				icon="/general/todoDefault.png"
@@ -822,7 +822,7 @@
 		<action id="ThePlugin.JiraIssues.EditorAddComment"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.AddCommentAction"
 				text="Add Comment"
-				icon="/general/add.png"/>
+				icon="/icons/icn_comment.gif"/>
 		<action id="ThePlugin.JiraIssues.EditorRefresh"
 				class="com.atlassian.theplugin.idea.action.issues.oneissue.EditorRefreshAction"
 				text="Refresh"
