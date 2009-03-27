@@ -16,7 +16,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 		JIRAIssue issue = getJIRAIssue(event);
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (issue != null && panel != null) {
-			panel.addCommentToIssue(issue);
+			panel.addCommentToIssue(issue.getKey(), getJiraServer(event));
 		}
 	}
 
