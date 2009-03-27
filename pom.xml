@@ -46,6 +46,9 @@
             <artifactId>openapi</artifactId>
             <version>7.0</version>
             <classifier>7590</classifier>
+            <!--artifactId>openapi</artifactId>
+            <version>8.0</version>
+            <classifier>9013</classifier-->
             <scope>compile</scope>
         </dependency>
         <dependency>
