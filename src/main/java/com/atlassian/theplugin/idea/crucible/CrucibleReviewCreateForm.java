@@ -84,7 +84,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-			@NotNull final CfgManager cfgManager, @NotNull String dialogTitle) {
+									@NotNull final CfgManager cfgManager, @NotNull String dialogTitle) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -226,8 +226,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private void $$$setupUI$$$() {
 		createUIComponents();
 		rootComponent = new JPanel();
-		rootComponent.setLayout(new FormLayout("fill:d:grow",
-				"center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:p:grow,top:3dlu:noGrow,fill:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+		rootComponent.setLayout(new FormLayout("fill:d:grow", "center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow,center:max(d;4px):noGrow,center:p:grow,top:3dlu:noGrow,fill:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		rootComponent.setMinimumSize(new Dimension(800, 505));
 		final JLabel label1 = new JLabel();
 		label1.setText("Title:");
@@ -236,9 +235,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		titleText = new JTextField();
 		rootComponent.add(titleText, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new FormLayout(
-				"fill:d:noGrow,left:4dlu:noGrow,fill:300px:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(p;4px):grow",
-				"center:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+		panel1.setLayout(new FormLayout("fill:d:noGrow,left:4dlu:noGrow,fill:300px:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(p;4px):grow", "center:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		rootComponent.add(panel1, cc.xy(1, 5));
 		final JLabel label2 = new JLabel();
 		label2.setText("Server:");
@@ -490,7 +487,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		private final List<User> users;
 
 		public CrucibleServerData(final List<Repository> repositories, final List<CrucibleProject> projects,
-				final List<User> users) {
+								  final List<User> users) {
 			this.repositories = repositories;
 			this.projects = projects;
 			this.users = users;
