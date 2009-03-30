@@ -134,8 +134,8 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		if (panel != null && jiraIssue != null && jiraServer != null) {
 			if (jiraServer != null && !jiraServer.getUsername().equals(jiraIssue.getAssigneeId())) {
 				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-						"Is already assigned to " + jiraIssue.getAssignee() +
-								". Do you want to overwrite assignee and start progress?",
+						"Is already assigned to " + jiraIssue.getAssignee()
+								+ ". Do you want to overwrite assignee and start progress?",
 						"Issue " + jiraIssue.getKey(),
 						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 			}
