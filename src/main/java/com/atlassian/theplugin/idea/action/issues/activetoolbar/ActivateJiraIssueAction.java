@@ -62,18 +62,21 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 					}
 
-					if (isDeactivated && deactivate(event) && activate(event, newActiveIssue)) {
-						setActiveJiraIssue(event, newActiveIssue);
+					if (isDeactivated && deactivate(event)) {
+						final boolean isActivated = activate(event, newActiveIssue);
+						if (isActivated) {
+							setActiveJiraIssue(event, newActiveIssue);
+						} else {
+							setActiveJiraIssue(event, null);
+						}
 
-						if (!isAlreadyActive) {
+						if (!isAlreadyActive && isActivated) {
 							registerToolbar();
 						}
 					}
 				}
 			}
 		});
-
-
 	}
 
 
