@@ -42,12 +42,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
 					JiraServerCfg jiraServerCfg = getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
 					ActiveJiraIssue newActiveIssue = null;
-
 					if (jiraServerCfg != null) {
 						newActiveIssue =
 								new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
@@ -63,9 +61,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 											+ " is active. Would you like to deactivate it first and proceed?",
 									"Deactivating current issue",
 									Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-
 						}
-
 						if (isDeactivated && deactivate(event)) {
 							final boolean isActivated = activate(event, newActiveIssue);
 							if (isActivated) {
