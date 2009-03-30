@@ -76,10 +76,25 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 
-	protected JiraServerCfg getSelectedJiraServer(final AnActionEvent event) {
+	protected JiraServerCfg getSelectedJiraServerByUrl(final AnActionEvent event, String serverUrl) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel != null) {
-			return panel.getSelectedServer();
+//			//return panel.getSelectedServer();
+
+			final Project project = IdeaHelper.getCurrentProject(event);
+			return CfgUtil.getJiraServerCfgByUrl(project, panel.getProjectCfgManager(), serverUrl);
+		}
+		return null;
+	}
+
+
+	protected JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverUrl) {
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		if (panel != null) {
+//			//return panel.getSelectedServer();
+
+			final Project project = IdeaHelper.getCurrentProject(event);
+			return CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), serverUrl);
 		}
 		return null;
 	}
@@ -119,7 +134,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		JiraServerCfg jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
-			jiraServer = CfgUtil.getJiraServerCfg(project, panel.getProjectCfgManager(), activeIssue.getServerId());
+			jiraServer = CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), activeIssue.getServerId());
 		}
 		return jiraServer;
 	}

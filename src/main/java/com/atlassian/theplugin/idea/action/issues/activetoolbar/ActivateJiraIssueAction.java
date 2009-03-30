@@ -45,33 +45,38 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
-					JiraServerCfg jiraServerCfg = getSelectedJiraServer(event);
-					final ActiveJiraIssue newActiveIssue =
-							new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
-									new DateTime());
-					final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
-					boolean isAlreadyActive = activeIssue != null;
-					boolean isDeactivated = true;
-					if (isAlreadyActive) {
+					JiraServerCfg jiraServerCfg = getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
+					ActiveJiraIssue newActiveIssue = null;
 
-						isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-								activeIssue.getIssueKey()
-										+ " is active. Would you like to deactivate it first and proceed?",
-								"Deactivating current issue",
-								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+					if (jiraServerCfg != null) {
+						newActiveIssue =
+								new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
+										new DateTime());
 
-					}
+						final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
+						boolean isAlreadyActive = activeIssue != null;
+						boolean isDeactivated = true;
+						if (isAlreadyActive) {
 
-					if (isDeactivated && deactivate(event)) {
-						final boolean isActivated = activate(event, newActiveIssue);
-						if (isActivated) {
-							setActiveJiraIssue(event, newActiveIssue);
-						} else {
-							setActiveJiraIssue(event, null);
+							isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+									activeIssue.getIssueKey()
+											+ " is active. Would you like to deactivate it first and proceed?",
+									"Deactivating current issue",
+									Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+
 						}
 
-						if (!isAlreadyActive && isActivated) {
-							registerToolbar();
+						if (isDeactivated && deactivate(event)) {
+							final boolean isActivated = activate(event, newActiveIssue);
+							if (isActivated) {
+								setActiveJiraIssue(event, newActiveIssue);
+							} else {
+								setActiveJiraIssue(event, null);
+							}
+
+							if (!isAlreadyActive && isActivated) {
+								registerToolbar();
+							}
 						}
 					}
 				}
@@ -86,10 +91,11 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
-		final JiraServerCfg selectedServer = getSelectedJiraServer(event);
 
-		if (selectedIssue != null && activeIssue != null && selectedServer != null) {
+		if (selectedIssue != null && activeIssue != null
+				&& getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
 
+			final JiraServerCfg selectedServer = getSelectedJiraServerById(event, activeIssue.getServerId());
 			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
 			event.getPresentation().setEnabled(!equals);

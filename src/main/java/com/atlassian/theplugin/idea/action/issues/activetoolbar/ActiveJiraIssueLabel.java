@@ -23,6 +23,7 @@ import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
@@ -30,6 +31,8 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
+	static final Icon jiraIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
+
 	public boolean displayTextInToolbar() {
 		return true;
 	}
@@ -63,11 +66,12 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 				jiraTimeSpent = ":" + jiraTimeSpent;
 			}
 
-			presentation.setText("Active Issue:"
+			presentation.setText("Active Issue: "
 					+ issue.getIssueKey()
 					+ jiraTimeSpent);
 
 			presentation.setEnabled(true);
+			presentation.setIcon(jiraIcon);
 		}
 
 		createTooltipText("Open Issue", this);
