@@ -37,11 +37,15 @@ public class DialogWithDetails extends DialogWrapper {
 	private JTextArea ctrlDetailsText;
 	private JPanel rootPane;
 	private JScrollPane ctrlDetailsPane;
-	private static final int MAX_DESCRIPTION_LENGTH = 50;
+	private static final int MAX_DESCRIPTION_LENGTH = 80;
 
 	protected DialogWithDetails(Project project, String description, Throwable exception) {
 		super(project, false);
-		this.description = description.substring(0, Math.min(description.length(), MAX_DESCRIPTION_LENGTH));
+		if (description.length() > MAX_DESCRIPTION_LENGTH) {
+			this.description = description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
+		} else {
+			this.description = description;
+		}
 		this.exceptionStr = getExceptionString(exception);
 
 		setTitle(PluginUtil.PRODUCT_NAME);
