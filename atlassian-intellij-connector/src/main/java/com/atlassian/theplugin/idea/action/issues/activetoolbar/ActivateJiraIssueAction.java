@@ -90,8 +90,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
 			event.getPresentation().setEnabled(!equals);
-		} else {
+		} else if (selectedIssue != null) {
 			event.getPresentation().setEnabled(true);
+		} else {
+			event.getPresentation().setEnabled(false);
 		}
 	}
 
