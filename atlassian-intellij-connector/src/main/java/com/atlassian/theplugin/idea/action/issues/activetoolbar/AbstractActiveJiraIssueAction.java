@@ -45,7 +45,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 	public final void update(final AnActionEvent event) {
-		boolean enabled = getActiveJiraIssue(event) != null ? true : false;
+		boolean enabled = getActiveJiraIssue(event) != null;
 
 		if (enabled) {
 			onUpdate(event);

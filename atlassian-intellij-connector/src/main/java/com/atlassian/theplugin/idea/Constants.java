@@ -26,8 +26,8 @@ import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
-import java.util.Collection;
 import java.awt.*;
+import java.util.Collection;
 
 public final class Constants {
 
@@ -111,5 +111,6 @@ public final class Constants {
 	public static final Icon CRUCIBLE_REVIEW_PANEL_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
 
 	public static final String ACTIVE_TOOLBAR_NAME = "ThePlugin.ActiveToolbar";
+	public static final String ACTIVE_JIRA_ISSUE_ACTION = "ThePlugin.ActiveTaskBar.ShowActiveJiraIssue";
 }
 
