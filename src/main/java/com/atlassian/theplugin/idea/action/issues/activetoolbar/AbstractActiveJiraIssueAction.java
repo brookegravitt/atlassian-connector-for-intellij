@@ -32,12 +32,13 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 
 /**
  * User: pmaruszak
  */
 public abstract class AbstractActiveJiraIssueAction extends AnAction {
-
 	public abstract void onUpdate(AnActionEvent event);
 
 	public void onUpdate(AnActionEvent event, boolean enabled) {
@@ -125,14 +126,24 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 
 	protected boolean activate(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
 		final Project project = IdeaHelper.getCurrentProject(event);
-		boolean isOk = false;
+		boolean isOk = true;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		final JiraServerCfg jiraServer = getJiraServer(event, activeIssue);
-		final JIRAIssue issue = getJIRAIssue(jiraServer, activeIssue);
+		final JIRAIssue jiraIssue = getJIRAIssue(jiraServer, activeIssue);
 
-		if (panel != null && issue != null && jiraServer != null) {
-			//assign to me and start working
-			isOk = panel.startWorkingOnIssue(issue, jiraServer);
+		if (panel != null && jiraIssue != null && jiraServer != null) {
+			if (jiraServer != null && !jiraServer.getUsername().equals(jiraIssue.getAssigneeId())) {
+				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+						"Is already assigned to " + jiraIssue.getAssignee() +
+								". Do you want to overwrite assignee and start progress?",
+						"Issue " + jiraIssue.getKey(),
+						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+			}
+
+			if (isOk) {
+				//assign to me and start working
+				isOk = panel.startWorkingOnIssue(jiraIssue, jiraServer);
+			}
 		}
 		return isOk;
 	}
@@ -143,11 +154,18 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
 			if (activeIssue != null) {
 				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				if (panel != null) {
-					boolean isOk = panel.logWorkOrDeactivateIssue(getJIRAIssue(event),
-							getJiraServer(event),
+				final JIRAIssue jiraIssue = getJIRAIssue(event);
+				if (panel != null && jiraIssue != null) {
+					boolean isOk = true;
+					final JiraServerCfg jiraServer = getJiraServer(event);
+
+
+					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
+							jiraServer,
 							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 							true);
+
+
 					return isOk;
 
 				}
