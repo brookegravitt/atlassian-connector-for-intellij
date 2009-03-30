@@ -42,10 +42,21 @@ public final class CfgUtil {
 		return DEFAULT_PROJECT;
 	}
 
-	public static JiraServerCfg getJiraServerCfg(final Project project, final ProjectCfgManager projectCfgManager,
+	public static JiraServerCfg getJiraServerCfgbyServerId(final Project project, final ProjectCfgManager projectCfgManager,
 			final String serverId) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 			if (server.getServerId().toString().equals(serverId)) {
+				return server;
+
+			}
+		}
+		return null;
+	}
+
+	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final ProjectCfgManager projectCfgManager,
+			final String serverUrl) {
+		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+			if (server.getUrl().toString().equals(serverUrl)) {
 				return server;
 
 			}
