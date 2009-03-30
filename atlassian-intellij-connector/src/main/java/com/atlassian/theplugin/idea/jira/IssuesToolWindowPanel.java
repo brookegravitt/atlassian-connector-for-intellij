@@ -1130,7 +1130,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
 				JiraServerCfg jiraServer, boolean deactivateIssue) {
-			super(IssuesToolWindowPanel.this.getProject(), "Logging Work", false);
+			super(IssuesToolWindowPanel.this.getProject(),
+					deactivateIssue ? "Deactivating Issue" : "Logging Work", false);
+
 			this.issue = issue;
 			this.dialog = dialog;
 			this.jiraServer = jiraServer;
@@ -1141,12 +1143,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void run(@NotNull final ProgressIndicator indicator) {
 			try {
 
-				setStatusMessage("Logging work for issue " + issue.getKey() + "...");
-				Calendar cal = Calendar.getInstance();
-				cal.setTime(dialog.getStartDate());
-
 				if (jiraServer != null) {
 					if (dialog.isLogTime()) {
+						setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+						Calendar cal = Calendar.getInstance();
+						cal.setTime(dialog.getStartDate());
+
 						String newRemainingEstimate = dialog.getUpdateRemainingManually()
 								? dialog.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
