@@ -36,7 +36,7 @@
           <grid id="29879" binding="timePanel" layout-manager="FormLayout">
             <rowspec value="center:d:noGrow"/>
             <rowspec value="top:3dlu:noGrow"/>
-            <rowspec value="center:d:noGrow"/>
+            <rowspec value="center:p:noGrow"/>
             <rowspec value="top:3dlu:noGrow"/>
             <rowspec value="center:d:noGrow"/>
             <rowspec value="top:3dlu:noGrow"/>
@@ -85,7 +85,7 @@
               </component>
               <component id="d4b56" class="javax.swing.JTextPane" binding="anEstimateOfHowTextPane" default-binding="true">
                 <constraints>
-                  <grid row="2" column="3" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="1" fill="1" indent="0" use-parent-layout="false">
+                  <grid row="2" column="3" row-span="1" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                     <preferred-size width="150" height="50"/>
                   </grid>
                   <forms defaultalign-horz="false" defaultalign-vert="false"/>
@@ -95,10 +95,10 @@
                   <enabled value="true"/>
                   <font size="10"/>
                   <margin top="0" left="12" bottom="0" right="0"/>
-                  <maximumSize width="310" height="90"/>
-                  <minimumSize width="310" height="90"/>
+                  <maximumSize width="310" height="100"/>
+                  <minimumSize width="310" height="100"/>
                   <opaque value="false"/>
-                  <preferredSize width="310" height="90"/>
+                  <preferredSize width="310" height="100"/>
                   <text value="An estimate of how much time &#10;you have spent working. &#10;The format of this is ' *w *d *h *m ' &#10;(representing weeks, days, hours and minutes &#10;- where * can be any number) &#10;Examples: 4d, 5h 30m, 60m and 3w. "/>
                 </properties>
               </component>
