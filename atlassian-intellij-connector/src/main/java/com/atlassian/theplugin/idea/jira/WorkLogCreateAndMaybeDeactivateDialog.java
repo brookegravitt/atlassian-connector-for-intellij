@@ -535,7 +535,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	}
 
 	public java.util.List<Change> getSelectedChanges() {
-		return ((MultipleChangeListBrowser) changesPanel).getCurrentIncludedChanges();
+		return changesBrowserPanel.getCurrentIncludedChanges();
 	}
 
 	public String getTimeSpentString() {
