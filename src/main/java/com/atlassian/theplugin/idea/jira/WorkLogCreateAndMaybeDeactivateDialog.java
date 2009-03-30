@@ -491,25 +491,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		chkLogWork.setVisible(deactivateActiveIssue);
 		if (!deactivateActiveIssue) {
 			wrapperPanel.remove(changesetPanel);
-//			wrapperPanel.remove(commentPanel);
-			wrapperPanel.validate();
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					CellConstraints cc = new CellConstraints();
-//					wrapperPanel.add(commentPanel, cc.xyw(1, 5, 1, CellConstraints.FILL, CellConstraints.FILL));
-					timePanel.setBorder(BorderFactory.createEmptyBorder());
-					validate();
-				}
-			});
+			timePanel.setBorder(BorderFactory.createEmptyBorder());
 			Dimension newSize = new Dimension(
 					(int) timePanel.getMinimumSize().getWidth(), (int) contentPane.getMinimumSize().getHeight());
 			contentPane.setPreferredSize(newSize);
 			contentPane.setMinimumSize(newSize);
 			contentPane.setSize(contentPane.getMinimumSize());
-//			comment.setSize(1, comment.getHeight());
-//			commentPanel.setSize(1, commentPanel.getHeight());
-//			commentPanel.validate();
-//			contentPane.validate();
 		}
 		endTimePanel.setVisible(!deactivateActiveIssue);
 	}
