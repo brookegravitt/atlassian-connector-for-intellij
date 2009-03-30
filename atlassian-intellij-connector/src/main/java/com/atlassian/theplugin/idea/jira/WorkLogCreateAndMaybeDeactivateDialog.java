@@ -106,7 +106,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		CellConstraints cc = new CellConstraints();
 		contentPane.add(wrapperPanel, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 		timePanel = new JPanel();
-		timePanel.setLayout(new FormLayout("fill:2dlu:noGrow,fill:136px:noGrow,fill:max(d;4px):noGrow,fill:p:noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:grow"));
+		timePanel.setLayout(new FormLayout("fill:2dlu:noGrow,fill:136px:noGrow,fill:max(d;4px):noGrow,fill:p:noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:noGrow,top:3dlu:noGrow,center:p:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow"));
 		wrapperPanel.add(timePanel, cc.xy(1, 3, CellConstraints.LEFT, CellConstraints.FILL));
 		timePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Time Tracking"));
 		timeSpentField = new JTextField();
@@ -121,12 +121,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		anEstimateOfHowTextPane.setEnabled(true);
 		anEstimateOfHowTextPane.setFont(new Font(anEstimateOfHowTextPane.getFont().getName(), anEstimateOfHowTextPane.getFont().getStyle(), 10));
 		anEstimateOfHowTextPane.setMargin(new Insets(0, 12, 0, 0));
-		anEstimateOfHowTextPane.setMaximumSize(new Dimension(310, 90));
-		anEstimateOfHowTextPane.setMinimumSize(new Dimension(310, 90));
+		anEstimateOfHowTextPane.setMaximumSize(new Dimension(350, 100));
+		anEstimateOfHowTextPane.setMinimumSize(new Dimension(350, 100));
 		anEstimateOfHowTextPane.setOpaque(false);
-		anEstimateOfHowTextPane.setPreferredSize(new Dimension(310, 90));
+		anEstimateOfHowTextPane.setPreferredSize(new Dimension(350, 100));
 		anEstimateOfHowTextPane.setText("An estimate of how much time \nyou have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes \n- where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
-		timePanel.add(anEstimateOfHowTextPane, cc.xyw(4, 3, 2, CellConstraints.FILL, CellConstraints.TOP));
+		timePanel.add(anEstimateOfHowTextPane, cc.xyw(4, 3, 2, CellConstraints.FILL, CellConstraints.FILL));
 		final JLabel label2 = new JLabel();
 		label2.setText("Remaining Estimate:");
 		timePanel.add(label2, cc.xy(2, 7));
@@ -161,8 +161,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		label3.setVerticalAlignment(1);
 		label3.setVerticalTextPosition(1);
 		endTimePanel.add(label3, cc.xy(1, 1));
-		final Spacer spacer1 = new Spacer();
-		timePanel.add(spacer1, cc.xy(4, 15, CellConstraints.DEFAULT, CellConstraints.FILL));
 		changesetPanel = new JPanel();
 		changesetPanel.setLayout(new FormLayout("fill:p:grow", "fill:p:grow,top:3dlu:noGrow,center:d:noGrow"));
 		changesetPanel.setBackground(SystemColor.control);
@@ -188,7 +186,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		changesPanel.setPreferredSize(new Dimension(300, 1));
 		changesetPanel.add(changesPanel, cc.xy(1, 1));
 		commentPanel = new JPanel();
-		commentPanel.setLayout(new FormLayout("fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:d:grow,fill:max(d;4px):noGrow", "center:50dlu:grow"));
+		commentPanel.setLayout(new FormLayout("fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:d:grow,fill:max(d;4px):noGrow", "fill:d:grow(4.0)"));
 		commentPanel.setMinimumSize(new Dimension(100, 81));
 		commentPanel.setPreferredSize(new Dimension(100, 81));
 		wrapperPanel.add(commentPanel, cc.xyw(1, 5, 2, CellConstraints.FILL, CellConstraints.FILL));
