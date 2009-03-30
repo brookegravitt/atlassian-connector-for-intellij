@@ -97,11 +97,11 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		contentPane = new JPanel();
 		contentPane.setLayout(new FormLayout("fill:d:grow", "center:d:grow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
 		contentPane.setMinimumSize(new Dimension(700, 400));
-		contentPane.setPreferredSize(new Dimension(1000, 600));
+		contentPane.setPreferredSize(new Dimension(800, 600));
 		wrapperPanel = new JPanel();
-		wrapperPanel.setLayout(new FormLayout("fill:m:noGrow,fill:p:grow", "center:max(d;4px):noGrow,center:max(d;4px):noGrow,fill:d:noGrow,top:3dlu:noGrow,center:max(d;20dlu):grow"));
-		wrapperPanel.setMinimumSize(new Dimension(600, 200));
-		wrapperPanel.setPreferredSize(new Dimension(600, 200));
+		wrapperPanel.setLayout(new FormLayout("fill:m:noGrow,fill:d:grow", "center:max(d;4px):noGrow,center:max(d;4px):noGrow,fill:p:grow,top:3dlu:noGrow,center:max(d;20dlu):grow(2.0)"));
+		wrapperPanel.setMinimumSize(new Dimension(1, 200));
+		wrapperPanel.setPreferredSize(new Dimension(1, 200));
 		wrapperPanel.setRequestFocusEnabled(true);
 		CellConstraints cc = new CellConstraints();
 		contentPane.add(wrapperPanel, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
@@ -114,17 +114,17 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		timeSpentField.setPreferredSize(new Dimension(150, 28));
 		timePanel.add(timeSpentField, new CellConstraints(3, 1, 2, 1, CellConstraints.LEFT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 48)));
 		final JLabel label1 = new JLabel();
-		label1.setText("Time spent:");
+		label1.setText("Time Spent:");
 		timePanel.add(label1, cc.xy(2, 1));
 		anEstimateOfHowTextPane = new JTextPane();
 		anEstimateOfHowTextPane.setEditable(false);
 		anEstimateOfHowTextPane.setEnabled(true);
 		anEstimateOfHowTextPane.setFont(new Font(anEstimateOfHowTextPane.getFont().getName(), anEstimateOfHowTextPane.getFont().getStyle(), 10));
 		anEstimateOfHowTextPane.setMargin(new Insets(0, 12, 0, 0));
-		anEstimateOfHowTextPane.setMaximumSize(new Dimension(310, 80));
-		anEstimateOfHowTextPane.setMinimumSize(new Dimension(310, 80));
+		anEstimateOfHowTextPane.setMaximumSize(new Dimension(310, 90));
+		anEstimateOfHowTextPane.setMinimumSize(new Dimension(310, 90));
 		anEstimateOfHowTextPane.setOpaque(false);
-		anEstimateOfHowTextPane.setPreferredSize(new Dimension(310, 80));
+		anEstimateOfHowTextPane.setPreferredSize(new Dimension(310, 90));
 		anEstimateOfHowTextPane.setText("An estimate of how much time \nyou have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes \n- where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
 		timePanel.add(anEstimateOfHowTextPane, cc.xyw(4, 3, 2, CellConstraints.FILL, CellConstraints.TOP));
 		final JLabel label2 = new JLabel();
@@ -157,20 +157,25 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		endDateLabel.setText("1/01/08 12:00");
 		endTimePanel.add(endDateLabel, cc.xy(3, 1));
 		final JLabel label3 = new JLabel();
-		label3.setText("End time:");
+		label3.setText("End Time:");
 		label3.setVerticalAlignment(1);
 		label3.setVerticalTextPosition(1);
 		endTimePanel.add(label3, cc.xy(1, 1));
 		final Spacer spacer1 = new Spacer();
 		timePanel.add(spacer1, cc.xy(4, 15, CellConstraints.DEFAULT, CellConstraints.FILL));
 		changesetPanel = new JPanel();
-		changesetPanel.setLayout(new FormLayout("fill:d:grow", "fill:d:grow,top:3dlu:noGrow,center:d:noGrow"));
+		changesetPanel.setLayout(new FormLayout("fill:p:grow", "fill:p:grow,top:3dlu:noGrow,center:d:noGrow"));
 		changesetPanel.setBackground(SystemColor.control);
 		changesetPanel.setMinimumSize(new Dimension(0, 16));
-		changesetPanel.setPreferredSize(new Dimension(0, 1000));
+		changesetPanel.setPreferredSize(new Dimension(0, 16));
+		changesetPanel.setRequestFocusEnabled(true);
 		wrapperPanel.add(changesetPanel, cc.xy(2, 3));
 		changesetPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Changes"));
 		chkDeactivateChangeSet = new JCheckBox();
+		chkDeactivateChangeSet.setMaximumSize(new Dimension(1, 23));
+		chkDeactivateChangeSet.setMinimumSize(new Dimension(1, 23));
+		chkDeactivateChangeSet.setOpaque(false);
+		chkDeactivateChangeSet.setPreferredSize(new Dimension(1, 23));
 		chkDeactivateChangeSet.setSelected(true);
 		chkDeactivateChangeSet.setText("Deactivate Change List After Commit");
 		changesetPanel.add(chkDeactivateChangeSet, cc.xy(1, 3));
@@ -180,12 +185,15 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		changesPanel.setMaximumSize(new Dimension(500, 2147483647));
 		changesPanel.setMinimumSize(new Dimension(0, 16));
 		changesPanel.setOpaque(false);
-		changesPanel.setPreferredSize(new Dimension(100, 1000));
+		changesPanel.setPreferredSize(new Dimension(300, 1));
 		changesetPanel.add(changesPanel, cc.xy(1, 1));
 		commentPanel = new JPanel();
-		commentPanel.setLayout(new FormLayout("fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:m:grow", "center:50dlu:grow"));
+		commentPanel.setLayout(new FormLayout("fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:d:grow,fill:max(d;4px):noGrow", "center:50dlu:grow"));
+		commentPanel.setMinimumSize(new Dimension(100, 81));
+		commentPanel.setPreferredSize(new Dimension(100, 81));
 		wrapperPanel.add(commentPanel, cc.xyw(1, 5, 2, CellConstraints.FILL, CellConstraints.FILL));
 		final JScrollPane scrollPane1 = new JScrollPane();
+		scrollPane1.setHorizontalScrollBarPolicy(30);
 		commentPanel.add(scrollPane1, cc.xy(4, 1, CellConstraints.FILL, CellConstraints.FILL));
 		comment = new JTextArea();
 		scrollPane1.setViewportView(comment);
@@ -197,6 +205,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		chkLogWork.setText("Log Work");
 		wrapperPanel.add(chkLogWork, cc.xy(1, 1));
 		chkCommitChanges = new JCheckBox();
+		chkCommitChanges.setMinimumSize(new Dimension(0, 23));
+		chkCommitChanges.setPreferredSize(new Dimension(1, 23));
 		chkCommitChanges.setSelected(true);
 		chkCommitChanges.setText("Commit Changes");
 		wrapperPanel.add(chkCommitChanges, cc.xy(2, 1));
@@ -328,14 +338,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 //				BrowserUtil.launchBrowser(helpUrl);
 //			}
 //		});
-
-		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
-		LocalChangeList chList = changeListManager.getDefaultChangeList();
-		changesPanel = IdeaVersionFacade.getInstance()
-				.getChangesListBrowser(project, changeListManager, chList.getChanges());
-
-		// todo: use this to know what to commit
-//		((MultipleChangeListBrowser)changesPanel).getCurrentIncludedChanges()
 	}
 
 	private void updateOKAction() {
@@ -489,13 +491,25 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		chkLogWork.setVisible(deactivateActiveIssue);
 		if (!deactivateActiveIssue) {
 			wrapperPanel.remove(changesetPanel);
-			timePanel.setBorder(BorderFactory.createEmptyBorder());
-			validate();
+//			wrapperPanel.remove(commentPanel);
+			wrapperPanel.validate();
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					CellConstraints cc = new CellConstraints();
+//					wrapperPanel.add(commentPanel, cc.xyw(1, 5, 1, CellConstraints.FILL, CellConstraints.FILL));
+					timePanel.setBorder(BorderFactory.createEmptyBorder());
+					validate();
+				}
+			});
 			Dimension newSize = new Dimension(
 					(int) timePanel.getMinimumSize().getWidth(), (int) contentPane.getMinimumSize().getHeight());
 			contentPane.setPreferredSize(newSize);
 			contentPane.setMinimumSize(newSize);
 			contentPane.setSize(contentPane.getMinimumSize());
+//			comment.setSize(1, comment.getHeight());
+//			commentPanel.setSize(1, commentPanel.getHeight());
+//			commentPanel.validate();
+//			contentPane.validate();
 		}
 		endTimePanel.setVisible(!deactivateActiveIssue);
 	}
