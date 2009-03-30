@@ -109,41 +109,50 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public synchronized void addIssuesToModel(LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,
 			final Collection<JiraServerCfg> allEnabledJiraServers, int size, boolean reload) throws JIRAException {
+
+		JIRAException exception = null;
 		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
-		try {
-			model.setModelFrozen(true);
-			if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
-				if (model != null) {
-					model.clear();
-					model.fireModelChanged();
-				}
-				return;
-			}
-
-			if (reload) {
-				startFrom = 0;
-				model.clear();
-			}
-
-			for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
-				for (JiraServerCfg server : allEnabledJiraServers) {
-					if (server.getServerId().toString().equals(recentIssue.getServerId())) {
-						JIRAIssue issue = facade.getIssue(server, recentIssue.getIssueKey());
-						l.add(issue);
-						break;
-					}
-				}
-			}
-
-			model.addIssues(l);
-
-			startFrom += l.size();
-		} finally {
+		model.setModelFrozen(true);
+		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
 			if (model != null) {
+				model.clear();
 				model.fireModelChanged();
-				model.fireIssuesLoaded(l.size());
-				model.setModelFrozen(false);
 			}
+			return;
+		}
+
+		if (reload) {
+			startFrom = 0;
+			model.clear();
+		}
+
+		for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
+			for (JiraServerCfg server : allEnabledJiraServers) {
+				if (server.getServerId().toString().equals(recentIssue.getServerId())) {
+					JIRAIssue issue = null;
+					try {
+						issue = facade.getIssue(server, recentIssue.getIssueKey());
+						l.add(issue);
+					} catch (JIRAException e) {
+						exception = e;
+					}
+					break;
+				}
+			}
+		}
+
+		model.addIssues(l);
+
+		startFrom += l.size();
+
+		if (model != null) {
+			model.fireModelChanged();
+			model.fireIssuesLoaded(l.size());
+			model.setModelFrozen(false);
+		}
+
+		if (exception != null) {
+			throw exception;
 		}
 	}
 
