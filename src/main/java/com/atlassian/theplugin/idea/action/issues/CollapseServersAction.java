@@ -12,6 +12,15 @@ public class CollapseServersAction extends JIRAAbstractAction {
 		}
 	}
 
-	public void onUpdate(AnActionEvent event) {		
+	public void onUpdate(AnActionEvent event) {
+		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		boolean enabled = panel != null;
+		event.getPresentation().setEnabled(enabled);
+	}
+
+	public void onUpdate(final AnActionEvent event, final boolean enabled) {
+		if (ModelFreezeUpdater.getState(event)) {
+			onUpdate(event);
+		}
 	}
 }
