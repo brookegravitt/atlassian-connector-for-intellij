@@ -88,20 +88,15 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		JiraServerCfg jiraServer = getJiraServer(event);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(event);
-
-
 			return getJIRAIssue(jiraServer, issue);
 		}
 		return null;
 	}
 
-	//invokeLater necessary
 	private JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue) {
 		if (jiraServer != null && activeIssue != null) {
 
 			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-
-
 			try {
 				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
@@ -125,7 +120,6 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		if (panel != null && activeIssue != null) {
 			jiraServer = CfgUtil.getJiraServerCfg(project, panel.getProjectCfgManager(), activeIssue.getServerId());
 		}
-
 		return jiraServer;
 	}
 
