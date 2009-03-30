@@ -211,7 +211,11 @@
               </vspacer>
             </children>
           </grid>
-          <grid id="2673e" binding="changesetPanel" layout-manager="GridBagLayout">
+          <grid id="2673e" binding="changesetPanel" layout-manager="FormLayout">
+            <rowspec value="fill:d:grow"/>
+            <rowspec value="top:3dlu:noGrow"/>
+            <rowspec value="center:d:noGrow"/>
+            <colspec value="fill:d:grow"/>
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
               <forms/>
@@ -225,26 +229,25 @@
             <children>
               <component id="223e9" class="javax.swing.JCheckBox" binding="chkDeactivateChangeSet">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="1.0" weighty="0.0"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+                  <forms/>
                 </constraints>
                 <properties>
                   <selected value="true"/>
                   <text value="Deactivate Change List After Commit"/>
                 </properties>
               </component>
-              <grid id="bf77b" binding="changesPanel" custom-create="true" layout-manager="FormLayout">
-                <rowspec value="center:d:grow"/>
+              <grid id="bf77b" binding="changesPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-                  <gridbag weightx="1.0" weighty="1.0"/>
+                  <forms/>
                 </constraints>
                 <properties>
                   <background system-color="control"/>
                   <maximumSize width="500" height="2147483647"/>
                   <minimumSize width="0" height="16"/>
                   <opaque value="false"/>
-                  <preferredSize width="1000" height="1000"/>
+                  <preferredSize width="100" height="1000"/>
                 </properties>
                 <border type="none"/>
                 <children/>
