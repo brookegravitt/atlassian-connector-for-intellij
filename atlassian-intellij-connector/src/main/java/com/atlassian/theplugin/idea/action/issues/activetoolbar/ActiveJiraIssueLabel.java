@@ -31,7 +31,7 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
-	static final Icon jiraIcon = IconLoader.getIcon("/icons/jira-blue-16.png");
+	static final Icon JIRA_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 
 	public boolean displayTextInToolbar() {
 		return true;
@@ -71,7 +71,7 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 					+ jiraTimeSpent);
 
 			presentation.setEnabled(true);
-			presentation.setIcon(jiraIcon);
+			presentation.setIcon(JIRA_ICON);
 		}
 
 		createTooltipText("Open Issue", this);
