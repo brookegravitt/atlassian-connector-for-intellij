@@ -58,7 +58,7 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 		if (enabled && project != null) {
 			ActiveJiraIssue issue = getActiveJiraIssue(event);
 			issue.recalculateTimeSpent();
-			String jiraTimeSpent = StringUtil.generateJiraLogTimeString(issue.getSecondsSpent());
+			String jiraTimeSpent = StringUtil.generateJiraLogTimeString(issue.recalculateTimeSpent());
 			if (jiraTimeSpent.length() > 0) {
 				jiraTimeSpent = ":" + jiraTimeSpent;
 			}
@@ -70,7 +70,7 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 			presentation.setEnabled(true);
 		}
 
-		//createTooltipText("Open Issue", event);
+		createTooltipText("Open Issue", this);
 
 	}
 }
