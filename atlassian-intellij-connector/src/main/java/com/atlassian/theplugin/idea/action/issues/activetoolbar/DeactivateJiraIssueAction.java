@@ -16,12 +16,8 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
 
 import javax.swing.*;
 
@@ -47,17 +43,5 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		event.getPresentation().setEnabled(enabled);
-	}
-
-	private void setInvisibleToolbar() {
-		ActionManager aManager = ActionManager.getInstance();
-		ActionGroup newActionGroup = (ActionGroup) aManager.getAction(Constants.ACTIVE_TOOLBAR_NAME);
-		DefaultActionGroup mainToolBar = (DefaultActionGroup) aManager.getAction("MainToolBar");
-
-		if (newActionGroup != null && mainToolBar != null) {
-			mainToolBar.remove(newActionGroup);
-
-		}
-
 	}
 }

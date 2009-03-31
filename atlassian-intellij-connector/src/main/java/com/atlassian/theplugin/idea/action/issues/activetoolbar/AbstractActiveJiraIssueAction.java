@@ -34,6 +34,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import org.joda.time.DateTime;
 
 /**
  * User: pmaruszak
@@ -45,8 +46,9 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 	public final void update(final AnActionEvent event) {
-		boolean enabled = getActiveJiraIssue(event) != null;
-
+		final ActiveJiraIssue activeJiraIssue = getActiveJiraIssue(event);
+		boolean enabled = activeJiraIssue != null;
+		System.out.println(activeJiraIssue != null ? activeJiraIssue.getIssueKey() + " " + new DateTime() : "nulllllll");
 		if (enabled) {
 			onUpdate(event);
 		}
@@ -59,9 +61,18 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		if (conf != null) {
 			return conf.getActiveJiraIssue();
 		}
-
 		return null;
 	}
+
+	protected ActiveJiraIssue getActiveJiraIssue(final Project project) {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+
+		if (conf != null) {
+			return conf.getActiveJiraIssue();
+		}
+		return null;
+	}
+
 
 	protected void setActiveJiraIssue(final AnActionEvent event, final ActiveJiraIssue issue) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
@@ -91,8 +102,6 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	protected JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverUrl) {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel != null) {
-//			//return panel.getSelectedServer();
-
 			final Project project = IdeaHelper.getCurrentProject(event);
 			return CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), serverUrl);
 		}
@@ -101,9 +110,14 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 
 	//invokeLater necessary
 	protected JIRAIssue getJIRAIssue(final AnActionEvent event) {
-		JiraServerCfg jiraServer = getJiraServer(event);
+		return getJIRAIssue(IdeaHelper.getCurrentProject(event));
+	}
+
+	//invokeLater necessary
+	protected JIRAIssue getJIRAIssue(final Project project) {
+		JiraServerCfg jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
-			final ActiveJiraIssue issue = getActiveJiraIssue(event);
+			final ActiveJiraIssue issue = getActiveJiraIssue(project);
 			return getJIRAIssue(jiraServer, issue);
 		}
 		return null;
@@ -124,13 +138,17 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 
 
 	protected JiraServerCfg getJiraServer(final AnActionEvent event) {
-		final ActiveJiraIssue issue = getActiveJiraIssue(event);
-		return getJiraServer(event, issue);
+		return getJiraServer(IdeaHelper.getCurrentProject(event));
+
 	}
 
-	public JiraServerCfg getJiraServer(final AnActionEvent event, final ActiveJiraIssue activeIssue) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		final Project project = IdeaHelper.getCurrentProject(event);
+	protected JiraServerCfg getJiraServer(final Project project) {
+		final ActiveJiraIssue issue = getActiveJiraIssue(project);
+		return getJiraServer(project, issue);
+	}
+
+	public JiraServerCfg getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		JiraServerCfg jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
@@ -143,7 +161,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		boolean isOk = true;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JiraServerCfg jiraServer = getJiraServer(event, activeIssue);
+		final JiraServerCfg jiraServer = getJiraServer(project, activeIssue);
 		final JIRAIssue jiraIssue = getJIRAIssue(jiraServer, activeIssue);
 
 		if (panel != null && jiraIssue != null && jiraServer != null) {
@@ -169,10 +187,11 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
 			if (activeIssue != null) {
 				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				final JIRAIssue jiraIssue = getJIRAIssue(event);
+				final Project project = IdeaHelper.getCurrentProject(event);
+				final JIRAIssue jiraIssue = getJIRAIssue(project);
 				if (panel != null && jiraIssue != null) {
 					boolean isOk = true;
-					final JiraServerCfg jiraServer = getJiraServer(event);
+					final JiraServerCfg jiraServer = getJiraServer(project);
 
 
 					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
@@ -189,4 +208,31 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		}
 		return true;
 	}
+
+//	protected void refreshLabel(ActiveJiraIssue issue) {
+//		ActionManager aManager = ActionManager.getInstance();
+//		AnAction action = aManager.getAction(Constants.ACTIVE_JIRA_ISSUE_ACTION);
+//		String label = getLabelText(issue);
+//		if (issue != null) {
+//			action.getTemplatePresentation().setText(label, true);
+//			action.getTemplatePresentation().setEnabled(true);
+//
+//		} else {
+//			action.getTemplatePresentation().setText(label, true);
+//			action.getTemplatePresentation().setEnabled(false);
+//		}
+//
+//		//createTooltipText("Open Issue", this);
+//
+//
+//	}
+
+	protected String getLabelText(ActiveJiraIssue issue) {
+		if (issue != null) {
+			return "Active issue: " + issue.getIssueKey() + "    ";
+		}
+
+		return "No active issue    ";
+	}
 }
+
