@@ -22,10 +22,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -69,10 +66,6 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 							} else {
 								setActiveJiraIssue(event, null);
 							}
-
-							if (!isAlreadyActive && isActivated) {
-								registerToolbar();
-							}
 						}
 					}
 				}
@@ -102,12 +95,15 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		}
 	}
 
-	private static void registerToolbar() {
+	private static void registerToolbar(AnActionEvent event) {
 		ActionManager aManager = ActionManager.getInstance();
 		ActionGroup newActionGroup = (ActionGroup) aManager.getAction(Constants.ACTIVE_TOOLBAR_NAME);
 		DefaultActionGroup mainToolBar = (DefaultActionGroup) aManager.getAction("MainToolBar");
 
 		if (newActionGroup != null && mainToolBar != null) {
+			AnAction[] children = mainToolBar.getChildren(event);
+			for (AnAction child : children) {
+			}
 			mainToolBar.add(newActionGroup);
 		}
 	}
@@ -116,7 +112,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
 		if (conf != null && conf.getActiveJiraIssue() != null) {
-			registerToolbar();
+			//registerToolbar();
 		}
 	}
 }

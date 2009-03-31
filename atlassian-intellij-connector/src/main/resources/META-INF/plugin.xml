@@ -539,7 +539,7 @@
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
-			<!--<add-to-group group-id="MainToolBar" anchor="last"/>-->
+			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
 
 		<action id="ThePlugin.CommittedChanges.Refresh"
