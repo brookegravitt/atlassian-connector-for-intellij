@@ -67,6 +67,8 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 					}
 				}
 			}
+
+
 		});
 	}
 
