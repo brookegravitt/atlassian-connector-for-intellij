@@ -37,7 +37,6 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 				if (isOk) {
 					conf.setActiveJiraIssue(null);
-					//setInvisibleToolbar();
 				}
 			}
 		});
