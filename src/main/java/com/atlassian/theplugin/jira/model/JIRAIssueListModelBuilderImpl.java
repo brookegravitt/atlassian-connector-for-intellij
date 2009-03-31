@@ -112,7 +112,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 		JIRAException exception = null;
 		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
-		model.setModelFrozen(true);
+
 		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
 			if (model != null) {
 				model.clear();
@@ -120,6 +120,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			}
 			return;
 		}
+
+		model.setModelFrozen(true);
 
 		if (reload) {
 			startFrom = 0;
