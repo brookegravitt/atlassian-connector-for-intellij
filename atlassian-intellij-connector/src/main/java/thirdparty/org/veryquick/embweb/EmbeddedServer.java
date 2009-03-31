@@ -71,7 +71,7 @@ public final class EmbeddedServer {
 							server.start();
 						}
 						catch (IOException e) {
-							LOGGER.error("Failed to start server", e);
+							LOGGER.warn("Failed to start server", e);
 						}
 					}
 				}, "server thread"
