@@ -30,7 +30,6 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -99,33 +98,39 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		contentPane.setMinimumSize(new Dimension(700, 400));
 		contentPane.setPreferredSize(new Dimension(800, 600));
 		wrapperPanel = new JPanel();
-		wrapperPanel.setLayout(new FormLayout("fill:m:noGrow,fill:d:grow", "center:max(d;4px):noGrow,center:max(d;4px):noGrow,fill:p:grow,top:3dlu:noGrow,center:max(d;20dlu):grow(2.0)"));
+		wrapperPanel.setLayout(new FormLayout("fill:m:noGrow,fill:d:grow",
+				"center:max(d;4px):noGrow,center:max(d;4px):noGrow,fill:p:grow,top:3dlu:noGrow,center:max(d;20dlu):grow(2.0)"));
 		wrapperPanel.setMinimumSize(new Dimension(1, 200));
 		wrapperPanel.setPreferredSize(new Dimension(1, 200));
 		wrapperPanel.setRequestFocusEnabled(true);
 		CellConstraints cc = new CellConstraints();
 		contentPane.add(wrapperPanel, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 		timePanel = new JPanel();
-		timePanel.setLayout(new FormLayout("fill:2dlu:noGrow,fill:136px:noGrow,fill:max(d;4px):noGrow,fill:p:noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow", "center:d:noGrow,top:3dlu:noGrow,center:p:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow"));
+		timePanel.setLayout(new FormLayout(
+				"fill:2dlu:noGrow,fill:136px:noGrow,fill:max(d;4px):noGrow,fill:p:noGrow,left:4dlu:noGrow,fill:max(d;4px):noGrow",
+				"center:d:noGrow,top:3dlu:noGrow,center:p:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow,top:3dlu:noGrow,center:d:noGrow"));
 		wrapperPanel.add(timePanel, cc.xy(1, 3, CellConstraints.LEFT, CellConstraints.FILL));
 		timePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Time Tracking"));
 		timeSpentField = new JTextField();
 		timeSpentField.setMinimumSize(new Dimension(100, 28));
 		timeSpentField.setPreferredSize(new Dimension(150, 28));
-		timePanel.add(timeSpentField, new CellConstraints(3, 1, 2, 1, CellConstraints.LEFT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 48)));
+		timePanel.add(timeSpentField,
+				new CellConstraints(3, 1, 2, 1, CellConstraints.LEFT, CellConstraints.DEFAULT, new Insets(0, 0, 0, 48)));
 		final JLabel label1 = new JLabel();
 		label1.setText("Time Spent:");
 		timePanel.add(label1, cc.xy(2, 1));
 		anEstimateOfHowTextPane = new JTextPane();
 		anEstimateOfHowTextPane.setEditable(false);
 		anEstimateOfHowTextPane.setEnabled(true);
-		anEstimateOfHowTextPane.setFont(new Font(anEstimateOfHowTextPane.getFont().getName(), anEstimateOfHowTextPane.getFont().getStyle(), 10));
+		anEstimateOfHowTextPane.setFont(
+				new Font(anEstimateOfHowTextPane.getFont().getName(), anEstimateOfHowTextPane.getFont().getStyle(), 10));
 		anEstimateOfHowTextPane.setMargin(new Insets(0, 12, 0, 0));
 		anEstimateOfHowTextPane.setMaximumSize(new Dimension(350, 100));
 		anEstimateOfHowTextPane.setMinimumSize(new Dimension(350, 100));
 		anEstimateOfHowTextPane.setOpaque(false);
 		anEstimateOfHowTextPane.setPreferredSize(new Dimension(350, 100));
-		anEstimateOfHowTextPane.setText("An estimate of how much time \nyou have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes \n- where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
+		anEstimateOfHowTextPane.setText(
+				"An estimate of how much time \nyou have spent working. \nThe format of this is ' *w *d *h *m ' \n(representing weeks, days, hours and minutes \n- where * can be any number) \nExamples: 4d, 5h 30m, 60m and 3w. ");
 		timePanel.add(anEstimateOfHowTextPane, cc.xyw(4, 3, 2, CellConstraints.FILL, CellConstraints.FILL));
 		final JLabel label2 = new JLabel();
 		label2.setText("Remaining Estimate:");
@@ -146,9 +151,11 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		remainingEstimateField.setMaximumSize(new Dimension(150, 28));
 		remainingEstimateField.setMinimumSize(new Dimension(100, 28));
 		remainingEstimateField.setPreferredSize(new Dimension(150, 28));
-		timePanel.add(remainingEstimateField, new CellConstraints(4, 13, 1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT, new Insets(0, 48, 0, 0)));
+		timePanel.add(remainingEstimateField,
+				new CellConstraints(4, 13, 1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT, new Insets(0, 48, 0, 0)));
 		endTimePanel = new JPanel();
-		endTimePanel.setLayout(new FormLayout("fill:d:noGrow,left:41dlu:noGrow,fill:128px:noGrow,left:9dlu:noGrow,fill:p:noGrow", "center:d:noGrow"));
+		endTimePanel.setLayout(new FormLayout(
+				"fill:d:noGrow,left:41dlu:noGrow,fill:128px:noGrow,left:9dlu:noGrow,fill:p:noGrow", "center:d:noGrow"));
 		timePanel.add(endTimePanel, cc.xyw(2, 5, 3, CellConstraints.LEFT, CellConstraints.DEFAULT));
 		endDateChange = new JButton();
 		endDateChange.setText("Change");
@@ -186,7 +193,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		changesPanel.setPreferredSize(new Dimension(300, 1));
 		changesetPanel.add(changesPanel, cc.xy(1, 1));
 		commentPanel = new JPanel();
-		commentPanel.setLayout(new FormLayout("fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:d:grow,fill:max(d;4px):noGrow", "fill:d:grow(4.0)"));
+		commentPanel.setLayout(new FormLayout(
+				"fill:2dlu:noGrow,left:4dlu:noGrow,left:46dlu:noGrow,fill:d:grow,fill:max(d;4px):noGrow", "fill:d:grow(4.0)"));
 		commentPanel.setMinimumSize(new Dimension(100, 81));
 		commentPanel.setPreferredSize(new Dimension(100, 81));
 		wrapperPanel.add(commentPanel, cc.xyw(1, 5, 2, CellConstraints.FILL, CellConstraints.FILL));
@@ -381,8 +389,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	}
 
 	public WorkLogCreateAndMaybeDeactivateDialog(final JiraServerCfg jiraServer, final JIRAIssue issue,
-												 final Project project, final String timeSpent,
-												 boolean deactivateActiveIssue) {
+			final Project project, final String timeSpent,
+			boolean deactivateActiveIssue) {
 		super(false);
 
 		this.project = project;
