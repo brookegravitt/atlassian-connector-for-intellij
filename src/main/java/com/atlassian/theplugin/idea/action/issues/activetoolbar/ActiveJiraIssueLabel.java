@@ -67,13 +67,13 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 			}
 
 			if (issue != null) {
-				presentation.setText(" Active Issue: "
-						+ issue.getIssueKey() + "   ");
+				presentation.setText("Active Issue: "
+						+ issue.getIssueKey() + "    ");
 				presentation.setEnabled(true);
 			}
 
 		} else {
-			presentation.setText("No active issue");
+			presentation.setText("    No active issue    ");
 			presentation.setEnabled(false);
 		}
 
