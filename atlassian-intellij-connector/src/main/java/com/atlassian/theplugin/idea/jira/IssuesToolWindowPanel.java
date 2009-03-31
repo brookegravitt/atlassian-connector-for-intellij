@@ -120,7 +120,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		currentIssueListModel = searchingIssueListModel;
 
 		jiraIssueListModelBuilder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel);
+		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel, project,
+				projectCfgManager);
 
 		jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModelImpl.class);
 
@@ -142,13 +143,31 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 						} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
 							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-							issueTreeBuilder.setProjectKeysToNames(Collections.<String, String>emptyMap());
+//							issueTreeBuilder.setProjectKeysToNames(Collections.<String, String>emptyMap());
+
+							Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
+
+							for (JiraServerCfg server
+									: projectCfgManager.getCfgManager()
+									.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+								try {
+									for (JIRAProject p : jiraServerModel.getProjects(server)) {
+										projectMap
+												.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
+									}
+								} catch (JIRAException e) {
+									setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+								}
+							}
+
+							issueTreeBuilder.setProjectKeysToNames(projectMap);
+
 							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-						} else {
-							Map<String, String> projectMap = new HashMap<String, String>();
+						} else if (srvcfg != null) {
+							Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
 							try {
 								for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-									projectMap.put(p.getKey(), p.getName());
+									projectMap.put(new Pair<String, ServerId>(p.getKey(), srvcfg.getServerId()), p.getName());
 								}
 							} catch (JIRAException e) {
 								setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);

@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
@@ -10,6 +13,8 @@ import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 
@@ -25,6 +30,8 @@ public class JIRAIssueTreeBuilder {
 
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
+	private Project project;
+	private ProjectCfgManager projectCfgManager;
 	private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
@@ -75,12 +82,15 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
-	private Map<String, String> projectKeysToNames;
+	private Map<Pair<String, ServerId>, String> projectKeysToNames;
 
-	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model) {
+	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
+			final Project project, final ProjectCfgManager projectCfgManager) {
 		this.groupBy = groupBy;
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;
+		this.project = project;
+		this.projectCfgManager = projectCfgManager;
 		lastTree = null;
 
 		issueModel.addModelListener(new JIRAIssueListModelListener() {
@@ -106,7 +116,7 @@ public class JIRAIssueTreeBuilder {
 		this.groupBy = groupBy;
 	}
 
-	public void setProjectKeysToNames(Map<String, String> projectKeysToNames) {
+	public void setProjectKeysToNames(Map<Pair<String, ServerId>, String> projectKeysToNames) {
 		this.projectKeysToNames = projectKeysToNames;
 	}
 
@@ -309,7 +319,7 @@ public class JIRAIssueTreeBuilder {
 				iconUrl = issue.getPriorityIconUrl();
 				break;
 			case PROJECT:
-				name = getProjectName(issue.getProjectKey());
+				name = getProjectName(issue);
 				break;
 			case STATUS:
 				name = issue.getStatus();
@@ -366,11 +376,13 @@ public class JIRAIssueTreeBuilder {
 		return groupName;
 	}
 
-	private String getProjectName(String key) {
-		if (projectKeysToNames == null || !projectKeysToNames.containsKey(key)) {
-			// bummer
-			return key;
+	private String getProjectName(JIRAIssue issue) {
+		if (projectKeysToNames == null
+				|| !projectKeysToNames.containsKey(new Pair<String, ServerId>(issue.getProjectKey(),
+				CfgUtil.getJiraServerCfgByUrl(project, projectCfgManager, issue.getServerUrl()).getServerId()))) {
+			return issue.getProjectKey();
 		}
-		return projectKeysToNames.get(key);
+		return projectKeysToNames.get(new Pair<String, ServerId>(issue.getProjectKey(),
+				CfgUtil.getJiraServerCfgByUrl(project, projectCfgManager, issue.getServerUrl()).getServerId()));
 	}
 }
