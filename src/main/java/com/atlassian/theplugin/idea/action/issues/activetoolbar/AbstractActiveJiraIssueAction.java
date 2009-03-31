@@ -229,10 +229,10 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 
 	protected String getLabelText(ActiveJiraIssue issue) {
 		if (issue != null) {
-			return "Active issue: " + issue.getIssueKey() + "    ";
+			return "Active issue: " + issue.getIssueKey();
 		}
 
-		return "No active issue    ";
+		return "No active issue";
 	}
 }
 
