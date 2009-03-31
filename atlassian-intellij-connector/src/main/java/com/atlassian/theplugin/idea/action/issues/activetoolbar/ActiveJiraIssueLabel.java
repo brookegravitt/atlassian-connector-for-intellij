@@ -66,10 +66,15 @@ public class ActiveJiraIssueLabel extends AbstractActiveJiraIssueAction {
 				jiraTimeSpent = ":" + jiraTimeSpent;
 			}
 
-			presentation.setText("Active Issue: "
-					+ issue.getIssueKey());
+			if (issue != null) {
+				presentation.setText(" Active Issue: "
+						+ issue.getIssueKey() + "   ");
+				presentation.setEnabled(true);
+			}
 
-			presentation.setEnabled(true);
+		} else {
+			presentation.setText("No active issue");
+			presentation.setEnabled(false);
 		}
 
 		createTooltipText("Open Issue", this);
