@@ -280,7 +280,10 @@
                 <children>
                   <component id="9f16d" class="javax.swing.JTextArea" binding="comment">
                     <constraints/>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                 </children>
               </scrollpane>
