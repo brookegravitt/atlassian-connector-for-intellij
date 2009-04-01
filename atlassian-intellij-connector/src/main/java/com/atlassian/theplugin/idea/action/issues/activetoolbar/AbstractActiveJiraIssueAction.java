@@ -72,11 +72,13 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 
-	protected void setActiveJiraIssue(final AnActionEvent event, final ActiveJiraIssue issue) {
+	protected void setActiveJiraIssue(final AnActionEvent event, final ActiveJiraIssue issue,
+			final JiraServerCfg jiraServerCfg) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
 			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
+			conf.addRecentlyOpenIssue(issue.getIssue(), jiraServerCfg);
 		}
 	}
 
