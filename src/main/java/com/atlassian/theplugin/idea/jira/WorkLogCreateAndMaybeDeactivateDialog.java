@@ -202,6 +202,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		scrollPane1.setHorizontalScrollBarPolicy(30);
 		commentPanel.add(scrollPane1, cc.xy(4, 1, CellConstraints.FILL, CellConstraints.FILL));
 		comment = new JTextArea();
+		comment.setLineWrap(true);
+		comment.setWrapStyleWord(true);
 		scrollPane1.setViewportView(comment);
 		final JLabel label4 = new JLabel();
 		label4.setText("Comment:");
