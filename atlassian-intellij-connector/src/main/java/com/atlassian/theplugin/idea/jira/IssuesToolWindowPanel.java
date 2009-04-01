@@ -132,63 +132,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			jiraFilterListModelBuilder.setProjectId(CfgUtil.getProjectId(project));
 			jiraFilterListModelBuilder.setJiraWorkspaceCfg(jiraWorkspaceConfiguration);
 		}
-		currentIssueListModel.addModelListener(new JIRAIssueListModelListener() {
-			public void modelChanged(JIRAIssueListModel model) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						JiraIssueAdapter.clearCache();
-						JiraServerCfg srvcfg = getSelectedServer();
-						if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
-							setStatusMessage("Nothing selected", false, false);
-							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-						} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
-							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-//							issueTreeBuilder.setProjectKeysToNames(Collections.<String, String>emptyMap());
-
-							Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
-
-							for (JiraServerCfg server
-									: projectCfgManager.getCfgManager()
-									.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-								try {
-									for (JIRAProject p : jiraServerModel.getProjects(server)) {
-										projectMap
-												.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
-									}
-								} catch (JIRAException e) {
-									setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
-								}
-							}
-
-							issueTreeBuilder.setProjectKeysToNames(projectMap);
-
-							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-						} else if (srvcfg != null) {
-							Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
-							try {
-								for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-									projectMap.put(new Pair<String, ServerId>(p.getKey(), srvcfg.getServerId()), p.getName());
-								}
-							} catch (JIRAException e) {
-								setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
-							}
-							issueTreeBuilder.setProjectKeysToNames(projectMap);
-							issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-							expandAllRightTreeNodes();
-							setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-						}
-					}
-				});
-			}
-
-			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
-				if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
-					enableGetMoreIssues(true);
-				} else {
-					enableGetMoreIssues(false);
-				}
-			}
-		});
+		currentIssueListModel.addModelListener(new LocalJiraIssueListModelListener());
 
 		currentIssueListModel.addFrozenModelListener(new FrozenModelListener() {
 			public void modelFrozen(FrozenModel model, boolean frozen) {
@@ -1230,6 +1174,57 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				} else {
 					setStatusMessage("Work not logged: " + e.getMessage(), true);
 				}
+			}
+		}
+	}
+
+	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
+		public void modelChanged(JIRAIssueListModel model) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					JiraIssueAdapter.clearCache();
+					JiraServerCfg srvcfg = getSelectedServer();
+					if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
+						setStatusMessage("Nothing selected", false, false);
+						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+					} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
+						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
+						Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
+						for (JiraServerCfg server : projectCfgManager.getCfgManager()
+								.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+							try {
+								for (JIRAProject p : jiraServerModel.getProjects(server)) {
+									projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
+								}
+							} catch (JIRAException e) {
+								setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+							}
+						}
+						issueTreeBuilder.setProjectKeysToNames(projects);
+						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+					} else if (srvcfg != null) {
+						Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
+						try {
+							for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
+								projectMap.put(new Pair<String, ServerId>(p.getKey(), srvcfg.getServerId()), p.getName());
+							}
+						} catch (JIRAException e) {
+							setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+						}
+						issueTreeBuilder.setProjectKeysToNames(projectMap);
+						issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+						expandAllRightTreeNodes();
+						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
+					}
+				}
+			});
+		}
+
+		public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+			if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
+				enableGetMoreIssues(true);
+			} else {
+				enableGetMoreIssues(false);
 			}
 		}
 	}
