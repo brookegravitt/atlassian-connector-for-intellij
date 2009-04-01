@@ -212,6 +212,7 @@ public class JIRASessionImpl implements JIRASession {
 	public JIRAIssue getIssueDetails(JIRAIssue issue) throws RemoteApiException {
 		try {
 			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
+
 			if (rIssue == null) {
 				throw new RemoteApiException("Unable to retrieve issue details");
 			}
@@ -243,6 +244,8 @@ public class JIRASessionImpl implements JIRASession {
 			return issueBean;
 
 		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		} catch (ClassCastException e) {
 			throw new RemoteApiException(e.toString(), e);
 		}
 
