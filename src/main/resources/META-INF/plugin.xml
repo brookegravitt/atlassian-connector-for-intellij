@@ -36,7 +36,6 @@
 			<li>Crucible 1.6 and above</li>
 			<li>JIRA 3.7 and above</li>
 			<li>Fisheye</li>
-			<li>Confluence - in the future</li>
 		</ul>
 		]]>
 	</description>
@@ -526,8 +525,8 @@
 
 
 		<group id="ThePlugin.GoToMenu">
-			<separator/>
-			<reference id="OpenFisheyeLinkInEditor"/>
+			<!--<separator/>-->
+			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
