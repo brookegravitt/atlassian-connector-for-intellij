@@ -478,9 +478,8 @@
 
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueLabel"
-				text="     No active issue     "
-				description="Open Issue"
-				icon="/icons/jira-blue-16.png">
+				text=""
+				>
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"

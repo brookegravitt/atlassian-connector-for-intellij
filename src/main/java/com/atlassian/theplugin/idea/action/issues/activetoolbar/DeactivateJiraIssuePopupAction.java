@@ -30,7 +30,7 @@ public class DeactivateJiraIssuePopupAction extends DeactivateJiraIssueAction {
 		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
 		JiraServerCfg selectedServer;
 
-		if (activeIssue != null) {
+		if (activeIssue != null && activeIssue.getIssueKey() != null) {
 			selectedServer = getSelectedJiraServerById(event, activeIssue.getServerId());
 			event.getPresentation().setEnabled(enabled && selectedJiraIssue != null
 					&& selectedJiraIssue.getKey().equals(activeIssue.getIssueKey())
