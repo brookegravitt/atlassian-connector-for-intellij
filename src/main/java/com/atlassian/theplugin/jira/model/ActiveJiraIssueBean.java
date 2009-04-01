@@ -90,6 +90,10 @@ public class ActiveJiraIssueBean implements ActiveJiraIssue {
 	}
 
 	public String getIssueKey() {
-		return issue.getKey();
+		if (issue != null) {
+			return issue.getKey();
+		}
+
+		return null;
 	}
 }
