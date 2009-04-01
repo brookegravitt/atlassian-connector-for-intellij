@@ -280,7 +280,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		fshHelp2.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
 		builder.add(fshHelp2, cc.xy(4, 21));
 
-		builder.addSeparator("Jira", cc.xyw(1, 23, ALL_COLUMNS));
+		builder.addSeparator("JIRA", cc.xyw(1, 23, ALL_COLUMNS));
 		JLabel jiraHelp = new JLabel(JIRA_HELP_TEXT);
 		jiraHelp.setFont(jiraHelp.getFont().deriveFont(10.0f));
 		// jgorycki: well, it seems like FormLayout doesn't give a shit about JLabel's maximum width. However,
