@@ -34,7 +34,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import org.joda.time.DateTime;
 
 /**
  * User: pmaruszak
@@ -48,7 +47,6 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	public final void update(final AnActionEvent event) {
 		final ActiveJiraIssue activeJiraIssue = getActiveJiraIssue(event);
 		boolean enabled = activeJiraIssue != null;
-		System.out.println(activeJiraIssue != null ? activeJiraIssue.getIssueKey() + " " + new DateTime() : "nulllllll");
 		if (enabled) {
 			onUpdate(event);
 		}
