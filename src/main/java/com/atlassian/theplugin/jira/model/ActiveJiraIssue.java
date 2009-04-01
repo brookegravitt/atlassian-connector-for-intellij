@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+
 /**
  * User: pmaruszak
  */
@@ -28,4 +30,6 @@ public interface ActiveJiraIssue {
 	void resetTimeSpent();
 
 	long recalculateTimeSpent();
+
+	JIRAIssue getIssue();
 }

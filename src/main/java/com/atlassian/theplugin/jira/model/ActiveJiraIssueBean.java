@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -27,25 +28,21 @@ public class ActiveJiraIssueBean implements ActiveJiraIssue {
 	private long secondsSpent;
 	private boolean active = false;
 	private String serverId;
-	private String issueKey;
+	private JIRAIssue issue;
 
 	public ActiveJiraIssueBean() {
 	}
 
-	public ActiveJiraIssueBean(final String serverId, final String issueKey, DateTime lastStartTime, long secondsSpent) {
+	public ActiveJiraIssueBean(final String serverId, final JIRAIssue issue, DateTime lastStartTime, long secondsSpent) {
 		this.serverId = serverId;
-		this.issueKey = issueKey;
+		this.issue = issue;
 		this.lastStartTime = lastStartTime;
 		this.secondsSpent = secondsSpent;
 	}
 
-	public ActiveJiraIssueBean(final String serverId, final String issueKey, DateTime lastStartTime) {
-		this(serverId, issueKey, lastStartTime, 0);
+	public ActiveJiraIssueBean(final String serverId, final JIRAIssue issue, DateTime lastStartTime) {
+		this(serverId, issue, lastStartTime, 0);
 
-	}
-
-	public ActiveJiraIssueBean(final String serverId, final String issueKey) {
-		this(serverId, issueKey, new DateTime(), 0);
 	}
 
 	public void resetTimeSpent() {
@@ -60,6 +57,10 @@ public class ActiveJiraIssueBean implements ActiveJiraIssue {
 		secondsSpent = secondsSpent + nextPeriod.getSeconds();
 		lastStartTime = now;
 		return secondsSpent;
+	}
+
+	public JIRAIssue getIssue() {
+		return issue;
 	}
 
 	public long getSecondsSpent() {
@@ -89,10 +90,6 @@ public class ActiveJiraIssueBean implements ActiveJiraIssue {
 	}
 
 	public String getIssueKey() {
-		return issueKey;
-	}
-
-	public void setIssueKey(final String issueKey) {
-		this.issueKey = issueKey;
+		return issue.getKey();
 	}
 }

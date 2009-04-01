@@ -39,10 +39,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
 				if (selectedIssue != null) {
 					JiraServerCfg jiraServerCfg = getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
-					ActiveJiraIssue newActiveIssue = null;
+					ActiveJiraIssue newActiveIssue;
 					if (jiraServerCfg != null) {
 						newActiveIssue =
-								new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
+								new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue,
 										new DateTime());
 
 						final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
@@ -59,16 +59,14 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 						if (isDeactivated && deactivate(event)) {
 							final boolean isActivated = activate(event, newActiveIssue);
 							if (isActivated) {
-								setActiveJiraIssue(event, newActiveIssue);
+								setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
 							} else {
-								setActiveJiraIssue(event, null);
+								setActiveJiraIssue(event, null, jiraServerCfg);
 							}
 						}
 					}
 				}
 			}
-
-
 		});
 	}
 
