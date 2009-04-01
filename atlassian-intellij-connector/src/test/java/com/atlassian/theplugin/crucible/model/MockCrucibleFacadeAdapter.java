@@ -112,8 +112,8 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
-	public void setReviewers(final CrucibleServerCfg server, final PermId permId, final Collection<String> userName)
-			throws RemoteApiException, ServerPasswordNotProvidedException {
+	public void setReviewers(@NotNull final CrucibleServerCfg server, @NotNull final PermId permId,
+			@NotNull final Collection<String> userName) throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
 	public Review approveReview(CrucibleServerCfg server, PermId permId)
