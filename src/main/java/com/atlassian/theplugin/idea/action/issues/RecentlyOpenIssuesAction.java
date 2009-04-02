@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -34,7 +33,6 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -68,7 +66,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 			// prepare list of recentlyOpenIssues from the config list
 
 			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Open Issues", true) {
-				private List<Pair<JIRAIssue, JiraServerCfg>> issues;
+				private List<JIRAIssue> issues;
 
 				public void run(final ProgressIndicator indicator) {
 					issues = issuesWindow.getIssues(recentlyOpenIssues);
@@ -88,11 +86,11 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		}
 	}
 
-	public static final class IssueListPopupStep extends BaseListPopupStep<Pair<JIRAIssue, JiraServerCfg>> {
+	public static final class IssueListPopupStep extends BaseListPopupStep<JIRAIssue> {
 		private IssuesToolWindowPanel issuesWindow;
 		private static final int LENGHT = 40;
 
-		public IssueListPopupStep(final String title, final List<Pair<JIRAIssue, JiraServerCfg>> reviews,
+		public IssueListPopupStep(final String title, final List<JIRAIssue> reviews,
 				final IssuesToolWindowPanel issuesWindow) {
 			super(title, reviews, IconLoader.getIcon("/icons/jira-blue-16.png"));
 			this.issuesWindow = issuesWindow;
@@ -100,23 +98,23 @@ public class RecentlyOpenIssuesAction extends AnAction {
 
 		@NotNull
 		@Override
-		public String getTextFor(final Pair<JIRAIssue, JiraServerCfg> value) {
+		public String getTextFor(final JIRAIssue value) {
 			StringBuilder text = new StringBuilder();
 
-			text.append(value.getFirst().getKey()).append(": ");
+			text.append(value.getKey()).append(": ");
 
-			if (value.getFirst().getSummary().length() > LENGHT) {
-				text.append(value.getFirst().getSummary().substring(0, LENGHT - (2 + 1))).append("...");
+			if (value.getSummary().length() > LENGHT) {
+				text.append(value.getSummary().substring(0, LENGHT - (2 + 1))).append("...");
 			} else {
-				text.append(value.getFirst().getSummary());
+				text.append(value.getSummary());
 			}
 
 			text.append(" (");
 
-			if (value.getSecond().getName().length() > LENGHT) {
-				text.append(value.getSecond().getName().substring(0, LENGHT - (2 + 1)));
+			if (value.getServer().getName().length() > LENGHT) {
+				text.append(value.getServer().getName().substring(0, LENGHT - (2 + 1)));
 			} else {
-				text.append(value.getSecond().getName());
+				text.append(value.getServer().getName());
 			}
 
 			text.append(')');
@@ -125,9 +123,9 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		}
 
 		@Override
-		public PopupStep onChosen(final Pair<JIRAIssue, JiraServerCfg> selectedValue, final boolean finalChoice) {
+		public PopupStep onChosen(final JIRAIssue selectedValue, final boolean finalChoice) {
 			// add review to the model (to show it in the main list) and open the review
-			issuesWindow.openIssue(selectedValue.getFirst(), selectedValue.getSecond());
+			issuesWindow.openIssue(selectedValue, selectedValue.getServer());
 
 			return null;
 		}

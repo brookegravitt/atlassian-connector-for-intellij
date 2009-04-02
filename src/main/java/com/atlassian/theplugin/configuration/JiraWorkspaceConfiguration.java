@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.components.PersistentStateComponent;
@@ -90,10 +89,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.recentlyOpenIssues = recentlyOpenIssues;
 	}
 
-	public void addRecentlyOpenIssue(final JIRAIssue issue, ServerCfg jiraServer) {
+	public void addRecentlyOpenIssue(final JIRAIssue issue) {
 		if (issue != null) {
 			String issueKey = issue.getKey();
-			String serverId = jiraServer.getServerId().toString();
+			String serverId = issue.getServer().getServerId().toString();
 
 			// add element and make sure it is not duplicated and it is insterted at the top
 			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);

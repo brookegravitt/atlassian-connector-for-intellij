@@ -77,7 +77,7 @@ public final class ActiveIssueUtils {
 
 		if (conf != null) {
 			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
-			conf.addRecentlyOpenIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue), jiraServerCfg);
+			conf.addRecentlyOpenIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
 		}
 	}
 
