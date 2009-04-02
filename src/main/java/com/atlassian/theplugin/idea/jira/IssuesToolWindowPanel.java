@@ -424,7 +424,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			return;
 		}
 		try {
-			JiraServerCfg jiraServer = getSelectedServer();
+			JiraServerCfg jiraServer = issue.getServer();
 			if (jiraServer != null) {
 				assignIssue(issue, jiraServer.getUsername());
 			}
@@ -457,7 +457,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
 
-					JiraServerCfg jiraServer = getSelectedServer();
+					JiraServerCfg jiraServer = issue.getServer();
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
@@ -502,7 +502,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void addCommentToSelectedIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue != null) {
-			addCommentToIssue(issue.getKey(), getSelectedServer());
+			addCommentToIssue(issue.getKey(), issue.getServer());
 		}
 	}
 
@@ -555,10 +555,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	public boolean startWorkingOnIssue(@NotNull final JIRAIssue issue, final JiraServerCfg server) {
+	public boolean startWorkingOnIssue(@NotNull final JIRAIssue issue) {
 //		if (issue == null) {
 //			return;
 //		}
+
+		final JiraServerCfg server = issue.getServer();
 
 		boolean isOk = createChangeListAction(issue);
 
@@ -819,8 +821,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			if (baseIssueListModel != null && baseIssueListModel.getIssues().size() > 0) {
 				for (JIRAIssue localIssue : baseIssueListModel.getIssues()) {
 					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
-							&& getSelectedServer() != null
-							&& getSelectedServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
+							&& localIssue.getServer() != null
+							&& localIssue.getServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
 						issues.add(localIssue);
 						found = true;
 						break;

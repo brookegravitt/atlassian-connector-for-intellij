@@ -202,7 +202,7 @@ public final class ActiveIssueUtils {
 
 			if (isOk) {
 				//assign to me and start working
-				isOk = panel.startWorkingOnIssue(jiraIssue, jiraServerCfg);
+				isOk = panel.startWorkingOnIssue(jiraIssue);
 			}
 		}
 		return isOk;
