@@ -58,7 +58,7 @@ public interface JIRASession {
 
 	List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException;
 
-	void progressWorkflowAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException;
+	void progressWorkflowAction(JIRAIssue issue, JIRAAction action, List<JIRAActionField> fields) throws RemoteApiException;
 
 	void setAssignee(JIRAIssue issue, String assignee) throws RemoteApiException;
 

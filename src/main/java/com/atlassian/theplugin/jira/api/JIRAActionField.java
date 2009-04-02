@@ -16,5 +16,10 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import java.util.List;
+
 public interface JIRAActionField extends JIRAConstant {
+	String getFieldId();
+	List<String> getValues();
+	void addValue(String val);
 }
