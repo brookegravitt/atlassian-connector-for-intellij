@@ -38,10 +38,10 @@ public class ActivateIssueItemAction extends AnAction {
 	}
 
 	public void actionPerformed(final AnActionEvent event) {
-		JiraServerCfg jiraServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
-		if (activeIssue != null && jiraServer != null) {
-			//activateIssue(event, activeIssue, jiraServer);
-		}
+		JiraServerCfg jiraServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
+//		if (activeIssue != null && jiraServer != null) {
+//			//activateIssue(event, activeIssue, jiraServer);
+//		}
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
