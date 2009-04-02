@@ -359,66 +359,33 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	//	public void setIssuesFilterParams(JiraServerCfg server, JIRASavedFilter savedFilter) {
 	//		jiraIssueListModelBuilder.setSavedFilter(savedFilter);
 
-	public void openIssue(final JIRAIssue issue, final JiraServerCfg server) {
+	public void openIssue(final JIRAIssue issue) {
 		if (issue.getServer() != null) {
 			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
-			IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
-		}
-	}
-
-	public void openIssue(@NotNull JIRAIssue issue) {
-		if (getSelectedServer() != null) {
-			openIssue(issue, getSelectedServer());
-		} else if (isRecentlyOpenFilterSelected()) {
-			for (JiraServerCfg server
-					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-				if (server.getUrl().equals(issue.getServerUrl())) {
-					openIssue(issue, server);
-					break;
-				}
-			}
+			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue.getServer(), issue, baseIssueListModel);
 		}
 	}
 
 	public void openIssue(@NotNull final String issueKey, final JiraServerCfg jiraServer) {
 		JIRAIssue issue = null;
 		for (JIRAIssue i : baseIssueListModel.getIssues()) {
-			if (i.getKey().equals(issueKey) && getSelectedServer().getServerId().equals(jiraServer.getServerId())) {
+			if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
 				issue = i;
 				break;
 			}
 		}
 
 		if (issue != null) {
-			openIssue(issue, jiraServer);
-//			openIssue(issue);
+			openIssue(issue);
 		} else {
 			Task.Backgroundable task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
 				private JIRAIssue issue;
 				private Throwable exception;
 
 				@Override
-				public void onSuccess() {
-					//JiraServerCfg server = getSelectedServer();
-					if (getProject().isDisposed()) {
-						return;
-					}
-					if (exception != null) {
-						final String serverName = jiraServer != null ? jiraServer.getName() : "[UNDEFINED!]";
-						DialogWithDetails.showExceptionDialog(getProject(),
-								"Cannot fetch issue " + issueKey + " from server " + serverName, exception);
-						return;
-					}
-					if (issue != null) {
-						openIssue(issue, jiraServer);
-					}
-				}
-
-				@Override
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					progressIndicator.setIndeterminate(true);
 					try {
-						//final JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
 //							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
@@ -429,8 +396,26 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						exception = e;
 					}
 				}
+
+				@Override
+				public void onSuccess() {
+					if (getProject().isDisposed()) {
+						return;
+					}
+					if (exception != null) {
+						final String serverName = jiraServer != null ? jiraServer.getName() : "[UNDEFINED!]";
+						DialogWithDetails.showExceptionDialog(getProject(),
+								"Cannot fetch issue " + issueKey + " from server " + serverName, exception);
+						return;
+					}
+					if (issue != null) {
+						openIssue(issue);
+					}
+				}
+
 			};
 			task.queue();
+
 		}
 	}
 
