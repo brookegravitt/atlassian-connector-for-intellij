@@ -220,7 +220,6 @@ public final class ActiveIssueUtils {
 					boolean isOk = true;
 					final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
-
 					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
 							jiraServer,
 							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
@@ -228,9 +227,7 @@ public final class ActiveIssueUtils {
 
 
 					return isOk;
-
 				}
-
 			}
 		}
 		return true;
