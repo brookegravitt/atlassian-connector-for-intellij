@@ -99,6 +99,10 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		return new ClickAction();
 	}
 
+	public boolean isNavigateAction() {
+		return true;
+	}
+
 	private class ClickAction extends AnAction {
 		private static final String ADDING_COMMENT_FAILED = "Adding comment failed: ";
 		private static final String UPDATING_COMMENT_FAILED = "Updating comment failed: ";
