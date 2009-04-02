@@ -61,6 +61,9 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
 	void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
+	void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue,
+								JIRAAction action, List<JIRAActionField> fields) throws JIRAException;
+	
 	void addComment(JiraServerCfg server, String issueKey, String comment) throws JIRAException;
 
 	JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException;

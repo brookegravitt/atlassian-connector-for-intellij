@@ -446,12 +446,23 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public void progressWorkflowAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException {
+	public void progressWorkflowAction(JIRAIssue issue, JIRAAction action, List<JIRAActionField> fields)
+			throws RemoteApiException {
 		try {
-			// todo: if you want to actually fill in some fields, you will have to wait
-			// until we actually handle this properly in the UI
-			RemoteFieldValue[] dummyValues = new RemoteFieldValue[0];
-			service.progressWorkflowAction(token, issue.getKey(), String.valueOf(action.getId()), dummyValues);
+			if (fields == null) {
+				RemoteFieldValue[] dummyValues = new RemoteFieldValue[0];
+				service.progressWorkflowAction(token, issue.getKey(), String.valueOf(action.getId()), dummyValues);
+			} else {
+				RemoteFieldValue[] values = new RemoteFieldValue[fields.size()];
+				int i = 0;
+				for (JIRAActionField field : fields) {
+					List<String> fieldValues = field.getValues();
+					String[] fieldValueTable = fieldValues.toArray(new String[fieldValues.size()]);
+					values[i] = new RemoteFieldValue(field.getFieldId(), fieldValueTable);
+					++i;
+				}
+				service.progressWorkflowAction(token, issue.getKey(), String.valueOf(action.getId()), values);
+			}
 		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
 		}
