@@ -39,7 +39,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 	public final void update(final AnActionEvent event) {
-		final ActiveJiraIssue activeJiraIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+		final ActiveJiraIssue activeJiraIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		boolean enabled = activeJiraIssue != null;
 		if (enabled) {
 			onUpdate(event);
@@ -53,8 +53,8 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		boolean isOk = true;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JiraServerCfg jiraServer = ActiveIssueHelper.getJiraServer(project, newActiveIssue);
-		final JIRAIssue jiraIssue = ActiveIssueHelper.getJIRAIssue(jiraServer, newActiveIssue);
+		final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project, newActiveIssue);
+		final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServer, newActiveIssue);
 
 		if (panel != null && jiraIssue != null && jiraServer != null) {
 			if (jiraServer != null && !jiraServer.getUsername().equals(jiraIssue.getAssigneeId())) {
@@ -80,10 +80,10 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 			if (activeIssue != null) {
 				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 				final Project project = IdeaHelper.getCurrentProject(event);
-				final JIRAIssue jiraIssue = ActiveIssueHelper.getJIRAIssue(project);
+				final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 				if (panel != null && jiraIssue != null) {
 					boolean isOk = true;
-					final JiraServerCfg jiraServer = ActiveIssueHelper.getJiraServer(project);
+					final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
 
 					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,

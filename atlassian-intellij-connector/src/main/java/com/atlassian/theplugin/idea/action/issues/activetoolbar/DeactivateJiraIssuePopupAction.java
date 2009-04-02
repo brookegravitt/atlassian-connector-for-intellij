@@ -26,12 +26,12 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class DeactivateJiraIssuePopupAction extends DeactivateJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		final JIRAIssue selectedJiraIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
-		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+		final JIRAIssue selectedJiraIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		JiraServerCfg selectedServer;
 
 		if (activeIssue != null && activeIssue.getIssueKey() != null) {
-			selectedServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
+			selectedServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
 			event.getPresentation().setEnabled(enabled && selectedJiraIssue != null
 					&& selectedJiraIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer != null && selectedServer.getServerId().toString().equals(activeIssue.getServerId()));

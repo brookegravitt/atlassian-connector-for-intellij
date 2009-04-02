@@ -13,10 +13,10 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(AnActionEvent event) {
-		JIRAIssue issue = ActiveIssueHelper.getJIRAIssue(event);
+		JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(event);
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (issue != null && panel != null) {
-			panel.addCommentToIssue(issue.getKey(), ActiveIssueHelper.getJiraServer(event));
+			panel.addCommentToIssue(issue.getKey(), ActiveIssueUtils.getJiraServer(event));
 		}
 	}
 

@@ -33,7 +33,7 @@ public class OpenActiveJiraIssue extends AnAction {
 	}
 
 	public void update(final AnActionEvent event) {
-		event.getPresentation().setEnabled(ActiveIssueHelper.getActiveJiraIssue(event) != null);
+		event.getPresentation().setEnabled(ActiveIssueUtils.getActiveJiraIssue(event) != null);
 	}
 
 	private void openIssue(final AnActionEvent event) {
@@ -41,7 +41,7 @@ public class OpenActiveJiraIssue extends AnAction {
 			public void run() {
 				final Project currentProject = IdeaHelper
 						.getCurrentProject(event);
-				final JIRAIssue issue = ActiveIssueHelper.getJIRAIssue(currentProject);
+				final JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(currentProject);
 				if (currentProject != null && issue != null) {
 					final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
 					if (panel != null) {
