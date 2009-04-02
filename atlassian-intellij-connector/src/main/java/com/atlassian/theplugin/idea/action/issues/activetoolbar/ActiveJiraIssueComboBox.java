@@ -15,8 +15,11 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -26,6 +29,7 @@ import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
+import org.joda.time.DateTime;
 
 import javax.swing.*;
 
@@ -55,7 +59,18 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		AnAction action = new ActivateIssueItemAction(ActiveIssueHelper.getActiveJiraIssue(currentProject));
 
 		DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
-
+		final JiraWorkspaceConfiguration conf = IdeaHelper
+				.getProjectComponent(currentProject, JiraWorkspaceConfiguration.class);
+		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(currentProject);
+		if (conf != null) {
+			for (IssueRecentlyOpenBean issue : conf.getRecentlyOpenIssues()) {
+				if (activeIssue == null || !issue.getIssueKey().equals(activeIssue.getIssueKey())) {
+					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServerId(), issue.getIssueKey(),
+							new DateTime());
+					group.add(new ActivateIssueItemAction(newActiveIsse));
+				}
+			}
+		}
 		group.add(action);
 
 
