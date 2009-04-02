@@ -39,20 +39,20 @@ public class ActivateIssueItemAction extends AnAction {
 
 	public void actionPerformed(final AnActionEvent event) {
 		JiraServerCfg jiraServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
-//		if (activeIssue != null && jiraServer != null) {
-//			//activateIssue(event, activeIssue, jiraServer);
-//		}
+		if (activeIssue != null && jiraServer != null) {
+			activeIssue.resetTimeSpent();
+			ActiveIssueUtils.activateIssue(event, activeIssue, jiraServer);
+		}
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		if (activeIssue != null) {
 			event.getPresentation().setText(activeIssue.getIssueKey());
-			//super.onUpdate(event, enabled);
 		} else {
 			event.getPresentation().setEnabled(false);
-			event.getPresentation().setText("-- None --");
+			event.getPresentation().setText("unknown");
 		}
 
-		//event.getPresentation().setIcon(null);
+
 	}
 }
