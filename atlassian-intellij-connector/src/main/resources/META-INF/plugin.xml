@@ -474,10 +474,16 @@
 				description="Open FishEye URL in Editor"
 				icon="/icons/fisheye-16.png">
 		</action>
-
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
-				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueLabel"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"
 				text=""
+				>
+		</action>
+
+		<action id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"
+				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.OpenActiveJiraIssue"
+				text=""
+				icon="/icons/jira-blue-16.png"
 				>
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
@@ -534,6 +540,7 @@
 		<group id="ThePlugin.ActiveToolbar">
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
+			<reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
