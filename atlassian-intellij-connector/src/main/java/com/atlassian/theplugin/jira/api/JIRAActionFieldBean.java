@@ -16,8 +16,13 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIRAActionField {
 	private String fieldId;
+
+	private List<String> fieldValues = new ArrayList<String>();
 
 	public JIRAActionFieldBean(String fieldId, String name) {
 		super(fieldId.hashCode(), name, null);
@@ -28,9 +33,20 @@ public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIR
 		this(other.fieldId, other.name);
 	}
 
+	public String getFieldId() {
+		return fieldId;
+	}
+
+	public void addValue(String val) {
+		fieldValues.add(val);
+	}
+
+	public List<String> getValues() {
+		return fieldValues;
+	}
+
 	public String getQueryStringFragment() {
-		// todo: I am almost absolutely sure this is wrong. Once we get
-		// to actually handling action fields, this will have to be fixed
+		// todo: I am almost absolutely sure this is wrong.
 		return fieldId + "=";
 	}
 

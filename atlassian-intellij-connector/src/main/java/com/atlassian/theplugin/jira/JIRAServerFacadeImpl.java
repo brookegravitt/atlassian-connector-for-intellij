@@ -320,9 +320,14 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException {
+		progressWorkflowAction(server, issue, action, null);
+	}
+
+	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue,
+									   JIRAAction action, List<JIRAActionField> fields) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
-			soap.progressWorkflowAction(issue, action);
+			soap.progressWorkflowAction(issue, action, fields);
 		} catch (RemoteApiException e) {
 			soapSessions.remove(getSoapSessionKey(server));
 			throw new JIRAException(e.getMessage(), e);
