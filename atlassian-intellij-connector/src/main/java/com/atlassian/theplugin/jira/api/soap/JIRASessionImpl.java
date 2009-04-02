@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.jira.api.soap;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
@@ -39,7 +40,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	private String token;
 	private JiraSoapService service;
-	private String serverUrl;
+	private JiraServerCfg server;
 	private URL portAddress;
 
 	public static final int ONE_DAY_AGO = -24;
@@ -116,14 +117,14 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
-	public JIRASessionImpl(String serverUrl) throws ServiceException, MalformedURLException {
-		portAddress = new URL(serverUrl + "/rpc/soap/jirasoapservice-v2");
+	public JIRASessionImpl(JiraServerCfg server) throws ServiceException, MalformedURLException {
+		portAddress = new URL(server.getUrl() + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
 		AbstractHttpSession.setUrl(portAddress); // dirty hack
 		service = loc.getJirasoapserviceV2(portAddress);
 		setProxy();
 
-		this.serverUrl = serverUrl;
+		this.server = server;
 	}
 
 	public void login(String userName, String password) throws RemoteApiException {
@@ -204,7 +205,7 @@ public class JIRASessionImpl implements JIRASession {
 		}
 
 		// todo: fill in all other fields. For now only the issue key and URL is being displayed
-		JIRAIssueBean retVal = new JIRAIssueBean(serverUrl);
+		JIRAIssueBean retVal = new JIRAIssueBean(server);
 		retVal.setKey(remoteIssue.getKey());
 		return retVal;
 	}
