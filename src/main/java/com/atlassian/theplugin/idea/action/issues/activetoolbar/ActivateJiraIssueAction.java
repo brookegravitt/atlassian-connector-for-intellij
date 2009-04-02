@@ -35,10 +35,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
 		JIRAIssue selectedIssue = null;
 		JiraServerCfg jiraServerCfg = null;
-		selectedIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
+		selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (selectedIssue != null) {
-			jiraServerCfg = ActiveIssueHelper.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
+			jiraServerCfg = ActiveIssueUtils.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
 			ActiveJiraIssue newActiveIssue;
 			if (jiraServerCfg != null) {
 				newActiveIssue =
@@ -54,7 +54,7 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+				final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 				boolean isAlreadyActive = activeIssue != null;
 				boolean isDeactivated = true;
 				if (isAlreadyActive) {
@@ -68,9 +68,9 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 				if (isDeactivated && deactivate(event)) {
 					final boolean isActivated = activate(event, newActiveIssue, jiraServerCfg);
 					if (isActivated) {
-						ActiveIssueHelper.setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
+						ActiveIssueUtils.setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
 					} else {
-						ActiveIssueHelper.setActiveJiraIssue(event, null, jiraServerCfg);
+						ActiveIssueUtils.setActiveJiraIssue(event, null, jiraServerCfg);
 					}
 				}
 			}
@@ -82,13 +82,13 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		final JIRAIssue selectedIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
-		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+		final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
 		if (selectedIssue != null && activeIssue != null
-				&& ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
+				&& ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
 
-			final JiraServerCfg selectedServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
+			final JiraServerCfg selectedServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
 			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
 			event.getPresentation().setEnabled(!equals);

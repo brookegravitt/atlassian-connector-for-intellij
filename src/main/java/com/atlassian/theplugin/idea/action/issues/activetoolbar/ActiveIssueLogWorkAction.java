@@ -33,11 +33,11 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+				final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
 				if (activeIssue != null && panel != null) {
-					boolean isOk = panel.logWorkOrDeactivateIssue(ActiveIssueHelper.getJIRAIssue(event),
-							ActiveIssueHelper.getJiraServer(event),
+					boolean isOk = panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
+							ActiveIssueUtils.getJiraServer(event),
 							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 							false);
 
