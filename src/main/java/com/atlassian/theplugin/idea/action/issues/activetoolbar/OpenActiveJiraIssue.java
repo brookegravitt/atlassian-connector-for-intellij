@@ -15,47 +15,41 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 
 /**
  * User: pmaruszak
  */
-public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
-
-
+public class OpenActiveJiraIssue extends AnAction {
 	public void actionPerformed(final AnActionEvent event) {
+		openIssue(event);
+	}
+
+	public void update(final AnActionEvent event) {
+		event.getPresentation().setEnabled(ActiveIssueHelper.getActiveJiraIssue(event) != null);
+	}
+
+	private void openIssue(final AnActionEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
-
-				if (activeIssue != null && panel != null) {
-					boolean isOk = panel.logWorkOrDeactivateIssue(ActiveIssueHelper.getJIRAIssue(event),
-							ActiveIssueHelper.getJiraServer(event),
-							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-							false);
-
-					if (isOk) {
-						activeIssue.resetTimeSpent();
+				final Project currentProject = IdeaHelper
+						.getCurrentProject(event);
+				final JIRAIssue issue = ActiveIssueHelper.getJIRAIssue(currentProject);
+				if (currentProject != null && issue != null) {
+					final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					if (panel != null) {
+						panel.openIssue(issue);
 					}
 				}
+
 			}
 		});
 	}
-
-	public void onUpdate(final AnActionEvent event) {
-
-	}
-
-	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		event.getPresentation().setEnabled(enabled);
-	}
-
-
 }

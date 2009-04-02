@@ -16,27 +16,43 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
  * User: pmaruszak
  */
-public class DeactivateJiraIssuePopupAction extends DeactivateJiraIssueAction {
+public class ActivateIssueItemAction extends AnAction {
+	private final ActiveJiraIssue activeIssue;
+
+	ActivateIssueItemAction(ActiveJiraIssue activeIssue) {
+		this.activeIssue = activeIssue;
+		if (activeIssue != null) {
+			getTemplatePresentation().setText(activeIssue.getIssueKey());
+		}
+	}
+
+	public boolean displayTextInToolbar() {
+		return true;
+	}
+
+	public void actionPerformed(final AnActionEvent event) {
+		JiraServerCfg jiraServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
+		if (activeIssue != null && jiraServer != null) {
+			//activateIssue(event, activeIssue, jiraServer);
+		}
+	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		final JIRAIssue selectedJiraIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
-		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
-		JiraServerCfg selectedServer;
-
-		if (activeIssue != null && activeIssue.getIssueKey() != null) {
-			selectedServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
-			event.getPresentation().setEnabled(enabled && selectedJiraIssue != null
-					&& selectedJiraIssue.getKey().equals(activeIssue.getIssueKey())
-					&& selectedServer != null && selectedServer.getServerId().toString().equals(activeIssue.getServerId()));
+		if (activeIssue != null) {
+			event.getPresentation().setText(activeIssue.getIssueKey());
+			//super.onUpdate(event, enabled);
 		} else {
 			event.getPresentation().setEnabled(false);
+			event.getPresentation().setText("-- None --");
 		}
+
+		//event.getPresentation().setIcon(null);
 	}
 }
