@@ -33,37 +33,44 @@ import javax.swing.*;
 public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(final AnActionEvent event) {
+		JIRAIssue selectedIssue = null;
+		JiraServerCfg jiraServerCfg = null;
+		selectedIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
+
+		if (selectedIssue != null) {
+			jiraServerCfg = ActiveIssueHelper.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
+			ActiveJiraIssue newActiveIssue;
+			if (jiraServerCfg != null) {
+				newActiveIssue =
+						new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
+								new DateTime());
+				activateIssue(event, newActiveIssue, jiraServerCfg);
+			}
+		}
+	}
+
+	public void activateIssue(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
+			final JiraServerCfg jiraServerCfg) {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
-				if (selectedIssue != null) {
-					JiraServerCfg jiraServerCfg = getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
-					ActiveJiraIssue newActiveIssue;
-					if (jiraServerCfg != null) {
-						newActiveIssue =
-								new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue,
-										new DateTime());
+				final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+				boolean isAlreadyActive = activeIssue != null;
+				boolean isDeactivated = true;
+				if (isAlreadyActive) {
 
-						final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
-						boolean isAlreadyActive = activeIssue != null;
-						boolean isDeactivated = true;
-						if (isAlreadyActive) {
-
-							isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-									activeIssue.getIssueKey()
-											+ " is active. Would you like to deactivate it first and proceed?",
-									"Deactivating current issue",
-									Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-						}
-						if (isDeactivated && deactivate(event)) {
-							final boolean isActivated = activate(event, newActiveIssue);
-							if (isActivated) {
-								setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
-							} else {
-								setActiveJiraIssue(event, null, jiraServerCfg);
-							}
-						}
+					isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+							activeIssue.getIssueKey()
+									+ " is active. Would you like to deactivate it first and proceed?",
+							"Deactivating current issue",
+							Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+				}
+				if (isDeactivated && deactivate(event)) {
+					final boolean isActivated = activate(event, newActiveIssue, jiraServerCfg);
+					if (isActivated) {
+						ActiveIssueHelper.setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
+					} else {
+						ActiveIssueHelper.setActiveJiraIssue(event, null, jiraServerCfg);
 					}
 				}
 			}
@@ -75,13 +82,13 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		final JIRAIssue selectedIssue = getSelectedJiraIssue(event);
-		final ActiveJiraIssue activeIssue = getActiveJiraIssue(event);
+		final JIRAIssue selectedIssue = ActiveIssueHelper.getSelectedJiraIssue(event);
+		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
 
 		if (selectedIssue != null && activeIssue != null
-				&& getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
+				&& ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
 
-			final JiraServerCfg selectedServer = getSelectedJiraServerById(event, activeIssue.getServerId());
+			final JiraServerCfg selectedServer = ActiveIssueHelper.getSelectedJiraServerById(event, activeIssue.getServerId());
 			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
 			event.getPresentation().setEnabled(!equals);
