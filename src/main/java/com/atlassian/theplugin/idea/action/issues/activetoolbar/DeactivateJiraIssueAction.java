@@ -29,7 +29,7 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				boolean isOk = deactivate(event);
+				boolean isOk = ActiveIssueUtils.deactivate(event);
 				final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 				if (isOk) {
 					conf.setActiveJiraIssue(null);

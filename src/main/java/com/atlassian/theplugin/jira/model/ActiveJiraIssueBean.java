@@ -45,6 +45,7 @@ public class ActiveJiraIssueBean implements ActiveJiraIssue {
 	}
 
 	public void resetTimeSpent() {
+		lastStartTime = new DateTime();
 		secondsSpent = 0;
 	}
 

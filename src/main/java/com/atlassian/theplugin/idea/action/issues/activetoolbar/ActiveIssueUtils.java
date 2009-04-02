@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -30,6 +31,10 @@ import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+
+import javax.swing.*;
 
 /**
  * User: pmaruszak
@@ -149,5 +154,85 @@ public final class ActiveIssueUtils {
 			jiraServer = CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), activeIssue.getServerId());
 		}
 		return jiraServer;
+	}
+
+	public static void activateIssue(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
+			final JiraServerCfg jiraServerCfg) {
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
+				boolean isAlreadyActive = activeIssue != null;
+				boolean isDeactivated = true;
+				if (isAlreadyActive) {
+
+					isDeactivated = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+							activeIssue.getIssueKey()
+									+ " is active. Would you like to deactivate it first and proceed?",
+							"Deactivating current issue",
+							Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+				}
+				if (isDeactivated && ActiveIssueUtils.deactivate(event)) {
+					final boolean isActivated = ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
+					if (isActivated) {
+						ActiveIssueUtils.setActiveJiraIssue(event, newActiveIssue, jiraServerCfg);
+					} else {
+						ActiveIssueUtils.setActiveJiraIssue(event, null, jiraServerCfg);
+					}
+				}
+			}
+		});
+	}
+
+	private static boolean activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
+			final JiraServerCfg jiraServerCfg) {
+		final Project project = IdeaHelper.getCurrentProject(event);
+		boolean isOk = true;
+		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
+
+		if (panel != null && jiraIssue != null && jiraServerCfg != null) {
+			if (jiraServerCfg != null && !jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())) {
+				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+						"Is already assigned to " + jiraIssue.getAssignee()
+								+ ". Do you want to overwrite assignee and start progress?",
+						"Issue " + jiraIssue.getKey(),
+						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+			}
+
+			if (isOk) {
+				//assign to me and start working
+				isOk = panel.startWorkingOnIssue(jiraIssue, jiraServerCfg);
+			}
+		}
+		return isOk;
+	}
+
+	public static boolean deactivate(final AnActionEvent event) {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+		if (conf != null) {
+			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
+			if (activeIssue != null) {
+				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+				final Project project = IdeaHelper.getCurrentProject(event);
+				final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
+				if (panel != null && jiraIssue != null) {
+					boolean isOk = true;
+					final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
+
+
+					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
+							jiraServer,
+							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
+							true);
+
+
+					return isOk;
+
+				}
+
+			}
+		}
+		return true;
 	}
 }
