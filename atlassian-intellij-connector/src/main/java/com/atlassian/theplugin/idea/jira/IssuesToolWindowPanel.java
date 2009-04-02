@@ -360,8 +360,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	//		jiraIssueListModelBuilder.setSavedFilter(savedFilter);
 
 	public void openIssue(final JIRAIssue issue, final JiraServerCfg server) {
-		if (server != null) {
-			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue, server);
+		if (issue.getServer() != null) {
+			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
 			IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
 		}
 	}
@@ -820,8 +820,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		return jiraFilterTree != null && jiraFilterTree.isRecentlyOpenSelected();
 	}
 
-	public List<Pair<JIRAIssue, JiraServerCfg>> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {
-		List<Pair<JIRAIssue, JiraServerCfg>> issues = new ArrayList<Pair<JIRAIssue, JiraServerCfg>>();
+	public List<JIRAIssue> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {
+		List<JIRAIssue> issues = new ArrayList<JIRAIssue>();
 
 		if (recentlyOpenIssues == null || recentlyOpenIssues.size() == 0) {
 			return issues;
@@ -836,7 +836,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
 							&& getSelectedServer() != null
 							&& getSelectedServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
-						issues.add(new Pair<JIRAIssue, JiraServerCfg>(localIssue, getSelectedServer()));
+						issues.add(localIssue);
 						found = true;
 						break;
 					}
@@ -850,7 +850,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					if (server.getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
 						try {
 							JIRAIssue issue = jiraServerFacade.getIssue(server, recentlyOpenIssue.getIssueKey());
-							issues.add(new Pair<JIRAIssue, JiraServerCfg>(issue, server));
+							issues.add(issue);
 						} catch (JIRAException e) {
 							PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
 							setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
