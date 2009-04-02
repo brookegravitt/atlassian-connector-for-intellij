@@ -21,8 +21,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
@@ -48,15 +46,14 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		}
 
 		event.getPresentation().setText(text);
-		super.update(event);	//To change body of overridden methods use File | Settings | File Templates.
+		super.update(event);
 	}
 
 	@NotNull
 	protected DefaultActionGroup createPopupActionGroup(final JComponent jComponent) {
 		final Project currentProject = IdeaHelper
 				.getCurrentProject(DataManager.getInstance().getDataContext(jComponent));
-		ActionManager aManager = ActionManager.getInstance();
-		AnAction action = new ActivateIssueItemAction(ActiveIssueUtils.getActiveJiraIssue(currentProject));
+
 
 		DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
 		final JiraWorkspaceConfiguration conf = IdeaHelper
@@ -71,8 +68,6 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 				}
 			}
 		}
-		group.add(action);
-
 
 		return group;
 	}

@@ -15,19 +15,9 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
 
 /**
  * User: pmaruszak
@@ -45,60 +35,6 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 			onUpdate(event);
 		}
 		onUpdate(event, enabled);
-	}
-
-
-	protected boolean activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-			final JiraServerCfg jiraServerCfg) {
-		final Project project = IdeaHelper.getCurrentProject(event);
-		boolean isOk = true;
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project, newActiveIssue);
-		final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServer, newActiveIssue);
-
-		if (panel != null && jiraIssue != null && jiraServer != null) {
-			if (jiraServer != null && !jiraServer.getUsername().equals(jiraIssue.getAssigneeId())) {
-				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-						"Is already assigned to " + jiraIssue.getAssignee()
-								+ ". Do you want to overwrite assignee and start progress?",
-						"Issue " + jiraIssue.getKey(),
-						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
-			}
-
-			if (isOk) {
-				//assign to me and start working
-				isOk = panel.startWorkingOnIssue(jiraIssue, jiraServer);
-			}
-		}
-		return isOk;
-	}
-
-	protected boolean deactivate(final AnActionEvent event) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-		if (conf != null) {
-			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
-			if (activeIssue != null) {
-				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				final Project project = IdeaHelper.getCurrentProject(event);
-				final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
-				if (panel != null && jiraIssue != null) {
-					boolean isOk = true;
-					final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
-
-
-					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
-							jiraServer,
-							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-							true);
-
-
-					return isOk;
-
-				}
-
-			}
-		}
-		return true;
 	}
 
 //	protected void refreshLabel(ActiveJiraIssue issue) {
