@@ -41,7 +41,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 	static final Icon JIRA_ICON_DISABLED = IconLoader.getIcon("/icons/jira-grey-16.png");
 
 	public void update(final AnActionEvent event) {
-		ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(event);
+		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		String text = "No active issue";
 		if (activeIssue != null) {
 			text = activeIssue.getIssueKey();
@@ -56,12 +56,12 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		final Project currentProject = IdeaHelper
 				.getCurrentProject(DataManager.getInstance().getDataContext(jComponent));
 		ActionManager aManager = ActionManager.getInstance();
-		AnAction action = new ActivateIssueItemAction(ActiveIssueHelper.getActiveJiraIssue(currentProject));
+		AnAction action = new ActivateIssueItemAction(ActiveIssueUtils.getActiveJiraIssue(currentProject));
 
 		DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
 		final JiraWorkspaceConfiguration conf = IdeaHelper
 				.getProjectComponent(currentProject, JiraWorkspaceConfiguration.class);
-		final ActiveJiraIssue activeIssue = ActiveIssueHelper.getActiveJiraIssue(currentProject);
+		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(currentProject);
 		if (conf != null) {
 			for (IssueRecentlyOpenBean issue : conf.getRecentlyOpenIssues()) {
 				if (activeIssue == null || !issue.getIssueKey().equals(activeIssue.getIssueKey())) {
