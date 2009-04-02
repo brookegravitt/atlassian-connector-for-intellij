@@ -22,6 +22,7 @@
  */
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
@@ -194,7 +195,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private List<JIRAIssue> makeIssues(@NotNull List<Element> issueElements) {
 		List<JIRAIssue> result = new ArrayList<JIRAIssue>(issueElements.size());
 		for (final Element issueElement : issueElements) {
-			JIRAIssueBean jiraIssue = new JIRAIssueBean(getBaseUrl(), issueElement);
+			JIRAIssueBean jiraIssue = new JIRAIssueBean((JiraServerCfg) getServer(), issueElement);
 			CachedIconLoader.loadIcon(jiraIssue.getTypeIconUrl());
 			CachedIconLoader.loadIcon(jiraIssue.getPriorityIconUrl());
 			CachedIconLoader.loadIcon(jiraIssue.getStatusTypeUrl());
