@@ -65,7 +65,15 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 
 			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
 			final JToolTip jToolTip = createToolTip();
-			jToolTip.setTipText(buildTolltip(issue, 0));
+
+			try {
+				jToolTip.setTipText(buildTolltip(issue, 0));
+			} catch (ClassCastException e) {
+				// don't know why but sometimes setTipText throws CCE (most probably on IDEA start)
+				// we cannot do much about thtat
+				PluginUtil.getLogger().warn("ClassCastException when setting tooltip text", e);
+			}
+
 			final int prefWidth = jToolTip.getPreferredSize().width;
 			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
 			setToolTipText(buildTolltip(issue, width));
