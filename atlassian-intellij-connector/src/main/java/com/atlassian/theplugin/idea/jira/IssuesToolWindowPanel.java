@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -91,6 +92,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final int ONE_SECOND = 1000;
 
+	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
+
+
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
@@ -154,6 +158,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 
+		recentlyOpenIssuesCache = new RecentlyOpenIssuesCache(project, projectCfgManager, baseIssueListModel);
+
 		addIssuesTreeListeners();
 		addSearchBoxListener();
 		freezeSynchronizator.setIssueModel(currentIssueListModel);
@@ -161,6 +167,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		freezeSynchronizator.setFilterModel(jiraFilterListModel);
 
 		init(0);
+
 
 		jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
 
@@ -199,6 +206,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public ProjectCfgManager getProjectCfgManager() {
 		return projectCfgManager;
+	}
+
+	public void init() {
+		recentlyOpenIssuesCache.init();
 	}
 
 	@Override
@@ -359,46 +370,47 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	//	public void setIssuesFilterParams(JiraServerCfg server, JIRASavedFilter savedFilter) {
 	//		jiraIssueListModelBuilder.setSavedFilter(savedFilter);
 
-	public void openIssue(final JIRAIssue issue) {
+	public void openIssue(final JIRAIssue issue, final JiraServerCfg server) {
 		if (issue.getServer() != null) {
 			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
-			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue.getServer(), issue, baseIssueListModel);
+			IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
+		}
+	}
+
+	public void openIssue(@NotNull JIRAIssue issue) {
+		if (getSelectedServer() != null) {
+			openIssue(issue, getSelectedServer());
+		} else if (isRecentlyOpenFilterSelected()) {
+			for (JiraServerCfg server
+					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+				if (server.getUrl().equals(issue.getServerUrl())) {
+					openIssue(issue, server);
+					break;
+				}
+			}
 		}
 	}
 
 	public void openIssue(@NotNull final String issueKey, final JiraServerCfg jiraServer) {
 		JIRAIssue issue = null;
 		for (JIRAIssue i : baseIssueListModel.getIssues()) {
-			if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
+			if (i.getKey().equals(issueKey) && getSelectedServer().getServerId().equals(jiraServer.getServerId())) {
 				issue = i;
 				break;
 			}
 		}
 
 		if (issue != null) {
-			openIssue(issue);
+			openIssue(issue, jiraServer);
+//			openIssue(issue);
 		} else {
 			Task.Backgroundable task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
 				private JIRAIssue issue;
 				private Throwable exception;
 
 				@Override
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					progressIndicator.setIndeterminate(true);
-					try {
-						if (jiraServer != null) {
-							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
-//							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
-						} else {
-							exception = new RuntimeException("No JIRA server defined!");
-						}
-					} catch (JIRAException e) {
-						exception = e;
-					}
-				}
-
-				@Override
 				public void onSuccess() {
+					//JiraServerCfg server = getSelectedServer();
 					if (getProject().isDisposed()) {
 						return;
 					}
@@ -409,13 +421,27 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						return;
 					}
 					if (issue != null) {
-						openIssue(issue);
+						openIssue(issue, jiraServer);
 					}
 				}
 
+				@Override
+				public void run(@NotNull ProgressIndicator progressIndicator) {
+					progressIndicator.setIndeterminate(true);
+					try {
+						//final JiraServerCfg jiraServer = getSelectedServer();
+						if (jiraServer != null) {
+							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+//							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
+						} else {
+							exception = new RuntimeException("No JIRA server defined!");
+						}
+					} catch (JIRAException e) {
+						exception = e;
+					}
+				}
 			};
 			task.queue();
-
 		}
 	}
 
@@ -424,7 +450,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			return;
 		}
 		try {
-			JiraServerCfg jiraServer = issue.getServer();
+			JiraServerCfg jiraServer = getSelectedServer();
 			if (jiraServer != null) {
 				assignIssue(issue, jiraServer.getUsername());
 			}
@@ -457,7 +483,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
 
-					JiraServerCfg jiraServer = issue.getServer();
+					JiraServerCfg jiraServer = getSelectedServer();
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
@@ -502,7 +528,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void addCommentToSelectedIssue() {
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue != null) {
-			addCommentToIssue(issue.getKey(), issue.getServer());
+			addCommentToIssue(issue.getKey(), getSelectedServer());
 		}
 	}
 
@@ -559,9 +585,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 //		if (issue == null) {
 //			return;
 //		}
-
 		final JiraServerCfg server = issue.getServer();
-
 		boolean isOk = createChangeListAction(issue);
 
 		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
@@ -633,6 +657,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		} else if (jiraFilterTree.isRecentlyOpenSelected()) {
 			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
 		}
+
+		recentlyOpenIssuesCache.invalidate();
 	}
 
 	private void refreshIssues(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg, final boolean reload) {
@@ -708,7 +734,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	public void projectUnregistered() {
+	public void projectRegistered() {
+
 	}
 
 	public JiraIssueGroupBy getGroupBy() {
@@ -817,35 +844,45 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
 			boolean found = false;
 
-			// search local list
-			if (baseIssueListModel != null && baseIssueListModel.getIssues().size() > 0) {
-				for (JIRAIssue localIssue : baseIssueListModel.getIssues()) {
-					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
-							&& localIssue.getServer() != null
-							&& localIssue.getServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
-						issues.add(localIssue);
-						found = true;
-						break;
-					}
+//			// search local list
+//			if (baseIssueListModel != null && baseIssueListModel.getIssues().size() > 0) {
+//				for (JIRAIssue localIssue : baseIssueListModel.getIssues()) {
+//					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
+//							&& getSelectedServer() != null
+//							&& getSelectedServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
+//						issues.add(localIssue);
+//						found = true;
+//						break;
+//					}
+//				}
+//			}
+//
+//			// search enabled servers
+//			if (!found) {
+//				for (JiraServerCfg server
+//						: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+//					if (server.getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
+//						try {
+//							JIRAIssue issue = jiraServerFacade.getIssue(server, recentlyOpenIssue.getIssueKey());
+//							issues.add(issue);
+//						} catch (JIRAException e) {
+//							PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
+//							setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
+//						}
+//
+//						break;
+//					}
+//				}
+//			}
+			JIRAIssue issue = null;
+			try {
+				issue = recentlyOpenIssuesCache.getJIRAIssue(recentlyOpenIssue);
+				if (issue != null) {
+					issues.add(issue);
 				}
-			}
-
-			// search enabled servers
-			if (!found) {
-				for (JiraServerCfg server
-						: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-					if (server.getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
-						try {
-							JIRAIssue issue = jiraServerFacade.getIssue(server, recentlyOpenIssue.getIssueKey());
-							issues.add(issue);
-						} catch (JIRAException e) {
-							PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
-							setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
-						}
-
-						break;
-					}
-				}
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
+				setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
 			}
 		}
 

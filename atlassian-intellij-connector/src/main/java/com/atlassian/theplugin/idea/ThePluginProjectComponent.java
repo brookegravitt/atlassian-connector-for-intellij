@@ -292,6 +292,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			}
 
 			registerCrucibleNotifier();
+			issuesToolWindowPanel.init();
 		}
 	}
 
