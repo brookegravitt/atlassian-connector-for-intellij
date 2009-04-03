@@ -41,8 +41,8 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class RecentlyOpenIssuesCache {
-	Map<IssueRecentlyOpenBean, JIRAIssue> items = new HashMap<IssueRecentlyOpenBean, JIRAIssue>();
-	final LocalModelListener localModelListener = new LocalModelListener();
+	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new HashMap<IssueRecentlyOpenBean, JIRAIssue>();
+	private final LocalModelListener localModelListener = new LocalModelListener();
 	private final Project project;
 	private final ProjectCfgManager cfgManager;
 	private final JIRAIssueListModel issueModel;
