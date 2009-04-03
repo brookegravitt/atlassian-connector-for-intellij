@@ -569,15 +569,18 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final JiraServerCfg jiraServer, String initialLog,
 			final boolean deactivateIssue) {
-		final WorkLogCreateAndMaybeDeactivateDialog dialog =
-				new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog, deactivateIssue);
-		dialog.show();
-		if (dialog.isOK()) {
-			Task.Backgroundable logWork = new LogWorkWorkerTask(issue, dialog, jiraServer, deactivateIssue);
-			ProgressManager.getInstance().run(logWork);
-		}
+		if (issue != null) {
+			final WorkLogCreateAndMaybeDeactivateDialog dialog =
+					new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog, deactivateIssue);
+			dialog.show();
+			if (dialog.isOK()) {
+				Task.Backgroundable logWork = new LogWorkWorkerTask(issue, dialog, jiraServer, deactivateIssue);
+				ProgressManager.getInstance().run(logWork);
+			}
 
-		return dialog.isOK();
+			return dialog.isOK();
+		}
+		return false;
 	}
 
 
