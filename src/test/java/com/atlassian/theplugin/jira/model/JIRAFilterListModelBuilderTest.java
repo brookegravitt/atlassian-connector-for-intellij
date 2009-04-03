@@ -166,6 +166,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 				throws JIRAException {
 		}
 
+		public void progressWorkflowAction(final JiraServerCfg server, final JIRAIssue issue, final JIRAAction action,
+				final List<JIRAActionField> fields)
+				throws JIRAException {
+		}
+
 		public void addComment(JiraServerCfg server, String issueKey, String comment) throws JIRAException {
 		}
 
