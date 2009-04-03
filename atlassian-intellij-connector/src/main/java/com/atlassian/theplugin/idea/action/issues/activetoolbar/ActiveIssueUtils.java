@@ -192,10 +192,12 @@ public final class ActiveIssueUtils {
 		final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
 
 		if (panel != null && jiraIssue != null && jiraServerCfg != null) {
-			if (jiraServerCfg != null && !jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())) {
+			if (jiraServerCfg != null &&
+					!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
+					&& !"-1".equals(jiraIssue.getAssigneeId())) {
 				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-						"Is already assigned to " + jiraIssue.getAssignee()
-								+ ". Do you want to overwrite assignee and start progress?",
+						"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
+								+ ".\nDo you want to overwrite assignee and start progress?",
 						"Issue " + jiraIssue.getKey(),
 						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 			}
