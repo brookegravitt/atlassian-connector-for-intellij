@@ -20,8 +20,8 @@ package com.atlassian.theplugin.configuration;
  */
 public class IssueRecentlyOpenBean {
 
-	private String serverId;
-	private String issueKey;
+	protected String serverId;
+	protected String issueKey;
 
 	public IssueRecentlyOpenBean() {
 	}
