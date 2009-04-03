@@ -45,7 +45,9 @@ public final class JiraActionFieldType {
 		typeMap.put("assignee", WidgetType.USER);
 	}
 
-	private JiraActionFieldType() {}
+	private JiraActionFieldType() {
+
+	}
 
 	public static WidgetType getFiledTypeForFieldId(@NotNull JIRAActionField field) {
 		return getFiledTypeForFieldId(field.getFieldId());
