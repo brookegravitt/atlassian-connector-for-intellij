@@ -74,6 +74,8 @@ public class PerformIssueActionForm extends DialogWrapper {
 		contentPanel.setLayout(new FormLayout(columns, rows));
 		final CellConstraints cc = new CellConstraints();
 
+		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModel.class);
+
 		for (JIRAActionField field : fieldList) {
 
 			ActionFieldEditor editor = null;
@@ -89,21 +91,21 @@ public class PerformIssueActionForm extends DialogWrapper {
 					editor = new FieldEnvironment(issue, field);
 					break;
 				case ISSUE_TYPE:
-					editor =
-							new IssueTypeComboBox(IdeaHelper.getProjectComponent(project, JIRAServerModel.class), issue, field);
+					editor = new IssueTypeComboBox(jiraServerModel, issue, field);
 					break;
 				case RESOLUTION:
-					editor = new IssueResolutionComboBox(IdeaHelper.getProjectComponent(project, JIRAServerModel.class),
-							issue, field);
+					editor = new IssueResolutionComboBox(jiraServerModel, issue, field);
 					break;
 				case USER:
 					editor = new FieldUser(issue, field);
+					break;
+				case PRIORITY:
+					editor = new FieldPriority(jiraServerModel, issue, field);
 					break;
 				case TIME_SPENT:
 				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
-				case PRIORITY:
 				case UNSUPPORTED:
 				default:
 					break;
@@ -127,6 +129,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case ISSUE_TYPE:
 				case RESOLUTION:
 				case USER:
+				case PRIORITY:
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
@@ -138,7 +141,6 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
-				case PRIORITY:
 				default:
 					break;
 			}
