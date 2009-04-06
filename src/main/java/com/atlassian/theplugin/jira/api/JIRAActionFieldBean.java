@@ -45,6 +45,10 @@ public class JIRAActionFieldBean extends AbstractJIRAConstantBean implements JIR
 		return fieldValues;
 	}
 
+	public void setValues(List<String> values) {
+		this.fieldValues = values;
+	}
+
 	public String getQueryStringFragment() {
 		// todo: I am almost absolutely sure this is wrong.
 		return fieldId + "=";

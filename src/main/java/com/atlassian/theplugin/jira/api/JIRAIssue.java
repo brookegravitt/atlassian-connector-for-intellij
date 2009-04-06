@@ -110,4 +110,8 @@ public interface JIRAIssue {
 	List<JIRAComment> getComments();
 
 	JiraServerCfg getServer();
+
+	Object getRawSoapIssue();
+
+	void setRawSoapIssue(Object soapIssue);
 }
