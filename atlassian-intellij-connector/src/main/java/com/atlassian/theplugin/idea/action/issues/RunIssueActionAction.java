@@ -108,7 +108,7 @@ public class RunIssueActionAction extends AnAction {
 										new Task.Backgroundable(project, "Running workflow action", false) {
 											public void run(final ProgressIndicator indicator) {
 												try {
-													facade.progressWorkflowAction(server, issue, action, fields);
+													facade.progressWorkflowAction(server, issue, action, dialog.getFields());
 													performPostActionActivity(server);
 												} catch (JIRAException e) {
 													showInfo("Unable to run action [" + action.getName() + "] on issue ["
