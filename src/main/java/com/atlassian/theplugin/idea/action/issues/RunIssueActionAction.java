@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueActionProvider;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAAction;
@@ -16,8 +17,13 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 
+import java.awt.*;
 import java.util.List;
 
 public class RunIssueActionAction extends AnAction {
@@ -61,62 +67,92 @@ public class RunIssueActionAction extends AnAction {
 		}
 
 		public void run() {
-			try {
-				window.setStatusMessage(
-						"Retrieving fields for action \""
-								+ action.getName()
-								+ "\" in issue "
-								+ issue.getKey()
-								+ "...");
+			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...", false);
 
-				JiraServerCfg server = window.getSelectedServer();
-				if (server != null) {
-					List<JIRAActionField> fields = facade.getFieldsForAction(server, issue, action);
-					if (fields.isEmpty()) {
-						window.setStatusMessage(
-								"Running action \""
-										+ action.getName()
-										+ "\" on issue "
-										+ issue.getKey()
-										+ "...");
-						facade.progressWorkflowAction(server, issue, action);
-						if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-						} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-							JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
-						}
-						JIRAIssueListModelBuilder issueListModelBuilder =
-								IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
-						JiraIssueAdapter.get(issue).clearCachedActions();
-						window.setStatusMessage(
-								"Action \""
-										+ action.getName()
-										+ "\" on issue "
-										+ issue.getKey()
-										+ " run succesfully");
+			final JiraServerCfg server = issue.getServer();
 
-						if (issueListModelBuilder != null) {
-							issueListModelBuilder.updateIssue(issue, server);
-						}
-					} else {
-						window.setStatusMessage(
-								"Action \""
-										+ action.getName()
-										+ "\" on issue "
-										+ issue.getKey()
-										+ " is interactive, launching browser");
-						launchBrowser();
-					}
+			if (server != null) {
+				final List<JIRAActionField> fields;
+				try {
+					fields = facade.getFieldsForAction(server, issue, action);
+				} catch (JIRAException e) {
+					showInfo(
+							"Cannot retrieve fields for action [" + action.getName() + "] on issue [" + issue.getKey() + "]"
+									+ e.getMessage(), true);
+					return;
 				}
-			} catch (JIRAException e) {
-				window.setStatusMessage(
-						"Unable to run action "
-								+ action.getName()
-								+ " on issue "
-								+ issue.getKey()
-								+ ": "
-								+ e.getMessage(),
-						true);
+
+				showInfo("Running action [" + action.getName() + "] on issue [" + issue.getKey() + "]...", false);
+
+				if (fields.isEmpty()) {
+					try {
+						facade.progressWorkflowAction(server, issue, action);
+						performPostActionActivity(server);
+					} catch (JIRAException e) {
+						showInfo("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
+								+ e.getMessage(), true);
+					}
+				} else {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							// show action fields dialog
+							final PerformIssueActionForm dialog = new PerformIssueActionForm(project, action.getName(), fields);
+							dialog.show();
+
+							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+
+								// perform workflow action in the background thread
+								ProgressManager.getInstance().run(
+										new Task.Backgroundable(project, "Running workflow action", false) {
+											public void run(final ProgressIndicator indicator) {
+												try {
+													facade.progressWorkflowAction(server, issue, action, fields);
+													performPostActionActivity(server);
+												} catch (JIRAException e) {
+													showInfo("Unable to run action [" + action.getName() + "] on issue ["
+															+ issue.getKey() + "]: " + e.getMessage(), true);
+												}
+											}
+										});
+							} else {
+								showInfo("Running workflow action [" + action.getName() + "] cancelled", false);
+							}
+						}
+					});
+
+				}
+			}
+		}
+
+		private void showInfo(final String s, final boolean isError) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					window.setStatusMessage(s, isError);
+
+				}
+			});
+		}
+
+		/**
+		 * Should be called in the background thread
+		 *
+		 * @param server
+		 * @throws JIRAException
+		 */
+		private void performPostActionActivity(final JiraServerCfg server) throws JIRAException {
+			if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+				JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+			} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+				JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
+			}
+			JIRAIssueListModelBuilder issueListModelBuilder =
+					IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+			JiraIssueAdapter.get(issue).clearCachedActions();
+
+			showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
+
+			if (issueListModelBuilder != null) {
+				issueListModelBuilder.updateIssue(issue, server);
 			}
 		}
 	}
