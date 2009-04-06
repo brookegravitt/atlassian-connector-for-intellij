@@ -218,8 +218,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			JiraServerCfg jiraServer = CfgUtil
 					.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId());
 			if (jiraServer != null) {
-				JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-				foundIssue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
+				foundIssue = JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 
 			}
 			model.addIssue(foundIssue);
