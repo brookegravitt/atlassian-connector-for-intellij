@@ -156,7 +156,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAConstant> issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), null);
+			List<JIRAConstant> issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), null, true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, issueTypes.size());
 		} catch (JIRAException e) {
@@ -172,7 +172,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		try {
 			model.setFacade(facade);
-			List<JIRAConstant> issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), p);
+			List<JIRAConstant> issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), p, true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, issueTypes.size());
 		} catch (JIRAException e) {
@@ -187,7 +187,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), null);
+			issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), null, true);
 			fail();
 		} catch (JIRAException e) {
 			assertEquals(0, issueTypes.size());
@@ -205,7 +205,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), p);
+			issueTypes = model.getIssueTypes(new JiraServerCfg("test", new ServerId()), p, true);
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;
@@ -387,7 +387,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAResolutionBean> resolutions = model.getResolutions(new JiraServerCfg("test", new ServerId()));
+			List<JIRAResolutionBean> resolutions = model.getResolutions(new JiraServerCfg("test", new ServerId()), true);
 			// should be 3 from the facade + "Any" + "Unresolved"
 			assertEquals(5, resolutions.size());
 		} catch (JIRAException e) {
@@ -402,7 +402,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			resolutions = model.getResolutions(new JiraServerCfg("test", new ServerId()));
+			resolutions = model.getResolutions(new JiraServerCfg("test", new ServerId()), true);
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;
@@ -460,6 +460,29 @@ public class JIRAServerModelImplTest extends TestCase {
 		}
 
 		public List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+			if (throwException) {
+				throw new JIRAException("test");
+			}
+			List<JIRAConstant> list = new ArrayList<JIRAConstant>();
+			list.add(new JIRAIssueTypeBean(1, "test", null));
+			list.add(new JIRAIssueTypeBean(2, "test", null));
+			list.add(new JIRAIssueTypeBean(3, "test", null));
+			return list;
+		}
+
+		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException {
+			if (throwException) {
+				throw new JIRAException("test");
+			}
+			List<JIRAConstant> list = new ArrayList<JIRAConstant>();
+			list.add(new JIRAIssueTypeBean(1, "test", null));
+			list.add(new JIRAIssueTypeBean(2, "test", null));
+			list.add(new JIRAIssueTypeBean(3, "test", null));
+			return list;
+		}
+
+		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project)
+				throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");
 			}

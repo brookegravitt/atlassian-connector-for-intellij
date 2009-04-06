@@ -42,6 +42,10 @@ public interface JIRASession {
 
 	List<JIRAConstant> getIssueTypesForProject(String project) throws RemoteApiException;
 
+	List<JIRAConstant> getSubtaskIssueTypes() throws RemoteApiException;
+
+	List<JIRAConstant> getSubtaskIssueTypesForProject(String project) throws RemoteApiException;
+
 	List<JIRAConstant> getStatuses() throws RemoteApiException;
 
 	List<JIRAComponentBean> getComponents(String projectKey) throws RemoteApiException;

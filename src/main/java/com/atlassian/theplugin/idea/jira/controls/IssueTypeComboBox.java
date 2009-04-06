@@ -1,10 +1,9 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,22 +27,7 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor {
 		setModel(model);
 		setEditable(false);
 		setEnabled(false);
-		setRenderer(new ListCellRenderer() {
-			public Component getListCellRendererComponent(JList list, Object value, int index,
-					boolean isSelected, boolean cellHasFocus) {
-				if (!initialized) {
-					return new JLabel(value.toString());
-				}
-				JIRAConstant type = (JIRAIssueTypeBean) value;
-				JLabel l = new JLabel(type.getName());
-				l.setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
-				if (isSelected) {
-					l.setForeground(UIUtil.getListSelectionForeground());
-					l.setBackground(UIUtil.getListSelectionBackground());
-				}
-				return l;
-			}
-		});
+		setRenderer(new JIRAQueryFragmentListRenderer());
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -55,16 +39,26 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor {
 							break;
 						}
 					}
-					final List<JIRAConstant> issueTypes = serverModel.getIssueTypes(issue.getServer(), issueProject);
+					final List<JIRAConstant> issueTypes = issue.isSubTask()
+							? serverModel.getSubtaskIssueTypes(issue.getServer(), issueProject) 
+							: serverModel.getIssueTypes(issue.getServer(), issueProject, false);
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							model.removeAllElements();
+							JIRAConstant selected = null;
 							for (JIRAConstant type : issueTypes) {
 								model.addElement(type);
+								if (issue.getType().equals(type.getName())) {
+									selected = type;
+								}
 							}
 							initialized = true;
 							setEnabled(true);
-							setSelectedIndex(0);
+							if (selected != null) {
+								setSelectedItem(selected);
+							} else {
+								setSelectedIndex(0);
+							}
 						}
 					});
 				} catch (JIRAException e) {

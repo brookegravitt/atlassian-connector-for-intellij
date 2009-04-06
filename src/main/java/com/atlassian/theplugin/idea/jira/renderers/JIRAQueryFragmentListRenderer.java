@@ -25,7 +25,7 @@ public class JIRAQueryFragmentListRenderer extends DefaultListCellRenderer {
 	public Component getListCellRendererComponent(
 			JList jList, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, index, isSelected, cellHasFocus);
-		if (comp != null && value != null) {
+		if (comp != null && value != null && value instanceof JIRAQueryFragment) {
 			comp.setText(((JIRAQueryFragment) value).getName());
 		}
 		return comp;
