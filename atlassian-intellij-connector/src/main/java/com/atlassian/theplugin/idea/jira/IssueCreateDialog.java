@@ -231,7 +231,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			public void run() {
 				List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 				try {
-					issueTypes = model.getIssueTypes(jiraServer, project);
+					issueTypes = model.getIssueTypes(jiraServer, project, true);
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error("Cannto retrieve JIRA issue types:" + e.getMessage());
 				}

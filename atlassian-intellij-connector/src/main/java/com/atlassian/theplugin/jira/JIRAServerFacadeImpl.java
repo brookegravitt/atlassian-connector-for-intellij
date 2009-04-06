@@ -185,6 +185,27 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
+	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getSubtaskIssueTypes();
+		} catch (RemoteApiException e) {
+			soapSessions.remove(getSoapSessionKey(server));
+			throw new JIRAException(e.getMessage(), e);
+		}
+	}
+
+	public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+		try {
+			JIRASession soap = getSoapSession(server);
+			return soap.getSubtaskIssueTypesForProject(project);
+		} catch (RemoteApiException e) {
+			soapSessions.remove(getSoapSessionKey(server));
+			throw new JIRAException(e.getMessage(), e);
+		}
+	}
+
+
 	public List<JIRAConstant> getStatuses(JiraServerCfg server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);

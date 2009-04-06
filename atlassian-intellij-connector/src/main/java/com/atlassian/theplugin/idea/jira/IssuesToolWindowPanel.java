@@ -333,7 +333,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				@Override
 				public void run() {
 					try {
-						JiraServerCfg jiraServer = getSelectedServer();
+						JiraServerCfg jiraServer = issue.getServer();//getSelectedServer();
 
 						if (jiraServer != null) {
 							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
@@ -909,11 +909,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						setStatusMessage(serverStr + "Retrieving projects...");
 						jiraServerModel.getProjects(server);
 						setStatusMessage(serverStr + "Retrieving issue types...");
-						jiraServerModel.getIssueTypes(server, null);
+						jiraServerModel.getIssueTypes(server, null, true);
 						setStatusMessage(serverStr + "Retrieving statuses...");
 						jiraServerModel.getStatuses(server);
 						setStatusMessage(serverStr + "Retrieving resolutions...");
-						jiraServerModel.getResolutions(server);
+						jiraServerModel.getResolutions(server, true);
 						setStatusMessage(serverStr + "Retrieving priorities...");
 						jiraServerModel.getPriorities(server);
 						setStatusMessage(serverStr + "Retrieving projects...");

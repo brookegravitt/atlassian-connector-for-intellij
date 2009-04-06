@@ -315,6 +315,27 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
+	public List<JIRAConstant> getSubtaskIssueTypes() throws RemoteApiException {
+		try {
+			return issueTableToList(service.getSubTaskIssueTypes(token));
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		} catch (MalformedURLException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+
+	}
+
+	public List<JIRAConstant> getSubtaskIssueTypesForProject(String project) throws RemoteApiException {
+		try {
+			return issueTableToList(service.getSubTaskIssueTypesForProject(token, project));
+		} catch (RemoteException e) {
+			throw new RemoteApiException(e.toString(), e);
+		} catch (MalformedURLException e) {
+			throw new RemoteApiException(e.toString(), e);
+		}
+	}
+
 	public List<JIRAConstant> getStatuses() throws RemoteApiException {
 		try {
 			RemoteStatus[] statuses = service.getStatuses(token);

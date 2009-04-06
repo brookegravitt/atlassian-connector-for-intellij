@@ -195,6 +195,14 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
+		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException {
+			return null;
+		}
+
+		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+			return null;
+		}
+
 		public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException {
 			return null;
 		}

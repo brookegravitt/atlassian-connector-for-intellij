@@ -149,12 +149,21 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getStatuses();
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project, boolean includeAny) 
+			throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getIssueTypes(project);
+		return (srv == null) ? null : srv.getIssueTypes(project, includeAny);
+	}
+
+	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
+		if (cfg == null) {
+			return null;
+		}
+		JIRAServerCache srv = getServer(cfg);
+		return (srv == null) ? null : srv.getSubtaskIssueTypes(project);
 	}
 
 	public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) throws JIRAException {
@@ -173,12 +182,12 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getPriorities();
 	}
 
-	public List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg) throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg, boolean includeAnyAndUnknown) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getResolutions();
+		return (srv == null) ? null : srv.getResolutions(includeAnyAndUnknown);
 	}
 
 	public List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
