@@ -18,13 +18,31 @@ package com.atlassian.theplugin.idea.jira.controls;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * @author Jacek Jaroczynski
  */
-public class FieldUser extends AbstractFieldTextField {
+public class FieldUser extends JPanel implements ActionFieldEditor {
+	private AbstractFieldTextField textField;
 
 	public FieldUser(final JIRAIssue issue, final JIRAActionField field) {
-		super(issue.getAssigneeId(), field);
+		super();
 
+		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
+		textField = new AbstractFieldTextField(issue.getAssigneeId(), field);
+		add(textField);
+		add(Box.createRigidArea(new Dimension(5, 0)));
+		add(new JLabel("Warning! This field is not validated prior to sending to JIRA"));
+	}
+
+	public JIRAActionField getEditedFieldValue() {
+		return textField.getEditedFieldValue();
+	}
+
+	public Component getComponent() {
+		return this;
 	}
 }
