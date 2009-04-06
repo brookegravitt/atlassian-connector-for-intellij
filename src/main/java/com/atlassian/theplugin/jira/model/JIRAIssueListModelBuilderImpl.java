@@ -135,10 +135,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 		model.setModelFrozen(true);
 
-		if (reload) {
-			startFrom = 0;
-			model.clear();
-		}
+		//if (reload) {
+		startFrom = 0;
+		model.clear();
+		//}
 
 		for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
 			for (JiraServerCfg server : allEnabledJiraServers) {
