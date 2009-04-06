@@ -29,4 +29,5 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void reset();
 
 
+	JIRAIssue getJIRAIssue(IssueRecentlyOpenBean recentlyOpen) throws JIRAException;
 }

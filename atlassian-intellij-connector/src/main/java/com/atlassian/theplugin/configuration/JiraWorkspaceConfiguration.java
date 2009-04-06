@@ -39,19 +39,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private ActiveJiraIssueBean activeJiraIssue;
 	private final Project project;
 
-	private boolean zupa = true;
 
 	public JiraWorkspaceConfiguration() {
 		project = null;
 
-	}
-
-	public boolean isZupa() {
-		return zupa;
-	}
-
-	public void setZupa(final boolean zupa) {
-		this.zupa = zupa;
 	}
 
 	public JiraWorkspaceConfiguration(@NotNull Project project) {
