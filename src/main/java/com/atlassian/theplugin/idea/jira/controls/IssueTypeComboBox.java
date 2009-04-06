@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
@@ -16,11 +15,13 @@ import java.util.List;
  * Date: Apr 6, 2009
  * Time: 12:32:54 PM
  */
-public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
+public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor {
 	private DefaultComboBoxModel model;
 	private boolean initialized;
+	private JIRAActionField field;
 
-	public IssueTypeComboBox(final JIRAServerModel serverModel, final JIRAIssue issue, final JiraServerCfg server) {
+	public IssueTypeComboBox(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
+		this.field = field;
 		model = new DefaultComboBoxModel();
 		model.addElement("Fetching...");
 		initialized = false;
@@ -29,7 +30,7 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
 		setEnabled(false);
 		setRenderer(new ListCellRenderer() {
 			public Component getListCellRendererComponent(JList list, Object value, int index,
-														  boolean isSelected, boolean cellHasFocus) {
+					boolean isSelected, boolean cellHasFocus) {
 				if (!initialized) {
 					return new JLabel(value.toString());
 				}
@@ -46,7 +47,7 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					List<JIRAProject> projects = serverModel.getProjects(server);
+					List<JIRAProject> projects = serverModel.getProjects(issue.getServer());
 					JIRAProject issueProject = null;
 					for (JIRAProject project : projects) {
 						if (issue.getProjectKey().equals(project.getKey())) {
@@ -54,7 +55,7 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
 							break;
 						}
 					}
-					final List<JIRAConstant> issueTypes = serverModel.getIssueTypes(server, issueProject);
+					final List<JIRAConstant> issueTypes = serverModel.getIssueTypes(issue.getServer(), issueProject);
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							model.removeAllElements();
@@ -74,13 +75,18 @@ public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
 		t.start();
 	}
 
-	public JIRAActionField getEditedFieldValue(JIRAActionField field) {
+	public JIRAActionField getEditedFieldValue() {
 		if (!initialized) {
 			return null;
 		}
 		JIRAConstant type = (JIRAConstant) getSelectedItem();
-		field.addValue(Long.valueOf(type.getId()).toString());
-		return field;
+		JIRAActionField ret = new JIRAActionFieldBean(field);
+		ret.addValue(Long.valueOf(type.getId()).toString());
+		return ret;
+	}
+
+	public Component getComponent() {
+		return this;
 	}
 
 }
