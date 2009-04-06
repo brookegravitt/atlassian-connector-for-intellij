@@ -62,7 +62,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
 			try {
-				serverModel.getResolutions(server);
+				serverModel.getResolutions(server, true);
 			} catch (JIRAException e) {
 			}
 		}
@@ -126,6 +126,14 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 
 		public List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+			return null;
+		}
+
+		public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException {
+			return null;
+		}
+
+		public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
 			return null;
 		}
 

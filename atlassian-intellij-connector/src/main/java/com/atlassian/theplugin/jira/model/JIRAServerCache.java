@@ -46,8 +46,10 @@ public class JIRAServerCache {
 	private List<JIRAConstant> priorities;
 	private List<JIRAResolutionBean> resolutions;
 	private List<JIRAConstant> globalIssueTypes;
+	private List<JIRAConstant> globalSubtaskIssueTypes;
 
 	private Map<String, List<JIRAConstant>> issueTypesCache;
+	private Map<String, List<JIRAConstant>> subtaskIssueTypesCache;
 	private Map<String, List<JIRAVersionBean>> serverVersionsCache;
 	private Map<String, List<JIRAComponentBean>> componentsCache;
 
@@ -56,6 +58,7 @@ public class JIRAServerCache {
 	public JIRAServerCache(JiraServerCfg server, JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
+		this.subtaskIssueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.serverVersionsCache = new HashMap<String, List<JIRAVersionBean>>();
 		this.componentsCache = new HashMap<String, List<JIRAComponentBean>>();
 		this.server = server;
@@ -121,19 +124,18 @@ public class JIRAServerCache {
 	/**
 	 * @return list of issue types or empty collection
 	 */
-	public List<JIRAConstant> getIssueTypes(JIRAProject project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypes(JIRAProject project, boolean includeAny) throws JIRAException {
 		List<JIRAConstant> issueTypes = project == null ? globalIssueTypes : issueTypesCache.get(project.getKey());
 
 		if (issueTypes == null) {
 			List<JIRAConstant> retrieved;
 			try {
-				if (project == null) {
+				if (project == null || project.getKey() == null) {
 					retrieved = jiraServerFacade.getIssueTypes(server);
 				} else {
 					retrieved = jiraServerFacade.getIssueTypesForProject(server, Long.toString(project.getId()));
 				}
-				issueTypes = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-				issueTypes.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
+				issueTypes = new ArrayList<JIRAConstant>(retrieved.size());
 				issueTypes.addAll(retrieved);
 
 				for (JIRAConstant issueType : issueTypes) {
@@ -154,7 +156,51 @@ public class JIRAServerCache {
 				}
 			}
 		}
-		return issueTypes;
+
+		List<JIRAConstant> result = new ArrayList<JIRAConstant>();
+		if (includeAny) {
+			result.add(new JIRAIssueTypeBean(ANY_ID, "Any", null));
+		}
+		result.addAll(issueTypes);
+
+		return result;
+	}
+
+	public List<JIRAConstant> getSubtaskIssueTypes(JIRAProject project) throws JIRAException {
+		List<JIRAConstant> subtaskTypes =
+				project == null ? globalSubtaskIssueTypes : subtaskIssueTypesCache.get(project.getKey());
+
+		if (subtaskTypes == null) {
+			List<JIRAConstant> retrieved;
+			try {
+				if (project == null || project.getKey() == null) {
+					retrieved = jiraServerFacade.getSubtaskIssueTypes(server);
+				} else {
+					retrieved = jiraServerFacade.getSubtaskIssueTypesForProject(server, Long.toString(project.getId()));
+				}
+				subtaskTypes = new ArrayList<JIRAConstant>(retrieved.size());
+				subtaskTypes.addAll(retrieved);
+
+				for (JIRAConstant subtaskType : subtaskTypes) {
+					CachedIconLoader.getIcon(subtaskType.getIconUrl());
+				}
+
+				if (project != null) {
+					subtaskIssueTypesCache.put(project.getKey(), subtaskTypes);
+				} else {
+					globalSubtaskIssueTypes = subtaskTypes;
+				}
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e.getMessage());
+				if (globalSubtaskIssueTypes != null) {
+					subtaskTypes = globalSubtaskIssueTypes;
+				} else {
+					throw e;
+				}
+			}
+		}
+
+		return subtaskTypes;
 	}
 
 	public List<JIRAQueryFragment> getSavedFilters() throws JIRAException {
@@ -187,20 +233,26 @@ public class JIRAServerCache {
 		return priorities;
 	}
 
-	public List<JIRAResolutionBean> getResolutions() throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(boolean includeAnyAndUnknown) throws JIRAException {
 		if (resolutions == null) {
 			try {
 				List<JIRAResolutionBean> retrieved = jiraServerFacade.getResolutions(server);
-				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size() + 1);
-				resolutions.add(new JIRAResolutionBean(ANY_ID, "Any"));
-				resolutions.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
+				resolutions = new ArrayList<JIRAResolutionBean>(retrieved.size());
 				resolutions.addAll(retrieved);
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
 				throw e;
 			}
 		}
-		return resolutions;
+		List<JIRAResolutionBean> result;
+		result = new ArrayList<JIRAResolutionBean>();
+		if (includeAnyAndUnknown) {
+			result.add(new JIRAResolutionBean(ANY_ID, "Any"));
+			result.add(new JIRAResolutionBean(UNRESOLVED_ID, "Unresolved"));
+		}
+		result.addAll(resolutions);
+
+		return result;
 	}
 
 	private List<JIRAVersionBean> getAllVersions(JIRAProject project) throws JIRAException {
@@ -210,7 +262,7 @@ public class JIRAServerCache {
 		}
 		if (versions == null) {
 			try {
-				if (project != null) {
+				if (project != null && project.getKey() != null) {
 					versions = jiraServerFacade.getVersions(server, project.getKey());
 					serverVersionsCache.put(project.getKey(), versions);
 				} else {
@@ -291,7 +343,7 @@ public class JIRAServerCache {
 		}
 		if (components == null) {
 			try {
-				if (project != null) {
+				if (project != null && project.getKey() != null) {
 					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, project.getKey());
 
 					components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);

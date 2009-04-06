@@ -24,13 +24,15 @@ public interface JIRAServerModel extends FrozenModel {
 
 	List<JIRAConstant> getStatuses(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
+	List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project, boolean includeAny) throws JIRAException;
+
+	List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
 	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) throws JIRAException;
 
 	List<JIRAConstant> getPriorities(JiraServerCfg cfg) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg, boolean includeAnyAndUnknown) throws JIRAException;
 
 	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 

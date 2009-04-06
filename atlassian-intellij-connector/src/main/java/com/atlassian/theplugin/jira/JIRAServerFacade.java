@@ -39,11 +39,15 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
 	List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(JiraServerCfg server) throws JIRAException;
-
 	List<JIRAConstant> getStatuses(JiraServerCfg server) throws JIRAException;
 
+	List<JIRAConstant> getIssueTypes(JiraServerCfg server) throws JIRAException;
+
 	List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException;
+
+	List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException;
+
+	List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException;
 
 	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException;
 
