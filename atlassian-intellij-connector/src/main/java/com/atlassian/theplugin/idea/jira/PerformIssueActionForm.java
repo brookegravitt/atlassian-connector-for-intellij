@@ -54,10 +54,11 @@ public class PerformIssueActionForm extends DialogWrapper {
 		$$$setupUI$$$();
 
 		init();
-		createContent(fields);
 		pack();
+		createContent(fields);
 
 		setTitle(name);
+		setSize(600, 300);
 //		getOKAction().putValue(Action.NAME, name);
 	}
 

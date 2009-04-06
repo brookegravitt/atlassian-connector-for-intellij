@@ -34,8 +34,8 @@ public abstract class AbstractFieldTextArea extends JScrollPane implements Actio
 
 		textArea = new JTextArea(contentText);
 
-		textArea.setRows(6);
-		textArea.setColumns(22);
+		textArea.setRows(8);
+		textArea.setColumns(36);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
 
