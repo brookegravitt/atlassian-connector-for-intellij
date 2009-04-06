@@ -17,6 +17,8 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.jira.api.soap.axis.RemoteCustomFieldValue;
+import com.atlassian.theplugin.jira.api.soap.axis.RemoteIssue;
 import org.jdom.Element;
 
 import java.text.DateFormat;
@@ -60,6 +62,7 @@ public class JIRAIssueBean implements JIRAIssue {
 	private String remainingEstimate;
 	private String timeSpent;
 	private List<JIRAComment> commentsList;
+	private Object rawSoapIssue;
 
 	public JIRAIssueBean() {
 	}
@@ -484,5 +487,13 @@ public class JIRAIssueBean implements JIRAIssue {
 
 	public JiraServerCfg getServer() {
 		return server;
+	}
+
+	public Object getRawSoapIssue() {
+		return rawSoapIssue;
+	}
+
+	public void setRawSoapIssue(Object soapIssue) {
+		rawSoapIssue = soapIssue;
 	}
 }

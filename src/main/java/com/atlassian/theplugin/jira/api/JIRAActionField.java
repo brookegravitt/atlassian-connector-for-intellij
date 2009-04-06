@@ -23,6 +23,8 @@ public interface JIRAActionField extends JIRAConstant {
 
 	List<String> getValues();
 
+	void setValues(List<String> values);
+
 	void addValue(String val);
 
 	String getName();
