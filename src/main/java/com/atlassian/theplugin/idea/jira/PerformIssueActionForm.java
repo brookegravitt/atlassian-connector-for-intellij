@@ -15,11 +15,14 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.idea.jira.controls.FieldDescription;
+import com.atlassian.theplugin.idea.jira.controls.FieldEnvironment;
+import com.atlassian.theplugin.idea.jira.controls.FieldSummary;
 import com.atlassian.theplugin.jira.JiraActionFieldType;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -33,14 +36,19 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class PerformIssueActionForm extends DialogWrapper {
-	private JTextField textField1;
 	private JPanel root;
 	private JPanel contentPanel;
-	private JTextArea textArea2;
-	private JTextArea textArea1;
+	private JIRAIssue issue;
+	private List<JIRAActionField> fields;
 
-	public PerformIssueActionForm(final Project project, final String name, final List<JIRAActionField> fields) {
+	public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
+			final String name) {
+
 		super(project, true);
+
+		this.issue = issue;
+		this.fields = fields;
+
 
 		$$$setupUI$$$();
 
@@ -53,57 +61,35 @@ public class PerformIssueActionForm extends DialogWrapper {
 //		getOKAction().putValue(Action.NAME, name);
 	}
 
-	private void createContent(final List<JIRAActionField> fields) {
+	private void createContent(final List<JIRAActionField> fieldList) {
 
-////		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.PAGE_AXIS));
 		String columns = "3dlu, right:pref, 3dlu, fill:pref:grow, 3dlu";
-		String rows = "3dlu"; //, p, 3dlu, fill:pref:grow, 3dlu";
+		String rows = "3dlu";
 
-		for (JIRAActionField field : fields) {
-			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
-				case TEXT_FIELD:
-					rows += ", p, 3dlu";
-					break;
-				case TEXT_AREA:
-					rows += ", fill:pref:grow, 3dlu";
-					break;
-				case TIME_SPENT:
-				case UNSUPPORTED:
-				case USER:
-				case VERSIONS:
-				case CALENDAR:
-				case COMPONENTS:
-				case ISSUE_TYPE:
-				case PRIORITY:
-				case RESOLUTION:
-				default:
-					break;
-			}
-		}
+		rows = createLayoutRows(fieldList, rows);
 
 		int y = 2;
 
 		contentPanel.setLayout(new FormLayout(columns, rows));
 		final CellConstraints cc = new CellConstraints();
 
-		for (JIRAActionField field : fields) {
-
+		for (JIRAActionField field : fieldList) {
 
 			Component component = null;
 
 			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
-				case TEXT_FIELD:
-					component = new JTextField();
+				case SUMMARY:
+					component = new FieldSummary(issue);
 					break;
-				case TEXT_AREA:
-					JTextArea textArea = new JTextArea();
-					textArea.setRows(6);
-					textArea.setColumns(20);
-					textArea.setLineWrap(true);
-					textArea.setWrapStyleWord(true);
-					component = new JScrollPane(textArea,
+				case DESCRIPTION:
+					JTextArea description = new FieldDescription(issue);
+					component = new JScrollPane(description,
 							ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 					break;
+				case ENVIRONMENT:
+					JTextArea environment = new FieldEnvironment(issue);
+					component = new JScrollPane(environment,
+							ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				case TIME_SPENT:
 				case UNSUPPORTED:
 				case USER:
@@ -124,33 +110,39 @@ public class PerformIssueActionForm extends DialogWrapper {
 				contentPanel.add(component, cc.xy(4, y));
 				y += 2;
 			}
-
-
 		}
+	}
 
-//		final JLabel label1 = new JLabel("sfsfssdfssd");
-//		contentPanel.add(label1, cc.xy(2, 2));
-////
-//		textField1 = new JTextField();
-//		contentPanel.add(textField1, cc.xy(4, 2));
-////
-//		final JLabel label2 = new JLabel("aaa");
-//		contentPanel.add(label2, cc.xy(2, 4, CellConstraints.RIGHT, CellConstraints.TOP));
-//
-//		textArea1 = new JTextArea();
-//		textArea1.setRows(8);
-//		textArea1.setColumns(20);
-////		textArea1.setMinimumSize(new Dimension(120, 80));
-//		textArea1.setLineWrap(true);
-//		textArea1.setWrapStyleWord(true);
-////		textArea1.setBorder(new BlockBorder());
-//		JScrollPane scroll = new JScrollPane(textArea1,
-//				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//		contentPanel.add(scroll, cc.xy(4, 4));
-//		contentPanel.add(textArea1, cc.xy(4, 4));
+	private String createLayoutRows(final List<JIRAActionField> fieldList, String rows) {
+		for (JIRAActionField field : fieldList) {
+			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
+				case SUMMARY:
+					rows += ", p, 3dlu";
+					break;
+				case DESCRIPTION:
+				case ENVIRONMENT:
+					rows += ", fill:pref:grow, 3dlu";
+					break;
+				case TIME_SPENT:
+				case UNSUPPORTED:
+				case USER:
+				case VERSIONS:
+				case CALENDAR:
+				case COMPONENTS:
+				case ISSUE_TYPE:
+				case PRIORITY:
+				case RESOLUTION:
+				default:
+					break;
+			}
+		}
+		return rows;
 	}
 
 	protected void doOKAction() {
+
+		// fields 
+
 		super.doOKAction();
 	}
 
@@ -180,23 +172,8 @@ public class PerformIssueActionForm extends DialogWrapper {
 		scrollPane1.setHorizontalScrollBarPolicy(31);
 		root.add(scrollPane1, BorderLayout.CENTER);
 		contentPanel = new JPanel();
-		contentPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+		contentPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		scrollPane1.setViewportView(contentPanel);
-		final JLabel label1 = new JLabel();
-		label1.setHorizontalAlignment(10);
-		label1.setText("Labeldfasfasfsdf");
-		contentPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-		textField1 = new JTextField();
-		contentPanel.add(textField1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-				new Dimension(150, -1), null, 0, false));
-		final JScrollPane scrollPane2 = new JScrollPane();
-		contentPanel.add(scrollPane2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-		textArea2 = new JTextArea();
-		scrollPane2.setViewportView(textArea2);
 	}
 
 	/**
