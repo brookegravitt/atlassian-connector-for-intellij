@@ -15,13 +15,14 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class FieldEnvironment extends AbstractFieldTextArea {
-	public FieldEnvironment(final JIRAIssue issue) {
-		super(""); //issue.getEnvironment());
+	public FieldEnvironment(final JIRAIssue issue, final JIRAActionField field) {
+		super("", field); //issue.getEnvironment());
 	}
 }

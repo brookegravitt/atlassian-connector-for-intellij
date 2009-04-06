@@ -16,24 +16,42 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
 
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class AbstractFieldTextArea extends JTextArea implements ActionFieldEditor {
-	public AbstractFieldTextArea(final String contentText) {
-		setRows(6);
-		setColumns(22);
-		setLineWrap(true);
-		setWrapStyleWord(true);
+public abstract class AbstractFieldTextArea extends JScrollPane implements ActionFieldEditor {
+	private JIRAActionField field;
+	private JTextArea textArea;
 
-		setText(contentText);
+	public AbstractFieldTextArea(final String contentText, final JIRAActionField field) {
+
+		this.field = field;
+
+		textArea = new JTextArea(contentText);
+
+		textArea.setRows(6);
+		textArea.setColumns(22);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+
+		this.setViewportView(textArea);
+		this.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
 	}
 
-	public JIRAActionField getEditedFieldValue(final JIRAActionField field) {
-		field.addValue(getText());
-		return field;
+	public JIRAActionField getEditedFieldValue() {
+		JIRAActionField ret = new JIRAActionFieldBean(field);
+		ret.addValue(textArea.getText());
+		return ret;
+	}
+
+	public Component getComponent() {
+		return this;
 	}
 }

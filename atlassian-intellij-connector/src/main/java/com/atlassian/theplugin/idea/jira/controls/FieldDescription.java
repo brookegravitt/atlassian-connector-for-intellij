@@ -15,13 +15,14 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class FieldDescription extends AbstractFieldTextArea {
-	public FieldDescription(final JIRAIssue issue) {
-		super(issue.getDescription());
+	public FieldDescription(final JIRAIssue issue, final JIRAActionField field) {
+		super(issue.getDescription(), field);
 	}
 }
