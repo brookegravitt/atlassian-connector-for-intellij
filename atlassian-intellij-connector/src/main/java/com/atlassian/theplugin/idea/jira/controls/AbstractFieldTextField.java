@@ -16,14 +16,31 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class FieldSummary extends AbstractFieldTextField {
+public class AbstractFieldTextField extends JTextField implements ActionFieldEditor {
 
-	public FieldSummary(final JIRAIssue issue, final JIRAActionField field) {
-		super(issue.getSummary(), field);
+	private JIRAActionField field;
+
+	public AbstractFieldTextField(final String text, final JIRAActionField field) {
+		super(text);
+		this.field = field;
 	}
+
+	public JIRAActionField getEditedFieldValue() {
+		JIRAActionField ret = new JIRAActionFieldBean(field);
+		ret.addValue(getText());
+		return ret;
+	}
+
+	public Component getComponent() {
+		return this;
+	}
+
 }
