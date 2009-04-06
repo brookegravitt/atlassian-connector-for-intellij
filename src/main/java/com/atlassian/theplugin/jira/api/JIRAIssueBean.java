@@ -17,8 +17,6 @@
 package com.atlassian.theplugin.jira.api;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.soap.axis.RemoteCustomFieldValue;
-import com.atlassian.theplugin.jira.api.soap.axis.RemoteIssue;
 import org.jdom.Element;
 
 import java.text.DateFormat;
