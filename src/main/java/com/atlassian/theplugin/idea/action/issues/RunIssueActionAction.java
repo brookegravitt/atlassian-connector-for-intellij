@@ -97,7 +97,8 @@ public class RunIssueActionAction extends AnAction {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							// show action fields dialog
-							final PerformIssueActionForm dialog = new PerformIssueActionForm(project, action.getName(), fields);
+							final PerformIssueActionForm dialog =
+									new PerformIssueActionForm(project, issue, fields, action.getName());
 							dialog.show();
 
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
