@@ -333,7 +333,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				@Override
 				public void run() {
 					try {
-						JiraServerCfg jiraServer = issue.getServer();//getSelectedServer();
+						JiraServerCfg jiraServer = issue.getServer(); // was: getSelectedServer();
 
 						if (jiraServer != null) {
 							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
