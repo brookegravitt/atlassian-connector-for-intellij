@@ -23,7 +23,6 @@ import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import org.picocontainer.MutablePicoContainer;
 
@@ -42,7 +41,6 @@ public final class PicoUtil {
 
 	private static final Class<?>[] PROJECT_COMPONENTS = {
 			JIRAServerModelImpl.class,
-			JIRAIssueListModelBuilderImpl.class,
 			JIRAFilterListBuilder.class,
 			IssueToolWindowFreezeSynchronizator.class,
 			ReviewListModelBuilderImpl.class,

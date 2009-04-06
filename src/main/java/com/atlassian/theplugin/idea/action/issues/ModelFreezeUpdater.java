@@ -1,7 +1,10 @@
 package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -14,17 +17,12 @@ public final class ModelFreezeUpdater {
 	}
 
 	public static boolean getState(AnActionEvent event) {
-		JIRAIssueListModelBuilder issueBuilder =
-				IdeaHelper.getProjectComponent(event, JIRAIssueListModelBuilderImpl.class);
+		final JIRAIssueListModelBuilder issueBuilder = IdeaHelper.getJIRAIssueListModelBuilder(event);
 		JIRAFilterListBuilder filterBuilder = IdeaHelper.getProjectComponent(event, JIRAFilterListBuilder.class);
 		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(event, JIRAServerModelImpl.class);
 
 		return (issueBuilder != null && !issueBuilder.isModelFrozen())
 				&& (filterBuilder != null && !filterBuilder.isModelFrozen())
 				&& (jiraServerModel != null && !jiraServerModel.isModelFrozen());
-
-//		event.getPresentation().setEnabled(enabled);
-
-//		return enabled;
 	}
 }

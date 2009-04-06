@@ -76,7 +76,6 @@ public class RecentlyOpenIssuesCache {
 			};
 			ProgressManager.getInstance().run(task);
 		}
-
 	}
 
 	public void invalidate() {

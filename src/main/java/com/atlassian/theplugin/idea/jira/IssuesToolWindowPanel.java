@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -92,7 +91,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final int ONE_SECOND = 1000;
 
-	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
+	//private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
@@ -100,13 +99,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
-			@NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final UiTaskExecutor uiTaskExecutor,
+			@NotNull final JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.uiTaskExecutor = uiTaskExecutor;
+		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
@@ -123,7 +124,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
 
-		jiraIssueListModelBuilder = IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
 		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel, project,
 				projectCfgManager);
 
@@ -158,7 +158,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 
-		recentlyOpenIssuesCache = new RecentlyOpenIssuesCache(project, projectCfgManager, baseIssueListModel);
+		//recentlyOpenIssuesCache = new RecentlyOpenIssuesCache(project, projectCfgManager, baseIssueListModel);
 
 		addIssuesTreeListeners();
 		addSearchBoxListener();
@@ -209,7 +209,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void init() {
-		recentlyOpenIssuesCache.init();
+		//recentlyOpenIssuesCache.init();
 	}
 
 	@Override
@@ -326,7 +326,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 		if (actions != null) {
 			for (JIRAAction a : actions) {
-				submenu.add(new RunIssueActionAction(this, jiraServerFacade, issue, a));
+				submenu.add(new RunIssueActionAction(this, jiraServerFacade, issue, a, jiraIssueListModelBuilder));
 			}
 		} else {
 			Thread t = new Thread() {
@@ -345,7 +345,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									if (pMenu.isVisible()) {
 										for (JIRAAction a : actions) {
 											submenu.add(new RunIssueActionAction(IssuesToolWindowPanel.this,
-													jiraServerFacade, issue, a));
+													jiraServerFacade, issue, a, jiraIssueListModelBuilder));
 										}
 
 										// magic that makes the popup update itself. Don't ask - it is some sort of voodoo
@@ -658,10 +658,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		} else if (manualFilter != null) {
 			refreshIssues(manualFilter, serverCfg, reload);
 		} else if (jiraFilterTree.isRecentlyOpenSelected()) {
-			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
+			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), reload);
 		}
-
-		recentlyOpenIssuesCache.invalidate();
 	}
 
 	private void refreshIssues(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg, final boolean reload) {
@@ -756,8 +754,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void createIssue() {
-		JIRAIssueListModelBuilder builder = IdeaHelper.getProjectComponent(getProject(), JIRAIssueListModelBuilderImpl.class);
-		if (builder == null) {
+
+		if (jiraIssueListModelBuilder == null) {
 			return;
 		}
 
@@ -847,45 +845,14 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
 			boolean found = false;
 
-//			// search local list
-//			if (baseIssueListModel != null && baseIssueListModel.getIssues().size() > 0) {
-//				for (JIRAIssue localIssue : baseIssueListModel.getIssues()) {
-//					if (localIssue.getKey().equals(recentlyOpenIssue.getIssueKey())
-//							&& getSelectedServer() != null
-//							&& getSelectedServer().getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
-//						issues.add(localIssue);
-//						found = true;
-//						break;
-//					}
-//				}
-//			}
-//
-//			// search enabled servers
-//			if (!found) {
-//				for (JiraServerCfg server
-//						: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-//					if (server.getServerId().toString().equals(recentlyOpenIssue.getServerId())) {
-//						try {
-//							JIRAIssue issue = jiraServerFacade.getIssue(server, recentlyOpenIssue.getIssueKey());
-//							issues.add(issue);
-//						} catch (JIRAException e) {
-//							PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
-//							setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
-//						}
-//
-//						break;
-//					}
-//				}
-//			}
-			JIRAIssue issue = null;
-			try {
-				issue = recentlyOpenIssuesCache.getJIRAIssue(recentlyOpenIssue);
-				if (issue != null) {
+			if (jiraIssueListModelBuilder != null) {
+				JIRAIssue issue = null;
+				try {
+					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
 					issues.add(issue);
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().warn(e.getMessage());
 				}
-			} catch (JIRAException e) {
-				PluginUtil.getLogger().warn("Exception thrown when retrieving issue", e);
-				setStatusMessage("Cannot get issue from the server: " + e.getMessage(), true);
 			}
 		}
 
@@ -1105,7 +1072,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			hideManualFilterPanel();
 
 			// refresh issues view
-			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), true);
+			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), false);
 
 			jiraWorkspaceConfiguration.getView().setViewServerId("");
 			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);
