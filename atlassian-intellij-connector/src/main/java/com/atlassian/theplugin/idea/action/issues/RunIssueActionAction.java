@@ -13,7 +13,6 @@ import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -31,14 +30,16 @@ public class RunIssueActionAction extends AnAction {
 	private JIRAAction action;
 	private JIRAServerFacade facade;
 	private IssueActionProvider window;
+	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 
 	public RunIssueActionAction(IssueActionProvider toolWindow, JIRAServerFacade facade,
-			JIRAIssue issue, JIRAAction jiraAction) {
+			JIRAIssue issue, JIRAAction jiraAction, final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		super(jiraAction.getName());
 		this.issue = issue;
 		action = jiraAction;
 		window = toolWindow;
 		this.facade = facade;
+		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 	}
 
 	@Override
@@ -145,14 +146,13 @@ public class RunIssueActionAction extends AnAction {
 			} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
 				JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
 			}
-			JIRAIssueListModelBuilder issueListModelBuilder =
-					IdeaHelper.getProjectComponent(project, JIRAIssueListModelBuilderImpl.class);
+
 			JiraIssueAdapter.get(issue).clearCachedActions();
 
 			showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 
-			if (issueListModelBuilder != null) {
-				issueListModelBuilder.updateIssue(issue, server);
+			if (jiraIssueListModelBuilder != null) {
+				jiraIssueListModelBuilder.updateIssue(issue, server);
 			}
 		}
 	}

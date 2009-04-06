@@ -15,12 +15,14 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolder {
 	private String searchTerm;
@@ -93,6 +95,17 @@ public class SearchingJIRAIssueListModel extends JIRAIssueListModelListenerHolde
 
 	public JIRAIssue findIssue(String key) {
 		return parent.findIssue(key);
+	}
+
+	public void clearCache() {
+	}
+
+	public Set<JIRAIssue> getIssuesCache() {
+		return null;
+	}
+
+	public JIRAIssue getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
+		return null;
 	}
 
 	public void setActiveJiraIssue(final ActiveJiraIssueBean issue) {

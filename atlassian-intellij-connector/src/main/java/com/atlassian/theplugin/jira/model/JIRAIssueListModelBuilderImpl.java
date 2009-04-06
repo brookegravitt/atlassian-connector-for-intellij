@@ -1,13 +1,16 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +25,13 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	private int startFrom;
 	private JIRAIssueListModel model;
+	private Project project;
+	private ProjectCfgManager projectCfgManager;
+
 
 	public JIRAIssueListModelBuilderImpl() {
+		this.project = null;
+		this.projectCfgManager = null;
 		facade = JIRAServerFacadeImpl.getInstance();
 		startFrom = 0;
 	}
@@ -121,6 +129,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			return;
 		}
 
+		if (reload) {
+			model.clearCache();
+		}
+
 		model.setModelFrozen(true);
 
 		if (reload) {
@@ -131,13 +143,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
 			for (JiraServerCfg server : allEnabledJiraServers) {
 				if (server.getServerId().toString().equals(recentIssue.getServerId())) {
-					JIRAIssue issue = null;
-					try {
-						issue = facade.getIssue(server, recentIssue.getIssueKey());
-						l.add(issue);
-					} catch (JIRAException e) {
-						exception = e;
-					}
+					JIRAIssue issue = getJIRAIssue(recentIssue);
+					l.add(issue);
 					break;
 				}
 			}
@@ -199,5 +206,35 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void removeFrozenModelListener(FrozenModelListener listener) {
 		this.model.removeFrozenModelListener(listener);
+	}
+
+	public JIRAIssue getJIRAIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
+
+		JIRAIssue foundIssue = model.getIssueFromCache(recentlyOpen);
+
+		if (foundIssue != null) {
+			return foundIssue;
+		} else if (project != null && projectCfgManager != null) {
+			JiraServerCfg jiraServer = CfgUtil
+					.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId());
+			if (jiraServer != null) {
+				JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+				foundIssue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
+
+			}
+			model.addIssue(foundIssue);
+			return foundIssue;
+
+		}
+
+		return null;
+	}
+
+	public void setProject(final Project project) {
+		this.project = project;
+	}
+
+	public void setProjectCfgManager(final ProjectCfgManager projectCfgManager) {
+		this.projectCfgManager = projectCfgManager;
 	}
 }
