@@ -96,13 +96,15 @@ public class PerformIssueActionForm extends DialogWrapper {
 					editor = new IssueResolutionComboBox(IdeaHelper.getProjectComponent(project, JIRAServerModel.class),
 							issue, field);
 					break;
-				case TIME_SPENT:
-				case UNSUPPORTED:
 				case USER:
+					editor = new FieldUser(issue, field);
+					break;
+				case TIME_SPENT:
 				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
 				case PRIORITY:
+				case UNSUPPORTED:
 				default:
 					break;
 			}
@@ -124,6 +126,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case SUMMARY:
 				case ISSUE_TYPE:
 				case RESOLUTION:
+				case USER:
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
@@ -132,7 +135,6 @@ public class PerformIssueActionForm extends DialogWrapper {
 					break;
 				case TIME_SPENT:
 				case UNSUPPORTED:
-				case USER:
 				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
