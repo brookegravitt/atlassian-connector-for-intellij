@@ -17,8 +17,9 @@ public final class JiraActionFieldType {
 		UNSUPPORTED,
 		USER,
 		ISSUE_TYPE,
-		TEXT_FIELD,
-		TEXT_AREA,
+		SUMMARY,
+		DESCRIPTION,
+		ENVIRONMENT,
 		CALENDAR,
 		TIME_SPENT,
 		VERSIONS,
@@ -34,13 +35,13 @@ public final class JiraActionFieldType {
 		typeMap.put("fixVersions", WidgetType.VERSIONS);
 		typeMap.put("versions", WidgetType.VERSIONS);
 		typeMap.put("components", WidgetType.COMPONENTS);
-		typeMap.put("description", WidgetType.TEXT_AREA);
+		typeMap.put("description", WidgetType.DESCRIPTION);
 		typeMap.put("duedate", WidgetType.CALENDAR);
-		typeMap.put("environment", WidgetType.TEXT_AREA);
+		typeMap.put("environment", WidgetType.ENVIRONMENT);
 		typeMap.put("issuetype", WidgetType.ISSUE_TYPE);
 		typeMap.put("priority", WidgetType.PRIORITY);
 		typeMap.put("reporter", WidgetType.USER);
-		typeMap.put("summary", WidgetType.TEXT_FIELD);
+		typeMap.put("summary", WidgetType.SUMMARY);
 		typeMap.put("timetracking", WidgetType.TIME_SPENT);
 		typeMap.put("assignee", WidgetType.USER);
 	}
