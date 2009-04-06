@@ -1,10 +1,8 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
@@ -16,13 +14,13 @@ import java.util.List;
 /**
  * User: jgorycki
  * Date: Apr 6, 2009
- * Time: 11:41:06 AM
+ * Time: 12:32:54 PM
  */
-public class IssueResolutionComboBox extends JComboBox implements ActionFieldEditor {
+public class IssueTypeComboBox extends JComboBox implements ActionFieldEditor{
 	private DefaultComboBoxModel model;
 	private boolean initialized;
 
-	public IssueResolutionComboBox(final JIRAServerModel serverModel, JIRAIssue issue, final JiraServerCfg server) {
+	public IssueTypeComboBox(final JIRAServerModel serverModel, final JIRAIssue issue, final JiraServerCfg server) {
 		model = new DefaultComboBoxModel();
 		model.addElement("Fetching...");
 		initialized = false;
@@ -35,8 +33,9 @@ public class IssueResolutionComboBox extends JComboBox implements ActionFieldEdi
 				if (!initialized) {
 					return new JLabel(value.toString());
 				}
-				JIRAResolutionBean res = (JIRAResolutionBean) value;
-				JLabel l = new JLabel(res.getName());
+				JIRAConstant type = (JIRAIssueTypeBean) value;
+				JLabel l = new JLabel(type.getName());
+				l.setIcon(CachedIconLoader.getIcon(type.getIconUrl()));
 				if (isSelected) {
 					l.setForeground(UIUtil.getListSelectionForeground());
 					l.setBackground(UIUtil.getListSelectionBackground());
@@ -47,12 +46,20 @@ public class IssueResolutionComboBox extends JComboBox implements ActionFieldEdi
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					final List<JIRAResolutionBean> resolutions = serverModel.getResolutions(server);
+					List<JIRAProject> projects = serverModel.getProjects(server);
+					JIRAProject issueProject = null;
+					for (JIRAProject project : projects) {
+						if (issue.getProjectKey().equals(project.getKey())) {
+							issueProject = project;
+							break;
+						}
+					}
+					final List<JIRAConstant> issueTypes = serverModel.getIssueTypes(server, issueProject);
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							model.removeAllElements();
-							for (JIRAResolutionBean res : resolutions) {
-								model.addElement(res);
+							for (JIRAConstant type : issueTypes) {
+								model.addElement(type);
 							}
 							initialized = true;
 							setEnabled(true);
@@ -71,8 +78,9 @@ public class IssueResolutionComboBox extends JComboBox implements ActionFieldEdi
 		if (!initialized) {
 			return null;
 		}
-		JIRAResolutionBean res = (JIRAResolutionBean) getSelectedItem();
-		field.addValue(Long.valueOf(res.getId()).toString());
+		JIRAConstant type = (JIRAConstant) getSelectedItem();
+		field.addValue(Long.valueOf(type.getId()).toString());
 		return field;
 	}
+
 }
