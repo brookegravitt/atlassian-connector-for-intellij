@@ -17,6 +17,8 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -61,10 +63,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
+	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 
-	public IssueToolWindow(@NotNull final Project project) {
+	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
 		super(false);
 		this.project = project;
+		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
@@ -312,7 +316,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					actionGroup.clearActions(project);
 					for (JIRAAction a : actions) {
 						actionGroup.addAction(project,
-								new RunIssueActionAction(this, facade, issue, a));
+								new RunIssueActionAction(this, facade, issue, a, jiraIssueListModelBuilder));
 					}
 				} else {
 					Thread t = new Thread() {
@@ -333,7 +337,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 												actionGroup.addAction(
 														project,
 														new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue,
-																a));
+																a, jiraIssueListModelBuilder));
 											}
 										}
 									});

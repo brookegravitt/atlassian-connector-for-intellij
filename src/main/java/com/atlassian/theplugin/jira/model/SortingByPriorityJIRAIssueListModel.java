@@ -1,8 +1,10 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.Comparator;
+import java.util.Set;
 
 public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssueListModel {
 	static final Comparator<JIRAIssue> PRIORITY_ORDER = new Comparator<JIRAIssue>() {
@@ -23,6 +25,17 @@ public class SortingByPriorityJIRAIssueListModel extends AbstractSortingJIRAIssu
 	}
 
 	public ActiveJiraIssueBean getActiveJiraIssue() {
+		return null;
+	}
+
+	public void clearCache() {
+	}
+
+	public Set<JIRAIssue> getIssuesCache() {
+		return null;
+	}
+
+	public JIRAIssue getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
 		return null;
 	}
 }

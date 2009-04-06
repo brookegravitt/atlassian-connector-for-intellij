@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -180,5 +181,18 @@ public final class IdeaHelper {
 	public static CrucibleStatusChecker getCrucibleStatusChecker(Project project) {
 
 		return getCurrentProjectComponent(project).getCrucibleStatusChecker();
+	}
+
+	public static JIRAIssueListModelBuilder getJIRAIssueListModelBuilder(final AnActionEvent event) {
+		final Project project = getCurrentProject(event);
+		return getJIRAIssueListModelBuilder(project);
+	}
+
+	public static JIRAIssueListModelBuilder getJIRAIssueListModelBuilder(final Project project) {
+		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
+		if (pluginProjectComponent != null) {
+			return pluginProjectComponent.getJiraIssueListModelBuilder();
+		}
+		return null;
 	}
 }

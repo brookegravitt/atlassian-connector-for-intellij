@@ -35,12 +35,15 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -100,6 +103,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
+	private final ProjectCfgManager projectCfgManager;
+	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
 	private IssuesToolWindowPanel issuesToolWindowPanel;
@@ -122,11 +127,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
-			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration) {
+			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+			@NotNull final ProjectCfgManager projectCfgManager,
+			@NotNull final JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
 		this.project = project;
 		this.cfgManager = cfgManager;
-//        project.putUserData(BROKER_KEY, new ReviewActionEventBroker(project));
-
+		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;
 		this.pluginConfiguration = pluginConfiguration;
@@ -136,9 +142,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
+		this.projectCfgManager = projectCfgManager;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
+
+		jiraIssueListModelBuilder.setProject(project);
+		jiraIssueListModelBuilder.setProjectCfgManager(projectCfgManager);
 		/*
 
 										WARNING!!!
@@ -379,6 +389,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public BambooStatusChecker getBambooStatusChecker() {
 		return bambooStatusChecker;
+	}
+
+	public JIRAIssueListModelBuilder getJiraIssueListModelBuilder() {
+		return jiraIssueListModelBuilder;
 	}
 
 	private class ConfigurationListenerImpl extends ConfigurationListenerAdapter {

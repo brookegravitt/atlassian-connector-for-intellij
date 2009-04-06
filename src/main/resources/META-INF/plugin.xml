@@ -104,6 +104,9 @@
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
+		<applicationService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"
+							serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
+
 		<projectService serviceInterface="com.atlassian.theplugin.configuration.ProjectConfigurationBean"
 						serviceImplementation="com.atlassian.theplugin.configuration.ProjectConfigurationBean"/>
 
@@ -151,8 +154,10 @@
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao"
 							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
 
+
 		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
 		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>
+
 
 	</extensions>
 
