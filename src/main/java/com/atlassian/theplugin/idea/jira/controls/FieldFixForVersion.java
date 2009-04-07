@@ -45,12 +45,10 @@ public class FieldFixForVersion extends AbstractFieldList {
 					}
 					final List<JIRAFixForVersionBean> versions =
 							serverModel.getFixForVersions(issue.getServer(), issueProject, false);
-
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							final List<JIRAFixForVersionBean> selectedVersions = new ArrayList<JIRAFixForVersionBean>();
 							listModel.removeAllElements();
-
 							for (JIRAFixForVersionBean v : versions) {
 								listModel.addElement(v);
 								if (issue.getFixVersions() != null && issue.getFixVersions().contains(v)) {
