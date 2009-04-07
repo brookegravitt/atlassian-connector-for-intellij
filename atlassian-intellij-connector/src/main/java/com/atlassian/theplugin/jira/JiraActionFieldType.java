@@ -21,7 +21,8 @@ public final class JiraActionFieldType {
 
 	public enum WidgetType {
 		UNSUPPORTED,
-		USER,
+		ASSIGNEE,
+		REPORTER,
 		ISSUE_TYPE,
 		SUMMARY,
 		DESCRIPTION,
@@ -29,6 +30,7 @@ public final class JiraActionFieldType {
 		CALENDAR,
 		TIME_SPENT,
 		VERSIONS,
+		FIX_VERSIONS,
 		RESOLUTION,
 		PRIORITY,
 		COMPONENTS
@@ -57,7 +59,7 @@ public final class JiraActionFieldType {
 
 	static {
 		typeMap.put("resolution", new WidgetTypeAndFieldFiller(WidgetType.RESOLUTION, new ResolutionFiller()));
-		typeMap.put("fixVersions", new WidgetTypeAndFieldFiller(WidgetType.VERSIONS, new FixVersionsFiller()));
+		typeMap.put("fixVersions", new WidgetTypeAndFieldFiller(WidgetType.FIX_VERSIONS, new FixVersionsFiller()));
 		typeMap.put("versions", new WidgetTypeAndFieldFiller(WidgetType.VERSIONS, new AffectsVersionsFiller()));
 		typeMap.put("components", new WidgetTypeAndFieldFiller(WidgetType.COMPONENTS, new ComponentsFiller()));
 		typeMap.put("description", new WidgetTypeAndFieldFiller(WidgetType.DESCRIPTION, new DescriptionFiller()));
@@ -65,10 +67,10 @@ public final class JiraActionFieldType {
 		typeMap.put("environment", new WidgetTypeAndFieldFiller(WidgetType.ENVIRONMENT, new EnvironmentFiller()));
 		typeMap.put("issuetype", new WidgetTypeAndFieldFiller(WidgetType.ISSUE_TYPE, new IssueTypeFiller()));
 		typeMap.put("priority", new WidgetTypeAndFieldFiller(WidgetType.PRIORITY, new PriorityFiller()));
-		typeMap.put("reporter", new WidgetTypeAndFieldFiller(WidgetType.USER, new ReporterFiller()));
+		typeMap.put("reporter", new WidgetTypeAndFieldFiller(WidgetType.REPORTER, new ReporterFiller()));
 		typeMap.put("summary", new WidgetTypeAndFieldFiller(WidgetType.SUMMARY, new SummaryFiller()));
 		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIME_SPENT, new TimeTrackingFiller()));
-		typeMap.put("assignee", new WidgetTypeAndFieldFiller(WidgetType.USER, new AssigneeFiller()));
+		typeMap.put("assignee", new WidgetTypeAndFieldFiller(WidgetType.ASSIGNEE, new AssigneeFiller()));
 	}
 
 	private JiraActionFieldType() {
@@ -87,7 +89,7 @@ public final class JiraActionFieldType {
 	}
 
 	public static List<JIRAActionField> fillFieldValues(JIRAServerFacade facade, JIRAIssue issue,
-														List<JIRAActionField> fields) throws JIRAException {
+			List<JIRAActionField> fields) throws JIRAException {
 		List<JIRAActionField> result = new ArrayList<JIRAActionField>();
 		JIRAIssue detailedIssue = facade.getIssueDetails(issue.getServer(), issue);
 
