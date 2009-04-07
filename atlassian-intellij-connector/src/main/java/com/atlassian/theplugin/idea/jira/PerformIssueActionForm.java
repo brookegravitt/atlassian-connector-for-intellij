@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -67,7 +68,9 @@ public class PerformIssueActionForm extends DialogWrapper {
 		String columns = "3dlu, right:pref, 3dlu, fill:pref:grow, 3dlu";
 		String rows = "3dlu";
 
-		rows = createLayoutRows(fieldList, rows);
+		Collection<JIRAActionField> sortedFieldList = JiraActionFieldType.sortFieldList(fieldList);
+
+		rows = createLayoutRows(sortedFieldList, rows);
 
 		int y = 2;
 
@@ -76,7 +79,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 
 		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModel.class);
 
-		for (JIRAActionField field : fieldList) {
+		for (JIRAActionField field : sortedFieldList) {
 
 			ActionFieldEditor editor = null;
 
@@ -128,7 +131,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 		}
 	}
 
-	private String createLayoutRows(final List<JIRAActionField> fieldList, String rows) {
+	private String createLayoutRows(final Collection<JIRAActionField> fieldList, String rows) {
 		for (JIRAActionField field : fieldList) {
 			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
 				case SUMMARY:
