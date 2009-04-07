@@ -164,11 +164,11 @@ public class RunIssueActionAction extends AnAction {
 
 			JiraIssueAdapter.get(issue).clearCachedActions();
 
-			showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 
 			if (jiraIssueListModelBuilder != null) {
 				jiraIssueListModelBuilder.updateIssue(issue, server);
 			}
+			showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 		}
 	}
 }
