@@ -274,8 +274,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		label5.setText("Project/ Issue");
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -558,7 +558,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 				issueTypeList.setListData(jiraServerModel.getIssueTypes(jiraServerCfg, currentJiraProject, true).toArray());
 				statusList.setListData(jiraServerModel.getStatuses(jiraServerCfg).toArray());
-				prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg).toArray());
+				prioritiesList.setListData(jiraServerModel.getPriorities(jiraServerCfg, true).toArray());
 				resolutionsList.setListData(jiraServerModel.getResolutions(jiraServerCfg, true).toArray());
 				fixForList.setListData(jiraServerModel.getFixForVersions(jiraServerCfg, currentJiraProject).toArray());
 

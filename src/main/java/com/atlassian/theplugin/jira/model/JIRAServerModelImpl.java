@@ -174,12 +174,12 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getSavedFilters();
 	}
 
-	public List<JIRAConstant> getPriorities(JiraServerCfg cfg) throws JIRAException {
+	public List<JIRAConstant> getPriorities(JiraServerCfg cfg, boolean includeAny) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getPriorities();
+		return (srv == null) ? null : srv.getPriorities(includeAny);
 	}
 
 	public List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg, boolean includeAnyAndUnknown) throws JIRAException {
