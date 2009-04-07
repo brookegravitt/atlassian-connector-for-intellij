@@ -352,7 +352,7 @@ public class JIRAServerCache {
 		return fixForVersions;
 	}
 
-	public List<JIRAComponentBean> getComponents(JIRAProject project) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(JIRAProject project, final boolean includeSpecialValues) throws JIRAException {
 		List<JIRAComponentBean> components = null;
 		if (project != null) {
 			components = componentsCache.get(project.getKey());
@@ -363,8 +363,10 @@ public class JIRAServerCache {
 					List<JIRAComponentBean> retrieved = jiraServerFacade.getComponents(server, project.getKey());
 
 					components = new ArrayList<JIRAComponentBean>(retrieved.size() + 1);
-					components.add(new JIRAComponentBean(ANY_ID, "Any"));
-					components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
+					if (includeSpecialValues) {
+						components.add(new JIRAComponentBean(ANY_ID, "Any"));
+						components.add(new JIRAComponentBean(UNKNOWN_COMPONENT_ID, "Unknown"));
+					}
 					components.addAll(retrieved);
 
 					componentsCache.put(project.getKey(), components);
