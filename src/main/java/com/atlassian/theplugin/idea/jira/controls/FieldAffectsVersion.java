@@ -45,32 +45,51 @@ public class FieldAffectsVersion extends AbstractFieldList {
 					}
 					final List<JIRAVersionBean> versions =
 							serverModel.getVersions(issue.getServer(), issueProject, false);
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							final List<JIRAVersionBean> selectedVersions = new ArrayList<JIRAVersionBean>();
-							listModel.removeAllElements();
-							for (JIRAVersionBean v : versions) {
-								listModel.addElement(v);
-								if (issue.getAffectsVersions() != null && issue.getAffectsVersions().contains(v)) {
-									selectedVersions.add(v);
-								}
-							}
-							initialized = true;
-							setEnabled(true);
-							if (selectedVersions.size() > 0) {
-								for (JIRAVersionBean v : selectedVersions) {
-									getList().setSelectedValue(v, true);
-								}
-							} else {
-								getList().setSelectedIndex(0);
-							}
-						}
-					});
+					SwingUtilities.invokeLater(new LocalVersionListFiller(listModel, versions, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e.getMessage());
 				}
 			}
 		});
 		t.start();
+	}
+
+	private class LocalVersionListFiller implements Runnable {
+		private final DefaultListModel listModel;
+		private final List<JIRAVersionBean> versions;
+		private final JIRAIssue issue;
+
+		public LocalVersionListFiller(
+				final DefaultListModel listModel, final List<JIRAVersionBean> versions, final JIRAIssue issue) {
+			this.listModel = listModel;
+			this.versions = versions;
+			this.issue = issue;
+		}
+
+		public void run() {
+			ArrayList<Integer> selectedIndexes = new ArrayList<Integer>();
+			listModel.removeAllElements();
+			int i = 0;
+			for (JIRAVersionBean v : versions) {
+				listModel.addElement(v);
+				if (issue.getAffectsVersions() != null && issue.getAffectsVersions().contains(v)) {
+					selectedIndexes.add(i);
+				}
+				i++;
+			}
+			initialized = true;
+			setEnabled(true);
+			if (selectedIndexes.size() > 0) {
+				int j = 0;
+				int[] selected = new int[selectedIndexes.size()];
+				for (Integer s : selectedIndexes) {
+					selected[j] = s;
+					j++;
+				}
+				getList().setSelectedIndices(selected);
+			} else {
+				getList().setSelectedIndex(0);
+			}
+		}
 	}
 }
