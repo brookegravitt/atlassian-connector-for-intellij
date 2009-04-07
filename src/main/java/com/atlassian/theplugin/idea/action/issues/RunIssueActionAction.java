@@ -48,7 +48,7 @@ public class RunIssueActionAction extends AnAction {
 	}
 
 	public void runIssueActionOrLaunchBrowser(Project project) {
-		new IssueActionOrLaunchBrowserRunnable(project).run();
+		ProgressManager.getInstance().run(new IssueActionOrLaunchBrowserRunnable(project));
 	}
 
 	public void launchBrowser() {
@@ -60,14 +60,15 @@ public class RunIssueActionAction extends AnAction {
 				+ action.getQueryStringFragment());
 	}
 
-	private class IssueActionOrLaunchBrowserRunnable {
+	private class IssueActionOrLaunchBrowserRunnable extends Task.Backgroundable {
 		private Project project;
 
 		IssueActionOrLaunchBrowserRunnable(Project project) {
+			super(project, "Running Issue Action");
 			this.project = project;
 		}
 
-		public void run() {
+		public void run(final ProgressIndicator indicator) {
 			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...", false);
 
 			final JiraServerCfg server = issue.getServer();
@@ -94,11 +95,22 @@ public class RunIssueActionAction extends AnAction {
 								+ e.getMessage(), true);
 					}
 				} else {
+					showInfo("Retrieving issue details", false);
+					JIRAIssue i = null;
+					try {
+						i = facade.getIssueDetails(issue.getServer(), issue);
+					} catch (JIRAException e) {
+						showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
+						return;
+					}
+
+					final JIRAIssue detailedIssue = i;
+
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							// show action fields dialog
 							final PerformIssueActionForm dialog =
-									new PerformIssueActionForm(project, issue, fields, action.getName());
+									new PerformIssueActionForm(project, detailedIssue, fields, action.getName());
 							dialog.show();
 
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
