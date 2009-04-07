@@ -2,7 +2,6 @@ package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.fields.*;
 import org.jetbrains.annotations.NotNull;
@@ -93,8 +92,12 @@ public final class JiraActionFieldType {
 		return WidgetType.UNSUPPORTED;
 	}
 
-	public static List<JIRAActionField> fillFieldValues(JIRAServerFacade facade, JIRAIssue issue,
-			List<JIRAActionField> fields) throws JIRAException {
+	/**
+	 * @param issue  must be detailed issue
+	 * @param fields
+	 * @return list of fields with original values from the server
+	 */
+	public static List<JIRAActionField> fillFieldValues(JIRAIssue issue, List<JIRAActionField> fields) {
 		List<JIRAActionField> result = new ArrayList<JIRAActionField>();
 
 		// we should already have detailed issue here

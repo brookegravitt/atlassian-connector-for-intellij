@@ -8,6 +8,7 @@ import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.jira.JiraActionFieldType;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -96,21 +97,22 @@ public class RunIssueActionAction extends AnAction {
 					}
 				} else {
 					showInfo("Retrieving issue details", false);
-					JIRAIssue i = null;
+					final JIRAIssue detailesIssue;
 					try {
-						i = facade.getIssueDetails(issue.getServer(), issue);
+						detailesIssue = facade.getIssueDetails(issue.getServer(), issue);
 					} catch (JIRAException e) {
 						showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
 						return;
 					}
 
-					final JIRAIssue detailedIssue = i;
+					showInfo("Retrieving values for action fields", false);
+					final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailesIssue, fields);
 
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							// show action fields dialog
 							final PerformIssueActionForm dialog =
-									new PerformIssueActionForm(project, detailedIssue, fields, action.getName());
+									new PerformIssueActionForm(project, detailesIssue, preFilleddfields, action.getName());
 							dialog.show();
 
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
