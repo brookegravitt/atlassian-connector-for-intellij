@@ -190,20 +190,22 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getResolutions(includeAnyAndUnknown);
 	}
 
-	public List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
+	public List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project, boolean includeSpecialValues)
+			throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getVersions(project);
+		return (srv == null) ? null : srv.getVersions(project, includeSpecialValues);
 	}
 
-	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
+	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project,
+														 boolean includeSpecialValues) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getFixForVersions(project);
+		return (srv == null) ? null : srv.getFixForVersions(project, includeSpecialValues);
 	}
 
 	public List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) throws JIRAException {

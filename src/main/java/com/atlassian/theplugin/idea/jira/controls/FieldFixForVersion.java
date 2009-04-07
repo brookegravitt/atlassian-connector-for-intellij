@@ -43,7 +43,8 @@ public class FieldFixForVersion extends AbstractFieldList {
 							break;
 						}
 					}
-					final List<JIRAFixForVersionBean> versions = serverModel.getFixForVersions(issue.getServer(), issueProject);
+					final List<JIRAFixForVersionBean> versions =
+							serverModel.getFixForVersions(issue.getServer(), issueProject, false);
 
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
