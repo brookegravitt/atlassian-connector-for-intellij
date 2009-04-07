@@ -252,7 +252,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			private List<JIRAComponentBean> components;
 
 			public void run() throws Exception {
-				components = model.getComponents(jiraServer, project);
+				components = model.getComponents(jiraServer, project, true);
 			}
 
 			@Override
