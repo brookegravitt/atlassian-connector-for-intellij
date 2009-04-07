@@ -26,6 +26,8 @@ import java.awt.*;
  */
 public class FieldUser extends JPanel implements ActionFieldEditor {
 	private AbstractFieldTextField textField;
+	private static final float WARNING_FONT_SIZE = 10.0f;
+	private static final int BOX_WIDTH = 5;
 
 	public FieldUser(final JIRAIssue issue, final JIRAActionField field) {
 		super();
@@ -34,8 +36,10 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 
 		textField = new AbstractFieldTextField(issue.getAssigneeId(), field);
 		add(textField);
-		add(Box.createRigidArea(new Dimension(5, 0)));
-		add(new JLabel("Warning! This field is not validated prior to sending to JIRA"));
+		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
+		JLabel warningLabel = new JLabel("Warning! This field is not validated prior to sending to JIRA");
+		warningLabel.setFont(warningLabel.getFont().deriveFont(WARNING_FONT_SIZE));
+		add(warningLabel);
 	}
 
 	public JIRAActionField getEditedFieldValue() {

@@ -244,7 +244,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAConstant> priorities = model.getPriorities(new JiraServerCfg("test", new ServerId()));
+			List<JIRAConstant> priorities = model.getPriorities(new JiraServerCfg("test", new ServerId()), true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, priorities.size());
 		} catch (JIRAException e) {
@@ -259,7 +259,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			priorities = model.getPriorities(new JiraServerCfg("test", new ServerId()));
+			priorities = model.getPriorities(new JiraServerCfg("test", new ServerId()), true);
 			fail();
 		} catch (JIRAException e) {
 

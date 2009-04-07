@@ -215,12 +215,11 @@ public class JIRAServerCache {
 		return savedFilters;
 	}
 
-	public List<JIRAConstant> getPriorities() throws JIRAException {
+	public List<JIRAConstant> getPriorities(boolean includeAny) throws JIRAException {
 		if (priorities == null) {
 			try {
 				List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
 				priorities = new ArrayList<JIRAConstant>(retrieved.size() + 1);
-				priorities.add(new JIRAPriorityBean(ANY_ID, "Any", null));
 				priorities.addAll(retrieved);
 				for (JIRAConstant priority : priorities) {
 					CachedIconLoader.getIcon(priority.getIconUrl());
@@ -230,7 +229,13 @@ public class JIRAServerCache {
 				throw e;
 			}
 		}
-		return priorities;
+
+		List<JIRAConstant> result = new ArrayList<JIRAConstant>();
+		if (includeAny) {
+			result.add(new JIRAPriorityBean(ANY_ID, "Any", null));
+		}
+		result.addAll(priorities);
+		return result;
 	}
 
 	public List<JIRAResolutionBean> getResolutions(boolean includeAnyAndUnknown) throws JIRAException {
