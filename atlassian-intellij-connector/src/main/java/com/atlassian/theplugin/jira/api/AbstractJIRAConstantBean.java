@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class AbstractJIRAConstantBean implements JIRAConstant {
-    protected String name;
-    protected long id;
-    protected URL iconUrl = null;
+	protected String name;
+	protected long id;
+	protected URL iconUrl = null;
 
-	public AbstractJIRAConstantBean() {		
+	public AbstractJIRAConstantBean() {
 	}
 
 	protected AbstractJIRAConstantBean(long id, String name, URL iconUrl) {
@@ -36,17 +36,17 @@ public abstract class AbstractJIRAConstantBean implements JIRAConstant {
 	}
 
 	public AbstractJIRAConstantBean(Map<String, String> map) {
-        name = map.get("name");
-        id = Long.valueOf(map.get("id"));
+		name = map.get("name");
+		id = Long.valueOf(map.get("id"));
 
-        if (map.containsKey("icon")) {
-            try {
-                iconUrl = new URL(map.get("icon"));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+		if (map.containsKey("icon")) {
+			try {
+				iconUrl = new URL(map.get("icon"));
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public HashMap<String, String> getMap() {
 		HashMap<String, String> map = new HashMap<String, String>();
@@ -60,14 +60,41 @@ public abstract class AbstractJIRAConstantBean implements JIRAConstant {
 	}
 
 	public long getId() {
-        return id;
-    }
+		return id;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public URL getIconUrl() {
-        return iconUrl;
-    }
+	public URL getIconUrl() {
+		return iconUrl;
+	}
+
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || !(o instanceof AbstractJIRAConstantBean)) {
+			return false;
+		}
+
+		final AbstractJIRAConstantBean that = (AbstractJIRAConstantBean) o;
+
+		if (id != that.id) {
+			return false;
+		}
+		if (name != null ? !name.equals(that.name) : that.name != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public int hashCode() {
+		int result;
+		result = (name != null ? name.hashCode() : 0);
+		result = 31 * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
 }
