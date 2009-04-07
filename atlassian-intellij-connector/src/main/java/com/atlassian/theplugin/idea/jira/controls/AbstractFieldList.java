@@ -19,7 +19,7 @@ import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 
 import javax.swing.*;
@@ -78,7 +78,7 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 		JIRAActionField ret = new JIRAActionFieldBean(field);
 
 		for (Object selected : list.getSelectedValues()) {
-			JIRAVersionBean selectedValue = (JIRAVersionBean) selected;
+			JIRAQueryFragment selectedValue = (JIRAQueryFragment) selected;
 			ret.addValue(Long.valueOf(selectedValue.getId()).toString());
 		}
 		return ret;
