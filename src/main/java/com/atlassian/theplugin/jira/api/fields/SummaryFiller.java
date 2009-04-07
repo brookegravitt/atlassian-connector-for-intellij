@@ -13,14 +13,11 @@ import java.util.List;
  */
 public class SummaryFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
-		List<String> result = new ArrayList<String>();
-
 		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
 		if (ri == null) {
 			return null;
 		}
-
-
+		List<String> result = new ArrayList<String>();
 		result.add(ri.getSummary());
 		return result;
 	}

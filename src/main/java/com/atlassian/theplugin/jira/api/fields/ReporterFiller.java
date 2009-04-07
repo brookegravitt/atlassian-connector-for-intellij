@@ -13,14 +13,11 @@ import java.util.ArrayList;
  */
 public class ReporterFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
-		List<String> result = new ArrayList<String>();
-
 		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
 		if (ri == null) {
 			return null;
 		}
-
-
+		List<String> result = new ArrayList<String>();
 		result.add(ri.getReporter());
 		return result;
 	}
