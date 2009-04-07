@@ -61,11 +61,11 @@ public class RunIssueActionAction extends AnAction {
 				+ action.getQueryStringFragment());
 	}
 
-	private class IssueActionOrLaunchBrowserRunnable extends Task.Backgroundable {
+	private class IssueActionOrLaunchBrowserRunnable extends Task.Modal {
 		private Project project;
 
 		IssueActionOrLaunchBrowserRunnable(Project project) {
-			super(project, "Running Issue Action");
+			super(project, "Running Issue Action", true);
 			this.project = project;
 		}
 
