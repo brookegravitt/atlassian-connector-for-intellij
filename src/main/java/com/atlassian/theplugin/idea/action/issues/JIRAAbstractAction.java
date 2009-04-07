@@ -4,6 +4,7 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -31,8 +32,9 @@ public abstract class JIRAAbstractAction extends AnAction {
 //		onUpdate(event, enabled);
 
 		boolean enabled = false;
-		ServerCfg server = event.getData(Constants.SERVER_KEY);
-		if (server != null) {
+		JIRAIssue selectedIssue = event.getData(Constants.ISSUE_KEY);
+		if (selectedIssue != null) {
+			ServerCfg server = selectedIssue.getServer();
 			Project project = event.getData(DataKeys.PROJECT);
 			if (project != null) {
 				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
