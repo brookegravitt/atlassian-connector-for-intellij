@@ -15,13 +15,10 @@ import java.util.List;
 public class CustomFieldFiller implements FieldFiller {
 	public List<String> getFieldValues(String field, JIRAIssue detailedIssue) {
 		RemoteIssue ri = (RemoteIssue) detailedIssue.getRawSoapIssue();
-
 		if (ri == null) {
 			return null;
 		}
-
 		RemoteCustomFieldValue[] customFields = ri.getCustomFieldValues();
-
 		for (RemoteCustomFieldValue customField : customFields) {
 			if (customField.getCustomfieldId().equals(field)) {
 				return Arrays.asList(customField.getValues());
