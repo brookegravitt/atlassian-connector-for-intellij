@@ -24,6 +24,7 @@ import com.atlassian.theplugin.jira.model.JIRAServerModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * @author Jacek Jaroczynski
@@ -50,6 +51,19 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 		setViewportView(list);
 
 		fillList(listModel, serverModel, issue);
+	}
+
+	protected void setSelectedIndices(final ArrayList<Integer> selectedIndexes) {
+		if (selectedIndexes.size() > 0) {
+			int j = 0;
+			int[] selected = new int[selectedIndexes.size()];
+			for (Integer s : selectedIndexes) {
+				selected[j] = s;
+				j++;
+			}
+			getList().setSelectedIndices(selected);
+			getList().ensureIndexIsVisible(selected[0]);
+		}
 	}
 
 	protected abstract void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel,
