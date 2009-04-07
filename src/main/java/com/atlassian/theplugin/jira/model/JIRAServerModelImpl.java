@@ -149,7 +149,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getStatuses();
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project, boolean includeAny) 
+	public List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project, boolean includeAny)
 			throws JIRAException {
 		if (cfg == null) {
 			return null;
@@ -200,7 +200,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 	}
 
 	public List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project,
-														 boolean includeSpecialValues) throws JIRAException {
+			boolean includeSpecialValues) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
@@ -208,12 +208,13 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getFixForVersions(project, includeSpecialValues);
 	}
 
-	public List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project, final boolean includeSpecialValues)
+			throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
 		JIRAServerCache srv = getServer(cfg);
-		return (srv == null) ? null : srv.getComponents(project);
+		return (srv == null) ? null : srv.getComponents(project, includeSpecialValues);
 	}
 
 	public Collection<JiraServerCfg> getServers() {
