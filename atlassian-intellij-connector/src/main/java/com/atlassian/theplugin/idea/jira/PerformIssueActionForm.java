@@ -96,12 +96,14 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case RESOLUTION:
 					editor = new IssueResolutionComboBox(jiraServerModel, issue, field);
 					break;
-				case USER:
+				case ASSIGNEE:
 					editor = new FieldUser(issue, field);
 					break;
 				case PRIORITY:
 					editor = new FieldPriority(jiraServerModel, issue, field);
 					break;
+				case FIX_VERSIONS:
+				case REPORTER:
 				case TIME_SPENT:
 				case VERSIONS:
 				case CALENDAR:
@@ -128,7 +130,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case SUMMARY:
 				case ISSUE_TYPE:
 				case RESOLUTION:
-				case USER:
+				case ASSIGNEE:
 				case PRIORITY:
 					rows += ", p, 3dlu";
 					break;
@@ -136,11 +138,13 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case ENVIRONMENT:
 					rows += ", fill:pref:grow, 3dlu";
 					break;
+				case FIX_VERSIONS:
+				case REPORTER:
 				case TIME_SPENT:
-				case UNSUPPORTED:
 				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
+				case UNSUPPORTED:
 				default:
 					break;
 			}
