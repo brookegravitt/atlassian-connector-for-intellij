@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
 import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,12 +28,12 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	private static final float WARNING_FONT_SIZE = 10.0f;
 	private static final int BOX_WIDTH = 5;
 
-	public FieldUser(final JIRAIssue issue, final JIRAActionField field) {
+	public FieldUser(final String text, final JIRAActionField field) {
 		super();
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-		textField = new AbstractFieldTextField(issue.getAssigneeId(), field);
+		textField = new AbstractFieldTextField(text, field);
 		add(textField);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
 		JLabel warningLabel = new JLabel("Warning! This field is not validated prior to sending to JIRA");
