@@ -319,7 +319,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		p.setKey("TEST");
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), p);
+			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), p, true);
 			// should be 3 from the facade + "Any" + "No" + "Unreleased" + "Released"
 			assertEquals(7, versions.size());
 		} catch (JIRAException e) {
@@ -332,7 +332,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), null);
+			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), null, true);
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
 			fail();
@@ -347,7 +347,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), p);
+			List<JIRAVersionBean> versions = model.getVersions(new JiraServerCfg("test", new ServerId()), p, true);
 			facade.throwException = false;
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
@@ -362,7 +362,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		p.setKey("TEST");
 		model.setFacade(facade);
 		try {
-			List<JIRAFixForVersionBean> versions = model.getFixForVersions(new JiraServerCfg("test", new ServerId()), p);
+			List<JIRAFixForVersionBean> versions = model.getFixForVersions(new JiraServerCfg("test", new ServerId()), p, true);
 			// should be 3 from the facade + "Any" + "No" + "Unreleased" + "Released"
 			assertEquals(7, versions.size());
 		} catch (JIRAException e) {
@@ -375,7 +375,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAFixForVersionBean> versions = model.getFixForVersions(new JiraServerCfg("test", new ServerId()), null);
+			List<JIRAFixForVersionBean> versions = model.getFixForVersions(new JiraServerCfg("test", new ServerId()), null, true);
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
 			fail();

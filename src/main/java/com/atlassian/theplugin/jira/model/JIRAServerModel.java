@@ -34,9 +34,11 @@ public interface JIRAServerModel extends FrozenModel {
 
 	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg, boolean includeAnyAndUnknown) throws JIRAException;
 
-	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
+	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project, boolean includeSpecialValues)
+			throws JIRAException;
 
-	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
+	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project, boolean includeSpecialValues) 
+			throws JIRAException;
 
 	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
 
