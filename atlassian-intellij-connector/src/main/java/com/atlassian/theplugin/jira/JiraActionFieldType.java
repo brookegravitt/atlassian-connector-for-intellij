@@ -36,7 +36,7 @@ public final class JiraActionFieldType {
 		COMPONENTS
 	}
 
-	private static class WidgetTypeAndFieldFiller {
+	private static final class WidgetTypeAndFieldFiller {
 		private FieldFiller filler;
 		private WidgetType widgetType;
 
