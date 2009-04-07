@@ -196,7 +196,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			public void run() {
 				List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
 				try {
-					priorities = model.getPriorities(jiraServer);
+					priorities = model.getPriorities(jiraServer, myPerformAction);
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error("Cannot retrieve JIRa priorities:" + e.getMessage());
 				}
