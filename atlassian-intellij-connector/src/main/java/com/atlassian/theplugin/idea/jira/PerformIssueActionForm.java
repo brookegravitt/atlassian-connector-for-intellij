@@ -103,6 +103,8 @@ public class PerformIssueActionForm extends DialogWrapper {
 					editor = new FieldPriority(jiraServerModel, issue, field);
 					break;
 				case FIX_VERSIONS:
+					editor = new FieldFixForVersion(jiraServerModel, issue, field);
+					break;
 				case REPORTER:
 				case TIME_SPENT:
 				case VERSIONS:
@@ -114,7 +116,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 			}
 
 			if (editor != null) {
-				final JLabel label = new JLabel(field.getFieldId() + ":");
+				final JLabel label = new JLabel(field.getName() + ":");
 				contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
 				contentPanel.add(editor.getComponent(), cc.xy(4, y));
 				y += 2;
@@ -132,13 +134,13 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case RESOLUTION:
 				case ASSIGNEE:
 				case PRIORITY:
+				case FIX_VERSIONS:
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
 				case ENVIRONMENT:
 					rows += ", fill:pref:grow, 3dlu";
 					break;
-				case FIX_VERSIONS:
 				case REPORTER:
 				case TIME_SPENT:
 				case VERSIONS:
