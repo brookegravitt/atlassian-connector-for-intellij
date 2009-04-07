@@ -15,46 +15,55 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class FieldPriority extends AbstractFieldComboBox {
-	public FieldPriority(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field) {
+public class FieldAffectsVersion extends AbstractFieldList {
+	public FieldAffectsVersion(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field) {
 		super(jiraServerModel, issue, field);
 	}
 
-	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					final List<JIRAConstant> priorities = serverModel.getPriorities(issue.getServer(), false);
+					List<JIRAProject> projects = serverModel.getProjects(issue.getServer());
+					JIRAProject issueProject = null;
+					for (JIRAProject project : projects) {
+						if (issue.getProjectKey().equals(project.getKey())) {
+							issueProject = project;
+							break;
+						}
+					}
+					final List<JIRAVersionBean> versions = serverModel.getVersions(issue.getServer(), issueProject);
 
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
-							comboModel.removeAllElements();
-							JIRAConstant selected = null;
-							for (JIRAConstant type : priorities) {
-								comboModel.addElement(type);
-								if (issue.getPriority().equals(type.getName())) {
-									selected = type;
+							final List<JIRAVersionBean> selectedVersions = new ArrayList<JIRAVersionBean>();
+							listModel.removeAllElements();
+
+							for (JIRAVersionBean v : versions) {
+								listModel.addElement(v);
+								if (issue.getAffectsVersions() != null && issue.getAffectsVersions().contains(v)) {
+									selectedVersions.add(v);
 								}
 							}
 							initialized = true;
 							setEnabled(true);
-							if (selected != null) {
-								setSelectedItem(selected);
+							if (selectedVersions.size() > 0) {
+								for (JIRAVersionBean v : selectedVersions) {
+									getList().setSelectedValue(v, true);
+								}
 							} else {
-								setSelectedIndex(0);
+								getList().setSelectedIndex(0);
 							}
 						}
 					});

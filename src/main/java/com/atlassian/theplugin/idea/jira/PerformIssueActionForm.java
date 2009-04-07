@@ -91,10 +91,10 @@ public class PerformIssueActionForm extends DialogWrapper {
 					editor = new FieldEnvironment(issue, field);
 					break;
 				case ISSUE_TYPE:
-					editor = new IssueTypeComboBox(jiraServerModel, issue, field);
+					editor = new FieldIssueType(jiraServerModel, issue, field);
 					break;
 				case RESOLUTION:
-					editor = new IssueResolutionComboBox(jiraServerModel, issue, field);
+					editor = new FieldResolution(jiraServerModel, issue, field);
 					break;
 				case ASSIGNEE:
 					editor = new FieldUser(issue, field);
@@ -102,12 +102,14 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case PRIORITY:
 					editor = new FieldPriority(jiraServerModel, issue, field);
 					break;
+				case VERSIONS:
+					editor = new FieldAffectsVersion(jiraServerModel, issue, field);
+					break;
 				case FIX_VERSIONS:
 					editor = new FieldFixForVersion(jiraServerModel, issue, field);
 					break;
 				case REPORTER:
 				case TIME_SPENT:
-				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
 				case UNSUPPORTED:
@@ -134,6 +136,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case RESOLUTION:
 				case ASSIGNEE:
 				case PRIORITY:
+				case VERSIONS:
 				case FIX_VERSIONS:
 					rows += ", p, 3dlu";
 					break;
@@ -143,7 +146,6 @@ public class PerformIssueActionForm extends DialogWrapper {
 					break;
 				case REPORTER:
 				case TIME_SPENT:
-				case VERSIONS:
 				case CALENDAR:
 				case COMPONENTS:
 				case UNSUPPORTED:

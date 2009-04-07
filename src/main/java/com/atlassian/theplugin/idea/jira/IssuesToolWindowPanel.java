@@ -915,7 +915,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						setStatusMessage(serverStr + "Retrieving resolutions...");
 						jiraServerModel.getResolutions(server, true);
 						setStatusMessage(serverStr + "Retrieving priorities...");
-						jiraServerModel.getPriorities(server);
+						jiraServerModel.getPriorities(server, true);
 						setStatusMessage(serverStr + "Retrieving projects...");
 						jiraServerModel.getProjects(server);
 						setStatusMessage(serverStr + "Server data query finished");
