@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class FieldPriority extends AbstractFieldComboBox {
 	public FieldPriority(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(jiraServerModel, issue, field);
+		super(jiraServerModel, issue, field, true);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
