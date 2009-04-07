@@ -282,21 +282,25 @@ public class JIRAServerCache {
 		return versions;
 	}
 
-	public List<JIRAVersionBean> getVersions(JIRAProject project) throws JIRAException {
+	public List<JIRAVersionBean> getVersions(JIRAProject project, boolean includeSpecialValues) throws JIRAException {
 		List<JIRAVersionBean> versions;
 		if (project != null) {
 			List<JIRAVersionBean> retrieved = getAllVersions(project);
 			if (!retrieved.isEmpty()) {
 				versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
-				versions.add(new JIRAVersionBean(ANY_ID, "Any"));
-				versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
-				versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				if (includeSpecialValues) {
+					versions.add(new JIRAVersionBean(ANY_ID, "Any"));
+					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
+					versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				}
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
 					if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 						versions.add((JIRAVersionBean) jiraQueryFragment);
 					}
 				}
-				versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+				if (includeSpecialValues) {
+					versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+				}
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
 					if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 						versions.add((JIRAVersionBean) jiraQueryFragment);
@@ -312,21 +316,28 @@ public class JIRAServerCache {
 		return versions;
 	}
 
-	public List<JIRAFixForVersionBean> getFixForVersions(JIRAProject project) throws JIRAException {
+	public List<JIRAFixForVersionBean> getFixForVersions(JIRAProject project, boolean includeSpecialValues)
+			throws JIRAException {
 		List<JIRAFixForVersionBean> fixForVersions;
 		if (project != null) {
 			List<JIRAVersionBean> retrieved = getAllVersions(project);
 			if (!retrieved.isEmpty()) {
 				fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
-				fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
-				fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
-				fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				if (includeSpecialValues) {
+					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
+					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
+					fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
+				}
 				for (JIRAVersionBean jiraQueryFragment : retrieved) {
 					if (jiraQueryFragment.isReleased()) {
 						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
 					}
 				}
-				fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+
+				if (includeSpecialValues) {
+					fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+				}
+
 				for (JIRAVersionBean jiraQueryFragment : retrieved) {
 					if (!jiraQueryFragment.isReleased()) {
 						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
