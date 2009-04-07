@@ -59,7 +59,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 		createContent(fields);
 
 		setTitle(name);
-//		setSize(700, 300);
+		root.setMinimumSize(new Dimension(600, 300));
 //		getOKAction().putValue(Action.NAME, name);
 	}
 

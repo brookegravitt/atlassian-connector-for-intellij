@@ -23,6 +23,6 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
  */
 public class FieldDescription extends AbstractFieldTextArea {
 	public FieldDescription(final JIRAIssue issue, final JIRAActionField field) {
-		super(issue.getDescription(), field);
+		super(field.getValues().get(0), field);
 	}
 }
