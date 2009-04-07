@@ -81,17 +81,8 @@ public class FieldFixForVersion extends AbstractFieldList {
 			}
 			initialized = true;
 			setEnabled(true);
-			if (selectedIndexes.size() > 0) {
-				int j = 0;
-				int[] selected = new int[selectedIndexes.size()];
-				for (Integer s : selectedIndexes) {
-					selected[j] = s;
-					j++;
-				}
-				getList().setSelectedIndices(selected);
-			} else {
-				getList().setSelectedIndex(0);
-			}
+
+			setSelectedIndices(selectedIndexes);
 		}
 	}
 }
