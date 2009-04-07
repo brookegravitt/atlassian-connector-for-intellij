@@ -111,10 +111,12 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case FIX_VERSIONS:
 					editor = new FieldFixForVersion(jiraServerModel, issue, field);
 					break;
+				case COMPONENTS:
+					editor = new FieldComponents(jiraServerModel, issue, field);
+					break;
 				case REPORTER:
 				case TIME_SPENT:
 				case CALENDAR:
-				case COMPONENTS:
 				case UNSUPPORTED:
 				default:
 					break;
@@ -141,6 +143,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case PRIORITY:
 				case VERSIONS:
 				case FIX_VERSIONS:
+				case COMPONENTS:
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
@@ -150,7 +153,6 @@ public class PerformIssueActionForm extends DialogWrapper {
 				case REPORTER:
 				case TIME_SPENT:
 				case CALENDAR:
-				case COMPONENTS:
 				case UNSUPPORTED:
 				default:
 					break;

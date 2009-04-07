@@ -276,7 +276,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new JiraServerCfg("test", new ServerId()), p);
+			components = model.getComponents(new JiraServerCfg("test", new ServerId()), p, true);
 		} catch (JIRAException e) {
 		}
 		// should be 3 from the facade + "Any" + "no component"
@@ -289,7 +289,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new JiraServerCfg("test", new ServerId()), null);
+			components = model.getComponents(new JiraServerCfg("test", new ServerId()), null, true);
 		} catch (JIRAException e) {
 		}
 		assertEquals(0, components.size());
@@ -304,7 +304,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new JiraServerCfg("test", new ServerId()), p);
+			components = model.getComponents(new JiraServerCfg("test", new ServerId()), p, true);
 		} catch (JIRAException e) {
 
 		}
@@ -375,7 +375,8 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAFixForVersionBean> versions = model.getFixForVersions(new JiraServerCfg("test", new ServerId()), null, true);
+			List<JIRAFixForVersionBean> versions = model
+					.getFixForVersions(new JiraServerCfg("test", new ServerId()), null, true);
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
 			fail();
