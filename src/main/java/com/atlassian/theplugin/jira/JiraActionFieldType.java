@@ -91,10 +91,12 @@ public final class JiraActionFieldType {
 	public static List<JIRAActionField> fillFieldValues(JIRAServerFacade facade, JIRAIssue issue,
 			List<JIRAActionField> fields) throws JIRAException {
 		List<JIRAActionField> result = new ArrayList<JIRAActionField>();
-		JIRAIssue detailedIssue = facade.getIssueDetails(issue.getServer(), issue);
+
+		// we should already have detailed issue here
+//		JIRAIssue detailedIssue = facade.getIssueDetails(issue.getServer(), issue);
 
 		for (JIRAActionField field : fields) {
-			JIRAActionField filledField = fillField(detailedIssue, field);
+			JIRAActionField filledField = fillField(issue, field);
 			result.add(filledField);
 		}
 
