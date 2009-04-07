@@ -18,8 +18,8 @@ package com.atlassian.theplugin.idea.jira.controls;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.jira.api.JIRAFixForVersionBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 
 import javax.swing.*;
@@ -64,7 +64,7 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 		JIRAActionField ret = new JIRAActionFieldBean(field);
 
 		for (Object selected : list.getSelectedValues()) {
-			JIRAFixForVersionBean selectedValue = (JIRAFixForVersionBean) selected;
+			JIRAVersionBean selectedValue = (JIRAVersionBean) selected;
 			ret.addValue(Long.valueOf(selectedValue.getId()).toString());
 		}
 		return ret;
