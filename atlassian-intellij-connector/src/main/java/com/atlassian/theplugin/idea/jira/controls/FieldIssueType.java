@@ -16,7 +16,7 @@ public class FieldIssueType extends AbstractFieldComboBox {
 
 
 	public FieldIssueType(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(serverModel, issue, field);
+		super(serverModel, issue, field, true);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel,

@@ -18,7 +18,7 @@ import java.util.List;
 public class FieldResolution extends AbstractFieldComboBox {
 
 	public FieldResolution(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(serverModel, issue, field);
+		super(serverModel, issue, field, false);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {

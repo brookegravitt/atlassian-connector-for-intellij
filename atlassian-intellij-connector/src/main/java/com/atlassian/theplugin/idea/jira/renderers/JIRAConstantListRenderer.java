@@ -24,17 +24,19 @@ import java.awt.*;
 
 public class JIRAConstantListRenderer extends DefaultListCellRenderer {
 	@Override
-	public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b1) {
-		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, o, i, b, b1);
-		JIRAConstant c = (JIRAConstant) o;
-		comp.setText(c.getName());
-		Icon icon = CachedIconLoader.getIcon(c.getIconUrl());
-		comp.setIcon(icon);
-		if (c.getIconUrl() != null) {
-			Icon disabledIcon = CachedIconLoader.getDisabledIcon(c.getIconUrl().toString());
-			comp.setDisabledIcon(disabledIcon);
-		} else {
-			comp.setDisabledIcon(null);
+	public Component getListCellRendererComponent(JList jList, Object value, int i, boolean b, boolean b1) {
+		JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, i, b, b1);
+		if (comp != null && value != null && value instanceof JIRAConstant) {
+			JIRAConstant c = (JIRAConstant) value;
+			comp.setText(c.getName());
+			Icon icon = CachedIconLoader.getIcon(c.getIconUrl());
+			comp.setIcon(icon);
+			if (c.getIconUrl() != null) {
+				Icon disabledIcon = CachedIconLoader.getDisabledIcon(c.getIconUrl().toString());
+				comp.setDisabledIcon(disabledIcon);
+			} else {
+				comp.setDisabledIcon(null);
+			}
 		}
 		return comp;
 	}
