@@ -45,12 +45,10 @@ public class FieldAffectsVersion extends AbstractFieldList {
 					}
 					final List<JIRAVersionBean> versions =
 							serverModel.getVersions(issue.getServer(), issueProject, false);
-
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							final List<JIRAVersionBean> selectedVersions = new ArrayList<JIRAVersionBean>();
 							listModel.removeAllElements();
-
 							for (JIRAVersionBean v : versions) {
 								listModel.addElement(v);
 								if (issue.getAffectsVersions() != null && issue.getAffectsVersions().contains(v)) {
