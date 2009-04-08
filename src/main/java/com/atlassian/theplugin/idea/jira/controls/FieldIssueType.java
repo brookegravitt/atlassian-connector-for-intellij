@@ -37,7 +37,6 @@ public class FieldIssueType extends AbstractFieldComboBox {
 					final List<JIRAConstant> issueTypes = issue.isSubTask()
 							? serverModel.getSubtaskIssueTypes(issue.getServer(), issueProject)
 							: serverModel.getIssueTypes(issue.getServer(), issueProject, false);
-
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							comboModel.removeAllElements();
