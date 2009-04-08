@@ -828,7 +828,16 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public JiraServerCfg getSelectedServer() {
-		return jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
+		JiraServerCfg server = jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
+		if (server != null) {
+			return server;
+		}
+		ProjectConfiguration cfg = projectCfgManager.getCfgManager()
+				.getProjectConfiguration(CfgUtil.getProjectId(project));
+		if (cfg != null) {
+			return cfg.getDefaultJiraServer();
+		}
+		return null;
 	}
 
 	public boolean isRecentlyOpenFilterSelected() {
