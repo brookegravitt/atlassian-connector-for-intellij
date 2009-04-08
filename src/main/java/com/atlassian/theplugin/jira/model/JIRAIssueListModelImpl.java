@@ -191,7 +191,7 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		if (recentIssue != null) {
 			for (JIRAIssue i : getIssuesCache()) {
 				if (i.getKey().equals(recentIssue.getIssueKey())
-						&& i.getServer().getServerId().toString().equals(recentIssue.getServerId())) {
+						&& i.getServer() != null && i.getServer().getServerId().toString().equals(recentIssue.getServerId())) {
 					return i;
 				}
 			}
