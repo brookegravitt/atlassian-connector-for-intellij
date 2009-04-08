@@ -432,7 +432,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						//final JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
-//							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
+							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
 						} else {
 							exception = new RuntimeException("No JIRA server defined!");
 						}
