@@ -182,9 +182,10 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 
 //		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
 //									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel,
-//									 final boolean fail) {
+
+		//									 final boolean fail) {
 		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
-									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
+				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
 					"Adding new comment reply", false) {
 				public void run(@NotNull ProgressIndicator progressIndicator) {
@@ -194,7 +195,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 //									"Very Very Long Comment, Very Very Long Comment, "
 //									+ "Very Very Long Comment, Very Very Long Comment");
 //						} else {
-							review.addVersionedCommentReply(fileInfo, parent, reply);
+						review.addVersionedCommentReply(fileInfo, parent, reply);
 //						}
 					} catch (Exception e) {
 						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
@@ -225,7 +226,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private VersionedCommentBean createReplyBean(String text) {
 		final VersionedCommentBean reply = new VersionedCommentBean();
 		reply.setMessage(text);
-		reply.setAuthor(new UserBean(review.getServer().getUsername()));
+		reply.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 		reply.setDefectRaised(false);
 		reply.setDefectApproved(false);
 		reply.setDeleted(false);
@@ -238,7 +239,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	}
 
 	protected boolean checkIfUserAnAuthor() {
-		return review.getServer().getUsername().equals(comment.getAuthor().getUserName());
+		return review.getServer().getCurrentUsername().equals(comment.getAuthor().getUserName());
 	}
 
 	protected boolean checkIfAuthorized() {

@@ -17,23 +17,12 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.FileNameNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralSectionNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.*;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -149,7 +138,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment = new VersionedCommentBean();
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 		}
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
@@ -195,7 +184,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setToEndLine(comment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 		}
 
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
@@ -241,7 +230,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment Reply", false) {
 

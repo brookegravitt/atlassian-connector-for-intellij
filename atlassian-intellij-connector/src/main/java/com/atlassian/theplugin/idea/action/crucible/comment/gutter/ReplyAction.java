@@ -37,7 +37,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 			newComment.setToEndLine(comment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 		}
 
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);

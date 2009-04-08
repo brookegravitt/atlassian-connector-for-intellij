@@ -20,5 +20,8 @@ import com.atlassian.theplugin.ConnectionWrapper;
 
 public interface TestConnectionProcessor {
 	void setConnectionResult(ConnectionWrapper.ConnectionState result);
+
 	void onSuccess();
+
+	void onError(String errorMessage);
 }

@@ -126,7 +126,7 @@ public class PluginSSLProtocolSocketFactory extends EasySSLProtocolSocketFactory
 			// }else{
 			// printDebug("Using Authenticator.");
 			// tunnelUser = pa.getUserName();
-			// tunnelPassword = new String(pa.getPassword());
+			// tunnelPassword = new String(pa.getCurrentPassword());
 			// }
 			out.print("CONNECT " + host + ":" + sslPort + " HTTP/1.0\r\n"
 					+ "User-Agent: AxisClient");

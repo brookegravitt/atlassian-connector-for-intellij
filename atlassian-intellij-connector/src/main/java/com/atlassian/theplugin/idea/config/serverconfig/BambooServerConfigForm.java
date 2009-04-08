@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -37,6 +38,7 @@ public class BambooServerConfigForm {
 
 	private transient GenericServerConfigForm genericServerConfigForm;
 	private final Project project;
+	private final UserCfg defaultUser;
 	private final transient BambooServerFacade bambooServerFacade;
 
 	public BambooServerCfg getBambooServerCfg() {
@@ -45,8 +47,9 @@ public class BambooServerConfigForm {
 
 	private BambooServerCfg bambooServerCfg;
 
-	public BambooServerConfigForm(Project project, BambooServerFacade bambooServerFacadeInstance) {
+	public BambooServerConfigForm(Project project, final UserCfg defaultUser, BambooServerFacade bambooServerFacadeInstance) {
 		this.project = project;
+		this.defaultUser = defaultUser;
 		this.bambooServerFacade = bambooServerFacadeInstance;
 
 		$$$setupUI$$$();
@@ -78,7 +81,7 @@ public class BambooServerConfigForm {
 	}
 
 	private void createUIComponents() {
-		genericServerConfigForm = new GenericServerConfigForm(project, new ProductConnector(bambooServerFacade));
+		genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(bambooServerFacade));
 		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this);
 	}
 
