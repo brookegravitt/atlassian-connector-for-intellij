@@ -60,7 +60,7 @@ public class RecentlyOpenIssuesCache {
 		if (conf != null) {
 			final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
 			invalidate();
-			Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving recently open issues", false) {
 
 				public void run(final ProgressIndicator progressindicator) {
 					if (recentlyOpen != null) {
