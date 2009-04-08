@@ -394,7 +394,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void openIssue(@NotNull final String issueKey, final JiraServerCfg jiraServer) {
 		JIRAIssue issue = null;
 		for (JIRAIssue i : baseIssueListModel.getIssues()) {
-			if (i.getKey().equals(issueKey) && getSelectedServer().getServerId().equals(jiraServer.getServerId())) {
+			if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
 				issue = i;
 				break;
 			}
