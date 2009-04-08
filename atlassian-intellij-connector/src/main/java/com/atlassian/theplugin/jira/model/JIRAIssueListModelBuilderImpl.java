@@ -215,9 +215,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			if (jiraServer != null) {
 				foundIssue = JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 
+				model.addIssue(foundIssue);
+				return foundIssue;
 			}
-			model.addIssue(foundIssue);
-			return foundIssue;
 
 		}
 
