@@ -6,6 +6,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueActionProvider;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JiraActionFieldType;
@@ -82,31 +83,36 @@ public class RunIssueActionAction extends AnAction {
 					showInfo(
 							"Cannot retrieve fields for action [" + action.getName() + "] on issue [" + issue.getKey() + "]"
 									+ e.getMessage(), true);
+					showInfo(e);
+					return;
+				}
+
+				showInfo("Retrieving issue details", false);
+				final JIRAIssue detailesIssue;
+				try {
+					detailesIssue = facade.getIssueDetails(issue.getServer(), issue);
+				} catch (JIRAException e) {
+					showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
+					showInfo(e);
 					return;
 				}
 
 				showInfo("Running action [" + action.getName() + "] on issue [" + issue.getKey() + "]...", false);
 
-				if (fields.isEmpty()) {
+
+				showInfo("Retrieving values for action fields", false);
+				final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailesIssue, fields);
+
+				if (preFilleddfields.isEmpty()) {
 					try {
 						facade.progressWorkflowAction(server, issue, action);
 						performPostActionActivity(server);
 					} catch (JIRAException e) {
 						showInfo("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
 								+ e.getMessage(), true);
+						showInfo(e);
 					}
 				} else {
-					showInfo("Retrieving issue details", false);
-					final JIRAIssue detailesIssue;
-					try {
-						detailesIssue = facade.getIssueDetails(issue.getServer(), issue);
-					} catch (JIRAException e) {
-						showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
-						return;
-					}
-
-					showInfo("Retrieving values for action fields", false);
-					final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailesIssue, fields);
 
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
@@ -127,6 +133,7 @@ public class RunIssueActionAction extends AnAction {
 												} catch (JIRAException e) {
 													showInfo("Unable to run action [" + action.getName() + "] on issue ["
 															+ issue.getKey() + "]: " + e.getMessage(), true);
+													showInfo(e);
 												}
 											}
 										});
@@ -145,6 +152,14 @@ public class RunIssueActionAction extends AnAction {
 				public void run() {
 					window.setStatusMessage(s, isError);
 
+				}
+			});
+		}
+
+		private void showInfo(final Throwable e) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 				}
 			});
 		}
