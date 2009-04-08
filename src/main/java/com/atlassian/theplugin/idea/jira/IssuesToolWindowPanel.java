@@ -452,7 +452,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		try {
 			JiraServerCfg jiraServer = getSelectedServer();
 			if (jiraServer != null) {
-				assignIssue(issue, jiraServer.getUsername());
+				assignIssue(issue, jiraServer.getCurrentUsername());
 			}
 		} catch (NullPointerException ex) {
 			// whatever, means action was called when no issue was selected. Let's just swallow it
@@ -596,9 +596,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					if (!issue.getAssigneeId().equals(server.getUsername())) {
+					if (!issue.getAssigneeId().equals(server.getCurrentUsername())) {
 						setStatusMessage("Assigning issue " + issue.getKey() + " to me...");
-						jiraServerFacade.setAssignee(server, issue, server.getUsername());
+						jiraServerFacade.setAssignee(server, issue, server.getCurrentUsername());
 					}
 					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
 					boolean found = false;

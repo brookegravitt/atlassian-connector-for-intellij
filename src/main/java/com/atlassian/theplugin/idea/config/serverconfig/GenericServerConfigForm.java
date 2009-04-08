@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
@@ -30,6 +31,8 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -45,15 +48,18 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	private JButton testConnection;
 	private JCheckBox chkPasswordRemember;
 	private JCheckBox cbEnabled;
+	private JCheckBox useDefault;
 	private DocumentListener listener;
 
 	private transient ServerCfg serverCfg;
+	private final UserCfg defaultUser;
 
 	synchronized ServerCfg getServerCfg() {
 		return serverCfg;
 	}
 
-	public GenericServerConfigForm(final Project project, final Connector tester) {
+	public GenericServerConfigForm(final Project project, final UserCfg defaultUser, final Connector tester) {
+		this.defaultUser = defaultUser;
 
 		$$$setupUI$$$();
 		testConnection
@@ -85,6 +91,26 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 				setServerState();
 			}
 		};
+
+		useDefault.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent e) {
+				enableDisableUserPassword();
+			}
+		});
+
+		enableDisableUserPassword();
+	}
+
+	private void enableDisableUserPassword() {
+		if (useDefault.isSelected()) {
+			username.setEnabled(false);
+			password.setEnabled(false);
+			chkPasswordRemember.setEnabled(false);
+		} else {
+			username.setEnabled(true);
+			password.setEnabled(true);
+			chkPasswordRemember.setEnabled(true);
+		}
 	}
 
 	public void finalizeData() {
@@ -118,14 +144,15 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
-		username.setText(server.getUsername());
+		username.setText(server.getCurrentUsername());
 		chkPasswordRemember.setSelected(server.isPasswordStored());
-		password.setText(server.getPassword());
+		password.setText(server.getCurrentPassword());
 		cbEnabled.setSelected(server.isEnabled());
-
+		useDefault.setSelected(server.isUseDefaultCredentials());
 
 		username.getDocument().addDocumentListener(listener);
 		password.getDocument().addDocumentListener(listener);
+		enableDisableUserPassword();
 	}
 
 	public synchronized void saveData() {
@@ -139,6 +166,8 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		serverCfg.setPassword(String.valueOf(password.getPassword()));
 		serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
 		serverCfg.setEnabled(cbEnabled.isSelected());
+		serverCfg.setUseDefaultCredentials(useDefault.isSelected());
+		serverCfg.setDefaultUser(defaultUser);
 	}
 
 	public JComponent getRootComponent() {
@@ -159,6 +188,9 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	}
 
 	public void onSuccess() {
+	}
+
+	public void onError(final String errorMessage) {
 	}
 
 	public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
@@ -263,6 +295,11 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		panel1.add(cbEnabled, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, new Dimension(115, 25), null, 0, false));
+		useDefault = new JCheckBox();
+		useDefault.setText("Use Default Credentials");
+		panel1.add(useDefault, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		final JPanel spacer1 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;

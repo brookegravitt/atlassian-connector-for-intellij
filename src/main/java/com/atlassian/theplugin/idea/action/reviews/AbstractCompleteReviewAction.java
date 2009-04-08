@@ -1,14 +1,14 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.idea.crucible.CrucibleCompleteWorker;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.Constants;
 
 /**
  * User: jgorycki
@@ -39,7 +39,7 @@ public abstract class AbstractCompleteReviewAction extends AnAction {
 			try {
 				if (review.getActions().contains(getRequestedAction())) {
 					for (Reviewer reviewer : review.getReviewers()) {
-						if (reviewer.getUserName().equals(review.getServer().getUsername())) {
+						if (reviewer.getUserName().equals(review.getServer().getCurrentUsername())) {
 							if (reviewer.isCompleted() == !getCompletionStatus()) {
 								event.getPresentation().setEnabled(true);
 								event.getPresentation().setVisible(true);

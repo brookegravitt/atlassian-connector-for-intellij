@@ -16,21 +16,13 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.Connector;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import org.apache.log4j.Category;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -66,77 +58,11 @@ public class TestConnectionListener implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 
-		Task.Modal testConnectionTask = new TestConnectionTask(project, "Testing Connection", true);
+		Task.Modal testConnectionTask = new TestConnectionTask(project, connectionTester, serverCfgProvider, processor,
+				"Testing Connection", true);
 		testConnectionTask.setCancelText("Stop");
 		ProgressManager.getInstance().run(testConnectionTask);
 	}
 
-	private class TestConnectionTask extends Task.Modal {
 
-		private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
-		private final Category log = Category.getInstance(TestConnectionTask.class);
-		private final ConnectionWrapper testConnector;
-
-		public TestConnectionTask(Project currentProject, String title, boolean canBeCanceled) {
-			super(currentProject, title, canBeCanceled);
-			testConnector = new ConnectionWrapper(connectionTester, serverCfgProvider.getServerCfg(), "test thread");
-		}
-
-		@Override
-		public void run(@NotNull ProgressIndicator indicator) {
-
-			if (indicator == null) {
-				PluginUtil.getLogger().error("Progress Indicator is null in TestConnectionTask!!!");
-				System.out.println("Progress Indicator is null in TestConnectionTask!!!");
-			} else {
-				indicator.setText("Connecting...");
-				indicator.setFraction(0);
-				indicator.setIndeterminate(true);
-			}
-
-			testConnector.start();
-
-			while (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
-				try {
-					if (indicator.isCanceled()) {
-						testConnector.setInterrupted();
-						//t.interrupt();
-						break;
-					} else {
-						java.lang.Thread.sleep(CHECK_CANCEL_INTERVAL);
-					}
-				} catch (InterruptedException e) {
-					log.info(e.getMessage());
-				}
-			}
-
-			ConnectionWrapper.ConnectionState state = testConnector.getConnectionState();
-			processor.setConnectionResult(state);
-			switch (testConnector.getConnectionState()) {
-				case FAILED:
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							DialogWithDetails.showExceptionDialog(getProject(), testConnector.getErrorMessage(),
-									testConnector.getException(), HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
-						}
-					});
-					break;
-				case INTERUPTED:
-					log.debug("Cancel was pressed during 'Test Connection' operation");
-					break;
-				case SUCCEEDED:
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							showMessageDialog(getProject(), "Connected successfully", "Connection OK",
-									Messages.getInformationIcon());
-							processor.onSuccess();
-						}
-					});
-					break;
-				default: //NOT_FINISHED:
-					log.warn("Unexpected 'Test Connection' thread state: "
-							+ testConnector.getConnectionState().toString());
-			}
-		}
-	}
 }

@@ -42,8 +42,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -158,7 +158,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	public void updateReviewInfo(final ReviewAdapter reviewInfo) {
 		detailsPanel.add(new DetailsPanel(reviewInfo), BorderLayout.CENTER);
-		if (CrucibleAction.CLOSE.equals(action) || CrucibleAction.SUMMARIZE.equals(action) || !"".equals(reviewInfo.getSummary())) {
+		if (CrucibleAction.CLOSE.equals(action) || CrucibleAction.SUMMARIZE.equals(action) ||
+				!"".equals(reviewInfo.getSummary())) {
 			boolean isEditable = CrucibleAction.CLOSE.equals(action) || CrucibleAction.SUMMARIZE.equals(action);
 			descriptionPanel = new DescriptionPanel(review, isEditable);
 			summaryPanel.add(descriptionPanel, BorderLayout.CENTER);
@@ -244,7 +245,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private void showErrorMessage(final String message) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				showMessageDialog(message, "Error changing review state: " + review.getServer().getUrl(), Messages.getErrorIcon());
+				showMessageDialog(message, "Error changing review state: " + review.getServer().getUrl(),
+						Messages.getErrorIcon());
 			}
 		});
 
@@ -457,7 +459,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
-			String userName = review.getServer().getUsername();
+			String userName = review.getServer().getCurrentUsername();
 
 			String totalComments;
 			try {
@@ -469,7 +471,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			String myAllComments;
 			try {
-				myAllComments = review.getNumberOfGeneralComments(userName) + review.getNumberOfVersionedComments(userName) + "";
+				myAllComments = review.getNumberOfGeneralComments(userName) + review.getNumberOfVersionedComments(userName) +
+						"";
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				myAllComments = "Value not initialized yet";
 			}

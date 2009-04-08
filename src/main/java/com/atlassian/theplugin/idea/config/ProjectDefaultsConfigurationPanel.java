@@ -15,9 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -26,6 +28,8 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -36,6 +40,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -50,10 +56,17 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JComboBox defaultJiraServerCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
+	private JTextField defaultUserName = new JTextField();
+	private JButton defaultCredentialsTestButton = new JButton("Test Connections");
+	private JPasswordField defaultPassword = new JPasswordField();
+	private final Project project;
 	private ProjectConfiguration projectConfiguration;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
+	private final BambooServerFacade bambooServerFacade;
+	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
+	private final CfgManager cfgManager;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
@@ -224,13 +237,18 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			+ "Typically it will be something like <b>\"trunk/\"</b> or <b>\"trunk/myproject\"</b>. "
 			+ "Leave blank if your project is located at the repository root";
 
-	public ProjectDefaultsConfigurationPanel(final ProjectConfiguration projectConfiguration,
+	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
-			final UiTaskExecutor uiTaskExecutor) {
+			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
+			final UiTaskExecutor uiTaskExecutor, final CfgManager cfgManager) {
+		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.fishEyeServerFacade = fishEyeServerFacade;
+		this.bambooServerFacade = bambooServerFacade;
+		this.jiraServerFacade = jiraServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
+		this.cfgManager = cfgManager;
 
 		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
 				+ "E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
@@ -239,7 +257,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		final FormLayout layout = new FormLayout(
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
 				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
+						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
+						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
 //		layout.setRowGroups(new int[][]{{11, 13, 15}});
@@ -290,10 +309,39 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		builder.add(jiraHelp, cc.xyw(1, 25, ALL_COLUMNS));
 		builder.addLabel("Default Server:", cc.xy(2, 27));
 		builder.add(defaultJiraServerCombo, cc.xy(4, 27));
+
+		builder.addSeparator("Default Credentials", cc.xyw(1, 29, ALL_COLUMNS));
+		builder.addLabel("Username:", cc.xy(2, 31));
+		builder.add(defaultUserName, cc.xy(4, 31));
+		builder.addLabel("Password:", cc.xy(2, 33));
+		builder.add(defaultPassword, cc.xy(4, 33));
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(defaultCredentialsTestButton, BorderLayout.EAST);
+		defaultCredentialsTestButton.setMaximumSize(defaultCredentialsTestButton.getPreferredSize());
+
+		builder.add(defaultCredentialsTestButton, cc.xy(4, 35, CellConstraints.RIGHT, CellConstraints.CENTER));
+
 		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
 
+		defaultCredentialsTestButton.addMouseListener(new MouseListener() {
+			public void mouseClicked(final MouseEvent e) {
+				testDefaultCredentials();
+			}
+
+			public void mousePressed(final MouseEvent e) {
+			}
+
+			public void mouseReleased(final MouseEvent e) {
+			}
+
+			public void mouseEntered(final MouseEvent e) {
+			}
+
+			public void mouseExited(final MouseEvent e) {
+			}
+		});
 		defaultCrucibleServerCombo.addItemListener(new ItemListener() {
 			public void itemStateChanged(final ItemEvent e) {
 				crucProjectModel.refresh();
@@ -306,6 +354,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				fishRepositoryModel.refresh();
 			}
 		});
+
 
 		pathToProjectEdit.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(final DocumentEvent e) {
@@ -321,6 +370,99 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 		});
 
+		defaultUserName.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(final DocumentEvent e) {
+				setUserName();
+			}
+
+			public void removeUpdate(final DocumentEvent e) {
+				setUserName();
+			}
+
+			public void changedUpdate(final DocumentEvent e) {
+				setUserName();
+			}
+
+			private void setUserName() {
+				UserCfg user = projectConfiguration.getDefaultUser();
+				if (user == null) {
+					user = new UserCfg();
+				}
+				user.setUserName(defaultUserName.getText());
+				projectConfiguration.setDefaultUser(user);
+				for (ServerCfg server : cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project))) {
+					server.setDefaultUser(user);
+				}
+			}
+		});
+
+		defaultPassword.getDocument().addDocumentListener(new DocumentListener() {
+			public void insertUpdate(final DocumentEvent e) {
+				setPassword();
+			}
+
+			public void removeUpdate(final DocumentEvent e) {
+				setPassword();
+			}
+
+			public void changedUpdate(final DocumentEvent e) {
+				setPassword();
+			}
+
+			private void setPassword() {
+				UserCfg user = projectConfiguration.getDefaultUser();
+				if (user == null) {
+					user = new UserCfg();
+				}
+				user.setPassword(String.valueOf(defaultPassword.getPassword()));
+				projectConfiguration.setDefaultUser(user);
+				for (ServerCfg server : cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project))) {
+					server.setDefaultUser(user);
+				}
+			}
+		});
+
+	}
+
+
+	private void testDefaultCredentials() {
+		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
+				fishEyeServerFacade, bambooServerFacade);
+		test.run(cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project)));
+		//	ListPopup popup =
+		//						JBPopupFactory.getInstance().createListPopup(
+		//								new RecentlyOpenIssuesAction.IssueListPopupStep("Recently Open Issues", issues, issuesWindow));
+//					popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
+		//	popup.showInCenterOf(e.getInputEvent().getComponent());
+
+//		Collection<ServerCfg> servers = cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project),
+//				ServerType.BAMBOO_SERVER);
+//
+//		for (ServerCfg server : servers) {
+//			final ServerCfg serverFinal = server;
+//			ProductConnector connectionTester = new ProductConnector(bambooServerFacade);
+//			TestConnectionProcessor processor = new TestConnectionProcessor() {
+//					public void setConnectionResult(final ConnectionWrapper.ConnectionState result) {
+//					}
+//
+//					public void onSuccess() {
+//					}
+//				};
+//			TestConnectionListener.ServerCfgProvider serverCfgProvider = new  TestConnectionListener.ServerCfgProvider () {
+//
+//				public ServerCfg getServerCfg() {
+//					return serverFinal;
+//				}
+//			};
+//
+//			Task.Modal testConnectionTask = new TestConnectionTask(project, connectionTester, serverCfgProvider, processor,
+//					"Testing Connection", true);
+//			testConnectionTask.setCancelText("Stop");
+//			ProgressManager.getInstance().run(testConnectionTask);
+		//}
+		//PasswordDialog dialog = new PasswordDialog()
+
+
 	}
 
 	private void initializeControls() {
@@ -333,6 +475,12 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 
 		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
+		final UserCfg user = projectConfiguration.getDefaultUser();
+
+		if (user != null) {
+			defaultUserName.setText(user.getUserName());
+			defaultPassword.setText(user.getPassword());
+		}
 	}
 
 

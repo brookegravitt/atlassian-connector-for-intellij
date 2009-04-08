@@ -17,12 +17,7 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
@@ -162,7 +157,7 @@ public class CommentAction extends AnAction {
 		} else {
 			newComment = new VersionedCommentBean();
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getUsername()));
+			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
 			if (file.getCommitType() == CommitType.Deleted) {
 				newComment.setFromStartLine(start);
 				newComment.setFromEndLine(end);

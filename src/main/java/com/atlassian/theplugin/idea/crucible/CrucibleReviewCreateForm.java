@@ -595,7 +595,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			for (User user : crucibleServerData.getUsers()) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
-				if (user.getUserName().equals(server.getUsername())) {
+				if (user.getUserName().equals(server.getCurrentUsername())) {
 					indexToSelect = index + 1;
 				}
 
@@ -652,7 +652,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		@Override
 		public User getCreator() {
 			UserBean user = new UserBean();
-			user.setUserName(server.getUsername());
+			user.setUserName(server.getCurrentUsername());
 			return user;
 		}
 
@@ -760,7 +760,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						if (!leaveAsDraftCheckBox.isSelected()) {
 							try {
 								Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-								if (newReview.getModerator().getUserName().equals(server.getUsername())) {
+								if (newReview.getModerator().getUserName().equals(server.getCurrentUsername())) {
 									if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
 										crucibleServerFacade.approveReview(server, draftReview.getPermId());
 									} else {
