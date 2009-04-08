@@ -27,11 +27,13 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class FieldFixForVersion extends AbstractFieldList {
-	public FieldFixForVersion(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(jiraServerModel, issue, field);
+	public FieldFixForVersion(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
+		super(jiraServerModel, issue, field, freezeListener);
 	}
 
 	protected void fillList(final DefaultListModel listModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -83,6 +85,7 @@ public class FieldFixForVersion extends AbstractFieldList {
 			setEnabled(true);
 
 			setSelectedIndices(selectedIndexes);
+			freezeListener.unfreeze();
 		}
 	}
 }

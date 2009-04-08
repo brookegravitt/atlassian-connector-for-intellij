@@ -29,11 +29,13 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class FieldPriority extends AbstractFieldComboBox {
-	public FieldPriority(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(jiraServerModel, issue, field, true);
+	public FieldPriority(final JIRAServerModel jiraServerModel, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
+		super(jiraServerModel, issue, field, true, freezeListener);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -56,6 +58,7 @@ public class FieldPriority extends AbstractFieldComboBox {
 							} else {
 								setSelectedIndex(0);
 							}
+							freezeListener.unfreeze();
 						}
 					});
 				} catch (JIRAException e) {
