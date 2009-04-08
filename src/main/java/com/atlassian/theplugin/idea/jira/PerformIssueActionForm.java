@@ -37,13 +37,14 @@ import java.util.List;
 /**
  * @author Jacek Jaroczynski
  */
-public class PerformIssueActionForm extends DialogWrapper {
+public class PerformIssueActionForm extends DialogWrapper implements FreezeListener {
 	private JPanel root;
 	private JPanel contentPanel;
 	private Project project;
 	private JIRAIssue issue;
 	private List<JIRAActionField> fields;
 	private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
+	private int semaphore = 0;
 
 	public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
 			final String name) {
@@ -61,6 +62,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 
 		setTitle(name);
 		root.setMinimumSize(new Dimension(600, 300));
+		getOKAction().setEnabled(false);
 //		getOKAction().putValue(Action.NAME, name);
 	}
 
@@ -95,25 +97,25 @@ public class PerformIssueActionForm extends DialogWrapper {
 //					//editor = new FieldEnvironment(issue, field);
 					break;
 				case ISSUE_TYPE:
-					editor = new FieldIssueType(jiraServerModel, issue, field);
+					editor = new FieldIssueType(jiraServerModel, issue, field, this);
 					break;
 				case RESOLUTION:
-					editor = new FieldResolution(jiraServerModel, issue, field);
+					editor = new FieldResolution(jiraServerModel, issue, field, this);
 					break;
 				case ASSIGNEE:
 					editor = new FieldUser(issue.getAssigneeId(), field);
 					break;
 				case PRIORITY:
-					editor = new FieldPriority(jiraServerModel, issue, field);
+					editor = new FieldPriority(jiraServerModel, issue, field, this);
 					break;
 				case VERSIONS:
-					editor = new FieldAffectsVersion(jiraServerModel, issue, field);
+					editor = new FieldAffectsVersion(jiraServerModel, issue, field, this);
 					break;
 				case FIX_VERSIONS:
-					editor = new FieldFixForVersion(jiraServerModel, issue, field);
+					editor = new FieldFixForVersion(jiraServerModel, issue, field, this);
 					break;
 				case COMPONENTS:
-					editor = new FieldComponents(jiraServerModel, issue, field);
+					editor = new FieldComponents(jiraServerModel, issue, field, this);
 					break;
 				case REPORTER:
 					editor = new FieldUser(issue.getReporterId(), field);
@@ -195,6 +197,20 @@ public class PerformIssueActionForm extends DialogWrapper {
 // >>> IMPORTANT!! <<<
 // DO NOT EDIT OR ADD ANY CODE HERE!
 
+	}
+
+	public void freeze() {
+		semaphore++;
+		getOKAction().setEnabled(false);
+		root.validate();
+	}
+
+	public void unfreeze() {
+		semaphore--;
+		if (semaphore == 0) {
+			getOKAction().setEnabled(true);
+			root.validate();
+		}
 	}
 
 	/**
