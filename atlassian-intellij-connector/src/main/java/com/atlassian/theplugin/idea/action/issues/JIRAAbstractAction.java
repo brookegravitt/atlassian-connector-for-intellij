@@ -32,9 +32,15 @@ public abstract class JIRAAbstractAction extends AnAction {
 //		onUpdate(event, enabled);
 
 		boolean enabled = false;
+		ServerCfg server = null;
 		JIRAIssue selectedIssue = event.getData(Constants.ISSUE_KEY);
 		if (selectedIssue != null) {
-			ServerCfg server = selectedIssue.getServer();
+			server = selectedIssue.getServer();
+		}
+		if (server == null) {
+			server = event.getData(Constants.SERVER_KEY);
+		}
+		if (server != null) {
 			Project project = event.getData(DataKeys.PROJECT);
 			if (project != null) {
 				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
