@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,13 +16,14 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
@@ -34,9 +35,10 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	private BambooServerConfigForm bambooPluginConfigurationForm;
 
 	@Override
-    protected void setUp() throws Exception {
+	protected void setUp() throws Exception {
 		super.setUp();
-		bambooPluginConfigurationForm = new BambooServerConfigForm(null, BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 	}
 
 	public void testBambooSetGetData() throws Exception {
@@ -106,9 +108,9 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	private static BambooServerCfg createServerBean() {
 
-        BambooServerCfg outServer = new BambooServerCfg(true, "name", new ServerId());
+		BambooServerCfg outServer = new BambooServerCfg(true, "name", new ServerId());
 		outServer.setPassword("password");
-        outServer.setPasswordStored(true);
+		outServer.setPasswordStored(true);
 		outServer.setUrl("url");
 		outServer.setUsername("userName");
 
@@ -119,9 +121,9 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	private static void checkServerBean(BambooServerCfg outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
-		assertEquals("password", outServer.getPassword());
+		assertEquals("password", outServer.getCurrentPassword());
 		assertEquals("http://url", outServer.getUrl());
-		assertEquals("userName", outServer.getUsername());
+		assertEquals("userName", outServer.getCurrentUsername());
 	}
 
 	public static Test suite() {
@@ -129,32 +131,31 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	}
 
 
-    public void testBambooFormFieldSetting() throws Exception {
+	public void testBambooFormFieldSetting() throws Exception {
 		// TODO this call should be removed when HttpClientFactory is not singleton anymore
 		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
 
 		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerId()));
 
-        BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
-        assertEquals("", outServer.getName());
-        assertEquals("", outServer.getUrl());
-        assertEquals("", outServer.getUsername());
-        assertEquals("", outServer.getPassword());
-        assertEquals(0, outServer.getSubscribedPlans().size());
+		BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
+		assertEquals("", outServer.getName());
+		assertEquals("", outServer.getUrl());
+		assertEquals("", outServer.getCurrentUsername());
+		assertEquals("", outServer.getCurrentPassword());
+		assertEquals(0, outServer.getSubscribedPlans().size());
 
-        GenericServerConfigFormFieldMapper helper = new GenericServerConfigFormFieldMapper(bambooPluginConfigurationForm.getGenericServerConfigForm());
+		GenericServerConfigFormFieldMapper helper = new GenericServerConfigFormFieldMapper(
+				bambooPluginConfigurationForm.getGenericServerConfigForm());
 
-        helper.getServerName().setText("name");
-        helper.getPassword().setText("password");
-        helper.getServerUrl().setText("url");
-        helper.getUsername().setText("userName");
+		helper.getServerName().setText("name");
+		helper.getPassword().setText("password");
+		helper.getServerUrl().setText("url");
+		helper.getUsername().setText("userName");
 		saveData();
-		
+
 		outServer = bambooPluginConfigurationForm.getBambooServerCfg();
-        checkServerBean(outServer);
-    }
-
-
+		checkServerBean(outServer);
+	}
 
 
 }

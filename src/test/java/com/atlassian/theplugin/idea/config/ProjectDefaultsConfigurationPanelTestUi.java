@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.DefaultSwingUiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -130,6 +131,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(fishEyeServerFacade);
 
 		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
+		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
 		EasyMock.expect(jiraServerFacade.getProjects(jiraServerCfg1)).andReturn(jiraProjects1).anyTimes();
 
@@ -143,12 +145,12 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 		EasyMock.replay(jiraServerFacade);
 
-		JPanel panel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, new DefaultSwingUiTaskExecutor());
+		JPanel panel = new ProjectDefaultsConfigurationPanel(null, projectConfiguration, crucibleServerFacade,
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(), null);
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
 		frame.getContentPane().setLayout(new GridLayout(1, 1));
-		frame.getContentPane().add(panel);		
+		frame.getContentPane().add(panel);
 
 		//Finish setting up the frame, and show it.
 		frame.addWindowListener(new WindowAdapter() {

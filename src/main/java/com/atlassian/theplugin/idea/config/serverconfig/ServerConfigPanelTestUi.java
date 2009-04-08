@@ -52,7 +52,7 @@ public final class ServerConfigPanelTestUi {
 				new JiraServerCfg("2-Second Jira", new ServerId())
 		);
 
-		ServerConfigPanel configPanel = new ServerConfigPanel(null, serverCfgs, null) {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null) {
 			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);

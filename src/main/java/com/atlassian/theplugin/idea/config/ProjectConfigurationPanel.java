@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -23,6 +25,7 @@ import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
@@ -50,11 +53,13 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer) {
+			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer, final CfgManager cfgManager) {
 		this.projectConfiguration = projectConfiguration;
-		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getServers(), selectedServer);
-		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, uiTaskExecutor);
+		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getDefaultUser(),
+				projectConfiguration.getServers(), selectedServer);
+		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, cfgManager);
 		aboutBox = new AboutForm();
 
 		initLayout();

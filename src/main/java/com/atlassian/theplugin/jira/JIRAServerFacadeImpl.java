@@ -53,7 +53,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private static JIRAServerFacadeImpl instance;
 
 	private String getSoapSessionKey(JiraServerCfg server) {
-		return server.getUsername() + server.getUrl() + server.getPassword();
+		return server.getCurrentUsername() + server.getUrl() + server.getCurrentPassword();
 	}
 
 	private synchronized JIRASession getSoapSession(JiraServerCfg server) throws RemoteApiException {
@@ -70,7 +70,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			}
 
 
-			session.login(server.getUsername(), server.getPassword());
+			session.login(server.getCurrentUsername(), server.getCurrentPassword());
 			soapSessions.put(key, session);
 		}
 		return session;
@@ -78,7 +78,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 	private synchronized JIRARssClient getRssSession(JiraServerCfg server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUsername() + server.getUrl() + server.getPassword();
+		String key = server.getCurrentUsername() + server.getUrl() + server.getCurrentPassword();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
 			session = new JIRARssClient(server, callback);
@@ -88,7 +88,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
-		testServerConnection((JiraServerCfg) serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
+		testServerConnection((JiraServerCfg) serverCfg, serverCfg.getCurrentUsername(), serverCfg.getCurrentPassword());
 	}
 
 	public void testServerConnection(JiraServerCfg server, String userName, String password) throws RemoteApiException {
@@ -345,7 +345,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue,
-									   JIRAAction action, List<JIRAActionField> fields) throws JIRAException {
+			JIRAAction action, List<JIRAActionField> fields) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.progressWorkflowAction(issue, action, fields);

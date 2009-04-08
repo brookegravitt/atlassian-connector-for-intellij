@@ -17,11 +17,12 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ public class CrucibleServerConfigForm {
 	private transient GenericServerConfigForm genericServerConfigForm;
 	private CrucibleDetailConfigForm crucibleDetailConfigForm;
 	private final Project project;
+	private final UserCfg defaultUser;
 	private final transient CrucibleServerFacade crucibleServerFacade;
 	private FishEyeServerFacade fishEyeServerFacade;
 
@@ -48,9 +50,11 @@ public class CrucibleServerConfigForm {
 
 	private CrucibleServerCfg crucibleServerCfg;
 
-	public CrucibleServerConfigForm(Project project, @NotNull CrucibleServerFacade crucibleServerFacade,
+	public CrucibleServerConfigForm(Project project, final UserCfg defaultUser,
+			@NotNull CrucibleServerFacade crucibleServerFacade,
 			@NotNull FishEyeServerFacade fishEyeServerFacade) {
 		this.project = project;
+		this.defaultUser = defaultUser;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.fishEyeServerFacade = fishEyeServerFacade;
 
@@ -84,11 +88,12 @@ public class CrucibleServerConfigForm {
 		crucibleDetailConfigForm = new CrucibleDetailConfigForm(crucibleServerFacade);
 		final CrucibleConnector connector = new CrucibleConnector(crucibleServerFacade,
 				fishEyeServerFacade);
-		genericServerConfigForm = new GenericServerConfigForm(project, connector) {
+		genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, connector) {
 			@Override
 			public void onSuccess() {
 				if (connector.isFisheye() == true && !crucibleDetailConfigForm.isFishEyeInstance()) {
-					int res = Messages.showYesNoDialog(project, "This Crucible server is connected to Fisheye.\nWould you like to connect to the Fisheye server as well?",
+					int res = Messages.showYesNoDialog(project,
+							"This Crucible server is connected to Fisheye.\nWould you like to connect to the Fisheye server as well?",
 							"Combined FishEye & Crucible detected", Messages.getQuestionIcon());
 					if (res == DialogWrapper.OK_EXIT_CODE) {
 						crucibleDetailConfigForm.setIsFishEyeInstance(true);

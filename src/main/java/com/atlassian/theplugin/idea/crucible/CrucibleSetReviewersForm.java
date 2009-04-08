@@ -147,7 +147,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		actualReviewers = reviewers;
 		if (!users.isEmpty()) {
 			for (User user : users) {
-				if (!user.getUserName().equals(server.getUsername())
+				if (!user.getUserName().equals(server.getCurrentUsername())
 						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) &&
 						!user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;

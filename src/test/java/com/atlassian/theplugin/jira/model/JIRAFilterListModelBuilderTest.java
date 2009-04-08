@@ -249,6 +249,14 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
+	public Collection<ServerCfg> getAllServersWithDefaultCredentials(final ProjectId projectId, final ServerType serverType) {
+		return null;
+	}
+
+	public Collection<ServerCfg> getAllServersWithDefaultCredentials(final ProjectId projectId) {
+		return null;
+	}
+
 	public void updateProjectConfiguration(final ProjectId projectId, final ProjectConfiguration projectConfiguration) {
 	}
 

@@ -2,17 +2,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.crucible.model.MockCrucibleFacadeAdapter;
@@ -36,7 +26,7 @@ public class LineCommentTooltipPanelTest {
 		rev.setPermId(new PermIdBean("MyReview"));
 		final ReviewAdapter ra = new ReviewAdapter(rev, new CrucibleServerCfg("test", new ServerId()) {
 			@Override
-			public String getUsername() {
+			public String getCurrentUsername() {
 				return "zenon";
 			}
 		});
@@ -137,7 +127,7 @@ public class LineCommentTooltipPanelTest {
 			if (throwException != null && throwException.equals("yes")) {
 				throw new RemoteApiException(
 						"Very Very Long Comment, Very Very Long Comment, "
-						+ "Very Very Long Comment, Very Very Long Comment");
+								+ "Very Very Long Comment, Very Very Long Comment");
 			} else {
 				VersionedCommentBean bean = (VersionedCommentBean) comment;
 				bean.setAuthor(new UserBean("zenon", "Zenon User"));

@@ -97,7 +97,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(ContentParameters params) {
 		IssueContentParameters icp = (IssueContentParameters) params;
-		return icp.server != null ? icp.server.getUrl() + icp.server.getUsername() + icp.issue.getKey() : "";
+		return icp.server != null ? icp.server.getUrl() + icp.server.getCurrentUsername() + icp.issue.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {

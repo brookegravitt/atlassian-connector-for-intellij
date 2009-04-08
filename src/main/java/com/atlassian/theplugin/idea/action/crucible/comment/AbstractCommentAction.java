@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -60,7 +60,7 @@ public abstract class AbstractCommentAction extends AnAction {
 	}
 
 	@Nullable
-	private TreePath getSelectedTreePath(AnActionEvent e) {		
+	private TreePath getSelectedTreePath(AnActionEvent e) {
 		JTree tree = getTree(e);
 		if (tree != null) {
 			return tree.getSelectionPath();
@@ -85,49 +85,49 @@ public abstract class AbstractCommentAction extends AnAction {
 		return null;
 	}
 
-    protected boolean checkIfAuthor(final AtlassianTreeNode node) {
-        if (node == null) {
-            return false;
-        }
-        boolean result = false;
-        if (node instanceof VersionedCommentTreeNode) {
-            VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
-            if (isUserAnAuthor(anode.getComment(), anode.getReview())) {
-                result = true;
-            }
-        }
-        if (node instanceof GeneralCommentTreeNode) {
-            GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
-            if (isUserAnAuthor(anode.getComment(), anode.getReview())) {
-                result = true;
-            }
-        }
-        return result;
-    }
+	protected boolean checkIfAuthor(final AtlassianTreeNode node) {
+		if (node == null) {
+			return false;
+		}
+		boolean result = false;
+		if (node instanceof VersionedCommentTreeNode) {
+			VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+			if (isUserAnAuthor(anode.getComment(), anode.getReview())) {
+				result = true;
+			}
+		}
+		if (node instanceof GeneralCommentTreeNode) {
+			GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+			if (isUserAnAuthor(anode.getComment(), anode.getReview())) {
+				result = true;
+			}
+		}
+		return result;
+	}
 
-    protected boolean checkIfDraftAndAuthor(final AtlassianTreeNode node) {
-        if (node == null) {
-            return false;
-        }
-        boolean result = false;
-        if (node instanceof VersionedCommentTreeNode) {
-            VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
-            if (isUserAnAuthor(anode.getComment(), anode.getReview())
+	protected boolean checkIfDraftAndAuthor(final AtlassianTreeNode node) {
+		if (node == null) {
+			return false;
+		}
+		boolean result = false;
+		if (node instanceof VersionedCommentTreeNode) {
+			VersionedCommentTreeNode anode = (VersionedCommentTreeNode) node;
+			if (isUserAnAuthor(anode.getComment(), anode.getReview())
 					&& anode.getComment().isDraft()) {
-                result = true;
-            }
-        }
-        if (node instanceof GeneralCommentTreeNode) {
-            GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
-            if (isUserAnAuthor(anode.getComment(), anode.getReview())
+				result = true;
+			}
+		}
+		if (node instanceof GeneralCommentTreeNode) {
+			GeneralCommentTreeNode anode = (GeneralCommentTreeNode) node;
+			if (isUserAnAuthor(anode.getComment(), anode.getReview())
 					&& anode.getComment().isDraft()) {
-                result = true;
-            }
-        }
-        return result;
-    }
+				result = true;
+			}
+		}
+		return result;
+	}
 
 	private boolean isUserAnAuthor(Comment comment, ReviewAdapter review) {
-        return review.getServer().getUsername().equals(comment.getAuthor().getUserName());
-    }
+		return review.getServer().getCurrentUsername().equals(comment.getAuthor().getUserName());
+	}
 }

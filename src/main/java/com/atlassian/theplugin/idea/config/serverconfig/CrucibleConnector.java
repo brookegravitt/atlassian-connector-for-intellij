@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.FishEyeServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.util.Connector;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,11 +38,11 @@ public class CrucibleConnector implements Connector {
 		isFisheye = false;
 		facade.testServerConnection(serverCfg);
 		try {
-    		FishEyeServerCfg fishEye = new FishEyeServerCfg(true, serverCfg.getName(), serverCfg.getServerId());
-    		fishEye.setUrl(serverCfg.getUrl());
-    		fishEye.setUsername(serverCfg.getUsername());
-    		fishEye.setPassword(serverCfg.getPassword());
-    		fishEyeServerFacade.testServerConnection(fishEye);
+			FishEyeServerCfg fishEye = new FishEyeServerCfg(true, serverCfg.getName(), serverCfg.getServerId());
+			fishEye.setUrl(serverCfg.getUrl());
+			fishEye.setUsername(serverCfg.getCurrentUsername());
+			fishEye.setPassword(serverCfg.getCurrentPassword());
+			fishEyeServerFacade.testServerConnection(fishEye);
 			isFisheye = true;
 		} catch (RemoteApiException e) {
 			// it's apparently not a FishEye instance

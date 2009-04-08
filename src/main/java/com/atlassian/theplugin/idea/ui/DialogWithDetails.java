@@ -61,6 +61,16 @@ public class DialogWithDetails extends DialogWrapper {
 		init();
 	}
 
+	protected DialogWithDetails(Component parent, String description, String exception) {
+		super(parent, false);
+		this.description = description;
+		this.exceptionStr = exception;
+
+		setTitle(PluginUtil.PRODUCT_NAME);
+		init();
+		pack();
+	}
+
 	protected DialogWithDetails(Component parent, String description, Throwable exception) {
 		super(parent, false);
 		this.description = description;
@@ -76,6 +86,14 @@ public class DialogWithDetails extends DialogWrapper {
 		dialog.show();
 		return dialog.getExitCode();
 	}
+
+
+	public static int showExceptionDialog(Component component, String description, String details) {
+		final DialogWithDetails dialog = new DialogWithDetails(component, description, details);
+		dialog.show();
+		return dialog.getExitCode();
+	}
+
 
 	public static int showExceptionDialog(Project project, String description, Throwable exception) {
 		final DialogWithDetails dialog = new DialogWithDetails(project, description, exception);
