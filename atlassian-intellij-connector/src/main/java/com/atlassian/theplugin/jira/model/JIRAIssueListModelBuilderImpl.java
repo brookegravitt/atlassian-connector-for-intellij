@@ -118,7 +118,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public synchronized void addIssuesToModel(LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,
 			final Collection<JiraServerCfg> allEnabledJiraServers, int size, boolean reload) throws JIRAException {
 
-		JIRAException exception = null;
 		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
 
 		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
@@ -160,9 +159,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.setModelFrozen(false);
 		}
 
-		if (exception != null) {
-			throw exception;
-		}
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue, final JiraServerCfg jiraServerCfg) throws JIRAException {
