@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
@@ -25,9 +24,7 @@ import javax.swing.*;
  */
 public class JiraRecentlyOpenTreeNode extends AbstractTreeNode {
 
-	private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
-	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
-	private static final String NODE_NAME = "Recently Viewed Issues";
+	private static final String NODE_NAME = "Recently Open Issues";
 
 	public JiraRecentlyOpenTreeNode() {
 		super(NODE_NAME, null, null);
