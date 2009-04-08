@@ -429,40 +429,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade);
 		test.run(cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project)));
-		//	ListPopup popup =
-		//						JBPopupFactory.getInstance().createListPopup(
-		//								new RecentlyOpenIssuesAction.IssueListPopupStep("Recently Open Issues", issues, issuesWindow));
-//					popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
-		//	popup.showInCenterOf(e.getInputEvent().getComponent());
-
-//		Collection<ServerCfg> servers = cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project),
-//				ServerType.BAMBOO_SERVER);
-//
-//		for (ServerCfg server : servers) {
-//			final ServerCfg serverFinal = server;
-//			ProductConnector connectionTester = new ProductConnector(bambooServerFacade);
-//			TestConnectionProcessor processor = new TestConnectionProcessor() {
-//					public void setConnectionResult(final ConnectionWrapper.ConnectionState result) {
-//					}
-//
-//					public void onSuccess() {
-//					}
-//				};
-//			TestConnectionListener.ServerCfgProvider serverCfgProvider = new  TestConnectionListener.ServerCfgProvider () {
-//
-//				public ServerCfg getServerCfg() {
-//					return serverFinal;
-//				}
-//			};
-//
-//			Task.Modal testConnectionTask = new TestConnectionTask(project, connectionTester, serverCfgProvider, processor,
-//					"Testing Connection", true);
-//			testConnectionTask.setCancelText("Stop");
-//			ProgressManager.getInstance().run(testConnectionTask);
-		//}
-		//PasswordDialog dialog = new PasswordDialog()
-
-
 	}
 
 	private void initializeControls() {
