@@ -77,7 +77,11 @@ public final class ActiveIssueUtils {
 
 		if (conf != null) {
 			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
-			conf.addRecentlyOpenIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
+			try {
+				conf.addRecentlyOpenIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
+			} catch (JIRAException e) {
+				PluginUtil.getLogger().error(e);
+			}
 		}
 	}
 
@@ -108,12 +112,12 @@ public final class ActiveIssueUtils {
 	}
 
 	//invokeLater necessary
-	public static JIRAIssue getJIRAIssue(final AnActionEvent event) {
+	public static JIRAIssue getJIRAIssue(final AnActionEvent event) throws JIRAException {
 		return getJIRAIssue(IdeaHelper.getCurrentProject(event));
 	}
 
 	//invokeLater necessary
-	public static JIRAIssue getJIRAIssue(final Project project) {
+	public static JIRAIssue getJIRAIssue(final Project project) throws JIRAException {
 		JiraServerCfg jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(project);
@@ -122,7 +126,8 @@ public final class ActiveIssueUtils {
 		return null;
 	}
 
-	public static JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue) {
+	public static JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue)
+			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
 			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
@@ -130,6 +135,7 @@ public final class ActiveIssueUtils {
 				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e.getMessage());
+				throw e;
 			}
 		}
 		return null;
@@ -189,22 +195,28 @@ public final class ActiveIssueUtils {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		boolean isOk = true;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-		final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
+		try {
+			final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
 
-		if (panel != null && jiraIssue != null && jiraServerCfg != null) {
-			if (jiraServerCfg != null
-					&& !jiraServerCfg.getCurrentUsername().equals(jiraIssue.getAssigneeId())
-					&& !"-1".equals(jiraIssue.getAssigneeId())) {
-				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
-						"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
-								+ ".\nDo you want to overwrite assignee and start progress?",
-						"Issue " + jiraIssue.getKey(),
-						Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+			if (panel != null && jiraIssue != null && jiraServerCfg != null) {
+				if (jiraServerCfg != null
+						&& !jiraServerCfg.getCurrentUsername().equals(jiraIssue.getAssigneeId())
+						&& !"-1".equals(jiraIssue.getAssigneeId())) {
+					isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
+							"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
+									+ ".\nDo you want to overwrite assignee and start progress?",
+							"Issue " + jiraIssue.getKey(),
+							Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+				}
+
+				if (isOk) {
+					//assign to me and start working
+					isOk = panel.startWorkingOnIssue(jiraIssue);
+				}
 			}
-
-			if (isOk) {
-				//assign to me and start working
-				isOk = panel.startWorkingOnIssue(jiraIssue);
+		} catch (JIRAException e) {
+			if (panel != null) {
+				panel.setStatusMessage("Error activating issue: " + e.getMessage(), true);
 			}
 		}
 		return isOk;
@@ -217,18 +229,23 @@ public final class ActiveIssueUtils {
 			if (activeIssue != null) {
 				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 				final Project project = IdeaHelper.getCurrentProject(event);
-				final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
-				if (panel != null && jiraIssue != null) {
-					boolean isOk = true;
-					final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
+				try {
+					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
+					if (panel != null && jiraIssue != null) {
+						boolean isOk = true;
+						final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
-					isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
-							jiraServer,
-							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-							true);
+						isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
+								jiraServer,
+								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
+								true);
 
-
-					return isOk;
+						return isOk;
+					}
+				} catch (JIRAException e) {
+					if (panel != null) {
+						panel.setStatusMessage("Error deactivating issue: " + e.getMessage(), true);
+					}
 				}
 			}
 		}
