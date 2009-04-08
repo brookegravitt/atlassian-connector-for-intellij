@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * User: jgorycki
@@ -25,7 +26,7 @@ public class DueDateFiller implements FieldFiller {
 			return null;
 		}
 		// hmm, is it right for all cases? This is the date format JIRA is sending us, will it accept it back?
-		DateFormat df = new SimpleDateFormat("dd/MMM/yy");
+		DateFormat df = new SimpleDateFormat("dd/MMM/yy", Locale.US);
 		List<String> result = new ArrayList<String>();
 		result.add(df.format(dueDate.getTime()));
 		return result;

@@ -35,6 +35,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class JIRASessionImpl implements JIRASession {
 
@@ -477,9 +478,19 @@ public class JIRASessionImpl implements JIRASession {
 				RemoteFieldValue[] dummyValues = new RemoteFieldValue[0];
 				service.progressWorkflowAction(token, issue.getKey(), String.valueOf(action.getId()), dummyValues);
 			} else {
-				RemoteFieldValue[] values = new RemoteFieldValue[fields.size()];
+
+				CopyOnWriteArrayList<JIRAActionField> safeFields = new CopyOnWriteArrayList<JIRAActionField>(fields);
+
+				for (JIRAActionField field : safeFields) {
+					if (field.getValues() == null) {
+						safeFields.remove(field);
+					}
+				}
+
 				int i = 0;
-				for (JIRAActionField field : fields) {
+				RemoteFieldValue[] values = new RemoteFieldValue[safeFields.size()];
+
+				for (JIRAActionField field : safeFields) {
 					List<String> fieldValues = field.getValues();
 					String[] fieldValueTable = fieldValues.toArray(new String[fieldValues.size()]);
 					values[i] = new RemoteFieldValue(field.getFieldId(), fieldValueTable);
