@@ -45,7 +45,7 @@ public class FieldPriority extends AbstractFieldComboBox {
 							JIRAConstant selected = null;
 							for (JIRAConstant type : priorities) {
 								comboModel.addElement(type);
-								if (issue.getPriority().equals(type.getName())) {
+								if (issue.getPriority() != null && issue.getPriority().equals(type.getName())) {
 									selected = type;
 								}
 							}

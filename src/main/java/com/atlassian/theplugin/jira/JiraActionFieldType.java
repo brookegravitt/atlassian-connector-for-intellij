@@ -86,6 +86,7 @@ public final class JiraActionFieldType {
 	}
 
 	public static WidgetType getFiledTypeForFieldId(String fieldId) {
+
 		if (typeMap.containsKey(fieldId)) {
 			return typeMap.get(fieldId).getWidgetType();
 		}
@@ -100,12 +101,11 @@ public final class JiraActionFieldType {
 	public static List<JIRAActionField> fillFieldValues(JIRAIssue issue, List<JIRAActionField> fields) {
 		List<JIRAActionField> result = new ArrayList<JIRAActionField>();
 
-		// we should already have detailed issue here
-//		JIRAIssue detailedIssue = facade.getIssueDetails(issue.getServer(), issue);
-
 		for (JIRAActionField field : fields) {
 			JIRAActionField filledField = fillField(issue, field);
-			result.add(filledField);
+			if (filledField != null) {
+				result.add(filledField);
+			}
 		}
 
 		return result;
@@ -123,6 +123,7 @@ public final class JiraActionFieldType {
 	}
 
 	public static Collection<JIRAActionField> sortFieldList(List<JIRAActionField> fieldList) {
+
 		int customFieldOffset = typeMap.size();
 		Map<Integer, JIRAActionField> sorted = new TreeMap<Integer, JIRAActionField>();
 		for (JIRAActionField field : fieldList) {

@@ -42,6 +42,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 	private JPanel contentPanel;
 	private Project project;
 	private JIRAIssue issue;
+	private List<JIRAActionField> fields;
 	private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
 
 	public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
@@ -49,8 +50,8 @@ public class PerformIssueActionForm extends DialogWrapper {
 
 		super(project, true);
 		this.project = project;
-
 		this.issue = issue;
+		this.fields = fields;
 
 		$$$setupUI$$$();
 
@@ -91,7 +92,7 @@ public class PerformIssueActionForm extends DialogWrapper {
 					editor = new FieldDescription(issue, field);
 					break;
 				case ENVIRONMENT:
-					editor = new FieldEnvironment(issue, field);
+//					//editor = new FieldEnvironment(issue, field);
 					break;
 				case ISSUE_TYPE:
 					editor = new FieldIssueType(jiraServerModel, issue, field);
@@ -150,9 +151,9 @@ public class PerformIssueActionForm extends DialogWrapper {
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
-				case ENVIRONMENT:
 					rows += ", fill:pref:grow, 3dlu";
 					break;
+				case ENVIRONMENT:
 				case TIME_SPENT:
 				case CALENDAR:
 				case UNSUPPORTED:
@@ -165,9 +166,15 @@ public class PerformIssueActionForm extends DialogWrapper {
 
 
 	public List<JIRAActionField> getFields() {
+
 		List<JIRAActionField> ret = new ArrayList<JIRAActionField>();
 
+		ret.addAll(fields);
+
 		for (ActionFieldEditor editor : createdFieldEditors) {
+			if (ret.contains(editor.getEditedFieldValue())) {
+				ret.remove(editor.getEditedFieldValue());
+			}
 			ret.add(editor.getEditedFieldValue());
 		}
 
