@@ -57,11 +57,18 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			PasswordDialog dialog = new PasswordDialog(server, serverFacade, project);
 			dialog.pack();
 			JPanel panel = dialog.getPasswordPanel();
+			int answer = JOptionPane.CANCEL_OPTION;
 
-			int answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-					PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+			if (server.isUseDefaultCredentials()) {
+				Messages.showInfoMessage(project,
+						"Either do not use default credentials for " + server.getName() + " or change default credentials",
+						"Please change default credentials");
+			} else {
+				answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
+						PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+			}
 
-			if (answer == JOptionPane.OK_OPTION) {
+			if (!server.isUseDefaultCredentials() && answer == JOptionPane.OK_OPTION) {
 				String password = dialog.getPasswordString();
 				Boolean shouldPasswordBeStored = dialog.getShouldPasswordBeStored();
 				server.setPassword(password);
@@ -74,7 +81,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 
 //			server.transientSetIsConfigInitialized(true);
 
-			if (wasCanceled) {
+			if (wasCanceled && !server.isUseDefaultCredentials()) {
 				Messages.showMessageDialog(
 						"You can always change password by changing plugin settings (Preferences | IDE Settings | "
 								+ PluginUtil.getInstance().getName() + ")", "Information", Messages.getInformationIcon());

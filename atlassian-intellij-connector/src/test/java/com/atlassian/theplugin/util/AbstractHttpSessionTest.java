@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,16 +16,16 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpMethod;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -52,11 +52,12 @@ public class AbstractHttpSessionTest extends TestCase {
 		httpServer = new org.mortbay.jetty.Server(0);
 		httpServer.start();
 
-        ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
-        mockServer = new JettyMockServer(httpServer);
+		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
+		mockServer = new JettyMockServer(httpServer);
 	}
 
-    public void testRetrieveGetResponseWithDataTransferTimeout() throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
+	public void testRetrieveGetResponseWithDataTransferTimeout()
+			throws RemoteApiMalformedUrlException, IOException, RemoteApiSessionExpiredException, JDOMException {
 		int timeout; // 7 sec
 		long t1;
 		final String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort() + SOME_URL;
@@ -64,6 +65,7 @@ public class AbstractHttpSessionTest extends TestCase {
 		TestHttpSession session = new TestHttpSession(new com.atlassian.theplugin.commons.cfg.Server() {
 
 			private ServerId serverId = new ServerId();
+
 			public ServerId getServerId() {
 				return serverId;
 			}
@@ -76,16 +78,20 @@ public class AbstractHttpSessionTest extends TestCase {
 				return mockBaseUrl;
 			}
 
-			public String getUsername() {
+			public String getCurrentUsername() {
 				return null;
 			}
 
-			public String getPassword() {
+			public String getCurrentPassword() {
 				return null;
 			}
 
 			public boolean isEnabled() {
 				return true;
+			}
+
+			public boolean isUseDefaultCredentials() {
+				return false;
 			}
 		}, new HttpSessionCallbackImpl());
 

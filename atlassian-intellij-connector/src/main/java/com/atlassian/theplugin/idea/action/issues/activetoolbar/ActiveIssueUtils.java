@@ -193,7 +193,7 @@ public final class ActiveIssueUtils {
 
 		if (panel != null && jiraIssue != null && jiraServerCfg != null) {
 			if (jiraServerCfg != null
-					&& !jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
+					&& !jiraServerCfg.getCurrentUsername().equals(jiraIssue.getAssigneeId())
 					&& !"-1".equals(jiraIssue.getAssigneeId())) {
 				isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 						"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()

@@ -17,12 +17,14 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
@@ -334,8 +336,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			configuration = setDefaultProjectConfiguration();
 		}
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
-				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer);
+				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
+				selectedServer, cfgManager);
 		return projectConfigurationPanel;
 	}
 
