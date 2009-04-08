@@ -52,9 +52,13 @@ public final class JiraEditorLinkParser {
 	private String getDefaultJiraServerUrl() {
 		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager()
 				.getProjectConfiguration(CfgUtil.getProjectId(project));
-		final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
-		if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {
-			return defaultServer.getUrl();
+		// kalamon: not sure why this could be null, but see PL-1348.
+		// I am too stupid to grok the project configuration code
+		if (projectConfiguration != null) {
+			final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
+			if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {
+				return defaultServer.getUrl();
+			}
 		}
 		return "";
 	}
