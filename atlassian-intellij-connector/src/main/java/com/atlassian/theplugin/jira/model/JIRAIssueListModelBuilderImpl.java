@@ -120,44 +120,45 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
 
-		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
-			if (model != null) {
-				model.clear();
-				model.fireModelChanged();
+		try {
+			if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
+				if (model != null) {
+					model.clear();
+					model.fireModelChanged();
+				}
+				return;
 			}
-			return;
-		}
 
-		if (reload) {
-			model.clearCache();
-		}
+			if (reload) {
+				model.clearCache();
+			}
 
-		model.setModelFrozen(true);
+			model.setModelFrozen(true);
 
 
-		startFrom = 0;
-		model.clear();
+			startFrom = 0;
+			model.clear();
 
-		for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
-			for (JiraServerCfg server : allEnabledJiraServers) {
-				if (server.getServerId().toString().equals(recentIssue.getServerId())) {
-					JIRAIssue issue = getJIRAIssue(recentIssue);
-					l.add(issue);
-					break;
+			for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
+				for (JiraServerCfg server : allEnabledJiraServers) {
+					if (server.getServerId().toString().equals(recentIssue.getServerId())) {
+						JIRAIssue issue = getJIRAIssue(recentIssue);
+						l.add(issue);
+						break;
+					}
 				}
 			}
+
+			model.addIssues(l);
+
+			startFrom += l.size();
+		} finally {
+			if (model != null) {
+				model.fireModelChanged();
+				model.fireIssuesLoaded(l.size());
+				model.setModelFrozen(false);
+			}
 		}
-
-		model.addIssues(l);
-
-		startFrom += l.size();
-
-		if (model != null) {
-			model.fireModelChanged();
-			model.fireIssuesLoaded(l.size());
-			model.setModelFrozen(false);
-		}
-
 	}
 
 	public synchronized void updateIssue(final JIRAIssue issue, final JiraServerCfg jiraServerCfg) throws JIRAException {
