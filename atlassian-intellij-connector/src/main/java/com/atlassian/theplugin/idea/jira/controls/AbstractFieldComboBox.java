@@ -33,11 +33,13 @@ public abstract class AbstractFieldComboBox extends JComboBox implements ActionF
 
 	protected boolean initialized;
 	private JIRAActionField field;
+	protected FreezeListener freezeListener;
 
 	public AbstractFieldComboBox(final JIRAServerModel serverModel, final JIRAIssue issue,
-								 final JIRAActionField field, boolean showIcon) {
+			final JIRAActionField field, boolean showIcon, final FreezeListener freezeListener) {
 
 		this.field = field;
+		this.freezeListener = freezeListener;
 		final DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
 		comboBoxModel.addElement("Fetching...");
 		initialized = false;
@@ -45,7 +47,7 @@ public abstract class AbstractFieldComboBox extends JComboBox implements ActionF
 		setEditable(false);
 		setEnabled(false);
 		if (showIcon) {
-			setRenderer(new JIRAConstantListRenderer()); 	
+			setRenderer(new JIRAConstantListRenderer());
 		} else {
 			setRenderer(new JIRAQueryFragmentListRenderer());
 		}

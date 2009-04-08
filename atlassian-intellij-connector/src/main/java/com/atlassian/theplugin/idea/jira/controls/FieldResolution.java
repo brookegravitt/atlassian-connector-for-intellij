@@ -17,11 +17,13 @@ import java.util.List;
  */
 public class FieldResolution extends AbstractFieldComboBox {
 
-	public FieldResolution(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(serverModel, issue, field, false);
+	public FieldResolution(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
+		super(serverModel, issue, field, false, freezeListener);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel, final JIRAServerModel serverModel, final JIRAIssue issue) {
+		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -43,6 +45,7 @@ public class FieldResolution extends AbstractFieldComboBox {
 							} else {
 								setSelectedIndex(0);
 							}
+							freezeListener.unfreeze();
 						}
 					});
 				} catch (JIRAException e) {

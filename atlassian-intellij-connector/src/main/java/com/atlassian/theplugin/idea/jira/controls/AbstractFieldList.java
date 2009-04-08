@@ -32,15 +32,18 @@ import java.util.ArrayList;
 public abstract class AbstractFieldList extends JScrollPane implements ActionFieldEditor {
 	protected boolean initialized;
 	private JIRAActionField field;
+	protected FreezeListener freezeListener;
 	private JList list = new JList();
 
 	public JList getList() {
 		return list;
 	}
 
-	public AbstractFieldList(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
+	public AbstractFieldList(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
 
 		this.field = field;
+		this.freezeListener = freezeListener;
 		final DefaultListModel listModel = new DefaultListModel();
 		listModel.addElement("Fetching...");
 		initialized = false;
