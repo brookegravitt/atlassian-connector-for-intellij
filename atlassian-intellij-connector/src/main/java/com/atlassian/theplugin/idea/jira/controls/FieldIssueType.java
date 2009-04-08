@@ -14,14 +14,15 @@ import java.util.List;
  */
 public class FieldIssueType extends AbstractFieldComboBox {
 
-
-	public FieldIssueType(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field) {
-		super(serverModel, issue, field, true);
+	public FieldIssueType(final JIRAServerModel serverModel, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
+		super(serverModel, issue, field, true, freezeListener);
 	}
 
 	protected void fillCombo(final DefaultComboBoxModel comboModel,
-							 final JIRAServerModel serverModel, final JIRAIssue issue) {
+			final JIRAServerModel serverModel, final JIRAIssue issue) {
 
+		freezeListener.freeze();
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
@@ -54,6 +55,8 @@ public class FieldIssueType extends AbstractFieldComboBox {
 							} else {
 								setSelectedIndex(0);
 							}
+
+							freezeListener.unfreeze();
 						}
 					});
 				} catch (JIRAException e) {
