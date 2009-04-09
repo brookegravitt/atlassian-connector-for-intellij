@@ -97,13 +97,19 @@ public interface JIRAIssue {
 
 	String getOriginalEstimate();
 
+	String getOriginalEstimateInSeconds();
+
 	void setOriginalEstimate(String t);
 
 	String getRemainingEstimate();
 
+	String getRemainingEstimateInSeconds();
+
 	void setRemainingEstimate(String t);
 
 	String getTimeSpent();
+
+	String getTimeSpentInSeconds();
 
 	void setTimeSpent(String t);
 
