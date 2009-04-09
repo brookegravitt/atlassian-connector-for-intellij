@@ -136,7 +136,8 @@ public final class JiraEditorLinkParser {
 			List<JiraURLTextRange> newRanges = getNewRanges(lineText);
 			if (!newRanges.isEmpty()) {
 				for (JiraURLTextRange range : newRanges) {
-					if (startLineOffset + range.getStartOffset() <= offset && startLineOffset + range.getEndOffset() >= offset) {
+					if (startLineOffset + range.getStartOffset() <= offset && startLineOffset + range.getEndOffset()
+							>= offset) {
 						range.setActive(isComment(file, offset));
 						return range;
 					}
