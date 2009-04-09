@@ -319,7 +319,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 		initializeControls();
+		registerListeners();
 
+		//CHECKSTYLE:MAGIC:ON
+
+	}
+
+	private void registerListeners() {
 		defaultCredentialsTestButton.addMouseListener(new MouseListener() {
 			public void mouseClicked(final MouseEvent e) {
 				testDefaultCredentials();
@@ -416,8 +422,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				}
 			}
 		});
-		//CHECKSTYLE:MAGIC:ON
-
 	}
 
 
