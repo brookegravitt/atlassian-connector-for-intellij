@@ -19,6 +19,7 @@ import com.atlassian.theplugin.jira.api.JIRAActionField;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * @author Jacek Jaroczynski
@@ -27,13 +28,21 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	private AbstractFieldTextField textField;
 	private static final float WARNING_FONT_SIZE = 10.0f;
 	private static final int BOX_WIDTH = 5;
+	private static final String UNASSIGNED_NAME = "Unassigned";
+	private static final String UNASSIGNED_ID = "-1";
 
 	public FieldUser(final String text, final JIRAActionField field) {
 		super();
 
+		String userId = text;
+
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
-		textField = new AbstractFieldTextField(text, field);
+		if (userId.equals(UNASSIGNED_ID)) {
+			userId = UNASSIGNED_NAME;
+		}
+
+		textField = new AbstractFieldTextField(userId, field);
 		add(textField);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
 		JLabel warningLabel = new JLabel("Warning! This field is not validated prior to sending to JIRA");
@@ -42,7 +51,11 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	}
 
 	public JIRAActionField getEditedFieldValue() {
-		return textField.getEditedFieldValue();
+		JIRAActionField field = textField.getEditedFieldValue();
+		if (field.getValues().get(0).equals(UNASSIGNED_NAME)) {
+			field.setValues(Arrays.asList(UNASSIGNED_ID));
+		}
+		return field;
 	}
 
 	public Component getComponent() {
