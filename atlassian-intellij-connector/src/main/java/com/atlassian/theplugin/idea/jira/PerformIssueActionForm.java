@@ -62,7 +62,6 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 		setTitle(name);
 		root.setMinimumSize(new Dimension(600, 300));
-		getOKAction().setEnabled(false);
 //		getOKAction().putValue(Action.NAME, name);
 	}
 
