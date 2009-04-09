@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -391,8 +390,10 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				}
 				user.setUserName(defaultUserName.getText());
 				projectConfiguration.setDefaultUser(user);
-				for (ServerCfg server : cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project))) {
-					server.setDefaultUser(user);
+				for (ServerCfg server : projectConfiguration.getServers()) {
+					if (server.isUseDefaultCredentials()) {
+						server.setDefaultUser(user);
+					}
 				}
 			}
 		});
@@ -417,7 +418,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				}
 				user.setPassword(String.valueOf(defaultPassword.getPassword()));
 				projectConfiguration.setDefaultUser(user);
-				for (ServerCfg server : cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project))) {
+				for (ServerCfg server : projectConfiguration.getAllServersWithDefaultCredentials()) {
 					server.setDefaultUser(user);
 				}
 			}
@@ -428,7 +429,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private void testDefaultCredentials() {
 		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade);
-		test.run(cfgManager.getAllServersWithDefaultCredentials(CfgUtil.getProjectId(project)));
+		test.run(projectConfiguration.getAllServersWithDefaultCredentials());
 	}
 
 	private void initializeControls() {
