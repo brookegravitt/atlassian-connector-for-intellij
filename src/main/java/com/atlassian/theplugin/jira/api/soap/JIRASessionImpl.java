@@ -215,10 +215,14 @@ public class JIRASessionImpl implements JIRASession {
 		try {
 			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
 
+			RemoteSecurityLevel securityLevel = service.getSecurityLevel(token, issue.getKey());
+
 			if (rIssue == null) {
 				throw new RemoteApiException("Unable to retrieve issue details");
 			}
 			JIRAIssueBean issueBean = new JIRAIssueBean(issue);
+
+			issueBean.setSecurityLevel(new JIRASecurityLevelBean(Long.valueOf(securityLevel.getId()), securityLevel.getName()));
 
 			RemoteVersion[] aVers = rIssue.getAffectsVersions();
 			List<JIRAConstant> av = new ArrayList<JIRAConstant>();
