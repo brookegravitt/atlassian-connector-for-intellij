@@ -29,7 +29,8 @@ public final class JiraActionFieldType {
 		FIX_VERSIONS,
 		RESOLUTION,
 		PRIORITY,
-		COMPONENTS
+		COMPONENTS,
+		SECURITY
 	}
 
 	private static final class WidgetTypeAndFieldFiller {
@@ -75,6 +76,7 @@ public final class JiraActionFieldType {
 		typeMap.put("environment", new WidgetTypeAndFieldFiller(WidgetType.ENVIRONMENT, ++i, new EnvironmentFiller()));
 		typeMap.put("description", new WidgetTypeAndFieldFiller(WidgetType.DESCRIPTION, ++i, new DescriptionFiller()));
 		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIME_SPENT, ++i, new TimeTrackingFiller()));
+		typeMap.put("security", new WidgetTypeAndFieldFiller(WidgetType.SECURITY, ++i, new SecurityFiller()));
 	}
 
 	private JiraActionFieldType() {
@@ -95,7 +97,7 @@ public final class JiraActionFieldType {
 
 	/**
 	 * @param issue  must be detailed issue
-	 * @param fields
+	 * @param fields fields to pre-fill
 	 * @return list of fields with original values from the server
 	 */
 	public static List<JIRAActionField> fillFieldValues(JIRAIssue issue, List<JIRAActionField> fields) {
