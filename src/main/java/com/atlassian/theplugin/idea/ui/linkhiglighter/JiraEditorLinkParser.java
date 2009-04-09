@@ -135,9 +135,13 @@ public final class JiraEditorLinkParser {
 			CharSequence lineText = editor.getDocument().getCharsSequence().subSequence(startLineOffset, endLineOffset);
 			List<JiraURLTextRange> newRanges = getNewRanges(lineText);
 			if (!newRanges.isEmpty()) {
-				JiraURLTextRange range = (JiraURLTextRange) newRanges.toArray()[0];
-				range.setActive(isComment(file, offset));
-				return range;
+				for (JiraURLTextRange range : newRanges) {
+					if (startLineOffset + range.getStartOffset() <= offset && startLineOffset + range.getEndOffset() >= offset) {
+						range.setActive(isComment(file, offset));
+						return range;
+					}
+				}
+
 			}
 		}
 
