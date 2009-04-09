@@ -65,7 +65,7 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 				j++;
 			}
 			getList().setSelectedIndices(selected);
-			getList().ensureIndexIsVisible(selected[0]);
+			getList().ensureIndexIsVisible(selected[selectedIndexes.size() - 1]);
 		}
 	}
 
