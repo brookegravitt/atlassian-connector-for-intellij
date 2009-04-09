@@ -23,6 +23,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
  */
 public class FieldDescription extends AbstractFieldTextArea {
 	public FieldDescription(final JIRAIssue issue, final JIRAActionField field) {
+		// we use wiki markup version from field (not html version from issue)
 		super(field.getValues().get(0), field);
 	}
 }

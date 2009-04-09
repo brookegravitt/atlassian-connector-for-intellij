@@ -93,9 +93,6 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 				case DESCRIPTION:
 					editor = new FieldDescription(issue, field);
 					break;
-				case ENVIRONMENT:
-//					//editor = new FieldEnvironment(issue, field);
-					break;
 				case ISSUE_TYPE:
 					editor = new FieldIssueType(jiraServerModel, issue, field, this);
 					break;
@@ -119,6 +116,9 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					break;
 				case REPORTER:
 					editor = new FieldUser(issue.getReporterId(), field);
+					break;
+				case ENVIRONMENT:
+					editor = new FieldEnvironment(issue, field);
 					break;
 				case TIME_SPENT:
 				case CALENDAR:
@@ -153,9 +153,9 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					rows += ", p, 3dlu";
 					break;
 				case DESCRIPTION:
+				case ENVIRONMENT:
 					rows += ", fill:pref:grow, 3dlu";
 					break;
-				case ENVIRONMENT:
 				case TIME_SPENT:
 				case CALENDAR:
 				case UNSUPPORTED:
