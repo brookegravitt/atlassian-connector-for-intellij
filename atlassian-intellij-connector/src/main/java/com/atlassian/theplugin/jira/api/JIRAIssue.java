@@ -120,4 +120,6 @@ public interface JIRAIssue {
 	Object getRawSoapIssue();
 
 	void setRawSoapIssue(Object soapIssue);
+
+	JIRASecurityLevelBean getSecurityLevel();
 }
