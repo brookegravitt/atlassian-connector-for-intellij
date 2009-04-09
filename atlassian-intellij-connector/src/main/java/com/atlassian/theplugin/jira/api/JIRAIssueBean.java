@@ -64,6 +64,7 @@ public class JIRAIssueBean implements JIRAIssue {
 	private String originalEstimateInSeconds;
 	private String remainingEstimateInSeconds;
 	private String timeSpentInSeconds;
+	private JIRASecurityLevelBean securityLevel;
 
 	public JIRAIssueBean() {
 	}
@@ -517,5 +518,13 @@ public class JIRAIssueBean implements JIRAIssue {
 
 	public void setRawSoapIssue(Object soapIssue) {
 		rawSoapIssue = soapIssue;
+	}
+
+	public JIRASecurityLevelBean getSecurityLevel() {
+		return securityLevel;
+	}
+
+	public void setSecurityLevel(final JIRASecurityLevelBean securityLevelBean) {
+		this.securityLevel = securityLevelBean;
 	}
 }
