@@ -61,6 +61,9 @@ public class JIRAIssueBean implements JIRAIssue {
 	private String timeSpent;
 	private List<JIRAComment> commentsList;
 	private Object rawSoapIssue;
+	private String originalEstimateInSeconds;
+	private String remainingEstimateInSeconds;
+	private String timeSpentInSeconds;
 
 	public JIRAIssueBean() {
 	}
@@ -98,6 +101,12 @@ public class JIRAIssueBean implements JIRAIssue {
 		thisIsASubTask = issue.isSubTask();
 		subTaskList = issue.getSubTaskKeys();
 		parentIssueKey = issue.getParentIssueKey();
+		originalEstimate = issue.getOriginalEstimate();
+		originalEstimateInSeconds = issue.getOriginalEstimateInSeconds();
+		remainingEstimate = issue.getRemainingEstimate();
+		remainingEstimateInSeconds = issue.getRemainingEstimateInSeconds();
+		timeSpent = issue.getTimeSpent();
+		timeSpentInSeconds = issue.getTimeSpentInSeconds();
 	}
 
 	public JIRAIssueBean(JiraServerCfg server, Element e) {
@@ -152,6 +161,9 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.originalEstimate = getTextSafely(e, "timeoriginalestimate");
 		this.remainingEstimate = getTextSafely(e, "timeestimate");
 		this.timeSpent = getTextSafely(e, "timespent");
+		this.originalEstimateInSeconds = getAttributeSafely(e, "timeoriginalestimate", "seconds");
+		this.remainingEstimateInSeconds = getAttributeSafely(e, "timeestimate", "seconds");
+		this.timeSpentInSeconds = getAttributeSafely(e, "timespent", "seconds");
 
 		Element comments = e.getChild("comments");
 		if (comments != null) {
@@ -463,8 +475,16 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.originalEstimate = originalEstimate;
 	}
 
+	public String getOriginalEstimateInSeconds() {
+		return originalEstimateInSeconds;
+	}
+
 	public String getRemainingEstimate() {
 		return remainingEstimate;
+	}
+
+	public String getRemainingEstimateInSeconds() {
+		return remainingEstimateInSeconds;
 	}
 
 	public void setRemainingEstimate(String remainingEstimate) {
@@ -473,6 +493,10 @@ public class JIRAIssueBean implements JIRAIssue {
 
 	public String getTimeSpent() {
 		return timeSpent;
+	}
+
+	public String getTimeSpentInSeconds() {
+		return timeSpentInSeconds;
 	}
 
 	public void setTimeSpent(String timeSpent) {

@@ -108,7 +108,31 @@ public final class JiraActionFieldType {
 			}
 		}
 
+		addTimeFields(issue, result);
+
 		return result;
+	}
+
+	private static void addTimeFields(JIRAIssue issue, List<JIRAActionField> result) {
+		String originalEstimate = issue.getOriginalEstimateInSeconds();
+		String remainingEstimate = issue.getRemainingEstimateInSeconds();
+		String timeSpent = issue.getTimeSpentInSeconds();
+
+		if (originalEstimate != null) {
+			JIRAActionField originalEstimateField = new JIRAActionFieldBean("timeoriginalestimate", "Original Estimate");
+			originalEstimateField.addValue(originalEstimate);
+			result.add(originalEstimateField);
+		}
+		if (remainingEstimate != null) {
+			JIRAActionField remainingEstimateField = new JIRAActionFieldBean("timeestimate", "Remaining Estimate");
+			remainingEstimateField.addValue(remainingEstimate);
+			result.add(remainingEstimateField);
+		}
+		if (timeSpent != null) {
+			JIRAActionField timeSpentField = new JIRAActionFieldBean("timespent", "Time Spent");
+			timeSpentField.addValue(timeSpent);
+			result.add(timeSpentField);
+		}
 	}
 
 	private static JIRAActionField fillField(JIRAIssue issue, final JIRAActionField field) {

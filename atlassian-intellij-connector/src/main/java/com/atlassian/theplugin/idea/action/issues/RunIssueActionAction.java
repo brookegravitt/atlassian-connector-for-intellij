@@ -88,9 +88,10 @@ public class RunIssueActionAction extends AnAction {
 				}
 
 				showInfo("Retrieving issue details", false);
-				final JIRAIssue detailesIssue;
+				final JIRAIssue detailedIssue;
 				try {
-					detailesIssue = facade.getIssueDetails(issue.getServer(), issue);
+					JIRAIssue issueWithTime = facade.getIssue(issue.getServer(), issue.getKey());
+					detailedIssue = facade.getIssueDetails(issue.getServer(), issueWithTime);
 				} catch (JIRAException e) {
 					showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
 					showInfo(e);
@@ -101,7 +102,7 @@ public class RunIssueActionAction extends AnAction {
 
 
 				showInfo("Retrieving values for action fields", false);
-				final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailesIssue, fields);
+				final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailedIssue, fields);
 
 				if (preFilleddfields.isEmpty()) {
 					try {
@@ -118,7 +119,7 @@ public class RunIssueActionAction extends AnAction {
 						public void run() {
 							// show action fields dialog
 							final PerformIssueActionForm dialog =
-									new PerformIssueActionForm(project, detailesIssue, preFilleddfields, action.getName());
+									new PerformIssueActionForm(project, detailedIssue, preFilleddfields, action.getName());
 							dialog.show();
 
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
