@@ -261,13 +261,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
-//		layout.setRowGroups(new int[][]{{11, 13, 15}});
-
 		PanelBuilder builder = new PanelBuilder(layout, this);
 		builder.setDefaultDialogBorder();
-
 		final CellConstraints cc = new CellConstraints();
-
 		builder.addSeparator("Crucible", cc.xyw(1, 1, ALL_COLUMNS));
 		JLabel cruHelp = new JLabel(CRUCIBLE_HELP_TEXT);
 		cruHelp.setFont(cruHelp.getFont().deriveFont(10.0f));
@@ -321,7 +317,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		builder.add(defaultCredentialsTestButton, cc.xy(4, 35, CellConstraints.RIGHT, CellConstraints.CENTER));
 
-		//CHECKSTYLE:MAGIC:ON
 
 		initializeControls();
 
@@ -421,6 +416,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				}
 			}
 		});
+		//CHECKSTYLE:MAGIC:ON
 
 	}
 
