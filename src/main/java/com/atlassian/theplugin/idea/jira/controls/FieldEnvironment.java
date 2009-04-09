@@ -23,6 +23,6 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
  */
 public class FieldEnvironment extends AbstractFieldTextArea {
 	public FieldEnvironment(final JIRAIssue issue, final JIRAActionField field) {
-		super("", field); //issue.getEnvironment());
+		super(field.getValues().get(0), field); //issue.getEnvironment());
 	}
 }
