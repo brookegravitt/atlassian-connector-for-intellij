@@ -1181,7 +1181,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	//CHECKSTYLE:MAGIC:OFF
+
 	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
 		public void modelChanged(JIRAIssueListModel model) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -1228,7 +1228,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			});
 		}
 
-		//CHECKSTYLE:MAGIC:ON
 		public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 			if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
 				enableGetMoreIssues(true);
