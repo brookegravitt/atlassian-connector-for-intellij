@@ -25,6 +25,9 @@ import java.util.List;
  */
 public class SecurityFiller implements FieldFiller {
 	public List<String> getFieldValues(final String field, final JIRAIssue detailedIssue) {
+		if (detailedIssue.getSecurityLevel() == null) {
+			return null;
+		}
 		List<String> result = new ArrayList<String>();
 		result.add("" + detailedIssue.getSecurityLevel().getId());
 		return result;
