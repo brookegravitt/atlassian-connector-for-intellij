@@ -379,7 +379,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void openIssue(@NotNull JIRAIssue issue) {
 		if (getSelectedServer() != null) {
-			openIssue(issue, getSelectedServer());
+			openIssue(issue, issue.getServer());
 		} else if (isRecentlyOpenFilterSelected()) {
 			for (JiraServerCfg server
 					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
