@@ -4,6 +4,8 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -73,6 +75,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.addIssues(l);
 			}
 			startFrom += l != null ? l.size() : 0;
+			checkActiveIssue(l);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
@@ -106,6 +109,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.addIssues(l);
 
 			startFrom += l != null ? l.size() : 0;
+			checkActiveIssue(l);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
@@ -152,6 +156,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.addIssues(l);
 
 			startFrom += l.size();
+			checkActiveIssue(l);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
@@ -186,6 +191,18 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		startFrom = 0;
 		model.fireModelChanged();
 //		}
+	}
+
+	public void checkActiveIssue(final List<JIRAIssue> newIssues) {
+		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+		if (activeIssue != null) {
+			for (JIRAIssue issue : newIssues) {
+				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getServer() != null
+						&& issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
+					ActiveIssueUtils.checkIssueState(project, issue);
+				}
+			}
+		}
 	}
 
 	public boolean isModelFrozen() {
