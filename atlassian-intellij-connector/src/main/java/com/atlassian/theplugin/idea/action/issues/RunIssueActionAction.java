@@ -71,6 +71,12 @@ public class RunIssueActionAction extends AnAction {
 		}
 
 		public void run(final ProgressIndicator indicator) {
+
+			if (indicator != null) {
+				indicator.setFraction(0.0);
+				indicator.setIndeterminate(true);
+			}
+
 			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...", false);
 
 			final JiraServerCfg server = issue.getServer();
@@ -83,7 +89,7 @@ public class RunIssueActionAction extends AnAction {
 					showInfo(
 							"Cannot retrieve fields for action [" + action.getName() + "] on issue [" + issue.getKey() + "]"
 									+ e.getMessage(), true);
-					showInfo(e);
+					showDetailedInfo(project, e);
 					return;
 				}
 
@@ -94,7 +100,7 @@ public class RunIssueActionAction extends AnAction {
 					detailedIssue = facade.getIssueDetails(issue.getServer(), issueWithTime);
 				} catch (JIRAException e) {
 					showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
-					showInfo(e);
+					showDetailedInfo(project, e);
 					return;
 				}
 
@@ -111,91 +117,110 @@ public class RunIssueActionAction extends AnAction {
 					} catch (JIRAException e) {
 						showInfo("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
 								+ e.getMessage(), true);
-						showInfo(e);
+						showDetailedInfo(project, e);
 					}
 				} else {
 
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							// show action fields dialog
-							final PerformIssueActionForm dialog =
-									new PerformIssueActionForm(project, detailedIssue, preFilleddfields, action.getName());
-							dialog.show();
-							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-								// perform workflow action in the background thread
-								ProgressManager.getInstance().run(
-										new Task.Backgroundable(project, "Running workflow action", false) {
-											public void run(final ProgressIndicator indicator) {
-												try {
-													facade.progressWorkflowAction(server, issue, action, dialog.getFields());
-												} catch (JIRAException e) {
-													showInfo("Unable to run action [" + action.getName() + "] on issue ["
-															+ issue.getKey() + "]: " + e.getMessage(), true);
-													showInfo(e);
-													return;
-												}
-												try {
-													if (dialog.getComment() != null && dialog.getComment().length() > 0) {
-														facade.addComment(server, issue.getKey(), dialog.getComment());
-													}
-												} catch (JIRAException e) {
-													showInfo("Unable to add comment to action [" + action.getName()
-															+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), true);
-													showInfo(e);
-												}
-												try {
-													performPostActionActivity(server);
-												} catch (JIRAException e) {
-													showInfo(e);
-												}
-											}
-										});
-							} else {
-								showInfo("Running workflow action [" + action.getName() + "] cancelled", false);
+					EventQueue.invokeLater(new LocalDisplayActionDialog(project, detailedIssue, preFilleddfields, server));
+				}
+			}
+		}
+	}
+
+	private void showInfo(final String s, final boolean isError) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				window.setStatusMessage(s, isError);
+
+			}
+		});
+	}
+
+	private void showDetailedInfo(final Project project, final Throwable e) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+			}
+		});
+	}
+
+	/**
+	 * Should be called in the background thread
+	 *
+	 * @param server
+	 * @throws JIRAException
+	 */
+	private void performPostActionActivity(final JiraServerCfg server) throws JIRAException {
+		if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+			JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+		} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+			JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
+		}
+
+		JiraIssueAdapter.get(issue).clearCachedActions();
+
+
+		if (jiraIssueListModelBuilder != null) {
+			jiraIssueListModelBuilder.updateIssue(issue, server);
+		}
+		showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
+	}
+
+	private class LocalDisplayActionDialog implements Runnable {
+		private Project project;
+		private JIRAIssue detailedIssue;
+		private List<JIRAActionField> preFilleddfields;
+		private JiraServerCfg server;
+
+		public LocalDisplayActionDialog(final Project project,
+				final JIRAIssue detailedIssue, final List<JIRAActionField> preFilleddfields, final JiraServerCfg server) {
+			this.project = project;
+			this.detailedIssue = detailedIssue;
+			this.preFilleddfields = preFilleddfields;
+			this.server = server;
+		}
+
+		public void run() {
+			// show action fields dialog
+			final PerformIssueActionForm dialog =
+					new PerformIssueActionForm(project, detailedIssue, preFilleddfields, action.getName());
+			dialog.show();
+			if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+				// perform workflow action in the background thread
+				ProgressManager.getInstance().run(
+						new Task.Backgroundable(project, "Running Workflow Action", false) {
+							public void run(final ProgressIndicator indicator) {
+								if (indicator != null) {
+									indicator.setFraction(0.0);
+									indicator.setIndeterminate(true);
+								}
+								try {
+									facade.progressWorkflowAction(server, issue, action, dialog.getFields());
+								} catch (JIRAException e) {
+									showInfo("Unable to run action [" + action.getName() + "] on issue ["
+											+ issue.getKey() + "]: " + e.getMessage(), true);
+									showDetailedInfo(project, e);
+									return;
+								}
+								try {
+									if (dialog.getComment() != null && dialog.getComment().length() > 0) {
+										facade.addComment(server, issue.getKey(), dialog.getComment());
+									}
+								} catch (JIRAException e) {
+									showInfo("Unable to add comment to action [" + action.getName()
+											+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), true);
+									showDetailedInfo(project, e);
+								}
+								try {
+									performPostActionActivity(server);
+								} catch (JIRAException e) {
+									showDetailedInfo(project, e);
+								}
 							}
-						}
-					});
-				}
+						});
+			} else {
+				showInfo("Running workflow action [" + action.getName() + "] cancelled", false);
 			}
-		}
-
-		private void showInfo(final String s, final boolean isError) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					window.setStatusMessage(s, isError);
-
-				}
-			});
-		}
-
-		private void showInfo(final Throwable e) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
-				}
-			});
-		}
-
-		/**
-		 * Should be called in the background thread
-		 *
-		 * @param server
-		 * @throws JIRAException
-		 */
-		private void performPostActionActivity(final JiraServerCfg server) throws JIRAException {
-			if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-				JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-			} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-				JIRAIssueProgressTimestampCache.getInstance().removeTimestamp(server, issue);
-			}
-
-			JiraIssueAdapter.get(issue).clearCachedActions();
-
-
-			if (jiraIssueListModelBuilder != null) {
-				jiraIssueListModelBuilder.updateIssue(issue, server);
-			}
-			showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 		}
 	}
 }
