@@ -72,4 +72,8 @@ public abstract class AbstractFieldComboBox extends JComboBox implements ActionF
 	public Component getComponent() {
 		return this;
 	}
+
+	public String getFieldName() {
+		return field.getName();
+	}
 }

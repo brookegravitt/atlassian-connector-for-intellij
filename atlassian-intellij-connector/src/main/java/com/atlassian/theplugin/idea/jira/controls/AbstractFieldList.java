@@ -90,4 +90,8 @@ public abstract class AbstractFieldList extends JScrollPane implements ActionFie
 	public Component getComponent() {
 		return this;
 	}
+
+	public String getFieldName() {
+		return field.getName();
+	}
 }

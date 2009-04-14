@@ -13,4 +13,6 @@ public interface ActionFieldEditor {
 	JIRAActionField getEditedFieldValue();
 
 	Component getComponent();
+
+	String getFieldName();
 }
