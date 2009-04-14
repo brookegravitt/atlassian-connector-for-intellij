@@ -54,4 +54,8 @@ public abstract class AbstractFieldTextArea extends JScrollPane implements Actio
 	public Component getComponent() {
 		return this;
 	}
+
+	public String getFieldName() {
+		return field.getName();
+	}
 }

@@ -43,4 +43,7 @@ public class AbstractFieldTextField extends JTextField implements ActionFieldEdi
 		return this;
 	}
 
+	public String getFieldName() {
+		return field.getName();
+	}
 }

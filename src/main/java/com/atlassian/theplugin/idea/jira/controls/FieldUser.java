@@ -61,4 +61,8 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 	public Component getComponent() {
 		return this;
 	}
+
+	public String getFieldName() {
+		return textField.getFieldName();
+	}
 }
