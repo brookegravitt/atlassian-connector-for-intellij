@@ -13,6 +13,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
@@ -373,7 +374,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void openIssue(final JIRAIssue issue, final JiraServerCfg server) {
 		if (issue.getServer() != null) {
 			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
+			ActiveIssueUtils.checkIssueState(project, issue);
 			IdeaHelper.getIssueToolWindow(getProject()).showIssue(server, issue, baseIssueListModel);
+
 		}
 	}
 
