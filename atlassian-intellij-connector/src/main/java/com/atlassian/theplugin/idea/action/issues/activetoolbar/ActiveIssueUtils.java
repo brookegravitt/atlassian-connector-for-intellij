@@ -190,6 +190,38 @@ public final class ActiveIssueUtils {
 		});
 	}
 
+	public static void checkIssueState(final Project project, final JIRAIssue issue) {
+		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
+		if (issue != null && activeIssue != null) {
+			if (issue.getServer() != null && (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
+					|| !issue.getStatus().toLowerCase().contains("in progress"))) {
+				SwingUtilities.invokeLater(new Runnable() {
+
+					public void run() {
+						int isOk = Messages.showYesNoDialog(project,
+								"Issue " + issue.getKey() + " has changed status (assigned to:" + issue.getAssignee()
+										+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
+								"Issue " + issue.getKey(),
+								Messages.getQuestionIcon());
+
+						if (isOk == DialogWrapper.OK_EXIT_CODE) {
+							if (deactivate(project)) {
+								final JiraWorkspaceConfiguration conf = IdeaHelper
+										.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+								if (conf != null) {
+									conf.setActiveJiraIssue(null);
+								}
+							}
+							;
+						}
+					}
+				});
+
+
+			}
+		}
+	}
+
 	private static boolean activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
 			final JiraServerCfg jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);
@@ -223,12 +255,15 @@ public final class ActiveIssueUtils {
 	}
 
 	public static boolean deactivate(final AnActionEvent event) {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+		return deactivate(IdeaHelper.getCurrentProject(event));
+	}
+
+	public static boolean deactivate(final Project project) {
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
 			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
 			if (activeIssue != null) {
-				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-				final Project project = IdeaHelper.getCurrentProject(event);
+				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 				try {
 					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 					if (panel != null && jiraIssue != null) {
