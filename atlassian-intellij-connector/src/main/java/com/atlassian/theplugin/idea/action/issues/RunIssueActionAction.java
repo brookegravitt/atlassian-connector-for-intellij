@@ -135,7 +135,7 @@ public class RunIssueActionAction extends AnAction {
 													return;
 												}
 												try {
-													if (dialog.getComment() != null && !dialog.getComment().isEmpty()) {
+													if (dialog.getComment() != null && dialog.getComment().length() > 0) {
 														facade.addComment(server, issue.getKey(), dialog.getComment());
 													}
 												} catch (JIRAException e) {
