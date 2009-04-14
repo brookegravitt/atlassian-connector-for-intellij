@@ -144,9 +144,9 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
-		username.setText(server.getCurrentUsername());
+		username.setText(server.getUsername());
 		chkPasswordRemember.setSelected(server.isPasswordStored());
-		password.setText(server.getCurrentPassword());
+		password.setText(server.getPassword());
 		cbEnabled.setSelected(server.isEnabled());
 		useDefault.setSelected(server.isUseDefaultCredentials());
 
