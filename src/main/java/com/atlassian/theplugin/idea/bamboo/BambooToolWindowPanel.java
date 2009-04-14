@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
@@ -72,8 +71,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BuildListModelImpl bambooModel,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final ProjectCfgManager projectCfgManager) {
 
 		this.project = project;
 		this.bambooModel = bambooModel;
@@ -91,7 +89,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		filterList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(final ListSelectionEvent e) {
-				if (e.getValueIsAdjusting() == false) {
+				if (!e.getValueIsAdjusting()) {
 					final BambooBuildFilter filter = filterList.getSelection();
 					bambooModel.setFilter(filter);
 				}
@@ -135,7 +133,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private void addBuildTreeListeners() {
 		buildTree.addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
 				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && buildDetailsInfo != null) {
 					openBuild(buildDetailsInfo);
