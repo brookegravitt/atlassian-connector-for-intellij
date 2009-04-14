@@ -72,52 +72,59 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 		Collection<JIRAActionField> sortedFieldList = JiraActionFieldType.sortFieldList(fieldList);
 
-		rows = createLayoutRows(sortedFieldList, rows);
-
-		int y = 2;
-
-		contentPanel.setLayout(new FormLayout(columns, rows));
-		final CellConstraints cc = new CellConstraints();
-
 		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModel.class);
+
+		List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
 
 		for (JIRAActionField field : sortedFieldList) {
 
 			ActionFieldEditor editor = null;
+			String row = null;
 
 			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
 				case SUMMARY:
 					editor = new FieldSummary(issue, field);
+					row = ", p, 3dlu";
 					break;
 				case DESCRIPTION:
 					editor = new FieldDescription(issue, field);
+					row = ", fill:pref:grow, 3dlu";
 					break;
 				case ISSUE_TYPE:
 					editor = new FieldIssueType(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case RESOLUTION:
 					editor = new FieldResolution(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case ASSIGNEE:
 					editor = new FieldUser(issue.getAssigneeId(), field);
+					row = ", p, 3dlu";
 					break;
 				case PRIORITY:
 					editor = new FieldPriority(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case VERSIONS:
 					editor = new FieldAffectsVersion(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case FIX_VERSIONS:
 					editor = new FieldFixForVersion(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case COMPONENTS:
 					editor = new FieldComponents(jiraServerModel, issue, field, this);
+					row = ", p, 3dlu";
 					break;
 				case REPORTER:
 					editor = new FieldUser(issue.getReporterId(), field);
+					row = ", p, 3dlu";
 					break;
 				case ENVIRONMENT:
 					editor = new FieldEnvironment(issue, field);
+					row = ", fill:pref:grow, 3dlu";
 					break;
 				case TIME_SPENT:
 				case CALENDAR:
@@ -126,45 +133,26 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					break;
 			}
 
-			if (editor != null) {
-				final JLabel label = new JLabel(field.getName() + ":");
-				contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
-				contentPanel.add(editor.getComponent(), cc.xy(4, y));
-				y += 2;
-
-				createdFieldEditors.add(editor);
+			if (editor != null && row != null) {
+				editors.add(editor);
+				rows += row;
 			}
 		}
-	}
 
-	private String createLayoutRows(final Collection<JIRAActionField> fieldList, String rows) {
-		for (JIRAActionField field : fieldList) {
-			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
-				case SUMMARY:
-				case ISSUE_TYPE:
-				case RESOLUTION:
-				case ASSIGNEE:
-				case PRIORITY:
-				case VERSIONS:
-				case FIX_VERSIONS:
-				case COMPONENTS:
-				case REPORTER:
-					rows += ", p, 3dlu";
-					break;
-				case DESCRIPTION:
-				case ENVIRONMENT:
-					rows += ", fill:pref:grow, 3dlu";
-					break;
-				case TIME_SPENT:
-				case CALENDAR:
-				case UNSUPPORTED:
-				default:
-					break;
-			}
+		contentPanel.setLayout(new FormLayout(columns, rows));
+		final CellConstraints cc = new CellConstraints();
+
+		int y = 2;
+
+		for (ActionFieldEditor editor : editors) {
+			final JLabel label = new JLabel(editor.getFieldName() + ":");
+			contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
+			contentPanel.add(editor.getComponent(), cc.xy(4, y));
+			createdFieldEditors.add(editor);
+			y += 2;
 		}
-		return rows;
-	}
 
+	}
 
 	public List<JIRAActionField> getFields() {
 
