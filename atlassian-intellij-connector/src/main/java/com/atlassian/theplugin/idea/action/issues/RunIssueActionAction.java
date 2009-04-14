@@ -121,19 +121,31 @@ public class RunIssueActionAction extends AnAction {
 							final PerformIssueActionForm dialog =
 									new PerformIssueActionForm(project, detailedIssue, preFilleddfields, action.getName());
 							dialog.show();
-
 							if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-
 								// perform workflow action in the background thread
 								ProgressManager.getInstance().run(
 										new Task.Backgroundable(project, "Running workflow action", false) {
 											public void run(final ProgressIndicator indicator) {
 												try {
 													facade.progressWorkflowAction(server, issue, action, dialog.getFields());
-													performPostActionActivity(server);
 												} catch (JIRAException e) {
 													showInfo("Unable to run action [" + action.getName() + "] on issue ["
 															+ issue.getKey() + "]: " + e.getMessage(), true);
+													showInfo(e);
+													return;
+												}
+												try {
+													if (dialog.getComment() != null && !dialog.getComment().isEmpty()) {
+														facade.addComment(server, issue.getKey(), dialog.getComment());
+													}
+												} catch (JIRAException e) {
+													showInfo("Unable to add comment to action [" + action.getName()
+															+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), true);
+													showInfo(e);
+												}
+												try {
+													performPostActionActivity(server);
+												} catch (JIRAException e) {
 													showInfo(e);
 												}
 											}
@@ -143,7 +155,6 @@ public class RunIssueActionAction extends AnAction {
 							}
 						}
 					});
-
 				}
 			}
 		}
