@@ -26,6 +26,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -45,6 +46,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 	private List<JIRAActionField> fields;
 	private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
 	private int semaphore = 0;
+	private CommentTextArea commentTextArea;
 
 	public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
 			final String name) {
@@ -75,6 +77,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModel.class);
 
 		List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
+		List<String> unsupportedFields = new ArrayList<String>();
 
 		for (JIRAActionField field : sortedFieldList) {
 
@@ -87,7 +90,8 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					row = ", p, 3dlu";
 					break;
 				case DESCRIPTION:
-					editor = new FieldDescription(issue, field);
+					// we use wiki markup version from field (not html version from issue)
+					editor = new FieldTextArea(field.getValues().get(0), field);
 					row = ", fill:pref:grow, 3dlu";
 					break;
 				case ISSUE_TYPE:
@@ -123,13 +127,14 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					row = ", p, 3dlu";
 					break;
 				case ENVIRONMENT:
-					editor = new FieldEnvironment(issue, field);
+					editor = new FieldTextArea(field.getValues().get(0), field);
 					row = ", fill:pref:grow, 3dlu";
 					break;
 				case TIME_SPENT:
 				case CALENDAR:
 				case UNSUPPORTED:
 				default:
+					unsupportedFields.add(field.getName());
 					break;
 			}
 
@@ -137,6 +142,12 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 				editors.add(editor);
 				rows += row;
 			}
+		}
+
+		rows += ", fill:pref:grow, 3dlu";	// Comments text area
+
+		if (!unsupportedFields.isEmpty()) {
+			rows += ", p, 3dlu";	// warning status line about not handled 
 		}
 
 		contentPanel.setLayout(new FormLayout(columns, rows));
@@ -150,6 +161,20 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 			contentPanel.add(editor.getComponent(), cc.xy(4, y));
 			createdFieldEditors.add(editor);
 			y += 2;
+		}
+
+		final JLabel label = new JLabel("Comment :");
+		contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
+		// todo create field for Comments
+		commentTextArea = new CommentTextArea();
+		contentPanel.add(commentTextArea, cc.xy(4, y));
+
+		y += 2;
+
+		if (!unsupportedFields.isEmpty()) {
+			String warning = "Not supported fields are not displayed: ";
+			warning += StringUtils.join(unsupportedFields, ", ");
+			contentPanel.add(new Label(warning), cc.xyw(2, y, 3, CellConstraints.LEFT, CellConstraints.CENTER));
 		}
 
 	}
@@ -168,6 +193,10 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 		}
 
 		return ret;
+	}
+
+	public String getComment() {
+		return commentTextArea.getComment();
 	}
 
 	protected void doOKAction() {

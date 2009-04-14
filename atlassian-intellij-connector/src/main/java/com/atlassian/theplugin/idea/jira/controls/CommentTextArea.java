@@ -15,15 +15,29 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import javax.swing.*;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class FieldDescription extends AbstractFieldTextArea {
-	public FieldDescription(final JIRAIssue issue, final JIRAActionField field) {
-		// we use wiki markup version from field (not html version from issue)
-		super(field.getValues().get(0), field);
+public class CommentTextArea extends JScrollPane {
+
+	private JTextArea textArea;
+
+	public CommentTextArea() {
+
+		textArea = new JTextArea();
+		textArea.setRows(8);
+		textArea.setColumns(40);
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+
+		this.setViewportView(textArea);
+		this.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		this.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+	}
+
+	public String getComment() {
+		return textArea.getText();
 	}
 }

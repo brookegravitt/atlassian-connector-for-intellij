@@ -24,11 +24,11 @@ import java.awt.*;
 /**
  * @author Jacek Jaroczynski
  */
-public abstract class AbstractFieldTextArea extends JScrollPane implements ActionFieldEditor {
+public class FieldTextArea extends JScrollPane implements ActionFieldEditor {
 	private JIRAActionField field;
 	private JTextArea textArea;
 
-	public AbstractFieldTextArea(final String contentText, final JIRAActionField field) {
+	public FieldTextArea(final String contentText, final JIRAActionField field) {
 
 		this.field = field;
 
