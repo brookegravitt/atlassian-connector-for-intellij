@@ -257,7 +257,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
 				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
 						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
+						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		PanelBuilder builder = new PanelBuilder(layout, this);
@@ -306,15 +306,19 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		builder.add(defaultJiraServerCombo, cc.xy(4, 27));
 
 		builder.addSeparator("Default Credentials", cc.xyw(1, 29, ALL_COLUMNS));
-		builder.addLabel("Username:", cc.xy(2, 31));
-		builder.add(defaultUserName, cc.xy(4, 31));
-		builder.addLabel("Password:", cc.xy(2, 33));
-		builder.add(defaultPassword, cc.xy(4, 33));
+		final String DEFAULT_CREDENTIALS_TEXT = "Default credentials for selected servers";
+		JLabel defaultCredentialsLabel = new JLabel(DEFAULT_CREDENTIALS_TEXT);
+		defaultCredentialsLabel.setFont(defaultCredentialsLabel.getFont().deriveFont(10.0f));
+		builder.add(defaultCredentialsLabel, cc.xyw(1, 31, ALL_COLUMNS));
+		builder.addLabel("Username:", cc.xy(2, 33));
+		builder.add(defaultUserName, cc.xy(4, 33));
+		builder.addLabel("Password:", cc.xy(2, 35));
+		builder.add(defaultPassword, cc.xy(4, 35));
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(defaultCredentialsTestButton, BorderLayout.EAST);
 		defaultCredentialsTestButton.setMaximumSize(defaultCredentialsTestButton.getPreferredSize());
 
-		builder.add(defaultCredentialsTestButton, cc.xy(4, 35, CellConstraints.RIGHT, CellConstraints.CENTER));
+		builder.add(defaultCredentialsTestButton, cc.xy(4, 37, CellConstraints.RIGHT, CellConstraints.CENTER));
 
 
 		initializeControls();

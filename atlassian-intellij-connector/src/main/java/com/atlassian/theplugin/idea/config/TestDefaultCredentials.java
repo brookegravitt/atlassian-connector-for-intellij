@@ -32,6 +32,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
@@ -68,25 +69,29 @@ public class TestDefaultCredentials {
 
 	public void run(Collection<ServerCfg> servers) {
 
-		for (ServerCfg server : servers) {
-			if (server instanceof JiraServerCfg) {
-				testGenericConnection(server, jiraServerFacade);
-			} else if (server instanceof CrucibleServerCfg) {
-				testGenericConnection(server, crucibleServerFacade);
-			} else if (server instanceof FishEyeServerFacade) {
-				testGenericConnection(server, fishEyeServerFacade);
-			} else if (server instanceof BambooServerFacade) {
-				testGenericConnection(server, bambooServerFacade);
-			} else {
-				PluginUtil.getLogger().warn("Unknown host type " + server);
+		if (servers != null && servers.size() > 0) {
+			for (ServerCfg server : servers) {
+				if (server instanceof JiraServerCfg) {
+					testGenericConnection(server, jiraServerFacade);
+				} else if (server instanceof CrucibleServerCfg) {
+					testGenericConnection(server, crucibleServerFacade);
+				} else if (server instanceof FishEyeServerFacade) {
+					testGenericConnection(server, fishEyeServerFacade);
+				} else if (server instanceof BambooServerFacade) {
+					testGenericConnection(server, bambooServerFacade);
+				} else {
+					PluginUtil.getLogger().warn("Unknown host type " + server);
+				}
 			}
-		}
 
-		final DefaultCredentialsServerList list = new DefaultCredentialsServerList("Default credentials tests result",
-				new ArrayList(servers));
-		ListPopup popup = JBPopupFactory.getInstance().createListPopup(list);
+			final DefaultCredentialsServerList list = new DefaultCredentialsServerList("Default credentials tests result",
+					new ArrayList(servers));
+			ListPopup popup = JBPopupFactory.getInstance().createListPopup(list);
 //		popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
-		popup.showInCenterOf(parentComponent);
+			popup.showInCenterOf(parentComponent);
+		} else {
+			Messages.showInfoMessage(project, "None of servers configuration use default credentials", "Default credentials");
+		}
 	}
 
 
