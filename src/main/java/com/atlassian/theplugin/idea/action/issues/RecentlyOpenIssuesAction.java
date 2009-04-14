@@ -69,6 +69,10 @@ public class RecentlyOpenIssuesAction extends AnAction {
 				private List<JIRAIssue> issues;
 
 				public void run(final ProgressIndicator indicator) {
+					if (indicator != null) {
+						indicator.setFraction(0.0);
+						indicator.setIndeterminate(true);
+					}
 					issues = issuesWindow.getIssues(recentlyOpenIssues);
 				}
 
