@@ -65,7 +65,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		if (recentlyOpenIssues.size() > 0) {
 			// prepare list of recentlyOpenIssues from the config list
 
-			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Open Issues", true) {
+			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Viewed Issues", true) {
 				private List<JIRAIssue> issues;
 
 				public void run(final ProgressIndicator indicator) {
@@ -79,13 +79,13 @@ public class RecentlyOpenIssuesAction extends AnAction {
 				public void onSuccess() {
 					ListPopup popup =
 							JBPopupFactory.getInstance().createListPopup(
-									new IssueListPopupStep("Recently Open Issues", issues, issuesWindow));
+									new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
 //					popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
 					popup.showInCenterOf(e.getInputEvent().getComponent());
 				}
 			});
 		} else {
-			Messages.showInfoMessage(project, "No recently open issues found.", PluginUtil.PRODUCT_NAME);
+			Messages.showInfoMessage(project, "No recently viewed issues found.", PluginUtil.PRODUCT_NAME);
 		}
 	}
 
