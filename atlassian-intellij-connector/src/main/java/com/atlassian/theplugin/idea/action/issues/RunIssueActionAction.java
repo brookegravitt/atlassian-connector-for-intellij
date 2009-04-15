@@ -120,7 +120,6 @@ public class RunIssueActionAction extends AnAction {
 						showDetailedInfo(project, e);
 					}
 				} else {
-
 					EventQueue.invokeLater(new LocalDisplayActionDialog(project, detailedIssue, preFilleddfields, server));
 				}
 			}
