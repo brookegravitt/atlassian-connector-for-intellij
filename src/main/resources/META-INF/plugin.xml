@@ -517,7 +517,7 @@
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
 				text="Deactivate Issue"
-				icon="/actions/suspend.png">
+				icon="/actions/pause.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"

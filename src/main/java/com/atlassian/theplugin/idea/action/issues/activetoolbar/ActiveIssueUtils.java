@@ -22,8 +22,10 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -35,6 +37,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
+import java.util.List;
 
 /**
  * User: pmaruszak
@@ -190,11 +193,25 @@ public final class ActiveIssueUtils {
 		});
 	}
 
+	private static boolean isInProgress(final JIRAIssue issue) {
+		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+		if (actions != null) {
+			for (JIRAAction a : actions) {
+				if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 	public static void checkIssueState(final Project project, final JIRAIssue issue) {
 		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
 		if (issue != null && activeIssue != null) {
+
 			if (issue.getServer() != null && (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
-					|| !issue.getStatus().toLowerCase().contains("in progress"))) {
+					|| !isInProgress(issue))) {
 				SwingUtilities.invokeLater(new Runnable() {
 
 					public void run() {
