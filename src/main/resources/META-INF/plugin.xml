@@ -104,8 +104,8 @@
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
-		<applicationService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"
-							serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.configuration.ProjectConfigurationBean"
 						serviceImplementation="com.atlassian.theplugin.configuration.ProjectConfigurationBean"/>
@@ -113,6 +113,9 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"/>
 
+        <projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModel"
+                        serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl"/>
+        
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueToolWindow"/>
 

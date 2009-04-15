@@ -43,7 +43,6 @@ import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListene
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -129,7 +128,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;

@@ -100,8 +100,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
+            @NotNull final JIRAIssueListModel issueModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor,
-			@NotNull final JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
@@ -120,7 +121,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			groupSubtasksUnderParent = false;
 		}
 		jiraFilterListModel = getJIRAFilterListModel();
-		baseIssueListModel = JIRAIssueListModelImpl.createInstance();
+		baseIssueListModel = issueModel;
 		JIRAIssueListModel sortingIssueListModel = new SortingByPriorityJIRAIssueListModel(baseIssueListModel);
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
@@ -1207,6 +1208,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
 					setStatusMessage("Nothing selected", false, false);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
+                    if (currentIssueListModel.getIssues().size() > 0) {
+                        setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
+                    }
 				} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
 					if (currentIssueListModel.getIssues().size() > 0) {
 						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
