@@ -17,9 +17,7 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
@@ -75,9 +73,9 @@ public class TestDefaultCredentials {
 					testGenericConnection(server, jiraServerFacade);
 				} else if (server instanceof CrucibleServerCfg) {
 					testGenericConnection(server, crucibleServerFacade);
-				} else if (server instanceof FishEyeServerFacade) {
+				} else if (server instanceof FishEyeServerCfg) {
 					testGenericConnection(server, fishEyeServerFacade);
-				} else if (server instanceof BambooServerFacade) {
+				} else if (server instanceof BambooServerCfg) {
 					testGenericConnection(server, bambooServerFacade);
 				} else {
 					PluginUtil.getLogger().warn("Unknown host type " + server);
