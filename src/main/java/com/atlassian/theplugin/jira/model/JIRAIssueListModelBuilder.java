@@ -5,6 +5,8 @@ import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.intellij.openapi.project.Project;
 
 import java.util.List;
 
@@ -26,4 +28,8 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void reset();
 
 	JIRAIssue getJIRAIssue(IssueRecentlyOpenBean recentlyOpen) throws JIRAException;
+
+    void setProject(final Project project);
+
+    void setProjectCfgManager(final ProjectCfgManager projectCfgManager);
 }

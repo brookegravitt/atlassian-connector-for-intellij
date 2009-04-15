@@ -39,7 +39,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	}
 
 	public void testAddIssuesOnUninitialized() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
@@ -56,7 +56,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	}
 
 	public void testAddSavedFilterIssues() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
@@ -73,7 +73,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	}
 
 	public void testAddCustomFilterIssues() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 
@@ -94,7 +94,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	private boolean listenerCalled;
 
 	public void testListeners() {
-		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 
@@ -123,7 +123,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	}
 
 	public void testReset() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
