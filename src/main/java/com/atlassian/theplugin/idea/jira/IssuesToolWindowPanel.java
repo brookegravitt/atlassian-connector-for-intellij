@@ -847,6 +847,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		return jiraFilterTree != null && jiraFilterTree.isRecentlyOpenSelected();
 	}
 
+	/**
+	 * @param recentlyOpenIssues list of recenlty open issue beans to retrieve
+	 * @return list of recenlty open issues (exluding nulls)
+	 */
 	public List<JIRAIssue> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {
 		List<JIRAIssue> issues = new ArrayList<JIRAIssue>();
 
@@ -861,7 +865,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				JIRAIssue issue = null;
 				try {
 					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
-					issues.add(issue);
+					if (issue != null) {
+						issues.add(issue);
+					}
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().warn(e.getMessage());
 				}
