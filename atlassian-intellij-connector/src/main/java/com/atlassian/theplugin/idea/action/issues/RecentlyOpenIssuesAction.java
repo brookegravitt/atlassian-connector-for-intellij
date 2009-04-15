@@ -84,7 +84,6 @@ public class RecentlyOpenIssuesAction extends AnAction {
 					popup.showInCenterOf(e.getInputEvent().getComponent());
 				}
 			});
-
 		} else {
 			Messages.showInfoMessage(project, "No recently open issues found.", PluginUtil.PRODUCT_NAME);
 		}
@@ -94,15 +93,20 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		private IssuesToolWindowPanel issuesWindow;
 		private static final int LENGHT = 40;
 
-		public IssueListPopupStep(final String title, final List<JIRAIssue> reviews,
+		public IssueListPopupStep(final String title, final List<JIRAIssue> issues,
 				final IssuesToolWindowPanel issuesWindow) {
-			super(title, reviews, IconLoader.getIcon("/icons/jira-blue-16.png"));
+			super(title, issues, IconLoader.getIcon("/icons/jira-blue-16.png"));
 			this.issuesWindow = issuesWindow;
 		}
 
 		@NotNull
 		@Override
 		public String getTextFor(final JIRAIssue value) {
+
+			if (value == null) {
+				return "null";
+			}
+
 			StringBuilder text = new StringBuilder();
 
 			text.append(value.getKey()).append(": ");
