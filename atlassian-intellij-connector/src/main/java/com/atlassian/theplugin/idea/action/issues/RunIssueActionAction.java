@@ -15,7 +15,6 @@ import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -46,26 +45,17 @@ public class RunIssueActionAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		runIssueActionOrLaunchBrowser(IdeaHelper.getCurrentProject(event));
+		runIssueAction(IdeaHelper.getCurrentProject(event));
 	}
 
-	public void runIssueActionOrLaunchBrowser(Project project) {
-		ProgressManager.getInstance().run(new IssueActionOrLaunchBrowserRunnable(project));
+	public void runIssueAction(Project project) {
+		ProgressManager.getInstance().run(new IssueActionRunnable(project));
 	}
 
-	public void launchBrowser() {
-		JiraIssueAdapter.get(issue).clearCachedActions();
-		BrowserUtil.launchBrowser(issue.getServerUrl()
-				+ "/secure/WorkflowUIDispatcher.jspa?id="
-				+ issue.getId()
-				+ "&"
-				+ action.getQueryStringFragment());
-	}
-
-	private class IssueActionOrLaunchBrowserRunnable extends Task.Modal {
+	private class IssueActionRunnable extends Task.Modal {
 		private Project project;
 
-		IssueActionOrLaunchBrowserRunnable(Project project) {
+		IssueActionRunnable(Project project) {
 			super(project, "Running Issue Action", true);
 			this.project = project;
 		}
@@ -120,7 +110,8 @@ public class RunIssueActionAction extends AnAction {
 						showDetailedInfo(project, e);
 					}
 				} else {
-					EventQueue.invokeLater(new LocalDisplayActionDialog(project, detailedIssue, preFilleddfields, server));
+					EventQueue.invokeLater(
+							new LocalDisplayActionDialogRunnable(project, detailedIssue, preFilleddfields, server));
 				}
 			}
 		}
@@ -165,13 +156,13 @@ public class RunIssueActionAction extends AnAction {
 		showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 	}
 
-	private class LocalDisplayActionDialog implements Runnable {
+	private class LocalDisplayActionDialogRunnable implements Runnable {
 		private Project project;
 		private JIRAIssue detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
 		private JiraServerCfg server;
 
-		public LocalDisplayActionDialog(final Project project,
+		public LocalDisplayActionDialogRunnable(final Project project,
 				final JIRAIssue detailedIssue, final List<JIRAActionField> preFilleddfields, final JiraServerCfg server) {
 			this.project = project;
 			this.detailedIssue = detailedIssue;
