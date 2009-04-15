@@ -23,15 +23,54 @@ import org.jdom.Document;
 import org.jdom.input.SAXBuilder;
 
 public class JIRAIssueBeanTest extends TestCase {
-	public void testFromXml() throws Exception {
-		Document doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/api/single-issue.xml"));
+	private JIRAIssueBean issue;
+	private Document doc;
+
+	protected void setUp() throws Exception {
+		doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/api/single-issue.xml"));
 		JiraServerCfg server = new JiraServerCfg("name", new ServerId());
 		server.setUrl("http://jira.com");
-		JIRAIssueBean issue = new JIRAIssueBean(server, doc.getRootElement());
+		issue = new JIRAIssueBean(server, doc.getRootElement());
+	}
+
+	public void testFromXml() throws Exception {
 		assertEquals("NullPointerException on wrong URL to Bamboo server", issue.getSummary());
 		assertEquals("PL-94", issue.getKey());
 		assertEquals("http://jira.com", issue.getServerUrl());
 		assertEquals("http://jira.com/browse/PL", issue.getProjectUrl());
 		assertEquals("http://jira.com/browse/PL-94", issue.getIssueUrl());
+	}
+
+	public void testEquals() {
+		JIRAIssueBean modyfiedIssue = new JIRAIssueBean(issue);
+		assertEquals(issue, modyfiedIssue);
+
+		modyfiedIssue.setSummary(issue.getSummary() + "modyfied");
+		assertEquals(issue, modyfiedIssue);
+
+		modyfiedIssue.setDescription(issue.getDescription() + "modyfied");
+		assertEquals(issue, modyfiedIssue);
+
+		modyfiedIssue.setAssigneeId("jjaroczynski");
+		assertEquals(issue, modyfiedIssue);
+
+		modyfiedIssue.setReporterId("jjaroczynski");
+		assertEquals(issue, modyfiedIssue);
+	}
+
+	public void testNotEquals() {
+		JIRAIssueBean modyfiedIssue;
+
+		modyfiedIssue = new JIRAIssueBean(issue);
+		assertEquals(issue, modyfiedIssue);
+		modyfiedIssue.setKey(issue.getKey() + "modyfied");
+		assertFalse(issue.equals(modyfiedIssue));
+
+		modyfiedIssue = new JIRAIssueBean(issue.getServer(), doc.getRootElement());
+		assertEquals(issue, modyfiedIssue);
+		modyfiedIssue = new JIRAIssueBean(new JiraServerCfg(issue.getServer().getName() + "modyfied", new ServerId()),
+				doc.getRootElement());
+		assertFalse(issue.equals(modyfiedIssue));
+
 	}
 }
