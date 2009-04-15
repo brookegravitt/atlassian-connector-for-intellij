@@ -414,7 +414,9 @@ public class JIRAIssueBean implements JIRAIssue {
 		if (server != null ? !server.equals(that.server) : that.server != null) {
 			return false;
 		}
-		return !(summary != null ? !summary.equals(that.summary) : that.summary != null);
+
+		return true;
+//		return !(summary != null ? !summary.equals(that.summary) : that.summary != null);
 
 	}
 
@@ -424,7 +426,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		int result;
 		result = (server != null ? server.hashCode() : 0);
 		result = ONE_EFF * result + (key != null ? key.hashCode() : 0);
-		result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
+//		result = ONE_EFF * result + (summary != null ? summary.hashCode() : 0);
 		return result;
 	}
 
