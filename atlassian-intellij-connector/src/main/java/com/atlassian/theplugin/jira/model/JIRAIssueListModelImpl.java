@@ -31,14 +31,10 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	private JIRAIssue selectedIssue;
 	private boolean modelFrozen = false;
 
-	private JIRAIssueListModelImpl() {
+	public JIRAIssueListModelImpl() {
 		super(null);
 		issues = new HashSet<JIRAIssue>();
 		issuesCache = new HashSet<JIRAIssue>();
-	}
-
-	public static JIRAIssueListModel createInstance() {
-		return new JIRAIssueListModelImpl();
 	}
 
 	public void clear() {
@@ -141,21 +137,21 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		return null;
 	}
 
-	public void fireModelChanged() {
-		modelChanged(this);
-	}
+//	public void fireModelChanged() {
+//		modelChanged(this);
+//	}
 
-	public void fireIssuesLoaded(int numberOfLoadedIssues) {
-		issuesLoaded(this, numberOfLoadedIssues);
-	}
+//	public void fireIssuesLoaded(int numberOfLoadedIssues) {
+//		issuesLoaded(this, numberOfLoadedIssues);
+//	}
 
-	public void addModelListener(JIRAIssueListModelListener listener) {
-		addListener(listener);
-	}
+//	public void addModelListener(JIRAIssueListModelListener listener) {
+//		addListener(listener);
+//	}
 
-	public void removeModelListener(JIRAIssueListModelListener listener) {
-		removeListener(listener);
-	}
+//	public void removeModelListener(JIRAIssueListModelListener listener) {
+//		removeListener(listener);
+//	}
 
 	public void clearCache() {
 		issuesCache.clear();
