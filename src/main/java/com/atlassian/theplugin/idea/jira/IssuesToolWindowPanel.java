@@ -713,9 +713,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					getStatusBarPane().setMessage("Loading issues...", false);
-					jiraIssueListModelBuilder.addIssuesToModel(recentlyOpenIssues,
-							projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project)),
-							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
+					jiraIssueListModelBuilder.addIssuesToModel(getIssues(recentlyOpenIssues), reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
