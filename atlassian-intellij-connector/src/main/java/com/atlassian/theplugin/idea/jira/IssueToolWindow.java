@@ -18,7 +18,6 @@ import com.atlassian.theplugin.jira.JIRAUserNameCache;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
@@ -65,7 +64,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 
-	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilderImpl jiraIssueListModelBuilder) {
+	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;

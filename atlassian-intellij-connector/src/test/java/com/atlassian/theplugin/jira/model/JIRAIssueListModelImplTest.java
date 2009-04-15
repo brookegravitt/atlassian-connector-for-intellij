@@ -35,13 +35,13 @@ public class JIRAIssueListModelImplTest extends TestCase {
     }
 
     public void testAddOne() {
-	    JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+	    JIRAIssueListModel model = new JIRAIssueListModelImpl();
 	    model.addIssue(new JIRAIssueBean());
 	    assertEquals(1, model.getIssues().size());
     }
 
 	public void testAddMany() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		List<JIRAIssue> list = new ArrayList<JIRAIssue>();
 		JIRAIssueBean proto = new JIRAIssueBean();
 		proto.setKey("A-1");
@@ -57,7 +57,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	}
 
 	public void testClear() {
-		JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		model.addIssue(new JIRAIssueBean());
 		assertEquals(1, model.getIssues().size());
 		model.clear();
@@ -68,7 +68,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	private	boolean listenerCalled2 = false;
 
 	public void testListeners() {
-		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelListener l = new JIRAIssueListModelListener() {
 			public void modelChanged(JIRAIssueListModel m) {
 				if (model == m) {
@@ -103,7 +103,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		final int numberOfIssues = 4;
 
 		// create and apply mock
-		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelListener l = EasyMock.createMock(JIRAIssueListModelListener.class);
 		model.addModelListener(l);
 
@@ -139,7 +139,7 @@ public class JIRAIssueListModelImplTest extends TestCase {
 		final int numberOfIssues = 4;
 
 		// create and apply mock
-		final JIRAIssueListModel model = JIRAIssueListModelImpl.createInstance();
+		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelListener listener = Mockito.mock(JIRAIssueListModelListener.class);
 		model.addModelListener(listener);
 
