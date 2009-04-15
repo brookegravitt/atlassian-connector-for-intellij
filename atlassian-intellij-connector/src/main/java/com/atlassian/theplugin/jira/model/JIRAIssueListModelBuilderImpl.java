@@ -3,9 +3,8 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -15,8 +14,6 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
@@ -119,48 +116,33 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addIssuesToModel(LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,
-			final Collection<JiraServerCfg> allEnabledJiraServers, int size, boolean reload) throws JIRAException {
+	public synchronized void addIssuesToModel(List<JIRAIssue> recentlyOpenIssues, boolean reload) throws JIRAException {
 
-		List<JIRAIssue> l = new ArrayList<JIRAIssue>();
+		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
+			if (model != null) {
+				model.clear();
+				model.fireModelChanged();
+			}
+			return;
+		}
+
+		if (reload) {
+			model.clearCache();
+		}
+
+		model.setModelFrozen(true);
+
+		startFrom = 0;
+		model.clear();
 
 		try {
-			if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
-				if (model != null) {
-					model.clear();
-					model.fireModelChanged();
-				}
-				return;
-			}
-
-			if (reload) {
-				model.clearCache();
-			}
-
-			model.setModelFrozen(true);
-
-
-			startFrom = 0;
-			model.clear();
-
-			for (IssueRecentlyOpenBean recentIssue : recentlyOpenIssues) {
-				for (JiraServerCfg server : allEnabledJiraServers) {
-					if (server.getServerId().toString().equals(recentIssue.getServerId())) {
-						JIRAIssue issue = getJIRAIssue(recentIssue);
-						l.add(issue);
-						break;
-					}
-				}
-			}
-
-			model.addIssues(l);
-
-			startFrom += l.size();
-			checkActiveIssue(l);
+			model.addIssues(recentlyOpenIssues);
+			startFrom += recentlyOpenIssues.size();
+			checkActiveIssue(recentlyOpenIssues);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
-				model.fireIssuesLoaded(l.size());
+				model.fireIssuesLoaded(recentlyOpenIssues.size());
 				model.setModelFrozen(false);
 			}
 		}

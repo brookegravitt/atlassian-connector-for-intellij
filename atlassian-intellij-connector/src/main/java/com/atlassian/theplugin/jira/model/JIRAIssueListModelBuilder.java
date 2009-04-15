@@ -6,8 +6,7 @@ import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void setModel(JIRAIssueListModel model);
@@ -20,14 +19,11 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void addIssuesToModel(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg, int size, boolean reload)
 			throws JIRAException;
 
-	void addIssuesToModel(LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,
-			final Collection<JiraServerCfg> allEnabledJiraServers, int size, boolean reload)
-			throws JIRAException;
+	void addIssuesToModel(List<JIRAIssue> recentlyOpenIssues, boolean reload) throws JIRAException;
 
 	void updateIssue(JIRAIssue issue, JiraServerCfg jiraServerCfg) throws JIRAException;
 
 	void reset();
-
 
 	JIRAIssue getJIRAIssue(IssueRecentlyOpenBean recentlyOpen) throws JIRAException;
 }
