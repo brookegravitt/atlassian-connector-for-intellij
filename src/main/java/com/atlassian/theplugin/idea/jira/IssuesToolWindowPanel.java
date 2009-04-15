@@ -859,10 +859,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 
 		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
-			boolean found = false;
-
 			if (jiraIssueListModelBuilder != null) {
-				JIRAIssue issue = null;
+				JIRAIssue issue;
 				try {
 					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
 					if (issue != null) {
