@@ -229,7 +229,6 @@ public final class ActiveIssueUtils {
 									conf.setActiveJiraIssue(null);
 								}
 							}
-							;
 						}
 					}
 				});
