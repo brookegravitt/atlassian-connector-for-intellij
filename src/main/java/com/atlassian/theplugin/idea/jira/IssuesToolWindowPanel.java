@@ -1189,13 +1189,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
 					setStatusMessage("Nothing selected", false, false);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-					if (currentIssueListModel.getIssues().size() > 0) {
-						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-					}
+					setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 				} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
-					if (currentIssueListModel.getIssues().size() > 0) {
-						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-					}
+					setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 					Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
 					for (JiraServerCfg server : projectCfgManager.getCfgManager()
 							.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
@@ -1221,9 +1217,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					issueTreeBuilder.setProjectKeysToNames(projectMap);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 					expandAllRightTreeNodes();
-					if (currentIssueListModel.getIssues().size() > 0) {
-						setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
-					}
+					setStatusMessage("Loaded " + currentIssueListModel.getIssues().size() + " issues", false, true);
 				}
 			}
 		}
