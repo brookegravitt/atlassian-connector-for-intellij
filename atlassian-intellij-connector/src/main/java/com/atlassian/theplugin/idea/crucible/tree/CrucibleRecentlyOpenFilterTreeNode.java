@@ -26,7 +26,7 @@ import javax.swing.*;
  * @author Jacek Jaroczynski
  */
 public class CrucibleRecentlyOpenFilterTreeNode extends AbstractTreeNode {
-	private static final String NAME = "Recently Open Reviews";
+	private static final String NAME = "Recently Viewed Reviews";
 	private final CrucibleReviewListModel reviewListModel;
 	private RecentlyOpenReviewsFilter recenltyOpenFilter;
 
