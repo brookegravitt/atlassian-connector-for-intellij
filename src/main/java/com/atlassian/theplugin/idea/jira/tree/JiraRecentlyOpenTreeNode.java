@@ -24,7 +24,7 @@ import javax.swing.*;
  */
 public class JiraRecentlyOpenTreeNode extends AbstractTreeNode {
 
-	private static final String NODE_NAME = "Recently Open Issues";
+	private static final String NODE_NAME = "Recently Viewed Issues";
 
 	public JiraRecentlyOpenTreeNode() {
 		super(NODE_NAME, null, null);

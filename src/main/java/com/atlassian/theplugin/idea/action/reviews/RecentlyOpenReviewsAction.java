@@ -66,7 +66,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 		if (recentlyOpenReviews.size() > 0) {
 			// prepare list of recentlyOpenReviews from the config list
 
-			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Open Reviews", true) {
+			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Viewed Reviews", true) {
 				private List<ReviewAdapter> reviews;
 
 				public void run(final ProgressIndicator indicator) {
@@ -76,13 +76,13 @@ public class RecentlyOpenReviewsAction extends AnAction {
 				public void onSuccess() {
 					ListPopup popup =
 							JBPopupFactory.getInstance().createListPopup(new QuickSearchReviewAction.ReviewListPopupStep(
-									"Recently Open Reviews", reviews, reviewsWindow));
+									"Recently Viewed Reviews", reviews, reviewsWindow));
 					popup.showCenteredInCurrentWindow(project);
 				}
 			});
 
 		} else {
-			Messages.showInfoMessage(project, "No recently open reviews found.", PluginUtil.PRODUCT_NAME);
+			Messages.showInfoMessage(project, "No recently viewed reviews found.", PluginUtil.PRODUCT_NAME);
 		}
 	}
 }
