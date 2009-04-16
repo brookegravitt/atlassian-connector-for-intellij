@@ -24,11 +24,11 @@ import java.awt.*;
 /**
  * @author Jacek Jaroczynski
  */
-public class AbstractFieldTextField extends JTextField implements ActionFieldEditor {
+public class FieldTextField extends JTextField implements ActionFieldEditor {
 
 	private JIRAActionField field;
 
-	public AbstractFieldTextField(final String text, final JIRAActionField field) {
+	public FieldTextField(final String text, final JIRAActionField field) {
 		super(text);
 		this.field = field;
 	}

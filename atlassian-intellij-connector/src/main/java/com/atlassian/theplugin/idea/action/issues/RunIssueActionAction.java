@@ -96,7 +96,6 @@ public class RunIssueActionAction extends AnAction {
 
 				showInfo("Running action [" + action.getName() + "] on issue [" + issue.getKey() + "]...", false);
 
-
 				showInfo("Retrieving values for action fields", false);
 				final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailedIssue, fields);
 
