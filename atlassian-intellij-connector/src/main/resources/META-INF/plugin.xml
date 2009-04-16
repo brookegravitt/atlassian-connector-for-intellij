@@ -501,25 +501,25 @@
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
-				text="Activate Issue"
+				text="Start Work"
 				icon="/icons/pin_assignandstart.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
-				text="Activate Issue"
+				text="Start Work"
 				icon="/icons/pin_assignandstart.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
-				text="Deactivate Issue"
+				text="Stop Work"
 				icon="/actions/pause.png">
 		</action>
 
 
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
-				text="Deactivate Issue"
+				text="Stop Work"
 				icon="/actions/pause.png">
 		</action>
 
