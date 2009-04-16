@@ -510,9 +510,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void addCommentToSelectedIssue() {
+		// todo move getSelectedIssue from the model to the tree
 		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
 		if (issue != null) {
-			addCommentToIssue(issue.getKey(), getSelectedServer());
+			addCommentToIssue(issue.getKey(), issue.getServer());
 		}
 	}
 
