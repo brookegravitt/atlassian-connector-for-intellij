@@ -265,7 +265,7 @@ public final class ActiveIssueUtils {
 			}
 		} catch (JIRAException e) {
 			if (panel != null) {
-				panel.setStatusMessage("Error activating issue: " + e.getMessage(), true);
+				panel.setStatusMessage("Error starting work on issue: " + e.getMessage(), true);
 			}
 		}
 		return isOk;
@@ -296,7 +296,7 @@ public final class ActiveIssueUtils {
 					}
 				} catch (JIRAException e) {
 					if (panel != null) {
-						panel.setStatusMessage("Error deactivating issue: " + e.getMessage(), true);
+						panel.setStatusMessage("Error stopping work on issue: " + e.getMessage(), true);
 					}
 				}
 			}

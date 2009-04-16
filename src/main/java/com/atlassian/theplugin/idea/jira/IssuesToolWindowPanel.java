@@ -1084,7 +1084,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
 				JiraServerCfg jiraServer, boolean deactivateIssue) {
 			super(IssuesToolWindowPanel.this.getProject(),
-					deactivateIssue ? "Deactivating Issue" : "Logging Work", false);
+					deactivateIssue ? "Stopping Work" : "Logging Work", false);
 
 			this.issue = issue;
 			this.dialog = dialog;
