@@ -6,11 +6,12 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 
-public class QuickSearchAction extends JIRAAbstractAction {
+public class QuickSearchAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
@@ -41,8 +42,8 @@ public class QuickSearchAction extends JIRAAbstractAction {
 		}
 	}
 
-	@Override
-	public void onUpdate(AnActionEvent event) {
+    @Override
+    public void update(AnActionEvent event) {
 		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 
 		boolean enabled = panel != null && panel.getSelectedServer() != null;
