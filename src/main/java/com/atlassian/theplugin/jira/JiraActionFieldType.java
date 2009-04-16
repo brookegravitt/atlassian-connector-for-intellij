@@ -24,7 +24,7 @@ public final class JiraActionFieldType {
 		DESCRIPTION,
 		ENVIRONMENT,
 		CALENDAR,
-		TIME_SPENT,
+		TIMETRACKING,
 		VERSIONS,
 		FIX_VERSIONS,
 		RESOLUTION,
@@ -75,7 +75,7 @@ public final class JiraActionFieldType {
 		typeMap.put("reporter", new WidgetTypeAndFieldFiller(WidgetType.REPORTER, ++i, new ReporterFiller()));
 		typeMap.put("environment", new WidgetTypeAndFieldFiller(WidgetType.ENVIRONMENT, ++i, new EnvironmentFiller()));
 		typeMap.put("description", new WidgetTypeAndFieldFiller(WidgetType.DESCRIPTION, ++i, new DescriptionFiller()));
-		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIME_SPENT, ++i, new TimeTrackingFiller()));
+		typeMap.put("timetracking", new WidgetTypeAndFieldFiller(WidgetType.TIMETRACKING, ++i, new TimeTrackingFiller()));
 		typeMap.put("security", new WidgetTypeAndFieldFiller(WidgetType.SECURITY, ++i, new SecurityFiller()));
 	}
 
