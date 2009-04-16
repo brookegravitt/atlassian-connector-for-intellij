@@ -487,6 +487,14 @@
 				description="Open FishEye URL in Editor"
 				icon="/icons/fisheye-16.png">
 		</action>
+
+        <action id="ThePlugin.JiraIssues.QuickSearch"
+                class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
+                text="Search JIRA"
+                icon="/icons/find-jira.png">
+            <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
+        </action>
+
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"
 				text=""
@@ -544,7 +552,8 @@
 
 
 		<group id="ThePlugin.GoToMenu">
-			<!--<separator/>-->
+			<separator/>
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
@@ -782,12 +791,6 @@
 				icon="/icons/add_jira.png">
 			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
 		</action>
-		<action id="ThePlugin.JiraIssues.QuickSearch"
-				class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
-				text="Search JIRA"
-				icon="/actions/find.png">
-			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
-		</action>
 
 		<action id="ThePlugin.JiraIssues.CopyIssueKey"
 				class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeyAction"
@@ -876,7 +879,7 @@
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
-			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<!--<reference id="ThePlugin.JiraIssues.QuickSearch"/>-->
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
