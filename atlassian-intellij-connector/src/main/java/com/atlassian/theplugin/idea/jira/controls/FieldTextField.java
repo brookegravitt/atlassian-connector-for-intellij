@@ -30,6 +30,7 @@ public class FieldTextField extends JTextField implements ActionFieldEditor {
 
 	public FieldTextField(final String text, final JIRAActionField field) {
 		super(text);
+        setCaretPosition(0);
 		this.field = field;
 	}
 
