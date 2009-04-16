@@ -86,7 +86,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
 				case SUMMARY:
-					editor = new FieldSummary(issue, field);
+					editor = new FieldTextField(issue.getSummary(), field);
 					row = ", p, 3dlu";
 					break;
 				case DESCRIPTION:
@@ -130,7 +130,10 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					editor = new FieldTextArea(field.getValues().get(0), field);
 					row = ", fill:pref:grow, 3dlu";
 					break;
-				case TIME_SPENT:
+				case TIMETRACKING:
+					editor = new FieldTextField("", field);
+					row = ", p, 3dlu";
+					break;
 				case CALENDAR:
 				case UNSUPPORTED:
 				default:

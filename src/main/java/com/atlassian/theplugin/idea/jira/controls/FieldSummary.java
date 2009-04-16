@@ -21,7 +21,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 /**
  * @author Jacek Jaroczynski
  */
-public class FieldSummary extends AbstractFieldTextField {
+public class FieldSummary extends FieldTextField {
 
 	public FieldSummary(final JIRAIssue issue, final JIRAActionField field) {
 		super(issue.getSummary(), field);
