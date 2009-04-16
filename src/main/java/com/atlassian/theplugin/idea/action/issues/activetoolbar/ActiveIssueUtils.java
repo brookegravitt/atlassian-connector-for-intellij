@@ -211,7 +211,8 @@ public final class ActiveIssueUtils {
 		if (issue != null && activeIssue != null) {
 
 			if (issue.getServer() != null && (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
-					|| !isInProgress(issue))) {
+					|| !isInProgress(issue)) && issue.getKey().equals(activeIssue.getIssueKey()) &&
+					issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
 				SwingUtilities.invokeLater(new Runnable() {
 
 					public void run() {
