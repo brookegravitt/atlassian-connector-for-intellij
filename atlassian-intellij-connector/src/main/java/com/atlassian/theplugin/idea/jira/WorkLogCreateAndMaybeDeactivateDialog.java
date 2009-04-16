@@ -385,7 +385,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 		$$$setupUI$$$();
 		if (deactivateActiveIssue) {
-			setTitle("Deactivate Issue " + issue.getKey());
+			setTitle("Stop Work on Issue " + issue.getKey());
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -400,7 +400,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			});
 
 
-			getOKAction().putValue(Action.NAME, "Deactivate Issue");
+			getOKAction().putValue(Action.NAME, "Stop Work");
 		} else {
 			setTitle("Add Worklog for " + issue.getKey());
 			getOKAction().putValue(Action.NAME, "Add Worklog");
