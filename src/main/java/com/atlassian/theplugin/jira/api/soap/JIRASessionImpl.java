@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.axis.AxisProperties;
 
@@ -212,10 +213,20 @@ public class JIRASessionImpl implements JIRASession {
 	}
 
 	public JIRAIssue getIssueDetails(JIRAIssue issue) throws RemoteApiException {
+		RemoteSecurityLevel securityLevel = null;
+
+		try {
+			securityLevel = service.getSecurityLevel(token, issue.getKey());
+		} catch (RemoteException e) {
+			PluginUtil.getLogger().warn(
+					"Soap method 'getSecurityLevel' thrown exception. "
+							+ "Probably there is no 'SecurityLevel' on JIRA (non enterprise version of JIRA).",
+					e);
+		}
+
 		try {
 			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
 
-			RemoteSecurityLevel securityLevel = service.getSecurityLevel(token, issue.getKey());
 
 			if (rIssue == null) {
 				throw new RemoteApiException("Unable to retrieve issue details");
