@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @author Jacek Jaroczynski
  */
 public class FieldUser extends JPanel implements ActionFieldEditor {
-	private AbstractFieldTextField textField;
+	private FieldTextField textField;
 	private static final float WARNING_FONT_SIZE = 10.0f;
 	private static final int BOX_WIDTH = 5;
 	private static final String UNASSIGNED_NAME = "Unassigned";
@@ -42,7 +42,7 @@ public class FieldUser extends JPanel implements ActionFieldEditor {
 			userId = UNASSIGNED_NAME;
 		}
 
-		textField = new AbstractFieldTextField(userId, field);
+		textField = new FieldTextField(userId, field);
 		add(textField);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
 		JLabel warningLabel = new JLabel("Warning! This field is not validated prior to sending to JIRA");
