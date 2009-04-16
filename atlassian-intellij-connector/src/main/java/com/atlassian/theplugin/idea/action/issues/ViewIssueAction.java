@@ -28,6 +28,8 @@ public class ViewIssueAction extends JIRAAbstractAction {
 			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 			boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 			event.getPresentation().setEnabled(e);
+		} else {
+			event.getPresentation().setEnabled(false);
 		}
 	}
 }
