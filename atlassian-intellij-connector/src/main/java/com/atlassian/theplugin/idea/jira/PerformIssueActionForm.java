@@ -16,15 +16,14 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.jira.controls.*;
+import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.jira.JiraActionFieldType;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang.StringUtils;
@@ -65,7 +64,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 		setTitle(name);
 		root.setMinimumSize(new Dimension(600, 300));
-        root.setPreferredSize(new Dimension(600, 300));
+		root.setPreferredSize(new Dimension(600, 300));
 //		getOKAction().putValue(Action.NAME, name);
 	}
 
@@ -133,7 +132,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					row = ", fill:pref:grow, 3dlu";
 					break;
 				case TIMETRACKING:
-					editor = new FieldTextField("", field);
+					editor = new FieldTimeTracking(field.getValues().get(0), issue, field);
 					row = ", p, 3dlu";
 					break;
 				case CALENDAR:
@@ -182,11 +181,11 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 			contentPanel.add(new JLabel(warning), cc.xyw(2, y, 3, CellConstraints.LEFT, CellConstraints.CENTER));
 		}
 
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                contentPanel.validate();
-            }
-        });
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				contentPanel.validate();
+			}
+		});
 	}
 
 	public List<JIRAActionField> getFields() {
@@ -234,12 +233,12 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 	private void setupUI() {
 		root = new JPanel();
-        root.setOpaque(false);
+		root.setOpaque(false);
 		root.setLayout(new BorderLayout(0, 0));
 		final JScrollPane scroll = new JScrollPane();
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setOpaque(false);
-        scroll.getViewport().setOpaque(false);
+		scroll.setOpaque(false);
+		scroll.getViewport().setOpaque(false);
 		root.add(scroll, BorderLayout.CENTER);
 		contentPanel = new ScrollablePanel();
 		scroll.setViewportView(contentPanel);
