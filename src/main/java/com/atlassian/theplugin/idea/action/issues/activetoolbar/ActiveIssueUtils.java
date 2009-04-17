@@ -201,40 +201,45 @@ public final class ActiveIssueUtils {
 					return true;
 				}
 			}
+
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	public static void checkIssueState(final Project project, final JIRAIssue issue) {
 		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
 		if (issue != null && activeIssue != null) {
 
-			if (issue.getServer() != null && (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
-					|| !isInProgress(issue)) && issue.getKey().equals(activeIssue.getIssueKey())
-                    && issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
-				SwingUtilities.invokeLater(new Runnable() {
+			if (issue.getServer() != null && issue.getKey().equals(activeIssue.getIssueKey())
+					&& issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
+				if (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
+						|| !isInProgress(issue)) {
+					
+					SwingUtilities.invokeLater(new Runnable() {
 
-					public void run() {
-						int isOk = Messages.showYesNoDialog(project,
-								"Issue " + issue.getKey() + " has changed status (assigned to:" + issue.getAssignee()
-										+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
-								"Issue " + issue.getKey(),
-								Messages.getQuestionIcon());
+						public void run() {
+							int isOk = Messages.showYesNoDialog(project,
+									"Issue " + issue.getKey() + " has changed status (assigned to:" + issue.getAssignee()
+											+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
+									"Issue " + issue.getKey(),
+									Messages.getQuestionIcon());
 
-						if (isOk == DialogWrapper.OK_EXIT_CODE) {
-							if (deactivate(project)) {
-								final JiraWorkspaceConfiguration conf = IdeaHelper
-										.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-								if (conf != null) {
-									conf.setActiveJiraIssue(null);
+							if (isOk == DialogWrapper.OK_EXIT_CODE) {
+								if (deactivate(project)) {
+									final JiraWorkspaceConfiguration conf = IdeaHelper
+											.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+									if (conf != null) {
+										conf.setActiveJiraIssue(null);
+									}
 								}
 							}
 						}
-					}
-				});
+					});
 
 
+				}
 			}
 		}
 	}
