@@ -41,8 +41,6 @@ import javax.management.timer.Timer;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -229,15 +227,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return contentPane;
 	}
 
-	private class WdhmInputListener implements DocumentListener {
+	private class WdhmInputListener extends JiraTimeWdhmTextFieldListener {
 
-		private static final String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
-
-		private JTextField field;
 		private boolean matchFound;
 
 		public WdhmInputListener(JTextField field) {
-			this.field = field;
+			super(field);
 		}
 
 		private class Period {
@@ -273,40 +268,25 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		private Period hours = new Period("h");
 		private Period minutes = new Period("m");
 
-		public void insertUpdate(DocumentEvent e) {
-			stateChanged();
-		}
 
-		public void removeUpdate(DocumentEvent e) {
-			stateChanged();
-		}
-
-		public void changedUpdate(DocumentEvent e) {
-			stateChanged();
-		}
-
-		public void stateChanged() {
-			if (!field.isEnabled()) {
-				return;
+		public boolean stateChanged() {
+			if (!getField().isEnabled()) {
+				return false;
 			}
 
-			String text = field.getText();
+			matchFound = super.stateChanged();
 
-			Pattern p = Pattern.compile(REGEX);
-			Matcher m = p.matcher(text);
-			Color c;
-
-			matchFound = m.matches() && text.length() > 0;
-			c = matchFound ? Color.BLACK : Color.RED;
-			field.setForeground(c);
 			updateOKAction();
 
 			if (matchFound) {
+				String text = getField().getText();
 				weeks.findAndSet(text);
 				days.findAndSet(text);
 				hours.findAndSet(text);
 				minutes.findAndSet(text);
 			}
+
+			return matchFound;
 		}
 
 		public long getWeeks() {
