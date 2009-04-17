@@ -1105,7 +1105,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						String newRemainingEstimate = dialog.getUpdateRemainingManually()
 								? dialog.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
-								cal, dialog.getComment(),
+								cal, null,
 								!dialog.getLeaveRemainingUnchanged(), newRemainingEstimate);
 						JIRAIssueProgressTimestampCache.getInstance().setTimestamp(jiraServer, issue);
 						setStatusMessage("Logged work for issue " + issue.getKey());
