@@ -10,6 +10,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -270,9 +271,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			for (JIRAIssue i : params.model.getIssues()) {
 				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(params.server.getUrl())) {
 					params.issue = i;
+					ActiveIssueUtils.checkIssueState(project, i);
 					break;
 				}
 			}
+
+
 
 			if (params.issue != null && params.server != null) {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
