@@ -157,7 +157,9 @@ public class JIRASessionImpl implements JIRASession {
 		RemoteWorklog workLog = new RemoteWorklog();
 		workLog.setStartDate(startDate);
 		workLog.setTimeSpent(timeSpent);
-		workLog.setComment(comment);
+        if (comment != null) {
+		    workLog.setComment(comment);
+        }
 		try {
 			if (updateEstimate) {
 				if (newEstimate != null) {
