@@ -22,4 +22,8 @@ public interface FreezeListener {
 	void freeze();
 
 	void unfreeze();
+
+	void fieldSyntaxError(final String fieldName);
+
+	void fieldSyntaxOk(final String fieldName);
 }

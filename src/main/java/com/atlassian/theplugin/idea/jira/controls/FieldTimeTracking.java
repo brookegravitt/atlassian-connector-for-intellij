@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.idea.jira.JiraTimeWdhmTextFieldListener;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
@@ -31,9 +32,14 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 
 	private FieldTextField textField;
 	private JIRAIssue issue;
+	private FreezeListener freezeListener;
 
-	public FieldTimeTracking(final String text, final JIRAIssue issue, final JIRAActionField field) {
+	public FieldTimeTracking(final String text, final JIRAIssue issue, final JIRAActionField field,
+			final FreezeListener freezeListener) {
 		super();
+
+		this.issue = issue;
+		this.freezeListener = freezeListener;
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -41,11 +47,11 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		add(textField);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
 		JLabel warningLabel = new JLabel(
-				"The format of this is ' *w *d *h *m ' (weeks, days, hours and minutes - where * can be any number)");
+				"The format of this is ' *w *d *h *m ' (weeks, days, hours and minutes - * can be any number)");
 		warningLabel.setFont(warningLabel.getFont().deriveFont(WARNING_FONT_SIZE));
 		add(warningLabel);
 
-		this.issue = issue;
+		textField.getDocument().addDocumentListener(new LocalJiraTimeWdhmTextFieldListener(textField));
 	}
 
 	public JIRAActionField getEditedFieldValue() {
@@ -62,5 +68,24 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		}
 
 		return "Remaining Estimate";
+	}
+
+	private class LocalJiraTimeWdhmTextFieldListener extends JiraTimeWdhmTextFieldListener {
+		public LocalJiraTimeWdhmTextFieldListener(final JTextField textField) {
+			super(textField);
+		}
+
+		public boolean stateChanged() {
+			boolean isIncorrect = super.stateChanged();
+
+			if (isIncorrect) {
+				// disable OK button
+				freezeListener.fieldSyntaxError(getFieldName());
+			} else {
+				// enable OK buttom
+				freezeListener.fieldSyntaxOk(getFieldName());
+			}
+			return isIncorrect;
+		}
 	}
 }

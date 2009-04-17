@@ -172,7 +172,8 @@ public class RunIssueActionAction extends AnAction {
 		public void run() {
 			// show action fields dialog
 			final PerformIssueActionForm dialog =
-					new PerformIssueActionForm(project, detailedIssue, preFilleddfields, action.getName());
+					new PerformIssueActionForm(project, detailedIssue, preFilleddfields,
+							action.getName() + " " + detailedIssue.getKey());
 			dialog.show();
 			if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 				// perform workflow action in the background thread
