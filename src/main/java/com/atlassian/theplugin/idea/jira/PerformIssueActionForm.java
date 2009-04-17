@@ -138,7 +138,10 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					editor = new FieldTimeTracking(field.getValues().get(0), issue, field, this);
 					row = ", p, 3dlu";
 					break;
-				case CALENDAR:
+				case DUE_DATE:
+					editor = new FieldDueDate(field.getValues().get(0), field);
+					row = ", p, 3dlu";
+					break;
 				case UNSUPPORTED:
 				default:
 					unsupportedFields.add(field.getName());
