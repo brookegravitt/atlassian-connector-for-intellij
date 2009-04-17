@@ -23,7 +23,7 @@ public final class JiraActionFieldType {
 		SUMMARY,
 		DESCRIPTION,
 		ENVIRONMENT,
-		CALENDAR,
+		DUE_DATE,
 		TIMETRACKING,
 		VERSIONS,
 		FIX_VERSIONS,
@@ -67,7 +67,7 @@ public final class JiraActionFieldType {
 		typeMap.put("resolution", new WidgetTypeAndFieldFiller(WidgetType.RESOLUTION, ++i, new ResolutionFiller()));
 		typeMap.put("issuetype", new WidgetTypeAndFieldFiller(WidgetType.ISSUE_TYPE, ++i, new IssueTypeFiller()));
 		typeMap.put("priority", new WidgetTypeAndFieldFiller(WidgetType.PRIORITY, ++i, new PriorityFiller()));
-		typeMap.put("duedate", new WidgetTypeAndFieldFiller(WidgetType.CALENDAR, ++i, new DueDateFiller()));
+		typeMap.put("duedate", new WidgetTypeAndFieldFiller(WidgetType.DUE_DATE, ++i, new DueDateFiller()));
 		typeMap.put("components", new WidgetTypeAndFieldFiller(WidgetType.COMPONENTS, ++i, new ComponentsFiller()));
 		typeMap.put("versions", new WidgetTypeAndFieldFiller(WidgetType.VERSIONS, ++i, new AffectsVersionsFiller()));
 		typeMap.put("fixVersions", new WidgetTypeAndFieldFiller(WidgetType.FIX_VERSIONS, ++i, new FixVersionsFiller()));
