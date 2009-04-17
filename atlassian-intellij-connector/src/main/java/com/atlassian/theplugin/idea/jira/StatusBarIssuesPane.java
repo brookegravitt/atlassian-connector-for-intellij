@@ -16,6 +16,8 @@ public class StatusBarIssuesPane extends StatusBarPane {
 		super(initialText);
 
 		getMoreIssues = new HyperlinkLabel("Get More Issues...");
+        getMoreIssues.setOpaque(false);
+
 		enableGetMoreIssues(false);
 
 		addComponent(getMoreIssues);
