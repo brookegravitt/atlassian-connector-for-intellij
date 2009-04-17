@@ -22,9 +22,13 @@ public class TimeTrackingFiller implements FieldFiller {
 
 	private String translate(String displayValue) {
 		if (displayValue != null) {
+			displayValue = displayValue.replaceAll(" weeks", "w");
 			displayValue = displayValue.replaceAll(" week", "w");
+			displayValue = displayValue.replaceAll(" days", "d");
 			displayValue = displayValue.replaceAll(" day", "d");
+			displayValue = displayValue.replaceAll(" hours", "h");
 			displayValue = displayValue.replaceAll(" hour", "h");
+			displayValue = displayValue.replaceAll(" minutes", "m");
 			displayValue = displayValue.replaceAll(" minute", "m");
 			displayValue = displayValue.replaceAll(",", "");
 		}
