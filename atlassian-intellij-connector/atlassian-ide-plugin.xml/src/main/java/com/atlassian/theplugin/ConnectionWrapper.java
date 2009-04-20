@@ -25,7 +25,7 @@ public class ConnectionWrapper extends Thread {
 
 	private Connector connector;
 	private final ServerCfg serverCfg;
-	private Exception exception;  sasasasa
+	private Exception exception;  sasasasafgfdfgdfg
 
 	public Exception getException() {
 		return exception;aaaaaa fdfdfddggghh
