@@ -22,6 +22,7 @@ import net.sf.nachocalendar.model.DateSelectionModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -32,17 +33,39 @@ public class DatePicker extends DialogWrapper {
 	private JPanel panel = new JPanel();
 
 	private CalendarPanel calendar;
+	private JPanel bottomPanel = new JPanel();
 
 	public DatePicker(final String title, final Date dateToSelect) {
 		super(false);
 		init();
 
-		calendar = CalendarFactory.createCalendarPanel(1);
-		calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
-		calendar.setDate(dateToSelect);
-
 		setTitle(title);
 
+		createCalendar(dateToSelect);
+
+		createPanel();
+	}
+
+	private void createCalendar(final Date dateToSelect) {
+		calendar = CalendarFactory.createCalendarPanel(1);
+		calendar.setSelectionMode(DateSelectionModel.SINGLE_SELECTION);
+
+		Calendar nowcal = Calendar.getInstance();
+
+		// calculate time to midnight
+		nowcal.setTime(dateToSelect);
+		nowcal.set(Calendar.HOUR_OF_DAY, 0);
+		nowcal.set(Calendar.MINUTE, 0);
+		nowcal.set(Calendar.SECOND, 0);
+		nowcal.set(Calendar.MILLISECOND, 0);
+
+		Date nowZeroZero = nowcal.getTime();
+
+		calendar.setDate(nowZeroZero);
+		calendar.setValue(nowZeroZero);
+	}
+
+	private void createPanel() {
 		panel.setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
 
@@ -56,7 +79,8 @@ public class DatePicker extends DialogWrapper {
 		gbc.gridy = 1;
 		panel.add(calendar, gbc);
 
-		show();
+		gbc.gridy = 2;
+		panel.add(bottomPanel, gbc);
 	}
 
 	@Override
@@ -64,10 +88,16 @@ public class DatePicker extends DialogWrapper {
 		return panel;
 	}
 
-	protected JComponent getRootComponent() {
-		return panel;
+	/**
+	 * @return JPanel which can hold additional controls (for inheritance purposes)
+	 */
+	protected JPanel getPanelComponent() {
+		return bottomPanel;
 	}
 
+	/**
+	 * @return Date selected in the calendar control
+	 */
 	public Date getSelectedDate() {
 		return (Date) calendar.getValue();
 	}

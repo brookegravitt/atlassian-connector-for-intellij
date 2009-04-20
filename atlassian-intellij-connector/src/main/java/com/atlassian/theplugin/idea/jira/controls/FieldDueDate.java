@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.idea.jira.ColoredTextFieldListener;
 import com.atlassian.theplugin.idea.jira.DatePicker;
 import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -37,7 +38,7 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 	private static final int BOX_WIDTH = 5;
 	private static final String DUE_DATE_FORMAT = "dd/MMM/yy";
 
-	public FieldDueDate(final String date, final JIRAActionField field) {
+	public FieldDueDate(final String date, final JIRAActionField field, final FreezeListener freezeListener) {
 
 		super();
 
@@ -49,11 +50,14 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 		final JButton button = new JButton("Select a Date");
 		add(button);
 
+		textField.getDocument().addDocumentListener(
+				new LocalDateTextFieldListener(textField, freezeListener, getFieldName()));
+
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
 
 				SimpleDateFormat dateFormatter = new SimpleDateFormat(DUE_DATE_FORMAT, Locale.US);
-				Date dueDate = null;
+				Date dueDate;
 
 				try {
 					dueDate = dateFormatter.parse(textField.getText());
@@ -63,6 +67,7 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 				}
 
 				DatePicker datePicker = new DatePicker("Select Due Date", dueDate);
+				datePicker.show();
 				if (datePicker.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 					SimpleDateFormat dateFormat = new SimpleDateFormat(DUE_DATE_FORMAT, Locale.US);
 					textField.setText(dateFormat.format(datePicker.getSelectedDate()));
@@ -83,4 +88,32 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 		return textField.getFieldName();
 	}
 
+	private class LocalDateTextFieldListener extends ColoredTextFieldListener {
+		private static final String REGEX = "^\\s*\\d{1,2}/[a-zA-Z]{3}/\\d{1,4}\\s*$";
+
+		private FreezeListener freezeListener;
+		private String fieldName;
+
+		public LocalDateTextFieldListener(
+				final FieldTextField textField, final FreezeListener freezeListener, final String fieldName) {
+			super(textField, REGEX);
+
+			this.freezeListener = freezeListener;
+			this.fieldName = fieldName;
+		}
+
+		@Override
+		public boolean stateChanged() {
+			boolean isIncorrect = !super.stateChanged();
+
+			if (isIncorrect) {
+				// disable OK button
+				freezeListener.fieldSyntaxError(fieldName);
+			} else {
+				// enable OK buttom
+				freezeListener.fieldSyntaxOk(fieldName);
+			}
+			return !isIncorrect;
+		}
+	}
 }

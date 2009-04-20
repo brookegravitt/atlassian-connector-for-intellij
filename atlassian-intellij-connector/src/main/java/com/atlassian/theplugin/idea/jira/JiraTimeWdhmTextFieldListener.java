@@ -16,58 +16,14 @@
 package com.atlassian.theplugin.idea.jira;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class JiraTimeWdhmTextFieldListener implements DocumentListener {
+public class JiraTimeWdhmTextFieldListener extends ColoredTextFieldListener {
 	private static final String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
 
-	private JTextField field;
-
 	public JiraTimeWdhmTextFieldListener(final JTextField textField) {
-		this.field = textField;
-	}
-
-	public JTextField getField() {
-		return field;
-	}
-
-	public void insertUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
-
-	public void removeUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
-
-	public void changedUpdate(final DocumentEvent e) {
-		stateChanged();
-	}
-
-	/**
-	 * Makes the color of input text red in case of wrong syntax
-	 *
-	 * @return true if there is a syntaxt error
-	 */
-	public boolean stateChanged() {
-
-		boolean correct = isCorrect(field.getText());
-
-		Color c = correct ? Color.BLACK : Color.RED;
-		field.setForeground(c);
-
-		return !correct;
-	}
-
-	private boolean isCorrect(final String text) {
-		Pattern p = Pattern.compile(REGEX);
-		Matcher m = p.matcher(text);
-		return m.matches() && text.length() > 0;
+		super(textField, REGEX);
 	}
 }
