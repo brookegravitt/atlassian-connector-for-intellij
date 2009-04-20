@@ -46,7 +46,7 @@ public class CruciblePatchSubmitExecutor implements CommitExecutor {
 
 	@Nls
 	public String getActionText() {
-		return "Crucible Review...";
+		return "Crucible Pre-commit Review...";
 	}
 
 	@Nls
