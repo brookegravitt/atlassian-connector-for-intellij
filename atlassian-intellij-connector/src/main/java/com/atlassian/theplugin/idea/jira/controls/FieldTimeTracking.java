@@ -32,14 +32,12 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 
 	private FieldTextField textField;
 	private JIRAIssue issue;
-	private FreezeListener freezeListener;
 
 	public FieldTimeTracking(final String text, final JIRAIssue issue, final JIRAActionField field,
 			final FreezeListener freezeListener) {
 		super();
 
 		this.issue = issue;
-		this.freezeListener = freezeListener;
 
 		setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -51,7 +49,8 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		warningLabel.setFont(warningLabel.getFont().deriveFont(WARNING_FONT_SIZE));
 		add(warningLabel);
 
-		textField.getDocument().addDocumentListener(new LocalJiraTimeWdhmTextFieldListener(textField));
+		textField.getDocument().addDocumentListener(
+				new LocalJiraTimeWdhmTextFieldListener(textField, freezeListener, getFieldName()));
 	}
 
 	public JIRAActionField getEditedFieldValue() {
@@ -70,22 +69,29 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		return "Remaining Estimate";
 	}
 
-	private class LocalJiraTimeWdhmTextFieldListener extends JiraTimeWdhmTextFieldListener {
-		public LocalJiraTimeWdhmTextFieldListener(final JTextField textField) {
+	private static class LocalJiraTimeWdhmTextFieldListener extends JiraTimeWdhmTextFieldListener {
+		private FreezeListener freezeListener;
+		private String fieldId;
+
+		public LocalJiraTimeWdhmTextFieldListener(
+				final JTextField textField, final FreezeListener freezeListener, final String fieldId) {
 			super(textField);
+			this.freezeListener = freezeListener;
+			this.fieldId = fieldId;
 		}
 
+		@Override
 		public boolean stateChanged() {
-			boolean isIncorrect = super.stateChanged();
+			boolean isIncorrect = !super.stateChanged();
 
 			if (isIncorrect) {
 				// disable OK button
-				freezeListener.fieldSyntaxError(getFieldName());
+				freezeListener.fieldSyntaxError(fieldId);
 			} else {
 				// enable OK buttom
-				freezeListener.fieldSyntaxOk(getFieldName());
+				freezeListener.fieldSyntaxOk(fieldId);
 			}
-			return isIncorrect;
+			return !isIncorrect;
 		}
 	}
 }
