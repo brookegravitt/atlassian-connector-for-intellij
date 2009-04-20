@@ -44,7 +44,7 @@ public class ConnectionWrapper extends Thread {
 		INTERUPTED,
 		NOT_FINISHED
 	}
-
+                                               dffdfdf
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
 	public ConnectionWrapper(Connector connector, ServerCfg serverCfg, String threadName) {
