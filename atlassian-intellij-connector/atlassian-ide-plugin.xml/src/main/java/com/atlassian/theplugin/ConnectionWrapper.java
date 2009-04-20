@@ -39,7 +39,7 @@ public class ConnectionWrapper extends Thread {
 	}
 
 	public enum ConnectionState {                         dgdgdf
-		SUCCEEDED,
+		SUCCEEDED,                                                     hgfhhff
 		FAILED,
 		INTERUPTED,
 		NOT_FINISHED
