@@ -29,7 +29,7 @@ public class ConnectionWrapper extends Thread {
 
 	public Exception getException() {
 		return exception;aaaaaa fdfdfddggghh
-	}
+	}                                             sdadsdsdsdsds
 
 	public String getErrorMessage() {
 		if (exception == null) {
