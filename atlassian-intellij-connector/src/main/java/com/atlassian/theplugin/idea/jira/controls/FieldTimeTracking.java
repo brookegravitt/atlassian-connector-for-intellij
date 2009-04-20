@@ -45,7 +45,7 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		add(textField);
 		add(Box.createRigidArea(new Dimension(BOX_WIDTH, 0)));
 		JLabel warningLabel = new JLabel(
-				"The format of this is ' *w *d *h *m ' (weeks, days, hours and minutes - * can be any number)");
+				"The format of this is ' *w *d *h *m ' (weeks, days, hours and minutes)");
 		warningLabel.setFont(warningLabel.getFont().deriveFont(WARNING_FONT_SIZE));
 		add(warningLabel);
 
