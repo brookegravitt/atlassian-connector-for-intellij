@@ -28,7 +28,7 @@ public class ConnectionWrapper extends Thread {
 	private Exception exception;
 
 	public Exception getException() {
-		return exception;aaaaaa fdfdfddggghh                   ggffgfg  vgfgcghcvghfcgh         nchjfghfgd
+		return exception;aaaaaa fdfdfddggghh                   ggffgfg  vgfgcghcvghfcgh  dsssdsdsd       nchjfghfgd
 	}
 
 	public String getErrorMessage() {
