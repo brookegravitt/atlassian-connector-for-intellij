@@ -32,4 +32,6 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
     void setProject(final Project project);
 
     void setProjectCfgManager(final ProjectCfgManager projectCfgManager);
+	void clearCache();
+	
 }

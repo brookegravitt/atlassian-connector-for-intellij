@@ -116,6 +116,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
+	public synchronized void clearCache() {
+		model.clearCache();
+	}
 	public synchronized void addIssuesToModel(List<JIRAIssue> recentlyOpenIssues, boolean reload) throws JIRAException {
 
 		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
