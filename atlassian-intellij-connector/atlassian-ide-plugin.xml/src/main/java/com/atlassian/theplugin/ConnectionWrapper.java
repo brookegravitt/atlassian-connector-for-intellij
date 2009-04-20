@@ -38,7 +38,7 @@ public class ConnectionWrapper extends Thread {
 		return exception.getMessage();
 	}
 
-	public enum ConnectionState {
+	public enum ConnectionState {                         dgdgdf
 		SUCCEEDED,
 		FAILED,
 		INTERUPTED,
