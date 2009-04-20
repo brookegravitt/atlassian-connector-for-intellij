@@ -43,7 +43,7 @@ public class ConnectionWrapper extends Thread {
 		FAILED,
 		INTERUPTED,
 		NOT_FINISHED
-	}
+	}                                                    gdhgfghhgf  gffggffgfg
                                                dffdfdf
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
