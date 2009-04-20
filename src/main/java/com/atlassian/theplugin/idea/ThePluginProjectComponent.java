@@ -29,7 +29,6 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.action.fisheye.ViewFisheyeChangesetItemAction;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
@@ -48,6 +47,7 @@ import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
@@ -297,7 +297,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ActionManager aManager = ActionManager.getInstance();
 			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
 			if (changesToolBar != null) {
-				changesToolBar.add(new ViewFisheyeChangesetItemAction(), aManager);
+                AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
+                changesToolBar.remove(action);
+				changesToolBar.add(action, aManager);
 			}
 
 			registerCrucibleNotifier();
@@ -373,6 +375,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
+            ActionManager aManager = ActionManager.getInstance();
+            DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
+            if (changesToolBar != null) {
+                AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
+                changesToolBar.remove(action);
+            }
 
 			created = false;
 		}
