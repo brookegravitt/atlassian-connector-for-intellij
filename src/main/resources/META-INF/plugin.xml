@@ -103,8 +103,7 @@
 		<customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
-        <!-- PL-1379 - uncomment when we decide to actually use it-->
-        <!--<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PaZuCheckinHandlerFactory"/>-->
+        <checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PostCommitReviewCheckinHandlerFactory"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
