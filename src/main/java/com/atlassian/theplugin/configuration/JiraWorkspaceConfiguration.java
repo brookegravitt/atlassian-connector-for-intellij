@@ -81,6 +81,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 	public void addRecentlyOpenIssue(final JIRAIssue issue) {
+		if (recentlyOpenIssues == null) {
+			recentlyOpenIssues =  new LinkedList<IssueRecentlyOpenBean>();
+		}
+		
 		if (issue != null) {
 			String issueKey = issue.getKey();
 			String serverId = issue.getServer().getServerId().toString();
