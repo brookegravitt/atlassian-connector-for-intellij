@@ -1,0 +1,18 @@
+Index: modified-mixed
+===================================================================
+--- modified-mixed	(revision 1000)
++++ modified-mixed	(working copy)
+@@ -2,11 +2,11 @@
+ two
+ three
+ four
++added-four
+ five
+ six
+-seven
+ eight
+-nine
++replaced-nine
+ ten
+ eleven
+ twelve
