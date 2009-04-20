@@ -704,6 +704,12 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProgressManager.getInstance().run(task);
 	}
 
+	public void clearCache() {
+		if (jiraIssueListModelBuilder != null) {
+			jiraIssueListModelBuilder.clearCache();
+		}
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 		refreshModels();
