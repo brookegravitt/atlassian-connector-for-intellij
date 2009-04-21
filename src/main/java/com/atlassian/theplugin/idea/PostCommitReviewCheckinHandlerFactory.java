@@ -6,10 +6,7 @@ import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
-import com.intellij.openapi.ui.Messages;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +47,8 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
             if (cbCreateReview.isSelected()) {
                 form = new CrucibleCreatePostCommitReviewDelayedForm(
                         checkinProjectPanel.getProject(), CrucibleServerFacadeImpl.getInstance(),
-                        IdeaHelper.getCfgManager(), checkinProjectPanel.getCommitMessage());
+                        IdeaHelper.getCfgManager(), checkinProjectPanel.getCommitMessage(),
+                        checkinProjectPanel.getVirtualFiles());
                 form.show();
             }
             return ReturnResult.COMMIT;
