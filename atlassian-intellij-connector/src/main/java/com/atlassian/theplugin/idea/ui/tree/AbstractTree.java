@@ -26,6 +26,9 @@ import java.util.Set;
  */
 public abstract class AbstractTree extends JTree {
 
+	public AbstractTree() {
+	}
+
 	protected AbstractTree(final TreeModel model) {
 		super(model);
 	}
@@ -33,6 +36,12 @@ public abstract class AbstractTree extends JTree {
 	protected void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
+		}
+	}
+
+	public void collapseTree() {
+		for (int i = 0; i < this.getRowCount(); i++) {
+			this.collapseRow(i);
 		}
 	}
 

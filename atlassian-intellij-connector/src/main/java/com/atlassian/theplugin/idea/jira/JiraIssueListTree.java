@@ -16,15 +16,15 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 
-import javax.swing.*;
 import javax.swing.tree.TreePath;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class JiraIssueListTree extends JTree {
+public class JiraIssueListTree extends AbstractTree {
 	public JIRAIssue getSelectedIssue() {
 		final TreePath selectionPath = getSelectionPath();
 		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRAIssueTreeNode) {

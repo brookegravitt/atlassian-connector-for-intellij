@@ -3,12 +3,12 @@ package com.atlassian.theplugin.idea.jira.tree;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -21,7 +21,7 @@ import java.util.HashSet;
 /**
  * User: pmaruszak
  */
-public class JIRAFilterTree extends JTree {
+public class JIRAFilterTree extends AbstractTree {
 
 	private static final JIRAFilterTreeRenderer MY_RENDERER = new JIRAFilterTreeRenderer();
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
@@ -137,19 +137,6 @@ public class JIRAFilterTree extends JTree {
 		}
 		if (!filterFound) {
 			localSelectionListener.fireSelectionCleared();
-		}
-	}
-
-	public void expandAll() {
-		for (int i = 0; i < this.getRowCount(); i++) {
-			this.expandRow(i);
-		}
-	}
-
-
-	public void collapseAll() {
-		for (int i = 0; i < this.getRowCount(); i++) {
-			this.collapseRow(i);
 		}
 	}
 
@@ -366,7 +353,7 @@ public class JIRAFilterTree extends JTree {
 
 		private void rebuildTree(final JIRAFilterListModel jiraFilterListModel, boolean fireSelectionChange) {
 			reCreateTree(jiraFilterListModel, fireSelectionChange);
-			expandAll();
+			expandTree();
 
 			//should only be used once during configuration read
 			if (!isAlreadyInitialized) {
