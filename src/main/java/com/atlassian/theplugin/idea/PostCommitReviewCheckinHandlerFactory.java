@@ -8,14 +8,24 @@ import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.List;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
+    private CrucibleWorkspaceConfiguration config;
+
+    public PostCommitReviewCheckinHandlerFactory(@NotNull final ProjectConfigurationBean projectConfiguration) {
+        config = projectConfiguration.getCrucibleConfiguration();
+    }
+
     @NotNull
     public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
         return new Handler(checkinProjectPanel);
@@ -30,6 +40,11 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 
         public Handler(CheckinProjectPanel checkinProjectPanel) {
             this.checkinProjectPanel = checkinProjectPanel;
+            cbCreateReview.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    config.setCreateReviewOnCommit(cbCreateReview.isSelected());
+                }
+            });
         }
 
         @Override
@@ -92,9 +107,11 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
             }
 
             public void saveState() {
+                config.setCreateReviewOnCommit(cbCreateReview.isSelected());
             }
 
             public void restoreState() {
+                cbCreateReview.setSelected(config.isCreateReviewOnCommit());
             }
         }
     }
