@@ -29,7 +29,7 @@ import java.util.Set;
 
 public final class CodeNavigationUtil {
                                                 gfgfgfgfgf  fggf   fdfdd
-	private CodeNavigationUtil() {          dfdfdfdfddddfdfddfd
+	private CodeNavigationUtil() {          dfdfdfdfddddfdfddfdbnvbbvnmvbnvbnvbmn n gbmnvc mnvbn
 		// this is utility class
 	}
 
