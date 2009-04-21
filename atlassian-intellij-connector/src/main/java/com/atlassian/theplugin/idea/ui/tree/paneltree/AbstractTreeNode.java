@@ -49,8 +49,8 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 
 	public abstract JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus);
 
-	public void onSelect() {
-	}
+//	public void onSelect() {
+//	}
 
 	private static final class RendererPanel extends JPanel {
 

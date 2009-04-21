@@ -2,11 +2,11 @@ package com.atlassian.theplugin.idea.crucible.tree.node;
 
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
-import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -171,7 +171,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 				removeAll();
 				validate();
 
-				keyAndSummary =	new SelectableLabel(true, true,
+				keyAndSummary = new SelectableLabel(true, true,
 						review.getPermId().getId() + ": " + review.getName(), ICON_HEIGHT);
 				otherDetails = createPanelForOtherReviewDetails();
 
@@ -204,13 +204,13 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 
 	private String buildTolltip(int width) {
 		StringBuilder sb = new StringBuilder(
-                "<html>"
-                + BODY_WITH_STYLE);
+				"<html>"
+						+ BODY_WITH_STYLE);
 		final String widthString = width > 0 ? "width='" + width + "px'" : "";
 		sb.append("<table ").append(widthString).append(" align='center' cols='2'>");
 		sb.append("<tr><td colspan='2'><b><font color='blue'>");
-        sb.append(review.getPermId().getId());
-        sb.append("</font></b>");
+		sb.append(review.getPermId().getId());
+		sb.append("</font></b>");
 
 		sb.append("<tr><td valign=\"top\"><b>Name:</b></td><td valign=\"top\">");
 
@@ -232,11 +232,11 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		sb.append(review.getAuthor().getDisplayName());
 		sb.append("</td></tr>");
 
-        sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
-        sb.append(review.getModerator().getDisplayName());
-        sb.append("</td></tr>");
+		sb.append("<tr><td valign=\"top\"><b>Moderator:</b></td><td valign=\"top\">");
+		sb.append(review.getModerator().getDisplayName());
+		sb.append("</td></tr>");
 
-        sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
+		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
 		sb.append(review.getCreateDate());
 		sb.append("</td></tr>");
 
@@ -249,10 +249,10 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 		return sb.toString();
 	}
 
-	@Override
-	public void onSelect() {
-//		model.setSelectedReview(review); <- selection is stored inside the tree instead of global plugin review model
-	}
+//	@Override
+//	public void onSelect() {
+////		model.setSelectedReview(review); <- selection is stored inside the tree instead of global plugin review model
+//	}
 
 	private static void setFixedComponentSize(JComponent c, int width, int height) {
 		c.setPreferredSize(new Dimension(width, height));

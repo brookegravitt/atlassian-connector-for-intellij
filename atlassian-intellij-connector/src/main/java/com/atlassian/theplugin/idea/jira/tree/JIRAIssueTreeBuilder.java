@@ -5,7 +5,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -19,8 +19,6 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -120,9 +118,9 @@ public class JIRAIssueTreeBuilder {
 		this.projectKeysToNames = projectKeysToNames;
 	}
 
-	public synchronized void rebuild(JTree tree, JComponent treeParent) {
+	public synchronized void rebuild(JiraIssueListTree tree, JComponent treeParent) {
 
-		JIRAIssue selectedIsse = getSelectedIssue(tree);
+		JIRAIssue selectedIsse = tree.getSelectedIssue();
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		reCreateTree(tree, treeParent, root);
@@ -180,16 +178,6 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
-	private JIRAIssue getSelectedIssue(final JTree tree) {
-		final TreePath selectionPath = tree.getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRAIssueTreeNode) {
-			return ((JIRAIssueTreeNode) selectionPath.getLastPathComponent()).getIssue();
-		} else {
-			// nothing selected
-			return null;
-		}
-	}
-
 	private void reCreateTree(final JTree tree, JComponent treeParent, DefaultMutableTreeNode root) {
 		tree.removeAll();
 		treeModel = new SortableGroupsTreeModel(root, groupBy);
@@ -200,16 +188,16 @@ public class JIRAIssueTreeBuilder {
 			this.lastTree = tree;
 			tree.setShowsRootHandles(true);
 			tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-			tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
-				public void valueChanged(TreeSelectionEvent e) {
-					final TreePath selectionPath = tree.getSelectionModel().getSelectionPath();
-					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
-						((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
-					} else {
-						issueModel.setSeletedIssue(null);
-					}
-				}
-			});
+//			tree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+//				public void valueChanged(TreeSelectionEvent e) {
+//					final TreePath selectionPath = tree.getSelectionModel().getSelectionPath();
+//					if (selectionPath != null && selectionPath.getLastPathComponent() != null) {
+//						((AbstractTreeNode) selectionPath.getLastPathComponent()).onSelect();
+//					} else {
+//						issueModel.setSeletedIssue(null);
+//					}
+//				}
+//			});
 			uiSetup.initializeUI(tree, treeParent);
 			tree.setRootVisible(false);
 		}
