@@ -50,7 +50,7 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		add(warningLabel);
 
 		textField.getDocument().addDocumentListener(
-				new LocalJiraTimeWdhmTextFieldListener(textField, freezeListener, getFieldName()));
+				new LocalJiraTimeWdhmTextFieldListener(textField, freezeListener, getFieldName(), true));
 	}
 
 	public JIRAActionField getEditedFieldValue() {
@@ -74,8 +74,8 @@ public class FieldTimeTracking extends JPanel implements ActionFieldEditor {
 		private String fieldId;
 
 		public LocalJiraTimeWdhmTextFieldListener(
-				final JTextField textField, final FreezeListener freezeListener, final String fieldId) {
-			super(textField);
+				final JTextField textField, final FreezeListener freezeListener, final String fieldId, final boolean emptyOk) {
+			super(textField, emptyOk);
 			this.freezeListener = freezeListener;
 			this.fieldId = fieldId;
 		}
