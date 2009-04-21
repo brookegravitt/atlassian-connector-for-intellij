@@ -25,7 +25,7 @@ public final class HttpConfigurableIdeaImpl implements HttpConfigurableAdapter {
 	private static HttpConfigurableIdeaImpl instance;
 
 	private HttpConfigurableIdeaImpl() {
-	}
+	}                                       mnmnmnmnmnmn
 
 	public static HttpConfigurableIdeaImpl getInstance() {
 		if (instance == null) {
