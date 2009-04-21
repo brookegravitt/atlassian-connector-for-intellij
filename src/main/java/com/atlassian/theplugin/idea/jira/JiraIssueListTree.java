@@ -13,32 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.bamboo.tree;
+package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.swing.*;
+import javax.swing.tree.TreePath;
 
 /**
  * @author Jacek Jaroczynski
  */
-public class BuildGroupTreeNode extends AbstractTreeNode {
-	public BuildGroupTreeNode(String name) {
-		super(name, null, null);
+public class JiraIssueListTree extends JTree {
+	public JIRAIssue getSelectedIssue() {
+		final TreePath selectionPath = getSelectionPath();
+		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRAIssueTreeNode) {
+			return ((JIRAIssueTreeNode) selectionPath.getLastPathComponent()).getIssue();
+		} else {
+			// nothing selected
+			return null;
+		}
 	}
-
-	@Override
-	public String toString() {
-		return name;
-	}
-
-	@Override
-	public JComponent getRenderer(final JComponent c, final boolean selected, final boolean expanded, final boolean hasFocus) {
-		return getDefaultRenderer(c, selected, expanded, hasFocus);
-	}
-
-//	@Override
-//	public void onSelect() {
-//
-//	}
 }

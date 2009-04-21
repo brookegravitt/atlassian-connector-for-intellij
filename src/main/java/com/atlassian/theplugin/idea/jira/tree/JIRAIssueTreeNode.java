@@ -264,10 +264,10 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		return issue;
 	}
 
-	@Override
-	public void onSelect() {
-		model.setSeletedIssue(issue);
-	}
+//	@Override
+//	public void onSelect() {
+//		model.setSeletedIssue(issue);
+//	}
 
 	@Override
 	public String toString() {

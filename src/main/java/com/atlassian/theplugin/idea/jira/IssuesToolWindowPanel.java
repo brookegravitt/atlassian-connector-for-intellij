@@ -84,8 +84,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
 
-	private JTree issueTree;
-
 	private JIRAIssueListModel baseIssueListModel;
 
 	private Timer timer;
@@ -265,8 +263,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private void addIssuesTreeListeners() {
 		getRightTree().addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
-				JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+			public void keyReleased(KeyEvent e) {
+				JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
 					openIssue(issue);
 				}
@@ -277,7 +275,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+				final JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
 					openIssue(issue);
 				}
@@ -289,7 +287,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				TreePath selPath = getRightTree().getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
 					getRightTree().setSelectionPath(selPath);
-					if (currentIssueListModel.getSelectedIssue() != null) {
+					if (getSelectedIssue() != null) {
 						launchContextMenu(e);
 					}
 				}
@@ -324,7 +322,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		};
 		actionGroup.add(submenu);
 
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+		final JIRAIssue issue = getSelectedIssue();
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 		if (actions != null) {
 			for (JIRAAction a : actions) {
@@ -366,6 +364,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			};
 			t.start();
 		}
+	}
+
+	private JIRAIssue getSelectedIssue() {
+		return getRightTree().getSelectedIssue();
 	}
 
 	public void openIssue(@NotNull JIRAIssue issue) {
@@ -511,7 +513,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void addCommentToSelectedIssue() {
 		// todo move getSelectedIssue from the model to the tree
-		final JIRAIssue issue = currentIssueListModel.getSelectedIssue();
+		final JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
 		if (issue != null) {
 			addCommentToIssue(issue.getKey(), issue.getServer());
 		}
@@ -947,7 +949,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	@Nullable
 	public Object getData(@NotNull final String dataId) {
 		if (dataId.equals(Constants.ISSUE)) {
-			return currentIssueListModel.getSelectedIssue();
+			return getSelectedIssue();
 		}
 		if (dataId.equals(Constants.SERVER)) {
 			return getSelectedServer();
@@ -1018,14 +1020,17 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	@Override
 	public JTree createRightTree() {
-		if (issueTree == null) {
-			issueTree = new JTree();
-		}
+		JiraIssueListTree issueTree = new JiraIssueListTree();
 
 		new TreeSpeedSearch(issueTree);
 
 		issueTreeBuilder.rebuild(issueTree, getRightPanel());
 		return issueTree;
+	}
+
+	@Override
+	public JiraIssueListTree getRightTree() {
+		return (JiraIssueListTree) super.getRightTree();
 	}
 
 	@Override
