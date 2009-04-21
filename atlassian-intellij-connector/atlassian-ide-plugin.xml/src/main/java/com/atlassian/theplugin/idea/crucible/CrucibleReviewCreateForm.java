@@ -118,7 +118,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				int index = reviewersList.locationToIndex(e.getPoint());
 				setCheckboxState(index);
 				refreshUserModel();
-				reviewersList.setSelectedIndex(index);
+				reviewersList.setSelectedIndex(index);                                    bbbvbvvb
 			}
 		});
 
