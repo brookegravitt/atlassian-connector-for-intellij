@@ -19,17 +19,22 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
+
+import javax.swing.*;
 
 /**
  * User: pmaruszak
  */
 public class ActivateIssueItemAction extends AnAction {
 	private final ActiveJiraIssue activeIssue;
+	static final Icon JIRA_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 
 	ActivateIssueItemAction(ActiveJiraIssue activeIssue) {
 		this.activeIssue = activeIssue;
 		if (activeIssue != null) {
 			getTemplatePresentation().setText(activeIssue.getIssueKey());
+			getTemplatePresentation().setIcon(JIRA_ICON);
 		}
 	}
 

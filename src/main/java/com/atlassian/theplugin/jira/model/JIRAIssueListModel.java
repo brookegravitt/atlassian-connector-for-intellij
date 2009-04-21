@@ -29,9 +29,7 @@ public interface JIRAIssueListModel extends FrozenModel {
 
 	JIRAIssue findIssue(String key);
 
-	void setSeletedIssue(JIRAIssue issue);
-
-	JIRAIssue getSelectedIssue();
+//	void setSeletedIssue(JIRAIssue issue);
 
 	void setIssue(JIRAIssue issue);
 

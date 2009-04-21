@@ -46,6 +46,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		}
 
 		event.getPresentation().setText(text);
+//		event.getPresentation().setIcon(JIRA_ICON);
 		super.update(event);
 	}
 

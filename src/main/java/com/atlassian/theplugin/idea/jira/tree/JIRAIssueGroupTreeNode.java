@@ -18,9 +18,9 @@ public class JIRAIssueGroupTreeNode extends AbstractTreeNode {
 		return getDefaultRenderer(c, selected, expanded, hasFocus);
 	}
 
-	public void onSelect() {
-		model.setSeletedIssue(null);
-	}
+//	public void onSelect() {
+//		model.setSeletedIssue(null);
+//	}
 
 	public String toString() {
 		return name;
