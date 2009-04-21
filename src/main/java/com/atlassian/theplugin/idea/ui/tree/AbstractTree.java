@@ -33,7 +33,7 @@ public abstract class AbstractTree extends JTree {
 		super(model);
 	}
 
-	protected void expandTree() {
+	public void expandTree() {
 		for (int i = 0; i < getRowCount(); i++) {
 			expandRow(i);
 		}
