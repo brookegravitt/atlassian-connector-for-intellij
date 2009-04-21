@@ -207,7 +207,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 	private class WdhmInputListener extends JiraTimeWdhmTextFieldListener {
 
-		private boolean matchFound;
+		private boolean matchFound = true;
 
 		public WdhmInputListener(JTextField field) {
 			super(field);
@@ -344,6 +344,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 		setupUI();
 
+
 		if (deactivateActiveIssue) {
 			setTitle("Stop Work on Issue " + issue.getKey());
 
@@ -367,10 +368,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
 		setOKActionEnabled(false);
 
-		timeSpentListener = new WdhmInputListener(timeSpentField);
-		remainingEstimateListener = new WdhmInputListener(remainingEstimateField);
 
-		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
 		timeSpentField.setText(timeSpent);
 
 		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(jiraServer, issue);
@@ -378,7 +376,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}
 
-		remainingEstimateField.getDocument().addDocumentListener(remainingEstimateListener);
 
 		final Calendar now = Calendar.getInstance();
 		endTime = now.getTime();
@@ -433,9 +430,19 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
 
 		init();
-		updateOKAction();
 		setCommentText();
 		validate();
+
+		timeSpentListener = new WdhmInputListener(timeSpentField);
+		remainingEstimateListener = new WdhmInputListener(remainingEstimateField);
+
+		timeSpentField.getDocument().addDocumentListener(timeSpentListener);
+		remainingEstimateField.getDocument().addDocumentListener(remainingEstimateListener);
+
+		timeSpentListener.stateChanged();
+		remainingEstimateListener.stateChanged();
+
+		updateOKAction();
 	}
 
 	private void setCommentText() {
