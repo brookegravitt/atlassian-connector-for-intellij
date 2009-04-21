@@ -68,6 +68,7 @@ public class ColoredTextFieldListener implements DocumentListener {
 	}
 
 	private boolean isCorrect(final String text) {
+
 		if (emptyOk && (text == null || text.length() == 0)) {
 			return true;
 		}
