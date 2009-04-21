@@ -23,7 +23,7 @@ import javax.swing.*;
 public class JiraTimeWdhmTextFieldListener extends ColoredTextFieldListener {
 	private static final String REGEX = "^\\s*(\\d+w)?\\s*(\\d+d)?\\s*(\\d+h)?\\s*(\\d+m)?\\s*$";
 
-	public JiraTimeWdhmTextFieldListener(final JTextField textField) {
-		super(textField, REGEX);
+	public JiraTimeWdhmTextFieldListener(final JTextField textField, boolean isEmptyOk) {
+		super(textField, REGEX, isEmptyOk);
 	}
 }

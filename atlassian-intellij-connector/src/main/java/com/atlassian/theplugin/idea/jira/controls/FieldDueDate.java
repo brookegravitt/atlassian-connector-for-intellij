@@ -51,7 +51,7 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 		add(button);
 
 		textField.getDocument().addDocumentListener(
-				new LocalDateTextFieldListener(textField, freezeListener, getFieldName()));
+				new LocalDateTextFieldListener(textField, freezeListener, getFieldName(), true));
 
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent event) {
@@ -95,8 +95,9 @@ public class FieldDueDate extends JPanel implements ActionFieldEditor {
 		private String fieldName;
 
 		public LocalDateTextFieldListener(
-				final FieldTextField textField, final FreezeListener freezeListener, final String fieldName) {
-			super(textField, REGEX);
+				final FieldTextField textField, final FreezeListener freezeListener, final String fieldName,
+				final boolean emptyOk) {
+			super(textField, REGEX, emptyOk);
 
 			this.freezeListener = freezeListener;
 			this.fieldName = fieldName;

@@ -139,7 +139,11 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 					row = ", p, 3dlu";
 					break;
 				case DUE_DATE:
-					editor = new FieldDueDate(field.getValues().get(0), field, this);
+					String content = "";
+					if (field.getValues() != null && field.getValues().size() > 0) {
+						content = field.getValues().get(0);
+					}
+					editor = new FieldDueDate(content, field, this);
 					row = ", p, 3dlu";
 					break;
 				case UNSUPPORTED:

@@ -210,7 +210,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		private boolean matchFound = true;
 
 		public WdhmInputListener(JTextField field) {
-			super(field);
+			super(field, false);
 		}
 
 		private class Period {
