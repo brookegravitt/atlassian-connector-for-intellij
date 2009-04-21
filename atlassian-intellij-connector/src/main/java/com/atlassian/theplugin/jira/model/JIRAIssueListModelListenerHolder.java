@@ -26,7 +26,7 @@ import java.util.List;
  * Date: Nov 19, 2008
  * Time: 3:06:58 PM
  */
-public abstract class JIRAIssueListModelListenerHolder 
+public abstract class JIRAIssueListModelListenerHolder
 		implements JIRAIssueListModelListener, FrozenModelListener, JIRAIssueListModel {
 
 	private List<JIRAIssueListModelListener> listeners = new ArrayList<JIRAIssueListModelListener>();
@@ -108,21 +108,11 @@ public abstract class JIRAIssueListModelListenerHolder
 		}
 	}
 
-	public void setSeletedIssue(JIRAIssue issue) {
-		if (parent != null) {
-			parent.setSeletedIssue(issue);
-		}
-	}
-
-	public JIRAIssue getSelectedIssue() {
-		if (parent != null) {
-			JIRAIssue i = parent.getSelectedIssue();
-			if (getIssues().contains(i)) {
-				return i;
-			}
-		}
-		return null;
-	}
+//	public void setSeletedIssue(JIRAIssue issue) {
+//		if (parent != null) {
+//			parent.setSeletedIssue(issue);
+//		}
+//	}
 
 	public void setIssue(JIRAIssue issue) {
 		if (parent != null) {

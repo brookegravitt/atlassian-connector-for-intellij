@@ -29,8 +29,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.TextLayout;
 import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -76,7 +76,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 					l.getFont(), new FontRenderContext(null, true, true));
 			serverWidth = Math.max(layoutName.getBounds().getWidth(), serverWidth);
 			String date = getRelativeBuildTimeString(b);
-			TextLayout layoutDate =	new TextLayout(date.length() > 0 ? date : ".",
+			TextLayout layoutDate = new TextLayout(date.length() > 0 ? date : ".",
 					l.getFont(), new FontRenderContext(null, true, true));
 			dateWidth = Math.max(layoutDate.getBounds().getWidth(), dateWidth);
 		}
@@ -94,7 +94,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	@Override
 	public JComponent getRenderer(final JComponent c, final boolean selected,
-							   final boolean expanded, final boolean hasFocus) {
+			final boolean expanded, final boolean hasFocus) {
 		boolean enabled = c.isEnabled();
 
 		JPanel p = new JPanel();
@@ -198,7 +198,6 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		server.setHorizontalAlignment(SwingConstants.RIGHT);
 		p.add(server, gbc);
-
 
 		// gap
 		gbc.gridx++;
@@ -310,9 +309,9 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return sb.toString();
 	}
 
-	@Override
-	public void onSelect() {
-	}
+//	@Override
+//	public void onSelect() {
+//	}
 
 	private static void setFixedComponentSize(JComponent c, int width, int height) {
 		c.setPreferredSize(new Dimension(width, height));
