@@ -28,10 +28,12 @@ import java.util.regex.Pattern;
 public class ColoredTextFieldListener implements DocumentListener {
 	private JTextField field;
 	private String regexp;
+	private boolean emptyOk;
 
-	public ColoredTextFieldListener(final JTextField textField, final String regexp) {
+	public ColoredTextFieldListener(final JTextField textField, final String regexp, final boolean emptyOk) {
 		this.field = textField;
 		this.regexp = regexp;
+		this.emptyOk = emptyOk;
 	}
 
 	public JTextField getField() {
@@ -66,6 +68,10 @@ public class ColoredTextFieldListener implements DocumentListener {
 	}
 
 	private boolean isCorrect(final String text) {
+		if (emptyOk && (text == null || text.isEmpty())) {
+			return true;
+		}
+
 		Pattern p = Pattern.compile(regexp);
 		Matcher m = p.matcher(text);
 		return m.matches() && text.length() > 0;
