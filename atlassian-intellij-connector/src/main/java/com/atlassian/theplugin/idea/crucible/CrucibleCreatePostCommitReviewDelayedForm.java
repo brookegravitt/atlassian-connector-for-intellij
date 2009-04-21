@@ -28,6 +28,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.ChangeList;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.versionBrowser.ChangeBrowserSettings;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -37,6 +38,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.swing.*;
 import java.util.List;
 import java.util.Collection;
+import java.io.File;
 
 public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleCreatePostCommitReviewForm {
     private boolean doCreateReview = false;
@@ -69,12 +71,28 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 
     private ChangeList[] getChanges() {
         if (list.size() > 0) {
-            // todo: get my newest review, instead of simply the first one on the list
-            ChangeList[] chlist = new ChangeList[1];
-            chlist[0] = list.get(0);
-            return chlist;
+            for (CommittedChangeList committedChangeList : list) {
+                if (isMyCommittedChangeList(committedChangeList)) {
+                    ChangeList[] chlist = new ChangeList[1];
+                    chlist[0] = committedChangeList;
+                    return chlist;
+                }
+            }
         }
         return null;
+    }
+
+    private boolean isMyCommittedChangeList(CommittedChangeList committedChangeList) {
+        int verifiedChangesCnt = 0;
+        for (VirtualFile virtualFile : virtualFiles) {
+            for (Change change : committedChangeList.getChanges()) {
+                if (change.affectsFile(new File(virtualFile.getPath()))) {
+                    ++verifiedChangesCnt;
+                    break;
+                }
+            }
+        }
+        return verifiedChangesCnt == virtualFiles.size();
     }
 
     public void startReviewCreation() {
