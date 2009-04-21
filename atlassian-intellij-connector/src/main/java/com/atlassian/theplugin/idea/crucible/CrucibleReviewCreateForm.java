@@ -816,7 +816,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 }, modalityState);
                             } else {
                                 try {
-                                    indicator.setText("Waiting for Fisheye to update to newest change set...");
+                                    indicator.setText("Waiting for Crucible to update to newest change set...");
                                     for (int i = 0; i < 10; ++i) {
                                         if (indicator.isCanceled()) {
                                             break;

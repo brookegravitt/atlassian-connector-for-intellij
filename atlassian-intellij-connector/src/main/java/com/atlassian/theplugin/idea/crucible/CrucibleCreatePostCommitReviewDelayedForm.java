@@ -36,18 +36,21 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.Collection;
 
 public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleCreatePostCommitReviewForm {
     private boolean doCreateReview = false;
     List<CommittedChangeList> list;
+    private Collection<VirtualFile> virtualFiles;
 
     public CrucibleCreatePostCommitReviewDelayedForm(
             final Project project,
             final CrucibleServerFacade crucibleServerFacade,
             @NotNull final CfgManager cfgManager,
-            String title) {
+            String title, Collection<VirtualFile> virtualFiles) {
 
         super(project, crucibleServerFacade, title, cfgManager);
+        this.virtualFiles = virtualFiles;
         setCustomComponent(null);
         pack();
     }
