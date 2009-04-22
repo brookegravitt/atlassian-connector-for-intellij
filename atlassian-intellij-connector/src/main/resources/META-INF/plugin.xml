@@ -103,7 +103,7 @@
 		<customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
-        <checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PostCommitReviewCheckinHandlerFactory"/>
+		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PostCommitReviewCheckinHandlerFactory"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
@@ -115,9 +115,12 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel"/>
 
-        <projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModel"
-                        serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl"/>
-        
+		<projectService serviceInterface="com.atlassian.theplugin.cache.RecentlyOpenIssuesCache"
+						serviceImplementation="com.atlassian.theplugin.cache.RecentlyOpenIssuesCache"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModel"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl"/>
+
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueToolWindow"/>
 
@@ -490,12 +493,12 @@
 				icon="/icons/fisheye-16.png">
 		</action>
 
-        <action id="ThePlugin.JiraIssues.QuickSearch"
-                class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
-                text="Search JIRA"
-                icon="/icons/find-jira.png">
-            <keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
-        </action>
+		<action id="ThePlugin.JiraIssues.QuickSearch"
+				class="com.atlassian.theplugin.idea.action.issues.QuickSearchAction"
+				text="Search JIRA"
+				icon="/icons/find-jira.png">
+			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
+		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"
@@ -555,7 +558,7 @@
 
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
-            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
