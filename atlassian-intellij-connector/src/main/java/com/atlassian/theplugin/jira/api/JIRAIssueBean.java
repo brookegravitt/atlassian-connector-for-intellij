@@ -177,7 +177,7 @@ public class JIRAIssueBean implements JIRAIssue {
 				String creationDate = el.getAttributeValue("created", "Unknown");
 
 				Calendar cal = Calendar.getInstance();
-				DateFormat df = new SimpleDateFormat("EEE MMM d HH:mm:ss Z yyyy", Locale.US);
+				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
 				try {
 					cal.setTime(df.parse(creationDate));
 				} catch (java.text.ParseException ex) {
