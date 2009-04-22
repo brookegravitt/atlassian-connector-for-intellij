@@ -65,7 +65,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 				if (activeIssue == null || !issue.getIssueKey().equals(activeIssue.getIssueKey())) {
 					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServerId(), issue.getIssueKey(),
 							new DateTime());
-					group.add(new ActivateIssueItemAction(newActiveIsse));
+					group.add(new ActivateIssueItemAction(newActiveIsse, currentProject));
 				}
 			}
 		}
