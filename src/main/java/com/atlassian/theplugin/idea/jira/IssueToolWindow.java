@@ -896,14 +896,11 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						if (params != null && params.server != null) {
 							java.util.List<JIRAComment> cmts = null;
 
-//							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
-//							if (oneIssue != null) {
-//								descriptionPanel.setDescription(oneIssue.getDescription());
-//								cmts = oneIssue.getComments();
-//							}
-
-							descriptionPanel.setDescription(params.issue.getDescription());
-							cmts = params.issue.getComments();
+							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
+							if (oneIssue != null) {
+								descriptionPanel.setDescription(oneIssue.getDescription());
+								cmts = oneIssue.getComments();
+							}
 
 							if (cmts == null) {
 								// oh well, no comments in XML - can it even happen? Fall back to SOAP
