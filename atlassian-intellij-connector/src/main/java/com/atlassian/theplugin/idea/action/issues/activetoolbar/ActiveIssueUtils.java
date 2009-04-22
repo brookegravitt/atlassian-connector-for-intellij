@@ -82,10 +82,13 @@ public final class ActiveIssueUtils {
 
 		if (conf != null) {
 			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
-			try {
-				issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
-			} catch (JIRAException e) {
-				PluginUtil.getLogger().error(e);
+
+			if (issue != null) {
+				try {
+					issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().error(e);
+				}
 			}
 		}
 	}
