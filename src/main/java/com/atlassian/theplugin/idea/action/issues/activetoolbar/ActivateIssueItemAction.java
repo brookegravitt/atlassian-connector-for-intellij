@@ -15,10 +15,14 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
@@ -30,10 +34,30 @@ public class ActivateIssueItemAction extends AnAction {
 	private final ActiveJiraIssue activeIssue;
 	static final Icon JIRA_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 
-	ActivateIssueItemAction(ActiveJiraIssue activeIssue) {
+	ActivateIssueItemAction(ActiveJiraIssue activeIssue, final Project project) {
 		this.activeIssue = activeIssue;
+
+		RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
+
+		String summary = "";
+
+		if (cache != null) {
+			for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
+				if (issue.getServer().getServerId().toString().equals(activeIssue.getServerId())
+						&& issue.getKey().equals(activeIssue.getIssueKey())) {
+
+					summary = issue.getSummary();
+					if (summary.length() > 20) {
+						summary = summary.substring(0, 20) + "...";
+					}
+					break;
+				}
+			}
+		}
+
+
 		if (activeIssue != null) {
-			getTemplatePresentation().setText(activeIssue.getIssueKey());
+			getTemplatePresentation().setText(activeIssue.getIssueKey() + ": " + summary);
 			getTemplatePresentation().setIcon(JIRA_ICON);
 		}
 	}
