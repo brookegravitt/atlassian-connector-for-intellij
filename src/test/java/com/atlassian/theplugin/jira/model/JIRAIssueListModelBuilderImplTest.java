@@ -40,7 +40,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	public void testAddIssuesOnUninitialized() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
@@ -57,7 +57,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	public void testAddSavedFilterIssues() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());
@@ -74,7 +74,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	public void testAddCustomFilterIssues() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
@@ -95,7 +95,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	public void testListeners() {
 		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
@@ -124,7 +124,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	public void testReset() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
-		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl();
+		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
 		JiraServerCfg server = new JiraServerCfg("test", new ServerId());

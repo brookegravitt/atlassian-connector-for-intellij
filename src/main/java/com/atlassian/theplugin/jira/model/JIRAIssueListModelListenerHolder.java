@@ -96,11 +96,11 @@ public abstract class JIRAIssueListModelListenerHolder
 		}
 	}
 
-	public void addIssue(JIRAIssue issue) {
-		if (parent != null) {
-			parent.addIssue(issue);
-		}
-	}
+//	public void addIssue(JIRAIssue issue) {
+//		if (parent != null) {
+//			parent.addIssue(issue);
+//		}
+//	}
 
 	public void addIssues(Collection<JIRAIssue> issues) {
 		if (parent != null) {
