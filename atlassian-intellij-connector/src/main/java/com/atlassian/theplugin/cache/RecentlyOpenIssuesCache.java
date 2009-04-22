@@ -134,6 +134,15 @@ public class RecentlyOpenIssuesCache {
 		}
 	}
 
+	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
+		for (JIRAIssue issue : getLoadedRecenltyOpenIssues()) {
+			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().toString().equals(serverId)) {
+				return issue;
+			}
+		}
+		return null;
+	}
+
 	private class LocalModelListener implements JIRAIssueListModelListener {
 
 		public void modelChanged(final JIRAIssueListModel model) {

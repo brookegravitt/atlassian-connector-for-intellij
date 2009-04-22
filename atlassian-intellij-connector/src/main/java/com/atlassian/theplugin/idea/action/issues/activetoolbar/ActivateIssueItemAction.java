@@ -33,6 +33,7 @@ import javax.swing.*;
 public class ActivateIssueItemAction extends AnAction {
 	private final ActiveJiraIssue activeIssue;
 	static final Icon JIRA_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
+	private static final int SUMMARY_LENGHT = 30;
 
 	ActivateIssueItemAction(ActiveJiraIssue activeIssue, final Project project) {
 		this.activeIssue = activeIssue;
@@ -47,8 +48,8 @@ public class ActivateIssueItemAction extends AnAction {
 						&& issue.getKey().equals(activeIssue.getIssueKey())) {
 
 					summary = issue.getSummary();
-					if (summary.length() > 20) {
-						summary = summary.substring(0, 20) + "...";
+					if (summary.length() > SUMMARY_LENGHT) {
+						summary = summary.substring(0, SUMMARY_LENGHT) + "...";
 					}
 					break;
 				}
