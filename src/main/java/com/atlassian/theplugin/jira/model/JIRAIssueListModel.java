@@ -1,16 +1,14 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Set;
 
 public interface JIRAIssueListModel extends FrozenModel {
 	void clear();
 
-	void addIssue(JIRAIssue issue);
+//	void addIssue(JIRAIssue issue);
 
 	void addIssues(Collection<JIRAIssue> issues);
 
@@ -41,9 +39,9 @@ public interface JIRAIssueListModel extends FrozenModel {
 
 	void removeModelListener(JIRAIssueListModelListener listener);
 
-	void clearCache();
+//	void clearCache();
 
-	Set<JIRAIssue> getIssuesCache();
+//	Set<JIRAIssue> getIssuesCache();
 
-	JIRAIssue getIssueFromCache(IssueRecentlyOpenBean recentIssue);
+//	JIRAIssue getIssueFromCache(IssueRecentlyOpenBean recentIssue);
 }
