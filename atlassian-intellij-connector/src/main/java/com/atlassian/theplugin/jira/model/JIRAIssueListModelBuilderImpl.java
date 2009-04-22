@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -14,6 +13,7 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
@@ -26,9 +26,11 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	private JIRAIssueListModel model;
 	private Project project;
 	private ProjectCfgManager projectCfgManager;
+	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
-	public JIRAIssueListModelBuilderImpl() {
+	public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
+		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 		this.project = null;
 		this.projectCfgManager = null;
 		facade = JIRAServerFacadeImpl.getInstance();
@@ -67,6 +69,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.clear();
 			}
 
+			if (recentlyOpenIssuesCache != null) {
+				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+			}
+
 			if (manualFilter.getQueryFragment().size() > 0) {
 				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
@@ -100,6 +106,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				model.clear();
 			}
 
+			if (recentlyOpenIssuesCache != null) {
+				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+			}
+
 			List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 			query.add(savedFilter);
 			l = facade.getSavedFilterIssues(jiraServerCfg, query, SORT_BY, SORT_ORDER, startFrom, size);
@@ -116,36 +126,37 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void clearCache() {
-		model.clearCache();
-	}
-	public synchronized void addIssuesToModel(List<JIRAIssue> recentlyOpenIssues, boolean reload) throws JIRAException {
+//	public synchronized void clearCache() {
+//		model.clearCache();
+//	}
 
-		if (model == null || recentlyOpenIssues == null || recentlyOpenIssues.isEmpty()) {
-			if (model != null) {
-				model.clear();
-				model.fireModelChanged();
-			}
+	public synchronized void addRecenltyOpenIssuesToModel(/*RecentlyOpenIssuesCache _recentlyOpenIssuesCache,*/ boolean reload)
+			throws JIRAException {
+
+		if (model == null) {
 			return;
 		}
 
-		if (reload) {
-			model.clearCache();
-		}
-
-		model.setModelFrozen(true);
-
-		startFrom = 0;
-		model.clear();
+		LinkedList<JIRAIssue> issues = null;
 
 		try {
-			model.addIssues(recentlyOpenIssues);
-			startFrom += recentlyOpenIssues.size();
-			checkActiveIssue(recentlyOpenIssues);
+			model.setModelFrozen(true);
+
+			if (reload) {
+//				model.clearCache();
+				startFrom = 0;
+				model.clear();
+			}
+			issues = recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+
+			model.addIssues(issues);
+			startFrom += issues.size();
+			checkActiveIssue(issues);
+
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
-				model.fireIssuesLoaded(recentlyOpenIssues.size());
+				model.fireIssuesLoaded(issues != null ? issues.size() : 0);
 				model.setModelFrozen(false);
 			}
 		}
@@ -206,26 +217,26 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		this.model.removeFrozenModelListener(listener);
 	}
 
-	public JIRAIssue getJIRAIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
-
-		JIRAIssue foundIssue = model.getIssueFromCache(recentlyOpen);
-
-		if (foundIssue != null) {
-			return foundIssue;
-		} else if (project != null && projectCfgManager != null) {
-			JiraServerCfg jiraServer = CfgUtil
-					.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId());
-			if (jiraServer != null) {
-				foundIssue = JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
-
-				model.addIssue(foundIssue);
-				return foundIssue;
-			}
-
-		}
-
-		return null;
-	}
+//	public JIRAIssue getJIRAIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
+//
+//		JIRAIssue foundIssue = model.getIssueFromCache(recentlyOpen);
+//
+//		if (foundIssue != null) {
+//			return foundIssue;
+//		} else if (project != null && projectCfgManager != null) {
+//			JiraServerCfg jiraServer = CfgUtil
+//					.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId());
+//			if (jiraServer != null) {
+//				foundIssue = JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
+//
+//				model.addIssue(foundIssue);
+//				return foundIssue;
+//			}
+//
+//		}
+//
+//		return null;
+//	}
 
 	public void setProject(final Project project) {
 		this.project = project;

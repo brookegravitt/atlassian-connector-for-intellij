@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -77,11 +78,12 @@ public final class ActiveIssueUtils {
 	public static void setActiveJiraIssue(final AnActionEvent event, final ActiveJiraIssue issue,
 			final JiraServerCfg jiraServerCfg) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+		final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
 
 		if (conf != null) {
 			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
 			try {
-				conf.addRecentlyOpenIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
+				issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
 			} catch (JIRAException e) {
 				PluginUtil.getLogger().error(e);
 			}
@@ -216,7 +218,7 @@ public final class ActiveIssueUtils {
 					&& issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
 				if (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
 						|| !isInProgress(issue)) {
-					
+
 					SwingUtilities.invokeLater(new Runnable() {
 
 						public void run() {

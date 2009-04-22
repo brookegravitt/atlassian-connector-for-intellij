@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -26,7 +26,6 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -64,6 +63,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private JIRAFilterListModel jiraFilterListModel;
 	private JIRAIssueTreeBuilder issueTreeBuilder;
 	private JIRAIssueListModelBuilder jiraIssueListModelBuilder;
+	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private JiraIssueGroupBy groupBy;
 	@NotNull
@@ -100,7 +100,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
 			@NotNull final JIRAIssueListModel issueModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor,
-			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+			@NotNull final RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
@@ -108,6 +109,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
+		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 
 		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
@@ -189,6 +191,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void serverNameChanged(final JIRAFilterListModel filterListModel) {
 			}
 		});
+
 	}
 
 	protected void showManualFilterPanel(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
@@ -210,6 +213,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void init() {
 		//recentlyOpenIssuesCache.init();
+		recentlyOpenIssuesCache.init();
 	}
 
 	@Override
@@ -372,7 +376,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void openIssue(@NotNull JIRAIssue issue) {
 		if (issue.getServer() != null) {
-			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
+			recentlyOpenIssuesCache.addIssue(issue);
+//			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
 			ActiveIssueUtils.checkIssueState(project, issue);
 			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue.getServer(), issue, baseIssueListModel);
 		}
@@ -645,7 +650,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		} else if (manualFilter != null) {
 			refreshIssues(manualFilter, serverCfg, reload);
 		} else if (jiraFilterTree.isRecentlyOpenSelected()) {
-			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), reload);
+			refreshRecenltyOpenIssues(/*jiraWorkspaceConfiguration.getRecentlyOpenIssues(),*/ reload);
 		}
 	}
 
@@ -688,7 +693,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	private void refreshIssues(final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues, final boolean reload) {
+	private void refreshRecenltyOpenIssues(/*final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,*/
+			final boolean reload) {
 		if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
 			return;
 		}
@@ -697,7 +703,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					getStatusBarPane().setMessage("Loading issues...", false);
-					jiraIssueListModelBuilder.addIssuesToModel(getIssues(recentlyOpenIssues), reload);
+					jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(/*recentlyOpenIssuesCache,*/ reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
@@ -706,11 +712,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProgressManager.getInstance().run(task);
 	}
 
-	public void clearCache() {
-		if (jiraIssueListModelBuilder != null) {
-			jiraIssueListModelBuilder.clearCache();
-		}
-	}
+//	public void clearCache() {
+//		if (jiraIssueListModelBuilder != null) {
+//			jiraIssueListModelBuilder.clearCache();
+//		}
+//	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
@@ -836,31 +842,34 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	/**
-	 * @param recentlyOpenIssues list of recenlty open issue beans to retrieve
-	 * @return list of recenlty open issues (exluding nulls)
+	 * @return list of recenlty open issues loaded earlier
 	 */
-	public List<JIRAIssue> getIssues(final List<IssueRecentlyOpenBean> recentlyOpenIssues) {
-		List<JIRAIssue> issues = new ArrayList<JIRAIssue>();
+	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
+		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
 
-		if (recentlyOpenIssues == null || recentlyOpenIssues.size() == 0) {
-			return issues;
-		}
+//		if (recentlyOpenIssues == null || recentlyOpenIssues.size() == 0) {
+//			return issues;
+//		}
+//
+//		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
+//			if (jiraIssueListModelBuilder != null) {
+//				JIRAIssue issue;
+//				try {
+//					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
+//					if (issue != null) {
+//						issues.add(issue);
+//					}
+//				} catch (JIRAException e) {
+//					PluginUtil.getLogger().warn(e.getMessage());
+//				}
+//			}
+//		}
+//
+//		return issues;
+	}
 
-		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
-			if (jiraIssueListModelBuilder != null) {
-				JIRAIssue issue;
-				try {
-					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
-					if (issue != null) {
-						issues.add(issue);
-					}
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().warn(e.getMessage());
-				}
-			}
-		}
-
-		return issues;
+	public List<JIRAIssue> loadRecenltyOpenIssues() {
+		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.loadRecenltyOpenIssues());
 	}
 
 
@@ -1079,7 +1088,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			hideManualFilterPanel();
 
 			// refresh issues view
-			refreshIssues(jiraWorkspaceConfiguration.getRecentlyOpenIssues(), false);
+			refreshRecenltyOpenIssues(/*jiraWorkspaceConfiguration.getRecentlyOpenIssues(),*/ true);
 
 			jiraWorkspaceConfiguration.getView().setViewServerId("");
 			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);

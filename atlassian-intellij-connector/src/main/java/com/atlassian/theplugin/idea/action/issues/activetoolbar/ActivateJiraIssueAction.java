@@ -19,8 +19,6 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.joda.time.DateTime;
 
@@ -43,19 +41,18 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 								new DateTime());
 
 				ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
-				clearCache(event);
+//				clearCache(event);
 			}
 		}
 	}
 
+//	private void clearCache(final AnActionEvent event) {
+//		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+//		if (panel != null) {
+//			panel.clearCache();
+//		}
 
-
-	private void clearCache(final AnActionEvent event) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-		if (panel != null) {
-			panel.clearCache();
-		}
-	}
+	//	}
 	public void onUpdate(final AnActionEvent event) {
 	}
 

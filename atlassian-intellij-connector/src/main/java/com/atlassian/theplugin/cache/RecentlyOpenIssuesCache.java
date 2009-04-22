@@ -32,16 +32,17 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.containers.HashMap;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
  * User: pmaruszak
  */
 public class RecentlyOpenIssuesCache {
-	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new HashMap<IssueRecentlyOpenBean, JIRAIssue>();
+	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
 	private final LocalModelListener localModelListener = new LocalModelListener();
 	private final Project project;
 	private final ProjectCfgManager cfgManager;
@@ -55,67 +56,82 @@ public class RecentlyOpenIssuesCache {
 		this.issueModel.addModelListener(localModelListener);
 	}
 
+	/**
+	 * Reloads cache from the model and server in the background task
+	 */
 	public void init() {
+		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
+			public void run(final ProgressIndicator progressindicator) {
+				loadRecenltyOpenIssues();
+			}
+		});
+	}
+
+	public LinkedList<JIRAIssue> loadRecenltyOpenIssues() {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
+			items.clear();
 			final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
-			invalidate();
-			Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
-
-				public void run(final ProgressIndicator progressindicator) {
-					if (recentlyOpen != null) {
-						for (IssueRecentlyOpenBean i : recentlyOpen) {
-							try {
-								getJIRAIssue(i);
-							} catch (JIRAException e) {
-								PluginUtil.getLogger().warn(e.getMessage());
-							}
+			if (recentlyOpen != null) {
+				for (IssueRecentlyOpenBean i : recentlyOpen) {
+					try {
+						JIRAIssue loadedIssue = loadJiraIssue(i);
+						if (loadedIssue != null) {
+							items.put(i, loadedIssue);
 						}
+					} catch (JIRAException e) {
+						PluginUtil.getLogger().warn(e.getMessage());
 					}
 				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
-	}
-
-	public void invalidate() {
-		items.clear();
-	}
-
-	public JIRAIssue getJIRAIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
-		if (items.containsKey(recentlyOpen)) {
-			return items.get(recentlyOpen);
-		} else {
-			JiraServerCfg jiraServer = CfgUtil.getJiraServerCfgbyServerId(project, cfgManager, recentlyOpen.getServerId());
-			if (jiraServer != null) {
-				JIRAIssue issue = null;
-
-				if (issueModel != null) {
-					issue = getIssueFromModel(recentlyOpen, jiraServer);
-				}
-
-				if (issue == null) {
-					JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-					issue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
-					items.put(recentlyOpen, issue);
-				}
-
-				return issue;
-
-			}
-			return null;
-		}
-
-	}
-
-	private JIRAIssue getIssueFromModel(final IssueRecentlyOpenBean recentlyOpen, final JiraServerCfg jiraServer) {
-		for (JIRAIssue issue : issueModel.getIssues()) {
-			if (issue != null && issue.getKey().equals(recentlyOpen.getIssueKey()) && issue.getServer().equals(jiraServer)) {
-				return issue;
 			}
 		}
 
-		return null;
+		return new LinkedList<JIRAIssue>(items.values());
+	}
+
+	private JIRAIssue loadJiraIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
+
+		JiraServerCfg jiraServer = CfgUtil.getJiraServerCfgbyServerId(project, cfgManager, recentlyOpen.getServerId());
+
+		JIRAIssue issue = null;
+
+		if (jiraServer != null) {
+//			if (issueModel != null) {
+//				issue = getIssueFromModel(recentlyOpen, jiraServer);
+//			}
+//			if (issue == null) {
+			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+			issue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
+//			}
+		}
+		return issue;
+	}
+
+//	private JIRAIssue getIssueFromModel(final IssueRecentlyOpenBean recentlyOpen, final JiraServerCfg jiraServer) {
+//		for (JIRAIssue issue : issueModel.getIssues()) {
+//			if (issue != null && issue.getKey().equals(recentlyOpen.getIssueKey()) && issue.getServer().equals(jiraServer)) {
+//				return issue;
+//			}
+//		}
+//		return null;
+//	}
+
+	public LinkedList<JIRAIssue> getLoadedRecenltyOpenIssues() {
+		return new LinkedList<JIRAIssue>(items.values());
+	}
+
+	/**
+	 * Add issue to cache and configuration. This is the only method user has to call to store recenlty viewed issue.
+	 *
+	 * @param issue Issue to add
+	 */
+	public void addIssue(final JIRAIssue issue) {
+		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId().toString(), issue.getKey()), issue);
+
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+		if (conf != null) {
+			conf.addRecentlyOpenIssue(issue);
+		}
 	}
 
 	private class LocalModelListener implements JIRAIssueListModelListener {
@@ -129,6 +145,5 @@ public class RecentlyOpenIssuesCache {
 
 	public void close() {
 		issueModel.removeModelListener(localModelListener);
-
 	}
 }

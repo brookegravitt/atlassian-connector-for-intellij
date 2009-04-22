@@ -73,7 +73,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 						indicator.setFraction(0.0);
 						indicator.setIndeterminate(true);
 					}
-					issues = issuesWindow.getIssues(recentlyOpenIssues);
+					issues = issuesWindow.getLoadedRecenltyOpenIssues(/*recentlyOpenIssues*/);
 				}
 
 				public void onSuccess() {
