@@ -5,7 +5,6 @@ import com.atlassian.theplugin.idea.jira.Html2text;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -25,12 +24,10 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 	private static final int MAX_TOOLTIP_WIDTH = 400;
 	private static final int MAX_DESCRIPTION_LENGTH = 360;
 
-	private final JIRAIssueListModel model;
 	private final JIRAIssue issue;
 
-	public JIRAIssueTreeNode(JIRAIssueListModel model, JIRAIssue issue) {
+	public JIRAIssueTreeNode(JIRAIssue issue) {
 		super(issue.getKey() + ": " + issue.getSummary(), null, null);
-		this.model = model;
 		this.issue = issue;
 		renderer = new RendererPanel();
 	}

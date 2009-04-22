@@ -126,24 +126,24 @@ public class JIRAIssueTreeBuilder {
 		reCreateTree(tree, treeParent, root);
 		if (isGroupSubtasksUnderParent) {
 			for (JIRAIssue issue : issueModel.getIssuesNoSubtasks()) {
-				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issueModel, issue);
+				JIRAIssueTreeNode node = new JIRAIssueTreeNode(issue);
 				getPlace(issue, root).add(node);
 				if (!issue.getSubTaskKeys().isEmpty()) {
 					for (JIRAIssue sub : issueModel.getSubtasks(issue)) {
-						node.add(new JIRAIssueTreeNode(issueModel, sub));
+						node.add(new JIRAIssueTreeNode(sub));
 					}
 				}
 			}
 			Collection<JIRAIssue> orphans = issueModel.getSubtasks(null);
 			if (!orphans.isEmpty()) {
 				for (JIRAIssue i : orphans) {
-					JIRAIssueTreeNode node = new JIRAIssueTreeNode(issueModel, i);
+					JIRAIssueTreeNode node = new JIRAIssueTreeNode(i);
 					getPlace(i, root).add(node);
 				}
 			}
 		} else {
 			for (JIRAIssue issue : issueModel.getIssues()) {
-				getPlace(issue, root).add(new JIRAIssueTreeNode(issueModel, issue));
+				getPlace(issue, root).add(new JIRAIssueTreeNode(issue));
 			}
 		}
 		treeModel.nodeStructureChanged(root);
