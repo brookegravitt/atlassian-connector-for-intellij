@@ -60,6 +60,7 @@ public class ActivateIssueItemAction extends AnAction {
 
 			if (issue != null) {
 				getTemplatePresentation().setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
+				getTemplatePresentation().setDescription(issue.getSummary());
 			}
 
 		}
