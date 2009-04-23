@@ -101,7 +101,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		customComponentPanel.setLayout(new BorderLayout());
 		titleText.setText(commitMessage);
-		getOKAction().putValue(javax.swing.Action.NAME, "Create review...");
+		getOKAction().putValue(Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
@@ -722,120 +722,123 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
-        runCreateReviewTask(false);
-        super.doOKAction();
+		runCreateReviewTask(false);
+		super.doOKAction();
 	}
 
-    protected void runCreateReviewTask(final boolean runUntilSuccessful) {
-        final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
-        if (selectedItem != null) {
-            final CrucibleServerCfg server = selectedItem.getServer();
+	protected void runCreateReviewTask(final boolean runUntilSuccessful) {
+		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
+		if (selectedItem != null) {
+			final CrucibleServerCfg server = selectedItem.getServer();
 
-            Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", false) {
-                public boolean isCancelled = false;
+			Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", false) {
+				public boolean isCancelled = false;
 
-                @Override
-                public void run(@NotNull final ProgressIndicator indicator) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
 
-                    boolean submissionSuccess = false;
-                    do {
-                        indicator.setText("Attempting to create review... ");
-                        ModalityState modalityState = ModalityState
-                                .stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
+					boolean submissionSuccess = false;
+					do {
+						indicator.setText("Attempting to create review... ");
+						ModalityState modalityState = ModalityState
+								.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
 
-                        try {
-                            final Review draftReview = createReview(server, new ReviewProvider(server));
-                            if (draftReview == null) {
-                                EventQueue.invokeLater(new Runnable() {
-                                    public void run() {
-                                        Messages.showErrorDialog(
-                                                project, "Review not created. Null returned.", PluginUtil.PRODUCT_NAME);
-                                    }
-                                });
-                                return;
-                            }
-                            submissionSuccess = true;
+						try {
+							final Review draftReview = createReview(server, new ReviewProvider(server));
+							if (draftReview == null) {
+								EventQueue.invokeLater(new Runnable() {
+									public void run() {
+										Messages.showErrorDialog(
+												project, "Review not created. Null returned.", PluginUtil.PRODUCT_NAME);
+									}
+								});
+								return;
+							}
+							submissionSuccess = true;
 
-                            Set<String> users = new HashSet<String>();
-                            for (int i = 0; i < model.getSize(); ++i) {
-                                UserListItem item = (UserListItem) model.get(i);
-                                if (item.isSelected()) {
-                                    users.add(item.getUser().getUserName());
-                                }
-                            }
+							Set<String> users = new HashSet<String>();
+							for (int i = 0; i < model.getSize(); ++i) {
+								UserListItem item = (UserListItem) model.get(i);
+								if (item.isSelected()) {
+									users.add(item.getUser().getUserName());
+								}
+							}
 
-                            if (!users.isEmpty()) {
-                                crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
-                            }
+							if (!users.isEmpty()) {
+								crucibleServerFacade.addReviewers(server, draftReview.getPermId(), users);
+							}
 
-                            if (!leaveAsDraftCheckBox.isSelected()) {
-                                try {
-                                    Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-                                    if (newReview.getModerator().getUserName().equals(server.getCurrentUsername())) {
-                                        if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
-                                            crucibleServerFacade.approveReview(server, draftReview.getPermId());
-                                        } else {
-                                            Messages.showErrorDialog(project,
-                                                    newReview.getAuthor().getDisplayName() + " is authorized to approve review.\n"
-                                                            + "Leaving review in draft state.", "Permission denied");
-                                        }
-                                    } else {
-                                        if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
-                                            crucibleServerFacade.submitReview(server, draftReview.getPermId());
-                                        } else {
-                                            Messages.showErrorDialog(project,
-                                                    newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
-                                                            + "Leaving review in draft state.", "Permission denied");
-                                        }
-                                    }
-                                } catch (ValueNotYetInitialized valueNotYetInitialized) {
-                                    Messages.showErrorDialog(project,
-                                            "Unable to change review state. Leaving review in draft state.", "Permission denied");
-                                }
-                            }
+							if (!leaveAsDraftCheckBox.isSelected()) {
+								try {
+									Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+									if (newReview.getModerator().getUserName().equals(server.getCurrentUsername())) {
+										if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
+											crucibleServerFacade.approveReview(server, draftReview.getPermId());
+										} else {
+											Messages.showErrorDialog(project,
+													newReview.getAuthor().getDisplayName() +
+															" is authorized to approve review.\n"
+															+ "Leaving review in draft state.", "Permission denied");
+										}
+									} else {
+										if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
+											crucibleServerFacade.submitReview(server, draftReview.getPermId());
+										} else {
+											Messages.showErrorDialog(project,
+													newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
+															+ "Leaving review in draft state.", "Permission denied");
+										}
+									}
+								} catch (ValueNotYetInitialized valueNotYetInitialized) {
+									Messages.showErrorDialog(project,
+											"Unable to change review state. Leaving review in draft state.",
+											"Permission denied");
+								}
+							}
 
-                            ApplicationManager.getApplication().invokeLater(new Runnable() {
-                                public void run() {
-                                    final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
-                                    if (panel != null) {
-                                        panel.refresh(UpdateReason.REFRESH);
-                                    }
-                                }
-                            }, modalityState);
-                        } catch (final Throwable e) {
-                            if (!runUntilSuccessful) {
-                                ApplicationManager.getApplication().invokeAndWait(new Runnable() {
-                                    public void run() {
-                                        String message = "Error creating review: " + server.getUrl();
-                                        if (e != null && e.getMessage() != null &&
-                                                e.getMessage().contains("Specified change set id does not exist")) {
-                                            message += "\nSpecified change set could not be found on server. Check selected repository";
-                                        }
-                                        DialogWithDetails.showExceptionDialog(project, message, e);
-                                    }
-                                }, modalityState);
-                            } else {
-                                try {
-                                    indicator.setText("Waiting for Crucible to update to newest change set...");
-                                    for (int i = 0; i < 10; ++i) {
-                                        if (indicator.isCanceled()) {
-                                            break;
-                                        }
-                                        Thread.sleep(1000);
-                                    }
-                                } catch (InterruptedException e1) {
-                                    // eeeem, now what?
-                                }
-                            }
-                        }
-                    } while (runUntilSuccessful && !submissionSuccess && !indicator.isCanceled());
-                }
-            };
-            ProgressManager.getInstance().run(changesTask);
-        }
-    }
+							ApplicationManager.getApplication().invokeLater(new Runnable() {
+								public void run() {
+									final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
+									if (panel != null) {
+										panel.refresh(UpdateReason.REFRESH);
+									}
+								}
+							}, modalityState);
+						} catch (final Throwable e) {
+							if (!runUntilSuccessful) {
+								ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+									public void run() {
+										String message = "Error creating review: " + server.getUrl();
+										if (e != null && e.getMessage() != null &&
+												e.getMessage().contains("Specified change set id does not exist")) {
+											message
+													+= "\nSpecified change set could not be found on server. Check selected repository";
+										}
+										DialogWithDetails.showExceptionDialog(project, message, e);
+									}
+								}, modalityState);
+							} else {
+								try {
+									indicator.setText("Waiting for Crucible to update to newest change set...");
+									for (int i = 0; i < 10; ++i) {
+										if (indicator.isCanceled()) {
+											break;
+										}
+										Thread.sleep(1000);
+									}
+								} catch (InterruptedException e1) {
+									// eeeem, now what?
+								}
+							}
+						}
+					} while (runUntilSuccessful && !submissionSuccess && !indicator.isCanceled());
+				}
+			};
+			ProgressManager.getInstance().run(changesTask);
+		}
+	}
 
-    protected boolean isValid(ReviewProvider reviewProvider) {
+	protected boolean isValid(ReviewProvider reviewProvider) {
 		return true;
 	}
 
