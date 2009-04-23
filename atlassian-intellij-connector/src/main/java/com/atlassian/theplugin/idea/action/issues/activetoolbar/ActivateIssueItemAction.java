@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -41,25 +42,26 @@ public class ActivateIssueItemAction extends AnAction {
 		RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 
 		String summary = "";
+		JIRAIssue issue = null;
 
 		if (cache != null) {
-			for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
-				if (issue.getServer().getServerId().toString().equals(activeIssue.getServerId())
-						&& issue.getKey().equals(activeIssue.getIssueKey())) {
+			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
-					summary = issue.getSummary();
-					if (summary.length() > SUMMARY_LENGHT) {
-						summary = summary.substring(0, SUMMARY_LENGHT) + "...";
-					}
-					break;
+			if (issue != null) {
+				summary = issue.getSummary();
+				if (summary.length() > SUMMARY_LENGHT) {
+					summary = summary.substring(0, SUMMARY_LENGHT) + "...";
 				}
 			}
 		}
 
-
 		if (activeIssue != null) {
 			getTemplatePresentation().setText(activeIssue.getIssueKey() + ": " + summary);
-			getTemplatePresentation().setIcon(JIRA_ICON);
+
+			if (issue != null) {
+				getTemplatePresentation().setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
+			}
+
 		}
 	}
 
@@ -76,12 +78,12 @@ public class ActivateIssueItemAction extends AnAction {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-		if (activeIssue != null) {
-			event.getPresentation().setText(activeIssue.getIssueKey());
-		} else {
-			event.getPresentation().setEnabled(false);
-			event.getPresentation().setText("unknown");
-		}
+//		if (activeIssue != null) {
+//			event.getPresentation().setText(activeIssue.getIssueKey());
+//		} else {
+//			event.getPresentation().setEnabled(false);
+//			event.getPresentation().setText("unknown");
+//		}
 
 
 	}
