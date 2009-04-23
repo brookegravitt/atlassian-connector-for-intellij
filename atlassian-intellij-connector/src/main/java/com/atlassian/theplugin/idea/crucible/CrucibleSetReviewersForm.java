@@ -16,8 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;

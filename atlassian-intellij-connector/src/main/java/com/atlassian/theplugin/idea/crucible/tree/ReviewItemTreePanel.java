@@ -16,19 +16,13 @@ package com.atlassian.theplugin.idea.crucible.tree;
  */
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -56,8 +50,8 @@ import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -110,7 +104,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		filterTreeNodes(filter.getNextState());
 	}
 
-	public ReviewItemTreePanel(@NotNull CfgManager cfgManager, final Project project, final CrucibleFilteredModelProvider.Filter filter,
+	public ReviewItemTreePanel(@NotNull CfgManager cfgManager, final Project project,
+			final CrucibleFilteredModelProvider.Filter filter,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
 		this.cfgManager = cfgManager;
 		this.pluginProjectComponent = pluginProjectComponent;
@@ -131,10 +126,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			treeUISetup = new TreeUISetup(renderer);
 			reviewFilesAndCommentsTree = new AtlassianTreeWithToolbar(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR,
 					treeUISetup, new AtlassianTree.ViewStateListener() {
-						public void setViewState(AtlassianTreeWithToolbar.ViewState state) {
-							setCommentsState(state);
-						}
-					});
+				public void setViewState(AtlassianTreeWithToolbar.ViewState state) {
+					setCommentsState(state);
+				}
+			});
 
 			final ActionGroup group = (ActionGroup) ActionManager.getInstance()
 					.getAction(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR);

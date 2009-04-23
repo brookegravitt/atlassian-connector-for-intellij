@@ -16,9 +16,8 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.openapi.editor.Editor;

@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
@@ -327,8 +326,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		componentsLabel.setLabelFor(componentsScrollPane);
+		componentsLabel.setNextFocusableComponent(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);

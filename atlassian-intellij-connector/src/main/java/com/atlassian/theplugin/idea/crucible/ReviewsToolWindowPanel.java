@@ -17,9 +17,8 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
