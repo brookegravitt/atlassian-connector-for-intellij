@@ -26,14 +26,15 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
+		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
+
 		facade = new JIRATestServerFacade();
 
-		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
+
 		serverModel = new JIRAServerModelImpl();
 		serverModel.setFacade(facade);
-		fillServersAndFilters(savedFilters);
-
 		cfgManager = new CfgManagerTest(savedFilters);
+		fillServersAndFilters(savedFilters);
 
 		JiraWorkspaceConfiguration jiraCfg = new JiraWorkspaceConfiguration();
 		fillJiraCfg(jiraCfg);
@@ -77,7 +78,8 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 		assertEquals(3, listModel.getJIRAServers().size());
 		JiraServerCfg jiraServer = savedFilters.keySet().iterator().next();
-		assertEquals(listModel.getSavedFilters(cfgManager.getServerData(jiraServer)).size(), savedFilters.get(jiraServer).size());
+		assertEquals(listModel.getSavedFilters(cfgManager.getServerData(jiraServer)).size(),
+				savedFilters.get(jiraServer).size());
 
 	}
 
@@ -140,8 +142,12 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 		public List<JIRAQueryFragment> getSavedFilters(ServerData server) throws JIRAException {
 			List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
-			for (JIRAQueryFragment query : savedFilters.get(server)) {
-				list.add(query);
+			for (JiraServerCfg serverCfg : savedFilters.keySet()) {
+				if (server.getServerId().equals(serverCfg.getServerId().toString())) {
+					for (JIRAQueryFragment query : savedFilters.get(serverCfg)) {
+						list.add(query);
+					}
+				}
 			}
 			return list;
 		}
@@ -220,9 +226,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 class CfgManagerTest implements CfgManager {
 	Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
 
-
-	public CfgManagerTest(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
-
+	CfgManagerTest(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
 		this.savedFilters = savedFilters;
 	}
 
@@ -334,11 +338,12 @@ class CfgManagerTest implements CfgManager {
 	}
 
 	public ServerCfg getServer(final ProjectId projectId, final ServerData serverData) {
-		return null; 
+		return null;
 	}
 
 	public ServerData getServerData(final Server serverCfg) {
-		return null;
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+				serverCfg.getPassword(), serverCfg.getUrl());
 	}
 
 	public ServerData getServerData(final ProjectId projectId, final ServerId serverId) {
@@ -347,6 +352,10 @@ class CfgManagerTest implements CfgManager {
 
 	public Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId) {
 		return null;
+	}
+
+	public void setSavedFilters(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
+		this.savedFilters = savedFilters;
 	}
 }
 
