@@ -2,8 +2,12 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -51,7 +55,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	}
 
 
-	public synchronized void addIssuesToModel(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg, int size,
+	public synchronized void addIssuesToModel(final JIRAManualFilter manualFilter, final ServerData jiraServerCfg, int size,
 			boolean reload) throws JIRAException {
 		List<JIRAIssue> l = null;
 		try {
@@ -88,7 +92,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg, int size,
+	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, int size,
 			boolean reload) throws JIRAException {
 		List<JIRAIssue> l = null;
 		try {
@@ -162,7 +166,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void updateIssue(final JIRAIssue issue, final JiraServerCfg jiraServerCfg) throws JIRAException {
+	public synchronized void updateIssue(final JIRAIssue issue, final ServerData jiraServerCfg) throws JIRAException {
 		model.setModelFrozen(true);
 		if (model == null || jiraServerCfg == null) {
 			return;
@@ -244,5 +248,5 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void setProjectCfgManager(final ProjectCfgManager projectCfgManager) {
 		this.projectCfgManager = projectCfgManager;
-	}
+	}	
 }

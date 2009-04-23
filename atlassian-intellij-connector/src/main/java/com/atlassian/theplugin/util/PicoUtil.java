@@ -16,14 +16,10 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
 import com.atlassian.theplugin.crucible.model.ReviewListModelBuilderImpl;
 import com.atlassian.theplugin.idea.IdeaActionScheduler;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator;
-import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
-import com.atlassian.theplugin.jira.model.JIRAServerModelImpl;
 import org.picocontainer.MutablePicoContainer;
 
 @Deprecated
@@ -35,14 +31,10 @@ public final class PicoUtil {
 
 	private static final Class<?>[] GLOBAL_COMPONENTS = {
 			IdeaActionScheduler.class,
-			CfgManagerImpl.class,
 			NewVersionChecker.class
 	};
 
 	private static final Class<?>[] PROJECT_COMPONENTS = {
-			JIRAServerModelImpl.class,
-			JIRAFilterListBuilder.class,
-			IssueToolWindowFreezeSynchronizator.class,
 			ReviewListModelBuilderImpl.class,
 			CrucibleStatusChecker.class
 	};

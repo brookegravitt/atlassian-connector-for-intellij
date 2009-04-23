@@ -57,7 +57,7 @@ public class ProjectConfigurationPanel extends JPanel {
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer, final CfgManager cfgManager) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getDefaultUser(),
-				projectConfiguration.getServers(), selectedServer);
+				projectConfiguration.getServers(), selectedServer, cfgManager);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, cfgManager);
 		aboutBox = new AboutForm();

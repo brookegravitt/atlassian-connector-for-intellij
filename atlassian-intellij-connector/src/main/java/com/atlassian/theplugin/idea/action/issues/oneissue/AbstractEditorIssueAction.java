@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.action.issues.oneissue;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -13,11 +15,12 @@ public abstract class AbstractEditorIssueAction extends AnAction {
 	@Override
 	public void update(final AnActionEvent e) {
 		boolean enabled = false;
-		ServerCfg server = e.getData(Constants.SERVER_KEY);
+		ServerData server = e.getData(Constants.SERVER_KEY);
 		if (server != null) {
 			Project project = e.getData(DataKeys.PROJECT);
 			if (project != null) {
-				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
+				ServerCfg server2 = IdeaHelper.getCfgManager(e).getServer(CfgUtil.getProjectId(project),
+						new ServerId(server.getServerId()));
 				if (server2 != null && server2.isEnabled()) {
 					enabled = true;
 				}

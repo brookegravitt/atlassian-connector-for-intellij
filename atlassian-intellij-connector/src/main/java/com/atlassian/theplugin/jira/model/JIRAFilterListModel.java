@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,13 +15,13 @@ import java.util.Map;
  */
 public class JIRAFilterListModel implements FrozenModel {
 
-	private Map<JiraServerCfg, JIRAServerFiltersBean> serversFilters = new HashMap<JiraServerCfg, JIRAServerFiltersBean>();
+	private Map<ServerData, JIRAServerFiltersBean> serversFilters = new HashMap<ServerData, JIRAServerFiltersBean>();
 	private List<JIRAFilterListModelListener> listeners = new ArrayList<JIRAFilterListModelListener>();
 	private List<FrozenModelListener> frozenModelListeners = new ArrayList<FrozenModelListener>();
 
 	private boolean modelFrozen = false;
 
-	public void setSavedFilters(final JiraServerCfg jiraServer, @NotNull final List<JIRASavedFilter> filters) {
+	public void setSavedFilters(final ServerData jiraServer, @NotNull final List<JIRASavedFilter> filters) {
 
 		if (serversFilters.containsKey(jiraServer)) {
 
@@ -34,14 +35,14 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public void clearManualFilter(final JiraServerCfg jiraServer) {
+	public void clearManualFilter(final ServerData jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
 			serversFilters.get(jiraServer).getManualFilter().getQueryFragment().clear();
 		}
 
 	}
 
-	public void setManualFilter(final JiraServerCfg jiraServer, @NotNull final JIRAManualFilter filter) {
+	public void setManualFilter(final ServerData jiraServer, @NotNull final JIRAManualFilter filter) {
 
 		if (serversFilters.containsKey(jiraServer)) {
 			serversFilters.get(jiraServer).setManualFilter(filter);
@@ -52,18 +53,18 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public List<JiraServerCfg> getJIRAServers() {
-		return new ArrayList<JiraServerCfg>(serversFilters.keySet());
+	public List<ServerData> getJIRAServers() {
+		return new ArrayList<ServerData>(serversFilters.keySet());
 	}
 
-	public List<JIRASavedFilter> getSavedFilters(final JiraServerCfg jiraServer) {
+	public List<JIRASavedFilter> getSavedFilters(final ServerData jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getSavedFilters();
 		}
 		return null;
 	}
 
-	public JIRAManualFilter getManualFilter(final JiraServerCfg jiraServer) {
+	public JIRAManualFilter getManualFilter(final ServerData jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
 			return serversFilters.get(jiraServer).getManualFilter();
 		}
@@ -95,7 +96,7 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public void fireManualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
+	public void fireManualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.manualFilterChanged(manualFilter, jiraServer);
 		}

@@ -117,7 +117,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		@Override
 		public PopupStep onChosen(final JIRAIssue selectedValue, final boolean finalChoice) {
 			// add review to the model (to show it in the main list) and open the review
-			issuesWindow.openIssue(selectedValue);
+			issuesWindow.openIssueWithSelectedServer(selectedValue);
 
 			return null;
 		}

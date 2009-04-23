@@ -27,7 +27,9 @@ import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueToolWindow;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -65,18 +67,45 @@ public final class IdeaHelper {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
 
-	public static CfgManager getCfgManager() {
-		return (CfgManager) ApplicationManager.getApplication().getPicoContainer()
-				.getComponentInstanceOfType(CfgManager.class);
+	@Nullable
+	public static CfgManager getCfgManager(final AnActionEvent event) {
+		ThePluginProjectComponent ppc = getCurrentProjectComponent(event);
+		if (ppc != null) {
+			return ppc.getCfgManager();
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static CfgManager getCfgManager(final Project project) {
+		ThePluginProjectComponent ppc = getCurrentProjectComponent(project);
+		if (ppc != null) {
+			return ppc.getCfgManager();
+		}
+
+		return null;
 	}
 
 	@Nullable
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
 		return getProjectComponent(event, IssuesToolWindowPanel.class);
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getIssuesToolWindowPanel();
+//		}
+//
+//		return null;
 	}
 
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
 		return getProjectComponent(project, IssuesToolWindowPanel.class);
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getIssuesToolWindowPanel();
+//		}
+//
+//		return null;
 	}
 
 	public static IssueToolWindow getIssueToolWindow(AnActionEvent event) {
@@ -189,10 +218,41 @@ public final class IdeaHelper {
 	}
 
 	public static JIRAIssueListModelBuilder getJIRAIssueListModelBuilder(final Project project) {
-		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
-		if (pluginProjectComponent != null) {
-			return pluginProjectComponent.getJiraIssueListModelBuilder();
-		}
-		return null;
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getJiraIssueListModelBuilder();
+//		}
+		return getProjectComponent(project, JIRAIssueListModelBuilder.class);
+	}
+
+	public static JIRAFilterListBuilder getJIRAFilterListBuilder(final Project project) {
+		return getProjectComponent(project, JIRAFilterListBuilder.class);
+	}
+
+	public static JIRAFilterListBuilder getJIRAFilterListBuilder(final AnActionEvent event) {
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getJiraFilterListBuilder();
+//		}
+
+		return getProjectComponent(event, JIRAFilterListBuilder.class);
+	}
+
+	public static JIRAServerModel getJIRAServerModel(final AnActionEvent event) {
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getJiraServerModel();
+//		}
+		return getProjectComponent(event, JIRAServerModel.class);
+	}
+
+	public static JIRAServerModel getJIRAServerModel(final Project project) {
+//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
+//		if (pluginProjectComponent != null) {
+//			return pluginProjectComponent.getJiraServerModel();
+//		}
+//
+//		return null;
+		return getProjectComponent(project, JIRAServerModel.class);
 	}
 }

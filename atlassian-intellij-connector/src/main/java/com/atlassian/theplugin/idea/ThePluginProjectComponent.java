@@ -41,7 +41,9 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
+import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -103,6 +105,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 	private final ProjectCfgManager projectCfgManager;
+	private final JIRAFilterListBuilder jiraFilterListBuilder;
+	private final JIRAServerModel jiraServerModel;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
@@ -128,7 +132,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+			@NotNull final JIRAFilterListBuilder jiraFilterListBuilder,
+			@NotNull final JIRAServerModel jiraServerModel) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -142,6 +148,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.projectCfgManager = projectCfgManager;
+		this.jiraFilterListBuilder = jiraFilterListBuilder;
+		this.jiraServerModel = jiraServerModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
@@ -175,7 +183,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public void initComponent() {
 		LoggerImpl.getInstance().info("Init ThePlugin project component.");
-		this.fileEditorListener = new FileEditorListenerImpl(project);
+		this.fileEditorListener = new FileEditorListenerImpl(project, cfgManager);
 		//ActivateJiraIssueAction.showToolbar(project);
 	}
 
@@ -297,8 +305,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ActionManager aManager = ActionManager.getInstance();
 			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
 			if (changesToolBar != null) {
-                AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
-                changesToolBar.remove(action);
+				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
+				changesToolBar.remove(action);
 				changesToolBar.add(action, aManager);
 			}
 
@@ -375,12 +383,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			crucibleReviewNotifier.unregisterListener(crucibleTooltip);
 			crucibleReviewListModel.removeListener(crucibleReviewNotifier);
 
-            ActionManager aManager = ActionManager.getInstance();
-            DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
-            if (changesToolBar != null) {
-                AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
-                changesToolBar.remove(action);
-            }
+			ActionManager aManager = ActionManager.getInstance();
+			DefaultActionGroup changesToolBar = (DefaultActionGroup) aManager.getAction("RepositoryChangesBrowserToolbar");
+			if (changesToolBar != null) {
+				AnAction action = aManager.getAction("ThePlugin.Crucible.ViewFisheyeChangesetItem");
+				changesToolBar.remove(action);
+			}
 
 			created = false;
 		}
@@ -413,4 +421,5 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.showHidePanels();
 		}
 	}
+
 }

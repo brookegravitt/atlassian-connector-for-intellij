@@ -18,19 +18,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DataKey;
-import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.actionSystem.DataSink;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vcs.AbstractVcs;
@@ -87,7 +81,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	}
 
 	@Override
-	protected Review createReview(final CrucibleServerCfg server, final ReviewProvider reviewProvider)
+	protected Review createReview(final ServerData server, final ReviewProvider reviewProvider)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		final MyDataSink dataSink = new MyDataSink();
 		//noinspection deprecation

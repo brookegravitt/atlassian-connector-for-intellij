@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.ide.BrowserUtil;
@@ -25,7 +26,7 @@ public class QuickSearchAction extends AnAction {
 			return;
 		}
 
-		final JiraServerCfg server = panel.getSelectedServer();
+		final ServerData server = panel.getSelectedServer();
 		if (server != null) {
 			String query = Messages.showInputDialog(project,
 					"Quick Search (entering just issue key will open this issue directly in IDE):",

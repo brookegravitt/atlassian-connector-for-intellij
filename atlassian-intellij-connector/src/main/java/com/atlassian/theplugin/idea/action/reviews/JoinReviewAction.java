@@ -36,7 +36,7 @@ public class JoinReviewAction extends AnAction {
 		} else {
 			if (review.isAllowReviewerToJoin()) {
 				try {
-					String userName = review.getServer().getCurrentUsername();
+					String userName = review.getServerData().getUserName();
 					if (review.getAuthor().getUserName().equals(userName)) {
 						event.getPresentation().setVisible(false);
 						event.getPresentation().setEnabled(false);

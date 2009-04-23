@@ -34,6 +34,6 @@ public class AddPatchToReviewAction extends Crucible16RepositoryAction {
 		}
 		final Project project = DataKeys.PROJECT.getData(event.getDataContext());
 		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), changes[0].getChanges(),
-				IdeaHelper.getCfgManager()).show();
+				IdeaHelper.getCfgManager(event)).show();
 	}
 }

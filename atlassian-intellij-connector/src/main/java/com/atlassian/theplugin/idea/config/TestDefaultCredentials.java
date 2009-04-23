@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
@@ -51,6 +52,13 @@ public class TestDefaultCredentials {
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final BambooServerFacade bambooServerFacade;
 	private Map<ServerCfg, String> errors = new HashMap<ServerCfg, String>();
+	private static CfgManager cfgManager = new AbstractCfgManager() {
+
+		public ServerData getServerData(final Server serverCfg) {
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+					serverCfg.getPassword(), serverCfg.getUrl());
+		}
+	};
 
 	public TestDefaultCredentials(final Project project, final JComponent parentComponent,
 			JIRAServerFacade jiraServerFacade, final CrucibleServerFacade crucibleServerFacade,
@@ -96,7 +104,7 @@ public class TestDefaultCredentials {
 	private boolean testGenericConnection(final ServerCfg serverCfg, final ProductServerFacade productServerFacade) {
 		TestConnectionTask testConnectionTask = new TestConnectionTask(project, new ProductConnector(productServerFacade),
 				new TestConnectionListener.ServerCfgProvider() {
-					public ServerCfg getServerCfg() {
+					public ServerCfg getServer() {
 						return serverCfg;
 					}
 				}, new TestConnectionProcessor() {

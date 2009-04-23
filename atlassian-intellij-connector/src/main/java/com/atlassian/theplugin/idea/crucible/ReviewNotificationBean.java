@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.List;
 
 public class ReviewNotificationBean {
 	private List<ReviewAdapter> reviews;
 	private Exception exception;
-	private Server server;
+	private ServerData server;
 
 	public ReviewNotificationBean() {
 	}
@@ -45,11 +45,11 @@ public class ReviewNotificationBean {
 		this.exception = exception;
 	}
 
-	public Server getServer() {
+	public ServerData getServer() {
 		return server;
 	}
 
-	public void setServer(final Server server) {
+	public void setServer(final ServerData server) {
 		this.server = server;
 	}
 }

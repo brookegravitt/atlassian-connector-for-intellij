@@ -32,7 +32,7 @@ public class PreCommitReview extends Crucible16RepositoryAction {
 			return;
 		}
 		new CrucibleCreatePreCommitUploadReviewForm(project, CrucibleServerFacadeImpl.getInstance(), null,
-				IdeaHelper.getCfgManager()).show();
+				IdeaHelper.getCfgManager(event)).show();
 	}
 }
 

@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.jira.api.soap;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.jira.api.*;
@@ -42,7 +42,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	private String token;
 	private JiraSoapService service;
-	private JiraServerCfg server;
+	private ServerData server;
 	private URL portAddress;
 
 	public static final int ONE_DAY_AGO = -24;
@@ -119,7 +119,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
-	public JIRASessionImpl(JiraServerCfg server) throws ServiceException, MalformedURLException {
+	public JIRASessionImpl(ServerData server) throws ServiceException, MalformedURLException {
 		portAddress = new URL(server.getUrl() + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();
 		AbstractHttpSession.setUrl(portAddress); // dirty hack
@@ -197,7 +197,8 @@ public class JIRASessionImpl implements JIRASession {
 			RemoteComponent[] remoteComponents = new RemoteComponent[components.size()];
 			int i = 0;
 			for (JIRAConstant component : components) {
-				remoteComponents[i++] = new RemoteComponent(String.valueOf(component.getId()), component.getName());
+				remoteComponents[i] = new RemoteComponent(String.valueOf(component.getId()), component.getName());
+				i++;
 			}
 			remoteIssue.setComponents(remoteComponents);
 		}

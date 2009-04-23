@@ -234,7 +234,7 @@ public class PluginToolWindow {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
-				final CfgManager myCfgManager = IdeaHelper.getCfgManager();
+				final CfgManager myCfgManager = IdeaHelper.getCfgManager(project);
 				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
 					// tab is not visible
 					final ContentManager contentManager = ideaToolWindow.getContentManager();

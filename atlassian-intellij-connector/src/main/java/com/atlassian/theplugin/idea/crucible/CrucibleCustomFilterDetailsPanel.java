@@ -3,9 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -43,17 +41,19 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private final Project project;
 	private final CrucibleServerFacade crucibleFacade;
 	private final UiTaskExecutor uiTaskExecutor;
+	private final CfgManager cfgManager;
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
 	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final ProjectCfgManager projectCfgManager,
 			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
-			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor, @NotNull CfgManager cfgManager) {
 		super(new BorderLayout());
 		this.projectCfgManager = projectCfgManager;
 		this.projectCrucibleCfg = crucibleCfg;
 		this.project = project;
 		this.crucibleFacade = crucibleFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
+		this.cfgManager = cfgManager;
 
 		updateDetails(crucibleCfg.getCrucibleFilters().getManualFilter());
 		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
@@ -103,7 +103,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		add(panel, BorderLayout.CENTER);
 		validate();
 
-		uiTaskExecutor.execute(new MyUiTask(filter, panel, projectCfgManager, crucibleFacade, project));
+		uiTaskExecutor.execute(new MyUiTask(filter, panel, projectCfgManager, crucibleFacade, project, cfgManager));
 	}
 
 	public void addCustomFilterChangeListener(CustomFilterChangeListener listener) {
@@ -130,15 +130,17 @@ class MyUiTask implements UiTask {
 	@NotNull
 	private final CrucibleServerFacade crucibleFacade;
 	private final Project project;
+	private final CfgManager cfgManager;
 
 	public MyUiTask(@Nullable CustomFilterBean filter, @NotNull final ScrollableTwoColumnPanel panel,
 			@NotNull ProjectCfgManager projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
-			@NotNull final Project project) {
+			@NotNull final Project project, @NotNull CfgManager cfgManager) {
 		this.filter = filter;
 		this.panel = panel;
 		this.projectCfgManager = projectCfgManager;
 		this.crucibleFacade = crucibleFacade;
 		this.project = project;
+		this.cfgManager = cfgManager;
 		if (filter != null) {
 			panel.updateContent(getEntries(filter, false));
 		}
@@ -178,7 +180,7 @@ class MyUiTask implements UiTask {
 			if (fetchRemoteData) {
 				try {
 					CrucibleProject crucibleProject = crucibleServerCfg != null
-							? crucibleFacade.getProject(crucibleServerCfg, customFilter.getProjectKey())
+							? crucibleFacade.getProject(cfgManager.getServerData(crucibleServerCfg), customFilter.getProjectKey())
 							: null;
 					if (crucibleProject != null) {
 						projectName = crucibleProject.getName();
@@ -225,7 +227,7 @@ class MyUiTask implements UiTask {
 		if (username.length() > 0) {
 
 			final String displayName = fetchRemoteData
-					? serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null
+					? serverCfg != null ? crucibleFacade.getDisplayName(cfgManager.getServerData(serverCfg), username) : null
 					: username;
 			entriesToFill.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
 		}

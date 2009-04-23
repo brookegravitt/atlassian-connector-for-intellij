@@ -30,7 +30,7 @@ public class CommentBuildAction extends AbstractBuildListAction {
 	public void update(final AnActionEvent event) {
 		super.update(event);
 		final BambooBuildAdapterIdea build = getBuild(event);
-		if (build == null || !build.isBamboo2() || !build.areActionsAllowed()) {
+		if (build == null || !isBamboo2(event, build.getServer()) || !build.areActionsAllowed()) {
 			event.getPresentation().setEnabled(false);
 		}
 	}

@@ -17,6 +17,8 @@ package com.atlassian.theplugin.cfg;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.project.Project;
 

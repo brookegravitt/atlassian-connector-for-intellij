@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -76,13 +77,13 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private final JIRAServerModel jiraServerModel;
 	private final JIRAFilterListModel filterListModel;
 	private JIRAProject currentJiraProject;
-	private JiraServerCfg jiraServerCfg;
+	private ServerData jiraServerCfg;
 	private FilterActionClear clearFilterAction = new FilterActionClear();
 	private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
 	private boolean windowClosed;
 
 	public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel,
-			final JIRAFilterListModel filterListModel, final JiraServerCfg jiraServerCfg) {
+			final JIRAFilterListModel filterListModel, final ServerData jiraServerCfg) {
 
 		super(project, false);
 		this.jiraServerModel = jiraServerModel;
@@ -326,8 +327,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
+		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -621,12 +622,12 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
 				reporterComboBox.removeAllItems();
 				reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
-				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getCurrentUsername()));
+				reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUserName()));
 
 				assigneeComboBox.removeAllItems();
 				assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
 				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getCurrentUsername()));
+				assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUserName()));
 
 
 				if (!isWindowClosed()) {

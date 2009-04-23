@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.util.Connector;
 
 
 public class ConnectionWrapper extends Thread {
 
 	private Connector connector;
-	private final ServerCfg serverCfg;
+	private final ServerData serverCfg;
 	private Exception exception;
 
 	public Exception getException() {
@@ -47,10 +47,10 @@ public class ConnectionWrapper extends Thread {
 
 	private ConnectionState connectionState = ConnectionState.NOT_FINISHED;
 
-	public ConnectionWrapper(Connector connector, ServerCfg serverCfg, String threadName) {
+	public ConnectionWrapper(Connector connector, ServerData serverData, String threadName) {
 		super(threadName);
 		this.connector = connector;
-		this.serverCfg = serverCfg;
+		this.serverCfg = serverData;
 	}
 
 	/**

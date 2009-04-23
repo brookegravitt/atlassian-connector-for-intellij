@@ -184,6 +184,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 //									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel,
 
 		//									 final boolean fail) {
+
 		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
 				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
 			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
@@ -226,7 +227,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private VersionedCommentBean createReplyBean(String text) {
 		final VersionedCommentBean reply = new VersionedCommentBean();
 		reply.setMessage(text);
-		reply.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+		reply.setAuthor(new UserBean(review.getServerData().getUserName()));
 		reply.setDefectRaised(false);
 		reply.setDefectApproved(false);
 		reply.setDeleted(false);
@@ -239,7 +240,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	}
 
 	protected boolean checkIfUserAnAuthor() {
-		return review.getServer().getCurrentUsername().equals(comment.getAuthor().getUserName());
+		return review.getServerData().getUserName().equals(comment.getAuthor().getUserName());
 	}
 
 	protected boolean checkIfAuthorized() {

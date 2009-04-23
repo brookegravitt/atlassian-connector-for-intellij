@@ -17,10 +17,10 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
-import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindow;
@@ -44,7 +44,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 	private final PluginToolWindow pluginToolWindow;
 	private final PluginConfiguration pluginConfiguration;
 
-	private final Map<Server, NewExceptionNotification> exceptions = new HashMap<Server, NewExceptionNotification>();
+	private final Map<ServerData, NewExceptionNotification> exceptions = new HashMap<ServerData, NewExceptionNotification>();
 
 	public CrucibleNotificationTooltip(@NotNull final CrucibleStatusIcon display, @NotNull final Project project,
 			@NotNull final PluginToolWindow pluginToolWindow, final PluginConfiguration pluginConfiguration) {

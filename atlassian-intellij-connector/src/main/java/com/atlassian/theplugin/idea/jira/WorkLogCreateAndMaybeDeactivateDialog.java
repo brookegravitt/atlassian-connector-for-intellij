@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -334,7 +334,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return result;
 	}
 
-	public WorkLogCreateAndMaybeDeactivateDialog(final JiraServerCfg jiraServer, final JIRAIssue issue,
+	public WorkLogCreateAndMaybeDeactivateDialog(final ServerData jiraServer, final JIRAIssue issue,
 			final Project project, final String timeSpent,
 			boolean deactivateActiveIssue) {
 		super(false);
@@ -371,7 +371,9 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 		timeSpentField.setText(timeSpent);
 
-		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(jiraServer, issue);
+		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
+				jiraServer, issue);
+		
 		if (startProgressTimestamp != null) {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}

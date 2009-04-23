@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,8 @@
 
 package com.atlassian.theplugin;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.util.Connector;
 import junit.framework.TestCase;
 
@@ -33,7 +32,7 @@ public class TestConnectionThreadTest extends TestCase {
 	public void setUp() throws Exception {
 
 		emptyConnectionTester = new Connector() {
-			public void connect(final ServerCfg serverCfg) throws RemoteApiException {
+			public void connect(final ServerData serverCfg) throws RemoteApiException {
 			}
 
 			public void onSuccess() {
@@ -41,9 +40,10 @@ public class TestConnectionThreadTest extends TestCase {
 		};
 
 		failedConnectionTester = new Connector() {
-			public void connect(final ServerCfg serverCfg) throws RemoteApiException {
+			public void connect(final ServerData serverCfg) throws RemoteApiException {
 				throw new RemoteApiException(ERROR_MESSAGE);
 			}
+
 			public void onSuccess() {
 			}
 		};
@@ -52,23 +52,13 @@ public class TestConnectionThreadTest extends TestCase {
 
 	@Override
 	public void tearDown() throws Exception {
-        super.tearDown();
-    }
+		super.tearDown();
+	}
 
-	private final ServerCfg serverCfg = new ServerCfg(true, null, null) {
-		@Override
-		public ServerType getServerType() {
-			return null;
-		}
-
-		@Override
-		public ServerCfg getClone() {
-			return null;
-		}
-	};
+	private final ServerData serverData = new ServerData(null, null, null, null, null);
 
 	public void testRunInterupted() {
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverCfg,
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverData,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
@@ -91,7 +81,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunSucceeded() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverCfg,
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverData,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());
@@ -112,7 +102,7 @@ public class TestConnectionThreadTest extends TestCase {
 
 	public void testRunFailed() {
 
-		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, serverCfg,
+		ConnectionWrapper testConnectionThread = new ConnectionWrapper(failedConnectionTester, serverData,
 				"test thread");
 
 		assertEquals(ConnectionWrapper.ConnectionState.NOT_FINISHED, testConnectionThread.getConnectionState());

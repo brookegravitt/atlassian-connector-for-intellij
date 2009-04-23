@@ -17,12 +17,10 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -33,12 +31,20 @@ import junit.framework.TestSuite;
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
+	private CfgManager cfgManager = new AbstractCfgManager() {
+
+		public ServerData getServerData(final Server serverCfg) {
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(),
+					serverCfg.getUserName(), serverCfg.getPassword(), serverCfg.getUrl());
+		}
+	};
+
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager);
 	}
 
 	public void testBambooSetGetData() throws Exception {
@@ -121,9 +127,9 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	private static void checkServerBean(BambooServerCfg outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
-		assertEquals("password", outServer.getCurrentPassword());
+		assertEquals("password", outServer.getPassword());
 		assertEquals("http://url", outServer.getUrl());
-		assertEquals("userName", outServer.getCurrentUsername());
+		assertEquals("userName", outServer.getUserName());
 	}
 
 	public static Test suite() {
@@ -140,8 +146,8 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrl());
-		assertEquals("", outServer.getCurrentUsername());
-		assertEquals("", outServer.getCurrentPassword());
+		assertEquals("", outServer.getUserName());
+		assertEquals("", outServer.getPassword());
 		assertEquals(0, outServer.getSubscribedPlans().size());
 
 		GenericServerConfigFormFieldMapper helper = new GenericServerConfigFormFieldMapper(

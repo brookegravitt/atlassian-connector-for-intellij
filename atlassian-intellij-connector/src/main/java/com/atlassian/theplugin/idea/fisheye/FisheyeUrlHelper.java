@@ -32,7 +32,7 @@ public final class FisheyeUrlHelper {
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -71,7 +71,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -108,7 +108,7 @@ public final class FisheyeUrlHelper {
 	public static String getFisheyeUrl(final PsiElement psiElement, final Project project) {
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -148,7 +148,7 @@ public final class FisheyeUrlHelper {
 	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}

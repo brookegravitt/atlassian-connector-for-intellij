@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -40,6 +41,7 @@ public class BambooServerConfigForm {
 	private final Project project;
 	private final UserCfg defaultUser;
 	private final transient BambooServerFacade bambooServerFacade;
+	private final CfgManager cfgManager;
 
 	public BambooServerCfg getBambooServerCfg() {
 		return bambooServerCfg;
@@ -47,10 +49,12 @@ public class BambooServerConfigForm {
 
 	private BambooServerCfg bambooServerCfg;
 
-	public BambooServerConfigForm(Project project, final UserCfg defaultUser, BambooServerFacade bambooServerFacadeInstance) {
+	public BambooServerConfigForm(Project project, final UserCfg defaultUser, BambooServerFacade bambooServerFacadeInstance,
+			@NotNull CfgManager cfgManager) {
 		this.project = project;
 		this.defaultUser = defaultUser;
 		this.bambooServerFacade = bambooServerFacadeInstance;
+		this.cfgManager = cfgManager;
 
 		$$$setupUI$$$();
 	}
@@ -82,7 +86,7 @@ public class BambooServerConfigForm {
 
 	private void createUIComponents() {
 		genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(bambooServerFacade));
-		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this);
+		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this, cfgManager);
 	}
 
 	// CHECKSTYLE:OFF

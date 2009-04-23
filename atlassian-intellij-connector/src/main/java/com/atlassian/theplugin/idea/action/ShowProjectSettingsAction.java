@@ -17,9 +17,11 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
@@ -39,8 +41,8 @@ public class ShowProjectSettingsAction extends AnAction {
 		Project project = IdeaHelper.getCurrentProject(event);
 		if (project != null) {
 			ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
-			ServerCfg server = event.getData(Constants.SERVER_KEY);
-			component.setSelectedServer(server);
+			ServerData server = event.getData(Constants.SERVER_KEY);
+			component.setSelectedServer(IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server));
 			final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 			if (settingsUtil != null) {
 				settingsUtil.editConfigurable(project, component);

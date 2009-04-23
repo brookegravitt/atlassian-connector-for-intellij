@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -32,18 +33,18 @@ public abstract class JIRAAbstractAction extends AnAction {
 //		onUpdate(event, enabled);
 
 		boolean enabled = false;
-		ServerCfg server = null;
+		ServerData server = null;
 		JIRAIssue selectedIssue = event.getData(Constants.ISSUE_KEY);
 		if (selectedIssue != null) {
 			server = selectedIssue.getServer();
 		}
-		if (server == null) {
+		if (server == null && event.getData(Constants.SERVER_KEY) != null) {
 			server = event.getData(Constants.SERVER_KEY);
 		}
 		if (server != null) {
 			Project project = event.getData(DataKeys.PROJECT);
 			if (project != null) {
-				ServerCfg server2 = IdeaHelper.getCfgManager().getServer(CfgUtil.getProjectId(project), server.getServerId());
+				ServerCfg server2 = IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server);
 				if (server2 != null && server2.isEnabled()) {
 					if (ModelFreezeUpdater.getState(event)) {
 						enabled = true;

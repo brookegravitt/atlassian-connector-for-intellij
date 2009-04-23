@@ -18,10 +18,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.*;
@@ -78,6 +81,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
+	private final CfgManager cfgManager;
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
 
@@ -88,10 +92,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
-			@NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final UiTaskExecutor uiTaskExecutor,
+			@NotNull final CfgManager cfgManager) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
+		this.cfgManager = cfgManager;
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
@@ -119,7 +125,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
 				getProject(), projectCfgManager, crucibleProjectConfiguration,
-				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
+				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor, cfgManager);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh(UpdateReason.FILTER_CHANGED);
@@ -240,7 +246,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			}
 			if (dataId.equals(Constants.SERVER)) {
 				if (reviewTree.getSelectedReview() != null) {
-					return reviewTree.getSelectedReview().getServer();
+					return reviewTree.getSelectedReview().getServerData();
 				}
 			}
 		}
@@ -293,7 +299,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel));
+			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, cfgManager, CfgUtil.getProjectId(project)));
 
 		}
 		return reviewTree;
@@ -386,7 +392,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
 				for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
 					if (localReview.getPermId().getId().equals(recentlyOpenReview.getReviewId())
-							&& localReview.getServer().getServerId().toString().equals(recentlyOpenReview.getServerId())) {
+							&& localReview.getServerData().getServerId().equals(recentlyOpenReview.getServerId())) {
 						reviews.add(localReview);
 						found = true;
 						break;
@@ -401,9 +407,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 						: projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
 					if (server.getServerId().toString().equals(recentlyOpenReview.getServerId())) {
 						try {
+							final ServerData serverData = cfgManager.getServerData(server);
 							Review r = CrucibleServerFacadeImpl.getInstance().getReview(
-									server, new PermIdBean(recentlyOpenReview.getReviewId()));
-							reviews.add(new ReviewAdapter(r, server));
+									serverData, new PermIdBean(recentlyOpenReview.getReviewId()));
+							reviews.add(new ReviewAdapter(r, serverData));
 						} catch (RemoteApiException e) {
 							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
 							setStatusMessage("Cannot get review from the server: " + e.getMessage(), true);

@@ -16,15 +16,14 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -310,9 +309,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	// CHECKSTYLE:OFF
 
 	private static final class ServerComboBoxItem {
-		private final CrucibleServerCfg server;
+		private final ServerData server;
 
-		private ServerComboBoxItem(CrucibleServerCfg server) {
+		private ServerComboBoxItem(ServerData server) {
 			this.server = server;
 		}
 
@@ -321,7 +320,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			return server.getName();
 		}
 
-		public CrucibleServerCfg getServer() {
+		public ServerData getServer() {
 			return server;
 		}
 
@@ -418,11 +417,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			getOKAction().setEnabled(false);
 		} else {
 			for (CrucibleServerCfg server : enabledServers) {
-				crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
+				crucibleServersComboBox.addItem(new ServerComboBoxItem(cfgManager.getServerData(server)));
 			}
 			ProjectConfiguration prjCfg = cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project));
 			if (prjCfg != null) {
-				final CrucibleServerCfg defCrucServer = prjCfg.getDefaultCrucibleServer();
+				final ServerData defCrucServer = cfgManager.getServerData(prjCfg.getDefaultCrucibleServer());
 				if (defCrucServer != null) {
 					crucibleServersComboBox.setSelectedItem(new ServerComboBoxItem(defCrucServer));
 				}
@@ -430,7 +429,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 	}
 
-	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
+	private void fillServerRelatedCombos(final ServerData server) {
 		projectsComboBox.removeAllItems();
 		if (shouldShowRepo()) {
 			repoComboBox.removeAllItems();
@@ -467,7 +466,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						}
 					}
 					final CrucibleServerData crucibleServerData = new CrucibleServerData(repositories, projects, users);
-					crucibleData.put(server.getServerId(), crucibleServerData);
+					crucibleData.put(new ServerId(server.getServerId()), crucibleServerData);
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 							updateServerRelatedCombos(server, crucibleServerData);
@@ -512,7 +511,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private Map<ServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
 
 
-	private void updateServerRelatedCombos(final CrucibleServerCfg server, final CrucibleServerData crucibleServerData) {
+	private void updateServerRelatedCombos(final ServerData server, final CrucibleServerData crucibleServerData) {
 
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 		if (selectedItem == null || !selectedItem.getServer().equals(server)) {
@@ -595,7 +594,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			for (User user : crucibleServerData.getUsers()) {
 				authorComboBox.addItem(new UserComboBoxItem(user));
 				moderatorComboBox.addItem(new UserComboBoxItem(user));
-				if (user.getUserName().equals(server.getCurrentUsername())) {
+				if (user.getUserName().equals(server.getUserName())) {
 					indexToSelect = index + 1;
 				}
 
@@ -632,9 +631,9 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	protected class ReviewProvider extends ReviewBean {
-		private final CrucibleServerCfg server;
+		private final ServerData server;
 
-		public ReviewProvider(CrucibleServerCfg server) {
+		public ReviewProvider(ServerData server) {
 			super(server.getUrl());
 			this.server = server;
 		}
@@ -652,7 +651,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		@Override
 		public User getCreator() {
 			UserBean user = new UserBean();
-			user.setUserName(server.getCurrentUsername());
+			user.setUserName(server.getUserName());
 			return user;
 		}
 
@@ -716,7 +715,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 
-	protected abstract Review createReview(CrucibleServerCfg server, ReviewProvider reviewProvider)
+	protected abstract Review createReview(ServerData server, ReviewProvider reviewProvider)
 			throws RemoteApiException,
 			ServerPasswordNotProvidedException;
 
@@ -729,7 +728,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	protected void runCreateReviewTask(final boolean runUntilSuccessful) {
 		final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
 		if (selectedItem != null) {
-			final CrucibleServerCfg server = selectedItem.getServer();
+			final ServerData server = selectedItem.getServer();
 
 			Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", false) {
 				public boolean isCancelled = false;
@@ -771,7 +770,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 							if (!leaveAsDraftCheckBox.isSelected()) {
 								try {
 									Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-									if (newReview.getModerator().getUserName().equals(server.getCurrentUsername())) {
+									if (newReview.getModerator().getUserName().equals(server.getUserName())) {
 										if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
 											crucibleServerFacade.approveReview(server, draftReview.getPermId());
 										} else {

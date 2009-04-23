@@ -2,6 +2,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.api.JIRASavedFilterBean;
@@ -16,7 +17,7 @@ public class JIRAFilterListModelTest extends TestCase {
 	JIRAFilterListModel listModel;
 	private int notifiedModelChanged = 0;
 	private int notifiedManualFilterChanged = 0;
-	final private JiraServerCfg jServer = new JiraServerCfg("DZira serwer", new ServerId());
+	final private ServerData jServer = new ServerData("DZira serwer", (new ServerId()).toString(), "", "", "");
 	private int notifiedServerRemoved;
 	private int notifiedServerAdded;
 	private int notifiedServerNameChanged;
@@ -47,7 +48,7 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedModelChanged++;
 			}
 
-			public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
+			public void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
 				notifiedManualFilterChanged++;
 			}
 

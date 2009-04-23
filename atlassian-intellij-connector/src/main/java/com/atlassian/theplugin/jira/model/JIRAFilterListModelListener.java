@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
  * User: pmaruszak
@@ -23,7 +24,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
 
-	void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer);
+	void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer);
 
 	void serverRemoved(final JIRAFilterListModel jiraFilterListModel);
 

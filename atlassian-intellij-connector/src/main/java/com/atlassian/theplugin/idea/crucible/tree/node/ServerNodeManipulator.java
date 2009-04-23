@@ -15,9 +15,12 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
@@ -26,8 +29,14 @@ import java.util.*;
  * @author Jacek Jaroczynski
  */
 public class ServerNodeManipulator extends NodeManipulator {
-	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
+	private final CfgManager cfgManager;
+	private final ProjectId projectId;
+
+	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root,
+			@NotNull CfgManager cfgManager, @NotNull ProjectId projectId) {
 		super(reviewListModel, root);
+		this.cfgManager = cfgManager;
+		this.projectId = projectId;
 	}
 
 	@Override
@@ -81,7 +90,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 		Set<ServerCfg> servers = new TreeSet<ServerCfg>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(review.getServer());
+			servers.add(cfgManager.getServer(projectId, review.getServerData()));
 		}
 
 		return new ArrayList<ServerCfg>(servers);
@@ -92,11 +101,11 @@ public class ServerNodeManipulator extends NodeManipulator {
 			return lhs.getName().compareTo(rhs.getName());
 		}
 	};
-	
+
 	private int gentNumOfReviewsForServer(ServerCfg server) {
 		int ret = 0;
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getServer().equals(server)) {
+			if (server.equals(cfgManager.getServer(projectId, review.getServerData()))) {
 				++ret;
 			}
 		}
@@ -109,7 +118,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 		// get all reviews in state
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (review.getServer().equals(server)) {
+			if (server.equals(cfgManager.getServer(projectId, review.getServerData()))) {
 				array.add(review);
 			}
 		}

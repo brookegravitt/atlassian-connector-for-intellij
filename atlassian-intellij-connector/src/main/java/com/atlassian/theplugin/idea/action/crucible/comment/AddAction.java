@@ -138,7 +138,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment = new VersionedCommentBean();
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 		}
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
 		dialog.pack();
@@ -184,7 +184,7 @@ public class AddAction extends AbstractCommentAction {
 			newComment.setToEndLine(comment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 		}
 
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
@@ -230,7 +230,7 @@ public class AddAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment Reply", false) {
 

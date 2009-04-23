@@ -371,7 +371,7 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 		}
 
 		private boolean isOwner(VersionedComment cmt) {
-			return review.getServer().getCurrentUsername().equals(cmt.getAuthor().getUserName());
+			return review.getServerData().getUserName().equals(cmt.getAuthor().getUserName());
 		}
 
 		private void createPublishButtons(CellConstraints cc) {

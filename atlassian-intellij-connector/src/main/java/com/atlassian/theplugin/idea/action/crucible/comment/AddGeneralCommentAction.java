@@ -99,7 +99,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 		dialog.show();
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 
 			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
 

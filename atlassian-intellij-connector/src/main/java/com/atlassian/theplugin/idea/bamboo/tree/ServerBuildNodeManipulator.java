@@ -15,19 +15,26 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class ServerBuildNodeManipulator extends BuildNodeManipulator {
-	public ServerBuildNodeManipulator(final BuildListModel buildModel, final DefaultMutableTreeNode root) {
+
+
+	public ServerBuildNodeManipulator(final BuildListModel buildModel,
+			final DefaultMutableTreeNode root) {
 		super(buildModel, root);
 	}
 
@@ -37,7 +44,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 			return getDistinctServers().size();
 		} else if (parent instanceof BuildServerTreeNode) {
 			BuildServerTreeNode serverNode = (BuildServerTreeNode) parent;
-			return gentNumOfBuildsForServer(serverNode.getServer().getServerId());
+			return gentNumOfBuildsForServer(new ServerId(serverNode.getServer().getServerId()));
 		}
 
 		return 0;
@@ -53,7 +60,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooServerCfg bambooServer = getDistinctServers().get(index);
+			ServerData bambooServer = getDistinctServers().get(index);
 
 			BuildServerTreeNode serverNode = new BuildServerTreeNode(bambooServer);
 			p.add(serverNode);
@@ -67,7 +74,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForServer(p.getServer().getServerId(), index);
+			BambooBuildAdapterIdea build = getBuildForServer(new ServerId(p.getServer().getServerId()), index);
 			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
@@ -77,18 +84,18 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return null;
 	}
 
-	private List<BambooServerCfg> getDistinctServers() {
-		Set<BambooServerCfg> servers = new TreeSet<BambooServerCfg>(COMPARATOR);
+	private List<ServerData> getDistinctServers() {
+		Set<ServerData> servers = new TreeSet<ServerData>(COMPARATOR);
 
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
 			servers.add(build.getServer());
 		}
 
-		return new ArrayList<BambooServerCfg>(servers);
+		return new ArrayList<ServerData>(servers);
 	}
 
-	private static final Comparator<BambooServerCfg> COMPARATOR = new Comparator<BambooServerCfg>() {
-		public int compare(BambooServerCfg lhs, BambooServerCfg rhs) {
+	private static final Comparator<ServerData> COMPARATOR = new Comparator<ServerData>() {
+		public int compare(ServerData lhs, ServerData rhs) {
 			return lhs.getName().compareTo(rhs.getName());
 		}
 	};

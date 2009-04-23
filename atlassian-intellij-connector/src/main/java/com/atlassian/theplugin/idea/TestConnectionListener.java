@@ -34,7 +34,7 @@ import java.awt.event.ActionListener;
 public class TestConnectionListener implements ActionListener {
 
 	public interface ServerCfgProvider {
-		ServerCfg getServerCfg();
+		ServerCfg getServer();
 	}
 
 	private final Project project;

@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.*;
@@ -35,7 +35,7 @@ public class JIRAServerCache {
 	public static final int UNKNOWN_COMPONENT_ID = -1;
 	private static final int UNRESOLVED_ID = -1;
 
-	private final JiraServerCfg server;
+	private final ServerData server;
 	private boolean validServer;
 	private String errorMessage;
 
@@ -55,7 +55,7 @@ public class JIRAServerCache {
 
 	private final JIRAServerFacade jiraServerFacade;
 
-	public JIRAServerCache(JiraServerCfg server, JIRAServerFacade jiraServerFacade) {
+	public JIRAServerCache(ServerData server, JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.subtaskIssueTypesCache = new HashMap<String, List<JIRAConstant>>();
@@ -64,7 +64,7 @@ public class JIRAServerCache {
 		this.server = server;
 	}
 
-	public JiraServerCfg getServer() {
+	public ServerData getServer() {
 		return server;
 	}
 

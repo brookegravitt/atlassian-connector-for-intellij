@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueActionProvider;
@@ -69,7 +69,7 @@ public class RunIssueActionAction extends AnAction {
 
 			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...", false);
 
-			final JiraServerCfg server = issue.getServer();
+			final ServerData server = issue.getServer();
 
 			if (server != null) {
 				final List<JIRAActionField> fields;
@@ -86,7 +86,8 @@ public class RunIssueActionAction extends AnAction {
 				showInfo("Retrieving issue details", false);
 				final JIRAIssue detailedIssue;
 				try {
-					JIRAIssue issueWithTime = facade.getIssue(issue.getServer(), issue.getKey());
+					JIRAIssue issueWithTime = facade.getIssue(issue.getServer(),
+							issue.getKey());
 					detailedIssue = facade.getIssueDetails(issue.getServer(), issueWithTime);
 				} catch (JIRAException e) {
 					showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
@@ -139,7 +140,7 @@ public class RunIssueActionAction extends AnAction {
 	 * @param server
 	 * @throws JIRAException
 	 */
-	private void performPostActionActivity(final JiraServerCfg server) throws JIRAException {
+	private void performPostActionActivity(final ServerData server) throws JIRAException {
 		if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
 			JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 		} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
@@ -159,10 +160,10 @@ public class RunIssueActionAction extends AnAction {
 		private Project project;
 		private JIRAIssue detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
-		private JiraServerCfg server;
+		private ServerData server;
 
 		public LocalDisplayActionDialogRunnable(final Project project,
-				final JIRAIssue detailedIssue, final List<JIRAActionField> preFilleddfields, final JiraServerCfg server) {
+				final JIRAIssue detailedIssue, final List<JIRAActionField> preFilleddfields, final ServerData server) {
 			this.project = project;
 			this.detailedIssue = detailedIssue;
 			this.preFilleddfields = preFilleddfields;
@@ -185,7 +186,8 @@ public class RunIssueActionAction extends AnAction {
 									indicator.setIndeterminate(true);
 								}
 								try {
-									facade.progressWorkflowAction(server, issue, action, dialog.getFields());
+									facade.progressWorkflowAction(server,
+											issue, action, dialog.getFields());
 								} catch (JIRAException e) {
 									showInfo("Unable to run action [" + action.getName() + "] on issue ["
 											+ issue.getKey() + "]: " + e.getMessage(), true);
@@ -194,7 +196,8 @@ public class RunIssueActionAction extends AnAction {
 								}
 								try {
 									if (dialog.getComment() != null && dialog.getComment().length() > 0) {
-										facade.addComment(server, issue.getKey(), dialog.getComment());
+										facade.addComment(server,
+												issue.getKey(), dialog.getComment());
 									}
 								} catch (JIRAException e) {
 									showInfo("Unable to add comment to action [" + action.getName()

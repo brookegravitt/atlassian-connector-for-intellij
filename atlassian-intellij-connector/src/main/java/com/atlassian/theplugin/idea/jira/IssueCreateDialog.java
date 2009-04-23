@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
@@ -55,13 +55,13 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JComboBox priorityComboBox;
 	private JTextField assignee;
 	private JList componentsList;
-	private final JiraServerCfg jiraServer;
+	private final ServerData jiraServer;
 	private final JIRAServerModel model;
 	private final UiTaskExecutor uiTaskExecutor;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 	private ActionListener projectComboListener;
 
-	public IssueCreateDialog(JIRAServerModel model, JiraServerCfg server,
+	public IssueCreateDialog(JIRAServerModel model, ServerData server,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(false);
 		this.model = model;

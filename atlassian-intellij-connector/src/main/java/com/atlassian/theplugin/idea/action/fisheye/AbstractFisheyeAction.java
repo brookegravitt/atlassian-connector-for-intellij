@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractFisheyeAction extends AnAction {
 	@Override
 	public void update(final AnActionEvent event) {
-			event.getPresentation().setVisible(isFishEyeConfigured(event));
+		event.getPresentation().setVisible(isFishEyeConfigured(event));
 	}
 
 	@Nullable
@@ -24,7 +24,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return null;
 		}
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(event).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -46,7 +46,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return null;
 		}
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -63,7 +63,6 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	}
 
 
-
 	protected boolean isFishEyeConfigured(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (project == null) {
@@ -71,7 +70,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 		}
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager().getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return false;
 		}

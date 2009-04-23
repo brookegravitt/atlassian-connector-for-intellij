@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
-public class CrucibleServerCfgWrapper extends GenericComboBoxItemWrapper<CrucibleServerCfg> {
-	public CrucibleServerCfgWrapper(final CrucibleServerCfg crucibleProject) {
+public class CrucibleServerCfgWrapper extends GenericComboBoxItemWrapper<ServerData> {
+	public CrucibleServerCfgWrapper(final ServerData crucibleProject) {
 		super(crucibleProject);
 	}
 

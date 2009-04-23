@@ -78,7 +78,7 @@ public class PerformIssueActionForm extends DialogWrapper implements FreezeListe
 
 		Collection<JIRAActionField> sortedFieldList = JiraActionFieldType.sortFieldList(fieldList);
 
-		JIRAServerModel jiraServerModel = IdeaHelper.getProjectComponent(project, JIRAServerModel.class);
+		JIRAServerModel jiraServerModel = IdeaHelper.getJIRAServerModel(project);
 
 		List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
 		List<String> unsupportedFields = new ArrayList<String>();

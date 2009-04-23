@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -42,6 +43,14 @@ import java.util.Collection;
 import java.util.List;
 
 public class ProjectDefaultsConfigurationPanelTestUi {
+	private static CfgManager cfgManager = new AbstractCfgManager() {
+
+		public ServerData getServerData(final Server serverCfg) {
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(),
+					serverCfg.getUserName(), serverCfg.getPassword(), serverCfg.getUrl());
+		}
+	};
+
 
 	private ProjectDefaultsConfigurationPanelTestUi() {
 	}
@@ -86,28 +95,28 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 				makeJiraProject(id, "EF", "Jira Project 4"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
-		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg)).andReturn(projects1).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getProjects(cfgManager.getServerData(crucibleServerCfg))).andReturn(projects1).anyTimes();
 
-		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg2)).andAnswer(new IAnswer<List<CrucibleProject>>() {
+		EasyMock.expect(crucibleServerFacade.getProjects(cfgManager.getServerData(crucibleServerCfg2))).andAnswer(new IAnswer<List<CrucibleProject>>() {
 
 			public List<CrucibleProject> answer() throws Throwable {
 				Thread.sleep(2000);
 				return projects2;
 			}
 		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getProjects(crucibleServerCfg3)).andAnswer(new IAnswer<List<CrucibleProject>>() {
+		EasyMock.expect(crucibleServerFacade.getProjects(cfgManager.getServerData(crucibleServerCfg3))).andAnswer(new IAnswer<List<CrucibleProject>>() {
 			public List<CrucibleProject> answer() throws Throwable {
 				Thread.sleep(2000);
 				throw new RuntimeException("fake RE");
 			}
 		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(crucibleServerCfg3)).andAnswer(new IAnswer<List<Repository>>() {
+		EasyMock.expect(crucibleServerFacade.getRepositories(cfgManager.getServerData(crucibleServerCfg3))).andAnswer(new IAnswer<List<Repository>>() {
 			public List<Repository> answer() throws Throwable {
 				Thread.sleep(1000);
 				return MiscUtil.buildArrayList(makeRepository("R1"), makeRepository("R2"));
 			}
 		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(crucibleServerCfg2)).andAnswer(new IAnswer<List<Repository>>() {
+		EasyMock.expect(crucibleServerFacade.getRepositories(cfgManager.getServerData(crucibleServerCfg2))).andAnswer(new IAnswer<List<Repository>>() {
 			public List<Repository> answer() throws Throwable {
 				Thread.sleep(2000);
 				return MiscUtil
@@ -119,8 +128,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(crucibleServerFacade);
 
 		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
-		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg0)).andReturn(repos0).anyTimes();
-		EasyMock.expect(fishEyeServerFacade.getRepositories(fishEyeServerCfg1)).andAnswer(new IAnswer<Collection<String>>() {
+		EasyMock.expect(fishEyeServerFacade.getRepositories(cfgManager.getServerData(fishEyeServerCfg0))).andReturn(repos0).anyTimes();
+		EasyMock.expect(fishEyeServerFacade.getRepositories(cfgManager.getServerData(fishEyeServerCfg1))).andAnswer(new IAnswer<Collection<String>>() {
 
 			public Collection<String> answer() throws Throwable {
 				Thread.sleep(7000);
@@ -133,9 +142,9 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
 		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
-		EasyMock.expect(jiraServerFacade.getProjects(jiraServerCfg1)).andReturn(jiraProjects1).anyTimes();
+		EasyMock.expect(jiraServerFacade.getProjects(cfgManager.getServerData(jiraServerCfg1))).andReturn(jiraProjects1).anyTimes();
 
-		EasyMock.expect(jiraServerFacade.getProjects(jiraServerCfg2)).andAnswer(new IAnswer<List<JIRAProject>>() {
+		EasyMock.expect(jiraServerFacade.getProjects(cfgManager.getServerData(jiraServerCfg2))).andAnswer(new IAnswer<List<JIRAProject>>() {
 
 			public List<JIRAProject> answer() throws Throwable {
 				Thread.sleep(2000);

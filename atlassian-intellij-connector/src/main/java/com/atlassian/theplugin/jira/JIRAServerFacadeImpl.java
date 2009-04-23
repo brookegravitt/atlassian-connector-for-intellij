@@ -17,10 +17,9 @@
 package com.atlassian.theplugin.jira;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.jira.api.*;
@@ -52,11 +51,11 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private Map<String, JIRASession> soapSessions = new WeakHashMap<String, JIRASession>();
 	private static JIRAServerFacadeImpl instance;
 
-	private String getSoapSessionKey(JiraServerCfg server) {
-		return server.getCurrentUsername() + server.getUrl() + server.getCurrentPassword();
+	private String getSoapSessionKey(ServerData server) {
+		return server.getUserName() + server.getUrl() + server.getPassword();
 	}
 
-	private synchronized JIRASession getSoapSession(JiraServerCfg server) throws RemoteApiException {
+	private synchronized JIRASession getSoapSession(ServerData server) throws RemoteApiException {
 		String key = getSoapSessionKey(server);
 
 		JIRASession session = soapSessions.get(key);
@@ -70,15 +69,15 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			}
 
 
-			session.login(server.getCurrentUsername(), server.getCurrentPassword());
+			session.login(server.getUserName(), server.getPassword());
 			soapSessions.put(key, session);
 		}
 		return session;
 	}
 
-	private synchronized JIRARssClient getRssSession(JiraServerCfg server) throws RemoteApiException {
+	private synchronized JIRARssClient getRssSession(ServerData server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getCurrentUsername() + server.getUrl() + server.getCurrentPassword();
+		String key = server.getUserName() + server.getUrl() + server.getPassword();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
 			session = new JIRARssClient(server, callback);
@@ -87,11 +86,11 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return session;
 	}
 
-	public void testServerConnection(final ServerCfg serverCfg) throws RemoteApiException {
-		testServerConnection((JiraServerCfg) serverCfg, serverCfg.getCurrentUsername(), serverCfg.getCurrentPassword());
+	public void testServerConnection(final ServerData serverCfg) throws RemoteApiException {
+		testServerConnection(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
 	}
 
-	public void testServerConnection(JiraServerCfg server, String userName, String password) throws RemoteApiException {
+	public void testServerConnection(ServerData server, String userName, String password) throws RemoteApiException {
 		JIRASession session;
 		try {
 			session = new JIRASessionImpl(server);
@@ -107,7 +106,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return ServerType.JIRA_SERVER;
 	}
 
-	public List<JIRAIssue> getIssues(JiraServerCfg server,
+	public List<JIRAIssue> getIssues(ServerData server,
 			List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
@@ -122,7 +121,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return rss.getIssues(query, sort, sortOrder, start, size);
 	}
 
-	public List<JIRAIssue> getSavedFilterIssues(JiraServerCfg server,
+	public List<JIRAIssue> getSavedFilterIssues(ServerData server,
 			List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
@@ -141,11 +140,11 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAIssue getIssueUpdate(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue getIssueUpdate(ServerData server, JIRAIssue issue) throws JIRAException {
 		return getIssue(server, issue.getKey());
 	}
 
-	public JIRAIssue getIssue(JiraServerCfg server, String key) throws JIRAException {
+	public JIRAIssue getIssue(ServerData server, String key) throws JIRAException {
 		JIRARssClient rss;
 		try {
 			rss = getRssSession(server);
@@ -155,7 +154,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		return rss.getIssue(key);
 	}
 
-	public List<JIRAProject> getProjects(JiraServerCfg server) throws JIRAException {
+	public List<JIRAProject> getProjects(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getProjects();
@@ -165,7 +164,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getIssueTypes(JiraServerCfg server) throws JIRAException {
+	public List<JIRAConstant> getIssueTypes(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueTypes();
@@ -175,7 +174,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+	public List<JIRAConstant> getIssueTypesForProject(ServerData server, String project) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueTypesForProject(project);
@@ -185,7 +184,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg server) throws JIRAException {
+	public List<JIRAConstant> getSubtaskIssueTypes(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getSubtaskIssueTypes();
@@ -195,7 +194,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerCfg server, String project) throws JIRAException {
+	public List<JIRAConstant> getSubtaskIssueTypesForProject(ServerData server, String project) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getSubtaskIssueTypesForProject(project);
@@ -206,7 +205,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	}
 
 
-	public List<JIRAConstant> getStatuses(JiraServerCfg server) throws JIRAException {
+	public List<JIRAConstant> getStatuses(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getStatuses();
@@ -216,7 +215,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void addComment(JiraServerCfg server, String issueKey, String comment) throws JIRAException {
+	public void addComment(ServerData server, String issueKey, String comment) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.addComment(issueKey, comment);
@@ -226,7 +225,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAIssue createIssue(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue createIssue(ServerData server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			JIRAIssue i = soap.createIssue(issue);
@@ -237,7 +236,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void logWork(JiraServerCfg server, JIRAIssue issue, String timeSpent, Calendar startDate,
+	public void logWork(ServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
 			String comment, boolean updateEstimate, String newEstimate)
 			throws JIRAException {
 		try {
@@ -249,7 +248,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAComponentBean> getComponents(JiraServerCfg server, String projectKey) throws JIRAException {
+	public List<JIRAComponentBean> getComponents(ServerData server, String projectKey) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getComponents(projectKey);
@@ -259,7 +258,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAVersionBean> getVersions(JiraServerCfg server, String projectKey) throws JIRAException {
+	public List<JIRAVersionBean> getVersions(ServerData server, String projectKey) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getVersions(projectKey);
@@ -269,7 +268,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getPriorities(JiraServerCfg server) throws JIRAException {
+	public List<JIRAConstant> getPriorities(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getPriorities();
@@ -279,7 +278,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAResolutionBean> getResolutions(JiraServerCfg server) throws JIRAException {
+	public List<JIRAResolutionBean> getResolutions(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getResolutions();
@@ -289,7 +288,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAQueryFragment> getSavedFilters(JiraServerCfg server) throws JIRAException {
+	public List<JIRAQueryFragment> getSavedFilters(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getSavedFilters();
@@ -299,7 +298,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAAction> getAvailableActions(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+	public List<JIRAAction> getAvailableActions(ServerData server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getAvailableActions(issue);
@@ -309,7 +308,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAActionField> getFieldsForAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action)
+	public List<JIRAActionField> getFieldsForAction(ServerData server, JIRAIssue issue, JIRAAction action)
 			throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
@@ -320,7 +319,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void setAssignee(JiraServerCfg server, JIRAIssue issue, String assignee) throws JIRAException {
+	public void setAssignee(ServerData server, JIRAIssue issue, String assignee) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			soap.setAssignee(issue, assignee);
@@ -330,7 +329,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAComment> getComments(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+	public List<JIRAComment> getComments(ServerData server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getComments(issue);
@@ -340,11 +339,11 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue, JIRAAction action) throws JIRAException {
+	public void progressWorkflowAction(ServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException {
 		progressWorkflowAction(server, issue, action, null);
 	}
 
-	public void progressWorkflowAction(JiraServerCfg server, JIRAIssue issue,
+	public void progressWorkflowAction(ServerData server, JIRAIssue issue,
 			JIRAAction action, List<JIRAActionField> fields) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
@@ -355,7 +354,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAIssue getIssueDetails(JiraServerCfg server, JIRAIssue issue) throws JIRAException {
+	public JIRAIssue getIssueDetails(ServerData server, JIRAIssue issue) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getIssueDetails(issue);
@@ -365,7 +364,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public JIRAUserBean getUser(JiraServerCfg server, String loginName) throws JIRAException, JiraUserNotFoundException {
+	public JIRAUserBean getUser(ServerData server, String loginName) throws JIRAException, JiraUserNotFoundException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getUser(loginName);

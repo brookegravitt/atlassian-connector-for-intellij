@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 
@@ -11,13 +11,13 @@ import javax.swing.*;
  */
 public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 	private JIRASavedFilter savedFilter;
-	private JiraServerCfg jiraServerCfg;
+	private ServerData serverData;
 
 
-	public JIRASavedFilterTreeNode(final JIRASavedFilter savedFilter, final JiraServerCfg jiraServerCfg) {
+	public JIRASavedFilterTreeNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg) {
 		super(savedFilter.getName(), null, null);
 		this.savedFilter = savedFilter;
-		this.jiraServerCfg = jiraServerCfg;
+		this.serverData = jiraServerCfg;
 	}
 
 	public String toString() {
@@ -31,8 +31,8 @@ public class JIRASavedFilterTreeNode extends AbstractTreeNode {
 		return new JLabel("Incorrect renderer");
 	}
 
-	public JiraServerCfg getJiraServerCfg() {
-		return jiraServerCfg;
+	public ServerData getServerData() {
+		return serverData;
 	}
 
 	public JIRASavedFilter getSavedFilter() {

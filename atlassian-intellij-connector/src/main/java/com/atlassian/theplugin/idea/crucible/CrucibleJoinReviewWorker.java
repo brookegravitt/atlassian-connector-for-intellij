@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.HashSet;
@@ -36,9 +37,9 @@ public class CrucibleJoinReviewWorker implements Runnable {
 	public void run() {
 		CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
 		Set<String> reviewers = new HashSet<String>();
-		reviewers.add(reviewInfo.getServer().getCurrentUsername());
+		reviewers.add(reviewInfo.getServerData().getUserName());
 		try {
-			facade.addReviewers(reviewInfo.getServer(), reviewInfo.getPermId(), reviewers);
+			facade.addReviewers(reviewInfo.getServerData(), reviewInfo.getPermId(), reviewers);
 		} catch (RemoteApiException e) {
 			PluginUtil.getLogger().error("Error joining review: " + e.getMessage(), e);
 		} catch (ServerPasswordNotProvidedException e) {

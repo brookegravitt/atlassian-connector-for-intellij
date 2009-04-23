@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -133,8 +134,9 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(review.getServer(), review.getPermId()),
-							review.getServer()));
+					review.fillReview(new ReviewAdapter(crucibleServerFacade.getReview(
+							review.getServerData(), review.getPermId()),
+							review.getServerData()));
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().warn(e);
 				} catch (ServerPasswordNotProvidedException e) {
@@ -204,35 +206,41 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		}
 		switch (action) {
 			case APPROVE:
-				crucibleServerFacade.approveReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.approveReview(review.getServerData(), review.getPermId());
 				break;
 			case SUBMIT:
-				crucibleServerFacade.submitReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.submitReview(review.getServerData(), review.getPermId());
 				break;
 			case ABANDON:
-				crucibleServerFacade.abandonReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.abandonReview(review.getServerData(), review.getPermId());
 				break;
 			case SUMMARIZE:
-				crucibleServerFacade.summarizeReview(review.getServer(), review.getPermId());
-				crucibleServerFacade.closeReview(review.getServer(), review.getPermId(), description);
+				crucibleServerFacade
+						.summarizeReview(review.getServerData(), review.getPermId());
+				crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(),
+						description);
 				break;
 			case CLOSE:
-				crucibleServerFacade.closeReview(review.getServer(), review.getPermId(), description);
+				crucibleServerFacade.closeReview(review.getServerData(), review.getPermId(),
+						description);
 				break;
 			case REOPEN:
-				crucibleServerFacade.reopenReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.reopenReview(review.getServerData(), review.getPermId());
 				break;
 			case RECOVER:
-				crucibleServerFacade.recoverReview(review.getServer(), review.getPermId());
+				crucibleServerFacade.recoverReview(review.getServerData(), review.getPermId());
 				break;
 			case COMPLETE:
 				if (this.publishDraftsCheckBox.isSelected()) {
-					crucibleServerFacade.publishAllCommentsForReview(review.getServer(), review.getPermId());
+					crucibleServerFacade.publishAllCommentsForReview(review.getServerData(),
+							review.getPermId());
 				}
-				crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), true);
+				crucibleServerFacade.completeReview(review.getServerData(), review.getPermId(),
+						true);
 				break;
 			case UNCOMPLETE:
-				crucibleServerFacade.completeReview(review.getServer(), review.getPermId(), false);
+				crucibleServerFacade
+						.completeReview(review.getServerData(), review.getPermId(), false);
 				break;
 		}
 		SwingUtilities.invokeLater(new Runnable() {
@@ -245,7 +253,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 	private void showErrorMessage(final String message) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				showMessageDialog(message, "Error changing review state: " + review.getServer().getUrl(),
+				showMessageDialog(message, "Error changing review state: " + review.getServerData().getUrl(),
 						Messages.getErrorIcon());
 			}
 		});
@@ -268,43 +276,33 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 		rootComponent.setMinimumSize(new Dimension(-1, -1));
 		detailsPanel = new JPanel();
 		detailsPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(detailsPanel,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
-						false));
+		rootComponent.add(detailsPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		commentsPanel = new JPanel();
 		commentsPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(commentsPanel,
-				new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
-						false));
+		rootComponent.add(commentsPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		publishPanel = new JPanel();
 		publishPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(publishPanel,
-				new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
-						false));
+		rootComponent.add(publishPanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		publishDraftsCheckBox = new JCheckBox();
 		publishDraftsCheckBox.setSelected(true);
 		publishDraftsCheckBox.setText("Publish all my draft comments");
-		publishPanel.add(publishDraftsCheckBox,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		publishPanel.add(publishDraftsCheckBox, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final Spacer spacer1 = new Spacer();
-		publishPanel.add(spacer1,
-				new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-						GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		publishPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL,
+				1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		summaryPanel = new JPanel();
 		summaryPanel.setLayout(new BorderLayout(0, 0));
-		rootComponent.add(summaryPanel,
-				new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-						GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0,
-						false));
+		rootComponent.add(summaryPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER,
+				GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 	}
 
 	/**
@@ -459,7 +457,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 			gbc1.gridy = 0;
 			gbc2.gridy = 0;
 
-			String userName = review.getServer().getCurrentUsername();
+			String userName = review.getServerData().getUserName();
 
 			String totalComments;
 			try {

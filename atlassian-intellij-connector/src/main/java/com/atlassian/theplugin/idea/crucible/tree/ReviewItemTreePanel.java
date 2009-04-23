@@ -18,6 +18,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -91,6 +93,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	private final CrucibleReviewListener reviewListener = new LocalReviewListener();
 	private final CrucibleReviewListModel crucibleReviewListModel;
+	private final CfgManager cfgManager;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private TreeUISetup treeUISetup;
 	private static final String THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR = "ThePlugin.Crucible.ReviewFileListToolBar";
@@ -107,8 +110,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		filterTreeNodes(filter.getNextState());
 	}
 
-	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter,
+	public ReviewItemTreePanel(@NotNull CfgManager cfgManager, final Project project, final CrucibleFilteredModelProvider.Filter filter,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
+		this.cfgManager = cfgManager;
 		this.pluginProjectComponent = pluginProjectComponent;
 		initLayout();
 		this.filter = filter;
@@ -250,12 +254,13 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		try {
 			List<VersionedComment> comments;
 			comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
-					reviewItem.getServer(), reviewItem.getPermId());
+					reviewItem.getServerData(), reviewItem.getPermId());
 
 			reviewItem.setGeneralComments(CrucibleServerFacadeImpl.getInstance().getGeneralComments(
-					reviewItem.getServer(), reviewItem.getPermId()));
+					reviewItem.getServerData(), reviewItem.getPermId()));
 
-			files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServer(), reviewItem.getPermId());
+			files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServerData(),
+					reviewItem.getPermId());
 			reviewItem.setFilesAndVersionedComments(files, comments);
 
 		} catch (RemoteApiException e) {
@@ -368,7 +373,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		@Override
 		public void serverConnectionDataChanged(ServerId serverId) {
-			if (getCrucibleReview().getServer().getServerId().equals(serverId)) {
+			if (getCrucibleReview().getServerData().getServerId().equals(serverId)) {
 				reviewFilesAndCommentsTree.clear();
 				stopListeningForCredentialChanges();
 			}

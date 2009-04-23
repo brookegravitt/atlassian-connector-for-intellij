@@ -50,7 +50,7 @@ public final class JiraEditorLinkParser {
 
 
 	private String getDefaultJiraServerUrl() {
-		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager()
+		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager(project)
 				.getProjectConfiguration(CfgUtil.getProjectId(project));
 		// kalamon: not sure why this could be null, but see PL-1348.
 		// I am too stupid to grok the project configuration code

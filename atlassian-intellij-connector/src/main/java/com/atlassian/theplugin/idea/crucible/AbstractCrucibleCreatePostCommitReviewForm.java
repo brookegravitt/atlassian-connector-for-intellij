@@ -17,10 +17,12 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.changes.ChangeList;
@@ -46,7 +48,7 @@ public abstract class AbstractCrucibleCreatePostCommitReviewForm extends Crucibl
 		return crucibleServerData.getRepositories().size() == 1;
 	}
 
-	protected Review createReviewImpl(final CrucibleServerCfg server, final ReviewProvider reviewProvider,
+	protected Review createReviewImpl(final ServerData server, final ReviewProvider reviewProvider,
 			final ChangeList[] changes) throws RemoteApiException, ServerPasswordNotProvidedException {
 		if (reviewProvider.getRepoName() == null) {
 			Messages.showErrorDialog(project, "Repository not selected. Unable to create review.\n", "Repository required");
