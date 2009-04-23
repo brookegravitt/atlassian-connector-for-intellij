@@ -346,6 +346,7 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="atlassian-connector-commons" />
+    <orderEntry type="module" module-name="atlassian-connector-build-tools" />
   </component>
 </module>
 
