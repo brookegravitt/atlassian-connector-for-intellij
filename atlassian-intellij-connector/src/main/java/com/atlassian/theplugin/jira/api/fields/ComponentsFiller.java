@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.jira.api.fields;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.soap.axis.RemoteComponent;
-import com.atlassian.theplugin.jira.api.soap.axis.RemoteIssue;
+import com.atlassian.theplugin.jira.api.soap.axisv4.RemoteComponent;
+import com.atlassian.theplugin.jira.api.soap.axisv4.RemoteIssue;
 
 import java.util.ArrayList;
 import java.util.List;

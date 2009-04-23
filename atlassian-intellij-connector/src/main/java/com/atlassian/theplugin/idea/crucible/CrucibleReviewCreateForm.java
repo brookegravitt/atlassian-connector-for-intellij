@@ -101,7 +101,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		customComponentPanel.setLayout(new BorderLayout());
 		titleText.setText(commitMessage);
-		getOKAction().putValue(Action.NAME, "Create review...");
+		getOKAction().putValue(javax.swing.Action.NAME, "Create review...");
 		crucibleServersComboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&
