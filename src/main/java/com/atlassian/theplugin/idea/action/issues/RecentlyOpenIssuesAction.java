@@ -23,9 +23,6 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
@@ -65,25 +62,12 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		if (recentlyOpenIssues.size() > 0) {
 			// prepare list of recentlyOpenIssues from the config list
 
-			ProgressManager.getInstance().run(new Task.Modal(project, "Retrieving Recently Viewed Issues", true) {
-				private List<JIRAIssue> issues;
+			List<JIRAIssue> issues = issuesWindow.getLoadedRecenltyOpenIssues(/*recentlyOpenIssues*/);
 
-				public void run(final ProgressIndicator indicator) {
-					if (indicator != null) {
-						indicator.setFraction(0.0);
-						indicator.setIndeterminate(true);
-					}
-					issues = issuesWindow.getLoadedRecenltyOpenIssues(/*recentlyOpenIssues*/);
-				}
-
-				public void onSuccess() {
-					ListPopup popup =
-							JBPopupFactory.getInstance().createListPopup(
-									new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
+			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
+					new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
 //					popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
-					popup.showInCenterOf(e.getInputEvent().getComponent());
-				}
-			});
+			popup.showInCenterOf(e.getInputEvent().getComponent());
 		} else {
 			Messages.showInfoMessage(project, "No recently viewed issues found.", PluginUtil.PRODUCT_NAME);
 		}
