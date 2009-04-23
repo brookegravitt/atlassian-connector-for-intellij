@@ -122,7 +122,12 @@ public class JIRAServerCache {
 	}
 
 	/**
+	 * @param project
+	 * @param includeAny
+	 * @param includeAny
 	 * @return list of issue types or empty collection
+	 * @throws com.atlassian.theplugin.jira.api.JIRAException
+	 *
 	 */
 	public List<JIRAConstant> getIssueTypes(JIRAProject project, boolean includeAny) throws JIRAException {
 		List<JIRAConstant> issueTypes = project == null ? globalIssueTypes : issueTypesCache.get(project.getKey());

@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -43,23 +44,30 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		String text = "No active issue";
 		String summary = "";
+		JIRAIssue issue = null;
+
 		if (activeIssue != null) {
 			text = activeIssue.getIssueKey();
 
 			RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
-			JIRAIssue issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
+			if (cache != null) {
+				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
-			if (issue != null) {
-				summary = issue.getSummary();
-				if (summary.length() > SUMMARY_LENGHT) {
-					summary = summary.substring(0, SUMMARY_LENGHT) + "...";
+				if (issue != null) {
+					summary = issue.getSummary();
+					if (summary.length() > SUMMARY_LENGHT) {
+						summary = summary.substring(0, SUMMARY_LENGHT) + "...";
+					}
 				}
 			}
 		}
 
 		event.getPresentation().setText(text);
 		event.getPresentation().setDescription(text + ": " + summary);
-//		event.getPresentation().setIcon(JIRA_ICON);
+
+		if (issue != null) {
+			event.getPresentation().setIcon(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
+		}
 		super.update(event);
 	}
 
