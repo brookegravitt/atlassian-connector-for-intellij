@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContent;
@@ -237,7 +238,8 @@ public final class CrucibleHelper {
 
 		boolean contentUrlAvailable = false;
 		try {
-			contentUrlAvailable = CrucibleServerFacadeImpl.getInstance().checkContentUrlAvailable(review.getServer());
+			contentUrlAvailable = CrucibleServerFacadeImpl.getInstance().checkContentUrlAvailable(
+					review.getServerData());
 		} catch (RemoteApiException e) {
 			// unable to get version
 		} catch (ServerPasswordNotProvidedException e) {
@@ -448,7 +450,7 @@ public final class CrucibleHelper {
 		if (review != null && comment != null && comment.getPermId() != null) {
 			String[] permTokens = comment.getPermId().getId().split(":");
 			if (permTokens.length == 2) {
-				return review.getServer().getUrl() + "/cru/"
+				return review.getServerData().getUrl() + "/cru/"
 						+ review.getPermId().getId() + "/#c" + permTokens[1];
 			}
 		}
@@ -457,7 +459,7 @@ public final class CrucibleHelper {
 
 	public static String getVersionedFileUrl(final ReviewAdapter review, final CrucibleFileInfo file) {
 		if (review != null && file != null && file.getPermId() != null) {
-			return review.getServer().getUrl() + "/cru/"
+			return review.getServerData().getUrl() + "/cru/"
 					+ review.getPermId().getId() + "/viewfile/" + file.getPermId().getId();
 		}
 		return null;

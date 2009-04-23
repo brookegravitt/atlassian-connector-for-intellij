@@ -16,10 +16,10 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -45,14 +45,16 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
+	private final CfgManager cfgManager;
 	private boolean isRegistered = false;
 	private LocalConfigurationListener localConfigurationListener;
 	private JiraServerCfg lastJiraServer = null;
 
 
-	public FileEditorListenerImpl(@NotNull Project project) {
+	public FileEditorListenerImpl(@NotNull Project project, @NotNull final CfgManager cfgManager) {
 
 		this.project = project;
+		this.cfgManager = cfgManager;
 		jiraEditorLinkParser = new JiraEditorLinkParser(project);
 		localConfigurationListener = new LocalConfigurationListener();
 
@@ -94,18 +96,15 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		IdeaHelper.getCfgManager()
-				.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
 		deactivate();
 	}
 
 	public void projectOpened() {
-		IdeaHelper.getCfgManager()
-				.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
 		activate();
-		if (IdeaHelper.getCfgManager().getProjectConfiguration(CfgUtil.getProjectId(project)) != null
-				&& IdeaHelper.getCfgManager()
-				.getProjectConfiguration(CfgUtil.getProjectId(project)).getDefaultJiraServer() != null) {
+		if (cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)) != null
+				&& cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)).getDefaultJiraServer() != null) {
 			Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 			ProgressManager.getInstance().run(task);
 		}

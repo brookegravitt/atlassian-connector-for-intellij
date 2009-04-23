@@ -21,9 +21,7 @@ import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.project.Project;
 import com.intellij.util.xmlb.annotations.Transient;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -37,16 +35,8 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 	static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 	private ActiveJiraIssueBean activeJiraIssue;
-	private final Project project;
-
 
 	public JiraWorkspaceConfiguration() {
-		project = null;
-
-	}
-
-	public JiraWorkspaceConfiguration(@NotNull Project project) {
-		this.project = project;
 	}
 
 	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
@@ -82,9 +72,9 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
 	public void addRecentlyOpenIssue(final JIRAIssue issue) {
 		if (recentlyOpenIssues == null) {
-			recentlyOpenIssues =  new LinkedList<IssueRecentlyOpenBean>();
+			recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 		}
-		
+
 		if (issue != null) {
 			String issueKey = issue.getKey();
 			String serverId = issue.getServer().getServerId().toString();
@@ -92,11 +82,13 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 			// add element and make sure it is not duplicated and it is insterted at the top
 			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);
 
-			recentlyOpenIssues.remove(r);
-			recentlyOpenIssues.addFirst(r);
+			if (recentlyOpenIssues != null) {
+				recentlyOpenIssues.remove(r);
+				recentlyOpenIssues.addFirst(r);
 
-			while (recentlyOpenIssues.size() > RECENLTY_OPEN_ISSUES_LIMIT) {
-				recentlyOpenIssues.removeLast();
+				while (recentlyOpenIssues.size() > RECENLTY_OPEN_ISSUES_LIMIT) {
+					recentlyOpenIssues.removeLast();
+				}
 			}
 		}
 	}

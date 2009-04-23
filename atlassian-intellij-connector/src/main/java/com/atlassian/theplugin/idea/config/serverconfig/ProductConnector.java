@@ -17,7 +17,9 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.util.Connector;
 
 public class ProductConnector implements Connector {
@@ -27,8 +29,8 @@ public class ProductConnector implements Connector {
 		this.facade = facade;
 	}
 
-	public void connect(ServerCfg serverCfg) throws RemoteApiException {
-		facade.testServerConnection(serverCfg);
+	public void connect(ServerData serverData) throws RemoteApiException {
+		facade.testServerConnection(serverData);
 	}
 
 	public void onSuccess() {

@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.jira.model.*;
 
+
 /**
  * User: pmaruszak
  */
@@ -9,7 +10,6 @@ public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAFilterListModel filterModel;
 	private JIRAIssueListModel issueModel;
 	private JIRAServerModel serverModel;
-
 
 
 	public void setServerModel(JIRAServerModel serverModel) {
@@ -31,26 +31,26 @@ public final class IssueToolWindowFreezeSynchronizator {
 	private void addListeners() {
 
 		if (issueModel != null && serverModel != null && filterModel != null) {
-		issueModel.addFrozenModelListener(new FrozenModelListener() {
+			issueModel.addFrozenModelListener(new FrozenModelListener() {
 
-			public void modelFrozen(FrozenModel model, boolean frozen) {
-				if (filterModel != null) {
-					filterModel.setModelFrozen(frozen);
+				public void modelFrozen(FrozenModel model, boolean frozen) {
+					if (filterModel != null) {
+						filterModel.setModelFrozen(frozen);
+					}
+
 				}
+			});
 
-			}
-		});
+			serverModel.addFrozenModelListener(new FrozenModelListener() {
 
-		serverModel.addFrozenModelListener(new FrozenModelListener() {
-
-			public void modelFrozen(FrozenModel model, boolean frozen) {
-				if (issueModel != null) {
-					issueModel.setModelFrozen(frozen);
+				public void modelFrozen(FrozenModel model, boolean frozen) {
+					if (issueModel != null) {
+						issueModel.setModelFrozen(frozen);
+					}
 				}
-			}
-		});
+			});
 
 
+		}
 	}
-			}
 }

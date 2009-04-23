@@ -64,7 +64,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		$$$setupUI$$$();
 		testConnection
 				.addActionListener(new TestConnectionListener(project, tester, new TestConnectionListener.ServerCfgProvider() {
-					public ServerCfg getServerCfg() {
+					public ServerCfg getServer() {
 						synchronized (GenericServerConfigForm.this) {
 							return serverCfg;
 						}

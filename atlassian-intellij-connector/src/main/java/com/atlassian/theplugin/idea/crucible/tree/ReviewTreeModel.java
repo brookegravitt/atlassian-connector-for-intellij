@@ -15,10 +15,14 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.tree.node.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -41,14 +45,14 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator authorNodeManipulator;
 	private NodeManipulator projectNodeManipulator;
 
-	public ReviewTreeModel(CrucibleReviewListModel reviewListModel) {
+	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull CfgManager cfgManager, ProjectId projectId) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
+		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot(), cfgManager, projectId);
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 	}
@@ -56,6 +60,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	/**
 	 * Sets groupBy field used to group the tree and triggers tree to rebuild
 	 * Only tree should use that method.
+	 *
 	 * @param aGroupBy
 	 */
 	public void groupBy(CrucibleReviewGroupBy aGroupBy) {
@@ -70,6 +75,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 	/**
 	 * Simple setter (does not trigger tree to rebuild)
+	 *
 	 * @param groupBy
 	 */
 	public void setGroupBy(CrucibleReviewGroupBy groupBy) {
@@ -184,7 +190,8 @@ public class ReviewTreeModel extends DefaultTreeModel {
 					Object node = getChild(root, i);
 					if (node instanceof CrucibleReviewServerTreeNode) {
 						CrucibleReviewServerTreeNode parent = (CrucibleReviewServerTreeNode) node;
-						if (parent.getCrucibleServer().getServerId().equals(review.getServer().getServerId())) {
+						if (parent.getCrucibleServer().getServerId()
+								.equals(new ServerId(review.getServerData().getServerId()))) {
 							return parent;
 						}
 					}

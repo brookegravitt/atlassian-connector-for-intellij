@@ -15,20 +15,13 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -41,11 +34,7 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -71,6 +60,7 @@ import java.util.Date;
 public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvider {
 	private static final String TOOL_WINDOW_TITLE = "Reviews - Crucible";
 	private ReviewAdapter reviewAdapter;
+	private final CfgManager cfgManager;
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
 
@@ -78,9 +68,10 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	private ReviewContentParameters contentParams;
 
 
-	protected CrucibleToolWindow(@NotNull final Project project,
+	protected CrucibleToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
 		super(true);
+		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
 	}
@@ -92,7 +83,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		String key = "";
 
 		if (ra != null) {
-			key = ra.getServer().getServerId() + ra.getPermId().getId();
+			key = ra.getServerData().getServerId() + ra.getPermId().getId();
 		}
 		return key;
 	}
@@ -257,7 +248,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 			private CommentsPanel() {
 				super(new BorderLayout());
 				setBackground(UIUtil.getTreeTextBackground());
-				reviewItemTreePanel = new ReviewItemTreePanel(project, CrucibleFilteredModelProvider.Filter.FILES_ALL,
+				reviewItemTreePanel = new ReviewItemTreePanel(cfgManager, project,
+						CrucibleFilteredModelProvider.Filter.FILES_ALL,
 						pluginProjectComponent);
 				reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel,
 						reviewItemTreePanel, BorderLayout.CENTER);
@@ -531,7 +523,7 @@ class DetailsPanel extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		CrucibleServerCfg cruc = new CrucibleServerCfg("my crucible server", new ServerId());
+		ServerData cruc = new ServerData("my crucible server", (new ServerId()).toString(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"

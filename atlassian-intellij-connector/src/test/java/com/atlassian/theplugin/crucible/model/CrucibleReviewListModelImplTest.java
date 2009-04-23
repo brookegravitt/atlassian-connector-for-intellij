@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import junit.framework.TestCase;
@@ -15,8 +16,8 @@ import java.util.*;
 
 public class CrucibleReviewListModelImplTest extends TestCase {
 	private CrucibleReviewListModelImplAdapter model;
-	private CrucibleServerCfg server1;
-	private CrucibleServerCfg server2;
+	private ServerData server1;
+	private ServerData server2;
 	private int addedReviews, changedReviews, removedReviews;
 	private Date date = new Date();
 
@@ -44,7 +45,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -67,7 +68,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -83,7 +84,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -108,7 +109,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r1 = new ReviewBean("test");
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewBean r2 = new ReviewBean("test");
@@ -125,7 +126,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r = new ReviewBean("test");
 		r.setPermId(new PermIdBean("test1"));
 		r.setState(State.REVIEW);
@@ -142,7 +143,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r1 = new ReviewBean("test");
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -165,7 +166,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r1 = new ReviewBean("test");
 		PermIdBean permId1 = new PermIdBean("test1");
 		r1.setPermId(permId1);
@@ -187,7 +188,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		CrucibleServerCfg cfg = new CrucibleServerCfg("test", id);
+		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
 		ReviewBean r1 = new ReviewBean("test");
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -472,11 +473,11 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 
-	private CrucibleServerCfg createServer(int id) {
-		return new CrucibleServerCfg("server" + id, new ServerId());
+	private ServerData createServer(int id) {
+		return new ServerData("server" + id, new ServerId().toString(), "", "", "");
 	}
 
-	private ReviewAdapter createReviewAdapter(int id, CrucibleServerCfg server) {
+	private ReviewAdapter createReviewAdapter(int id, ServerData server) {
 		ReviewBean rb = new ReviewBean("test_" + id);
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
@@ -486,7 +487,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		return new ReviewAdapter(rb, server);
 	}
 
-	private ReviewAdapter createReviewAdapterWithComments(int id, CrucibleServerCfg server)
+	private ReviewAdapter createReviewAdapterWithComments(int id, ServerData server)
 			throws RemoteApiException, ValueNotYetInitialized, ServerPasswordNotProvidedException {
 		ReviewBean rb = new ReviewBean("test_" + id);
 		PermId pId = new PermIdBean("permId_" + id);
@@ -521,7 +522,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 	private class MyFacade extends MockCrucibleFacadeAdapter {
 
-		public GeneralComment addGeneralComment(CrucibleServerCfg server, PermId permId, GeneralComment comment)
+		public GeneralComment addGeneralComment(ServerData server, PermId permId, GeneralComment comment)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
 			return comment;
 		}

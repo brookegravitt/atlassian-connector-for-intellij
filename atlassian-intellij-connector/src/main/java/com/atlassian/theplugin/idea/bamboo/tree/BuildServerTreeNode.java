@@ -16,20 +16,21 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class BuildServerTreeNode extends BuildGroupTreeNode {
-	private BambooServerCfg server;
+	private ServerData server;
 
-	public BuildServerTreeNode(BambooServerCfg server) {
+	public BuildServerTreeNode(ServerData server) {
 		super(server.getName());
 
 		this.server = server;
 	}
 
-	public BambooServerCfg getServer() {
+	public ServerData getServer() {
 		return server;
 	}
 }

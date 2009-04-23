@@ -15,27 +15,19 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfoImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldBean;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.ui.SimpleIconProvider;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Collections;
 
 public final class ReviewCommentRendererTestUi {
@@ -44,7 +36,7 @@ public final class ReviewCommentRendererTestUi {
 
 	public static void main(String[] args) throws ValueNotYetInitialized {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
-		CrucibleServerCfg cruc = new CrucibleServerCfg("my crucible server", new ServerId());
+		ServerData cruc = new ServerData("my crucible server", new ServerId().toString(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");

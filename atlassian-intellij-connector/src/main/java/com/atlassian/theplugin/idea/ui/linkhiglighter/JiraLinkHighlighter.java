@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.DocumentAdapter;
@@ -101,7 +102,8 @@ public class JiraLinkHighlighter {
 	}
 
 	private void listenOnInput() {
-		inputEditorInputHandler = new EditorInputHandler(project, editor, psiFile, jiraEditorLinkParser);
+		inputEditorInputHandler = new EditorInputHandler(IdeaHelper.getCfgManager(project), project, editor, psiFile,
+				jiraEditorLinkParser);
 		editor.getContentComponent().addKeyListener(inputEditorInputHandler);
 		editor.addEditorMouseMotionListener(inputEditorInputHandler);
 		editor.addEditorMouseListener(inputEditorInputHandler);

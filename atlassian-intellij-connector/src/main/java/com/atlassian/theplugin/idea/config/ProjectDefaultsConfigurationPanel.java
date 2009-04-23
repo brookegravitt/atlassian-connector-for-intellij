@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Repository;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.intellij.openapi.project.Project;
@@ -107,7 +108,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return crucibleServerFacade.getProjects(serverCfg);
+			return crucibleServerFacade.getProjects(cfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -155,7 +156,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
-			return crucibleServerFacade.getRepositories(serverCfg);
+			return crucibleServerFacade.getRepositories(cfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -197,7 +198,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
-			return fishEyeServerFacade.getRepositories(serverCfg);
+			return fishEyeServerFacade.getRepositories(cfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -498,7 +499,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						data.add(new CrucibleServerCfgWrapper((CrucibleServerCfg) serverCfg));
+						data.add(new CrucibleServerCfgWrapper(cfgManager.getServerData(serverCfg)));
 					}
 				}
 			}
@@ -519,9 +520,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			if (selectedItem != null && !selectedItem.equals(anItem) || selectedItem == null && anItem != null) {
 				if (anItem != null) {
 					CrucibleServerCfgWrapper item = (CrucibleServerCfgWrapper) anItem;
-					final CrucibleServerCfg wrapped = item.getWrapped();
+					final ServerData wrapped = item.getWrapped();
 					if (wrapped != null) {
-						projectConfiguration.setDefaultCrucibleServerId(wrapped.getServerId());
+						projectConfiguration.setDefaultCrucibleServerId(new ServerId(wrapped.getServerId()));
 						projectConfiguration.setDefaultCrucibleRepo(null);
 						projectConfiguration.setDefaultCrucibleProject(null);
 					} else {

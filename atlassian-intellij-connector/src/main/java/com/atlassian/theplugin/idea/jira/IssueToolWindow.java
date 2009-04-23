@@ -1,12 +1,10 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
@@ -64,28 +62,29 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
+	private final CfgManager cfgManager;
 
-	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
+	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+			@NotNull CfgManager cfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
+		this.cfgManager = cfgManager;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
-		private JiraServerCfg server;
 		// mutable because model may update the issue and we want to know about it (we have listener in place)
 		private JIRAIssue issue;
 		private final JIRAIssueListModel model;
 
-		private IssueContentParameters(JiraServerCfg server, JIRAIssue issue, JIRAIssueListModel model) {
-			this.server = server;
+		private IssueContentParameters(JIRAIssue issue, JIRAIssueListModel model) {
 			this.issue = issue;
 			this.model = model;
 		}
 	}
 
-	public void showIssue(JiraServerCfg server, final JIRAIssue issue, JIRAIssueListModel model) {
-		final IssueContentParameters issueContentParameters = new IssueContentParameters(server, issue, model);
+	public void showIssue(final JIRAIssue issue, JIRAIssueListModel model) {
+		final IssueContentParameters issueContentParameters = new IssueContentParameters(issue, model);
 		showToolWindow(project, issueContentParameters,
 				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON,
 				new ContentListener(getContentKey(issueContentParameters)));
@@ -97,7 +96,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(ContentParameters params) {
 		IssueContentParameters icp = (IssueContentParameters) params;
-		return icp.server != null ? icp.server.getUrl() + icp.server.getCurrentUsername() + icp.issue.getKey() : "";
+		ServerData server = icp.issue.getServer();
+		return server != null ? server.getUrl() + server.getUserName() + icp.issue.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {
@@ -113,8 +113,11 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 	public boolean isServerEnabled(String key) {
 		IssuePanel ip = getContentPanel(key);
-		if (ip != null && ip.params != null && ip.params.server != null) {
-			return ip.params.server.isEnabled();
+		ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project),
+				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
+
+		if (ip != null && ip.params != null && serverCfg != null) {
+			return serverCfg.isEnabled();
 		}
 		return false;
 	}
@@ -228,7 +231,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				params.model.addModelListener(this);
 			}
 
-			IdeaHelper.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 			refresh();
 		}
 
@@ -252,8 +255,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			// ignore for now - should we display it?
 		}
 
-		public JiraServerCfg getSelectedServer() {
-			return params != null ? params.server : null;
+		public ServerData getSelectedServer() {
+			return params != null && params.issue != null ? params.issue.getServer()
+					: null;
 		}
 
 		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
@@ -263,28 +267,35 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			if (params.model != null) {
 				params.model.removeModelListener(this);
 			}
-			IdeaHelper.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 		}
 
+		private ServerData getJiraServerCfg() {
+			if (params != null && params.issue != null) {
+				if (params.issue.getServer() != null) {
+					return params.issue.getServer();
+				}
+			}
 
+			return null;
+		}
 		public void refresh() {
+			ServerData jiraServerCfg = getJiraServerCfg();
 			for (JIRAIssue i : params.model.getIssues()) {
-				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(params.server.getUrl())) {
+				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerCfg.getUrl())) {
 					params.issue = i;
 					ActiveIssueUtils.checkIssueState(project, i);
 					break;
 				}
 			}
 
-
-
-			if (params.issue != null && params.server != null) {
+			if (params.issue != null && jiraServerCfg != null) {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
 					private boolean retrieved = false;
 
 					public void run(final ProgressIndicator indicator) {
 						try {
-							params.issue = facade.getIssue(params.server, params.issue.getKey());
+							params.issue = facade.getIssue(params.issue.getServer(), params.issue.getKey());
 							retrieved = true;
 						} catch (final JIRAException e) {
 							EventQueue.invokeLater(new Runnable() {
@@ -326,7 +337,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						@Override
 						public void run() {
 							try {
-								JiraServerCfg jiraServer = params != null ? params.server : null;
+								ServerData jiraServer =
+										params != null && params.issue != null ? params.issue.getServer() : null;
 
 								if (jiraServer != null) {
 									final java.util.List<JIRAAction> actions = facade
@@ -363,7 +375,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				return params.issue;
 			}
 			if (dataId.equals(Constants.SERVER)) {
-				return params.server;
+				return getJiraServerCfg();
 			}
 			return null;
 		}
@@ -616,12 +628,12 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				public void run() {
 
 					try {
-						if (params != null && params.server != null) {
+						if (params != null && params.issue != null && params.issue.getServer() != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
 //							params.issue = facade.getIssue(params.server, params.issue.getKey());
 
-							final JIRAIssue issueDetails = facade.getIssueDetails(params.server, params.issue);
+							final JIRAIssue issueDetails = facade.getIssueDetails(params.issue.getServer(), params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
 							params.issue.setFixVersions(issueDetails.getFixVersions());
 							params.issue.setComponents(issueDetails.getComponents());
@@ -817,7 +829,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			}
 
 			public void addComment(JIRAComment c) {
-				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, params.server, tabs);
+				CommentPanel p = new CommentPanel(comments.getComponents().length + 1, c, params.issue.getServer(), tabs);
 				comments.add(p);
 			}
 
@@ -846,8 +858,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 					Runnable runnable = new Runnable() {
 						public void run() {
 							try {
-								if (params != null && params.server != null && params.issue != null) {
-									facade.addComment(params.server, params.issue.getKey(), issueCommentDialog.getComment());
+								if (params != null && params.issue != null && params.issue.getServer() != null) {
+									facade.addComment(params.issue.getServer(), params.issue.getKey(), issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
 											refreshDescriptionAndComments();
@@ -893,10 +905,10 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			private class RefreshDescriptionAndCommentsRunnable implements Runnable {
 				public void run() {
 					try {
-						if (params != null && params.server != null) {
+						if (params != null && params.issue != null && params.issue.getServer() != null) {
 							java.util.List<JIRAComment> cmts = null;
 
-							JIRAIssue oneIssue = facade.getIssue(params.server, params.issue.getKey());
+							JIRAIssue oneIssue = facade.getIssue(params.issue.getServer(), params.issue.getKey());
 							if (oneIssue != null) {
 								descriptionPanel.setDescription(oneIssue.getDescription());
 								cmts = oneIssue.getComments();
@@ -904,13 +916,13 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 							if (cmts == null) {
 								// oh well, no comments in XML - can it even happen? Fall back to SOAP
-								cmts = facade.getComments(params.server, params.issue);
+								cmts = facade.getComments(params.issue.getServer(), params.issue);
 							}
 
 							for (JIRAComment c : cmts) {
 								try {
 									JIRAUserBean u = JIRAUserNameCache.getInstance()
-											.getUser(params.server, c.getAuthor());
+											.getUser(getJiraServerCfg(), c.getAuthor());
 									c.setAuthorFullName(u.getName());
 								} catch (JiraUserNotFoundException e) {
 									c.setAuthorFullName(c.getAuthor());
@@ -1056,7 +1068,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			private HeaderListener headerListener;
 
-			public CommentPanel(int cmtNumber, final JIRAComment comment, final JiraServerCfg server, JTabbedPane tabs) {
+			public CommentPanel(int cmtNumber, final JIRAComment comment, final ServerData server, JTabbedPane tabs) {
 				setOpaque(true);
 				setBackground(Color.WHITE);
 
@@ -1191,7 +1203,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		private class LocalConfigListener extends ConfigurationListenerAdapter {
 
 			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-				params.server = (JiraServerCfg) newConfiguration.getServerCfg(params.server.getServerId());
+				((JIRAIssueBean)params.issue).setServer(params.issue.getServer());
 			}
 		}
 	}

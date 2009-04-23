@@ -18,9 +18,11 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -111,8 +113,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setupUi();
 		setModal(true);
 
-		final CrucibleServerCfg serverCfg = (CrucibleServerCfg) cfgManager
-				.getServer(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
+		final ServerData serverCfg = cfgManager
+				.getServerData(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
@@ -135,7 +137,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
-		CrucibleServerCfg selectedServer = setSelectedServer(serverCfg);
+		ServerData selectedServer = setSelectedServer(serverCfg);
 		fillServerRelatedCombos(selectedServer);
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
@@ -151,8 +153,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	public CustomFilterBean getFilter() {
-		CrucibleServerCfg s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem()).getWrapped();
-		filter.setServerUid(s.getServerId().getUuid().toString());
+		ServerData s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem()).getWrapped();
+		filter.setServerUid(s.getServerId());
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();
@@ -233,7 +235,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		return filter;
 	}
 
-	private CrucibleServerCfg setSelectedServer(CrucibleServerCfg serverCfg) {
+	private ServerData setSelectedServer(ServerData serverCfg) {
 
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
 			if (serverComboBox.getItemAt(i) instanceof CrucibleServerCfgWrapper &&
@@ -264,17 +266,17 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			//@todo disable apply filter button in toolbar
 		} else {
 			for (CrucibleServerCfg server : enabledServers) {
-				serverComboBox.addItem(new CrucibleServerCfgWrapper(server));
+				serverComboBox.addItem(new CrucibleServerCfgWrapper(cfgManager.getServerData(server)));
 			}
 		}
 
 
 	}
 
-	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
-		final CrucibleServerCfg crucibleServerCfg = (server != null) ? server : getSelectedServer();
+	private void fillServerRelatedCombos(final ServerData server) {
+		final ServerData serverData = (server != null) ? server : getSelectedServer();
 
-		if (crucibleServerCfg != null) {
+		if (serverData != null) {
 			projectComboBox.setEnabled(false);
 			setStateForAllControls(false);
 
@@ -285,9 +287,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 				public void run() throws Exception {
 					currentAction = "fetching crucible projects";
-					projects = crucibleServerFacade.getProjects(crucibleServerCfg);
+					projects = crucibleServerFacade.getProjects(serverData);
 					currentAction = "fetching crucible users";
-					users = crucibleServerFacade.getUsers(crucibleServerCfg);
+					users = crucibleServerFacade.getUsers(serverData);
 				}
 
 				public void onSuccess() {
@@ -312,7 +314,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	@Nullable
-	private CrucibleServerCfg getSelectedServer() {
+	private ServerData getSelectedServer() {
 		final Object selectedItem = serverComboBox.getSelectedItem();
 		if (serverComboBox.getItemCount() > 0 && selectedItem != null
 				&& selectedItem instanceof CrucibleServerCfgWrapper) {

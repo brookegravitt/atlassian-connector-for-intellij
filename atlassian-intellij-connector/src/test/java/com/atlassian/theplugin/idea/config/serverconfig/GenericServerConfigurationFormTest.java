@@ -73,9 +73,9 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	private static void checkServerBean(ServerCfg outServer) throws ServerPasswordNotProvidedException {
 
 		assertEquals("name", outServer.getName());
-		assertEquals("password", outServer.getCurrentPassword());
+		assertEquals("password", outServer.getPassword());
 		assertEquals("http://url", outServer.getUrl());
-		assertEquals("userName", outServer.getCurrentUsername());
+		assertEquals("userName", outServer.getUserName());
 	}
 
 	public static Test suite() {

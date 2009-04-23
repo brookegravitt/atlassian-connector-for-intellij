@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -31,7 +31,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 	private final JiraWorkspaceConfiguration jiraProjectCfg;
 	private final JIRAServerModel jiraServerModel;
 	private final JButton editButton = new JButton("Edit");
-	private JiraServerCfg jiraServer;
+	private ServerData jiraServer;
 	private JIRAManualFilter jiraManualFilter;
 
 	JiraManualFilterDetailsPanel(JIRAFilterListModel listModel,
@@ -50,7 +50,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 				JiraManualFilterDetailsPanel.this.listModel = aListModel;
 			}
 
-			public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg server) {
+			public void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData server) {
 				// refresh data in the view
 				setFilter(manualFilter, server);
 			}
@@ -123,7 +123,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 		});
 	}
 
-	public void setFilter(JIRAManualFilter manualFilter, final JiraServerCfg jiraServerCfg) {
+	public void setFilter(JIRAManualFilter manualFilter, final ServerData jiraServerCfg) {
 
 		this.jiraServer = jiraServerCfg;
 		this.jiraManualFilter = manualFilter;

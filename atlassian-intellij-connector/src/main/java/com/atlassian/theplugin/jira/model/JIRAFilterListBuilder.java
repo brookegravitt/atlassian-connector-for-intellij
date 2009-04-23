@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -29,14 +29,9 @@ public class JIRAFilterListBuilder {
 	private final CfgManager cfgManager;
 
 
-	public JIRAFilterListBuilder(@NotNull final JIRAServerFacade jiraServerFacade, @NotNull final CfgManager cfgManager) {
-		this.jiraServerFacade = jiraServerFacade;
+	public JIRAFilterListBuilder(@NotNull final CfgManager cfgManager) {
+		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		this.cfgManager = cfgManager;
-	}
-
-	public JIRAFilterListBuilder() {
-		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-		cfgManager = IdeaHelper.getCfgManager();
 	}
 
 	public void setProjectId(final ProjectId projectId) {
@@ -60,9 +55,9 @@ public class JIRAFilterListBuilder {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-			Collection<JiraServerCfg> serversToAdd = new ArrayList<JiraServerCfg>();
+			Collection<ServerData> serversToAdd = new ArrayList<ServerData>();
 
-			for (JiraServerCfg jiraServer : jiraServerModel.getServers()) {
+			for (ServerData jiraServer : jiraServerModel.getServers()) {
 				try {
 					if (jiraServerModel.getServers().contains(jiraServer)) {
 						loadServerSavedFilter(jiraServer, jiraServerModel);
@@ -75,7 +70,7 @@ public class JIRAFilterListBuilder {
 				loadManualFilter(jiraServer);
 			}
 			//add non existing servers
-			for (JiraServerCfg newServer : serversToAdd) {
+			for (ServerData newServer : serversToAdd) {
 				try {
 					loadServerSavedFilter(newServer, jiraServerModel);
 				} catch (JIRAException e1) {
@@ -92,7 +87,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadServerSavedFilter(final JiraServerCfg jiraServer,
+	private void loadServerSavedFilter(final ServerData jiraServer,
 			final JIRAServerModel jiraServerModel) throws JIRAException {
 
 //		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
@@ -114,7 +109,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadManualFilter(final JiraServerCfg jiraServer) {
+	private void loadManualFilter(final ServerData jiraServer) {
 
 		if (jiraWorkspaceCfg != null) {
 
@@ -140,14 +135,14 @@ public class JIRAFilterListBuilder {
 	}
 
 	public class JIRAServerFiltersBuilderException extends Exception {
-		private Map<JiraServerCfg, JIRAException> exceptions = new HashMap<JiraServerCfg, JIRAException>();
+		private Map<ServerData, JIRAException> exceptions = new HashMap<ServerData, JIRAException>();
 
-		public void addException(JiraServerCfg server, JIRAException e) {
+		public void addException(ServerData server, JIRAException e) {
 			//noinspection ThrowableResultOfMethodCallIgnored
 			exceptions.put(server, e);
 		}
 
-		public Map<JiraServerCfg, JIRAException> getExceptions() {
+		public Map<ServerData, JIRAException> getExceptions() {
 			return exceptions;
 		}
 	}

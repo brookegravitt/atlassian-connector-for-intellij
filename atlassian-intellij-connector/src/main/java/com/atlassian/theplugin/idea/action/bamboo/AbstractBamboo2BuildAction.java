@@ -22,7 +22,8 @@ public abstract class AbstractBamboo2BuildAction extends AbstractBambooBuildActi
 	@Override
 	public void update(final AnActionEvent event) {
 		super.update(event);
-		if (build != null && !build.getServer().isBamboo2()) {
+		//todo: implement isBamboo2
+		if (build != null /*&& !build.getServer().isBamboo2()*/) {
 			event.getPresentation().setEnabled(false);
 		}
 	}

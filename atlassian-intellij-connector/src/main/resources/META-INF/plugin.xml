@@ -106,6 +106,15 @@
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PostCommitReviewCheckinHandlerFactory"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
+		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"
+						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"/>
+
+		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAServerModel"
+						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAServerModelImpl"/>
+
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
 
@@ -156,12 +165,16 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.PluginToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.PluginToolWindow"/>
 
+
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.UiTaskExecutor"
 							serviceImplementation="com.atlassian.theplugin.idea.util.IdeaUiTaskExecutor"/>
 
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao"
 							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
 
+
+		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"
+							serviceImplementation="com.atlassian.theplugin.cfg.IdeaCfgManager"/>
 
 		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
 		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>

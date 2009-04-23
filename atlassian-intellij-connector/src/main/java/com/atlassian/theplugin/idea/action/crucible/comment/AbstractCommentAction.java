@@ -128,6 +128,6 @@ public abstract class AbstractCommentAction extends AnAction {
 	}
 
 	private boolean isUserAnAuthor(Comment comment, ReviewAdapter review) {
-		return review.getServer().getCurrentUsername().equals(comment.getAuthor().getUserName());
+		return review.getServerData().getUserName().equals(comment.getAuthor().getUserName());
 	}
 }

@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -40,7 +41,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 					boolean isOk = false;
 					try {
 						isOk = panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
-							ActiveIssueUtils.getJiraServer(event),
+								IdeaHelper.getCfgManager(event).getServerData(ActiveIssueUtils.getJiraServer(event)),
 							StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 							false);
 					} catch (JIRAException e) {

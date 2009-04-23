@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.crucible.model.MockCrucibleFacadeAdapter;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 
@@ -24,12 +25,7 @@ public class LineCommentTooltipPanelTest {
 	public static void main(String[] args) {
 		ReviewBean rev = new ReviewBean("test");
 		rev.setPermId(new PermIdBean("MyReview"));
-		final ReviewAdapter ra = new ReviewAdapter(rev, new CrucibleServerCfg("test", new ServerId()) {
-			@Override
-			public String getCurrentUsername() {
-				return "zenon";
-			}
-		});
+		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerId().toString(), "zenon", "", ""));
 		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
 		ra.setFacade(new MyNullFacade());
 		final VersionedCommentBean comment = new VersionedCommentBean();
@@ -119,7 +115,7 @@ public class LineCommentTooltipPanelTest {
 
 	private static class MyNullFacade extends MockCrucibleFacadeAdapter {
 
-		public VersionedComment addVersionedCommentReply(CrucibleServerCfg server, PermId id, PermId cId,
+		public VersionedComment addVersionedCommentReply(ServerData server, PermId id, PermId cId,
 				VersionedComment comment) throws RemoteApiException, ServerPasswordNotProvidedException {
 
 			String throwException = System.getProperty("LCTPT.throw");

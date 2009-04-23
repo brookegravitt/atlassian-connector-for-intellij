@@ -59,7 +59,7 @@ public class JiraURLTextRange {
 	}
 
 	private String getDefaultJiraServerUrl() {
-		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager()
+		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager(project)
 				.getProjectConfiguration(CfgUtil.getProjectId(project));
 		final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
 		if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {

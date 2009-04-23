@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 
 import javax.swing.*;
@@ -28,6 +29,13 @@ import java.awt.event.WindowEvent;
 import java.util.Collection;
 
 public final class ServerConfigPanelTestUi {
+	private static CfgManager cfgManager = new AbstractCfgManager() {
+
+		public ServerData getServerData(final Server serverCfg) {
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+					serverCfg.getPassword(), serverCfg.getUrl());
+		}
+	};
 
 	private ServerConfigPanelTestUi() {
 	}
@@ -52,7 +60,7 @@ public final class ServerConfigPanelTestUi {
 				new JiraServerCfg("2-Second Jira", new ServerId())
 		);
 
-		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null) {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null, cfgManager) {
 			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);

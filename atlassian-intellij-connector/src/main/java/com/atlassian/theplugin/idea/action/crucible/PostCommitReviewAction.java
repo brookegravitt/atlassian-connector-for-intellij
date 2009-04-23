@@ -34,6 +34,6 @@ public class PostCommitReviewAction extends Crucible16MultiRevisionRepositoryAct
 		}
 
 		new CrucibleCreatePostCommitReviewFromChangeListForm(project, CrucibleServerFacadeImpl.getInstance(),
-				changes, IdeaHelper.getCfgManager()).show();
+				changes, IdeaHelper.getCfgManager(event)).show();
 	}
 }

@@ -20,6 +20,7 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
@@ -30,6 +31,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
@@ -87,7 +89,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private String patch;
 	private final CfgManager cfgManager;
 	private AddMode mode;
-	private CrucibleServerCfg server;
+	private ServerData server;
 	private Collection<Change> localChanges;
 	private MultipleChangeListBrowser changesBrowser;
 
@@ -138,7 +140,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 						ReviewComboBoxItem item = (ReviewComboBoxItem) reviewComboBox.getSelectedItem();
 						if (item != null) {
 							final ReviewAdapter review = item.getReview();
-							server = review.getServer();
+							server = review.getServerData();
 							permId = review.getPermId();
 							idField.setText(review.getPermId().getId());
 							statusField.setText(review.getState().value());
@@ -177,7 +179,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 				final List<Repository> repositories = new ArrayList<Repository>();
 
 				try {
-					List<Repository> repos = crucibleServerFacade.getRepositories(review.getServer());
+					List<Repository> repos = crucibleServerFacade
+							.getRepositories(review.getServerData());
 					repositories.addAll(repos);
 				} catch (final Exception e) {
 					if (CrucibleHelperForm.this.getRootComponent().isShowing()) {
@@ -351,7 +354,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 
 
 	private void addToReviewAdapterList(final List<ReviewAdapter> target, final Collection<Review> source,
-			final CrucibleServerCfg aServer) {
+			final ServerData aServer) {
 
 		for (Review review : source) {
 			target.add(new ReviewAdapter(review, aServer));
@@ -371,12 +374,16 @@ public class CrucibleHelperForm extends DialogWrapper {
 				Collection<CrucibleServerCfg> servers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 				for (CrucibleServerCfg server : servers) {
 					try {
+						final ServerData serverData = cfgManager.getServerData(server);
 						addToReviewAdapterList(drafts,
-								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.Drafts), server);
+								crucibleServerFacade.getReviewsForFilter(serverData,
+										PredefinedFilter.Drafts), serverData);
 						addToReviewAdapterList(outForReview,
-								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.OutForReview), server);
+								crucibleServerFacade.getReviewsForFilter(serverData,
+										PredefinedFilter.OutForReview), serverData);
 						addToReviewAdapterList(toSummarize,
-								crucibleServerFacade.getReviewsForFilter(server, PredefinedFilter.ToSummarize), server);
+								crucibleServerFacade.getReviewsForFilter(serverData,
+										PredefinedFilter.ToSummarize), serverData);
 					}
 					catch (RemoteApiException e) {
 						// nothing can be done here
@@ -462,12 +469,14 @@ public class CrucibleHelperForm extends DialogWrapper {
 							}
 
 							crucibleServerFacade
-									.addRevisionsToReview(server, permId, repoName, new ArrayList<String>(revisions));
+									.addRevisionsToReview(server, permId, repoName,
+											new ArrayList<String>(revisions));
 							break;
 						case ADDITEMS:
 							Collection<UploadItem> uploadItems = CrucibleHelper
 									.getUploadItemsFromChanges(project, localChanges);
-							crucibleServerFacade.addItemsToReview(server, permId, uploadItems);
+							crucibleServerFacade
+									.addItemsToReview(server, permId, uploadItems);
 							break;
 					}
 				} catch (final Throwable e) {

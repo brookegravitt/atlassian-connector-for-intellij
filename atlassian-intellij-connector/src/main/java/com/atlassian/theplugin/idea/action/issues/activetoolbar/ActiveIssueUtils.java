@@ -18,7 +18,9 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -85,7 +87,8 @@ public final class ActiveIssueUtils {
 
 			if (issue != null) {
 				try {
-					issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(jiraServerCfg, issue));
+					ServerData serverData = IdeaHelper.getCfgManager(event).getServerData(jiraServerCfg);
+					issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(serverData, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e);
 				}
@@ -129,12 +132,12 @@ public final class ActiveIssueUtils {
 		JiraServerCfg jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(project);
-			return getJIRAIssue(jiraServer, issue);
+			return getJIRAIssue(IdeaHelper.getCfgManager(project).getServerData(jiraServer), issue);
 		}
 		return null;
 	}
 
-	public static JIRAIssue getJIRAIssue(final JiraServerCfg jiraServer, final ActiveJiraIssue activeIssue)
+	public static JIRAIssue getJIRAIssue(final ServerData jiraServer, final ActiveJiraIssue activeIssue)
 			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
@@ -219,7 +222,7 @@ public final class ActiveIssueUtils {
 
 			if (issue.getServer() != null && issue.getKey().equals(activeIssue.getIssueKey())
 					&& issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
-				if (!issue.getServer().getCurrentUsername().equals(issue.getAssigneeId())
+				if (!issue.getServer().getUserName().equals(issue.getAssigneeId())
 						|| !isInProgress(issue)) {
 
 					SwingUtilities.invokeLater(new Runnable() {
@@ -255,11 +258,12 @@ public final class ActiveIssueUtils {
 		boolean isOk = true;
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		try {
-			final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(jiraServerCfg, newActiveIssue);
+			final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(
+					IdeaHelper.getCfgManager(event).getServerData(jiraServerCfg), newActiveIssue);
 
 			if (panel != null && jiraIssue != null && jiraServerCfg != null) {
 				if (jiraServerCfg != null
-						&& !jiraServerCfg.getCurrentUsername().equals(jiraIssue.getAssigneeId())
+						&& !jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId())
 						&& !"-1".equals(jiraIssue.getAssigneeId())) {
 					isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 							"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
@@ -298,7 +302,7 @@ public final class ActiveIssueUtils {
 						final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
 						isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
-								jiraServer,
+								IdeaHelper.getCfgManager(project).getServerData(jiraServer),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 								true);
 

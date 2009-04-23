@@ -3,50 +3,51 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.*;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface JIRAServerModel extends FrozenModel {
-	void clear(JiraServerCfg cfg);
+	void clear(ServerData cfg);
 
 	void clearAll();
 
 	/*
 	* returns false if invalid password or login occured
 	 */
-	Boolean checkServer(JiraServerCfg cfg) throws RemoteApiException;
+	Boolean checkServer(ServerData cfg) throws RemoteApiException;
 
-	String getErrorMessage(JiraServerCfg cfg);
+	String getErrorMessage(ServerData cfg);
 
-	List<JIRAProject> getProjects(JiraServerCfg cfg) throws JIRAException;
+	List<JIRAProject> getProjects(ServerData cfg) throws JIRAException;
 
-	List<JIRAConstant> getStatuses(JiraServerCfg cfg) throws JIRAException;
+	List<JIRAConstant> getStatuses(ServerData cfg) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(JiraServerCfg cfg, JIRAProject project, boolean includeAny) throws JIRAException;
+	List<JIRAConstant> getIssueTypes(ServerData cfg, JIRAProject project, boolean includeAny) throws JIRAException;
 
-	List<JIRAConstant> getSubtaskIssueTypes(JiraServerCfg cfg, JIRAProject project) throws JIRAException;
+	List<JIRAConstant> getSubtaskIssueTypes(ServerData cfg, JIRAProject project) throws JIRAException;
 
-	List<JIRAQueryFragment> getSavedFilters(JiraServerCfg cfg) throws JIRAException;
+	List<JIRAQueryFragment> getSavedFilters(ServerData cfg) throws JIRAException;
 
-	List<JIRAConstant> getPriorities(JiraServerCfg cfg, boolean includeAny) throws JIRAException;
+	List<JIRAConstant> getPriorities(ServerData cfg, boolean includeAny) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(JiraServerCfg cfg, boolean includeAnyAndUnknown) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(ServerData cfg, boolean includeAnyAndUnknown) throws JIRAException;
 
-	List<JIRAVersionBean> getVersions(JiraServerCfg cfg, JIRAProject project, boolean includeSpecialValues)
+	List<JIRAVersionBean> getVersions(ServerData cfg, JIRAProject project, boolean includeSpecialValues)
 			throws JIRAException;
 
-	List<JIRAFixForVersionBean> getFixForVersions(JiraServerCfg cfg, JIRAProject project, boolean includeSpecialValues)
+	List<JIRAFixForVersionBean> getFixForVersions(ServerData cfg, JIRAProject project, boolean includeSpecialValues)
 			throws JIRAException;
 
-	List<JIRAComponentBean> getComponents(JiraServerCfg cfg, JIRAProject project, final boolean includeSpecialValues)
+	List<JIRAComponentBean> getComponents(ServerData cfg, JIRAProject project, final boolean includeSpecialValues)
 			throws JIRAException;
 
 
-	Collection<JiraServerCfg> getServers();
+	Collection<ServerData> getServers();
 
 	void clear(final ServerId serverId);
 
-	void replace(final JiraServerCfg server);
+	void replace(final ServerData server);
 }

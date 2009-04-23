@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
@@ -54,7 +55,7 @@ public class JIRAFilterTree extends AbstractTree {
 		});
 	}
 
-	public JiraServerCfg getSelectedServer() {
+	public ServerData getSelectedServer() {
 		TreePath selectionPath = getSelectionModel().getSelectionPath();
 		if (selectionPath != null) {
 			if (selectionPath.getLastPathComponent() instanceof JIRAServerTreeNode) {
@@ -218,14 +219,14 @@ public class JIRAFilterTree extends AbstractTree {
 //		List<JiraServerCfg> servers = aListModel.getJIRAServers();
 //		Collections.sort(servers);
 
-		for (JiraServerCfg server : aListModel.getJIRAServers()) {
+		for (ServerData server : aListModel.getJIRAServers()) {
 			JIRAServerTreeNode serverNode = new JIRAServerTreeNode(server);
 			createFilterNodes(server, serverNode, aListModel);
 			rootNode.add(serverNode);
 		}
 	}
 
-	private void createFilterNodes(JiraServerCfg jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
+	private void createFilterNodes(ServerData jiraServer, DefaultMutableTreeNode node, JIRAFilterListModel aListModel) {
 		if (aListModel != null) {
 			for (JIRASavedFilter savedFilter : aListModel.getSavedFilters(jiraServer)) {
 				node.add(new JIRASavedFilterTreeNode(savedFilter, jiraServer));
@@ -249,14 +250,14 @@ public class JIRAFilterTree extends AbstractTree {
 	private class LocalTreeSelectionListener implements TreeSelectionListener {
 		private JIRAManualFilter prevManualFilter = null;
 		private JIRASavedFilter prevSavedFilter = null;
-		private JiraServerCfg prevServer = null;
+		private ServerData prevServer = null;
 		private boolean prevRecentlyOpen = false;
 
 		public final void valueChanged(final TreeSelectionEvent event) {
 
 			JIRAManualFilter manualFilter = getSelectedManualFilter();
 			JIRASavedFilter savedFilter = getSelectedSavedFilter();
-			JiraServerCfg serverCfg = getSelectedServer();
+			ServerData serverCfg = getSelectedServer();
 			boolean recentlyOpenSelected = isRecentlyOpenSelected();
 
 
@@ -309,13 +310,13 @@ public class JIRAFilterTree extends AbstractTree {
 			}
 		}
 
-		private void fireSelectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerCfg serverCfg) {
+		private void fireSelectedSavedFilterNode(final JIRASavedFilter savedFilter, final ServerData serverCfg) {
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
 				listener.selectedSavedFilterNode(savedFilter, serverCfg);
 			}
 		}
 
-		private void fireSelectedManualFilterNode(final JIRAManualFilter manualFilter, final JiraServerCfg serverCfg) {
+		private void fireSelectedManualFilterNode(final JIRAManualFilter manualFilter, final ServerData serverCfg) {
 			for (JiraFilterTreeSelectionListener listener : selectionListeners) {
 				listener.selectedManualFilterNode(manualFilter, serverCfg);
 			}
@@ -335,7 +336,7 @@ public class JIRAFilterTree extends AbstractTree {
 			rebuildTree(aListModel, true);
 		}
 
-		public void manualFilterChanged(final JIRAManualFilter manualFilter, final JiraServerCfg jiraServer) {
+		public void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
 			// we don't care about changes in manual filter
 		}
 

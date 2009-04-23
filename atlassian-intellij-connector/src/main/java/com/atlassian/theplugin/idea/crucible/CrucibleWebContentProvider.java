@@ -45,7 +45,7 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 		try {
 
 			// doggy workaround - PL-1287
-			String serverUrl = review.getServer().getUrl();
+			String serverUrl = review.getServerData().getUrl();
 			String contentUrl = versionedVirtualFile.getContentUrl();
 
 			String[] serverTokens = serverUrl.split("/");
@@ -58,7 +58,7 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 			}
 
 			byte[] content = CrucibleServerFacadeImpl.getInstance()
-					.getFileContent(review.getServer(), contentUrl);
+					.getFileContent(review.getServerData(), contentUrl);
 
 			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
 					versionedVirtualFile.getRevision(),

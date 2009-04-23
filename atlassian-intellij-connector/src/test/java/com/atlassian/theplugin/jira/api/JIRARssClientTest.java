@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import junit.framework.TestCase;
 import org.jdom.Document;
@@ -58,8 +59,8 @@ public class JIRARssClientTest extends TestCase
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
-		server.setUrl("file://test");
+		final ServerData server = new ServerData("jira", (new ServerId()).toString(), "", "", "file://test");
+
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
@@ -83,8 +84,8 @@ public class JIRARssClientTest extends TestCase
 	}
 
 	public void testBugPl941() throws Exception {
-		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
-		server.setUrl("file://test");
+		final ServerData server = new ServerData("jira", (new ServerId()).toString(), "", "", "file://test");
+
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
@@ -111,10 +112,7 @@ public class JIRARssClientTest extends TestCase
 
 	// make a simple mock rss client that overrides URL loading with loading from a file
     private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file) throws RemoteApiMalformedUrlException {
-		final JiraServerCfg server = new JiraServerCfg("jira", new ServerId());
-		server.setUrl(url);
-		server.setUsername(userName);
-		server.setPassword(password);
+		final ServerData server = new ServerData("jira", (new ServerId()).toString(), userName, password, url);
 		return new JIRARssClient(server, new HttpSessionCallbackImpl()) {
             // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
             protected InputStream getUrlAsStream(String url) throws IOException {

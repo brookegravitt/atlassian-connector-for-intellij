@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
@@ -18,10 +19,10 @@ public class AssignIssueToMyselfAction extends JIRAAbstractAction {
 
 	public void onUpdate(AnActionEvent event) {
 		final JIRAIssue issue = event.getData(Constants.ISSUE_KEY);
-		ServerCfg server = event.getData(Constants.SERVER_KEY);
+		ServerData server = event.getData(Constants.SERVER_KEY);
 
 		if (server != null && issue != null) {
-			if (issue.getAssigneeId().equals(server.getCurrentUsername())) {
+			if (issue.getAssigneeId().equals(server.getUserName())) {
 				event.getPresentation().setEnabled(false);
 			}
 		}

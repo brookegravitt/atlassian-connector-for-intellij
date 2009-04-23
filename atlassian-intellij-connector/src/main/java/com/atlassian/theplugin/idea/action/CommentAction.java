@@ -157,7 +157,7 @@ public class CommentAction extends AnAction {
 		} else {
 			newComment = new VersionedCommentBean();
 			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServer().getCurrentUsername()));
+			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 			if (file.getCommitType() == CommitType.Deleted) {
 				newComment.setFromStartLine(start);
 				newComment.setFromEndLine(end);

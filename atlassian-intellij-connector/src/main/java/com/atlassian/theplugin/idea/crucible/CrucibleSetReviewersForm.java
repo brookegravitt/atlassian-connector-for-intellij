@@ -17,12 +17,14 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -82,7 +84,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 			}
 		});
 
-		fillServerRelatedCombos(reviewData.getServer());
+		fillServerRelatedCombos(reviewData.getServerData());
 		pack();
 	}
 
@@ -115,7 +117,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		reviewersList.setSelectedIndices(newIdx);
 	}
 
-	private void fillServerRelatedCombos(final CrucibleServerCfg server) {
+	private void fillServerRelatedCombos(final ServerData server) {
 		model.removeAllElements();
 		getOKAction().setEnabled(false);
 
@@ -126,7 +128,8 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 				try {
 					users = crucibleServerFacade.getUsers(server);
-					reviewers = crucibleServerFacade.getReviewers(server, reviewData.getPermId());
+					reviewers = crucibleServerFacade
+							.getReviewers(server, reviewData.getPermId());
 				} catch (RemoteApiException e) {
 					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
@@ -143,11 +146,11 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		}, "atlassian-idea-plugin crucible patch upload combos refresh").start();
 	}
 
-	private void updateServerRelatedData(CrucibleServerCfg server, List<User> users, List<Reviewer> reviewers) {
+	private void updateServerRelatedData(ServerData server, List<User> users, List<Reviewer> reviewers) {
 		actualReviewers = reviewers;
 		if (!users.isEmpty()) {
 			for (User user : users) {
-				if (!user.getUserName().equals(server.getCurrentUsername())
+				if (!user.getUserName().equals(server.getUserName())
 						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) &&
 						!user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
@@ -213,19 +216,22 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		}
 		try {
 			if (!reviewersForAdd.isEmpty()) {
-				crucibleServerFacade.addReviewers(reviewData.getServer(), reviewData.getPermId(), reviewersForAdd);
+				crucibleServerFacade.addReviewers(reviewData.getServerData(),
+						reviewData.getPermId(), reviewersForAdd);
 			}
 			if (!reviewersForRemove.isEmpty()) {
 				for (String reviewer : reviewersForRemove) {
-					crucibleServerFacade.removeReviewer(reviewData.getServer(), reviewData.getPermId(), reviewer);
+					crucibleServerFacade.removeReviewer(reviewData.getServerData(),
+							reviewData.getPermId(), reviewer);
 				}
 			}
 		} catch (RemoteApiException e) {
 			DialogWithDetails.showExceptionDialog(project,
-					e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), e);
+					e.getMessage() + "Error creating review: " + reviewData.getServerData().getUrl(), e);
 //			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
 		} catch (ServerPasswordNotProvidedException e) {
-			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: " + reviewData.getServer().getUrl(), "");
+			Messages.showErrorDialog(project, e.getMessage() + "Error creating review: "
+					+ reviewData.getServerData().getUrl(), "");
 		}
 
 
@@ -260,9 +266,8 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		panel1.add(scrollPane1,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1, null, null,
-						null, 0, false));
+		panel1.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1,
+				null, null, null, 0, false));
 		scrollPane1.setViewportView(reviewersList);
 	}
 

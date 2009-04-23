@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
@@ -96,9 +97,9 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 						for (CrucibleServerCfg server : servers) {
 							try {
 								Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-										server, new PermIdBean(dialog.getSearchKey()));
+										IdeaHelper.getCfgManager(project).getServerData(server), new PermIdBean(dialog.getSearchKey()));
 								if (review != null) {
-									serverReviews.add(new ReviewAdapter(review, server));
+									serverReviews.add(new ReviewAdapter(review, IdeaHelper.getCfgManager(project).getServerData(server)));
 								}
 							} catch (final RemoteApiException e) {
 								failed = true;
@@ -183,10 +184,10 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 			text.append(" (");
 
-			if (value.getServer().getName().length() > LENGHT) {
-				text.append(value.getServer().getName().substring(0, LENGHT - (2 + 1)));
+			if (value.getServerData().getName().length() > LENGHT) {
+				text.append(value.getServerData().getName().substring(0, LENGHT - (2 + 1)));
 			} else {
-				text.append(value.getServer().getName());
+				text.append(value.getServerData().getName());
 			}
 
 			text.append(')');
