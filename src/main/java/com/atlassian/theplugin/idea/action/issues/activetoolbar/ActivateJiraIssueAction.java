@@ -28,8 +28,8 @@ import org.joda.time.DateTime;
 public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(final AnActionEvent event) {
-		JIRAIssue selectedIssue = null;
-		JiraServerCfg jiraServerCfg = null;
+		JIRAIssue selectedIssue;
+		JiraServerCfg jiraServerCfg;
 		selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (selectedIssue != null) {
@@ -41,18 +41,10 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 								new DateTime());
 
 				ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
-//				clearCache(event);
 			}
 		}
 	}
 
-//	private void clearCache(final AnActionEvent event) {
-//		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
-//		if (panel != null) {
-//			panel.clearCache();
-//		}
-
-	//	}
 	public void onUpdate(final AnActionEvent event) {
 	}
 
