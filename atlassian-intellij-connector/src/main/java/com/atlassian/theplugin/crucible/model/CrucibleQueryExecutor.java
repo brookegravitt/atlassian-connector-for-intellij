@@ -3,7 +3,6 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -78,7 +77,8 @@ public class CrucibleQueryExecutor {
 									throw new InterruptedException();
 								}
 
-								List<Review> review = crucibleServerFacade.getReviewsForFilter(cfgManager.getServerData(server), filter);
+								List<Review> review = crucibleServerFacade
+										.getReviewsForFilter(cfgManager.getServerData(server), filter);
 								List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
 								for (Review r : review) {
 									final ReviewAdapter reviewAdapter = new ReviewAdapter(r, cfgManager.getServerData(server));
@@ -148,7 +148,8 @@ public class CrucibleQueryExecutor {
 
 						Review r = crucibleServerFacade.getReview(cfgManager.getServerData(server),
 								new PermIdBean(recentReview.getReviewId()));
-						recenltyOpenFilterNotificationBean.getReviews().add(new ReviewAdapter(r, cfgManager.getServerData(server)));
+						recenltyOpenFilterNotificationBean.getReviews()
+								.add(new ReviewAdapter(r, cfgManager.getServerData(server)));
 
 					} catch (ServerPasswordNotProvidedException exception) {
 						ApplicationManager.getApplication().invokeLater(

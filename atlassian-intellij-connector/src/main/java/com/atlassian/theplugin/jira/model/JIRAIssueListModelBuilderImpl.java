@@ -1,13 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -248,5 +244,5 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void setProjectCfgManager(final ProjectCfgManager projectCfgManager) {
 		this.projectCfgManager = projectCfgManager;
-	}	
+	}
 }

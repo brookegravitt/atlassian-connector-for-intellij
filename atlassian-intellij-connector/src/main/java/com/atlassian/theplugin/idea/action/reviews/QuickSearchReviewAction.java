@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
@@ -97,9 +96,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 						for (CrucibleServerCfg server : servers) {
 							try {
 								Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-										IdeaHelper.getCfgManager(project).getServerData(server), new PermIdBean(dialog.getSearchKey()));
+										IdeaHelper.getCfgManager(project).getServerData(server),
+										new PermIdBean(dialog.getSearchKey()));
 								if (review != null) {
-									serverReviews.add(new ReviewAdapter(review, IdeaHelper.getCfgManager(project).getServerData(server)));
+									serverReviews.add(new ReviewAdapter(review,
+											IdeaHelper.getCfgManager(project).getServerData(server)));
 								}
 							} catch (final RemoteApiException e) {
 								failed = true;

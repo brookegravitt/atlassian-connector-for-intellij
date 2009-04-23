@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
@@ -51,7 +51,7 @@ public class AbstractHttpSessionTest extends TestCase {
 	private static CfgManager cfgManager = new AbstractCfgManager() {
 
 		public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-			return  new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 					serverCfg.getPassword(), serverCfg.getUrl());
 		}
 	};
