@@ -90,9 +90,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final int ONE_SECOND = 1000;
 
-	//private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
-
-
 	public IssuesToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
@@ -160,8 +157,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		});
 
-		//recentlyOpenIssuesCache = new RecentlyOpenIssuesCache(project, projectCfgManager, baseIssueListModel);
-
 		addIssuesTreeListeners();
 		addSearchBoxListener();
 		freezeSynchronizator.setIssueModel(currentIssueListModel);
@@ -212,7 +207,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 	public void init() {
-		//recentlyOpenIssuesCache.init();
 		recentlyOpenIssuesCache.init();
 	}
 
@@ -268,7 +262,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		getRightTree().addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
+				JIRAIssue issue = getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
 					openIssue(issue);
 				}
@@ -279,7 +273,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
+				final JIRAIssue issue = getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
 					openIssue(issue);
 				}
@@ -337,7 +331,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				@Override
 				public void run() {
 					try {
-						JiraServerCfg jiraServer = issue.getServer(); // was: getSelectedServer();
+						JiraServerCfg jiraServer = issue.getServer();
 
 						if (jiraServer != null) {
 							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
@@ -377,7 +371,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	public void openIssue(@NotNull JIRAIssue issue) {
 		if (issue.getServer() != null) {
 			recentlyOpenIssuesCache.addIssue(issue);
-//			jiraWorkspaceConfiguration.addRecentlyOpenIssue(issue);
 			ActiveIssueUtils.checkIssueState(project, issue);
 			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue.getServer(), issue, baseIssueListModel);
 		}
@@ -401,7 +394,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 				@Override
 				public void onSuccess() {
-					//JiraServerCfg server = getSelectedServer();
 					if (getProject().isDisposed()) {
 						return;
 					}
@@ -420,7 +412,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				public void run(@NotNull ProgressIndicator progressIndicator) {
 					progressIndicator.setIndeterminate(true);
 					try {
-						//final JiraServerCfg jiraServer = getSelectedServer();
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
 							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
@@ -518,7 +509,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	public void addCommentToSelectedIssue() {
 		// todo move getSelectedIssue from the model to the tree
-		final JIRAIssue issue = getSelectedIssue(); //currentIssueListModel.getSelectedIssue();
+		final JIRAIssue issue = getSelectedIssue();
 		if (issue != null) {
 			addCommentToIssue(issue.getKey(), issue.getServer());
 		}
@@ -633,13 +624,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			setStatusMessage("Some Jira servers did not return saved filters", true);
 		}
 	}
-//	public void setIssuesFilterParams(JiraServerCfg server, List<JIRAQueryFragment> manualFilter) {
-//		jiraIssueListModelBuilder.setServer(server);
-//	}
-//
-//		jiraIssueListModelBuilder.setServer(server);
-
-//	}
 
 	public void refreshIssues(final boolean reload) {
 		JIRAManualFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
@@ -650,7 +634,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		} else if (manualFilter != null) {
 			refreshIssues(manualFilter, serverCfg, reload);
 		} else if (jiraFilterTree.isRecentlyOpenSelected()) {
-			refreshRecenltyOpenIssues(/*jiraWorkspaceConfiguration.getRecentlyOpenIssues(),*/ reload);
+			refreshRecenltyOpenIssues(reload);
 		}
 	}
 
@@ -693,8 +677,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	}
 
 
-	private void refreshRecenltyOpenIssues(/*final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues,*/
-			final boolean reload) {
+	private void refreshRecenltyOpenIssues(final boolean reload) {
 		if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
 			return;
 		}
@@ -703,7 +686,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					getStatusBarPane().setMessage("Loading issues...", false);
-					jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(/*recentlyOpenIssuesCache,*/ reload);
+					jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
 				} catch (JIRAException e) {
 					setStatusMessage(e.getMessage(), true);
 				}
@@ -711,12 +694,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		};
 		ProgressManager.getInstance().run(task);
 	}
-
-//	public void clearCache() {
-//		if (jiraIssueListModelBuilder != null) {
-//			jiraIssueListModelBuilder.clearCache();
-//		}
-//	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
@@ -846,26 +823,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	 */
 	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
 		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
-
-//		if (recentlyOpenIssues == null || recentlyOpenIssues.size() == 0) {
-//			return issues;
-//		}
-//
-//		for (IssueRecentlyOpenBean recentlyOpenIssue : recentlyOpenIssues) {
-//			if (jiraIssueListModelBuilder != null) {
-//				JIRAIssue issue;
-//				try {
-//					issue = jiraIssueListModelBuilder.getJIRAIssue(recentlyOpenIssue);
-//					if (issue != null) {
-//						issues.add(issue);
-//					}
-//				} catch (JIRAException e) {
-//					PluginUtil.getLogger().warn(e.getMessage());
-//				}
-//			}
-//		}
-//
-//		return issues;
 	}
 
 	public List<JIRAIssue> loadRecenltyOpenIssues() {
@@ -1088,7 +1045,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			hideManualFilterPanel();
 
 			// refresh issues view
-			refreshRecenltyOpenIssues(/*jiraWorkspaceConfiguration.getRecentlyOpenIssues(),*/ true);
+			refreshRecenltyOpenIssues(true);
 
 			jiraWorkspaceConfiguration.getView().setViewServerId("");
 			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);

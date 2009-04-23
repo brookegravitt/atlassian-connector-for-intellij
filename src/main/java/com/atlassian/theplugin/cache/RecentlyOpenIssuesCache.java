@@ -96,25 +96,11 @@ public class RecentlyOpenIssuesCache {
 		JIRAIssue issue = null;
 
 		if (jiraServer != null) {
-//			if (issueModel != null) {
-//				issue = getIssueFromModel(recentlyOpen, jiraServer);
-//			}
-//			if (issue == null) {
 			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 			issue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
-//			}
 		}
 		return issue;
 	}
-
-//	private JIRAIssue getIssueFromModel(final IssueRecentlyOpenBean recentlyOpen, final JiraServerCfg jiraServer) {
-//		for (JIRAIssue issue : issueModel.getIssues()) {
-//			if (issue != null && issue.getKey().equals(recentlyOpen.getIssueKey()) && issue.getServer().equals(jiraServer)) {
-//				return issue;
-//			}
-//		}
-//		return null;
-//	}
 
 	public LinkedList<JIRAIssue> getLoadedRecenltyOpenIssues() {
 		return new LinkedList<JIRAIssue>(items.values());

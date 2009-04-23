@@ -82,7 +82,6 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 
 
 		DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
-//		final JiraWorkspaceConfiguration conf = IdeaHelper .getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		final RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
 		if (cache != null) {
