@@ -157,22 +157,43 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void updateIssue(final JIRAIssue issue, final ServerData jiraServerCfg) throws JIRAException {
-		model.setModelFrozen(true);
+	/**
+	 * Retrieves issue from the server and updates model
+	 *
+	 * @param issueKey	  issue to reload
+	 * @param jiraServerCfg server
+	 * @throws JIRAException
+	 */
+	public synchronized void reloadIssue(final String issueKey, final ServerData jiraServerCfg) throws JIRAException {
 		if (model == null || jiraServerCfg == null) {
 			return;
 		}
+		model.setModelFrozen(true);
 
-		JIRAIssue updatedIssue = facade.getIssueUpdate(jiraServerCfg, issue);
 		try {
-			model.setModelFrozen(true);
+//			JIRAIssue updatedIssue = facade.getIssueUpdate(jiraServerCfg, issue);
+			JIRAIssue updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
 			model.updateIssue(updatedIssue);
 		} finally {
 			model.setModelFrozen(false);
 		}
-
 		model.fireModelChanged();
+	}
 
+	/**
+	 * Updates the given issue in the model. That method does not retrieve issue from the server.
+	 *
+	 * @param issue fresh issue to update in the model
+	 */
+	public synchronized void updateIssue(final JIRAIssue issue) {
+		if (model == null) {
+			return;
+		}
+
+		model.setModelFrozen(true);
+		model.updateIssue(issue);
+		model.setModelFrozen(false);
+		model.fireModelChanged();
 	}
 
 	public synchronized void reset() {

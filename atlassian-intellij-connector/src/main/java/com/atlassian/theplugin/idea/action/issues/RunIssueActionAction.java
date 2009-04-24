@@ -151,7 +151,7 @@ public class RunIssueActionAction extends AnAction {
 
 
 		if (jiraIssueListModelBuilder != null) {
-			jiraIssueListModelBuilder.updateIssue(issue, server);
+			jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 		}
 		showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
 	}

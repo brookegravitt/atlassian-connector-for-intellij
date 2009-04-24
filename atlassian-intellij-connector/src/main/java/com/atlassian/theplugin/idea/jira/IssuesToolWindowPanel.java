@@ -435,7 +435,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					try {
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
-							jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
+							jiraIssueListModelBuilder.updateIssue(issue);
 						} else {
 							exception = new RuntimeException("No JIRA server defined!");
 						}
@@ -490,7 +490,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
 						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
-						jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
+						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				} catch (JIRAException e) {
 					setStatusMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
@@ -613,7 +613,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 							setStatusMessage("Started progress on " + issue.getKey());
 							found = true;
-							jiraIssueListModelBuilder.updateIssue(issue, server);
+							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 							break;
 						}
 					}
@@ -772,7 +772,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						boolean isError = false;
 						try {
 							JIRAIssue issueToCreate = issueCreateDialog.getJIRAIssue();
-							JIRAIssue createdIssue = jiraServerFacade.createIssue(server,
+							final JIRAIssue createdIssue = jiraServerFacade.createIssue(server,
 									issueToCreate);
 
 							message = "New issue created: <a href="
@@ -781,7 +781,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									+ createdIssue.getKey()
 									+ "</a>";
 
-							jiraIssueListModelBuilder.updateIssue(createdIssue, server);
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									recentlyOpenIssuesCache.addIssue(createdIssue);
+//									jiraIssueListModelBuilder.updateIssue(createdIssue);
+									refreshIssues(true);
+								}
+							});
+
+
 						} catch (JIRAException e) {
 							message = "Failed to create new issue: " + e.getMessage();
 							isError = true;
@@ -789,6 +797,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 						final String msg = message;
 						setStatusMessage(msg, isError);
+					}
+
+					public void onSuccess() {
+
 					}
 				};
 
@@ -1165,7 +1177,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						}
 
 						setStatusMessage("Deactivated issue " + issue.getKey());
-						jiraIssueListModelBuilder.updateIssue(issue, jiraServer);
+						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				}
 			} catch (JIRAException e) {
