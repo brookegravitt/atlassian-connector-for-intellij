@@ -23,7 +23,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.api.soap.axisv4.*;
+import com.atlassian.theplugin.jira.api.soap.axis.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.diagnostic.Logger;
