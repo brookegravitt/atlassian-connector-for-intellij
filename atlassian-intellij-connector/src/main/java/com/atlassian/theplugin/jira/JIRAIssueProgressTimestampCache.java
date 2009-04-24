@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.jira;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import java.util.Date;
 import java.util.HashMap;

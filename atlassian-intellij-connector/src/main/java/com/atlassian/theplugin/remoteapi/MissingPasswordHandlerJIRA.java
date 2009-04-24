@@ -18,7 +18,6 @@ package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;

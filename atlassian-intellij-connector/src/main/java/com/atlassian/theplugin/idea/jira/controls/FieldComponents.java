@@ -18,8 +18,6 @@ package com.atlassian.theplugin.idea.jira.controls;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.cfg.CfgUtil;
 
 import javax.swing.*;
 import java.util.ArrayList;

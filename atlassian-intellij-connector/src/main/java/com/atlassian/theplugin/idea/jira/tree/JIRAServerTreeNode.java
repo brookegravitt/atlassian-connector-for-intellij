@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.intellij.openapi.util.IconLoader;

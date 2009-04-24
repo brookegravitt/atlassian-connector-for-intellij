@@ -16,12 +16,11 @@
 
 package com.atlassian.theplugin.idea.action;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;

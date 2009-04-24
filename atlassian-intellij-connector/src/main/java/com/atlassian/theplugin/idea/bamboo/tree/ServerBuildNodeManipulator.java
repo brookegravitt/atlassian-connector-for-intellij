@@ -16,16 +16,12 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
-import com.atlassian.theplugin.idea.IdeaHelper;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.*;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Jacek Jaroczynski

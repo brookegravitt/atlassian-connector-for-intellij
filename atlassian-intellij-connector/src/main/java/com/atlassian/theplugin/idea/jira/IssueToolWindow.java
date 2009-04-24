@@ -1,9 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
@@ -859,7 +862,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 						public void run() {
 							try {
 								if (params != null && params.issue != null && params.issue.getServer() != null) {
-									facade.addComment(params.issue.getServer(), params.issue.getKey(), issueCommentDialog.getComment());
+									facade.addComment(params.issue.getServer(), params.issue.getKey(),
+											issueCommentDialog.getComment());
 									EventQueue.invokeLater(new Runnable() {
 										public void run() {
 											refreshDescriptionAndComments();
@@ -1203,7 +1207,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		private class LocalConfigListener extends ConfigurationListenerAdapter {
 
 			public void jiraServersChanged(final ProjectConfiguration newConfiguration) {
-				((JIRAIssueBean)params.issue).setServer(params.issue.getServer());
+				((JIRAIssueBean) params.issue).setServer(params.issue.getServer());
 			}
 		}
 	}

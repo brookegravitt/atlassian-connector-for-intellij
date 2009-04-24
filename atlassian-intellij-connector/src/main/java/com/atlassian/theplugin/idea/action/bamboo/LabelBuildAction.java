@@ -17,14 +17,7 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.project.Project;
 
 public class LabelBuildAction extends AbstractBuildListAction {
 

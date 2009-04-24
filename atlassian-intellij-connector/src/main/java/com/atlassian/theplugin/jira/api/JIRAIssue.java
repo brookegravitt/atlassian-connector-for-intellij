@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.List;
