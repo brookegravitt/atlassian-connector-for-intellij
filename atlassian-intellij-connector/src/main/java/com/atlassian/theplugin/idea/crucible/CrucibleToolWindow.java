@@ -33,6 +33,7 @@ import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.util.HyperlinkDetector;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -377,8 +378,9 @@ class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
 	private final ReviewAdapter ra;
+    private static final int MAX_DISPLAYED_LINK_LENGHT = 80;
 
-	public DetailsPanel(final ReviewAdapter reviewAdapter) {
+    public DetailsPanel(final ReviewAdapter reviewAdapter) {
 		this.ra = reviewAdapter;
 		setLayout(new GridBagLayout());
 
@@ -426,9 +428,19 @@ class DetailsPanel extends JPanel {
 		statementOfObjectives.setEditable(false);
 		statementOfObjectives.setOpaque(true);
 		statementOfObjectives.setBackground(Color.WHITE);
-		statementOfObjectives.setContentType("text/plain");
+		statementOfObjectives.setContentType("text/html");
 		statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-		statementOfObjectives.setText(ra.getDescription());
+        String sooText = new HyperlinkDetector(MAX_DISPLAYED_LINK_LENGHT).htmlizeHyperlinks(ra.getDescription());
+        sooText = sooText.replaceAll("\r", "").replaceAll("\n", "<br>");
+		statementOfObjectives.setText("<html><body>" + sooText + "</body></html>");
+        statementOfObjectives.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    BrowserUtil.launchBrowser(e.getURL().toString());
+                }
+            }
+        });
+
 		statementOfObjectives.setBorder(null);
 		body.add(statementOfObjectives, gbc2);
 		scroll.addComponentListener(new ComponentAdapter() {
