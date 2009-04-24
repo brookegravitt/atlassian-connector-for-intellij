@@ -32,7 +32,7 @@ public class LabelBuildAction extends AbstractBuildListAction {
 
 		final BambooBuildAdapterIdea build = getBuild(event);
 		boolean isBamboo2 = false;
-		if (build != null ) {
+		if (build != null) {
 			isBamboo2 = isBamboo2(event, build.getServer());			
 		}
 
