@@ -126,11 +126,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-//	public synchronized void clearCache() {
-//		model.clearCache();
-//	}
-
-	public synchronized void addRecenltyOpenIssuesToModel(/*RecentlyOpenIssuesCache _recentlyOpenIssuesCache,*/ boolean reload)
+	public synchronized void addRecenltyOpenIssuesToModel(boolean reload)
 			throws JIRAException {
 
 		if (model == null) {
@@ -143,7 +139,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.setModelFrozen(true);
 
 			if (reload) {
-//				model.clearCache();
 				startFrom = 0;
 				model.clear();
 			}
@@ -216,27 +211,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public void removeFrozenModelListener(FrozenModelListener listener) {
 		this.model.removeFrozenModelListener(listener);
 	}
-
-//	public JIRAIssue getJIRAIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
-//
-//		JIRAIssue foundIssue = model.getIssueFromCache(recentlyOpen);
-//
-//		if (foundIssue != null) {
-//			return foundIssue;
-//		} else if (project != null && projectCfgManager != null) {
-//			JiraServerCfg jiraServer = CfgUtil
-//					.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId());
-//			if (jiraServer != null) {
-//				foundIssue = JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
-//
-//				model.addIssue(foundIssue);
-//				return foundIssue;
-//			}
-//
-//		}
-//
-//		return null;
-//	}
 
 	public void setProject(final Project project) {
 		this.project = project;

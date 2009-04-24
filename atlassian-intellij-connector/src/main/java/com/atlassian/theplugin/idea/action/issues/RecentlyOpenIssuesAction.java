@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.issues;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -29,9 +30,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
-import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -65,7 +66,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 			List<JIRAIssue> issues = issuesWindow.getLoadedRecenltyOpenIssues(/*recentlyOpenIssues*/);
 
 			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
-					new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
+					new IssueListPopupStep("Recently Viewed Issues", issues, project, issuesWindow));
 //					popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
 			popup.showInCenterOf(e.getInputEvent().getComponent());
 		} else {
@@ -74,13 +75,19 @@ public class RecentlyOpenIssuesAction extends AnAction {
 	}
 
 	public static final class IssueListPopupStep extends BaseListPopupStep<JIRAIssue> {
+		private Project project;
 		private IssuesToolWindowPanel issuesWindow;
 		private static final int LENGHT = 40;
 
 		public IssueListPopupStep(final String title, final List<JIRAIssue> issues,
-				final IssuesToolWindowPanel issuesWindow) {
-			super(title, issues, IconLoader.getIcon("/icons/jira-blue-16.png"));
+				final Project project, final IssuesToolWindowPanel issuesWindow) {
+			super(title, issues);
+			this.project = project;
 			this.issuesWindow = issuesWindow;
+		}
+
+		public Icon getIconFor(final JIRAIssue issue) {
+			return CachedIconLoader.getIcon(issue.getTypeIconUrl());
 		}
 
 		@NotNull
