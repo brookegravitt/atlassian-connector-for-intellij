@@ -113,7 +113,7 @@ public class RecentlyOpenIssuesCache {
 	 * @param issue Issue to add
 	 */
 	public void addIssue(final JIRAIssue issue) {
-		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId().toString(), issue.getKey()), issue);
+		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey()), issue);
 
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
@@ -123,7 +123,7 @@ public class RecentlyOpenIssuesCache {
 
 	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
 		for (JIRAIssue issue : getLoadedRecenltyOpenIssues()) {
-			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().toString().equals(serverId)) {
+			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().equals(serverId)) {
 				return issue;
 			}
 		}

@@ -789,7 +789,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 								}
 							});
 
-
 						} catch (JIRAException e) {
 							message = "Failed to create new issue: " + e.getMessage();
 							isError = true;
