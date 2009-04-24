@@ -33,7 +33,7 @@ public class IdeaCfgManager extends AbstractCfgManager implements PersistentStat
 	public ServerData getServerData(final Server serverCfg) {
 		if (serverCfg != null) {
 			String userName = serverCfg.getUserName();
-			String password = serverCfg.getPassword() ;
+			String password = serverCfg.getPassword();
 
 			if (defaultCredentials != null) {
 				userName = defaultCredentials.getUserName();
