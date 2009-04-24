@@ -29,7 +29,7 @@ public interface JIRAIssueListModel extends FrozenModel {
 
 //	void setSeletedIssue(JIRAIssue issue);
 
-	void setIssue(JIRAIssue issue);
+	void updateIssue(JIRAIssue issue);
 
 	void fireIssuesLoaded(int numberOfLoadedIssues);
 

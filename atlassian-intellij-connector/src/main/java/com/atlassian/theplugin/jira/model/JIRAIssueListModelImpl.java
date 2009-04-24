@@ -24,52 +24,25 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	private Set<JIRAIssue> issues;
 
-	///this set may duplicates "issues" be carefull
-//	private Set<JIRAIssue> issuesCache;
-
 	private JIRAIssue selectedIssue;
 	private boolean modelFrozen = false;
 
 	public JIRAIssueListModelImpl() {
 		super(null);
 		issues = new HashSet<JIRAIssue>();
-//		issuesCache = new HashSet<JIRAIssue>();
 	}
 
 	public void clear() {
 		issues.clear();
 	}
 
-//	public void addIssue(JIRAIssue issue) {
-//		issues.add(issue);
-//
-////		//refresh cache isuues
-////		issuesCache.remove(issue);
-////		issuesCache.add(issue);
-//	}
-
 	public void addIssues(Collection<JIRAIssue> list) {
-//		Set<JIRAIssue> cacheToRemoveAdd = new HashSet<JIRAIssue>();
-
 		issues.addAll(list);
-
-//		for (JIRAIssue i : list) {
-//			addIssue(i);
-//			if (issuesCache.contains(i)) {
-//				cacheToRemoveAdd.add(i);
-//			}
-//		}
-		//refresh issues in cache
-//		issuesCache.removeAll(cacheToRemoveAdd);
-//		issuesCache.addAll(cacheToRemoveAdd);
 	}
 
-	public void setIssue(JIRAIssue issue) {
-		if (issue != null) {
-			if (issues.contains(issue)) {
-				issues.remove(issue);
-			}
-
+	public void updateIssue(JIRAIssue issue) {
+		if (issue != null && issues.contains(issue)) {
+			issues.remove(issue);
 			issues.add(issue);
 
 			if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
@@ -92,11 +65,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		}
 		return list;
 	}
-
-//	public Set<JIRAIssue> getIssuesCache() {
-//		return issuesCache;
-//	}
-
 
 	@NotNull
 	public Collection<JIRAIssue> getSubtasks(JIRAIssue parent) {
@@ -138,26 +106,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		return null;
 	}
 
-//	public void fireModelChanged() {
-//		modelChanged(this);
-//	}
-
-//	public void fireIssuesLoaded(int numberOfLoadedIssues) {
-//		issuesLoaded(this, numberOfLoadedIssues);
-//	}
-
-//	public void addModelListener(JIRAIssueListModelListener listener) {
-//		addListener(listener);
-//	}
-
-//	public void removeModelListener(JIRAIssueListModelListener listener) {
-//		removeListener(listener);
-//	}
-
-//	public void clearCache() {
-//		issuesCache.clear();
-//	}
-
 	public boolean isModelFrozen() {
 		return this.modelFrozen;
 	}
@@ -170,29 +118,4 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 	private void fireModelFrozen() {
 		modelFrozen(this, this.modelFrozen);
 	}
-
-	public void setSeletedIssue(JIRAIssue issue) {
-		if (issue != null && issues.contains(issue)) {
-			selectedIssue = issue;
-		} else {
-			selectedIssue = null;
-		}
-	}
-
-	public JIRAIssue getSelectedIssue() {
-		return selectedIssue;
-	}
-
-//	public JIRAIssue getIssueFromCache(final IssueRecentlyOpenBean recentIssue) {
-//		if (recentIssue != null) {
-//			for (JIRAIssue i : getIssuesCache()) {
-//				if (i.getKey().equals(recentIssue.getIssueKey())
-//						&& i.getServer() != null && i.getServer().getServerId().toString().equals(recentIssue.getServerId())) {
-//					return i;
-//				}
-//			}
-//		}
-//
-//		return null;
-//	}
 }
