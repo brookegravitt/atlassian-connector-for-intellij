@@ -53,7 +53,8 @@ public class ProjectConfigurationPanel extends JPanel {
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer, final ProjectCfgManager projectCfgManager) {
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
+			final ProjectCfgManager projectCfgManager) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getDefaultUser(),
 				projectConfiguration.getServers(), selectedServer, projectCfgManager);

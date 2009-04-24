@@ -82,7 +82,8 @@ public class CrucibleQueryExecutor {
 										.getReviewsForFilter(projectCfgManager.getServerData(server), filter);
 								List<ReviewAdapter> reviewData = new ArrayList<ReviewAdapter>(review.size());
 								for (Review r : review) {
-									final ReviewAdapter reviewAdapter = new ReviewAdapter(r, projectCfgManager.getServerData(server));
+									final ReviewAdapter reviewAdapter = new ReviewAdapter(r,
+											projectCfgManager.getServerData(server));
 									reviewData.add(reviewAdapter);
 								}
 
