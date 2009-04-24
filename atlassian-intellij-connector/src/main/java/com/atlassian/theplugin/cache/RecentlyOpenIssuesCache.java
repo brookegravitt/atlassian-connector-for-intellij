@@ -108,7 +108,7 @@ public class RecentlyOpenIssuesCache {
 	}
 
 	/**
-	 * Add issue to cache and configuration. This is the only method user has to call to store recenlty viewed issue.
+	 * Add issue to cache and configuration. This is the only method user has to call to store recently viewed issue.
 	 *
 	 * @param issue Issue to add
 	 */

@@ -18,17 +18,13 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void addIssuesToModel(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, int size, boolean reload)
 			throws JIRAException;
 
-	void addRecenltyOpenIssuesToModel(/*RecentlyOpenIssuesCache recentlyOpenIssues,*/ boolean reload) throws JIRAException;
+	void addRecenltyOpenIssuesToModel(boolean reload) throws JIRAException;
 
 	void updateIssue(JIRAIssue issue, ServerData jiraServerCfg) throws JIRAException;
 
 	void reset();
 
-//	JIRAIssue getJIRAIssue(IssueRecentlyOpenBean recentlyOpen) throws JIRAException;
-
 	void setProject(final Project project);
 
 	void setProjectCfgManager(final ProjectCfgManager projectCfgManager);
-//	void clearCache();
-
 }
