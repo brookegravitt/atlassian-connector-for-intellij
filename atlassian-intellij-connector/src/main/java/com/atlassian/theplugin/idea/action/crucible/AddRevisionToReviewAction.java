@@ -30,7 +30,7 @@ public class AddRevisionToReviewAction extends Crucible16RepositoryAction {
 		final ChangeList[] changes = DataKeys.CHANGE_LISTS.getData(event.getDataContext());
 		final Project project = event.getData(DataKeys.PROJECT);
 
-		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getCfgManager(event))
+		new CrucibleHelperForm(project, CrucibleServerFacadeImpl.getInstance(), changes, IdeaHelper.getProjectCfgManager(event))
 				.show();
 	}
 }

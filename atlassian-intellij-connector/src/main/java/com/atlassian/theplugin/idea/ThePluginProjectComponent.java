@@ -209,11 +209,11 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			toolWindow.register(toolWindowManager);
 
 			ChangeListManager.getInstance(project).registerCommitExecutor(
-					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, cfgManager));
+					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
-					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager, project),
+					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager, project),
 					PluginUtil.getLogger());
 
 			// DependencyValidationManager.getHolder(project, "", )

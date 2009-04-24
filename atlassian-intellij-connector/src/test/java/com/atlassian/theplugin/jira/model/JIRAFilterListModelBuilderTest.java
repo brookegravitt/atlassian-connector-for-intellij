@@ -350,6 +350,11 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
+	public ServerData getServerData(final ProjectId projectId, final Server server) {
+	return new ServerData(server.getName(), server.getServerId().toString(), server.getUserName(),
+				server.getPassword(), server.getUrl());	
+	}
+
 	public Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId) {
 		return null;
 	}

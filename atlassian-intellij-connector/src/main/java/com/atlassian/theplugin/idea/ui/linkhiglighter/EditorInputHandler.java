@@ -16,9 +16,9 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.EditorMouseEvent;
@@ -37,16 +37,16 @@ import java.awt.event.KeyEvent;
  */
 class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener, EditorMouseListener {
 	private Point lastPointLocation = null;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final Editor editor;
 	private final PsiFile file;
 	private final JiraEditorLinkParser jiraEditorLinkParser;
 	private boolean handCursor;
 
-	public EditorInputHandler(@NotNull CfgManager cfgManager, @NotNull Project project, @NotNull Editor editor, PsiFile file,
+	public EditorInputHandler(@NotNull ProjectCfgManager projectCfgManager, @NotNull Project project, @NotNull Editor editor, PsiFile file,
 			JiraEditorLinkParser jiraEditorLinkParser) {
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		this.project = project;
 
 		this.editor = editor;
@@ -91,9 +91,9 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 			if (hoverRange != null && hoverRange.isActive()) {
 				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 				JiraServerCfg defaultJiraServer =
-						cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project))
+						projectCfgManager.getCfgManager().getProjectConfiguration(CfgUtil.getProjectId(project))
 								.getDefaultJiraServer();
-				panel.openIssue(hoverRange.getIssueKey(), cfgManager.getServerData(defaultJiraServer));
+				panel.openIssue(hoverRange.getIssueKey(), projectCfgManager.getServerData(defaultJiraServer));
 			}
 		}
 

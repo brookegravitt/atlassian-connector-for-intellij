@@ -44,6 +44,7 @@ public abstract class JIRAAbstractAction extends AnAction {
 		if (server != null) {
 			Project project = event.getData(DataKeys.PROJECT);
 			if (project != null) {
+
 				ServerCfg server2 = IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server);
 				if (server2 != null && server2.isEnabled()) {
 					if (ModelFreezeUpdater.getState(event)) {

@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -32,13 +32,13 @@ import java.util.Collection;
 public class CruciblePatchSubmitCommitSession implements CommitSession {
 	private final Project project;
 	protected final CrucibleServerFacade crucibleServerFacade;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	public CruciblePatchSubmitCommitSession(Project project, CrucibleServerFacade crucibleServerFacade,
-			final CfgManager cfgManager) {
+			final ProjectCfgManager cfgManager) {
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = cfgManager;
 	}
 
 	@Nullable
@@ -58,7 +58,7 @@ public class CruciblePatchSubmitCommitSession implements CommitSession {
 	public void execute(Collection<Change> changes, String commitMessage) {
 		ApplicationManager.getApplication().invokeAndWait(
 				new CruciblePatchUploader(project, crucibleServerFacade,
-						changes, cfgManager),
+						changes, projectCfgManager),
 				ModalityState.defaultModalityState());
 
 	}

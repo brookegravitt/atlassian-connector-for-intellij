@@ -17,13 +17,13 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -54,8 +54,8 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	private int revisionsNumber = 30;
 
 	public CrucibleCreatePostCommitReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
-			@NotNull final CfgManager cfgManager, @NotNull final UiTaskExecutor taskExecutor) {
-		super(project, crucibleServerFacade, "", cfgManager);
+			@NotNull final ProjectCfgManager projectCfgManager, @NotNull final UiTaskExecutor taskExecutor) {
+		super(project, crucibleServerFacade, "", projectCfgManager);
 		this.taskExecutor = taskExecutor;
 
 		commitedChangesBrowser = new CommittedChangesTreeBrowser(project, Collections.<CommittedChangeList>emptyList());

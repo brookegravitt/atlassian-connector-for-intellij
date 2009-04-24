@@ -16,6 +16,6 @@ public class PreCommitReviewActionNoChangeSelected extends AbstractCrucibleToolb
 			return;
 		}
 		new CrucibleCreatePreCommitUploadReviewForm(project, CrucibleServerFacadeImpl.getInstance(), null,
-				IdeaHelper.getCfgManager(event)).show();
+				IdeaHelper.getProjectCfgManager(event)).show();
 	}
 }

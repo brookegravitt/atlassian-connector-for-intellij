@@ -23,7 +23,8 @@ public class PostCommitReviewActionNoRevisionSelected extends AbstractCrucibleTo
 			Messages.showErrorDialog(project, "Cannot fetch UI Task Executor", "Internal error");
 			return;
 		}
-		new CrucibleCreatePostCommitReviewForm(project, CrucibleServerFacadeImpl.getInstance(), IdeaHelper.getCfgManager(event),
+		new CrucibleCreatePostCommitReviewForm(project, CrucibleServerFacadeImpl.getInstance(),
+				IdeaHelper.getProjectCfgManager(event),
 				uiTaskExecutor).show();
 	}
 }

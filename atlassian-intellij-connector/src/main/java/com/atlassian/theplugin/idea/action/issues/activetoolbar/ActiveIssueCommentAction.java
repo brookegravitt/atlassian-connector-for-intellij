@@ -26,7 +26,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 		}
 		ServerData serverData = null;
 		if (IdeaHelper.getCfgManager(event) != null) {
-			serverData = IdeaHelper.getCfgManager(event).getServerData(ActiveIssueUtils.getJiraServer(event));
+			serverData = IdeaHelper.getProjectCfgManager(event).getServerData(ActiveIssueUtils.getJiraServer(event));
 		}
 		if (issue != null && panel != null) {
 

@@ -16,17 +16,19 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -72,7 +74,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	protected Project project;
 	protected CrucibleServerFacade crucibleServerFacade;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	protected void setCustomComponent(JComponent component) {
 		customComponentPanel.removeAll();
@@ -83,11 +85,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-			@NotNull final CfgManager cfgManager, @NotNull String dialogTitle) {
+			@NotNull final ProjectCfgManager projectCfgManager, @NotNull String dialogTitle) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		setTitle(dialogTitle);
 
 		$$$setupUI$$$();
@@ -409,19 +411,20 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager
-				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getCfgManager().
+				getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 		if (enabledServers.isEmpty()) {
 			crucibleServersComboBox.setEnabled(false);
 			crucibleServersComboBox.addItem("Enable a Crucible server first!");
 			getOKAction().setEnabled(false);
 		} else {
 			for (CrucibleServerCfg server : enabledServers) {
-				crucibleServersComboBox.addItem(new ServerComboBoxItem(cfgManager.getServerData(server)));
+				crucibleServersComboBox.addItem(new ServerComboBoxItem(projectCfgManager.getServerData(server)));
 			}
-			ProjectConfiguration prjCfg = cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project));
+			ProjectConfiguration prjCfg = projectCfgManager.getCfgManager().
+					getProjectConfiguration(CfgUtil.getProjectId(project));
 			if (prjCfg != null) {
-				final ServerData defCrucServer = cfgManager.getServerData(prjCfg.getDefaultCrucibleServer());
+				final ServerData defCrucServer = projectCfgManager.getServerData(prjCfg.getDefaultCrucibleServer());
 				if (defCrucServer != null) {
 					crucibleServersComboBox.setSelectedItem(new ServerComboBoxItem(defCrucServer));
 				}
@@ -528,7 +531,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		moderatorComboBox.removeAllItems();
 		model.removeAllElements();
 
-		ProjectConfiguration prjCfg = cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project));
+		ProjectConfiguration prjCfg = projectCfgManager.getCfgManager().getProjectConfiguration(CfgUtil.getProjectId(project));
 		if (crucibleServerData.getProjects().isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");

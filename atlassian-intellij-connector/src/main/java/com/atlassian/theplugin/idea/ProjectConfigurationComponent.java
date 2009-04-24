@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -57,7 +58,7 @@ import java.util.List;
 public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable {
 
 	private final Project project;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
@@ -73,11 +74,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private ServerCfg selectedServer;
 
 
-	public ProjectConfigurationComponent(final Project project, final CfgManager cfgManager,
+	public ProjectConfigurationComponent(final Project project, final ProjectCfgManager projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
 			@NotNull PrivateConfigurationDao privateCfgDao) {
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
 		shouldSaveConfiguration = load();
@@ -96,7 +97,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void projectOpened() {
-		if (cfgManager.getProjectConfiguration(getProjectId()) == null) {
+		if (projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId()) == null) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					Messages.showErrorDialog(project, "If you see this message, something bad happend to the "
@@ -107,14 +108,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			});
 		}
 
-		cfgManager.addProjectConfigurationListener(getProjectId(), configurationListener);
+		projectCfgManager.getCfgManager().addProjectConfigurationListener(getProjectId(), configurationListener);
 	}
 
 
 	public void projectClosed() {
-		cfgManager.removeProjectConfigurationListener(getProjectId(), configurationListener);
-		cfgManager.removeProject(getProjectId());
-//		cfgManager.removeAllConfigurationCredentialListeners(getProjectId());
+		projectCfgManager.getCfgManager().removeProjectConfigurationListener(getProjectId(), configurationListener);
+		projectCfgManager.getCfgManager().removeProject(getProjectId());
+//		projectCfgManager.removeAllConfigurationCredentialListeners(getProjectId());
 	}
 
 	@NonNls
@@ -161,7 +162,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				//now resolves migration problem from Crucible as FishEye to pure FishEye
 				projectConfiguration.setDefaultFishEyeServerId(null);
 			}
-			cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+			projectCfgManager.getCfgManager().updateProjectConfiguration(projectId, projectConfiguration);
 		} catch (ServerCfgFactoryException e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
@@ -206,7 +207,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 							PluginUtil.PRODUCT_NAME + " upgrade process", Messages.getQuestionIcon());
 
 					if (value == DialogWrapper.OK_EXIT_CODE) {
-						if (privateCfgFile.delete() == false) {
+						if (!privateCfgFile.delete()) {
 							Messages.showWarningDialog(project, "Cannot remove file [" + privateCfgFile.getAbsolutePath()
 									+ "].\nTry removing it manually.\n" + PluginUtil.PRODUCT_NAME
 									+ " should still behave correctly.", PluginUtil.PRODUCT_NAME);
@@ -243,7 +244,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	private ProjectConfiguration setDefaultProjectConfiguration() {
 		final ProjectConfiguration configuration = ProjectConfiguration.emptyConfiguration();
-		cfgManager.updateProjectConfiguration(CfgUtil.getProjectId(project),
+		projectCfgManager.getCfgManager().updateProjectConfiguration(CfgUtil.getProjectId(project),
 				configuration);
 		return configuration;
 	}
@@ -281,7 +282,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final Element element = new Element("atlassian-ide-plugin");
 
 		JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(element, privateCfgDao);
-		final ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
+		final ProjectConfiguration configuration = projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId());
 		if (configuration != null) {
 			if (configuration.getServers().size() > 0 && shouldSaveConfiguration == false) {
 				// apparently somebody still prefers to populate invalid configuration, so we would save it now
@@ -330,7 +331,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public JComponent createComponent() {
-		ProjectConfiguration configuration = cfgManager.getProjectConfiguration(getProjectId());
+		ProjectConfiguration configuration = projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId());
 		if (configuration == null) {
 			// may happen for Default Template project
 			configuration = setDefaultProjectConfiguration();
@@ -338,13 +339,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer, cfgManager);
+				selectedServer, projectCfgManager);
 		return projectConfigurationPanel;
 	}
 
 	public boolean isModified() {
 		projectConfigurationPanel.saveData(false);
-		return !cfgManager.getProjectConfiguration(getProjectId()).equals(projectConfigurationPanel.getProjectConfiguration());
+		return !projectCfgManager.getCfgManager().
+				getProjectConfiguration(getProjectId()).equals(projectConfigurationPanel.getProjectConfiguration());
 	}
 
 	public void apply() throws ConfigurationException {
@@ -352,8 +354,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			return;
 		}
 		projectConfigurationPanel.saveData(true);
-		cfgManager.updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
-		projectConfigurationPanel.setData(cfgManager.getProjectConfiguration(getProjectId()).getClone());
+		projectCfgManager.getCfgManager().
+				updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
+		projectConfigurationPanel.setData(projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId()).getClone());
 	}
 
 	public void reset() {

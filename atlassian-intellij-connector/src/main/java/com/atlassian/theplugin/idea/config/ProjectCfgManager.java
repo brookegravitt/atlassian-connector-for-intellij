@@ -15,18 +15,27 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class ProjectCfgManager {
 	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
+	private final ProjectId projectId;
 
-	public ProjectCfgManager(ProjectConfigurationComponent projectConfigurationComponent, CfgManager cfgManager) {
+	public ProjectCfgManager(@NotNull Project project, ProjectConfigurationComponent projectConfigurationComponent, CfgManager cfgManager) {
+		this.projectId = CfgUtil.getProjectId(project);
 		this.projectConfigurationComponent = projectConfigurationComponent;
 		this.cfgManager = cfgManager;
 	}
+
 
 	@NotNull
 	public ProjectConfigurationComponent getProjectConfigurationComponent() {
@@ -36,5 +45,13 @@ public class ProjectCfgManager {
 	@NotNull
 	public CfgManager getCfgManager() {
 		return cfgManager;
+	}
+
+	public ServerData getServerData(Server serverCfg) {
+		return cfgManager.getServerData(projectId, serverCfg);
+	}
+
+	public ServerCfg getServer(final ServerData serverData) {
+		return cfgManager.getServer(projectId, serverData);
 	}
 }

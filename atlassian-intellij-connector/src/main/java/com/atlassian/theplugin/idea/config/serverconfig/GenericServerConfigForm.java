@@ -166,8 +166,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		serverCfg.setPassword(String.valueOf(password.getPassword()));
 		serverCfg.setPasswordStored(chkPasswordRemember.isSelected());
 		serverCfg.setEnabled(cbEnabled.isSelected());
-		serverCfg.setUseDefaultCredentials(useDefault.isSelected());
-		serverCfg.setDefaultUser(defaultUser);
+		serverCfg.setUseDefaultCredentials(useDefault.isSelected());		
 	}
 
 	public JComponent getRootComponent() {

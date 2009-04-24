@@ -66,7 +66,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final BambooServerFacade bambooServerFacade;
 	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
@@ -108,7 +108,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return crucibleServerFacade.getProjects(cfgManager.getServerData(serverCfg));
+			return crucibleServerFacade.getProjects(projectCfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -156,7 +156,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
-			return crucibleServerFacade.getRepositories(cfgManager.getServerData(serverCfg));
+			return crucibleServerFacade.getRepositories(projectCfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -198,7 +198,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
-			return fishEyeServerFacade.getRepositories(cfgManager.getServerData(serverCfg));
+			return fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(serverCfg));
 		}
 
 		@Override
@@ -240,7 +240,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			final UiTaskExecutor uiTaskExecutor, final CfgManager cfgManager) {
+			final UiTaskExecutor uiTaskExecutor, final ProjectCfgManager projectCfgManager) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -248,7 +248,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		this.bambooServerFacade = bambooServerFacade;
 		this.jiraServerFacade = jiraServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 
 		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
 				+ "E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
@@ -395,11 +395,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				}
 				user.setUserName(defaultUserName.getText());
 				projectConfiguration.setDefaultUser(user);
-				for (ServerCfg server : projectConfiguration.getServers()) {
-					if (server.isUseDefaultCredentials()) {
-						server.setDefaultUser(user);
-					}
-				}
 			}
 		});
 
@@ -422,10 +417,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 					user = new UserCfg();
 				}
 				user.setPassword(String.valueOf(defaultPassword.getPassword()));
-				projectConfiguration.setDefaultUser(user);
-				for (ServerCfg server : projectConfiguration.getAllServersWithDefaultCredentials()) {
-					server.setDefaultUser(user);
-				}
+				projectConfiguration.setDefaultUser(user);				
 			}
 		});
 	}
@@ -499,7 +491,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						data.add(new CrucibleServerCfgWrapper(cfgManager.getServerData(serverCfg)));
+						data.add(new CrucibleServerCfgWrapper(projectCfgManager.getServerData(serverCfg)));
 					}
 				}
 			}

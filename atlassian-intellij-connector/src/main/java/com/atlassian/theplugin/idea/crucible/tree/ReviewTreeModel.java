@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 import com.atlassian.theplugin.idea.crucible.tree.node.*;
 import org.jetbrains.annotations.NotNull;
@@ -45,14 +45,15 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator authorNodeManipulator;
 	private NodeManipulator projectNodeManipulator;
 
-	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull CfgManager cfgManager, ProjectId projectId) {
+	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull ProjectCfgManager projectCfgManager,
+			ProjectId projectId) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot(), cfgManager, projectId);
+		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot(), projectCfgManager);
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 	}

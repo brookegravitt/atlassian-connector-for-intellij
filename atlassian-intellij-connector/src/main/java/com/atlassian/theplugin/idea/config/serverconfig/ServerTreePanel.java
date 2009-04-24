@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -49,7 +50,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 	private Collection<ServerCfg> servers;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
@@ -62,8 +63,8 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 	private ServerConfigPanel serverConfigPanel;
 
-	public ServerTreePanel(@NotNull CfgManager cfgManager) {
-		this.cfgManager = cfgManager;
+	public ServerTreePanel(@NotNull ProjectCfgManager projectCfgManager) {
+		this.projectCfgManager = projectCfgManager;
 		initLayout();
 	}
 
@@ -287,7 +288,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
-			return cfgManager.getServerData(getSelectedServer());
+			return projectCfgManager.getServerData(getSelectedServer());
 		} else if (dataId.equals(Constants.SERVER_TYPE)) {
 			if (selectedNode instanceof ServerTypeNode) {
 				final ServerTypeNode serverTypeNode = (ServerTypeNode) selectedNode;

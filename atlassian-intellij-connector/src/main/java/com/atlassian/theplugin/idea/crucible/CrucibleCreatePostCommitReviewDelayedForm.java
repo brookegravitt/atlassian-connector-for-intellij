@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -48,10 +48,10 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 	public CrucibleCreatePostCommitReviewDelayedForm(
 			final Project project,
 			final CrucibleServerFacade crucibleServerFacade,
-			@NotNull final CfgManager cfgManager,
+			@NotNull final ProjectCfgManager projectCfgManager,
 			String title, Collection<VirtualFile> virtualFiles) {
 
-		super(project, crucibleServerFacade, title, cfgManager);
+		super(project, crucibleServerFacade, title, projectCfgManager);
 		this.virtualFiles = virtualFiles;
 		setCustomComponent(null);
 		pack();
