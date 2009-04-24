@@ -86,8 +86,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final String THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR = "ThePlugin.JiraIssues.IssuesToolBar";
 
-	private JTree issueTree;
-
 	private JIRAIssueListModel baseIssueListModel;
 
 	private Timer timer;
