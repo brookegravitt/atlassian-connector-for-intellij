@@ -166,7 +166,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		JIRAIssue updatedIssue = facade.getIssueUpdate(jiraServerCfg, issue);
 		try {
 			model.setModelFrozen(true);
-			model.setIssue(updatedIssue);
+			model.updateIssue(updatedIssue);
 		} finally {
 			model.setModelFrozen(false);
 		}

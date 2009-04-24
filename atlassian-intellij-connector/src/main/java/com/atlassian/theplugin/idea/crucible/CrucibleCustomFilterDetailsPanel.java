@@ -119,7 +119,6 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	public void removeCustomFilterChangeListener(CustomFilterChangeListener listener) {
 		listeners.remove(listener);
 	}
-
 }
 
 class MyUiTask implements UiTask {

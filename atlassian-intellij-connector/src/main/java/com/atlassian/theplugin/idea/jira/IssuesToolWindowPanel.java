@@ -269,7 +269,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private void addIssuesTreeListeners() {
 		getRightTree().addKeyListener(new KeyAdapter() {
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyPressed(KeyEvent e) {
 				JIRAIssue issue = getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
 					openIssueWithSelectedServer(issue);
@@ -371,6 +371,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			t.start();
 		}
 	}
+
 	private JIRAIssue getSelectedIssue() {
 		return getRightTree().getSelectedIssue();
 	}
