@@ -30,7 +30,7 @@ public class ProjectCfgManager {
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
 
-	public ProjectCfgManager(@NotNull Project project, ProjectConfigurationComponent projectConfigurationComponent, CfgManager cfgManager) {
+	public ProjectCfgManager(Project project, ProjectConfigurationComponent projectConfigurationComponent, CfgManager cfgManager) {
 		this.projectId = CfgUtil.getProjectId(project);
 		this.projectConfigurationComponent = projectConfigurationComponent;
 		this.cfgManager = cfgManager;

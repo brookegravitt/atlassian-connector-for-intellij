@@ -29,14 +29,16 @@ public final class CfgUtil {
 	}
 
 	public static ProjectId getProjectId(Project project) {
-		final String res1 = project.getPresentableUrl();
-		if (res1 != null) {
-			return new ProjectId(res1);
-		}
+		if (project != null) {
+			final String res1 = project.getPresentableUrl();
+			if (res1 != null) {
+				return new ProjectId(res1);
+			}
 
-		final String res2 = project.getName();
-		if (res2 != null) {
-			return new ProjectId(res2);
+			final String res2 = project.getName();
+			if (res2 != null) {
+				return new ProjectId(res2);
+			}
 		}
 
 		return DEFAULT_PROJECT;
