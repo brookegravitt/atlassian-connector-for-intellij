@@ -799,9 +799,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						setStatusMessage(msg, isError);
 					}
 
-					public void onSuccess() {
-
-					}
 				};
 
 				ProgressManager.getInstance().run(createTask);
