@@ -23,21 +23,30 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 /**
  * User: pmaruszak
  */
+
 /*@State(name = "atlassian-ide-plugin-cfg-manager-idea",
 		storages = {@Storage(id = "atlassian-ide-plugin-cfg-manager-id", file = "$WORKSPACE_FILE$")})
 public class IdeaCfgManager extends AbstractCfgManager implements PersistentStateComponent<IdeaCfgManager> {*/
-public class IdeaCfgManager extends AbstractCfgManager {
+	public class IdeaCfgManager extends AbstractCfgManager {
 	private UserCfg defaultCredentials;
 
 	public ServerData getServerData(final Server serverCfg) {
 		if (serverCfg != null) {
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
-					serverCfg.getPassword(), serverCfg.getUrl());
+			String userName = serverCfg.getUserName();
+			String password = serverCfg.getPassword() ;
+
+			if (defaultCredentials != null) {
+				userName = defaultCredentials.getUserName();
+				password = defaultCredentials.getPassword();
+			}
+			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), userName,
+					password, serverCfg.getUrl());
 		}
 
 		return null;
 	}
 
+	
 	public IdeaCfgManager getState() {
 		return this;
 	}
