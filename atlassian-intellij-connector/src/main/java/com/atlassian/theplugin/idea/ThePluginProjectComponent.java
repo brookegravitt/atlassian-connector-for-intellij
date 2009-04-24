@@ -213,7 +213,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
 					cfgManager, pluginConfiguration,
-					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager, project),
+					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager,
+							project),
 					PluginUtil.getLogger());
 
 			// DependencyValidationManager.getHolder(project, "", )

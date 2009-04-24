@@ -49,7 +49,8 @@ public class MissingPasswordHandler implements Runnable {
 	private boolean shouldStop;
 
 
-	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManager projectCfgManager, final Project project) {
+	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManager projectCfgManager,
+			final Project project) {
 		this.serverFacade = serverFacade;
 		this.projectCfgManager = projectCfgManager;
 		this.project = project;

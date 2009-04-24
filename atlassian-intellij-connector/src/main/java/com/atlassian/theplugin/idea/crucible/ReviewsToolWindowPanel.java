@@ -294,7 +294,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, projectCfgManager, CfgUtil.getProjectId(project)));
+			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, projectCfgManager,
+					CfgUtil.getProjectId(project)));
 
 		}
 		return reviewTree;
