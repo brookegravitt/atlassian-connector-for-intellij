@@ -19,11 +19,15 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -62,9 +66,9 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 
 	public ServerConfigPanel(Project project, final UserCfg defaultUser, Collection<ServerCfg> serverCfgs,
-			final ServerCfg selectedServer, @NotNull CfgManager cfgManager) {
+			final ServerCfg selectedServer, @NotNull ProjectCfgManager projectCfgManager) {
 		this.serverCfgs = serverCfgs;
-		this.serverTreePanel = new ServerTreePanel(cfgManager);
+		this.serverTreePanel = new ServerTreePanel(projectCfgManager);
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -74,7 +78,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		jiraServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(jiraServerFacade));
 		crucibleServerConfigForm = new CrucibleServerConfigForm(project, defaultUser, crucibleServerFacade,
 				fishEyeServerFacade);
-		bambooServerConfigForm = new BambooServerConfigForm(project, defaultUser, bambooServerFacade, cfgManager);
+		bambooServerConfigForm = new BambooServerConfigForm(project, defaultUser, bambooServerFacade, projectCfgManager);
 		fisheyeServerConfigFrom = new GenericServerConfigForm(project, defaultUser, new ProductConnector(fishEyeServerFacade));
 		initLayout();
 

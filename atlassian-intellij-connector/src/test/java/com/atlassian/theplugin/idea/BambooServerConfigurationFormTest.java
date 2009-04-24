@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
@@ -31,20 +32,14 @@ import junit.framework.TestSuite;
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
-	private CfgManager cfgManager = new AbstractCfgManager() {
-
-		public ServerData getServerData(final Server serverCfg) {
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(),
-					serverCfg.getUserName(), serverCfg.getPassword(), serverCfg.getUrl());
-		}
-	};
+	private ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
 
 
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), cfgManager);
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager);
 	}
 
 	public void testBambooSetGetData() throws Exception {
@@ -164,4 +159,16 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	}
 
 
+}
+
+class LocalProjectCfgManager extends ProjectCfgManager {
+
+	public LocalProjectCfgManager() {
+		super(null, null, null);
+	}
+
+	public ServerData getServerData(final Server serverCfg) {
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+				serverCfg.getPassword(), serverCfg.getUrl());
+	}
 }

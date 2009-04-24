@@ -19,6 +19,10 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,14 +33,8 @@ import java.awt.event.WindowEvent;
 import java.util.Collection;
 
 public final class ServerConfigPanelTestUi {
-	private static CfgManager cfgManager = new AbstractCfgManager() {
-
-		public ServerData getServerData(final Server serverCfg) {
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
-					serverCfg.getPassword(), serverCfg.getUrl());
-		}
-	};
-
+	private  ProjectConfiguration projectCfg = new ProjectConfiguration();
+	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager(null, null, null);
 	private ServerConfigPanelTestUi() {
 	}
 
@@ -60,7 +58,7 @@ public final class ServerConfigPanelTestUi {
 				new JiraServerCfg("2-Second Jira", new ServerId())
 		);
 
-		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null, cfgManager) {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null, projectCfgManager) {
 			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
@@ -96,5 +94,22 @@ public final class ServerConfigPanelTestUi {
 		frame.pack();
 		frame.setVisible(true);
 
+	}
+
+
+
+
+}
+
+class LocalProjectCfgManager extends ProjectCfgManager {
+
+	public LocalProjectCfgManager(@NotNull Project project, ProjectConfigurationComponent projectConfigurationComponent,
+			CfgManager cfgManager) {
+		super(project, projectConfigurationComponent, cfgManager);
+	}
+
+	public ServerData getServerData(final Server serverCfg) {
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+				serverCfg.getPassword(), serverCfg.getUrl());
 	}
 }

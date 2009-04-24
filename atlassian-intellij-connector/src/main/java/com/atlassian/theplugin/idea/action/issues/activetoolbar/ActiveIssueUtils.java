@@ -86,7 +86,7 @@ public final class ActiveIssueUtils {
 
 			if (issue != null) {
 				try {
-					ServerData serverData = IdeaHelper.getCfgManager(event).getServerData(jiraServerCfg);
+					ServerData serverData = IdeaHelper.getProjectCfgManager(event).getServerData(jiraServerCfg);
 					issueCache.addIssue(ActiveIssueUtils.getJIRAIssue(serverData, issue));
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().error(e);
@@ -131,7 +131,7 @@ public final class ActiveIssueUtils {
 		JiraServerCfg jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(project);
-			return getJIRAIssue(IdeaHelper.getCfgManager(project).getServerData(jiraServer), issue);
+			return getJIRAIssue(IdeaHelper.getProjectCfgManager(project).getServerData(jiraServer), issue);
 		}
 		return null;
 	}
@@ -258,7 +258,7 @@ public final class ActiveIssueUtils {
 		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		try {
 			final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(
-					IdeaHelper.getCfgManager(event).getServerData(jiraServerCfg), newActiveIssue);
+					IdeaHelper.getProjectCfgManager(event).getServerData(jiraServerCfg), newActiveIssue);
 
 			if (panel != null && jiraIssue != null && jiraServerCfg != null) {
 				if (jiraServerCfg != null
@@ -301,7 +301,7 @@ public final class ActiveIssueUtils {
 						final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
 						isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
-								IdeaHelper.getCfgManager(project).getServerData(jiraServer),
+								IdeaHelper.getProjectCfgManager(project).getServerData(jiraServer),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 								true);
 

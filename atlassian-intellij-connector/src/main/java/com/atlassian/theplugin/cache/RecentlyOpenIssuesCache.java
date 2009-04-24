@@ -45,13 +45,13 @@ public class RecentlyOpenIssuesCache {
 	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
 	private final LocalModelListener localModelListener = new LocalModelListener();
 	private final Project project;
-	private final ProjectCfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final JIRAIssueListModel issueModel;
 
 	public RecentlyOpenIssuesCache(final Project project, final ProjectCfgManager cfgManager,
 			final JIRAIssueListModel issueModel) {
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = cfgManager;
 		this.issueModel = issueModel;
 		this.issueModel.addModelListener(localModelListener);
 	}
@@ -91,8 +91,8 @@ public class RecentlyOpenIssuesCache {
 
 	private JIRAIssue loadJiraIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
 
-		ServerData jiraServer = cfgManager.getCfgManager().getServerData(
-				CfgUtil.getJiraServerCfgbyServerId(project, cfgManager, recentlyOpen.getServerId()));
+		ServerData jiraServer = projectCfgManager.getServerData(
+				CfgUtil.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId()));
 
 		JIRAIssue issue = null;
 

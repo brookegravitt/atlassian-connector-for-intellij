@@ -96,11 +96,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 						for (CrucibleServerCfg server : servers) {
 							try {
 								Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-										IdeaHelper.getCfgManager(project).getServerData(server),
+										IdeaHelper.getProjectCfgManager(project).getServerData(server),
 										new PermIdBean(dialog.getSearchKey()));
 								if (review != null) {
 									serverReviews.add(new ReviewAdapter(review,
-											IdeaHelper.getCfgManager(project).getServerData(server)));
+											IdeaHelper.getProjectCfgManager(project).getServerData(server)));
 								}
 							} catch (final RemoteApiException e) {
 								failed = true;

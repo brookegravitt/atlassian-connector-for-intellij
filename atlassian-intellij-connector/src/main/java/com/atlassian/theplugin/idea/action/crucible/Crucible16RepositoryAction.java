@@ -45,7 +45,8 @@ public abstract class Crucible16RepositoryAction extends AnAction {
 		}
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(event).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(event).getCfgManager().
+				getProjectConfiguration(projectId);
 		if (projectCfg == null) {
 			return false;
 		}
@@ -65,7 +66,7 @@ public abstract class Crucible16RepositoryAction extends AnAction {
 
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
-		return IdeaHelper.getCfgManager(event).getAllEnabledCrucibleServers(projectId).size() != 0;
+		return IdeaHelper.getProjectCfgManager(event).getCfgManager().getAllEnabledCrucibleServers(projectId).size() != 0;
 	}
 
 }

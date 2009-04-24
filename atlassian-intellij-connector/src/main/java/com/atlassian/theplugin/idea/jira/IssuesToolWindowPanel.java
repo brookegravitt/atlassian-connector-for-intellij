@@ -840,7 +840,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProjectConfiguration cfg = projectCfgManager.getCfgManager()
 				.getProjectConfiguration(CfgUtil.getProjectId(project));
 		if (cfg != null) {
-			return cfgManager.getServerData(cfg.getDefaultJiraServer());
+			return projectCfgManager.getServerData(cfg.getDefaultJiraServer());
 		}
 		return null;
 	}
@@ -878,7 +878,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		private void fillServerData() {
 			servers = new ArrayList<ServerData>();
 			for (JiraServerCfg serverCfg : cfgManager.getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()))) {
-				servers.add(cfgManager.getServerData(serverCfg));
+				servers.add(projectCfgManager.getServerData(serverCfg));
 			}
 		}
 
@@ -890,7 +890,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		 */
 		public MetadataFetcherBackgroundableTask(final JiraServerCfg server, boolean refreshIssueList) {
 			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
-			this.servers = Arrays.asList(cfgManager.getServerData(server));
+			this.servers = Arrays.asList(projectCfgManager.getServerData(server));
 			this.refreshIssueList = refreshIssueList;
 		}
 
@@ -978,7 +978,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void serverNameChanged(final ServerId serverId) {
 			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
 			if (server instanceof JiraServerCfg) {
-				jiraServerModel.replace(cfgManager.getServerData(server));
+				jiraServerModel.replace(projectCfgManager.getServerData(server));
 				refreshFilterModel();
 				jiraFilterListModel.fireServerNameChanged();
 			}
@@ -1215,7 +1215,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					for (JiraServerCfg server : projectCfgManager.getCfgManager()
 							.getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 						try {
-							for (JIRAProject p : jiraServerModel.getProjects(cfgManager.getServerData(server))) {
+							for (JIRAProject p : jiraServerModel.getProjects(projectCfgManager.getServerData(server))) {
 								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {

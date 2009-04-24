@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -29,6 +28,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -77,7 +77,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private final Project project;
 	private PermId permId;
 	private String patch;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private AddMode mode;
 	private ServerData server;
 	private Collection<Change> localChanges;
@@ -86,8 +86,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private RepositoryComboBoxItem NON_REPO;
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			ChangeList[] changes, final CfgManager cfgManager) {
-		this(project, crucibleServerFacade, cfgManager);
+			ChangeList[] changes, final ProjectCfgManager projectCfgManager) {
+		this(project, crucibleServerFacade, projectCfgManager);
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
 		setTitle("Add revision to review... ");
@@ -95,8 +95,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			Collection<Change> changes, final CfgManager cfgManager) {
-		this(project, crucibleServerFacade, cfgManager);
+			Collection<Change> changes, final ProjectCfgManager projectCfgManager) {
+		this(project, crucibleServerFacade, projectCfgManager);
 		localChanges = changes;
 		this.mode = AddMode.ADDITEMS;
 		this.repositoryLabel.setVisible(false);
@@ -109,11 +109,11 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			final CfgManager cfgManager) {
+			final ProjectCfgManager projectCfgManager) {
 		super(false);
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 
 		RepositoryBean repo = new RepositoryBean();
 		repo.setName("");
@@ -210,7 +210,8 @@ public class CrucibleHelperForm extends DialogWrapper {
 			}
 
 			if (this.mode == AddMode.ADDREVISION) {
-				ProjectConfiguration prjCfg = cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project));
+				ProjectConfiguration prjCfg = projectCfgManager.getCfgManager().
+						getProjectConfiguration(CfgUtil.getProjectId(project));
 				// setting default repo if such is defined
 				if (prjCfg != null) {
 					final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
@@ -361,10 +362,11 @@ public class CrucibleHelperForm extends DialogWrapper {
 				List<ReviewAdapter> outForReview = MiscUtil.buildArrayList();
 				List<ReviewAdapter> toSummarize = MiscUtil.buildArrayList();
 
-				Collection<CrucibleServerCfg> servers = cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+				Collection<CrucibleServerCfg> servers = projectCfgManager.getCfgManager().
+						getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 				for (CrucibleServerCfg server : servers) {
 					try {
-						final ServerData serverData = cfgManager.getServerData(server);
+						final ServerData serverData = projectCfgManager.getServerData(server);
 						addToReviewAdapterList(drafts,
 								crucibleServerFacade.getReviewsForFilter(serverData,
 										PredefinedFilter.Drafts), serverData);

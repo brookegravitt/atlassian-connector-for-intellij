@@ -18,8 +18,8 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 import com.intellij.openapi.project.Project;
@@ -37,13 +37,7 @@ public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
 	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
 	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
-	private static CfgManager cfgManager = new AbstractCfgManager() {
-
-		public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-			return  new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
-					serverCfg.getPassword(), serverCfg.getUrl());
-		}
-	};
+	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
 	
 	private BambooFilterListTestUi() {
 	}
@@ -66,7 +60,7 @@ public final class BambooFilterListTestUi {
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
-				final BambooFilterList bambooFilterList = new BambooFilterList(new ProjectCfgManager(null, cfgManager),
+				final BambooFilterList bambooFilterList = new BambooFilterList(new ProjectCfgManager(null, null, cfgManager),
 						projectId1, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
@@ -124,7 +118,7 @@ public final class BambooFilterListTestUi {
 
 	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, cfgManager.getServerData(serverCfg), name, 123, state)
+		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, projectCfgManager.getServerData(serverCfg), name, 123, state)
 				.startTime(new Date())
 				.pollingTime(new Date())
 				.completionTime(new Date())
@@ -134,4 +128,17 @@ public final class BambooFilterListTestUi {
 	}
 
 
+}
+
+
+class LocalProjectCfgManager extends ProjectCfgManager {
+
+	public LocalProjectCfgManager() {
+		super(null, null, null);
+	}
+
+	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+				serverCfg.getPassword(), serverCfg.getUrl());
+	}
 }

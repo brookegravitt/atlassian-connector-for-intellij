@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -54,12 +53,12 @@ public class ProjectConfigurationPanel extends JPanel {
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer, final CfgManager cfgManager) {
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer, final ProjectCfgManager projectCfgManager) {
 		this.projectConfiguration = projectConfiguration;
 		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getDefaultUser(),
-				projectConfiguration.getServers(), selectedServer, cfgManager);
+				projectConfiguration.getServers(), selectedServer, projectCfgManager);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, cfgManager);
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, projectCfgManager);
 		aboutBox = new AboutForm();
 
 		initLayout();

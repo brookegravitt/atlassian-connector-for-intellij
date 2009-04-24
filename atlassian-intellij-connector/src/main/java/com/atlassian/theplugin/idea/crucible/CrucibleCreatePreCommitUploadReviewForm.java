@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
@@ -41,8 +41,8 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 
 	public CrucibleCreatePreCommitUploadReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
 			Collection<Change> changes,
-			@NotNull final CfgManager cfgManager) {
-		super(project, crucibleServerFacade, "", cfgManager);
+			@NotNull final ProjectCfgManager projectCfgManager) {
+		super(project, crucibleServerFacade, "", projectCfgManager);
 
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);
 		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBrowser(project, changeListManager, changes);

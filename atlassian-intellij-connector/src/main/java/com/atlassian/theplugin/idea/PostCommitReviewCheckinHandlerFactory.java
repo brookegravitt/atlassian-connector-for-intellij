@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
@@ -22,11 +22,11 @@ import java.util.List;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
 	private CrucibleWorkspaceConfiguration config;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	public PostCommitReviewCheckinHandlerFactory(@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull CfgManager cfgManager) {
-		this.cfgManager = cfgManager;
+			@NotNull ProjectCfgManager cfgManager) {
+		this.projectCfgManager = cfgManager;
 		config = projectConfiguration.getCrucibleConfiguration();
 	}
 
@@ -66,7 +66,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 			if (cbCreateReview.isSelected()) {
 				form = new CrucibleCreatePostCommitReviewDelayedForm(
 						checkinProjectPanel.getProject(), CrucibleServerFacadeImpl.getInstance(),
-						cfgManager, checkinProjectPanel.getCommitMessage(),
+						projectCfgManager, checkinProjectPanel.getCommitMessage(),
 						checkinProjectPanel.getVirtualFiles());
 				form.show();
 			}

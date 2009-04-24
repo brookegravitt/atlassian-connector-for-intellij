@@ -16,10 +16,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -45,13 +41,7 @@ public class TestConnectionTask extends Task.Modal {
 	private final TestConnectionProcessor processor;
 	private boolean showOkMessage = true;
 	private boolean showErrorMessage = true;
-	private CfgManager cfgManager = new AbstractCfgManager() {
 
-		public ServerData getServerData(final Server serverCfg) {
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(),
-					serverCfg.getUserName(), serverCfg.getPassword(), serverCfg.getUrl());
-		}
-	};
 
 
 	public TestConnectionTask(Project currentProject, final Connector connectionTester,
@@ -69,7 +59,8 @@ public class TestConnectionTask extends Task.Modal {
 		super(currentProject, title, canBeCanceled);
 		this.serverCfgProvider = serverCfgProvider;
 		this.processor = processor;
-		testConnector = new ConnectionWrapper(connectionTester, cfgManager.getServerData(serverCfgProvider.getServer()),
+		testConnector = new ConnectionWrapper(connectionTester, IdeaHelper.getProjectCfgManager(currentProject).
+				getServerData(serverCfgProvider.getServer()),
 				"test thread");
 	}
 
@@ -136,3 +127,4 @@ public class TestConnectionTask extends Task.Modal {
 		}
 	}
 }
+

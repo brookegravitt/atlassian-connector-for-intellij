@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -31,6 +30,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -81,7 +81,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 	};
 
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final CustomFilterBean filter;
 	private final UiTaskExecutor uiTaskExecutor;
@@ -102,17 +102,17 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
 
-	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final CfgManager cfgManager,
+	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManager cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = cfgManager;
 		this.filter = filter;
 		this.uiTaskExecutor = uiTaskExecutor;
 		setupUi();
 		setModal(true);
 
-		final ServerData serverCfg = cfgManager
+		final ServerData serverCfg = projectCfgManager.getCfgManager()
 				.getServerData(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
@@ -255,7 +255,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = cfgManager
+		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getCfgManager()
 				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 
 		serverComboBox.removeAllItems();
@@ -265,7 +265,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			//@todo disable apply filter button in toolbar
 		} else {
 			for (CrucibleServerCfg server : enabledServers) {
-				serverComboBox.addItem(new CrucibleServerCfgWrapper(cfgManager.getServerData(server)));
+				serverComboBox.addItem(new CrucibleServerCfgWrapper(projectCfgManager.getServerData(server)));
 			}
 		}
 

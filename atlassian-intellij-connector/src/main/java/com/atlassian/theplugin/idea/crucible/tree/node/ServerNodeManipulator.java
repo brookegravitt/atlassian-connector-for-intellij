@@ -15,11 +15,10 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -29,14 +28,12 @@ import java.util.*;
  * @author Jacek Jaroczynski
  */
 public class ServerNodeManipulator extends NodeManipulator {
-	private final CfgManager cfgManager;
-	private final ProjectId projectId;
+	private final ProjectCfgManager projectCfgManager;
 
 	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root,
-			@NotNull CfgManager cfgManager, @NotNull ProjectId projectId) {
+			@NotNull ProjectCfgManager projectCfgManager) {
 		super(reviewListModel, root);
-		this.cfgManager = cfgManager;
-		this.projectId = projectId;
+		this.projectCfgManager = projectCfgManager;
 	}
 
 	@Override
@@ -90,7 +87,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 		Set<ServerCfg> servers = new TreeSet<ServerCfg>(COMPARATOR);
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(cfgManager.getServer(projectId, review.getServerData()));
+			servers.add(projectCfgManager.getServer(review.getServerData()));
 		}
 
 		return new ArrayList<ServerCfg>(servers);
@@ -105,7 +102,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 	private int gentNumOfReviewsForServer(ServerCfg server) {
 		int ret = 0;
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (server.equals(cfgManager.getServer(projectId, review.getServerData()))) {
+			if (server.equals(projectCfgManager.getServer(review.getServerData()))) {
 				++ret;
 			}
 		}
@@ -118,7 +115,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 		// get all reviews in state
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (server.equals(cfgManager.getServer(projectId, review.getServerData()))) {
+			if (server.equals(projectCfgManager.getServer(review.getServerData()))) {
 				array.add(review);
 			}
 		}

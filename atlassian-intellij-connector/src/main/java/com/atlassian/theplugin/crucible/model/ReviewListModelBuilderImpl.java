@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.intellij.openapi.project.Project;
@@ -18,16 +18,16 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final Project project;
 	private final MissingPasswordHandler missingPasswordHandler;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	public ReviewListModelBuilderImpl(final Project project,
-			final CfgManager cfgManager,
+			final ProjectCfgManager projectCfgManager,
 			final ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, cfgManager, project);
+		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project);
 	}
 
 	public Map<CrucibleFilter, ReviewNotificationBean> getReviewsFromServer(
@@ -42,7 +42,7 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 
 
 		final CrucibleQueryExecutor crucibleQueryExecutor =
-				new CrucibleQueryExecutor(crucibleServerFacade, cfgManager, project, missingPasswordHandler,
+				new CrucibleQueryExecutor(crucibleServerFacade, projectCfgManager, project, missingPasswordHandler,
 						crucibleReviewListModel);
 		final Map<CrucibleFilter, ReviewNotificationBean> reviews =
 				crucibleQueryExecutor.runQuery(predefinedFilters, customFilter, recentlyOpenFilter, epoch);

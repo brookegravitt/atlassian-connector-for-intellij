@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -26,6 +25,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -43,18 +43,19 @@ public class MissingPasswordHandler implements Runnable {
 	private static boolean isDialogShown = false;
 
 	private final ProductServerFacade serverFacade;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final Set<ServerId> serversWithoutPassword = MiscUtil.buildHashSet();
 	private boolean shouldStop;
 
 
-	public MissingPasswordHandler(ProductServerFacade serverFacade, final CfgManager cfgManager, final Project project) {
+	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManager projectCfgManager, final Project project) {
 		this.serverFacade = serverFacade;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		this.project = project;
 		// todo make sure the config listener is unregistered / not added every time missignpasswordhandler is created
-		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), new LocalConfigurationListener());
+		projectCfgManager.getCfgManager().
+				addProjectConfigurationListener(CfgUtil.getProjectId(project), new LocalConfigurationListener());
 	}
 
 	private synchronized boolean shouldStop() {
@@ -68,7 +69,7 @@ public class MissingPasswordHandler implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			for (ServerCfg server : cfgManager.getAllEnabledServers(
+			for (ServerCfg server : projectCfgManager.getCfgManager().getAllEnabledServers(
 					CfgUtil.getProjectId(project), serverFacade.getServerType())) {
 				if (server.isComplete() || serversWithoutPassword.contains(server.getServerId())) {
 					continue;

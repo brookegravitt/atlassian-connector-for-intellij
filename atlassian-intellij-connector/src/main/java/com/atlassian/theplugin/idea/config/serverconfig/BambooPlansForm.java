@@ -18,13 +18,17 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 
 
 public class BambooPlansForm extends JPanel {
@@ -68,14 +70,14 @@ public class BambooPlansForm extends JPanel {
 	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
 	private final transient BambooServerFacade bambooServerFacade;
 	private final BambooServerConfigForm serverPanel;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManager projectCfgManager;
 
 	public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
-			final BambooServerConfigForm bambooServerConfigForm, @NotNull CfgManager cfgManager) {
+			final BambooServerConfigForm bambooServerConfigForm, @NotNull ProjectCfgManager projectCfgManager) {
 		this.bambooServerFacade = bambooServerFacade;
 		this.bambooServerCfg = bambooServerCfg;
 		this.serverPanel = bambooServerConfigForm;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 
 		$$$setupUI$$$();
 
@@ -224,7 +226,7 @@ public class BambooPlansForm extends JPanel {
 					if (!serverPlans.containsKey(key)) {
 						Collection<BambooPlan> plans;
 						try {
-							plans = bambooServerFacade.getPlanList(cfgManager.getServerData(queryServer));
+							plans = bambooServerFacade.getPlanList(projectCfgManager.getServerData(queryServer));
 						} catch (ServerPasswordNotProvidedException e) {
 							msg.append("Unable to connect: password for server not provided\n");
 							return;

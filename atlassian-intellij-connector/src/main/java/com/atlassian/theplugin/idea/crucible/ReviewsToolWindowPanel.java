@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -80,7 +79,6 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final CfgManager cfgManager;
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
 
@@ -91,12 +89,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManager projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
-			@NotNull final UiTaskExecutor uiTaskExecutor,
-			@NotNull final CfgManager cfgManager) {
+			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
-		this.cfgManager = cfgManager;
 
 		crucibleProjectConfiguration = projectConfiguration.getCrucibleConfiguration();
 
@@ -124,7 +120,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 		detailsPanel = new CrucibleCustomFilterDetailsPanel(
 				getProject(), projectCfgManager, crucibleProjectConfiguration,
-				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor, cfgManager);
+				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
 		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh(UpdateReason.FILTER_CHANGED);
@@ -298,7 +294,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	@Override
 	public JTree createRightTree() {
 		if (reviewTree == null) {
-			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, cfgManager, CfgUtil.getProjectId(project)));
+			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, projectCfgManager, CfgUtil.getProjectId(project)));
 
 		}
 		return reviewTree;
@@ -406,7 +402,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 						: projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
 					if (server.getServerId().toString().equals(recentlyOpenReview.getServerId())) {
 						try {
-							final ServerData serverData = cfgManager.getServerData(server);
+							final ServerData serverData = projectCfgManager.getServerData(server);
 							Review r = CrucibleServerFacadeImpl.getInstance().getReview(
 									serverData, new PermIdBean(recentlyOpenReview.getReviewId()));
 							reviews.add(new ReviewAdapter(r, serverData));

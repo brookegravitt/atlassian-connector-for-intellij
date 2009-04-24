@@ -102,7 +102,7 @@ public class JiraLinkHighlighter {
 	}
 
 	private void listenOnInput() {
-		inputEditorInputHandler = new EditorInputHandler(IdeaHelper.getCfgManager(project), project, editor, psiFile,
+		inputEditorInputHandler = new EditorInputHandler(IdeaHelper.getProjectCfgManager(project), project, editor, psiFile,
 				jiraEditorLinkParser);
 		editor.getContentComponent().addKeyListener(inputEditorInputHandler);
 		editor.addEditorMouseMotionListener(inputEditorInputHandler);

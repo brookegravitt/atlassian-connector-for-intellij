@@ -16,56 +16,12 @@
 package com.atlassian.theplugin.cfg;
 
 import com.atlassian.theplugin.commons.cfg.AbstractCfgManager;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
  * User: pmaruszak
  */
 
-/*@State(name = "atlassian-ide-plugin-cfg-manager-idea",
-		storages = {@Storage(id = "atlassian-ide-plugin-cfg-manager-id", file = "$WORKSPACE_FILE$")})
-public class IdeaCfgManager extends AbstractCfgManager implements PersistentStateComponent<IdeaCfgManager> {*/
-	public class IdeaCfgManager extends AbstractCfgManager {
-	private UserCfg defaultCredentials;
 
-	public ServerData getServerData(final Server serverCfg) {
-		if (serverCfg != null) {
-			String userName = serverCfg.getUserName();
-			String password = serverCfg.getPassword();
-
-			if (defaultCredentials != null) {
-				userName = defaultCredentials.getUserName();
-				password = defaultCredentials.getPassword();
-			}
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), userName,
-					password, serverCfg.getUrl());
-		}
-
-		return null;
-	}
-
-	
-	public IdeaCfgManager getState() {
-		return this;
-	}
-
-	public void loadState(final IdeaCfgManager ideaCfgManager) {
-		//To change body of implemented methods use File | Settings | File Templates.
-	}
-
-
-	public void copyData(final IdeaCfgManager cfgManager) {
-		this.defaultCredentials = cfgManager.defaultCredentials;
-	}
-
-	public UserCfg getDefaultCredentials() {
-		return defaultCredentials;
-	}
-
-	public void setDefaultCredentials(final UserCfg defaultCredentials) {
-		this.defaultCredentials = defaultCredentials;
-	}
+public class IdeaCfgManager extends AbstractCfgManager  {
 
 }

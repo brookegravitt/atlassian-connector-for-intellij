@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
@@ -67,27 +68,35 @@ public final class IdeaHelper {
 		return ApplicationManager.getApplication().getComponent(ThePluginApplicationComponent.class);
 	}
 
-	@Nullable
-	public static CfgManager getCfgManager(final AnActionEvent event) {
-		ThePluginProjectComponent ppc = getCurrentProjectComponent(event);
-		if (ppc != null) {
-			return ppc.getCfgManager();
-		}
+//	@Nullable
+//	public static CfgManager getCfgManager(final AnActionEvent event) {
+//		ThePluginProjectComponent ppc = getCurrentProjectComponent(event);
+//		if (ppc != null) {
+//			return ppc.getCfgManager();
+//		}
+//
+//		return null;
+//	}
+//
+//	@Nullable
+//	public static CfgManager getCfgManager(final Project project) {
+//		ThePluginProjectComponent ppc = getCurrentProjectComponent(project);
+//		if (ppc != null) {
+//			return ppc.getCfgManager();
+//		}
+//
+//		return null;
+//	}
 
-		return null;
+	public static ProjectCfgManager getProjectCfgManager(Project p) {
+		return getProjectComponent(p, ProjectCfgManager.class);
 	}
 
-	@Nullable
-	public static CfgManager getCfgManager(final Project project) {
-		ThePluginProjectComponent ppc = getCurrentProjectComponent(project);
-		if (ppc != null) {
-			return ppc.getCfgManager();
-		}
 
-		return null;
+	public static ProjectCfgManager getProjectCfgManager(AnActionEvent e) {
+		return getProjectComponent(e, ProjectCfgManager.class);
 	}
-
-	@Nullable
+	
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
 		return getProjectComponent(event, IssuesToolWindowPanel.class);
 //		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
@@ -254,5 +263,13 @@ public final class IdeaHelper {
 //
 //		return null;
 		return getProjectComponent(project, JIRAServerModel.class);
+	}
+
+	public static CfgManager getCfgManager(final Project project) {
+		return getProjectComponent(project, CfgManager.class);
+	}
+
+	public static CfgManager getCfgManager(final AnActionEvent event) {
+		return getProjectComponent(event, CfgManager.class);
 	}
 }
