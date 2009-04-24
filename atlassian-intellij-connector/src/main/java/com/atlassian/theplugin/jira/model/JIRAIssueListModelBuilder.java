@@ -20,7 +20,9 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 
 	void addRecenltyOpenIssuesToModel(boolean reload) throws JIRAException;
 
-	void updateIssue(JIRAIssue issue, ServerData jiraServerCfg) throws JIRAException;
+	void reloadIssue(String issueKey, ServerData jiraServerCfg) throws JIRAException;
+
+	void updateIssue(final JIRAIssue issue);
 
 	void reset();
 
