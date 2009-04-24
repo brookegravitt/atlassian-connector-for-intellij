@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpMethod;
 import org.ddsteps.mock.httpserver.JettyMockServer;
@@ -47,7 +46,6 @@ public class AbstractHttpSessionTest extends TestCase {
 	private Server httpServer;
 	private JettyMockServer mockServer;
 	private static final String SOME_URL = "/some_url";
-	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
 
 	@Override
 	protected void setUp() throws Exception {
@@ -137,7 +135,7 @@ public class AbstractHttpSessionTest extends TestCase {
 
 		private TestHttpSession(final com.atlassian.theplugin.commons.cfg.Server server, final HttpSessionCallback callback)
 				throws RemoteApiMalformedUrlException {
-			super(projectCfgManager.getServerData(server), callback);
+			super(getServerData(server), callback);
 		}
 
 		@Override
@@ -151,17 +149,13 @@ public class AbstractHttpSessionTest extends TestCase {
 		}
 
 	}
-}
 
 
-class LocalProjectCfgManager extends ProjectCfgManager {
-
-	public LocalProjectCfgManager() {
-		super(null, null, null);
-	}
-
-	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+	private  ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}
 }
+
+
+
