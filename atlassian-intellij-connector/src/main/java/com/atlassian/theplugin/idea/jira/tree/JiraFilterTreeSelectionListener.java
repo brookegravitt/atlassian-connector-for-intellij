@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.JIRAManualFilter;

@@ -1,13 +1,12 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;

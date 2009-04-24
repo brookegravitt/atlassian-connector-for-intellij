@@ -3,7 +3,10 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -46,7 +49,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 
 	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final ProjectCfgManager projectCfgManager,
 			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
-			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor, @NotNull CfgManager cfgManager) {
+			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor,
+			@NotNull CfgManager cfgManager) {
 		super(new BorderLayout());
 		this.projectCfgManager = projectCfgManager;
 		this.projectCrucibleCfg = crucibleCfg;
@@ -180,7 +184,8 @@ class MyUiTask implements UiTask {
 			if (fetchRemoteData) {
 				try {
 					CrucibleProject crucibleProject = crucibleServerCfg != null
-							? crucibleFacade.getProject(cfgManager.getServerData(crucibleServerCfg), customFilter.getProjectKey())
+							? crucibleFacade.getProject(cfgManager.getServerData(crucibleServerCfg),
+							customFilter.getProjectKey())
 							: null;
 					if (crucibleProject != null) {
 						projectName = crucibleProject.getName();

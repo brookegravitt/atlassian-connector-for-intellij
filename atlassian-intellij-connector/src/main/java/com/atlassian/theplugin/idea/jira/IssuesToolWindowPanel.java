@@ -8,7 +8,6 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -28,7 +27,6 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -902,7 +900,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server),
 									true);
 							EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade,
-									(JiraServerCfg)cfgManager.getServer(CfgUtil.getProjectId(project), server), project));
+									(JiraServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), server), project));
 							continue;
 						}//@todo remove  saved filters download or merge with existing in listModel
 
@@ -1222,7 +1220,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 					Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
 					try {
 						for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-							projectMap.put(new Pair<String, ServerId>(p.getKey(), new ServerId(srvcfg.getServerId())), p.getName());
+							projectMap.put(new Pair<String, ServerId>(p.getKey(), new ServerId(srvcfg.getServerId())),
+									p.getName());
 						}
 					} catch (JIRAException e) {
 						setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);

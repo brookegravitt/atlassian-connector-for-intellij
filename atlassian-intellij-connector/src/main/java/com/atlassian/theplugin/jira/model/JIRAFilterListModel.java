@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import org.jetbrains.annotations.NotNull;
