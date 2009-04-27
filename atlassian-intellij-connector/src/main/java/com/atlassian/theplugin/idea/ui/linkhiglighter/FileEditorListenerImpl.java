@@ -111,7 +111,11 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void deactivate() {
-		FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+        // PL-1346 - this seems to be some sort of a race condition in IDEA.
+        // Checking if project still good to avoid assertion failure
+        if (!project.isDisposed()) {
+		    FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+        }
 		isRegistered = false;
 	}
 
