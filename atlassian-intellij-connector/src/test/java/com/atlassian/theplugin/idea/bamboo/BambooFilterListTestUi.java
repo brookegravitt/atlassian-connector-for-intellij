@@ -38,7 +38,7 @@ public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
 	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
 	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
-	
+
 	private BambooFilterListTestUi() {
 	}
 
@@ -60,7 +60,8 @@ public final class BambooFilterListTestUi {
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
-				final BambooFilterList bambooFilterList = new BambooFilterList(new ProjectCfgManager(null, null, cfgManager),
+				final BambooFilterList bambooFilterList = new BambooFilterList(
+						new ProjectCfgManager(null, /*null,*/ cfgManager),
 						projectId1, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
@@ -96,7 +97,8 @@ public final class BambooFilterListTestUi {
 				});
 				toolbar.add(prjButton);
 				add(toolbar, BorderLayout.NORTH);
-			}		});
+			}
+		});
 
 
 	}
@@ -118,7 +120,8 @@ public final class BambooFilterListTestUi {
 
 	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
-		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null, projectCfgManager.getServerData(serverCfg), name, 123, state)
+		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null,
+				projectCfgManager.getServerData(serverCfg), name, 123, state)
 				.startTime(new Date())
 				.pollingTime(new Date())
 				.completionTime(new Date())
@@ -134,7 +137,7 @@ public final class BambooFilterListTestUi {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, null, null);
+		super(null, /*null,*/ null);
 	}
 
 	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
