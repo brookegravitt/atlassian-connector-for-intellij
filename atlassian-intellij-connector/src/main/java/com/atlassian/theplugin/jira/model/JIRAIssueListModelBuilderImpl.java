@@ -126,8 +126,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addRecenltyOpenIssuesToModel(boolean reload)
-			throws JIRAException {
+	public synchronized void addRecenltyOpenIssuesToModel(boolean reload) {
 
 		if (model == null) {
 			return;

@@ -90,7 +90,7 @@ public class JIRARssClient extends AbstractHttpSession {
 			}
 			return Collections.emptyList();
 		} catch (IOException e) {
-			throw new JIRAException(e.getMessage(), e);
+			throw new JIRAException("Connection error: " + e.getMessage(), e);
 		} catch (JDOMException e) {
 			throw new JIRAException(e.getMessage(), e);
 		} catch (RemoteApiSessionExpiredException e) {
