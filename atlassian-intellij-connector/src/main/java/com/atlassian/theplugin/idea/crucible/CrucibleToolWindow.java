@@ -33,7 +33,7 @@ import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
-import com.atlassian.theplugin.util.HyperlinkDetector;
+import com.atlassian.theplugin.util.Htmlizer;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -378,7 +378,7 @@ class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
 	private final ReviewAdapter ra;
-    private static final int MAX_DISPLAYED_LINK_LENGHT = 80;
+    private static final int MAX_DISPLAYED_LINK_LENGTH = 80;
 
     public DetailsPanel(final ReviewAdapter reviewAdapter) {
 		this.ra = reviewAdapter;
@@ -430,8 +430,9 @@ class DetailsPanel extends JPanel {
 		statementOfObjectives.setBackground(Color.WHITE);
 		statementOfObjectives.setContentType("text/html");
 		statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-        String sooText = new HyperlinkDetector(MAX_DISPLAYED_LINK_LENGHT).htmlizeHyperlinks(ra.getDescription());
-        sooText = sooText.replaceAll("\r", "").replaceAll("\n", "<br>");
+        Htmlizer htmlizer = new Htmlizer(MAX_DISPLAYED_LINK_LENGTH);
+        String sooText = htmlizer.htmlizeHyperlinks(ra.getDescription());
+        sooText = htmlizer.replaceWhitespace(sooText);
 		statementOfObjectives.setText("<html><body>" + sooText + "</body></html>");
         statementOfObjectives.addHyperlinkListener(new HyperlinkListener() {
             public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -534,7 +535,7 @@ class DetailsPanel extends JPanel {
 		return body;
 	}
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 		ServerData cruc = new ServerData("my crucible server", (new ServerId()).toString(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);

@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
  * Date: Apr 24, 2009
  * Time: 3:23:30 PM
  */
-public class HyperlinkDetector {
+public class Htmlizer {
 
     public static final String HYPERLINK_PATTERN = "(https?://\\S+)";
 
@@ -18,14 +18,14 @@ public class HyperlinkDetector {
     private String linkTextReplacement;
     private int truncateLinkTextAt = -1;
 
-    public HyperlinkDetector() {
+    public Htmlizer() {
     }
 
-    public HyperlinkDetector(int truncateLinkTextAt) {
+    public Htmlizer(int truncateLinkTextAt) {
         this.truncateLinkTextAt = truncateLinkTextAt;
     }
 
-    public HyperlinkDetector(String linkTextReplacement) {
+    public Htmlizer(String linkTextReplacement) {
         this.linkTextReplacement = linkTextReplacement;
     }
 
@@ -56,6 +56,16 @@ public class HyperlinkDetector {
         String rest = text.substring(index, text.length());
         result.append(rest);
         return result.toString();
+    }
+
+    public String replaceWhitespace(String text) {
+        String result = text.replaceAll("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
+        result = result.replaceAll("   ", "&nbsp;&nbsp;&nbsp;");
+        result = result.replaceAll("  ", "&nbsp;&nbsp;");
+        result = result.replaceAll("\n ", "<br>&nbsp;");
+        result = result.replaceAll("\n\t", "<br>&nbsp;&nbsp;&nbsp;&nbsp;");
+        result = result.replaceAll("\r", "").replaceAll("\n", "<br>");
+        return result;
     }
 
     private boolean matchBoth(Matcher matcherHyperlink, Matcher matcherA, int index) {
