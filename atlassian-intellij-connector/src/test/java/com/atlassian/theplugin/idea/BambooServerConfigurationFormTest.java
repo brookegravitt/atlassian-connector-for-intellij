@@ -164,7 +164,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, null, null);
+		super(null, /*null,*/ null);
 	}
 
 	public ServerData getServerData(final Server serverCfg) {

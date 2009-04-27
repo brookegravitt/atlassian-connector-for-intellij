@@ -88,62 +88,72 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 				makeJiraProject(id, "EF", "Jira Project 4"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg))).andReturn(projects1).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg)))
+				.andReturn(projects1).anyTimes();
 
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg2))).andAnswer(new IAnswer<List<CrucibleProject>>() {
+		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg2)))
+				.andAnswer(new IAnswer<List<CrucibleProject>>() {
 
-			public List<CrucibleProject> answer() throws Throwable {
-				Thread.sleep(2000);
-				return projects2;
-			}
-		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg3))).andAnswer(new IAnswer<List<CrucibleProject>>() {
-			public List<CrucibleProject> answer() throws Throwable {
-				Thread.sleep(2000);
-				throw new RuntimeException("fake RE");
-			}
-		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg3))).andAnswer(new IAnswer<List<Repository>>() {
-			public List<Repository> answer() throws Throwable {
-				Thread.sleep(1000);
-				return MiscUtil.buildArrayList(makeRepository("R1"), makeRepository("R2"));
-			}
-		}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg2))).andAnswer(new IAnswer<List<Repository>>() {
-			public List<Repository> answer() throws Throwable {
-				Thread.sleep(2000);
-				return MiscUtil
-						.buildArrayList(makeRepository("Clover"), makeRepository("Connector"), makeRepository("FishEye"));
+					public List<CrucibleProject> answer() throws Throwable {
+						Thread.sleep(2000);
+						return projects2;
+					}
+				}).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg3)))
+				.andAnswer(new IAnswer<List<CrucibleProject>>() {
+					public List<CrucibleProject> answer() throws Throwable {
+						Thread.sleep(2000);
+						throw new RuntimeException("fake RE");
+					}
+				}).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg3)))
+				.andAnswer(new IAnswer<List<Repository>>() {
+					public List<Repository> answer() throws Throwable {
+						Thread.sleep(1000);
+						return MiscUtil.buildArrayList(makeRepository("R1"), makeRepository("R2"));
+					}
+				}).anyTimes();
+		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg2)))
+				.andAnswer(new IAnswer<List<Repository>>() {
+					public List<Repository> answer() throws Throwable {
+						Thread.sleep(2000);
+						return MiscUtil
+								.buildArrayList(makeRepository("Clover"), makeRepository("Connector"),
+										makeRepository("FishEye"));
 
-			}
-		}).anyTimes();
+					}
+				}).anyTimes();
 
 		EasyMock.replay(crucibleServerFacade);
 
 		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
-		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg0))).andReturn(repos0).anyTimes();
-		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg1))).andAnswer(new IAnswer<Collection<String>>() {
+		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg0)))
+				.andReturn(repos0).anyTimes();
+		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg1)))
+				.andAnswer(new IAnswer<Collection<String>>() {
 
-			public Collection<String> answer() throws Throwable {
-				Thread.sleep(7000);
-				return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
-			}
-		}).anyTimes();
+					public Collection<String> answer() throws Throwable {
+						Thread.sleep(7000);
+						return MiscUtil.buildArrayList("studioA", "studioB", "StudioC");
+					}
+				}).anyTimes();
 
 		EasyMock.replay(fishEyeServerFacade);
 
 		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
 		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
-		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg1))).andReturn(jiraProjects1).anyTimes();
+		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg1))).andReturn(jiraProjects1)
+				.anyTimes();
 
-		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg2))).andAnswer(new IAnswer<List<JIRAProject>>() {
+		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg2)))
+				.andAnswer(new IAnswer<List<JIRAProject>>() {
 
-			public List<JIRAProject> answer() throws Throwable {
-				Thread.sleep(2000);
-				return jiraProjects2;
-			}
-		}).anyTimes();
+					public List<JIRAProject> answer() throws Throwable {
+						Thread.sleep(2000);
+						return jiraProjects2;
+					}
+				}).anyTimes();
 
 		EasyMock.replay(jiraServerFacade);
 
@@ -198,7 +208,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, null, null);
+		super(null, /*null,*/ null);
 	}
 
 	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {

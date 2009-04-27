@@ -21,27 +21,25 @@ import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
 public class ProjectCfgManager {
-	private final ProjectConfigurationComponent projectConfigurationComponent;
+	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
 
-	public ProjectCfgManager(Project project, ProjectConfigurationComponent projectConfigurationComponent,
+	public ProjectCfgManager(Project project, /* ProjectConfigurationComponent projectConfigurationComponent, */
 			CfgManager cfgManager) {
 		this.projectId = CfgUtil.getProjectId(project);
-		this.projectConfigurationComponent = projectConfigurationComponent;
+//		this.projectConfigurationComponent = projectConfigurationComponent;
 		this.cfgManager = cfgManager;
 	}
 
-
-	@NotNull
-	public ProjectConfigurationComponent getProjectConfigurationComponent() {
-		return projectConfigurationComponent;
-	}
+//	@NotNull
+//	public ProjectConfigurationComponent getProjectConfigurationComponent() {
+//		return projectConfigurationComponent;
+//	}
 
 	@NotNull
 	public CfgManager getCfgManager() {
