@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -43,21 +44,26 @@ import java.util.List;
 public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleCreatePostCommitReviewForm {
 	private boolean doCreateReview = false;
 	List<CommittedChangeList> list;
-	private Collection<VirtualFile> virtualFiles;
+    private CrucibleConfigurationBean cruciblePluginConfig;
+    private Collection<VirtualFile> virtualFiles;
 
 	public CrucibleCreatePostCommitReviewDelayedForm(
-			final Project project,
-			final CrucibleServerFacade crucibleServerFacade,
-			@NotNull final ProjectCfgManager projectCfgManager,
-			String title, Collection<VirtualFile> virtualFiles) {
+            final Project project,
+            final CrucibleServerFacade crucibleServerFacade,
+            @NotNull final ProjectCfgManager projectCfgManager,
+            CrucibleConfigurationBean cruciblePluginConfig,
+            String title,
+            Collection<VirtualFile> virtualFiles) {
 
 		super(project, crucibleServerFacade, title, projectCfgManager);
-		this.virtualFiles = virtualFiles;
+        this.cruciblePluginConfig = cruciblePluginConfig;
+        this.virtualFiles = virtualFiles;
 		setCustomComponent(null);
+        setReviewCreationTimeout(cruciblePluginConfig.getReviewCreationTimeout());
 		pack();
 	}
 
-	@Override
+    @Override
 	protected void doOKAction() {
 		doCreateReview = true;
 		doCancelAction();
