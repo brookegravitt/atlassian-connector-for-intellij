@@ -148,7 +148,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
 					refreshUserModel();
 				}
-			}
+			}                             ggfgfgffggf
 		});
 
 		ActionListener enableOkActionListener = new ActionListener() {
