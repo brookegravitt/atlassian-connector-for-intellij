@@ -17,16 +17,17 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
+import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ColoredListCellRenderer;
@@ -110,8 +111,10 @@ public class IssueCreateDialog extends DialogWrapper {
 		projectComboListener = new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-				updateIssueTypes(p);
-				updateComponents(p);
+				List<UiTask> tasks = new ArrayList<UiTask>();
+				tasks.add(updateIssueTypes(p));
+				tasks.add(updateComponents(p));
+				IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
 			}
 		};
 		projectComboBox.addActionListener(projectComboListener);
@@ -120,30 +123,31 @@ public class IssueCreateDialog extends DialogWrapper {
 	}
 
 	public void initData() {
-		updatePriorities();
-		updateProject();
+		List<UiTask> tasks = new ArrayList<UiTask>();
+		tasks.add(updatePriorities());
+		tasks.add(updateProject());
+		IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
 	}
 
-	private void updateProject() {
+	private UiTaskAdapter updateProject() {
 		projectComboBox.setEnabled(false);
 		getOKAction().setEnabled(false);
 
-		new Thread(new Runnable() {
-			public void run() {
-				List<JIRAProject> projects = new ArrayList<JIRAProject>();
-				try {
-					projects = model.getProjects(jiraServer);
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().error("Cannot retrieve JIRA projects:" + e.getMessage());
-				}
-				final List<JIRAProject> finalProjects = projects;
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						addProjects(finalProjects);
-					}
-				});
+		return new UiTaskAdapter("retrieving projects", getContentPane()) {
+			private List<JIRAProject> projects = new ArrayList<JIRAProject>();
+
+			public void run() throws JIRAException {
+				projects = model.getProjects(jiraServer);
 			}
-		}, "atlassian-idea-plugin jira issue priorities retrieve on issue create").start();
+
+			public void onSuccess() {
+				addProjects(projects);
+			}
+
+			public void onError() {
+				addProjects(projects);
+			}
+		};
 	}
 
 	private void addProjects(List<JIRAProject> projects) {
@@ -166,10 +170,10 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			// select default project
 			if (jiraConfiguration != null &&
-					jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+					jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId())) {
 
 				String project = jiraConfiguration.getView().getServerDefaults().
-						get(jiraServer.getServerId().toString()).getProject();
+						get(jiraServer.getServerId()).getProject();
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
 					if (projectComboBox.getItemAt(i) instanceof JIRAProject) {
@@ -189,29 +193,28 @@ public class IssueCreateDialog extends DialogWrapper {
 		projectComboBox.setEnabled(true);
 	}
 
-	private void updatePriorities() {
+	private UiTask updatePriorities() {
 		priorityComboBox.setEnabled(false);
 		getOKAction().setEnabled(false);
-		new Thread(new Runnable() {
-			public void run() {
-				List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
-				try {
-					priorities = model.getPriorities(jiraServer, myPerformAction);
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().error("Cannot retrieve JIRa priorities:" + e.getMessage());
-				}
 
-				final List<JIRAConstant> finalPriorities = priorities;
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						addIssuePriorieties(finalPriorities);
-					}
-				});
+		return new UiTaskAdapter("retrieving priorities", getContentPane()) {
+			private List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
+
+			public void run() throws Exception {
+				priorities = model.getPriorities(jiraServer, myPerformAction);
 			}
-		}, "atlassian-idea-plugin jira issue priorities retrieve on issue create").start();
+
+			public void onSuccess() {
+				addIssuePriorities(priorities);
+			}
+
+			public void onError() {
+				addIssuePriorities(priorities);
+			}
+		};
 	}
 
-	private void addIssuePriorieties(List<JIRAConstant> priorieties) {
+	private void addIssuePriorities(List<JIRAConstant> priorieties) {
 		priorityComboBox.removeAllItems();
 		for (JIRAConstant constant : priorieties) {
 			if (constant.getId() != JIRAServerCache.ANY_ID) {
@@ -224,31 +227,30 @@ public class IssueCreateDialog extends DialogWrapper {
 		priorityComboBox.setEnabled(true);
 	}
 
-	private void updateIssueTypes(final JIRAProject project) {
+	private UiTask updateIssueTypes(final JIRAProject project) {
 		typeComboBox.setEnabled(false);
 		getOKAction().setEnabled(false);
-		new Thread(new Runnable() {
-			public void run() {
-				List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
-				try {
-					issueTypes = model.getIssueTypes(jiraServer, project, true);
-				} catch (JIRAException e) {
-					PluginUtil.getLogger().error("Cannto retrieve JIRA issue types:" + e.getMessage());
-				}
-				final List<JIRAConstant> finalIssueTypes = issueTypes;
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						addIssueTypes(finalIssueTypes);
-					}
-				});
+		return new UiTaskAdapter("retrieving issue types", getContentPane()) {
+			private List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
+
+			public void run() throws Exception {
+				issueTypes = model.getIssueTypes(jiraServer, project, true);
 			}
-		}, "atlassian-idea-plugin jira issue types retrieve on issue create").start();
+
+			public void onSuccess() {
+				addIssueTypes(issueTypes);
+			}
+
+			public void onError() {
+				addIssueTypes(issueTypes);
+			}
+		};
 	}
 
-	private void updateComponents(final JIRAProject project) {
+	private UiTask updateComponents(final JIRAProject project) {
 		componentsList.setEnabled(false);
 		getOKAction().setEnabled(false);
-		uiTaskExecutor.execute(new UiTaskAdapter("fetching components", getContentPane()) {
+		return new UiTaskAdapter("fetching components", getContentPane()) {
 			private List<JIRAComponentBean> components;
 
 			public void run() throws Exception {
@@ -259,8 +261,7 @@ public class IssueCreateDialog extends DialogWrapper {
 			public void onSuccess() {
 				addComponents(components);
 			}
-
-		});
+		};
 	}
 
 
@@ -286,16 +287,16 @@ public class IssueCreateDialog extends DialogWrapper {
 		componentsList.setModel(listModel);
 
 		if (projectComboBox.getSelectedItem() != null && jiraConfiguration != null && jiraConfiguration.getView() != null
-				&& jiraConfiguration.getView().getServerDefaults() != null &&
-				jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId().toString())) {
+				&& jiraConfiguration.getView().getServerDefaults() != null
+				&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId())) {
 
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 
 			String configProject = jiraConfiguration.getView().getServerDefaults().
-					get(jiraServer.getServerId().toString()).getProject();
+					get(jiraServer.getServerId()).getProject();
 
 			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaults().
-					get(jiraServer.getServerId().toString()).getComponents();
+					get(jiraServer.getServerId()).getComponents();
 
 			// select default components for specified project
 			if (selectedProject.equals(configProject)) {
@@ -376,7 +377,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		// save selected project and components to the config
 		if (jiraConfiguration != null && jiraConfiguration.getView() != null) {
 			JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId().toString(), p.getKey(), selectedComponents);
+			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId(), p.getKey(), selectedComponents);
 		}
 
 		super.doOKAction();
@@ -390,6 +391,10 @@ public class IssueCreateDialog extends DialogWrapper {
 	@Override
 	@Nullable
 	protected JComponent createCenterPanel() {
+		return mainPanel;
+	}
+
+	public JPanel getRootComponent() {
 		return mainPanel;
 	}
 
