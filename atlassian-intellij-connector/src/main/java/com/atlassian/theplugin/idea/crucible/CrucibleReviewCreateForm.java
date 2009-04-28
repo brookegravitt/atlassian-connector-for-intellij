@@ -733,7 +733,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		if (selectedItem != null) {
 			final ServerData server = selectedItem.getServer();
 
-			Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", false) {
+			Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", runUntilSuccessful) {
 				public boolean isCancelled = false;
 
 				@Override
