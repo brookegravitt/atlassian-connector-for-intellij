@@ -85,7 +85,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
 			@NotNull final CfgManager cfgManager, @NotNull String dialogTitle) {
-		super(false);
+		super(false);                                                            kkkkjjkkj
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.cfgManager = cfgManager;
