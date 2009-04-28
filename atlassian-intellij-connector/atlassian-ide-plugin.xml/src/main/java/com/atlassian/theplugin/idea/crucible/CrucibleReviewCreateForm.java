@@ -157,7 +157,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				getOKAction().setEnabled(isValidForm());
 			}
 		};
-
+                       nmn
 		authorComboBox.addActionListener(enableOkActionListener);
 		repoComboBox.addActionListener(enableOkActionListener);
 		projectsComboBox.addActionListener(enableOkActionListener);
