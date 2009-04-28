@@ -75,6 +75,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
     protected Project project;
     protected CrucibleServerFacade crucibleServerFacade;
     private final ProjectCfgManager projectCfgManager;
+    private int reviewCreationTimeout = -1;
+    private static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
 
     protected void setCustomComponent(JComponent component) {
         customComponentPanel.removeAll();
@@ -725,9 +727,16 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
         super.doOKAction();
     }
 
+    protected void setReviewCreationTimeout(int reviewCreationTimeout) {
+        this.reviewCreationTimeout = reviewCreationTimeout;
+    }
+
+
     protected void runCreateReviewTask(final boolean runUntilSuccessful) {
         final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
         if (selectedItem != null) {
+            final Date startDate = new Date();
+
             final ServerData server = selectedItem.getServer();
 
             Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", runUntilSuccessful) {
@@ -818,6 +827,22 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 }, modalityState);
                             } else {
                                 try {
+                                    Date now = new Date();
+                                    if (reviewCreationTimeout > 0
+                                            && now.getTime() - startDate.getTime() >
+                                                reviewCreationTimeout * MILLISECONDS_IN_MINUTE) {
+                                        SwingUtilities.invokeLater(new Runnable() {
+                                            public void run() {
+                                                Messages.showErrorDialog(project,
+                                                        "Creation of the review on server\n"
+                                                        + selectedItem.getServer().getName()
+                                                        + " timed out after "
+                                                        + reviewCreationTimeout + " minutes",
+                                                        "Review Creation Timeout");
+                                            }
+                                        });
+                                        break;
+                                    }
                                     indicator.setText("Waiting for Crucible to update to newest change set...");
                                     for (int i = 0; i < 10; ++i) {
                                         if (indicator.isCanceled()) {
