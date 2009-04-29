@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -59,7 +58,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private final CfgManager cfgManager;
 	private final PluginConfiguration pluginConfiguration;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
-	private final UiTaskExecutor uiTaskExecutor;
 
 	private static final String SERVERS_TOOL_BAR = "ThePlugin.JiraServers.ServersToolBar";
 	private JIRAFilterListModel jiraFilterListModel;
@@ -99,7 +97,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
 			@NotNull final JIRAIssueListModel issueModel,
-			@NotNull final UiTaskExecutor uiTaskExecutor,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final RecentlyOpenIssuesCache recentlyOpenIssuesCache,
 			@NotNull final JIRAFilterListBuilder filterListBuilder,
@@ -110,7 +107,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		this.cfgManager = cfgManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
-		this.uiTaskExecutor = uiTaskExecutor;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 
@@ -758,7 +754,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
-					jiraWorkspaceConfiguration, uiTaskExecutor);
+					jiraWorkspaceConfiguration);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();
@@ -1059,7 +1055,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg) {
 			hideManualFilterPanel();
 			refreshIssues(savedFilter, jiraServerCfg, true);
-			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().toString());
+			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId());
 			jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
 		}
 
