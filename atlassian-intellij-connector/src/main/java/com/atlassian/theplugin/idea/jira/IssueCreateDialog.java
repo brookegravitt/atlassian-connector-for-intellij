@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskAdapter;
-import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -58,16 +57,14 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JList componentsList;
 	private final ServerData jiraServer;
 	private final JIRAServerModel model;
-	private final UiTaskExecutor uiTaskExecutor;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(JIRAServerModel model, ServerData server,
-			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg, @NotNull final UiTaskExecutor uiTaskExecutor) {
+			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
 		this.model = model;
 		this.jiraConfiguration = jiraProjectCfg;
-		this.uiTaskExecutor = uiTaskExecutor;
 		$$$setupUI$$$();
 		componentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		init();
