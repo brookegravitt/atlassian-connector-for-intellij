@@ -110,7 +110,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 	public String addServer(ServerType serverType) {
-
+        if (serverType == null) {
+            return null;
+        }
 
 		String name = ServerNameUtil.suggestNewName(servers);
 		ServerCfg newServer = createNewServer(serverType, name);
@@ -230,7 +232,6 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		return firstServerNode;
 	}
 
-
 	private void updateTreeConfiguration() {
 		//DefaultMutableTreeNode tmpNode = selectedNode;
 		selectedNode = updateServerTree();
@@ -319,4 +320,17 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			}
 		}
 	}
+
+    public ServerType getSelectedServerType() {
+        TreePath path = serverTree.getSelectionPath();
+        if (path == null) {
+            return null;
+        }
+
+        selectedNode = (DefaultMutableTreeNode) path.getLastPathComponent();
+        if (selectedNode instanceof ServerTypeNode) {
+            return ((ServerTypeNode) selectedNode).getServerType();
+        }
+        return null;
+    }
 }
