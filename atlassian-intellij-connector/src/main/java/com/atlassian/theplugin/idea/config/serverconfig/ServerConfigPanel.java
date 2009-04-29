@@ -27,7 +27,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -66,7 +66,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 
 	public ServerConfigPanel(Project project, final UserCfg defaultUser, Collection<ServerCfg> serverCfgs,
-			final ServerCfg selectedServer, @NotNull ProjectCfgManager projectCfgManager) {
+			final ServerCfg selectedServer, @NotNull IntelliJProjectCfgManager projectCfgManager) {
 		this.serverCfgs = serverCfgs;
 		this.serverTreePanel = new ServerTreePanel(projectCfgManager);
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();

@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
@@ -34,16 +33,14 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
-import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
@@ -103,10 +100,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
-	private final JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
-	private final ProjectCfgManager projectCfgManager;
-	private final JIRAFilterListBuilder jiraFilterListBuilder;
-	private final JIRAServerModel jiraServerModel;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
@@ -130,11 +124,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
-			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager,
-			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
-			@NotNull final JIRAFilterListBuilder jiraFilterListBuilder,
-			@NotNull final JIRAServerModel jiraServerModel) {
+			@NotNull final IntelliJProjectCfgManager projectCfgManager,
+			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -146,10 +137,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
-		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.projectCfgManager = projectCfgManager;
-		this.jiraFilterListBuilder = jiraFilterListBuilder;
-		this.jiraServerModel = jiraServerModel;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;

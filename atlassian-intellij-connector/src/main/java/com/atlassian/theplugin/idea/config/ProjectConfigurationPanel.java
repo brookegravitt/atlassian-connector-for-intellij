@@ -63,7 +63,7 @@ public class ProjectConfigurationPanel extends JPanel {
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-			final ProjectCfgManager projectCfgManager, @NotNull UserCfg defaultCredentials) {
+			final IntelliJProjectCfgManager projectCfgManager, @NotNull UserCfg defaultCredentials) {
 		this.projectConfiguration = projectConfiguration;
 		this.defaultCredentials = defaultCredentials;
 		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,

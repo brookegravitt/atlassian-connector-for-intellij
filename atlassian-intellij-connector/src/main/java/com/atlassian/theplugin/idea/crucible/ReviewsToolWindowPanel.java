@@ -29,7 +29,7 @@ import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
@@ -77,7 +77,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private FilterTree filterTree;
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
@@ -87,7 +87,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager,
+			@NotNull final IntelliJProjectCfgManager projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");

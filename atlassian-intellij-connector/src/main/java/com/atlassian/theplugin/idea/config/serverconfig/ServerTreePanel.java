@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
@@ -50,7 +50,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 	private Collection<ServerCfg> servers;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 
 	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
@@ -63,7 +63,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 	private ServerConfigPanel serverConfigPanel;
 
-	public ServerTreePanel(@NotNull ProjectCfgManager projectCfgManager) {
+	public ServerTreePanel(@NotNull IntelliJProjectCfgManager projectCfgManager) {
 		this.projectCfgManager = projectCfgManager;
 		initLayout();
 	}

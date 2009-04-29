@@ -5,7 +5,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
@@ -24,11 +24,11 @@ import java.util.List;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
 	private CrucibleWorkspaceConfiguration config;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
     private CrucibleConfigurationBean cruciblePluginConfig;
 
     public PostCommitReviewCheckinHandlerFactory(@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull ProjectCfgManager cfgManager,
+			@NotNull IntelliJProjectCfgManager cfgManager,
             @NotNull PluginConfigurationBean pluginCfg) {
 		this.projectCfgManager = cfgManager;
 		config = projectConfiguration.getCrucibleConfiguration();

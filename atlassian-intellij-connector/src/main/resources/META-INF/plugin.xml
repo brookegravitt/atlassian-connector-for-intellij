@@ -147,8 +147,8 @@
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
 						serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManager"
-						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManager"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager"
+						serviceImplementation="com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
 						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>

@@ -17,7 +17,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
@@ -38,14 +38,14 @@ import java.util.Collection;
 public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CustomFilterBean filter;
 	private ScrollableTwoColumnPanel panel;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final CrucibleWorkspaceConfiguration projectCrucibleCfg;
 	private final Project project;
 	private final CrucibleServerFacade crucibleFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
-	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final ProjectCfgManager projectCfgManager,
+	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final IntelliJProjectCfgManager projectCfgManager,
 			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
 			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(new BorderLayout());
@@ -125,13 +125,13 @@ class MyUiTask implements UiTask {
 	@NotNull
 	private final ScrollableTwoColumnPanel panel;
 	@NotNull
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	@NotNull
 	private final CrucibleServerFacade crucibleFacade;
 	private final Project project;
 
 	public MyUiTask(@Nullable CustomFilterBean filter, @NotNull final ScrollableTwoColumnPanel panel,
-			@NotNull ProjectCfgManager projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
+			@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
 			@NotNull final Project project) {
 		this.filter = filter;
 		this.panel = panel;

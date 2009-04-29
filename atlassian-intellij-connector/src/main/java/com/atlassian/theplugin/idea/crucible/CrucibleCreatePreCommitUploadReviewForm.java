@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
@@ -41,7 +41,7 @@ public class CrucibleCreatePreCommitUploadReviewForm extends AbstractCrucibleCre
 
 	public CrucibleCreatePreCommitUploadReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
 			Collection<Change> changes,
-			@NotNull final ProjectCfgManager projectCfgManager) {
+			@NotNull final IntelliJProjectCfgManager projectCfgManager) {
 		super(project, crucibleServerFacade, "", projectCfgManager);
 
 		ChangeListManager changeListManager = ChangeListManager.getInstance(project);

@@ -25,7 +25,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
@@ -55,7 +55,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
-	private final ProjectCfgManager projectCfgManager;
 	private final BuildTree buildTree;
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
@@ -71,12 +70,11 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BuildListModelImpl bambooModel,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager) {
+			@NotNull final IntelliJProjectCfgManager projectCfgManager) {
 
 		this.project = project;
 		this.bambooModel = bambooModel;
 		this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
-		this.projectCfgManager = projectCfgManager;
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		filterList = new BambooFilterList(projectCfgManager, projectId, bambooModel);

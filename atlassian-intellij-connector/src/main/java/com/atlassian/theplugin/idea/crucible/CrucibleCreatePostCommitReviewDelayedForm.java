@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -50,7 +50,7 @@ public class CrucibleCreatePostCommitReviewDelayedForm extends AbstractCrucibleC
 	public CrucibleCreatePostCommitReviewDelayedForm(
             final Project project,
             final CrucibleServerFacade crucibleServerFacade,
-            @NotNull final ProjectCfgManager projectCfgManager,
+            @NotNull final IntelliJProjectCfgManager projectCfgManager,
             CrucibleConfigurationBean cruciblePluginConfig,
             String title,
             Collection<VirtualFile> virtualFiles) {

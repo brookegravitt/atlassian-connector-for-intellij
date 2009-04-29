@@ -19,8 +19,8 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
-import com.atlassian.connector.cfg.ProjectCfgManager2;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ import java.awt.event.WindowEvent;
 import java.util.Collection;
 
 public final class ServerConfigPanelTestUi {
-	private static ProjectCfgManager projectCfgManager = new ProjectCfgManager(null, null, null);
+	private static IntelliJProjectCfgManager projectCfgManager = new IntelliJProjectCfgManager(null, null, null);
 
 	private ServerConfigPanelTestUi() {
 	}
@@ -97,7 +97,7 @@ public final class ServerConfigPanelTestUi {
 
 }
 
-class LocalProjectCfgManager implements ProjectCfgManager2 {
+class LocalProjectCfgManager implements ProjectCfgManager {
 
 	public ServerData getServerData(final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),

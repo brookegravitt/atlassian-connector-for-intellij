@@ -68,7 +68,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final BambooServerFacade bambooServerFacade;
 	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final UserCfg defaultCredentials;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
@@ -243,7 +243,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			final UiTaskExecutor uiTaskExecutor, final ProjectCfgManager projectCfgManager,
+			final UiTaskExecutor uiTaskExecutor, final IntelliJProjectCfgManager projectCfgManager,
 			@NotNull UserCfg defaultCredentials) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;

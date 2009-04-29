@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.intellij.ui.ListSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,14 +31,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class BambooFilterList extends JList {
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final ProjectId projectId;
 	private final BuildListModelImpl bambooModel;
 	private BambooFilterType bambooFilterType; // = BambooFilterType.NONE;
 	private final BamboAllFilterWrapper allFilterWrapper;
 
 
-	public BambooFilterList(final ProjectCfgManager projectCfgManager,
+	public BambooFilterList(final IntelliJProjectCfgManager projectCfgManager,
 			final ProjectId projectId, final BuildListModelImpl model) {
 		super(new DefaultListModel());
 		this.projectCfgManager = projectCfgManager;
