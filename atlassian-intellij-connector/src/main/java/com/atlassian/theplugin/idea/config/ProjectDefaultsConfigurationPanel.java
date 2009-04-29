@@ -68,7 +68,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final BambooServerFacade bambooServerFacade;
 	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final IntelliJProjectCfgManager projectCfgManager;
 	private final UserCfg defaultCredentials;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
@@ -111,7 +110,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return crucibleServerFacade.getProjects(projectCfgManager.getServerData(serverCfg));
+			return crucibleServerFacade.getProjects(ServerData.create(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -159,7 +158,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
-			return crucibleServerFacade.getRepositories(projectCfgManager.getServerData(serverCfg));
+			return crucibleServerFacade.getRepositories(ServerData.create(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -201,7 +200,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
-			return fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(serverCfg));
+			return fishEyeServerFacade.getRepositories(ServerData.create(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -243,8 +242,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			final UiTaskExecutor uiTaskExecutor, final IntelliJProjectCfgManager projectCfgManager,
-			@NotNull UserCfg defaultCredentials) {
+			final UiTaskExecutor uiTaskExecutor, @NotNull UserCfg defaultCredentials) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -252,7 +250,6 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		this.bambooServerFacade = bambooServerFacade;
 		this.jiraServerFacade = jiraServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
-		this.projectCfgManager = projectCfgManager;
 		this.defaultCredentials = defaultCredentials;
 
 		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
@@ -488,7 +485,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						data.add(new CrucibleServerCfgWrapper(projectCfgManager.getServerData(serverCfg)));
+						data.add(new CrucibleServerCfgWrapper(ServerData.create(serverCfg, defaultCredentials)));
 					}
 				}
 			}

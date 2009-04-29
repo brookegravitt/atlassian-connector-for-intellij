@@ -19,7 +19,6 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 
 import javax.swing.*;
@@ -30,9 +29,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
 
-public final class ServerConfigPanelTestUi {
-	private static IntelliJProjectCfgManager projectCfgManager = new IntelliJProjectCfgManager(null, null, null);
+import org.jetbrains.annotations.NotNull;
 
+public final class ServerConfigPanelTestUi {
 	private ServerConfigPanelTestUi() {
 	}
 
@@ -56,7 +55,7 @@ public final class ServerConfigPanelTestUi {
 				new JiraServerCfg("2-Second Jira", new ServerId())
 		);
 
-		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null, projectCfgManager) {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null) {
 			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
@@ -99,7 +98,8 @@ public final class ServerConfigPanelTestUi {
 
 class LocalProjectCfgManager implements ProjectCfgManager {
 
-	public ServerData getServerData(final Server serverCfg) {
+	@NotNull
+	public ServerData getServerData(@NotNull final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}

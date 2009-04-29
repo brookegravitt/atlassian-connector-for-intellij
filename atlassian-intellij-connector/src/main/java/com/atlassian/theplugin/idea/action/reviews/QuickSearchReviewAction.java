@@ -88,7 +88,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 					private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
 					private boolean failed = false;
 
-					public void run(final ProgressIndicator indicator) {
+					public void run(@NotNull final ProgressIndicator indicator) {
 
 						indicator.setFraction(0);
 

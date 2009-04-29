@@ -41,7 +41,6 @@ public class BambooServerConfigForm {
 	private final Project project;
 	private final UserCfg defaultUser;
 	private final transient BambooServerFacade bambooServerFacade;
-	private final IntelliJProjectCfgManager projectCfgManager;
 
 	public BambooServerCfg getBambooServerCfg() {
 		return bambooServerCfg;
@@ -49,12 +48,10 @@ public class BambooServerConfigForm {
 
 	private BambooServerCfg bambooServerCfg;
 
-	public BambooServerConfigForm(Project project, final UserCfg defaultUser, BambooServerFacade bambooServerFacadeInstance,
-			@NotNull IntelliJProjectCfgManager projectCfgManager) {
+	public BambooServerConfigForm(Project project, final UserCfg defaultUser, BambooServerFacade bambooServerFacadeInstance) {
 		this.project = project;
 		this.defaultUser = defaultUser;
 		this.bambooServerFacade = bambooServerFacadeInstance;
-		this.projectCfgManager = projectCfgManager;
 		$$$setupUI$$$();
 	}
 
@@ -85,7 +82,7 @@ public class BambooServerConfigForm {
 
 	private void createUIComponents() {
 		genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(bambooServerFacade));
-		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this, projectCfgManager);
+		planList = new BambooPlansForm(bambooServerFacade, bambooServerCfg, this, defaultUser);
 	}
 
 	// CHECKSTYLE:OFF

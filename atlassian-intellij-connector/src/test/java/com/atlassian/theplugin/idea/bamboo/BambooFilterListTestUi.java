@@ -138,6 +138,7 @@ class LocalProjectCfgManager extends IntelliJProjectCfgManager {
 		super(null, null, null);
 	}
 
+	@NotNull
 	@Override
 	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),

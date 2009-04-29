@@ -41,6 +41,7 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		this.projectId = CfgUtil.getProjectId(project);
 		this.cfgManager = cfgManager;
 	}
+	
 
 	@NotNull
 	public CfgManager getCfgManager() {
@@ -48,6 +49,7 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 	}
 
 
+	@NotNull
 	public ServerData getServerData(@NotNull Server serverCfg) {
 		return getServerDataImpl(serverCfg);
 	}
@@ -66,20 +68,9 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 				StringUtil.decode(projectConfigurationBean.getDefaultCredentials().getEncodedPassword()));
 	}
 
-    private ServerData getServerDataImpl(@NotNull Server serverCfg) {
-        final UserCfg defaultCredentials = getDefaultCredentials();
-        final String userName;
-        final String password;
-
-        if (serverCfg.isUseDefaultCredentials()) {
-            userName = defaultCredentials.getUserName();
-            password = defaultCredentials.getPassword();
-        } else {
-            userName = serverCfg.getUserName();
-            password = serverCfg.getPassword();
-        }
-        return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), userName,
-                password, serverCfg.getUrl());
+    @NotNull
+	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
+		return ServerData.create(serverCfg, getDefaultCredentials());
     }
 
 	public ServerData getServerData(final ServerId serverId) {

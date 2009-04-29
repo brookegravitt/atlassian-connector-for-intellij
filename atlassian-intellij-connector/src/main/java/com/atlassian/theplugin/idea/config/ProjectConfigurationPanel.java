@@ -63,14 +63,13 @@ public class ProjectConfigurationPanel extends JPanel {
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-			final IntelliJProjectCfgManager projectCfgManager, @NotNull UserCfg defaultCredentials) {
+			/*final IntelliJProjectCfgManager projectCfgManager, */@NotNull UserCfg defaultCredentials) {
 		this.projectConfiguration = projectConfiguration;
 		this.defaultCredentials = defaultCredentials;
 		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
-				projectConfiguration.getServers(), selectedServer, projectCfgManager);
+				projectConfiguration.getServers(), selectedServer);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, projectCfgManager,
-				defaultCredentials);
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
 		aboutBox = new AboutForm();
 
 		initLayout();

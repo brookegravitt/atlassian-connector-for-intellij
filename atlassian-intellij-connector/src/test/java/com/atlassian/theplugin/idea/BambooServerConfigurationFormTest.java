@@ -39,7 +39,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager);
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 	}
 
 	public void testBambooSetGetData() throws Exception {
@@ -167,6 +167,7 @@ class LocalProjectCfgManager extends IntelliJProjectCfgManager {
 		super(null, null, null);
 	}
 
+	@NotNull
 	@Override
 	public ServerData getServerData(@NotNull final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),

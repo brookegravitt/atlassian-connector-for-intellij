@@ -96,7 +96,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		cfgManager.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		cfgManager.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project),
+				localConfigurationListener);
 		deactivate();
 	}
 

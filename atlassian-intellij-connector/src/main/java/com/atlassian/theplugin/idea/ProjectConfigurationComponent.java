@@ -354,14 +354,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer, projectCfgManager, projectCfgManager.getDefaultCredentials().getClone());
+				selectedServer, projectCfgManager.getDefaultCredentials().getClone());
 		return projectConfigurationPanel;
 	}
 
 	public boolean isModified() {
 		projectConfigurationPanel.saveData(false);
 		return !(projectCfgManager.getProjectConfiguration().equals(projectConfigurationPanel.getProjectConfiguration())
-				&& projectConfigurationBean.getDefaultCredentials().equals(projectConfigurationPanel.getDefaultCredentials()));
+				&& projectCfgManager.getDefaultCredentials().equals(projectConfigurationPanel.getDefaultCredentials()));
 	}
 
 	public void apply() throws ConfigurationException {

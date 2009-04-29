@@ -40,7 +40,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 					boolean isOk = false;
 					try {
 						isOk = panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
-								IdeaHelper.getProjectCfgManager(event).getServerData(ActiveIssueUtils.getJiraServer(event)),
+								getActiveJiraServerData(event),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 								false);
 					} catch (JIRAException e) {
