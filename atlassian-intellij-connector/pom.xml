@@ -512,7 +512,8 @@
                         **/thirdparty/**/*.*,
                         **/JIRAIssueFilterPanel.java,
                         **/JIRAButtonPanel.java,
-                        **/WorkLogCreateAndMaybeDeactivate.java
+                        **/WorkLogCreateAndMaybeDeactivate.java,
+                        **/DialogWithDetails.java
                     </excludes>
                 </configuration>
             </plugin>
