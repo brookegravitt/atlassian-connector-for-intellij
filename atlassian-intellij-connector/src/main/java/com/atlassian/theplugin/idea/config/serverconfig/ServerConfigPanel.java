@@ -41,12 +41,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
@@ -267,7 +262,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
             gbc.gridx++;
             JLabel addServerLabel = new JLabel(IconLoader.getIcon("/general/add.png"));
             addServerLabel.addMouseListener(new MouseAdapter() {
-                public Cursor oldCursor;
+                private Cursor oldCursor;
 
                 @Override
                 public void mouseEntered(MouseEvent mouseEvent) {
