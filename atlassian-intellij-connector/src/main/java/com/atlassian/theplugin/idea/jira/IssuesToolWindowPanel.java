@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
@@ -991,18 +992,39 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		@Override
 		public void serverEnabled(final ServerId serverId) {
-			addServer(cfgManager.getServer(CfgUtil.getProjectId(project), serverId));
+			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			addServer(server, recenltyViewedAffected(server));
+		}
+
+		private boolean recenltyViewedAffected(final ServerCfg server) {
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER &&
+					jiraFilterTree.isRecentlyOpenSelected()) {
+				// check if some recenlty open issue come from enabled server; if yes then refresh filter
+				JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+				if (conf != null) {
+					final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
+					if (recentlyOpen != null) {
+						for (IssueRecentlyOpenBean i : recentlyOpen) {
+							if (i.getServerId().equals(server.getServerId().toString())) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return false;
 		}
 
 		@Override
 		public void serverAdded(final ServerCfg newServer) {
-			addServer(newServer);
+			addServer(newServer, false);
 		}
 
-		private void addServer(final ServerCfg server) {
+		private void addServer(final ServerCfg server, boolean refreshIssueList) {
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
-				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, false);
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, refreshIssueList);
 				ProgressManager.getInstance().run(task);
+
 			}
 		}
 
