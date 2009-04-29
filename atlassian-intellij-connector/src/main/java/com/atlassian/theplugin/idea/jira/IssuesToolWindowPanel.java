@@ -997,8 +997,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 
 		private boolean recenltyViewedAffected(final ServerCfg server) {
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER &&
-					jiraFilterTree.isRecentlyOpenSelected()) {
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER
+					&& jiraFilterTree.isRecentlyOpenSelected()) {
 				// check if some recenlty open issue come from enabled server; if yes then refresh filter
 				JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 				if (conf != null) {
