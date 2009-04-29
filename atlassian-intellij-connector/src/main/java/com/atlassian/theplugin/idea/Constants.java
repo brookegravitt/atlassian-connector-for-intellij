@@ -49,6 +49,20 @@ public final class Constants {
 		private long id;
 	}
 
+    public enum JiraStatusId {
+        IN_PROGRESS(3);
+
+        private int id;
+
+        JiraStatusId(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
+
 	public static final Color FAIL_COLOR = new Color(255, 100, 100);
 
 	public static final String FILE_TREE = "theplugin.tree";

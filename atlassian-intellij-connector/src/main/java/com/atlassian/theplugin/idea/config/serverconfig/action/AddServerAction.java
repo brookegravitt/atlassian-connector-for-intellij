@@ -32,12 +32,14 @@ public class AddServerAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.ServerTypePopup");
-        ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Server type", actionGroup);
-
         MouseEvent me = (MouseEvent) event.getInputEvent();
-
-        JPopupMenu jPopupMenu = popup.getComponent();
-        jPopupMenu.show(me.getComponent(), me.getX(), me.getY());
+        showAddServerPopup(me);
 	}
+
+    public static void showAddServerPopup(MouseEvent event) {
+        ActionGroup actionGroup = (ActionGroup) ActionManager.getInstance().getAction("ThePlugin.ServerTypePopup");
+        ActionPopupMenu popup = ActionManager.getInstance().createActionPopupMenu("Server type", actionGroup);
+        JPopupMenu jPopupMenu = popup.getComponent();
+        jPopupMenu.show(event.getComponent(), event.getX(), event.getY());
+    }
 }

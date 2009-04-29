@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -47,6 +48,9 @@ import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
@@ -241,8 +245,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		fisheyeServerConfigFrom.finalizeData();
 	}
 
-
-	static class BlankPanel extends JPanel {
+	private class BlankPanel extends JPanel {
 
 		public BlankPanel() {
 			initLayout();
@@ -255,30 +258,57 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 			setLayout(new BorderLayout());
 
-			DefaultStyledDocument doc = new DefaultStyledDocument();
-			Style s = doc.addStyle(null, null);
-			StyleConstants.setIcon(s, IconLoader.getIcon("/general/add.png"));
-			Style d = doc.addStyle(null, null);
-			StyleConstants.setFontFamily(d, getFont().getFamily());
-			StyleConstants.setFontSize(d, getFont().getSize());
-			try {
-				doc.insertString(0, TEXT_BEGIN, d);
-				doc.insertString(TEXT_BEGIN.length(), " ", s);
-				doc.insertString(TEXT_BEGIN.length() + 1, TEXT_END, d);
-			} catch (BadLocationException e) {
-				PluginUtil.getLogger().error(e);
-			}
-			JTextPane pane = new JTextPane();
-			pane.setBackground(getBackground());
-			pane.setDocument(doc);
-			pane.setEditable(false);
-			pane.setVisible(true);
+            JPanel instructionsPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.weightx = 0.0;
+            instructionsPanel.setOpaque(false);
+            instructionsPanel.add(new JLabel(TEXT_BEGIN), gbc);
+            gbc.gridx++;
+            JLabel addServerLabel = new JLabel(IconLoader.getIcon("/general/add.png"));
+            addServerLabel.addMouseListener(new MouseAdapter() {
+                public Cursor oldCursor;
 
-			add(pane, BorderLayout.NORTH);
+                @Override
+                public void mouseEntered(MouseEvent mouseEvent) {
+                    oldCursor = getCursor();
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                }
+
+                @Override
+                public void mouseExited(MouseEvent mouseEvent) {
+                    if (oldCursor != null) {
+                        setCursor(oldCursor);
+                        oldCursor = null;
+                    }
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent mouseEvent) {
+                    runAddServerAction(mouseEvent);
+                }
+            });
+            instructionsPanel.add(addServerLabel, gbc);
+            gbc.gridx++;
+            gbc.weightx = 1.0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            instructionsPanel.add(new JLabel(TEXT_END), gbc);
+            add(instructionsPanel, BorderLayout.NORTH);
 		}
 
+        private void runAddServerAction(MouseEvent mouseEvent) {
+            ServerType type = serverTreePanel.getSelectedServerType();
+            if (type != null) {
+                addServer(type);
+            } else {
+                AddServerAction.showAddServerPopup(mouseEvent);
+            }
+        }
 
-	}
+
+    }
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
