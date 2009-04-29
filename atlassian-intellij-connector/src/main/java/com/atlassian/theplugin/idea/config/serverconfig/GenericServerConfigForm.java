@@ -20,6 +20,7 @@ import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.TestConnectionListener;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.util.Connector;
@@ -52,21 +53,24 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	private DocumentListener listener;
 
 	private transient ServerCfg serverCfg;
-	private final UserCfg defaultUser;
 
 	synchronized ServerCfg getServerCfg() {
 		return serverCfg;
 	}
 
 	public GenericServerConfigForm(final Project project, final UserCfg defaultUser, final Connector tester) {
-		this.defaultUser = defaultUser;
-
 		$$$setupUI$$$();
 		testConnection
-				.addActionListener(new TestConnectionListener(project, tester, new TestConnectionListener.ServerCfgProvider() {
-					public ServerCfg getServer() {
+				.addActionListener(new TestConnectionListener(project, tester, new TestConnectionListener.ServerDataProvider() {
+					public ServerData getServer() {
 						synchronized (GenericServerConfigForm.this) {
-							return serverCfg;
+							saveData();
+							final String username = serverCfg.isUseDefaultCredentials() ? defaultUser.getUserName()
+									: serverCfg.getUsername();
+							final String password = serverCfg.isUseDefaultCredentials() ? defaultUser.getPassword()
+									: serverCfg.getUsername();
+							return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), username, password,
+									serverCfg.getUrl());
 						}
 					}
 				}, this));

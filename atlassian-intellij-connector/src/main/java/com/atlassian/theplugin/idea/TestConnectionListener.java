@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.util.Connector;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -33,13 +33,13 @@ import java.awt.event.ActionListener;
  */
 public class TestConnectionListener implements ActionListener {
 
-	public interface ServerCfgProvider {
-		ServerCfg getServer();
+	public interface ServerDataProvider {
+		ServerData getServer();
 	}
 
 	private final Project project;
 	private Connector connectionTester;
-	private final ServerCfgProvider serverCfgProvider;
+	private final ServerDataProvider serverCfgProvider;
 	private final TestConnectionProcessor processor;
 
 	/**
@@ -48,7 +48,7 @@ public class TestConnectionListener implements ActionListener {
 	 * @param serverCfgProvider provides the data of the server to connect to
 	 * @param processor
 	 */
-	public TestConnectionListener(Project project, Connector tester, @NotNull ServerCfgProvider serverCfgProvider,
+	public TestConnectionListener(Project project, Connector tester, @NotNull ServerDataProvider serverCfgProvider,
 			@NotNull TestConnectionProcessor processor) {
 		this.project = project;
 		connectionTester = tester;
@@ -58,8 +58,8 @@ public class TestConnectionListener implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 
-		Task.Modal testConnectionTask = new TestConnectionTask(project, connectionTester, serverCfgProvider, processor,
-				"Testing Connection", true);
+		Task.Modal testConnectionTask = new TestConnectionTask(project, connectionTester, serverCfgProvider.getServer(),
+				processor, "Testing Connection", true);
 		testConnectionTask.setCancelText("Stop");
 		ProgressManager.getInstance().run(testConnectionTask);
 	}

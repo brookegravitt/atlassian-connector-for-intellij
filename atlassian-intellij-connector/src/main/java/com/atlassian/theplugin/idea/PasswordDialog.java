@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
 import com.intellij.openapi.project.Project;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -28,7 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class PasswordDialog extends JDialog implements TestConnectionListener.ServerCfgProvider {
+public class PasswordDialog extends JDialog implements TestConnectionListener.ServerDataProvider {
 
 	private JPanel passwordPanel;
 	private JCheckBox chkRememberPassword;
@@ -74,12 +75,12 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	}
 
 	private void onCancel() {
-// add your code here if necessary
 		dispose();
 	}
 
-	public ServerCfg getServer() {
-		return server;
+	public ServerData getServer() {
+		return new ServerData(server.getName(), server.getServerId().toString(), getUserName(), getPasswordString(),
+				server.getUrl());
 	}
 
 	public JPanel getPasswordPanel() {

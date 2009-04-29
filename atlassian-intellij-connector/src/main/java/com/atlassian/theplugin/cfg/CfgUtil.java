@@ -58,7 +58,7 @@ public final class CfgUtil {
 	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final ProjectCfgManager projectCfgManager,
 			final String serverUrl) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-			if (server.getUrl().toString().equals(serverUrl)) {
+			if (server.getUrl().equals(serverUrl)) {
 				return server;
 
 			}

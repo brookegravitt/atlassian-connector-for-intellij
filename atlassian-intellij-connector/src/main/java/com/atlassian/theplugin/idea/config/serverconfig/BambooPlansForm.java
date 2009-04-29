@@ -319,8 +319,7 @@ public class BambooPlansForm extends JPanel {
                 // for those servers for which we cannot fetch metadata, we just show current plans
                 List<BambooPlanItem> modelPlans = MiscUtil.buildArrayList();
                 for (SubscribedPlan plan : server.getSubscribedPlans()) {
-                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()),
-                            true);
+                    final BambooPlanItem bambooPlanItem = new BambooPlanItem(new BambooPlan("Unknown", plan.getKey()), true);
                     model.addElement(bambooPlanItem);
                     modelPlans.add(bambooPlanItem);
                 }

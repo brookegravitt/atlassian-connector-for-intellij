@@ -70,9 +70,9 @@ public class MissingPasswordHandler implements Runnable {
 			isDialogShown = true;
 			boolean wasCanceled = false;
 
-			for (ServerCfg server : projectCfgManager.getCfgManager().getAllEnabledServers(
-					CfgUtil.getProjectId(project), serverFacade.getServerType())) {
-				if (server.isComplete() || serversWithoutPassword.contains(server.getServerId())) {
+			for (ServerCfg server : projectCfgManager.getAllEnabledServers(serverFacade.getServerType())) {
+				if (server.isComplete() || serversWithoutPassword.contains(server.getServerId())
+						|| server.isUseDefaultCredentials()) {
 					continue;
 				}
 				PasswordDialog dialog = new PasswordDialog(server, serverFacade, project);

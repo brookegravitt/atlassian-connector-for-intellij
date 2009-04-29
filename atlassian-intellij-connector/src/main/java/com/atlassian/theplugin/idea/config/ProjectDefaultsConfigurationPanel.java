@@ -46,6 +46,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	private static final int ALL_COLUMNS = 5;
@@ -67,6 +69,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final ProjectCfgManager projectCfgManager;
+	private final UserCfg defaultCredentials;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
@@ -240,7 +243,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	public ProjectDefaultsConfigurationPanel(final Project project, final ProjectConfiguration projectConfiguration,
 			final CrucibleServerFacade crucibleServerFacade, final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
-			final UiTaskExecutor uiTaskExecutor, final ProjectCfgManager projectCfgManager) {
+			final UiTaskExecutor uiTaskExecutor, final ProjectCfgManager projectCfgManager,
+			@NotNull UserCfg defaultCredentials) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.crucibleServerFacade = crucibleServerFacade;
@@ -249,6 +253,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		this.jiraServerFacade = jiraServerFacade;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.projectCfgManager = projectCfgManager;
+		this.defaultCredentials = defaultCredentials;
 
 		pathToProjectEdit.setToolTipText("Path to root directory in your repository. "
 				+ "E.g. trunk/myproject. Leave it blank if your project is located at the repository root");
@@ -389,12 +394,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 
 			private void setUserName() {
-				UserCfg user = projectConfiguration.getDefaultUser();
-				if (user == null) {
-					user = new UserCfg();
-				}
-				user.setUserName(defaultUserName.getText());
-				projectConfiguration.setDefaultUser(user);
+				defaultCredentials.setUserName(defaultUserName.getText());
 			}
 		});
 
@@ -412,12 +412,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 
 			private void setPassword() {
-				UserCfg user = projectConfiguration.getDefaultUser();
-				if (user == null) {
-					user = new UserCfg();
-				}
-				user.setPassword(String.valueOf(defaultPassword.getPassword()));
-				projectConfiguration.setDefaultUser(user);				
+				defaultCredentials.setPassword(String.valueOf(defaultPassword.getPassword()));
 			}
 		});
 	}
@@ -426,7 +421,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private void testDefaultCredentials() {
 		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade);
-		test.run(projectConfiguration.getAllServersWithDefaultCredentials());
+		Collection<TestDefaultCredentials.ServerDataExt> data = MiscUtil.buildArrayList();
+		for (ServerCfg serverCfg : projectConfiguration.getAllServersWithDefaultCredentials()) {
+			data.add(new TestDefaultCredentials.ServerDataExt(
+					new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), defaultCredentials.getUserName(),
+							defaultCredentials.getPassword(), serverCfg.getUrl()), serverCfg.getServerType()));
+		}
+		test.run(data);
 	}
 
 	private void initializeControls() {
@@ -439,12 +440,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 
 		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
-		final UserCfg user = projectConfiguration.getDefaultUser();
-
-		if (user != null) {
-			defaultUserName.setText(user.getUserName());
-			defaultPassword.setText(user.getPassword());
-		}
+		defaultUserName.setText(defaultCredentials.getUserName());
+		defaultPassword.setText(defaultCredentials.getPassword());
 	}
 
 
@@ -500,7 +497,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		public Object getSelectedItem() {
 			for (CrucibleServerCfgWrapper server : getServers()) {
-				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultCrucibleServerId())) {
+				final ServerId defaultCrucibleServerId = projectConfiguration.getDefaultCrucibleServerId();
+				if (server.getWrapped().getServerId().equals(
+						defaultCrucibleServerId != null ? defaultCrucibleServerId.toString() : null)) {
 					return server;
 				}
 			}
@@ -707,7 +706,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 			Collection<T> wrappers = data.get(server.getServerId());
 			if (wrappers == null) {
-				wrappers = MiscUtil.<T>buildArrayList(fetching);
+				wrappers = MiscUtil.buildArrayList(fetching);
 				data.put(server.getServerId(), wrappers);
 
 				uiTaskExecutor.execute(new UiTask() {

@@ -20,8 +20,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
+import com.atlassian.connector.cfg.ProjectCfgManager2;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,8 +31,7 @@ import java.awt.event.WindowEvent;
 import java.util.Collection;
 
 public final class ServerConfigPanelTestUi {
-	private ProjectConfiguration projectCfg = new ProjectConfiguration();
-	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager(null, /*null,*/ null);
+	private static ProjectCfgManager projectCfgManager = new ProjectCfgManager(null, null, null);
 
 	private ServerConfigPanelTestUi() {
 	}
@@ -99,15 +97,14 @@ public final class ServerConfigPanelTestUi {
 
 }
 
-class LocalProjectCfgManager extends ProjectCfgManager {
-
-	public LocalProjectCfgManager(@NotNull Project project, /* ProjectConfigurationComponent projectConfigurationComponent, */
-			CfgManager cfgManager) {
-		super(project, /*projectConfigurationComponent,*/ cfgManager);
-	}
+class LocalProjectCfgManager implements ProjectCfgManager2 {
 
 	public ServerData getServerData(final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
+	}
+
+	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 }

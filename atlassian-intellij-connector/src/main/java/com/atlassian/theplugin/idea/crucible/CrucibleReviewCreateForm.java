@@ -420,15 +420,11 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
             for (CrucibleServerCfg server : enabledServers) {
                 crucibleServersComboBox.addItem(new ServerComboBoxItem(projectCfgManager.getServerData(server)));
             }
-            ProjectConfiguration prjCfg = projectCfgManager.getCfgManager().
-                    getProjectConfiguration(CfgUtil.getProjectId(project));
-            if (prjCfg != null) {
-                final ServerData defCrucServer = projectCfgManager.getServerData(prjCfg.getDefaultCrucibleServer());
-                if (defCrucServer != null) {
-                    crucibleServersComboBox.setSelectedItem(new ServerComboBoxItem(defCrucServer));
-                }
-            }
-        }
+			final ServerData defCrucServer = projectCfgManager.getDefaultCrucibleServer();
+			if (defCrucServer != null) {
+				crucibleServersComboBox.setSelectedItem(new ServerComboBoxItem(defCrucServer));
+			}
+		}
     }
 
     private void fillServerRelatedCombos(final ServerData server) {
@@ -456,8 +452,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                             repositories = crucibleServerFacade.getRepositories(server);
                         }
                         users = crucibleServerFacade.getUsers(server);
-                    }
-                    catch (final Exception e) {
+                    } catch (final Exception e) {
                         if (CrucibleReviewCreateForm.this.getRootComponent().isShowing()) {
                             ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                                 public void run() {

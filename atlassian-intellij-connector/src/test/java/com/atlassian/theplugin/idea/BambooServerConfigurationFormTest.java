@@ -28,12 +28,12 @@ import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.jetbrains.annotations.NotNull;
 
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
 	private ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
-
 
 	@Override
 	protected void setUp() throws Exception {
@@ -164,10 +164,11 @@ public class BambooServerConfigurationFormTest extends TestCase {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, /*null,*/ null);
+		super(null, null, null);
 	}
 
-	public ServerData getServerData(final Server serverCfg) {
+	@Override
+	public ServerData getServerData(@NotNull final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}

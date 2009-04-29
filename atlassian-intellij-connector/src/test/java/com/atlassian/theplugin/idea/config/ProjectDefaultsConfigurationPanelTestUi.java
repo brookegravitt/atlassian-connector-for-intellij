@@ -34,6 +34,7 @@ import com.atlassian.theplugin.jira.api.JIRAProject;
 import com.atlassian.theplugin.jira.api.JIRAProjectBean;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -158,7 +159,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(jiraServerFacade);
 
 		JPanel panel = new ProjectDefaultsConfigurationPanel(null, projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(), null);
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(), null,
+				new UserCfg());
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
 		frame.getContentPane().setLayout(new GridLayout(1, 1));
@@ -208,10 +210,11 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, /*null,*/ null);
+		super(null, null, null);
 	}
 
-	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+	@Override
+	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}

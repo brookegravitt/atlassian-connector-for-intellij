@@ -16,13 +16,13 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.TestConnectionListener;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.TestConnectionTask;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
@@ -39,26 +39,42 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: pmaruszak
  */
 public class TestDefaultCredentials {
+
+	public static class ServerDataExt {
+		public ServerDataExt(final ServerData serverData, final ServerType serverType) {
+			this.serverData = serverData;
+			this.serverType = serverType;
+		}
+
+		private final ServerData serverData;
+		private final ServerType serverType;
+
+		public ServerData getServerData() {
+			return serverData;
+		}
+
+		public ServerType getServerType() {
+			return serverType;
+		}
+	}
+
 	private final Project project;
 	private final JComponent parentComponent;
 	private final JIRAServerFacade jiraServerFacade;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private final FishEyeServerFacade fishEyeServerFacade;
 	private final BambooServerFacade bambooServerFacade;
-	private Map<ServerCfg, String> errors = new HashMap<ServerCfg, String>();
-	private static CfgManager cfgManager = new AbstractCfgManager() {
-
-		public ServerData getServerData(final Server serverCfg) {
-			return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
-					serverCfg.getPassword(), serverCfg.getUrl());
-		}
-	};
+	private Map<ServerData, String> errors = new HashMap<ServerData, String>();
 
 	public TestDefaultCredentials(final Project project, final JComponent parentComponent,
 			JIRAServerFacade jiraServerFacade, final CrucibleServerFacade crucibleServerFacade,
@@ -73,25 +89,36 @@ public class TestDefaultCredentials {
 	}
 
 
-	public void run(Collection<ServerCfg> servers) {
+	public void run(Collection<ServerDataExt> servers) {
 
 		if (servers != null && servers.size() > 0) {
-			for (ServerCfg server : servers) {
-				if (server instanceof JiraServerCfg) {
-					testGenericConnection(server, jiraServerFacade);
-				} else if (server instanceof CrucibleServerCfg) {
-					testGenericConnection(server, crucibleServerFacade);
-				} else if (server instanceof FishEyeServerCfg) {
-					testGenericConnection(server, fishEyeServerFacade);
-				} else if (server instanceof BambooServerCfg) {
-					testGenericConnection(server, bambooServerFacade);
-				} else {
-					PluginUtil.getLogger().warn("Unknown host type " + server);
+			for (ServerDataExt server : servers) {
+				switch (server.getServerType()) {
+
+					case BAMBOO_SERVER:
+						testGenericConnection(server.getServerData(), bambooServerFacade);
+						break;
+					case CRUCIBLE_SERVER:
+						testGenericConnection(server.getServerData(), crucibleServerFacade);
+						break;
+					case FISHEYE_SERVER:
+						testGenericConnection(server.getServerData(), fishEyeServerFacade);
+						break;
+					case JIRA_SERVER:
+						testGenericConnection(server.getServerData(), jiraServerFacade);
+						break;
+					default:
+						PluginUtil.getLogger().warn("Unknown host type " + server);
 				}
 			}
 
+			final ArrayList<ServerData> serverDatas = MiscUtil.buildArrayList();
+			for (ServerDataExt server : servers) {
+				serverDatas.add(server.getServerData());
+			}
+
 			final DefaultCredentialsServerList list = new DefaultCredentialsServerList("Default credentials tests result",
-					new ArrayList(servers));
+					serverDatas);
 			ListPopup popup = JBPopupFactory.getInstance().createListPopup(list);
 //		popup.showCenteredInCurrentWindow(project); that can cause NPE inside IDEA OpenAPI
 			popup.showInCenterOf(parentComponent);
@@ -101,13 +128,9 @@ public class TestDefaultCredentials {
 	}
 
 
-	private boolean testGenericConnection(final ServerCfg serverCfg, final ProductServerFacade productServerFacade) {
+	private boolean testGenericConnection(final ServerData serverData, final ProductServerFacade productServerFacade) {
 		TestConnectionTask testConnectionTask = new TestConnectionTask(project, new ProductConnector(productServerFacade),
-				new TestConnectionListener.ServerCfgProvider() {
-					public ServerCfg getServer() {
-						return serverCfg;
-					}
-				}, new TestConnectionProcessor() {
+				serverData, new TestConnectionProcessor() {
 
 			public void setConnectionResult(final ConnectionWrapper.ConnectionState result) {
 			}
@@ -116,11 +139,11 @@ public class TestDefaultCredentials {
 			}
 
 			public void onError(final String errorMessage) {
-				errors.put(serverCfg, errorMessage);
+				errors.put(serverData, errorMessage);
 			}
 
 
-		}, "Testing connection : " + serverCfg.getName(), true, false, false);
+		}, "Testing connection : " + serverData.getName(), true, false, false);
 
 		testConnectionTask.setCancelText("Stop");
 		ProgressManager.getInstance().run(testConnectionTask);
@@ -128,21 +151,21 @@ public class TestDefaultCredentials {
 	}
 
 
-	private class DefaultCredentialsServerList extends BaseListPopupStep<ServerCfg> {
+	private class DefaultCredentialsServerList extends BaseListPopupStep<ServerData> {
 
 
-		public DefaultCredentialsServerList(final String title, final List<ServerCfg> servers) {
+		public DefaultCredentialsServerList(final String title, final List<ServerData> servers) {
 			super(title, servers);
 		}
 
 		@Override
-		public boolean isSelectable(final ServerCfg serverCfg) {
+		public boolean isSelectable(final ServerData serverCfg) {
 			return errors.containsKey(serverCfg);
 		}
 
 		@NotNull
 		@Override
-		public String getTextFor(final ServerCfg serverCfg) {
+		public String getTextFor(final ServerData serverCfg) {
 			String message = "<html>" + serverCfg.getName();
 
 			if (errors.containsKey(serverCfg)) {
@@ -154,7 +177,7 @@ public class TestDefaultCredentials {
 		}
 
 		@Override
-		public PopupStep onChosen(final ServerCfg serverCfg, final boolean b) {
+		public PopupStep<ServerData> onChosen(final ServerData serverCfg, final boolean b) {
 			if (errors.containsKey(serverCfg)) {
 				SwingUtilities.invokeLater(new Runnable() {
 

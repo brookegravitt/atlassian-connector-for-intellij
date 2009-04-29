@@ -81,8 +81,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
     private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
     private boolean windowClosed;
 
-    public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel,
-                                 final JIRAFilterListModel filterListModel, final ServerData jiraServerCfg) {
+    public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel, final JIRAFilterListModel filterListModel, final ServerData jiraServerCfg) {
 
         super(project, false);
         this.jiraServerModel = jiraServerModel;
@@ -411,8 +410,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
                     final List<JIRAFixForVersionBean> fixForVersion = jiraServerModel.getFixForVersions(jiraServerCfg,
                             currentJiraProject, true);
 
-                    final List<JIRAComponentBean> finalComponents =
-                            jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, true);
+                    final List<JIRAComponentBean> finalComponents = jiraServerModel.getComponents(jiraServerCfg, currentJiraProject, true);
 
                     final List<JIRAVersionBean> versions = jiraServerModel.getVersions(jiraServerCfg, currentJiraProject, true);
                     ApplicationManager.getApplication().invokeLater(new Runnable() {

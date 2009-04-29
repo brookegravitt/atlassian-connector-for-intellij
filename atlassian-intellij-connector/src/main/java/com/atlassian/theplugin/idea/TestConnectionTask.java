@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.Connector;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -37,31 +38,29 @@ public class TestConnectionTask extends Task.Modal {
 	private static final int CHECK_CANCEL_INTERVAL = 500;	// miliseconds
 	private final Category log = Category.getInstance(TestConnectionTask.class);
 	private final ConnectionWrapper testConnector;
-	private final TestConnectionListener.ServerCfgProvider serverCfgProvider;
 	private final TestConnectionProcessor processor;
+	private final ServerData serverData;
 	private boolean showOkMessage = true;
 	private boolean showErrorMessage = true;
 
 
 
 	public TestConnectionTask(Project currentProject, final Connector connectionTester,
-			final TestConnectionListener.ServerCfgProvider serverCfgProvider, final TestConnectionProcessor processor,
+			ServerData serverData, final TestConnectionProcessor processor,
 			String title, boolean canBeCanceled, boolean showOkMessage, boolean showErrorMessage) {
-		this(currentProject, connectionTester, serverCfgProvider, processor, title, canBeCanceled);
+		this(currentProject, connectionTester, serverData, processor, title, canBeCanceled);
 		this.showOkMessage = showOkMessage;
 		this.showErrorMessage = showErrorMessage;
 
 	}
 
 	public TestConnectionTask(Project currentProject, final Connector connectionTester,
-			final TestConnectionListener.ServerCfgProvider serverCfgProvider, final TestConnectionProcessor processor,
+			ServerData serverData, final TestConnectionProcessor processor,
 			String title, boolean canBeCanceled) {
 		super(currentProject, title, canBeCanceled);
-		this.serverCfgProvider = serverCfgProvider;
 		this.processor = processor;
-		testConnector = new ConnectionWrapper(connectionTester, IdeaHelper.getProjectCfgManager(currentProject).
-				getServerData(serverCfgProvider.getServer()),
-				"test thread");
+		this.serverData = serverData;
+		testConnector = new ConnectionWrapper(connectionTester, serverData, "test thread");
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class TestConnectionTask extends Task.Modal {
 					public void run() {
 						if (showErrorMessage) {
 							DialogWithDetails.showExceptionDialog(getProject(),
-									serverCfgProvider.getServer().getName() + " : " + testConnector.getErrorMessage(),
+									serverData.getName() + " : " + testConnector.getErrorMessage(),
 									testConnector.getException(), HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
 						}
 						processor.onError(testConnector.getErrorMessage());

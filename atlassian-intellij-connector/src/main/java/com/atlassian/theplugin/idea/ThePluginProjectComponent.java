@@ -183,7 +183,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public void initComponent() {
 		LoggerImpl.getInstance().info("Init ThePlugin project component.");
-		this.fileEditorListener = new FileEditorListenerImpl(project, cfgManager);
+		this.fileEditorListener = new FileEditorListenerImpl(project, projectCfgManager);
 		//ActivateJiraIssueAction.showToolbar(project);
 	}
 
@@ -211,8 +211,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
-			this.bambooStatusChecker = new BambooStatusChecker(CfgUtil.getProjectId(project), actionScheduler,
-					cfgManager, pluginConfiguration,
+			this.bambooStatusChecker = new BambooStatusChecker(actionScheduler,
+					projectCfgManager, pluginConfiguration,
 					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager,
 							project),
 					PluginUtil.getLogger());

@@ -19,14 +19,21 @@ package com.atlassian.theplugin.configuration;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.atlassian.connector.intellij.configuration.UserCfgBean;
+import org.jetbrains.annotations.NotNull;
 
 @State(name = "atlassian-ide-plugin-workspace",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-id", file = "$WORKSPACE_FILE$")})
 public class ProjectConfigurationBean implements PersistentStateComponent<ProjectConfigurationBean> {
 
 	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
+
+
 	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
 	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
+
+	private UserCfgBean defaultCredentials = new UserCfgBean();
+
 
 	public ProjectConfigurationBean() {
 
@@ -52,6 +59,8 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 		bambooConfiguration.copyConfiguration(state.getBambooConfiguration());
 		crucibleConfiguration.copyConfiguration(state.getCrucibleConfiguration());
 		this.activeToolWindowTab = state.getActiveToolWindowTab();
+		defaultCredentials = new UserCfgBean(state.defaultCredentials.getUsername(),
+				state.defaultCredentials.getEncodedPassword());
 	}
 
 	public String getActiveToolWindowTab() {
@@ -64,7 +73,6 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 
 	public ProjectConfigurationBean getState() {
 		return this;
-//		return projectConfigurationBean;
 	}
 
 	public void loadState(ProjectConfigurationBean state) {
@@ -72,4 +80,12 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 //		projectConfigurationBean.copyConfiguration(state);
 	}
 
+	@NotNull
+	public UserCfgBean getDefaultCredentials() {
+		return defaultCredentials;
+	}
+
+	public void setDefaultCredentials(@NotNull final UserCfgBean defaultCredentials) {
+		this.defaultCredentials = defaultCredentials;
+	}
 }
