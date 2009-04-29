@@ -16,10 +16,10 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -39,23 +39,23 @@ import javax.swing.*;
 import java.util.Map;
 
 /**
- * User: pmaruszak
+ * @author pmaruszak
  */
 public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
-	private final CfgManager cfgManager;
-	private boolean isRegistered = false;
+	private final ProjectCfgManager cfgManager;
+	private boolean isRegistered;
 	private LocalConfigurationListener localConfigurationListener;
-	private JiraServerCfg lastJiraServer = null;
+	private JiraServerCfg lastJiraServer;
 
 
-	public FileEditorListenerImpl(@NotNull Project project, @NotNull final CfgManager cfgManager) {
+	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManager cfgManager) {
 
 		this.project = project;
 		this.cfgManager = cfgManager;
-		jiraEditorLinkParser = new JiraEditorLinkParser(project);
+		jiraEditorLinkParser = new JiraEditorLinkParser(project, cfgManager);
 		localConfigurationListener = new LocalConfigurationListener();
 
 	}
@@ -96,16 +96,16 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		cfgManager.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
 		deactivate();
 	}
 
 	public void projectOpened() {
-		cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		cfgManager.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
 		activate();
-		if (cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)) != null
-				&& cfgManager.getProjectConfiguration(CfgUtil.getProjectId(project)).getDefaultJiraServer() != null) {
-			Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+		if (cfgManager.getProjectConfiguration() != null
+				&& cfgManager.getProjectConfiguration().getDefaultJiraServer() != null) {
+			Task.Backgroundable task = new ScanningJiraLinksTask(project, this);
 			ProgressManager.getInstance().run(task);
 		}
 	}
@@ -120,9 +120,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void activate() {
-
 		if (!isRegistered) {
-			FileEditorManager.getInstance(project).addFileEditorManagerListener(FileEditorListenerImpl.this);
+			FileEditorManager.getInstance(project).addFileEditorManagerListener(this);
 			isRegistered = true;
 		}
 
@@ -175,6 +174,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	class LocalConfigurationListener extends ConfigurationListenerAdapter {
+		@Override
 		public void configurationUpdated(final ProjectConfiguration aProjectConfiguration) {
 
 			final JiraServerCfg currentJiraServer = aProjectConfiguration.getDefaultJiraServer();
@@ -204,7 +204,8 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			this.fileEditor = fileEditor;
 		}
 
-		public void run(final ProgressIndicator progressIndicator) {
+		@Override
+		public void run(@NotNull final ProgressIndicator progressIndicator) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					fileEditor.scanOpenEditors();

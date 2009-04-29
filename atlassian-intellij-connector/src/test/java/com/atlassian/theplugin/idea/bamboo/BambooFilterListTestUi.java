@@ -22,8 +22,10 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+import com.atlassian.theplugin.cfg.IdeaCfgManager;
 import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,11 +50,7 @@ public final class BambooFilterListTestUi {
 //		EasyMock.expect(mock.getName()).andReturn("My-test-Project");
 		EasyMock.expect(mock.getPresentableUrl()).andReturn("projectId").anyTimes();
 		EasyMock.replay(mock);
-		final AbstractCfgManager cfgManager = new AbstractCfgManager() {
-			public ServerData getServerData(final Server serverCfg) {
-				return null;
-			}
-		};
+		final AbstractCfgManager cfgManager = new IdeaCfgManager();
 		cfgManager.addProjectSpecificServer(projectId1, B1);
 		cfgManager.addProjectSpecificServer(projectId1, B2);
 		cfgManager.addProjectSpecificServer(projectId1, B3);
@@ -61,7 +59,7 @@ public final class BambooFilterListTestUi {
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
 				final BambooFilterList bambooFilterList = new BambooFilterList(
-						new ProjectCfgManager(null, /*null,*/ cfgManager),
+						new ProjectCfgManager(null, cfgManager, null),
 						projectId1, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
@@ -118,7 +116,7 @@ public final class BambooFilterListTestUi {
 						new Random().nextBoolean() ? B1 : B2), createBambooBuild("B7", "PR4", "Project Four", getState(), B2));
 	}
 
-	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String key, String name, BuildStatus state,
+	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String projectKey, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
 		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null,
 				projectCfgManager.getServerData(serverCfg), name, 123, state)
@@ -137,10 +135,11 @@ public final class BambooFilterListTestUi {
 class LocalProjectCfgManager extends ProjectCfgManager {
 
 	public LocalProjectCfgManager() {
-		super(null, /*null,*/ null);
+		super(null, null, null);
 	}
 
-	public ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+	@Override
+	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}

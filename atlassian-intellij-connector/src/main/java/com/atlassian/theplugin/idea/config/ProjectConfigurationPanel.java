@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.idea.AboutForm;
@@ -42,7 +43,11 @@ public class ProjectConfigurationPanel extends JPanel {
 	private final AboutForm aboutBox;
 
 	private ProjectConfiguration projectConfiguration;
+
+	private final UserCfg defaultCredentials;
+
 	private static final int WIDTH = 800;
+
 	private static final int HEIGHT = 600;
 
 	public ProjectConfiguration getProjectConfiguration() {
@@ -50,16 +55,22 @@ public class ProjectConfigurationPanel extends JPanel {
 		return projectConfiguration;
 	}
 
+	public UserCfg getDefaultCredentials() {
+		return defaultCredentials;
+	}
+
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-			final ProjectCfgManager projectCfgManager) {
+			final ProjectCfgManager projectCfgManager, @NotNull UserCfg defaultCredentials) {
 		this.projectConfiguration = projectConfiguration;
-		serverConfigPanel = new ServerConfigPanel(project, projectConfiguration.getDefaultUser(),
+		this.defaultCredentials = defaultCredentials;
+		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
 				projectConfiguration.getServers(), selectedServer, projectCfgManager);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, projectCfgManager);
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, projectCfgManager,
+				defaultCredentials);
 		aboutBox = new AboutForm();
 
 		initLayout();

@@ -16,41 +16,113 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.connector.cfg.ProjectCfgManager2;
+import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class ProjectCfgManager {
+import java.util.Collection;
+
+public class ProjectCfgManager implements ProjectCfgManager2 {
 	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
+	private final ProjectConfigurationBean projectConfigurationBean;
 
-	public ProjectCfgManager(Project project, /* ProjectConfigurationComponent projectConfigurationComponent, */
-			CfgManager cfgManager) {
+	public ProjectCfgManager(Project project,
+			CfgManager cfgManager, ProjectConfigurationBean projectConfigurationBean) {
+		this.projectConfigurationBean = projectConfigurationBean;
 		this.projectId = CfgUtil.getProjectId(project);
-//		this.projectConfigurationComponent = projectConfigurationComponent;
 		this.cfgManager = cfgManager;
 	}
-
-//	@NotNull
-//	public ProjectConfigurationComponent getProjectConfigurationComponent() {
-//		return projectConfigurationComponent;
-//	}
 
 	@NotNull
 	public CfgManager getCfgManager() {
 		return cfgManager;
 	}
 
-	public ServerData getServerData(Server serverCfg) {
-		return cfgManager.getServerData(projectId, serverCfg);
+
+	public ServerData getServerData(@NotNull Server serverCfg) {
+		return getServerDataImpl(serverCfg);
 	}
 
 	public ServerCfg getServer(final ServerData serverData) {
 		return cfgManager.getServer(projectId, serverData);
 	}
+
+	public ProjectConfiguration getProjectConfiguration() {
+		return cfgManager.getProjectConfiguration(projectId);
+	}
+
+	@NotNull
+	public UserCfg getDefaultCredentials() {
+		return new UserCfg(projectConfigurationBean.getDefaultCredentials().getUsername(),
+				StringUtil.decode(projectConfigurationBean.getDefaultCredentials().getEncodedPassword()));
+	}
+
+    private ServerData getServerDataImpl(@NotNull Server serverCfg) {
+        final UserCfg defaultCredentials = getDefaultCredentials();
+        final String userName;
+        final String password;
+
+        if (serverCfg.isUseDefaultCredentials()) {
+            userName = defaultCredentials.getUserName();
+            password = defaultCredentials.getPassword();
+        } else {
+            userName = serverCfg.getUserName();
+            password = serverCfg.getPassword();
+        }
+        return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), userName,
+                password, serverCfg.getUrl());
+    }
+
+	public ServerData getServerData(final ServerId serverId) {
+		final ServerCfg serverCfg = cfgManager.getServer(projectId, serverId);
+
+		if (serverCfg != null) {
+            return getServerDataImpl(serverCfg);
+        }
+		return null;
+	}
+
+	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
+		return cfgManager.getAllEnabledBambooServers(projectId);
+	}
+
+	public Collection<ServerCfg> getAllEnabledServers() {
+		return cfgManager.getAllEnabledServers(projectId);
+	}
+
+	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
+		return cfgManager.getAllEnabledServers(projectId, serverType);
+	}
+
+	public void updateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
+		getCfgManager().updateProjectConfiguration(projectId, projectConfiguration);
+	}
+
+	public void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
+		projectConfigurationBean.setDefaultCredentials(
+				new UserCfgBean(defaultCredentials.getUserName(),
+						StringUtil.encode(defaultCredentials.getPassword())));
+	}
+
+
+    @Nullable
+    public ServerData getDefaultCrucibleServer() {
+        ProjectConfiguration prjCfg = getProjectConfiguration();
+        if (prjCfg != null) {
+            CrucibleServerCfg crucibleServer = prjCfg.getDefaultCrucibleServer();
+            if (crucibleServer != null) {
+                return getServerData(crucibleServer);
+            }
+        }
+        return null;
+    }
 }

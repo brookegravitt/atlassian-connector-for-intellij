@@ -839,7 +839,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		ProjectConfiguration cfg = projectCfgManager.getCfgManager()
 				.getProjectConfiguration(CfgUtil.getProjectId(project));
 		if (cfg != null) {
-			return projectCfgManager.getServerData(cfg.getDefaultJiraServer());
+			final JiraServerCfg defaultJira = cfg.getDefaultJiraServer();
+			if (defaultJira != null) {
+				return projectCfgManager.getServerData(defaultJira);
+			}
 		}
 		return null;
 	}

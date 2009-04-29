@@ -112,8 +112,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setupUi();
 		setModal(true);
 
-		final ServerData serverCfg = projectCfgManager.getCfgManager()
-				.getServerData(CfgUtil.getProjectId(project), new ServerId(filter.getServerUid()));
+		final ServerData serverCfg = projectCfgManager.getServerData(new ServerId(filter.getServerUid()));
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);

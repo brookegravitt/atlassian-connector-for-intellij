@@ -288,7 +288,11 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
-			return projectCfgManager.getServerData(getSelectedServer());
+			final ServerCfg selectedServer = getSelectedServer();
+			if (selectedServer == null) {
+				return null;
+			}
+			return projectCfgManager.getServerData(selectedServer);
 		} else if (dataId.equals(Constants.SERVER_TYPE)) {
 			if (selectedNode instanceof ServerTypeNode) {
 				final ServerTypeNode serverTypeNode = (ServerTypeNode) selectedNode;

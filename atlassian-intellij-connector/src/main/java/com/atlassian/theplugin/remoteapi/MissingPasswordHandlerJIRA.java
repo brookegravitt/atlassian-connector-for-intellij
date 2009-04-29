@@ -28,7 +28,7 @@ import static javax.swing.JOptionPane.OK_CANCEL_OPTION;
 import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 
 /**
- * Shows a dialog for each Bamboo server that has not the password set.
+ * Shows a dialog for each JIRA server that has not the password set.
  */
 public class MissingPasswordHandlerJIRA implements Runnable {
 

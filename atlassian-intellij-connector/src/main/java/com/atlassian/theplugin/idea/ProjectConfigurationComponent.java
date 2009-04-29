@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
@@ -61,6 +62,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final ProjectCfgManager projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
+	private final ProjectConfigurationBean projectConfigurationBean;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
@@ -76,11 +78,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public ProjectConfigurationComponent(final Project project, final ProjectCfgManager projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
-			@NotNull PrivateConfigurationDao privateCfgDao) {
+			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;
 		this.privateCfgDao = privateCfgDao;
+		this.projectConfigurationBean = projectConfigurationBean;
 		shouldSaveConfiguration = load();
 	}
 
@@ -240,6 +243,18 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			e.removeChild("defaultJiraServerId");
 			e.removeChild("defaultJiraProject");
 		}
+		/** there was defaultUser (by mistake) child of server element */
+		@SuppressWarnings("unchecked")
+		List<Element> serverNodes = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration/servers/*");
+		for (Element e : serverNodes) {
+			e.removeChild("defaultUser");
+		}
+
+		@SuppressWarnings("unchecked")
+		List<Element> projectConfigurationNode = XPath.selectNodes(root, "atlassian-ide-plugin/project-configuration");
+		for (Element e : projectConfigurationNode) {
+			e.removeChild("defaultUser");
+		}
 	}
 
 	private ProjectConfiguration setDefaultProjectConfiguration() {
@@ -339,14 +354,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer, projectCfgManager);
+				selectedServer, projectCfgManager, projectCfgManager.getDefaultCredentials().getClone());
 		return projectConfigurationPanel;
 	}
 
 	public boolean isModified() {
 		projectConfigurationPanel.saveData(false);
-		return !projectCfgManager.getCfgManager().
-				getProjectConfiguration(getProjectId()).equals(projectConfigurationPanel.getProjectConfiguration());
+		return !(projectCfgManager.getProjectConfiguration().equals(projectConfigurationPanel.getProjectConfiguration())
+				&& projectConfigurationBean.getDefaultCredentials().equals(projectConfigurationPanel.getDefaultCredentials()));
 	}
 
 	public void apply() throws ConfigurationException {
@@ -354,9 +369,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			return;
 		}
 		projectConfigurationPanel.saveData(true);
-		projectCfgManager.getCfgManager().
-				updateProjectConfiguration(getProjectId(), projectConfigurationPanel.getProjectConfiguration());
-		projectConfigurationPanel.setData(projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId()).getClone());
+		projectCfgManager.updateProjectConfiguration(projectConfigurationPanel.getProjectConfiguration());
+		projectConfigurationPanel.setData(projectCfgManager.getProjectConfiguration().getClone());
+		projectCfgManager.setDefaultCredentials(projectConfigurationPanel.getDefaultCredentials());
 	}
 
 	public void reset() {

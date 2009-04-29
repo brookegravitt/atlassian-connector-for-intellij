@@ -126,8 +126,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 				try {
 					users = crucibleServerFacade.getUsers(server);
-					reviewers = crucibleServerFacade
-							.getReviewers(server, reviewData.getPermId());
+					reviewers = crucibleServerFacade.getReviewers(server, reviewData.getPermId());
 				} catch (RemoteApiException e) {
 					// nothing can be done here
 				} catch (ServerPasswordNotProvidedException e) {
@@ -149,8 +148,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		if (!users.isEmpty()) {
 			for (User user : users) {
 				if (!user.getUserName().equals(server.getUserName())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) &&
-						!user.getUserName().equals(reviewData.getModerator().getUserName())) {
+						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) && !user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
 						if (reviewer.getUserName().equals(user.getUserName())) {
@@ -214,13 +212,11 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		}
 		try {
 			if (!reviewersForAdd.isEmpty()) {
-				crucibleServerFacade.addReviewers(reviewData.getServerData(),
-						reviewData.getPermId(), reviewersForAdd);
+				crucibleServerFacade.addReviewers(reviewData.getServerData(), reviewData.getPermId(), reviewersForAdd);
 			}
 			if (!reviewersForRemove.isEmpty()) {
 				for (String reviewer : reviewersForRemove) {
-					crucibleServerFacade.removeReviewer(reviewData.getServerData(),
-							reviewData.getPermId(), reviewer);
+					crucibleServerFacade.removeReviewer(reviewData.getServerData(), reviewData.getPermId(), reviewer);
 				}
 			}
 		} catch (RemoteApiException e) {
