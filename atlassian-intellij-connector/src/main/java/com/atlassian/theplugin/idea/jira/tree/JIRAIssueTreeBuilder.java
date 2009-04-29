@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
@@ -29,7 +29,7 @@ public class JIRAIssueTreeBuilder {
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
 	private Project project;
-	private ProjectCfgManager projectCfgManager;
+	private IntelliJProjectCfgManager projectCfgManager;
 	private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 	private JTree lastTree;
@@ -83,7 +83,7 @@ public class JIRAIssueTreeBuilder {
 	private Map<Pair<String, ServerId>, String> projectKeysToNames;
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
-			final Project project, final ProjectCfgManager projectCfgManager) {
+			final Project project, final IntelliJProjectCfgManager projectCfgManager) {
 		this.groupBy = groupBy;
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;

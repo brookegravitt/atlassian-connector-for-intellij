@@ -15,10 +15,9 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.EditorMouseEvent;
@@ -33,18 +32,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 /**
- * User: pmaruszak
+ * @author pmaruszak
  */
 class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener, EditorMouseListener {
 	private Point lastPointLocation = null;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final Editor editor;
 	private final PsiFile file;
 	private final JiraEditorLinkParser jiraEditorLinkParser;
 	private boolean handCursor;
 
-	public EditorInputHandler(@NotNull ProjectCfgManager projectCfgManager, @NotNull Project project, @NotNull Editor editor,
+	public EditorInputHandler(@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull Project project, @NotNull Editor editor,
 			PsiFile file, JiraEditorLinkParser jiraEditorLinkParser) {
 		this.projectCfgManager = projectCfgManager;
 		this.project = project;
@@ -90,10 +89,10 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 					jiraEditorLinkParser.getJiraURLTextRange(editor, file, event.getMouseEvent().getPoint());
 			if (hoverRange != null && hoverRange.isActive()) {
 				IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-				JiraServerCfg defaultJiraServer =
-						projectCfgManager.getCfgManager().getProjectConfiguration(CfgUtil.getProjectId(project))
-								.getDefaultJiraServer();
-				panel.openIssue(hoverRange.getIssueKey(), projectCfgManager.getServerData(defaultJiraServer));
+				final ServerData jiraServer = projectCfgManager.getDefaultJiraServer();
+				if (jiraServer != null) {
+					panel.openIssue(hoverRange.getIssueKey(), jiraServer);
+				}
 			}
 		}
 

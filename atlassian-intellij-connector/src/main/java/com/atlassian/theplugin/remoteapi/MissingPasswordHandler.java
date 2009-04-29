@@ -25,7 +25,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -43,13 +43,13 @@ public class MissingPasswordHandler implements Runnable {
 	private static boolean isDialogShown = false;
 
 	private final ProductServerFacade serverFacade;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final Set<ServerId> serversWithoutPassword = MiscUtil.buildHashSet();
 	private boolean shouldStop;
 
 
-	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManager projectCfgManager,
+	public MissingPasswordHandler(ProductServerFacade serverFacade, final IntelliJProjectCfgManager projectCfgManager,
 			final Project project) {
 		this.serverFacade = serverFacade;
 		this.projectCfgManager = projectCfgManager;

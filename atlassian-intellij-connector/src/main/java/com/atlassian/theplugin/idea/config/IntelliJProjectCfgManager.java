@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.connector.cfg.ProjectCfgManager2;
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
@@ -29,13 +29,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class ProjectCfgManager implements ProjectCfgManager2 {
+public class IntelliJProjectCfgManager implements ProjectCfgManager {
 	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
 	private final ProjectConfigurationBean projectConfigurationBean;
 
-	public ProjectCfgManager(Project project,
+	public IntelliJProjectCfgManager(Project project,
 			CfgManager cfgManager, ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.projectId = CfgUtil.getProjectId(project);
@@ -125,4 +125,18 @@ public class ProjectCfgManager implements ProjectCfgManager2 {
         }
         return null;
     }
+
+
+	@Nullable
+	public ServerData getDefaultJiraServer() {
+		ProjectConfiguration prjCfg = getProjectConfiguration();
+		if (prjCfg != null) {
+			JiraServerCfg jiraServer = prjCfg.getDefaultJiraServer();
+			if (jiraServer != null) {
+				return getServerData(jiraServer);
+			}
+		}
+		return null;
+	}
+
 }

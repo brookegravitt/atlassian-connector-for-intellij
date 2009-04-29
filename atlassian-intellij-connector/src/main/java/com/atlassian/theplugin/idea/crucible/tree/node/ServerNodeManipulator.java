@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible.tree.node;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -28,10 +28,10 @@ import java.util.*;
  * @author Jacek Jaroczynski
  */
 public class ServerNodeManipulator extends NodeManipulator {
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 
 	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root,
-			@NotNull ProjectCfgManager projectCfgManager) {
+			@NotNull IntelliJProjectCfgManager projectCfgManager) {
 		super(reviewListModel, root);
 		this.projectCfgManager = projectCfgManager;
 	}

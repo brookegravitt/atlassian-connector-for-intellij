@@ -44,7 +44,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class ProjectDefaultsConfigurationPanelTestUi {
-	private static ProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
+	private static IntelliJProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
 
 	private ProjectDefaultsConfigurationPanelTestUi() {
 	}
@@ -207,7 +207,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 }
 
-class LocalProjectCfgManager extends ProjectCfgManager {
+class LocalProjectCfgManager extends IntelliJProjectCfgManager {
 
 	public LocalProjectCfgManager() {
 		super(null, null, null);

@@ -15,11 +15,9 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -44,9 +42,9 @@ import java.util.regex.Pattern;
 public final class JiraEditorLinkParser {
 	private static final Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
 	private final Project project;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 
-	JiraEditorLinkParser(Project project, ProjectCfgManager projectCfgManager) {
+	JiraEditorLinkParser(Project project, IntelliJProjectCfgManager projectCfgManager) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 	}

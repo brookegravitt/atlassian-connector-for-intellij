@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
@@ -88,13 +88,13 @@ public final class IdeaHelper {
 //		return null;
 //	}
 
-	public static ProjectCfgManager getProjectCfgManager(Project p) {
-		return getProjectComponent(p, ProjectCfgManager.class);
+	public static IntelliJProjectCfgManager getProjectCfgManager(Project p) {
+		return getProjectComponent(p, IntelliJProjectCfgManager.class);
 	}
 
 
-	public static ProjectCfgManager getProjectCfgManager(AnActionEvent e) {
-		return getProjectComponent(e, ProjectCfgManager.class);
+	public static IntelliJProjectCfgManager getProjectCfgManager(AnActionEvent e) {
+		return getProjectComponent(e, IntelliJProjectCfgManager.class);
 	}
 	
 	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {

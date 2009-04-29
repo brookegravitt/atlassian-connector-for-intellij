@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -38,6 +38,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * User: pmaruszak
  */
@@ -45,10 +47,10 @@ public class RecentlyOpenIssuesCache {
 	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
 	private final LocalModelListener localModelListener = new LocalModelListener();
 	private final Project project;
-	private final ProjectCfgManager projectCfgManager;
+	private final IntelliJProjectCfgManager projectCfgManager;
 	private final JIRAIssueListModel issueModel;
 
-	public RecentlyOpenIssuesCache(final Project project, final ProjectCfgManager cfgManager,
+	public RecentlyOpenIssuesCache(final Project project, final IntelliJProjectCfgManager cfgManager,
 			final JIRAIssueListModel issueModel) {
 		this.project = project;
 		this.projectCfgManager = cfgManager;
@@ -61,7 +63,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void init() {
 		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
-			public void run(final ProgressIndicator progressindicator) {
+			public void run(@NotNull final ProgressIndicator progressindicator) {
 				loadRecenltyOpenIssues();
 			}
 		});

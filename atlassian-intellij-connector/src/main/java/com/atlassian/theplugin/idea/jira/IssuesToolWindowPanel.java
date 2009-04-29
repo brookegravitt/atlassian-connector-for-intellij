@@ -14,7 +14,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.config.ProjectCfgManager;
+import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
@@ -54,7 +54,7 @@ import java.util.List;
 public final class IssuesToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
 	public static final String PLACE_PREFIX = IssuesToolWindowPanel.class.getSimpleName();
-	private ProjectCfgManager projectCfgManager;
+	private IntelliJProjectCfgManager projectCfgManager;
 	private final CfgManager cfgManager;
 	private final PluginConfiguration pluginConfiguration;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
@@ -91,7 +91,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 	private static final int ONE_SECOND = 1000;
 
 	public IssuesToolWindowPanel(@NotNull final Project project,
-			@NotNull final ProjectCfgManager projectCfgManager,
+			@NotNull final IntelliJProjectCfgManager projectCfgManager,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
@@ -204,7 +204,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 	}
 
-	public ProjectCfgManager getProjectCfgManager() {
+	public IntelliJProjectCfgManager getProjectCfgManager() {
 		return projectCfgManager;
 	}
 
@@ -393,7 +393,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		}
 	}
 
-	public void openIssue(@NotNull final String issueKey, final ServerData jiraServer) {
+	public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer) {
 		JIRAIssue issue = null;
 		for (JIRAIssue i : baseIssueListModel.getIssues()) {
 			if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
@@ -832,15 +832,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		if (server != null) {
 			return server;
 		}
-		ProjectConfiguration cfg = projectCfgManager.getCfgManager()
-				.getProjectConfiguration(CfgUtil.getProjectId(project));
-		if (cfg != null) {
-			final JiraServerCfg defaultJira = cfg.getDefaultJiraServer();
-			if (defaultJira != null) {
-				return projectCfgManager.getServerData(defaultJira);
-			}
-		}
-		return null;
+		return projectCfgManager.getDefaultJiraServer();
 	}
 
 	public boolean isRecentlyOpenFilterSelected() {
