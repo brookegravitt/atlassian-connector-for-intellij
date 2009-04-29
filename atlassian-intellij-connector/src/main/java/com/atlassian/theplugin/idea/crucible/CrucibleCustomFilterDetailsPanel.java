@@ -45,7 +45,8 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private final UiTaskExecutor uiTaskExecutor;
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
-	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project, @NotNull final IntelliJProjectCfgManager projectCfgManager,
+	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project,
+			@NotNull final IntelliJProjectCfgManager projectCfgManager,
 			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
 			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(new BorderLayout());

@@ -83,6 +83,8 @@ public final class Constants {
 	public static final DataKey<ServerConfigPanel> SERVER_CONFIG_PANEL_KEY = DataKey.create(SERVER_CONFIG_PANEL);
 	public static final DataKey<ServerData> SERVER_KEY = DataKey.create(SERVER);
 	public static final DataKey<CrucibleFileNode> CRUCIBLE_FILE_NODE_KEY = DataKey.create(CRUCIBLE_FILE_NODE);
+	public static final DataKey<ServerCfg> SERVER_CFG_KEY = DataKey.create("com.atlassian.connector.cfg.server");
+
 
 	public static final DataKey<BambooBuild> BAMBOO_BUILD_KEY = DataKey.create("atlassian.connector.bamoo.build");
 

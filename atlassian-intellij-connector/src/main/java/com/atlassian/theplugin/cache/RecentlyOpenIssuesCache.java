@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.cache;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -32,13 +32,12 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 
 /**
  * User: pmaruszak
@@ -92,17 +91,13 @@ public class RecentlyOpenIssuesCache {
 	}
 
 	private JIRAIssue loadJiraIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
-
-		ServerData jiraServer = projectCfgManager.getServerData(
-				CfgUtil.getJiraServerCfgbyServerId(project, projectCfgManager, recentlyOpen.getServerId()));
-
-		JIRAIssue issue = null;
-
-		if (jiraServer != null) {
-			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-			issue = facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
+		final String recentServer = recentlyOpen.getServerId();
+		if (recentServer == null) {
+			return null;
 		}
-		return issue;
+		final ServerData jiraServer = projectCfgManager.getServerData(new ServerId(recentServer));
+		JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+		return facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
 	}
 
 	public LinkedList<JIRAIssue> getLoadedRecenltyOpenIssues() {

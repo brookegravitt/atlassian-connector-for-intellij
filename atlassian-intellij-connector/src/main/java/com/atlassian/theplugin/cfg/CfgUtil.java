@@ -44,8 +44,8 @@ public final class CfgUtil {
 		return DEFAULT_PROJECT;
 	}
 
-	public static JiraServerCfg getJiraServerCfgbyServerId(final Project project, final IntelliJProjectCfgManager projectCfgManager,
-			final String serverId) {
+	public static JiraServerCfg getJiraServerCfgbyServerId(final Project project,
+			final IntelliJProjectCfgManager projectCfgManager, final String serverId) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 			if (server.getServerId().toString().equals(serverId)) {
 				return server;

@@ -159,7 +159,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(jiraServerFacade);
 
 		JPanel panel = new ProjectDefaultsConfigurationPanel(null, projectConfiguration, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(), null,
+				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, new DefaultSwingUiTaskExecutor(),
 				new UserCfg());
 
 		JFrame frame = new JFrame("ProjectDefaultsConfigurationPanel test");
@@ -213,6 +213,7 @@ class LocalProjectCfgManager extends IntelliJProjectCfgManager {
 		super(null, null, null);
 	}
 
+	@NotNull
 	@Override
 	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),

@@ -43,8 +43,8 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 	private final JiraEditorLinkParser jiraEditorLinkParser;
 	private boolean handCursor;
 
-	public EditorInputHandler(@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull Project project, @NotNull Editor editor,
-			PsiFile file, JiraEditorLinkParser jiraEditorLinkParser) {
+	public EditorInputHandler(@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull Project project,
+			@NotNull Editor editor, PsiFile file, JiraEditorLinkParser jiraEditorLinkParser) {
 		this.projectCfgManager = projectCfgManager;
 		this.project = project;
 

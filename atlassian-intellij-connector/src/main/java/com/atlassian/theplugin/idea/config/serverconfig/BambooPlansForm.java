@@ -21,8 +21,10 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
@@ -70,14 +72,14 @@ public class BambooPlansForm extends JPanel {
 	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
 	private final transient BambooServerFacade bambooServerFacade;
 	private final BambooServerConfigForm serverPanel;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private UserCfg defaultCredentials;
 
 	public BambooPlansForm(BambooServerFacade bambooServerFacade, BambooServerCfg bambooServerCfg,
-			final BambooServerConfigForm bambooServerConfigForm, @NotNull IntelliJProjectCfgManager projectCfgManager) {
+			final BambooServerConfigForm bambooServerConfigForm, @NotNull UserCfg defaultCredentials) {
 		this.bambooServerFacade = bambooServerFacade;
 		this.bambooServerCfg = bambooServerCfg;
 		this.serverPanel = bambooServerConfigForm;
-		this.projectCfgManager = projectCfgManager;
+		this.defaultCredentials = defaultCredentials;
 
 		$$$setupUI$$$();
 
@@ -226,7 +228,7 @@ public class BambooPlansForm extends JPanel {
 					if (!serverPlans.containsKey(key)) {
 						Collection<BambooPlan> plans;
 						try {
-							plans = bambooServerFacade.getPlanList(projectCfgManager.getServerData(queryServer));
+							plans = bambooServerFacade.getPlanList(ServerData.create(queryServer, defaultCredentials));
 						} catch (ServerPasswordNotProvidedException e) {
 							msg.append("Unable to connect: password for server not provided\n");
 							return;

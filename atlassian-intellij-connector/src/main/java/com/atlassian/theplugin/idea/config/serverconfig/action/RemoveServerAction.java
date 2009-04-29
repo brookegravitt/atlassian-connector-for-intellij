@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.action;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -32,7 +33,7 @@ public class RemoveServerAction extends AbstractServerAction {
 
 	@Override
 	public void update(final AnActionEvent event) {
-		ServerData serverCfg = event.getData(Constants.SERVER_KEY);
+		ServerCfg serverCfg = event.getData(Constants.SERVER_CFG_KEY);
 		event.getPresentation().setEnabled(serverCfg != null);
 	}
 }
