@@ -341,6 +341,10 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
+	public ServerCfg getEnabledServer(final ProjectId projectId, final ServerId serverId) {
+		return null;
+	}
+
 	public ServerData getServerData(final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
@@ -351,8 +355,8 @@ class CfgManagerTest implements CfgManager {
 	}
 
 	public ServerData getServerData(final ProjectId projectId, final Server server) {
-	return new ServerData(server.getName(), server.getServerId().toString(), server.getUserName(),
-				server.getPassword(), server.getUrl());	
+		return new ServerData(server.getName(), server.getServerId().toString(), server.getUserName(),
+				server.getPassword(), server.getUrl());
 	}
 
 	public Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId) {

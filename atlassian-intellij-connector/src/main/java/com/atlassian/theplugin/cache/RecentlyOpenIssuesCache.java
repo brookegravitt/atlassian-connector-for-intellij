@@ -21,7 +21,6 @@ import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -95,9 +94,11 @@ public class RecentlyOpenIssuesCache {
 		if (recentServer == null) {
 			return null;
 		}
-		final ServerData jiraServer = projectCfgManager.getServerData(new ServerId(recentServer));
-		JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-		return facade.getIssue(jiraServer, recentlyOpen.getIssueKey());
+		final ServerData jiraServer = projectCfgManager.getEnabledServerData(new ServerId(recentServer));
+		if (jiraServer != null) {
+			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
+		}
+		return null;
 	}
 
 	public LinkedList<JIRAIssue> getLoadedRecenltyOpenIssues() {
