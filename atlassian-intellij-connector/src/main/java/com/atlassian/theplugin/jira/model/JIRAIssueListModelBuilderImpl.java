@@ -76,9 +76,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			if (manualFilter.getQueryFragment().size() > 0) {
 				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
+				startFrom += l != null ? l.size() : 0;
+				checkActiveIssue(l);
 			}
-			startFrom += l != null ? l.size() : 0;
-			checkActiveIssue(l);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();

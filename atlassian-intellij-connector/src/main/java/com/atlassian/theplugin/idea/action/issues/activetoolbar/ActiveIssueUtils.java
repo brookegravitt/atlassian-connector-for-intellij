@@ -220,7 +220,7 @@ public final class ActiveIssueUtils {
 		if (issue != null && activeIssue != null) {
 
 			if (issue.getServer() != null && issue.getKey().equals(activeIssue.getIssueKey())
-					&& issue.getServer().getServerId().toString().equals(activeIssue.getServerId())) {
+					&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
 				if (!issue.getServer().getUserName().equals(issue.getAssigneeId())
 						|| !isInProgress(issue)) {
 
