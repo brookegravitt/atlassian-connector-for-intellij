@@ -158,6 +158,13 @@ public abstract class MultiTabToolWindow {
 
 			for (Content c : tw.getContentManager().getContents()) {
 				if (c.getTabName().equals(key)) {
+
+					if (tw.getContentManager().getContentCount() == 1) {
+						tw.hide(new Runnable() {
+							public void run() {
+							}
+						});
+					}
 					tw.getContentManager().removeContent(c, true);
 					break;
 				}
