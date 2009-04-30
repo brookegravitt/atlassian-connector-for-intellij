@@ -18,6 +18,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.text.StyledEditorKit;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.awt.*;
@@ -320,8 +321,13 @@ public abstract class LineCommentTooltipPanel extends JPanel {
 			commentBody.setOpaque(true);
 			commentBody.setContentType("text/plain");
 			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+
+            // PL-1407 - without setting a decent editor kit, lines wrap within word boundaries, which looks bad
+            commentBody.setEditorKit(new StyledEditorKit());
+
 			commentBody.setText(comment != null ? comment.getMessage() : "");
 			commentBody.setRequestFocusEnabled(true);
+
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					setCommentBodyEditable(CommentPanel.this, comment == null);
