@@ -25,42 +25,45 @@ import com.intellij.openapi.application.ModalityState;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Jacek Jaroczynski
  */
 public final class IdeaUiMultiTaskExecutor {
-	private int semaphore;
 	private Component component;
 	private List<ErrorObject> errors = new ArrayList<ErrorObject>();
 
-	private IdeaUiMultiTaskExecutor() {
+	private CountDownLatch finishedLatch;
+
+	private IdeaUiMultiTaskExecutor(final int numberOfThread) {
+		finishedLatch = new CountDownLatch(numberOfThread);
 	}
 
 	public static void execute(final UiTask uiTask) {
-		getExecutor().executeTask(uiTask);
+		getExecutor(1).executeTask(uiTask);
 	}
 
 	public static void execute(final List<UiTask> tasks, final Component c) {
-		getExecutor().executeTasks(tasks, c);
+		getExecutor(tasks.size()).executeTasks(tasks, c);
 	}
 
-	private static IdeaUiMultiTaskExecutor getExecutor() {
-		return new IdeaUiMultiTaskExecutor();
+	private static IdeaUiMultiTaskExecutor getExecutor(int numberOfThread) {
+		return new IdeaUiMultiTaskExecutor(numberOfThread);
 	}
 
 	private void executeTask(final UiTask uiTask) {
-		semaphore = 1;
 		component = uiTask.getComponent();
 		runTask(uiTask);
+		waitForThreadsAndShowErrors();
 	}
 
 	private void executeTasks(final List<UiTask> tasks, final Component c) {
-		semaphore = tasks.size();
 		component = c;
 		for (UiTask uiTask : tasks) {
 			runTask(uiTask);
 		}
+		waitForThreadsAndShowErrors();
 	}
 
 	private void runTask(final UiTask uiTask) {
@@ -72,61 +75,52 @@ public final class IdeaUiMultiTaskExecutor {
 					uiTask.run();
 				} catch (final Exception e) {
 					reportError(e, uiTask, modalityState);
-					stopTask();
+					finishedLatch.countDown();
 					return;
 				}
 
 				reportSuccess(uiTask, modalityState);
-				stopTask();
+				finishedLatch.countDown();
 			}
 		});
 	}
 
-	private synchronized void stopTask() {
-		semaphore--;
+	private synchronized void waitForThreadsAndShowErrors() {
 
-		if (semaphore < 0) {
-			PluginUtil.getLogger().warn("Wrong IdeaUiTaskExecutor implementation! Semaphore value is less than zero.");
-			semaphore = 0;
-		}
-
-		if (semaphore == 0) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					if (component != null && component.isShowing()) {
-						if (errors.size() == 1) {
-							DialogWithDetails
-									.showExceptionDialog(component, errors.get(0).getMessage(), errors.get(0).getException());
-						} else if (errors.size() > 1) {
-							DialogWithDetails.showExceptionDialog(component, errors);
+		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+			public void run() {
+				try {
+					finishedLatch.await();
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							if (component != null && component.isShowing()) {
+								if (errors.size() == 1) {
+									DialogWithDetails.showExceptionDialog(component, errors.get(0).getMessage(),
+											errors.get(0).getException());
+								} else if (errors.size() > 1) {
+									DialogWithDetails.showExceptionDialog(component, errors);
+								}
+							}
+							clearErrors();
 						}
-					}
-					clearErrors();
+					});
+
+				} catch (InterruptedException e) {
+					PluginUtil.getLogger().warn("InterruptedException caught when waiting for CountDownLatch", e);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	private synchronized void reportSuccess(final UiTask uiTask, final ModalityState modalityState) {
-
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
-				try {
-					uiTask.onSuccess();
-				} catch (final Exception e) {
-					ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
-						public void run() {
-							LoggerImpl.getInstance().warn(e);
-							addError(new ErrorObject("Error while " + uiTask.getLastAction(), e));
-						}
-					});
-				}
+				uiTask.onSuccess();
 			}
 		}, modalityState);
 	}
 
 	private synchronized void reportError(final Exception e, final UiTask uiTask, final ModalityState modalityState) {
-
 		LoggerImpl.getInstance().warn(e);
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
