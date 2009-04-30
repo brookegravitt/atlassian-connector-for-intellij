@@ -82,10 +82,17 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		return null;
 	}
 
+	/**
+	 * Returns ServerData for enabled server with serverId specified by parameter
+	 *
+	 * @param serverId
+	 * @return ServerData for enabled server with serverId specified by parameter
+	 */
+	@Nullable
 	public ServerData getEnabledServerData(final ServerId serverId) {
-		final ServerCfg serverCfg = cfgManager.getEnabledServer(projectId, serverId);
+		final ServerCfg serverCfg = cfgManager.getServer(projectId, serverId);
 
-		if (serverCfg != null) {
+		if (serverCfg != null && serverCfg.isEnabled()) {
 			return getServerDataImpl(serverCfg);
 		}
 		return null;
