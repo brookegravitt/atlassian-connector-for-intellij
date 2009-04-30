@@ -979,14 +979,14 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void serverDisabled(final ServerId serverId) {
 			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
-				removeServer(serverId);
+				removeServer(serverId, recenltyViewedAffected(server));
 			}
 		}
 
 		@Override
 		public void serverRemoved(final ServerCfg oldServer) {
 			if (oldServer instanceof JiraServerCfg && oldServer.getServerType() == ServerType.JIRA_SERVER) {
-				removeServer(oldServer.getServerId());
+				removeServer(oldServer.getServerId(), recenltyViewedAffected(oldServer));
 			}
 		}
 
@@ -994,25 +994,6 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void serverEnabled(final ServerId serverId) {
 			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
 			addServer(server, recenltyViewedAffected(server));
-		}
-
-		private boolean recenltyViewedAffected(final ServerCfg server) {
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER
-					&& jiraFilterTree.isRecentlyOpenSelected()) {
-				// check if some recenlty open issue come from enabled server; if yes then refresh filter
-				JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-				if (conf != null) {
-					final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
-					if (recentlyOpen != null) {
-						for (IssueRecentlyOpenBean i : recentlyOpen) {
-							if (i.getServerId().equals(server.getServerId().toString())) {
-								return true;
-							}
-						}
-					}
-				}
-			}
-			return false;
 		}
 
 		@Override
@@ -1028,11 +1009,35 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			}
 		}
 
-		private void removeServer(final ServerId serverId) {
+		private void removeServer(final ServerId serverId, final boolean reloadIssueList) {
 			jiraServerModel.clear(serverId);
 			refreshFilterModel();
 			jiraFilterListModel.fireServerRemoved();
+
+			if (reloadIssueList) {
+				refreshRecenltyOpenIssues(true);
+			}
 		}
+
+		private boolean recenltyViewedAffected(final ServerCfg server) {
+			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER
+					&& jiraFilterTree.isRecentlyOpenSelected()) {
+				// check if some recenlty open issue come from enabled server; if yes then return true
+				JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+				if (conf != null) {
+					final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
+					if (recentlyOpen != null) {
+						for (IssueRecentlyOpenBean i : recentlyOpen) {
+							if (i.getServerId().equals(server.getServerId().toString())) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			return false;
+		}
+
 	}
 
 	@Override

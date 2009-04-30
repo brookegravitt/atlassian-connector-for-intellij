@@ -15,14 +15,14 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
+import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +41,7 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		this.projectId = CfgUtil.getProjectId(project);
 		this.cfgManager = cfgManager;
 	}
-	
+
 
 	@NotNull
 	public CfgManager getCfgManager() {
@@ -68,17 +68,26 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 				StringUtil.decode(projectConfigurationBean.getDefaultCredentials().getEncodedPassword()));
 	}
 
-    @NotNull
+	@NotNull
 	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
 		return ServerData.create(serverCfg, getDefaultCredentials());
-    }
+	}
 
 	public ServerData getServerData(final ServerId serverId) {
 		final ServerCfg serverCfg = cfgManager.getServer(projectId, serverId);
 
 		if (serverCfg != null) {
-            return getServerDataImpl(serverCfg);
-        }
+			return getServerDataImpl(serverCfg);
+		}
+		return null;
+	}
+
+	public ServerData getEnabledServerData(final ServerId serverId) {
+		final ServerCfg serverCfg = cfgManager.getEnabledServer(projectId, serverId);
+
+		if (serverCfg != null) {
+			return getServerDataImpl(serverCfg);
+		}
 		return null;
 	}
 
@@ -105,17 +114,17 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 	}
 
 
-    @Nullable
-    public ServerData getDefaultCrucibleServer() {
-        ProjectConfiguration prjCfg = getProjectConfiguration();
-        if (prjCfg != null) {
-            CrucibleServerCfg crucibleServer = prjCfg.getDefaultCrucibleServer();
-            if (crucibleServer != null) {
-                return getServerData(crucibleServer);
-            }
-        }
-        return null;
-    }
+	@Nullable
+	public ServerData getDefaultCrucibleServer() {
+		ProjectConfiguration prjCfg = getProjectConfiguration();
+		if (prjCfg != null) {
+			CrucibleServerCfg crucibleServer = prjCfg.getDefaultCrucibleServer();
+			if (crucibleServer != null) {
+				return getServerData(crucibleServer);
+			}
+		}
+		return null;
+	}
 
 
 	@Nullable
