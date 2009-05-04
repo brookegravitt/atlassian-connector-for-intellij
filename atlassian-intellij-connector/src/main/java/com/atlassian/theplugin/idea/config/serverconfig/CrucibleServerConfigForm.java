@@ -31,7 +31,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Plugin configuration form.
+ * Plugin configuration form..
  */
 public class CrucibleServerConfigForm {
 
