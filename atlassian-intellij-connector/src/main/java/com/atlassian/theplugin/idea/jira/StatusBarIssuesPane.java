@@ -11,12 +11,12 @@ public class StatusBarIssuesPane extends StatusBarPane {
 
 	private HyperlinkLabel getMoreIssues;
 
-	
+
 	public StatusBarIssuesPane(String initialText) {
 		super(initialText);
 
 		getMoreIssues = new HyperlinkLabel("Get More Issues...");
-        getMoreIssues.setOpaque(false);
+		getMoreIssues.setOpaque(false);
 
 		enableGetMoreIssues(false);
 

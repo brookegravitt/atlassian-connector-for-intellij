@@ -17,8 +17,8 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAException;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -54,7 +54,7 @@ public class OpenActiveJiraIssue extends AnAction {
 						}
 					} catch (JIRAException e) {
 						if (panel != null) {
-							panel.setStatusMessage("Error opening issue: " + e.getMessage(), true);
+							panel.setStatusErrorMessage("Error opening issue: " + e.getMessage(), e);
 						}
 					}
 				}

@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Collection;
 
 /**
  * User: pmaruszak
@@ -68,7 +69,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		leftUpperScrollPane.setViewportView(getLeftTree());
 		leftUpperScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, margin, 0, 0));
 		rightScrollPane.setViewportView(getRightTree());
-		addSearchBoxListener();		
+		addSearchBoxListener();
 	}
 
 	public void enableGetMoreIssues(boolean enable) {
@@ -145,28 +146,39 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		return component;
 	}
 
-	public void setStatusMessage(final String message) {
-		setStatusMessage(message, false);
-	}
-
-	/**
-	 * Sets status message for the Reviews panel.
-	 * It can be called from the non-UI thread
-	 * @param msg message
-	 * @param isError error flag
-	 */
-	public void setStatusMessage(final String msg, final boolean isError) {
-		setStatusMessage(msg, isError, false);
-	}
-
-	public void setStatusMessage(final String msg, final boolean isError, final boolean rightAlign) {
+	public void setStatusErrorMessage(final String error, final Throwable exception) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				if (isError) {
-					statusBarPane.setErrorMessage(msg);
-				} else {
-					statusBarPane.setMessage(msg, rightAlign);
-				}
+				statusBarPane.setErrorMessage(error, exception);
+			}
+		});
+	}
+
+
+	public void setStatusErrorMessages(final String error, final Collection<Exception> exceptions) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				statusBarPane.setErrorMessages(error, exceptions);
+			}
+		});
+	}
+
+	public void setStatusErrorMessage(final String error) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				statusBarPane.setErrorMessage(error);
+			}
+		});
+	}
+
+	public void setStatusInfoMessage(final String message) {
+		setStatusInfoMessage(message, false);
+	}
+
+	public void setStatusInfoMessage(final String msg, final boolean rightAlign) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				statusBarPane.setInfoMessage(msg, rightAlign);
 			}
 		});
 	}
@@ -219,7 +231,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 		toolBarPanel.add(searchField, gbc);
 
 		rightPanel.add(toolBarPanel, BorderLayout.NORTH);
-		
+
 		return rightPanel;
 	}
 
@@ -266,8 +278,11 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 	protected abstract void addSearchBoxListener();
+
 	public abstract JTree createRightTree();
+
 	public abstract JTree createLeftTree();
+
 	public abstract String getActionPlaceName();
 	//public abstract JComponent createCustomFiltedPanel();
 

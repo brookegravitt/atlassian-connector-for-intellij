@@ -22,7 +22,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 		try {
 			issue = ActiveIssueUtils.getJIRAIssue(event);
 		} catch (JIRAException e) {
-			panel.setStatusMessage("Error commenting issue: " + e.getMessage(), true);
+			panel.setStatusErrorMessage("Error commenting issue: " + e.getMessage(), e);
 			return;
 		}
 		if (IdeaHelper.getCfgManager(event) != null) {

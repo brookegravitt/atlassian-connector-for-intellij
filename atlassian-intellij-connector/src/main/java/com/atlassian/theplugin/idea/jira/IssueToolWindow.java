@@ -250,12 +250,16 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 			});
 		}
 
-		public void setStatusMessage(final String message) {
+		public void setStatusInfoMessage(final String message) {
 			// ignore for now - should we display it?
 		}
 
-		public void setStatusMessage(final String message, final boolean isError) {
+		public void setStatusErrorMessage(final String message) {
 			// ignore for now - should we display it?
+		}
+
+		public void setStatusErrorMessage(final String error, final Throwable exception) {
+
 		}
 
 		public ServerData getSelectedServer() {
@@ -282,6 +286,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 			return null;
 		}
+
 		public void refresh() {
 			ServerData jiraServerCfg = getJiraServerCfg();
 			for (JIRAIssue i : params.model.getIssues()) {

@@ -67,7 +67,7 @@ public class RunIssueActionAction extends AnAction {
 				indicator.setIndeterminate(true);
 			}
 
-			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...", false);
+			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...");
 
 			final ServerData server = issue.getServer();
 
@@ -76,28 +76,28 @@ public class RunIssueActionAction extends AnAction {
 				try {
 					fields = facade.getFieldsForAction(server, issue, action);
 				} catch (JIRAException e) {
-					showInfo(
+					showError(
 							"Cannot retrieve fields for action [" + action.getName() + "] on issue [" + issue.getKey() + "]"
-									+ e.getMessage(), true);
-					showDetailedInfo(project, e);
+									+ e.getMessage(), e);
+					showDialogDetailedInfo(project, e);
 					return;
 				}
 
-				showInfo("Retrieving issue details", false);
+				showInfo("Retrieving issue details");
 				final JIRAIssue detailedIssue;
 				try {
 					JIRAIssue issueWithTime = facade.getIssue(issue.getServer(),
 							issue.getKey());
 					detailedIssue = facade.getIssueDetails(issue.getServer(), issueWithTime);
 				} catch (JIRAException e) {
-					showInfo("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), true);
-					showDetailedInfo(project, e);
+					showError("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), e);
+					showDialogDetailedInfo(project, e);
 					return;
 				}
 
-				showInfo("Running action [" + action.getName() + "] on issue [" + issue.getKey() + "]...", false);
+				showInfo("Running action [" + action.getName() + "] on issue [" + issue.getKey() + "]...");
 
-				showInfo("Retrieving values for action fields", false);
+				showInfo("Retrieving values for action fields");
 				final List<JIRAActionField> preFilleddfields = JiraActionFieldType.fillFieldValues(detailedIssue, fields);
 
 				if (preFilleddfields.isEmpty()) {
@@ -105,9 +105,9 @@ public class RunIssueActionAction extends AnAction {
 						facade.progressWorkflowAction(server, issue, action);
 						performPostActionActivity(server);
 					} catch (JIRAException e) {
-						showInfo("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
-								+ e.getMessage(), true);
-						showDetailedInfo(project, e);
+						showError("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
+								+ e.getMessage(), e);
+						showDialogDetailedInfo(project, e);
 					}
 				} else {
 					EventQueue.invokeLater(
@@ -117,16 +117,15 @@ public class RunIssueActionAction extends AnAction {
 		}
 	}
 
-	private void showInfo(final String s, final boolean isError) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				window.setStatusMessage(s, isError);
-
-			}
-		});
+	private void showInfo(final String s) {
+		window.setStatusInfoMessage(s);
 	}
 
-	private void showDetailedInfo(final Project project, final Throwable e) {
+	private void showError(final String error, final Throwable exception) {
+		window.setStatusErrorMessage(error, exception);
+	}
+
+	private void showDialogDetailedInfo(final Project project, final Throwable e) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
@@ -153,7 +152,7 @@ public class RunIssueActionAction extends AnAction {
 		if (jiraIssueListModelBuilder != null) {
 			jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 		}
-		showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully", false);
+		showInfo("Action [" + action.getName() + "] on issue " + issue.getKey() + " run succesfully");
 	}
 
 	private class LocalDisplayActionDialogRunnable implements Runnable {
@@ -186,33 +185,32 @@ public class RunIssueActionAction extends AnAction {
 									indicator.setIndeterminate(true);
 								}
 								try {
-									facade.progressWorkflowAction(server,
-											issue, action, dialog.getFields());
+									facade.progressWorkflowAction(server, issue, action, dialog.getFields());
 								} catch (JIRAException e) {
-									showInfo("Unable to run action [" + action.getName() + "] on issue ["
-											+ issue.getKey() + "]: " + e.getMessage(), true);
-									showDetailedInfo(project, e);
+									showError("Unable to run action [" + action.getName() + "] on issue ["
+											+ issue.getKey() + "]: " + e.getMessage(), e);
+									showDialogDetailedInfo(project, e);
 									return;
 								}
 								try {
 									if (dialog.getComment() != null && dialog.getComment().length() > 0) {
-										facade.addComment(server,
-												issue.getKey(), dialog.getComment());
+										facade.addComment(server, issue.getKey(), dialog.getComment());
 									}
 								} catch (JIRAException e) {
-									showInfo("Unable to add comment to action [" + action.getName()
-											+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), true);
-									showDetailedInfo(project, e);
+									showError("Unable to add comment to action [" + action.getName()
+											+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), e);
+									showDialogDetailedInfo(project, e);
 								}
 								try {
 									performPostActionActivity(server);
 								} catch (JIRAException e) {
-									showDetailedInfo(project, e);
+									showError(e.getMessage(), e);
+									showDialogDetailedInfo(project, e);
 								}
 							}
 						});
 			} else {
-				showInfo("Running workflow action [" + action.getName() + "] cancelled", false);
+				showInfo("Running workflow action [" + action.getName() + "] cancelled");
 			}
 		}
 	}

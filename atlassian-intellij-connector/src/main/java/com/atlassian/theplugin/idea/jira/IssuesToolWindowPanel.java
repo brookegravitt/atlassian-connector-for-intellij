@@ -357,7 +357,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							});
 						}
 					} catch (JIRAException e) {
-						setStatusMessage("Query for issue " + issue.getKey() + " actions failed: " + e.getMessage(), true);
+						setStatusErrorMessage("Query for issue " + issue.getKey() + " actions failed: " + e.getMessage(), e);
 					} catch (NullPointerException e) {
 						// somebody unselected issue in the table, so let's just skip
 					}
@@ -480,17 +480,17 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
-				setStatusMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
+				setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
 				try {
 
 					ServerData jiraServer = getSelectedServer();
 					if (jiraServer != null) {
 						jiraServerFacade.setAssignee(jiraServer, issue, assignee);
-						setStatusMessage("Assigned issue " + issue.getKey() + " to " + assignee);
+						setStatusInfoMessage("Assigned issue " + issue.getKey() + " to " + assignee);
 						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				} catch (JIRAException e) {
-					setStatusMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), true);
+					setStatusErrorMessage("Failed to assign issue " + issue.getKey() + ": " + e.getMessage(), e);
 				}
 			}
 		};
@@ -542,7 +542,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				public void run(@NotNull final ProgressIndicator indicator) {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							setStatusMessage("Commenting issue " + issueKey + "...");
+							setStatusInfoMessage("Commenting issue " + issueKey + "...");
 						}
 					});
 					try {
@@ -550,14 +550,14 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							jiraServerFacade.addComment(jiraServer, issueKey, issueCommentDialog.getComment());
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
-									setStatusMessage("Commented issue " + issueKey);
+									setStatusInfoMessage("Commented issue " + issueKey);
 								}
 							});
 						}
 					} catch (final JIRAException e) {
 						EventQueue.invokeLater(new Runnable() {
 							public void run() {
-								setStatusMessage("Issue not commented: " + e.getMessage(), true);
+								setStatusErrorMessage("Issue not commented: " + e.getMessage(), e);
 							}
 						});
 					}
@@ -598,29 +598,29 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					if (!issue.getAssigneeId().equals(server.getUserName())) {
-						setStatusMessage("Assigning issue " + issue.getKey() + " to me...");
+						setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
 						jiraServerFacade.setAssignee(server, issue, server.getUserName());
 					}
 					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
 					boolean found = false;
 					for (JIRAAction a : actions) {
 						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							setStatusMessage("Starting progress on " + issue.getKey() + "...");
+							setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
 							jiraServerFacade.progressWorkflowAction(server, issue, a);
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-							setStatusMessage("Started progress on " + issue.getKey());
+							setStatusInfoMessage("Started progress on " + issue.getKey());
 							found = true;
 							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 							break;
 						}
 					}
 					if (!found && issue.getStatusConstant().getId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
-						setStatusMessage("Progress on "
+						setStatusInfoMessage("Progress on "
 								+ issue.getKey()
 								+ "  not started - no such workflow action available");
 					}
 				} catch (JIRAException e) {
-					setStatusMessage("Error starting progress on issue: " + e.getMessage(), true);
+					setStatusErrorMessage("Error starting progress on issue: " + e.getMessage(), e);
 				} catch (NullPointerException e) {
 					// eeeem - now what?
 				}
@@ -638,10 +638,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		try {
 			jiraFilterListModelBuilder.rebuildModel(jiraServerModel);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
+			Collection<Exception> exceptions = new ArrayList<Exception>();
+			for (JIRAException ex : e.getExceptions().values()) {
+				exceptions.add(ex);
+			}
 			//@todo show in message editPane
-			setStatusMessage("Some Jira servers did not return saved filters", true);
+			setStatusErrorMessages("Some Jira servers did not return saved filters", exceptions);
 		}
 	}
+
 
 	public void refreshIssues(final boolean reload) {
 		JIRAManualFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
@@ -664,11 +669,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					getStatusBarPane().setMessage("Loading issues...", false);
+					getStatusBarPane().setInfoMessage("Loading issues...", false);
 					jiraIssueListModelBuilder.addIssuesToModel(manualFilter, jiraServerCfg,
 							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 				} catch (JIRAException e) {
-					setStatusMessage(e.getMessage(), true);
+					setStatusErrorMessage(e.getMessage(), e);
 				}
 			}
 		};
@@ -683,11 +688,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					getStatusBarPane().setMessage("Loading issues...", false);
+					getStatusBarPane().setInfoMessage("Loading issues...", false);
 					jiraIssueListModelBuilder.addIssuesToModel(savedFilter, jiraServerCfg,
 							pluginConfiguration.getJIRAConfigurationData().getPageSize(), reload);
 				} catch (JIRAException e) {
-					setStatusMessage(e.getMessage(), true);
+					setStatusErrorMessage(e.getMessage(), e);
 				}
 			}
 		};
@@ -703,10 +708,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					getStatusBarPane().setMessage("Loading issues...", false);
+					getStatusBarPane().setInfoMessage("Loading issues...", false);
 					jiraIssueListModelBuilder.addRecenltyOpenIssuesToModel(reload);
 				} catch (JIRAException e) {
-					setStatusMessage(e.getMessage(), true);
+					setStatusErrorMessage(e.getMessage(), e);
 				}
 			}
 		};
@@ -764,7 +769,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				Task.Backgroundable createTask = new Task.Backgroundable(getProject(), "Creating Issue", false) {
 					@Override
 					public void run(@NotNull final ProgressIndicator indicator) {
-						setStatusMessage("Creating new issue...");
+						setStatusInfoMessage("Creating new issue...");
 						String message;
 						boolean isError = false;
 						try {
@@ -778,6 +783,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									+ createdIssue.getKey()
 									+ "</a>";
 
+							setStatusInfoMessage(message);
+
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
 									recentlyOpenIssuesCache.addIssue(createdIssue);
@@ -788,12 +795,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							});
 
 						} catch (JIRAException e) {
-							message = "Failed to create new issue: " + e.getMessage();
-							isError = true;
+							setStatusErrorMessage("Failed to create new issue: " + e.getMessage(), e);
 						}
-
-						final String msg = message;
-						setStatusMessage(msg, isError);
 					}
 
 				};
@@ -897,33 +900,32 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						//returns false if no cfg is available or login failed
 						Boolean serverCheck = jiraServerModel.checkServer(server);
 						if (serverCheck == null || !serverCheck) {
-							setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server),
-									true);
+							setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
 							EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade,
 									(JiraServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), server), project));
 							continue;
 						}//@todo remove  saved filters download or merge with existing in listModel
 
 						final String serverStr = "[" + server.getName() + "] ";
-						setStatusMessage(serverStr + "Retrieving saved filters...");
+						setStatusInfoMessage(serverStr + "Retrieving saved filters...");
 						jiraServerModel.getSavedFilters(server);
-						setStatusMessage(serverStr + "Retrieving projects...");
+						setStatusInfoMessage(serverStr + "Retrieving projects...");
 						jiraServerModel.getProjects(server);
-						setStatusMessage(serverStr + "Retrieving issue types...");
+						setStatusInfoMessage(serverStr + "Retrieving issue types...");
 						jiraServerModel.getIssueTypes(server, null, true);
-						setStatusMessage(serverStr + "Retrieving statuses...");
+						setStatusInfoMessage(serverStr + "Retrieving statuses...");
 						jiraServerModel.getStatuses(server);
-						setStatusMessage(serverStr + "Retrieving resolutions...");
+						setStatusInfoMessage(serverStr + "Retrieving resolutions...");
 						jiraServerModel.getResolutions(server, true);
-						setStatusMessage(serverStr + "Retrieving priorities...");
+						setStatusInfoMessage(serverStr + "Retrieving priorities...");
 						jiraServerModel.getPriorities(server, true);
-						setStatusMessage(serverStr + "Retrieving projects...");
+						setStatusInfoMessage(serverStr + "Retrieving projects...");
 						jiraServerModel.getProjects(server);
-						setStatusMessage(serverStr + "Server data query finished");
+						setStatusInfoMessage(serverStr + "Server data query finished");
 					} catch (RemoteApiException e) {
-						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+						setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), e);
 					} catch (JIRAException e) {
-						setStatusMessage("Cannot download details:" + e.getMessage(), true);
+						setStatusErrorMessage("Cannot download details:" + e.getMessage(), e);
 					}
 				}
 			} finally {
@@ -1132,7 +1134,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 				if (jiraServer != null) {
 					if (dialog.isLogTime()) {
-						setStatusMessage("Logging work for issue " + issue.getKey() + "...");
+						setStatusInfoMessage("Logging work for issue " + issue.getKey() + "...");
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(dialog.getStartDate());
 
@@ -1143,11 +1145,11 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 								!dialog.getLeaveRemainingUnchanged(), newRemainingEstimate);
 						JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
 								jiraServer, issue);
-						setStatusMessage("Logged work for issue " + issue.getKey());
+						setStatusInfoMessage("Logged work for issue " + issue.getKey());
 					}
 					if (deactivateIssue) {
 						JIRAAction stopProgressAction = null;
-						setStatusMessage("Checking workflow actions for issue " + issue.getKey() + "...");
+						setStatusInfoMessage("Checking workflow actions for issue " + issue.getKey() + "...");
 
 						List<JIRAAction> actions = jiraServerFacade.getAvailableActions(
 								jiraServer, issue);
@@ -1163,7 +1165,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							}
 						}
 						if (stopProgressAction != null) {
-							setStatusMessage("Stopping work for issue " + issue.getKey() + "...");
+							setStatusInfoMessage("Stopping work for issue " + issue.getKey() + "...");
 							jiraServerFacade.progressWorkflowAction(jiraServer, issue, stopProgressAction);
 						}
 
@@ -1174,9 +1176,9 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
-									setStatusMessage("Committing changes...");
+									setStatusInfoMessage("Committing changes...");
 									changeListManager.commitChanges(list, dialog.getSelectedChanges());
-									setStatusMessage("Deactivated issue " + issue.getKey());
+									setStatusInfoMessage("Deactivated issue " + issue.getKey());
 								}
 							});
 
@@ -1191,15 +1193,15 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 							}
 						}
 
-						setStatusMessage("Deactivated issue " + issue.getKey());
+						setStatusInfoMessage("Deactivated issue " + issue.getKey());
 						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				}
 			} catch (JIRAException e) {
 				if (deactivateIssue) {
-					setStatusMessage("Issue not deactivated: " + e.getMessage(), true);
+					setStatusErrorMessage("Issue not deactivated: " + e.getMessage(), e);
 				} else {
-					setStatusMessage("Work not logged: " + e.getMessage(), true);
+					setStatusErrorMessage("Work not logged: " + e.getMessage(), e);
 				}
 			}
 		}
@@ -1214,10 +1216,10 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 			if (loadedIssues >= pluginConfiguration.getJIRAConfigurationData().getPageSize()) {
 				enableGetMoreIssues(true);
-				setStatusMessage("Loaded " + loadedIssues + " issues", false, true);
+				setStatusInfoMessage("Loaded " + loadedIssues + " issues", true);
 			} else {
 				enableGetMoreIssues(false);
-				setStatusMessage("Loaded " + loadedIssues + " issues", false, false);
+				setStatusInfoMessage("Loaded " + loadedIssues + " issues");
 			}
 		}
 
@@ -1226,7 +1228,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 				JiraIssueAdapter.clearCache();
 				ServerData srvcfg = getSelectedServer();
 				if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
-					setStatusMessage("Nothing selected", false, false);
+					setStatusInfoMessage("Nothing selected");
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 				} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
 					Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
@@ -1237,7 +1239,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {
-							setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+							setStatusErrorMessage("Cannot retrieve projects." + e.getMessage(), e);
 						}
 					}
 					issueTreeBuilder.setProjectKeysToNames(projects);
@@ -1250,7 +1252,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									p.getName());
 						}
 					} catch (JIRAException e) {
-						setStatusMessage("Cannot retrieve projects." + e.getMessage(), true);
+						setStatusErrorMessage("Cannot retrieve projects." + e.getMessage(), e);
 					}
 					issueTreeBuilder.setProjectKeysToNames(projectMap);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());

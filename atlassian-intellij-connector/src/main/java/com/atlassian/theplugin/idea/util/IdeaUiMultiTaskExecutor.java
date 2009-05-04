@@ -85,6 +85,7 @@ public final class IdeaUiMultiTaskExecutor {
 		});
 	}
 
+	// todo it should not be synchronized???
 	private synchronized void waitForThreadsAndShowErrors() {
 
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
@@ -141,14 +142,14 @@ public final class IdeaUiMultiTaskExecutor {
 
 	public static class ErrorObject {
 		private String message;
-		private Exception exception;
+		private Throwable exception;
 
-		public ErrorObject(final String message, final Exception exception) {
+		public ErrorObject(final String message, final Throwable exception) {
 			this.message = message;
 			this.exception = exception;
 		}
 
-		public Exception getException() {
+		public Throwable getException() {
 			return exception;
 		}
 

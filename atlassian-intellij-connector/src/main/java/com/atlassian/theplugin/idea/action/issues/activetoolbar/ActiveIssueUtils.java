@@ -278,7 +278,7 @@ public final class ActiveIssueUtils {
 			}
 		} catch (JIRAException e) {
 			if (panel != null) {
-				panel.setStatusMessage("Error starting work on issue: " + e.getMessage(), true);
+				panel.setStatusErrorMessage("Error starting work on issue: " + e.getMessage(), e);
 			}
 		}
 		return isOk;
@@ -309,7 +309,7 @@ public final class ActiveIssueUtils {
 					}
 				} catch (JIRAException e) {
 					if (panel != null) {
-						panel.setStatusMessage("Error stopping work on issue: " + e.getMessage(), true);
+						panel.setStatusErrorMessage("Error stopping work on issue: " + e.getMessage(), e);
 					}
 				}
 			}

@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.jira;
  * User: pmaruszak
  */
 public interface StatusBar {
-	void setMessage(String message, boolean rightAlign);
+	void setInfoMessage(String message, boolean rightAlign);
+
 	void setErrorMessage(String msg);
 }

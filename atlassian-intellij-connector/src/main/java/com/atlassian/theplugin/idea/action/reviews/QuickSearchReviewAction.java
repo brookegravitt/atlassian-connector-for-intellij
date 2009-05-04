@@ -129,7 +129,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				PluginUtil.getLogger().warn("Error getting review", e);
-				reviewsWindow.setStatusMessage(e.getMessage(), true);
+				reviewsWindow.setStatusErrorMessage(e.getMessage(), e);
 				DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
 			}
 		});
@@ -139,7 +139,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			final String searchKey, final ReviewsToolWindowPanel reviewsWindow) {
 		if (reviews.size() == 0) {
 			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian IntelliJ Connector");
-//			reviewsWindow.setStatusMessage("Review " + searchKey + " not found.");
+//			reviewsWindow.setStatusInfoMessage("Review " + searchKey + " not found.");
 		} else if (reviews.size() == 1) {
 			reviewsWindow.openReview(reviews.iterator().next());
 		} else if (reviews.size() > 1) {
