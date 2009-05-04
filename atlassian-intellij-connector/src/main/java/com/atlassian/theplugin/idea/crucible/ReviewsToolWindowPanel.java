@@ -409,10 +409,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 							reviews.add(new ReviewAdapter(r, serverData));
 						} catch (RemoteApiException e) {
 							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
-							setStatusMessage("Cannot get review from the server: " + e.getMessage(), true);
+							setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
 						} catch (ServerPasswordNotProvidedException e) {
 							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
-							setStatusMessage("Cannot get review from the server: " + e.getMessage(), true);
+							setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
 						}
 						break;
 					}
@@ -446,7 +446,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			exception = null;
 			if (updateContext.getUpdateReason() != UpdateReason.TIMER_FIRED) {
 				setPanelEnabled(false);
-				setStatusMessage("Loading reviews...");
+				setStatusInfoMessage("Loading reviews...");
 			}
 		}
 
@@ -454,9 +454,9 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		public void reviewListUpdateFinished(UpdateContext updateContext) {
 			setPanelEnabled(true);
 			if (exception != null) {
-				setStatusMessage(exception.getMessage(), true);
+				setStatusErrorMessage(exception.getMessage(), exception);
 			} else {
-				setStatusMessage("Loaded " + reviewListModel.getReviews().size() + " reviews");
+				setStatusInfoMessage("Loaded " + reviewListModel.getReviews().size() + " reviews");
 			}
 		}
 

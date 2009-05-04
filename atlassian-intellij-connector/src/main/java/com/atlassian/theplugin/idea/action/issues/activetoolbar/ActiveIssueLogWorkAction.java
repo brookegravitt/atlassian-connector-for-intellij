@@ -44,7 +44,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
 								false);
 					} catch (JIRAException e) {
-						panel.setStatusMessage("Erroro logging work: " + e.getMessage(), true);
+						panel.setStatusErrorMessage("Erroro logging work: " + e.getMessage(), e);
 					}
 
 					if (isOk) {

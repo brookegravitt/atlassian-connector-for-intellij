@@ -18,11 +18,11 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.util.Random;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Random;
 
 
 public final class TwoPanePanelTestUi {
@@ -33,7 +33,7 @@ public final class TwoPanePanelTestUi {
 		SwingAppRunner.run(new TwoPanePanel() {
 			{
 				init();
-//				setStatusMessage("Very long message<br/>THIS IS VERY LOOOOOOOOOOOOOOOOOONG line<br/>Another line<br/>", true);
+//				setStatusInfoMessage("Very long message<br/>THIS IS VERY LOOOOOOOOOOOOOOOOOONG line<br/>Another line<br/>", true);
 			}
 
 			@Override
