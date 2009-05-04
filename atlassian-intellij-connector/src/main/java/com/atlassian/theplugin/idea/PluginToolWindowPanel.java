@@ -155,7 +155,7 @@ public abstract class PluginToolWindowPanel extends JPanel {
 	}
 
 
-	public void setStatusErrorMessages(final String error, final Collection<Exception> exceptions) {
+	public void setStatusErrorMessages(final String error, final Collection<Throwable> exceptions) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				statusBarPane.setErrorMessages(error, exceptions);

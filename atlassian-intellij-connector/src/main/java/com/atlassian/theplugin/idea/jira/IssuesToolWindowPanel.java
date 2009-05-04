@@ -638,7 +638,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		try {
 			jiraFilterListModelBuilder.rebuildModel(jiraServerModel);
 		} catch (JIRAFilterListBuilder.JIRAServerFiltersBuilderException e) {
-			Collection<Exception> exceptions = new ArrayList<Exception>();
+			Collection<Throwable> exceptions = new ArrayList<Throwable>();
 			for (JIRAException ex : e.getExceptions().values()) {
 				exceptions.add(ex);
 			}
@@ -1239,7 +1239,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {
-							setStatusErrorMessage("Cannot retrieve projects." + e.getMessage(), e);
+							setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]."
+									+ e.getMessage(), e);
 						}
 					}
 					issueTreeBuilder.setProjectKeysToNames(projects);
@@ -1252,7 +1253,8 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									p.getName());
 						}
 					} catch (JIRAException e) {
-						setStatusErrorMessage("Cannot retrieve projects." + e.getMessage(), e);
+						setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]."
+								+ e.getMessage(), e);
 					}
 					issueTreeBuilder.setProjectKeysToNames(projectMap);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
