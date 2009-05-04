@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -14,7 +14,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(AnActionEvent event) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel == null) {
 			return;
 		}

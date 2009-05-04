@@ -38,7 +38,7 @@ import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
@@ -104,7 +104,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
-	private IssuesToolWindowPanel issuesToolWindowPanel;
+	private IssueListToolWindowPanel issuesToolWindowPanel;
 
 	private PluginToolWindow toolWindow;
 
@@ -118,7 +118,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
 			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
-			@NotNull IssuesToolWindowPanel issuesToolWindowPanel,
+			@NotNull IssueListToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,

@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -11,7 +11,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
 		JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
 		if (issue != null) {
-			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 			if (panel != null) {
 				panel.openIssueWithSelectedServer(issue);
 			}
@@ -28,7 +28,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 		if (enabled && issue != null) {
 			event.getPresentation().setEnabled(true);
 		} else if (ModelFreezeUpdater.getState(event) && issue != null) {
-			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 			boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 			event.getPresentation().setEnabled(e);
 		} else {

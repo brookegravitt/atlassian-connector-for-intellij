@@ -23,7 +23,7 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -101,7 +101,7 @@ public final class ActiveIssueUtils {
 
 
 	public static JiraServerCfg getSelectedJiraServerByUrl(final AnActionEvent event, String serverUrl) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel != null) {
 //			//return panel.getSelectedServer();
 
@@ -113,7 +113,7 @@ public final class ActiveIssueUtils {
 
 
 	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (panel != null) {
 			final Project project = IdeaHelper.getCurrentProject(event);
 			return CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), serverId);
@@ -163,7 +163,7 @@ public final class ActiveIssueUtils {
 	}
 
 	public static JiraServerCfg getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		JiraServerCfg jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
@@ -255,7 +255,7 @@ public final class ActiveIssueUtils {
 			final JiraServerCfg jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		boolean isOk = true;
-		final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 		try {
 			final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(
 					IdeaHelper.getProjectCfgManager(event).getServerData(jiraServerCfg), newActiveIssue);
@@ -293,7 +293,7 @@ public final class ActiveIssueUtils {
 		if (conf != null) {
 			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
 			if (activeIssue != null) {
-				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+				final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 				try {
 					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 					if (panel != null && jiraIssue != null) {

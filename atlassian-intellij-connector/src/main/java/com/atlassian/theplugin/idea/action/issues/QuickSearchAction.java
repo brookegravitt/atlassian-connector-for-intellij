@@ -3,7 +3,7 @@ package com.atlassian.theplugin.idea.action.issues;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -19,7 +19,7 @@ public class QuickSearchAction extends AnAction {
 			return;
 		}
 
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 
 		if (panel == null) {
 			return;
@@ -42,9 +42,9 @@ public class QuickSearchAction extends AnAction {
 		}
 	}
 
-    @Override
-    public void update(AnActionEvent event) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+	@Override
+	public void update(AnActionEvent event) {
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 
 		boolean enabled = panel != null && panel.getSelectedServer() != null;
 		event.getPresentation().setEnabled(enabled);

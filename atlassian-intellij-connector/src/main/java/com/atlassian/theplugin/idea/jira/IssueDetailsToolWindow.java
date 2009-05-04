@@ -58,7 +58,7 @@ import java.util.Locale;
  * Date: Dec 23, 2008
  * Time: 3:59:21 PM
  */
-public final class IssueToolWindow extends MultiTabToolWindow {
+public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
 
@@ -67,7 +67,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final CfgManager cfgManager;
 
-	public IssueToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+	public IssueDetailsToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull CfgManager cfgManager) {
 		super(false);
 		this.project = project;
@@ -204,7 +204,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		private SummaryPanel summaryPanel;
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
-		private IssueToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
+		private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
@@ -245,7 +245,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		public void modelChanged(JIRAIssueListModel m) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					refresh();
+//					refresh();
+					retrieveIssueFromModel();
+					issueReloaded();
 				}
 			});
 		}
@@ -288,14 +290,9 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 		}
 
 		public void refresh() {
+			retrieveIssueFromModel();
+
 			ServerData jiraServerCfg = getJiraServerCfg();
-			for (JIRAIssue i : params.model.getIssues()) {
-				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerCfg.getUrl())) {
-					params.issue = i;
-					ActiveIssueUtils.checkIssueState(project, i);
-					break;
-				}
-			}
 
 			if (params.issue != null && jiraServerCfg != null) {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
@@ -317,14 +314,30 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 
 					public void onSuccess() {
 						if (retrieved) {
-							descriptionAndCommentsPanel.refreshDescriptionAndComments();
-							detailsPanel.refresh();
-							summaryPanel.refresh();
-							reloadAvailableActions();
+							issueReloaded();
+							jiraIssueListModelBuilder.updateIssue(params.issue);
 						}
 					}
 				});
 			}
+		}
+
+		private void retrieveIssueFromModel() {
+			ServerData jiraServerCfg = getJiraServerCfg();
+			for (JIRAIssue i : params.model.getIssues()) {
+				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerCfg.getUrl())) {
+					params.issue = i;
+					ActiveIssueUtils.checkIssueState(project, i);
+					break;
+				}
+			}
+		}
+
+		private void issueReloaded() {
+			descriptionAndCommentsPanel.refreshDescriptionAndComments();
+			detailsPanel.refresh();
+			summaryPanel.refresh();
+			reloadAvailableActions();
 		}
 
 		void reloadAvailableActions() {
@@ -359,7 +372,8 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 											for (JIRAAction a : actions) {
 												actionGroup.addAction(
 														project,
-														new RunIssueActionAction(IssueToolWindow.IssuePanel.this, facade, issue,
+														new RunIssueActionAction(IssueDetailsToolWindow.IssuePanel.this, facade,
+																issue,
 																a, jiraIssueListModelBuilder));
 											}
 										}
@@ -752,7 +766,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.OneIssueToolBar");
 				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
-				toolbar.setTargetComponent(IssueToolWindow.IssuePanel.this);
+				toolbar.setTargetComponent(IssueDetailsToolWindow.IssuePanel.this);
 
 				JComponent comp = toolbar.getComponent();
 				add(comp, gbc);
@@ -793,7 +807,7 @@ public final class IssueToolWindow extends MultiTabToolWindow {
 				ActionManager manager = ActionManager.getInstance();
 				ActionGroup group = (ActionGroup) manager.getAction("ThePlugin.JiraIssues.CommentsToolBar");
 				ActionToolbar toolbar = manager.createActionToolbar(getContentKey(params), group, true);
-				toolbar.setTargetComponent(IssueToolWindow.IssuePanel.this);
+				toolbar.setTargetComponent(IssueDetailsToolWindow.IssuePanel.this);
 
 				JComponent comp = toolbar.getComponent();
 				rightPanel.add(comp, gbc);

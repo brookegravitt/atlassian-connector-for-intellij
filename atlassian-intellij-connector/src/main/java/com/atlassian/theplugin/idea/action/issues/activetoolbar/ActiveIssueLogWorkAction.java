@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,7 +33,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+				final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 				final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
 				if (activeIssue != null && panel != null) {
