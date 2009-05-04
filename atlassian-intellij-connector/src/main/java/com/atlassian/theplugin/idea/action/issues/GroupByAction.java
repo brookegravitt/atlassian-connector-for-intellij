@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.atlassian.theplugin.idea.ui.ComboWithLabel;
 import com.intellij.ide.DataManager;
@@ -29,7 +29,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 
 		Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
 		if (project != null) {
-			IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 			updateSelection(panel, combo);
 		}
 
@@ -38,12 +38,12 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 			public void actionPerformed(ActionEvent e) {
 				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
 				if (currentProject != null) {
-					IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
 					if (panel != null) {
 						panel.setGroupBy((JiraIssueGroupBy) combo.getSelectedItem());
 					} else {
 						LoggerImpl.getInstance().error(GroupByAction.class.getName() + ": cannot find "
-								+ IssuesToolWindowPanel.class);
+								+ IssueListToolWindowPanel.class);
 					}
 				} else {
 					System.out.println("current project is null");
@@ -67,7 +67,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
 		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
 			updateSelection(panel, jComboBox);
@@ -78,7 +78,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 		}
 	}
 
-	private void updateSelection(IssuesToolWindowPanel panel, JComboBox combo) {
+	private void updateSelection(IssueListToolWindowPanel panel, JComboBox combo) {
 		if (panel != null && !panel.getGroupBy().equals(combo.getSelectedItem())) {
 			combo.setSelectedItem(panel.getGroupBy());
 		}

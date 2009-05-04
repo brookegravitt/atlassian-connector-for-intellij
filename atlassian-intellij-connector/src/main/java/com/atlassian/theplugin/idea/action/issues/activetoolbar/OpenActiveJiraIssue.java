@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -44,7 +44,7 @@ public class OpenActiveJiraIssue extends AnAction {
 						.getCurrentProject(event);
 				final JIRAIssue issue;
 				if (currentProject != null) {
-					final IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
 					try {
 						issue = ActiveIssueUtils.getJIRAIssue(currentProject);
 						if (issue != null) {

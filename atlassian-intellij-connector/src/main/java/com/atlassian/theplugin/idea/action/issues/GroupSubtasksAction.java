@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 
@@ -12,7 +12,7 @@ import com.intellij.openapi.actionSystem.ToggleAction;
  */
 public class GroupSubtasksAction extends ToggleAction {
 	public boolean isSelected(AnActionEvent e) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null) {
 			return panel.isGroupSubtasksUnderParent();
 		}
@@ -20,7 +20,7 @@ public class GroupSubtasksAction extends ToggleAction {
 	}
 
 	public void setSelected(AnActionEvent e, boolean state) {
-		IssuesToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null) {
 			panel.setGroupSubtasksUnderParent(state);
 		}

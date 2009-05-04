@@ -19,7 +19,7 @@ import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -48,7 +48,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 			return;
 		}
 
-		final IssuesToolWindowPanel issuesWindow = IdeaHelper.getIssuesToolWindowPanel(e);
+		final IssueListToolWindowPanel issuesWindow = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (issuesWindow == null) {
 			return;
 		}
@@ -76,11 +76,11 @@ public class RecentlyOpenIssuesAction extends AnAction {
 
 	public static final class IssueListPopupStep extends BaseListPopupStep<JIRAIssue> {
 		private Project project;
-		private IssuesToolWindowPanel issuesWindow;
+		private IssueListToolWindowPanel issuesWindow;
 		private static final int LENGHT = 40;
 
 		public IssueListPopupStep(final String title, final List<JIRAIssue> issues,
-				final Project project, final IssuesToolWindowPanel issuesWindow) {
+				final Project project, final IssueListToolWindowPanel issuesWindow) {
 			super(title, issues);
 			this.project = project;
 			this.issuesWindow = issuesWindow;

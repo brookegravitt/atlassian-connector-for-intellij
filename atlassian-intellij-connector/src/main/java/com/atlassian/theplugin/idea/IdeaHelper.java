@@ -25,8 +25,8 @@ import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.IssueToolWindow;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
@@ -96,9 +96,9 @@ public final class IdeaHelper {
 	public static IntelliJProjectCfgManager getProjectCfgManager(AnActionEvent e) {
 		return getProjectComponent(e, IntelliJProjectCfgManager.class);
 	}
-	
-	public static IssuesToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
-		return getProjectComponent(event, IssuesToolWindowPanel.class);
+
+	public static IssueListToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
+		return getProjectComponent(event, IssueListToolWindowPanel.class);
 //		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
 //		if (pluginProjectComponent != null) {
 //			return pluginProjectComponent.getIssuesToolWindowPanel();
@@ -107,8 +107,8 @@ public final class IdeaHelper {
 //		return null;
 	}
 
-	public static IssuesToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
-		return getProjectComponent(project, IssuesToolWindowPanel.class);
+	public static IssueListToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
+		return getProjectComponent(project, IssueListToolWindowPanel.class);
 //		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
 //		if (pluginProjectComponent != null) {
 //			return pluginProjectComponent.getIssuesToolWindowPanel();
@@ -117,12 +117,12 @@ public final class IdeaHelper {
 //		return null;
 	}
 
-	public static IssueToolWindow getIssueToolWindow(AnActionEvent event) {
-		return getProjectComponent(event, IssueToolWindow.class);
+	public static IssueDetailsToolWindow getIssueToolWindow(AnActionEvent event) {
+		return getProjectComponent(event, IssueDetailsToolWindow.class);
 	}
 
-	public static IssueToolWindow getIssueToolWindow(@NotNull final Project project) {
-		return getProjectComponent(project, IssueToolWindow.class);
+	public static IssueDetailsToolWindow getIssueToolWindow(@NotNull final Project project) {
+		return getProjectComponent(project, IssueDetailsToolWindow.class);
 	}
 
 	public static CrucibleToolWindow getCrucibleToolWindow(@NotNull final Project project) {

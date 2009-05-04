@@ -52,9 +52,9 @@ import java.awt.event.*;
 import java.util.*;
 import java.util.List;
 
-public final class IssuesToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
+public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
-	public static final String PLACE_PREFIX = IssuesToolWindowPanel.class.getSimpleName();
+	public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
 	private IntelliJProjectCfgManager projectCfgManager;
 	private final CfgManager cfgManager;
 	private final PluginConfiguration pluginConfiguration;
@@ -91,7 +91,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 	private static final int ONE_SECOND = 1000;
 
-	public IssuesToolWindowPanel(@NotNull final Project project,
+	public IssueListToolWindowPanel(@NotNull final Project project,
 			@NotNull final IntelliJProjectCfgManager projectCfgManager,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
@@ -345,7 +345,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 									JPopupMenu pMenu = popup.getComponent();
 									if (pMenu.isVisible()) {
 										for (JIRAAction a : actions) {
-											submenu.add(new RunIssueActionAction(IssuesToolWindowPanel.this,
+											submenu.add(new RunIssueActionAction(IssueListToolWindowPanel.this,
 													jiraServerFacade, issue, a, jiraIssueListModelBuilder));
 										}
 
@@ -864,7 +864,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		 * Clear server model and refill it with all enabled servers' data
 		 */
 		public MetadataFetcherBackgroundableTask() {
-			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
+			super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
 			fillServerData();
 			jiraServerModel.clearAll();
 			refreshIssueList = true;
@@ -884,7 +884,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 		 * @param refreshIssueList refresh issue list
 		 */
 		public MetadataFetcherBackgroundableTask(final JiraServerCfg server, boolean refreshIssueList) {
-			super(IssuesToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
+			super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
 			this.servers = Arrays.asList(projectCfgManager.getServerData(server));
 			this.refreshIssueList = refreshIssueList;
 		}
@@ -1119,7 +1119,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 
 		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
 				ServerData jiraServer, boolean deactivateIssue) {
-			super(IssuesToolWindowPanel.this.getProject(),
+			super(IssueListToolWindowPanel.this.getProject(),
 					deactivateIssue ? "Stopping Work" : "Logging Work", false);
 
 			this.issue = issue;

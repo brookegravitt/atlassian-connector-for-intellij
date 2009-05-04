@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
-import com.atlassian.theplugin.idea.jira.IssuesToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -51,7 +51,7 @@ public class PluginToolWindow {
 	private ToolWindow ideaToolWindow;
 	private Project project;
 	private final ReviewsToolWindowPanel reviewsToolWindowPanel;
-	private final IssuesToolWindowPanel issuesToolWindowPanel;
+	private final IssueListToolWindowPanel issuesToolWindowPanel;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
 	public static final String TOOL_WINDOW_NAME = "Atlassian ";
@@ -85,7 +85,7 @@ public class PluginToolWindow {
 	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
-			@NotNull IssuesToolWindowPanel issuesToolWindowPanel) {
+			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
 		this.project = project;
