@@ -50,6 +50,7 @@ public class StatusBarPane extends JPanel implements StatusBar {
 		textPanel.setContentType("text/html");
 		textPanel.setEditable(false);
 		textPanel.setMargin(new Insets(5, 5, 5, 5));
+		textPanel.setFont(new JLabel().getFont());
 		textPanel.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(final HyperlinkEvent e) {
 				if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
