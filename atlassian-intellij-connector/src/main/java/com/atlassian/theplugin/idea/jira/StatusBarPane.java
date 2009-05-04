@@ -28,16 +28,16 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	private static final int PAD_Y = 8;
 	protected final Color defaultColor = this.getBackground();
 
-	protected JLabel pane = new JLabel();
-	protected JPanel statusPanel;
+	protected JLabel textPanel = new JLabel();
+	protected JPanel additionalPanel;
 
 	public StatusBarPane(String initialText) {
 
-		statusPanel = new JPanel();
-		statusPanel.setLayout(new FlowLayout());
+		additionalPanel = new JPanel();
+		additionalPanel.setLayout(new FlowLayout());
 
-		pane.setMinimumSize(ED_PANE_MINE_SIZE);
-		pane.setOpaque(false);
+		textPanel.setMinimumSize(ED_PANE_MINE_SIZE);
+		textPanel.setOpaque(false);
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -46,35 +46,35 @@ public class StatusBarPane extends JPanel implements StatusBar {
 		gbc.weightx = 1.0;
 		gbc.ipady = PAD_Y;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
-		add(pane, gbc);
+		add(textPanel, gbc);
 
 		gbc = new GridBagConstraints();
 		gbc.gridx = 1;
 		gbc.weightx = 0.0;
-		add(statusPanel, gbc);
+		add(additionalPanel, gbc);
 
 		setMessage(initialText, false);
 	}
 
 
 	public void addComponent(JComponent component) {
-		statusPanel.add(component);
+		additionalPanel.add(component);
 	}
 
 
 	public void setMessage(String message, boolean rightAlign) {
-		pane.setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);
-		pane.setText(" " + message);
-		pane.setBackground(defaultColor);
+		textPanel.setHorizontalAlignment(rightAlign ? SwingConstants.RIGHT : SwingConstants.LEFT);
+		textPanel.setText(" " + message);
+		textPanel.setBackground(defaultColor);
 		setBackground(defaultColor);
-		statusPanel.setBackground(defaultColor);
+		additionalPanel.setBackground(defaultColor);
 	}
 
 	public void setErrorMessage(String msg) {
-		statusPanel.setBackground(Constants.FAIL_COLOR);
-		pane.setHorizontalAlignment(SwingConstants.LEFT);
-		pane.setBackground(Constants.FAIL_COLOR);
+		additionalPanel.setBackground(Constants.FAIL_COLOR);
+		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
+		textPanel.setBackground(Constants.FAIL_COLOR);
 		setBackground(Constants.FAIL_COLOR);
-		pane.setText(" " + msg);
+		textPanel.setText(" " + msg);
 	}
 }
