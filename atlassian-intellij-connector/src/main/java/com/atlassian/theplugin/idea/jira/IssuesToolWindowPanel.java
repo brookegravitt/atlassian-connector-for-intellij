@@ -782,6 +782,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 								public void run() {
 									recentlyOpenIssuesCache.addIssue(createdIssue);
 //									jiraIssueListModelBuilder.updateIssue(createdIssue);
+									openIssue(createdIssue);
 									refreshIssues(true);
 								}
 							});
@@ -920,7 +921,7 @@ public final class IssuesToolWindowPanel extends PluginToolWindowPanel implement
 						jiraServerModel.getProjects(server);
 						setStatusMessage(serverStr + "Server data query finished");
 					} catch (RemoteApiException e) {
-						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true);
+						setStatusMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server), true, e);
 					} catch (JIRAException e) {
 						setStatusMessage("Cannot download details:" + e.getMessage(), true);
 					}
