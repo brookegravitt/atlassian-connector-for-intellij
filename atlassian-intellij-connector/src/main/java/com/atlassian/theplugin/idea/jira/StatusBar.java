@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
+import java.util.Collection;
+
 /**
  * User: pmaruszak
  */
@@ -22,4 +24,8 @@ public interface StatusBar {
 	void setInfoMessage(String message, boolean rightAlign);
 
 	void setErrorMessage(String msg);
+
+	void setErrorMessage(String msg, Throwable e);
+
+	void setErrorMessages(final String msg, final Collection<Throwable> exceptions);
 }

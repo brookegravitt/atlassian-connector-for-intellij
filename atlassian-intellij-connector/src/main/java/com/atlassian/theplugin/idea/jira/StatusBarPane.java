@@ -32,7 +32,6 @@ import java.util.List;
  */
 public class StatusBarPane extends JPanel implements StatusBar {
 	private static final Dimension ED_PANE_MINE_SIZE = new Dimension(200, 200);
-	private static final int PAD_Y = 8;
 	protected final Color defaultColor = this.getBackground();
 
 	protected JEditorPane textPanel = new JEditorPane();
