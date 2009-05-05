@@ -610,19 +610,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 							setStatusInfoMessage("Started progress on " + issue.getKey());
 							found = true;
-							jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 							break;
 						}
 					}
-					if (!found && issue.getStatusConstant().getId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
+					JIRAIssue newIssue = jiraServerFacade.getIssue(server, issue.getKey());
+					if (!found && newIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
 						setStatusInfoMessage("Progress on "
 								+ issue.getKey()
 								+ "  not started - no such workflow action available");
 					}
+					jiraIssueListModelBuilder.updateIssue(newIssue);
 				} catch (JIRAException e) {
 					setStatusErrorMessage("Error starting progress on issue: " + e.getMessage(), e);
-				} catch (NullPointerException e) {
-					// eeeem - now what?
 				}
 			}
 		};

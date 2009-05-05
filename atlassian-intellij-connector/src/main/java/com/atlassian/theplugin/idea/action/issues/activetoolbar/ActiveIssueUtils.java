@@ -297,7 +297,7 @@ public final class ActiveIssueUtils {
 				try {
 					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 					if (panel != null && jiraIssue != null) {
-						boolean isOk = true;
+						boolean isOk;
 						final JiraServerCfg jiraServer = ActiveIssueUtils.getJiraServer(project);
 
 						isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
