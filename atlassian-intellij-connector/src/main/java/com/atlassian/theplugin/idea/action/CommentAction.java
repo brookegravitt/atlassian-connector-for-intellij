@@ -20,28 +20,19 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CommentEditForm;
-import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.vfs.VirtualFile;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Date;
 
 /**
@@ -117,10 +108,6 @@ public class CommentAction extends AnAction {
 		if (editor == null) {
 			return;
 		}
-		final Project project = e.getData(DataKeys.PROJECT);
-		if (project == null) {
-			return;
-		}
 
 		final Document document = editor.getDocument();
 		final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
@@ -146,64 +133,27 @@ public class CommentAction extends AnAction {
 				return;
 			}
 
-			createLineComment(e, project, review, file, start, end, null, null);
+			createLineComment(e, review, file, start, end);
 		}
 	}
 
-	private void createLineComment(AnActionEvent event, final Project project, final ReviewAdapter review,
-                                   final CrucibleFileInfo file, final int start, final int end,
-                                   final VersionedCommentBean localCopy, final Throwable error) {
+	private void createLineComment(AnActionEvent event, final ReviewAdapter review,
+                                   final CrucibleFileInfo file, final int start, final int end) {
 
-		final VersionedCommentBean newComment;
-		if (localCopy != null) {
-			newComment = new VersionedCommentBean(localCopy);
-		} else {
-			newComment = new VersionedCommentBean();
-			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
-			if (file.getCommitType() == CommitType.Deleted) {
-				newComment.setFromStartLine(start);
-				newComment.setFromEndLine(end);
-				newComment.setFromLineInfo(true);
-			} else {
-				newComment.setToStartLine(start);
-				newComment.setToEndLine(end);
-				newComment.setToLineInfo(true);
-			}
-		}
+		final VersionedCommentBean newComment = new VersionedCommentBean();
+        newComment.setCreateDate(new Date());
+        newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+        if (file.getCommitType() == CommitType.Deleted) {
+            newComment.setFromStartLine(start);
+            newComment.setFromEndLine(end);
+            newComment.setFromLineInfo(true);
+        } else {
+            newComment.setToStartLine(start);
+            newComment.setToEndLine(end);
+            newComment.setToLineInfo(true);
+        }
 
         CommentTooltipPanel.showCommentTooltipPopup(event,
                 new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD));
-
-//		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
-//		dialog.pack();
-//		dialog.setModal(true);
-//		dialog.show();
-//		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-//			Task.Backgroundable task = new Task.Backgroundable(project, "Adding line comment", false) {
-//				public void run(@NotNull final ProgressIndicator indicator) {
-//					try {
-//						review.addVersionedComment(file, newComment);
-//						EventQueue.invokeLater(new Runnable() {
-//							public void run() {
-//								Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
-//								if (editor != null) {
-//									CommentHighlighter.highlightCommentsInEditor(project, editor, review, file, null);
-//								}
-//							}
-//						});
-//					} catch (final Exception ex) {
-//						ApplicationManager.getApplication().invokeLater(new Runnable() {
-//
-//							public void run() {
-//								createLineComment(e, project, review, file, start, end, newComment, ex);
-//							}
-//						});
-//					}
-//				}
-//			};
-//
-//			ProgressManager.getInstance().run(task);
-//		}
 	}
 }

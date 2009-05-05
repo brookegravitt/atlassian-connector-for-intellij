@@ -26,8 +26,6 @@ import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
-
 public class AddGeneralCommentAction extends AbstractCommentAction {
 
 	@Override
