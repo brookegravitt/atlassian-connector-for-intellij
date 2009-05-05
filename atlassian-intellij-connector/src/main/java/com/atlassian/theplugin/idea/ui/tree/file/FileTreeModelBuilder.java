@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -152,8 +153,9 @@ public final class FileTreeModelBuilder {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
 				model.insertNode(commentNode, node);
 
-				for (VersionedComment reply : c.getReplies()) {
-					model.insertNode(new VersionedCommentTreeNode(review, file, reply, action), commentNode);
+				for (Comment reply : c.getReplies()) {
+					model.insertNode(
+                            new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
 				}
 			}
 		}
@@ -164,8 +166,9 @@ public final class FileTreeModelBuilder {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);
 				model.insertNode(commentNode, node);
 
-				for (VersionedComment reply : c.getReplies()) {
-					model.insertNode(new VersionedCommentTreeNode(review, file, reply, action), commentNode);
+				for (Comment reply : c.getReplies()) {
+					model.insertNode(
+                            new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
 				}
 			}
 		}

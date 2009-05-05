@@ -18,22 +18,7 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomField;
-import com.atlassian.theplugin.commons.crucible.api.model.FileType;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
-import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewBean;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewerBean;
-import com.atlassian.theplugin.commons.crucible.api.model.State;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -124,8 +109,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
-			public List<GeneralComment> getReplies() {
-				List<GeneralComment> replies = new ArrayList<GeneralComment>();
+			public List<Comment> getReplies() {
+				List<Comment> replies = new ArrayList<Comment>();
 				if (reply != null) {
 					replies.add(reply);
 				}
@@ -145,9 +130,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		EasyMock.expect(mock.getPermId()).andReturn(permId).anyTimes();
 		EasyMock.expect(mock.getReviewItemId()).andReturn(itemId).anyTimes();
 		EasyMock.expect(mock.getMessage()).andReturn("").anyTimes();
-		EasyMock.expect(mock.getReplies()).andAnswer(new IAnswer<List<VersionedComment>>() {
-			public List<VersionedComment> answer() throws Throwable {
-				final List<VersionedComment> replies = new ArrayList<VersionedComment>();
+		EasyMock.expect(mock.getReplies()).andAnswer(new IAnswer<List<Comment>>() {
+			public List<Comment> answer() throws Throwable {
+				final List<Comment> replies = new ArrayList<Comment>();
 				if (reply != null) {
 					replies.add(reply);
 				}

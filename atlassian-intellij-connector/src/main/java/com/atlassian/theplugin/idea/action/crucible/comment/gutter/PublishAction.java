@@ -17,7 +17,7 @@ public class PublishAction extends AbstractGutterCommentAction {
 
 			public void run(final ProgressIndicator indicator) {
 				try {
-					review.publisVersionedComment(file, comment);
+					review.publishVersionedComment(file, comment);
 				} catch (RemoteApiException e) {
 					IdeaHelper.handleRemoteApiException(project, e);
 				} catch (ServerPasswordNotProvidedException e) {

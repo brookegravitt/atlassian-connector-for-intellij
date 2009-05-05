@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 
@@ -25,8 +26,8 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 						GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, c, null);
 						addNode(commentNode);
 
-						for (GeneralComment reply : c.getReplies()) {
-							commentNode.addNode(new GeneralCommentTreeNode(review, reply, null));
+						for (Comment reply : c.getReplies()) {
+							commentNode.addNode(new GeneralCommentTreeNode(review, (GeneralComment) reply, null));
 						}
 					}
 				}

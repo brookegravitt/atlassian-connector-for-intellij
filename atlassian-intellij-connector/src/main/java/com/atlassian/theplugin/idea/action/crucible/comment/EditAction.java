@@ -19,6 +19,8 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
@@ -49,100 +51,109 @@ public class EditAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
-	public void actionPerformed(AnActionEvent e) {
-		Project currentProject = e.getData(DataKeys.PROJECT);
-		AtlassianTreeNode node = getSelectedNode(e);
+	public void actionPerformed(AnActionEvent event) {
+		Project currentProject = event.getData(DataKeys.PROJECT);
+		AtlassianTreeNode node = getSelectedNode(event);
 		if (node != null && currentProject != null) {
-			editComment(currentProject, node);
+			editComment(event, currentProject, node);
 		}
 	}
 
 
-	private void editComment(Project project, AtlassianTreeNode treeNode) {
+	private void editComment(AnActionEvent event, Project project, AtlassianTreeNode treeNode) {
 		if (treeNode instanceof GeneralCommentTreeNode) {
 			GeneralCommentTreeNode node = (GeneralCommentTreeNode) treeNode;
 			GeneralComment comment = node.getComment();
-			editGeneralComment(project, node.getReview(), comment, null, null);
+            GeneralComment parent =
+                    comment.isReply() ? ((GeneralCommentTreeNode) node.getParent()).getComment() : null;
+			editGeneralComment(event, project, node.getReview(), comment, parent, null, null);
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
 			VersionedComment comment = node.getComment();
-			editVersionedComment(project, node.getReview(), node.getFile(), comment, null, null);
+            VersionedComment parent =
+                    comment.isReply() ? ((VersionedCommentTreeNode) node.getParent()).getComment() : null;
+			editVersionedComment(event, project, node.getReview(), node.getFile(), comment, parent, null, null);
 		}
 	}
 
-	private void editGeneralComment(final Project project, final ReviewAdapter review, final GeneralComment comment,
-			GeneralCommentBean localCopy, final Throwable error) {
+	private void editGeneralComment(AnActionEvent event, final Project project, final ReviewAdapter review,
+                                    final GeneralComment comment, final GeneralComment parent,
+                                    GeneralCommentBean localCopy, final Throwable error) {
 
-		final GeneralCommentBean localData;
-		if (localCopy == null) {
-			localData = new GeneralCommentBean(comment);
-		} else {
-			localData = localCopy;
-		}
-
-		final CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-
-			Task.Backgroundable task = new Task.Backgroundable(project, "Editing General Comment", false) {
-
-				public void run(@NotNull final ProgressIndicator indicator) {
-
-					try {
-						review.editGeneralComment(localData);
-					} catch (final Exception e) {
-						ApplicationManager.getApplication().invokeLater(new Runnable() {
-
-							public void run() {
-								editGeneralComment(project, review, comment, localData, e);
-							}
-						});
-					}
-				}
-			};
-
-			ProgressManager.getInstance().run(task);
-		}
+        CommentTooltipPanel.showCommentTooltipPopup(event,
+                new CommentTooltipPanelWithRunners(event, review, null, comment, parent, CommentTooltipPanel.Mode.EDIT));
+//		final GeneralCommentBean localData;
+//		if (localCopy == null) {
+//			localData = new GeneralCommentBean(comment);
+//		} else {
+//			localData = localCopy;
+//		}
+//
+//		final CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
+//		dialog.pack();
+//		dialog.setModal(true);
+//		dialog.show();
+//		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+//
+//			Task.Backgroundable task = new Task.Backgroundable(project, "Editing General Comment", false) {
+//
+//				public void run(@NotNull final ProgressIndicator indicator) {
+//
+//					try {
+//						review.editGeneralComment(localData);
+//					} catch (final Exception e) {
+//						ApplicationManager.getApplication().invokeLater(new Runnable() {
+//
+//							public void run() {
+//								editGeneralComment(project, review, comment, localData, e);
+//							}
+//						});
+//					}
+//				}
+//			};
+//
+//			ProgressManager.getInstance().run(task);
+//		}
 	}
 
-	// PL-25
-	private void editVersionedComment(final Project project, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment,
+	private void editVersionedComment(AnActionEvent event, final Project project, final ReviewAdapter review,
+			final CrucibleFileInfo file, final VersionedComment comment, final VersionedComment parent,
 			VersionedCommentBean localCopy, Throwable error) {
 
-		final VersionedCommentBean localData;
-		if (localCopy == null) {
-			localData = new VersionedCommentBean(comment);
-		} else {
-			localData = localCopy;
-		}
+        CommentTooltipPanel.showCommentTooltipPopup(event,
+                new CommentTooltipPanelWithRunners(event, review, file, comment, parent, CommentTooltipPanel.Mode.EDIT));
 
-		CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-
-			Task.Backgroundable task = new Task.Backgroundable(project, "Editing File Comment", false) {
-
-				public void run(@NotNull final ProgressIndicator indicator) {
-
-					try {
-						review.editVersionedComment(file, localData);
-					} catch (final Exception e) {
-						ApplicationManager.getApplication().invokeLater(new Runnable() {
-
-							public void run() {
-								editVersionedComment(project, review, file, comment, localData, e);
-							}
-						});
-					}
-				}
-			};
-
-			ProgressManager.getInstance().run(task);
-		}
+//		final VersionedCommentBean localData;
+//		if (localCopy == null) {
+//			localData = new VersionedCommentBean(comment);
+//		} else {
+//			localData = localCopy;
+//		}
+//
+//		CommentEditForm dialog = new CommentEditForm(project, review, localData, error);
+//		dialog.pack();
+//		dialog.setModal(true);
+//		dialog.show();
+//		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+//
+//			Task.Backgroundable task = new Task.Backgroundable(project, "Editing File Comment", false) {
+//
+//				public void run(@NotNull final ProgressIndicator indicator) {
+//
+//					try {
+//						review.editVersionedComment(file, localData);
+//					} catch (final Exception e) {
+//						ApplicationManager.getApplication().invokeLater(new Runnable() {
+//
+//							public void run() {
+//								editVersionedComment(project, review, file, comment, localData, e);
+//							}
+//						});
+//					}
+//				}
+//			};
+//
+//			ProgressManager.getInstance().run(task);
+//		}
 	}
 }
