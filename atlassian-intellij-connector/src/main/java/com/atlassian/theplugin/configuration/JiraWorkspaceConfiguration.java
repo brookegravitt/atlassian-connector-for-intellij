@@ -77,7 +77,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
 		if (issue != null) {
 			String issueKey = issue.getKey();
-			String serverId = issue.getServer().getServerId().toString();
+			String serverId = issue.getServer().getServerId();
 
 			// add element and make sure it is not duplicated and it is insterted at the top
 			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);
