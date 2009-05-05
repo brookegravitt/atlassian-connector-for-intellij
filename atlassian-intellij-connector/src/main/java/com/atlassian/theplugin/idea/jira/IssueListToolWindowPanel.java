@@ -411,6 +411,21 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				private Throwable exception;
 
 				@Override
+				public void run(@NotNull ProgressIndicator progressIndicator) {
+					progressIndicator.setIndeterminate(true);
+					try {
+						if (jiraServer != null) {
+							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+							jiraIssueListModelBuilder.updateIssue(issue);
+						} else {
+							exception = new RuntimeException("No JIRA server defined!");
+						}
+					} catch (JIRAException e) {
+						exception = e;
+					}
+				}
+
+				@Override
 				public void onSuccess() {
 					if (getProject().isDisposed()) {
 						return;
@@ -423,21 +438,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					}
 					if (issue != null) {
 						openIssue(issue);
-					}
-				}
-
-				@Override
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					progressIndicator.setIndeterminate(true);
-					try {
-						if (jiraServer != null) {
-							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
-							jiraIssueListModelBuilder.updateIssue(issue);
-						} else {
-							exception = new RuntimeException("No JIRA server defined!");
-						}
-					} catch (JIRAException e) {
-						exception = e;
 					}
 				}
 			};

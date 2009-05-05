@@ -128,6 +128,11 @@ public class RecentlyOpenIssuesCache {
 		return null;
 	}
 
+	public void updateIssue(final JIRAIssue issue) {
+		// old value is replaced
+		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey()), issue);
+	}
+
 	private class LocalModelListener implements JIRAIssueListModelListener {
 
 		public void modelChanged(final JIRAIssueListModel model) {

@@ -172,6 +172,11 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		try {
 //			JIRAIssue updatedIssue = facade.getIssueUpdate(jiraServerCfg, issue);
 			JIRAIssue updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
+
+			if (recentlyOpenIssuesCache != null) {
+				recentlyOpenIssuesCache.updateIssue(updatedIssue);
+			}
+
 			model.updateIssue(updatedIssue);
 		} finally {
 			model.setModelFrozen(false);
@@ -187,6 +192,10 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public synchronized void updateIssue(final JIRAIssue issue) {
 		if (model == null) {
 			return;
+		}
+
+		if (recentlyOpenIssuesCache != null) {
+			recentlyOpenIssuesCache.updateIssue(issue);
 		}
 
 		model.setModelFrozen(true);
