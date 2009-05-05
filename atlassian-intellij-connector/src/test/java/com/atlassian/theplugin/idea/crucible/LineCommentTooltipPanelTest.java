@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -28,7 +27,7 @@ public class LineCommentTooltipPanelTest {
 		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerId().toString(), "zenon", "", ""));
 		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
 		ra.setFacade(new MyNullFacade());
-		final VersionedCommentBean comment = new VersionedCommentBean();
+		final CommentBean comment = new VersionedCommentBean();
 		User author = new UserBean("zenon", "Zenon User");
 
 		comment.setAuthor(author);
@@ -57,43 +56,64 @@ public class LineCommentTooltipPanelTest {
 			}
 		}
 
-		SwingAppRunner.run(new LineCommentTooltipPanel(ra, file, comment, true) {
-			@Override
-			protected void addNewReply(VersionedComment parent, String text, boolean draft) {
+		SwingAppRunner.run(new CommentTooltipPanel(ra, file, comment, null, CommentTooltipPanel.Mode.SHOW, true) {
+
+            protected void addNewComment(Comment comment, boolean draft) {
+            }
+
+            @Override
+			protected void addNewReply(Comment parent, String text, boolean draft) {
 				try {
-					VersionedCommentBean reply = createReply(comment, text);
+					CommentBean reply = createReply(comment, text);
 					reply.setDraft(draft);
-					ra.addVersionedCommentReply(file, parent, reply);
+                    if (comment instanceof VersionedComment) {
+                        ra.addVersionedCommentReply(file, (VersionedComment) parent, (VersionedCommentBean) reply);
+                    } else {
+                        ra.addGeneralCommentReply((GeneralComment) parent, (GeneralCommentBean) reply);
+                    }
 				} catch (Exception e) {
 					e.printStackTrace();
-					setStatusText(e.getMessage());
+					setStatusText(e.getMessage(), true);
 				}
 			}
 
 			@Override
-			protected void updateComment(VersionedComment comment, String text) {
+			protected void updateComment(Comment comment, String text) {
 				try {
-					VersionedCommentBean vcb = (VersionedCommentBean) comment;
+					CommentBean vcb = (CommentBean) comment;
 					vcb.setMessage(text);
-					ra.editVersionedComment(file, comment);
+
+                    if (comment instanceof VersionedComment) {
+    					ra.editVersionedComment(file, (VersionedComment) comment);
+                    } else {
+                        ra.editGeneralComment((GeneralComment) comment);
+                    }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
 			@Override
-			protected void removeComment(VersionedComment comment) {
+			protected void removeComment(Comment comment) {
 				try {
-					ra.removeVersionedComment(comment, file);
+                    if (comment instanceof VersionedComment) {
+    					ra.removeVersionedComment((VersionedComment) comment, file);
+                    } else {
+                        ra.removeGeneralComment((GeneralComment) comment);
+                    }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
 			@Override
-			protected void publishComment(VersionedComment comment) {
+			protected void publishComment(Comment comment) {
 				try {
-					ra.publisVersionedComment(file, comment);
+                    if (comment instanceof VersionedComment) {
+					    ra.publishVersionedComment(file, (VersionedComment) comment);
+                    } else {
+                        ra.publishGeneralComment((GeneralComment) comment);
+                    }
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -101,8 +121,8 @@ public class LineCommentTooltipPanelTest {
 		}, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
 	}
 
-	private static VersionedCommentBean createReply(VersionedComment parent, String txt) {
-		VersionedCommentBean reply = new VersionedCommentBean();
+	private static CommentBean createReply(Comment parent, String txt) {
+		CommentBean reply = new VersionedCommentBean();
 		User replyAuthor = new UserBean("juzef", "Juzef Morda");
 		reply.setAuthor(replyAuthor);
 		reply.setMessage(txt);

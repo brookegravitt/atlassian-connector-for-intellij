@@ -22,9 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CommentEditForm;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
+import com.atlassian.theplugin.idea.crucible.*;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -45,7 +43,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	public void actionPerformed(AnActionEvent e) {
 		Project currentProject = e.getData(DataKeys.PROJECT);
 		if (currentProject != null && getReview(e) != null) {
-			addGeneralComment(currentProject, getReview(e), null, null);
+			addGeneralComment(e, currentProject, getReview(e), null, null);
 		}
 	}
 
@@ -83,41 +81,44 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 		return true;
 	}
 
-	private void addGeneralComment(final Project project, final ReviewAdapter review, final GeneralCommentBean localCopy,
-			final Throwable error) {
+	private void addGeneralComment(AnActionEvent event, final Project project, final ReviewAdapter review,
+                                   final GeneralCommentBean localCopy, final Throwable error) {
 		final GeneralCommentBean newComment;
-		if (localCopy != null) {
-			newComment = new GeneralCommentBean(localCopy);
-		} else {
+//		if (localCopy != null) {
+//			newComment = new GeneralCommentBean(localCopy);
+//		} else {
 			newComment = new GeneralCommentBean();
-		}
+//		}
 
-		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
-		dialog.setTitle("Add General Comment");
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.show();
-		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
-			newComment.setCreateDate(new Date());
-			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+        CommentTooltipPanel.showCommentTooltipPopup(event,
+                new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD));
 
-			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
-
-				@Override
-				public void run(@NotNull final ProgressIndicator indicator) {
-					try {
-						review.addGeneralComment(newComment);
-					} catch (final Exception e) {
-						ApplicationManager.getApplication().invokeLater(new Runnable() {
-
-							public void run() {
-								addGeneralComment(project, review, newComment, e);
-							}
-						});
-					}
-				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
+//		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
+//		dialog.setTitle("Add General Comment");
+//		dialog.pack();
+//		dialog.setModal(true);
+//		dialog.show();
+//		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
+//			newComment.setCreateDate(new Date());
+//			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+//
+//			Task.Backgroundable task = new Task.Backgroundable(project, "Adding General Comment", false) {
+//
+//				@Override
+//				public void run(@NotNull final ProgressIndicator indicator) {
+//					try {
+//						review.addGeneralComment(newComment);
+//					} catch (final Exception e) {
+//						ApplicationManager.getApplication().invokeLater(new Runnable() {
+//
+//							public void run() {
+//								addGeneralComment(project, review, newComment, e);
+//							}
+//						});
+//					}
+//				}
+//			};
+//			ProgressManager.getInstance().run(task);
+//		}
 	}
 }

@@ -4,7 +4,8 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
-import com.atlassian.theplugin.idea.crucible.LineCommentTooltipPanel;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
@@ -43,7 +44,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 				.append(CommentDateUtil.getDateText(comment.getCreateDate()))
 				.append("</i>:<br>")
 				.append(comment.getMessage().replace("\n", "<br>"));
-		for (VersionedComment versionedComment : comment.getReplies()) {
+		for (Comment versionedComment : comment.getReplies()) {
 			s.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>")
 					.append(versionedComment.getAuthor().getDisplayName())
 					.append("</b> replied <i> on ")
@@ -104,135 +105,10 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	}
 
 	private class ClickAction extends AnAction {
-		private static final String ADDING_COMMENT_FAILED = "Adding comment failed: ";
-		private static final String UPDATING_COMMENT_FAILED = "Updating comment failed: ";
-		private static final String REMOVING_COMMENT_FAILED = "Removing comment failed: ";
-		private static final String PUBLISHING_COMMENT_FAILED = "Publishing comment failed: ";
-
 		public void actionPerformed(final AnActionEvent e) {
-
-			LineCommentTooltipPanel lctp =
-					new LineCommentTooltipPanel(review, fileInfo, comment) {
-						protected void addNewReply(final VersionedComment parent, String text, boolean draft) {
-							final VersionedCommentBean reply = createReplyBean(text);
-							reply.setDraft(draft);
-
-							boolean fail = false;
-							// test of PL-1285
-//							String test = System.getProperty("PL-1285");
-//							if (test != null && test.equals("yes")) {
-//								fail = true;
-//							}
-
-//							runAddReplyTask(parent, reply, e, this, fail);
-							runAddReplyTask(parent, reply, e, this);
-						}
-
-						protected void updateComment(final VersionedComment cmt, String text) {
-							final VersionedCommentBean commentBean = (VersionedCommentBean) cmt;
-							commentBean.setMessage(text);
-//					commentBean.getCustomFields().clear();
-//					for (String key : cmt.getCustomFields().keySet()) {
-//						commentBean.getCustomFields().put(key, cmt.getCustomFields().get(key));
-//					}
-							runUpdateCommandTask(commentBean, e, this);
-						}
-
-						protected void removeComment(final VersionedComment aComment) {
-							runRemoveCommentTask(aComment, e, this);
-						}
-
-						protected void publishComment(VersionedComment aComment) {
-							runPublishCommentTask(aComment, e, this);
-						}
-					};
-			LineCommentTooltipPanel.showCommentTooltipPopup(e, lctp);
-		}
-
-		private void runRemoveCommentTask(final VersionedComment aComment, final AnActionEvent anActionEvent,
-				final LineCommentTooltipPanel panel) {
-			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-					"Removing comment", false) {
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					try {
-						review.removeVersionedComment(aComment, fileInfo);
-					} catch (Exception e) {
-						panel.setStatusText(REMOVING_COMMENT_FAILED + e.getMessage());
-					}
-				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
-
-		private void runUpdateCommandTask(final VersionedCommentBean commentBean, final AnActionEvent anActionEvent,
-				final LineCommentTooltipPanel panel) {
-			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-					"Updating comment", false) {
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					try {
-						review.editVersionedComment(fileInfo, commentBean);
-					} catch (Exception e) {
-						panel.setStatusText(UPDATING_COMMENT_FAILED + e.getMessage());
-						panel.resumeEditing(commentBean);
-					}
-				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
-
-//		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
-//									 final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel,
-
-		//									 final boolean fail) {
-
-		private void runAddReplyTask(final VersionedComment parent, final VersionedCommentBean reply,
-				final AnActionEvent anActionEvent, final LineCommentTooltipPanel panel) {
-			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-					"Adding new comment reply", false) {
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					try {
-//						if (fail) {
-//							throw new Exception(
-//									"Very Very Long Comment, Very Very Long Comment, "
-//									+ "Very Very Long Comment, Very Very Long Comment");
-//						} else {
-						review.addVersionedCommentReply(fileInfo, parent, reply);
-//						}
-					} catch (Exception e) {
-						panel.setStatusText(ADDING_COMMENT_FAILED + e.getMessage());
-						panel.resumeAdding(reply);
-					}
-				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
-
-		private void runPublishCommentTask(final VersionedComment aComment, AnActionEvent anActionEvent,
-				final LineCommentTooltipPanel panel) {
-			Task.Backgroundable task = new Task.Backgroundable(IdeaHelper.getCurrentProject(anActionEvent),
-					"Publishing comment", false) {
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					try {
-						review.publisVersionedComment(fileInfo, aComment);
-					} catch (Exception e) {
-						panel.setStatusText(PUBLISHING_COMMENT_FAILED + e.getMessage());
-						panel.setAllButtonsVisible();
-					}
-				}
-			};
-			ProgressManager.getInstance().run(task);
-		}
-	}
-
-	private VersionedCommentBean createReplyBean(String text) {
-		final VersionedCommentBean reply = new VersionedCommentBean();
-		reply.setMessage(text);
-		reply.setAuthor(new UserBean(review.getServerData().getUserName()));
-		reply.setDefectRaised(false);
-		reply.setDefectApproved(false);
-		reply.setDeleted(false);
-		reply.setDraft(false);
-		return reply;
+			CommentTooltipPanel lctp = new CommentTooltipPanelWithRunners(e, review, fileInfo, comment, null);
+            CommentTooltipPanel.showCommentTooltipPopup(e, lctp);
+        }
 	}
 
 	protected boolean checkIfDraftAndAuthor() {
