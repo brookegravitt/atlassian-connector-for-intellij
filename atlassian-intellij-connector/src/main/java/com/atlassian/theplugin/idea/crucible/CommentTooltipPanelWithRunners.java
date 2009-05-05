@@ -68,11 +68,11 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
         runAddCommentTask(newComment, this);
     }
 
-    protected void addNewReply(final Comment parent, String text, boolean draft) {
-        final CommentBean reply = createReplyBean(parent, text);
+    protected void addNewReply(final Comment parentComment, String text, boolean draft) {
+        final CommentBean reply = createReplyBean(parentComment, text);
         reply.setDraft(draft);
 
-        runAddReplyTask(parent, reply, this);
+        runAddReplyTask(parentComment, reply, this);
     }
 
     protected void updateComment(final Comment cmt, String text) {

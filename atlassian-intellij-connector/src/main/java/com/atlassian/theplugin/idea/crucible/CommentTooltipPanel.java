@@ -330,7 +330,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				createDeleteButton(cc);
 			}
 
-			createCommentBody(cc, indent);
+			createCommentBody(cc);
 
 			if (this.comment != null && !this.comment.isReply()) {
 				createDefectClassificationPanel(cc);
@@ -340,9 +340,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 			validate();
 		}
 
-        private void createCommentInfoComponents(Comment comment) {
+        private void createCommentInfoComponents(Comment cmt) {
             CellConstraints cc = new CellConstraints();
-            JLabel user = new JLabel(comment.getAuthor().getDisplayName());
+            JLabel user = new JLabel(cmt.getAuthor().getDisplayName());
             user.setFont(user.getFont().deriveFont(Font.BOLD));
             user.setMinimumSize(new Dimension(0, 0));
             add(user, cc.xy(indent ? USER_POS : TWIXIE_2_POS, 1));
@@ -359,7 +359,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             setCommentDate();
             add(creationDate, cc.xy(DATE_POS, 1));
 
-            if (comment.isDraft()) {
+            if (cmt.isDraft()) {
                 draftLabel = new WhiteLabel();
                 draftLabel.setForeground(Color.GRAY);
                 draftLabel.setText("(Draft)");
@@ -375,12 +375,12 @@ public abstract class CommentTooltipPanel extends JPanel {
             updateDefectField();
         }
 
-        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter review) {
+        private void addEmptyReplyPanelAndSetupButtons(ReviewAdapter rev) {
             setButtonsVisible(false);
             if (btnEdit != null) {
                 btnEdit.setVisible(false);
             }
-            addCommentReplyPanel(review, null, true);
+            addCommentReplyPanel(rev, null, true);
             setStatusText(" ", false);
         }
 
@@ -389,7 +389,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			defectLabel.setVisible(comment.isDefectRaised());
 		}
 
-		private void createCommentBody(CellConstraints cc, boolean indent) {
+		private void createCommentBody(CellConstraints cc) {
 			commentBody.setOpaque(true);
 			commentBody.setContentType("text/plain");
 			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -743,7 +743,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 	protected abstract void addNewComment(Comment comment, boolean draft);
 
-    protected abstract void addNewReply(Comment parent, String text, boolean draft);
+    protected abstract void addNewReply(Comment parentComment, String text, boolean draft);
 
 	protected abstract void updateComment(Comment comment, String text);
 
@@ -754,9 +754,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 
         @Override
-        public void createdOrEditedGeneralCommentReply(ReviewAdapter review, GeneralComment parentComment,
+        public void createdOrEditedGeneralCommentReply(ReviewAdapter rev, GeneralComment parentComment,
                                                        GeneralComment comment) {
-            createdOrEditedCommentReply(review, null, parentComment, comment);
+            createdOrEditedCommentReply(rev, null, parentComment, comment);
         }
 
         public void createdOrEditedVersionedCommentReply(final ReviewAdapter rev, final PermId file,
@@ -816,8 +816,8 @@ public abstract class CommentTooltipPanel extends JPanel {
         }
 
         @Override
-        public void createdOrEditedGeneralComment(ReviewAdapter review, GeneralComment comment) {
-            createdOrEditedComment(review, null, comment);
+        public void createdOrEditedGeneralComment(ReviewAdapter rev, GeneralComment comment) {
+            createdOrEditedComment(rev, null, comment);
         }
 
         public void createdOrEditedVersionedComment(final ReviewAdapter rev, final PermId file,

@@ -62,14 +62,14 @@ public class LineCommentTooltipPanelTest {
             }
 
             @Override
-			protected void addNewReply(Comment parent, String text, boolean draft) {
+			protected void addNewReply(Comment parentComment, String text, boolean draft) {
 				try {
 					CommentBean reply = createReply(comment, text);
 					reply.setDraft(draft);
                     if (comment instanceof VersionedComment) {
-                        ra.addVersionedCommentReply(file, (VersionedComment) parent, (VersionedCommentBean) reply);
+                        ra.addVersionedCommentReply(file, (VersionedComment) parentComment, (VersionedCommentBean) reply);
                     } else {
-                        ra.addGeneralCommentReply((GeneralComment) parent, (GeneralCommentBean) reply);
+                        ra.addGeneralCommentReply((GeneralComment) parentComment, (GeneralCommentBean) reply);
                     }
 				} catch (Exception e) {
 					e.printStackTrace();
