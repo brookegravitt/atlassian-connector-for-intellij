@@ -52,6 +52,8 @@
         <rowspec value="center:max(d;4px):noGrow"/>
         <rowspec value="top:3dlu:noGrow"/>
         <rowspec value="center:max(d;4px):noGrow"/>
+        <rowspec value="top:4dlu:noGrow"/>
+        <rowspec value="center:max(d;4px):noGrow"/>
         <colspec value="fill:d:noGrow"/>
         <colspec value="left:4dlu:noGrow"/>
         <colspec value="fill:300px:grow"/>
@@ -159,16 +161,6 @@
             </constraints>
             <properties/>
           </component>
-          <component id="94051" class="javax.swing.JCheckBox" binding="allowCheckBox">
-            <constraints>
-              <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
-              <forms/>
-            </constraints>
-            <properties>
-              <enabled value="true"/>
-              <text value="Allow anyone to join"/>
-            </properties>
-          </component>
           <grid id="e63af" layout-manager="BorderLayout" hgap="0" vgap="0">
             <constraints>
               <grid row="0" column="6" row-span="7" col-span="1" vsize-policy="1" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -192,13 +184,42 @@
           </grid>
           <component id="d2e30" class="javax.swing.JLabel">
             <constraints>
-              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false">
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="5" fill="0" indent="0" use-parent-layout="false">
                 <preferred-size width="72" height="16"/>
               </grid>
-              <forms defaultalign-vert="false"/>
+              <forms defaultalign-horz="false" defaultalign-vert="false"/>
             </constraints>
             <properties>
-              <text value="Reviewers:"/>
+              <text value="Reviewers: "/>
+            </properties>
+          </component>
+          <component id="94051" class="javax.swing.JCheckBox" binding="allowCheckBox">
+            <constraints>
+              <grid row="10" column="6" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+              <forms/>
+            </constraints>
+            <properties>
+              <enabled value="true"/>
+              <text value="Allow anyone to join"/>
+            </properties>
+          </component>
+          <component id="3641d" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="8" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties>
+              <text value="Selected: "/>
+            </properties>
+          </component>
+          <component id="93c2b" class="javax.swing.JLabel" binding="selectedReviewers">
+            <constraints>
+              <grid row="8" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="7" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <forms defaultalign-horz="false"/>
+            </constraints>
+            <properties>
+              <horizontalTextPosition value="2"/>
+              <text value="None"/>
             </properties>
           </component>
         </children>
