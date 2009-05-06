@@ -29,22 +29,23 @@ import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
-import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
-import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.*;
+import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -297,6 +298,21 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, projectCfgManager,
 					CfgUtil.getProjectId(project)));
 
+            new TreeSpeedSearch(reviewTree) {
+                @Override
+                protected boolean isMatchingElement(Object o, String s) {
+                    TreePath tp = (TreePath) o;
+                    Object node = tp.getLastPathComponent();
+                    if (node instanceof CrucibleReviewTreeNode) {
+                        ReviewTreeNode rtn = (ReviewTreeNode) node;
+                        ReviewAdapter review = rtn.getReview();
+                        return review.getPermId().getId().toLowerCase().contains(s.toLowerCase())
+                                || review.getName().toLowerCase().contains(s.toLowerCase());
+                    } else {
+                        return super.isMatchingElement(o, s);
+                    }
+                }
+            };
 		}
 		return reviewTree;
 	}
