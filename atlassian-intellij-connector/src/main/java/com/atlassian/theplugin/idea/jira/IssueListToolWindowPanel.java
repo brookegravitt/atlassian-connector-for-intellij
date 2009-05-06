@@ -19,6 +19,7 @@ import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
+import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
@@ -1046,7 +1047,21 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	public JTree createRightTree() {
 		JiraIssueListTree issueTree = new JiraIssueListTree();
 
-		new TreeSpeedSearch(issueTree);
+		new TreeSpeedSearch(issueTree) {
+            @Override
+            protected boolean isMatchingElement(Object o, String s) {
+                TreePath tp = (TreePath) o;
+                Object node = tp.getLastPathComponent();
+                if (node instanceof JIRAIssueTreeNode) {
+                    JIRAIssueTreeNode jitn = (JIRAIssueTreeNode) node;
+                    JIRAIssue issue = jitn.getIssue();
+                    return issue.getKey().toLowerCase().contains(s.toLowerCase())
+                            || issue.getSummary().toLowerCase().contains(s.toLowerCase());
+                } else {
+                    return super.isMatchingElement(o, s);
+                }
+            }
+        };
 
 		issueTreeBuilder.rebuild(issueTree, getRightPanel());
 		return issueTree;
