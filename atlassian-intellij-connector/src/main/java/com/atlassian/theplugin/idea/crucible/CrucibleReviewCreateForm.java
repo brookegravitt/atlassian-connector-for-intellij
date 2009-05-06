@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -43,6 +42,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.ListSpeedSearch;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,6 +69,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	private JCheckBox leaveAsDraftCheckBox;
 	private JPanel customComponentPanel;
 	private JLabel repositoryLabel;
+	private JLabel selectedReviewers;
 	private DefaultListModel model;
 	private UserListCellRenderer cellRenderer = new UserListCellRenderer();
 
@@ -197,10 +198,59 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 				}
 			}
 			reviewersList.setModel(model);
+
+			Collection<UserListItem> displayedSelectedUsers = new ArrayList<UserListItem>();
+			Collection<UserListItem> allSelectedUsers = new ArrayList<UserListItem>();
+			for (int i = 0; i < reviewersList.getModel().getSize(); ++i) {
+				UserListItem user = (UserListItem) reviewersList.getModel().getElementAt(i);
+				if (user.isSelected()) {
+					allSelectedUsers.add(user);
+					displayedSelectedUsers.add(user);
+
+					String displayStr = prepareSelectedReviewersString(displayedSelectedUsers, allSelectedUsers);
+					int displayStrWidth = selectedReviewers.getFontMetrics(selectedReviewers.getFont()).stringWidth(displayStr);
+
+					if (displayStrWidth > reviewersList.getWidth()) {
+						displayedSelectedUsers.remove(user);
+					}
+				}
+			}
+
+			if (displayedSelectedUsers.size() == 0) {
+				this.selectedReviewers.setText("None");
+				this.selectedReviewers.setToolTipText(null);
+			} else {
+				String labelText = prepareSelectedReviewersString(displayedSelectedUsers, allSelectedUsers);
+				if (displayedSelectedUsers.size() < allSelectedUsers.size()) {
+					labelText += " ...";
+				}
+				this.selectedReviewers.setText(labelText);
+				this.selectedReviewers.setToolTipText(prepareSelectedReviewersTooltip(allSelectedUsers));
+			}
+
 			reviewersList.revalidate();
 			reviewersList.repaint();
 		}
 		getOKAction().setEnabled(isValidForm());
+	}
+
+	private String prepareSelectedReviewersTooltip(final Collection<UserListItem> selectedUsersTooltip) {
+		StringBuilder ret = new StringBuilder("<html>");
+
+		for (UserListItem user : selectedUsersTooltip) {
+			ret.append(user.getUser().getDisplayName());
+			ret.append("<br />");
+		}
+
+		ret.append("</html>");
+
+		return ret.toString();
+	}
+
+	private String prepareSelectedReviewersString(final Collection<UserListItem> selectedUsersLabel,
+			final Collection<UserListItem> allSelectedUsers) {
+		return "(" + allSelectedUsers.size() + " of " + reviewersList.getModel().getSize() + ") "
+				+ StringUtils.join(selectedUsersLabel, ", ");
 	}
 
 	private void setCheckboxState(int index) {
@@ -241,7 +291,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new FormLayout(
 				"fill:d:noGrow,left:4dlu:noGrow,fill:300px:grow,left:4dlu:noGrow,fill:max(d;4px):noGrow,left:4dlu:noGrow,fill:max(p;4px):grow",
-				"center:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow"));
+				"center:d:noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:3dlu:noGrow,center:max(d;4px):noGrow,top:4dlu:noGrow,center:max(d;4px):noGrow"));
 		rootComponent.add(panel1, cc.xy(1, 5));
 		final JLabel label2 = new JLabel();
 		label2.setText("Server:");
@@ -269,10 +319,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		panel1.add(moderatorComboBox, cc.xy(3, 7));
 		authorComboBox = new JComboBox();
 		panel1.add(authorComboBox, cc.xy(3, 9));
-		allowCheckBox = new JCheckBox();
-		allowCheckBox.setEnabled(true);
-		allowCheckBox.setText("Allow anyone to join");
-		panel1.add(allowCheckBox, cc.xy(7, 9));
 		final JPanel panel2 = new JPanel();
 		panel2.setLayout(new BorderLayout(0, 0));
 		panel1.add(panel2, cc.xywh(7, 1, 1, 7, CellConstraints.DEFAULT, CellConstraints.FILL));
@@ -280,11 +326,22 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		panel2.add(scrollPane1, BorderLayout.CENTER);
 		scrollPane1.setViewportView(reviewersList);
 		final JLabel label6 = new JLabel();
-		label6.setText("Reviewers:");
-		panel1.add(label6, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+		label6.setText("Reviewers: ");
+		panel1.add(label6, cc.xy(5, 1, CellConstraints.RIGHT, CellConstraints.TOP));
+		allowCheckBox = new JCheckBox();
+		allowCheckBox.setEnabled(true);
+		allowCheckBox.setText("Allow anyone to join");
+		panel1.add(allowCheckBox, cc.xy(7, 11));
 		final JLabel label7 = new JLabel();
-		label7.setText("Statement of Objectives:");
-		rootComponent.add(label7, cc.xy(1, 7));
+		label7.setText("Selected: ");
+		panel1.add(label7, cc.xy(5, 9, CellConstraints.RIGHT, CellConstraints.DEFAULT));
+		selectedReviewers = new JLabel();
+		selectedReviewers.setHorizontalTextPosition(2);
+		selectedReviewers.setText("None");
+		panel1.add(selectedReviewers, cc.xy(7, 9, CellConstraints.LEFT, CellConstraints.DEFAULT));
+		final JLabel label8 = new JLabel();
+		label8.setText("Statement of Objectives:");
+		rootComponent.add(label8, cc.xy(1, 7));
 		final JScrollPane scrollPane2 = new JScrollPane();
 		rootComponent.add(scrollPane2, cc.xy(1, 9, CellConstraints.FILL, CellConstraints.FILL));
 		statementArea = new JTextArea();
@@ -300,7 +357,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		label1.setLabelFor(titleText);
 		label2.setLabelFor(crucibleServersComboBox);
 		label5.setLabelFor(scrollPane1);
-		label7.setLabelFor(statementArea);
+		label8.setLabelFor(statementArea);
 	}
 
 	/**
