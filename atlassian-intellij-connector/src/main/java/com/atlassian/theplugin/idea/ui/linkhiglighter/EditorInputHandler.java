@@ -75,9 +75,11 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 		JiraURLTextRange hoverRange = jiraEditorLinkParser.getJiraURLTextRange(editor, file, lastPointLocation);
 		if (hoverRange != null && hoverRange.isActive()) {
 			editor.getContentComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            editor.getContentComponent().setToolTipText(hoverRange.getBrowserUrl());
 			handCursor = true;
 		} else if (handCursor) {
 			editor.getContentComponent().setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
+            editor.getContentComponent().setToolTipText(null);
 			handCursor = false;
 		}
 

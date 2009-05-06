@@ -99,10 +99,30 @@ public class JiraURLTextRange {
 			markupModel.removeHighlighter(rangeHighlighter);
 		}
 		rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
-				HighlighterLayer.ERROR, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
+				HighlighterLayer.WARNING - 1, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
 		rangeHighlighter.setErrorStripeMarkColor(LINK_COLOR);
+        rangeHighlighter.setErrorStripeTooltip("issue " + issueKey + " on " + getDefaultJiraServerUrl());
 		rangeHighlighter.putUserData(JIRA_ISSUE_LINK_HIGHLIGHTER_KEY, this);
+//        rangeHighlighter.setGutterIconRenderer(new JiraLinkGutterRenderer());
 	}
+
+//    private class JiraLinkGutterRenderer extends GutterIconRenderer {
+//
+//        @NotNull
+//        public Icon getIcon() {
+//            return Constants.JIRA_ISSUE_PANEL_ICON;
+//        }
+//
+//        @Override
+//        public boolean isNavigateAction() {
+//            return true;
+//        }
+//
+//        @Override
+//        public String getTooltipText() {
+//            return issueKey;
+//        }
+//    }
 
 	public void removeLinkHighlighter(final Editor editor) {
 		MarkupModel markupModel = editor.getMarkupModel();
