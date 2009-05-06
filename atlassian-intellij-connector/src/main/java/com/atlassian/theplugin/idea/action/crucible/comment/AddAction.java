@@ -125,8 +125,10 @@ public class AddAction extends AbstractCommentAction {
 		final VersionedCommentBean newComment = new VersionedCommentBean();
         newComment.setReviewItemId(review.getPermId());
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD),
+                null, null);
 	}
 
 	private void addReplyToVersionedComment(final AnActionEvent event, final ReviewAdapter review,
@@ -143,8 +145,10 @@ public class AddAction extends AbstractCommentAction {
         newComment.setReviewItemId(review.getPermId());
         newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, file, newComment, comment, CommentTooltipPanel.Mode.ADD));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, file, newComment, comment, CommentTooltipPanel.Mode.ADD),
+                null, null);
 	}
 
 	private void addReplyToGeneralComment(final AnActionEvent event, final ReviewAdapter review,
@@ -156,8 +160,10 @@ public class AddAction extends AbstractCommentAction {
        	newComment.setCreateDate(new Date());
 		newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
         
-        CommentTooltipPanel.showCommentTooltipPopup(event,
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
                 new CommentTooltipPanelWithRunners(event, review, null, newComment,
-                        parentComment, CommentTooltipPanel.Mode.ADD));
+                        parentComment, CommentTooltipPanel.Mode.ADD),
+                null, null);
 	}
 }

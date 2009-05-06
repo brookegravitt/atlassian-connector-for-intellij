@@ -153,7 +153,9 @@ public class CommentAction extends AnAction {
             newComment.setToLineInfo(true);
         }
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD),
+                null, null);
 	}
 }

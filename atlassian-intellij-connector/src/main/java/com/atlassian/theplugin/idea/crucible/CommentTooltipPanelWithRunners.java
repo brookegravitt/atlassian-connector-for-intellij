@@ -22,7 +22,6 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     private static final String UPDATING_COMMENT_FAILED = "Updating comment failed: ";
     private static final String REMOVING_COMMENT_FAILED = "Removing comment failed: ";
     private static final String PUBLISHING_COMMENT_FAILED = "Publishing comment failed: ";
-    private Project project;
 
     public CommentTooltipPanelWithRunners(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo fileInfo,
                                           VersionedComment comment, VersionedComment parent) {
@@ -37,7 +36,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     public CommentTooltipPanelWithRunners(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo fileInfo,
                                           Comment comment, Comment parent, Mode mode) {
         super(review, fileInfo, comment, parent, mode);
-        project = IdeaHelper.getCurrentProject(event);
+        setProject(IdeaHelper.getCurrentProject(event));
     }
 
     private CommentBean createReplyBean(Comment parent, String text) {
@@ -90,7 +89,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     private void runRemoveCommentTask(final Comment comment, final CommentTooltipPanel panel) {
-        Task.Backgroundable task = new Task.Backgroundable(project,
+        Task.Backgroundable task = new Task.Backgroundable(getProject(),
                 "Removing comment", false) {
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
@@ -108,7 +107,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     private void runUpdateCommandTask(final CommentBean comment, final CommentTooltipPanel panel) {
-        Task.Backgroundable task = new Task.Backgroundable(project, "Updating comment", false) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Updating comment", false) {
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
@@ -126,7 +125,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     private void runAddCommentTask(final Comment comment, final CommentTooltipPanel panel) {
-        Task.Backgroundable task = new Task.Backgroundable(project, "Adding new comment", false) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Adding new comment", false) {
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {
@@ -144,7 +143,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
     
     private void runAddReplyTask(final Comment parent, final CommentBean reply, final CommentTooltipPanel panel) {
-        Task.Backgroundable task = new Task.Backgroundable(project, "Adding new comment reply", false) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Adding new comment reply", false) {
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (parent instanceof VersionedComment) {
@@ -163,7 +162,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     }
 
     private void runPublishCommentTask(final Comment comment, final CommentTooltipPanel panel) {
-        Task.Backgroundable task = new Task.Backgroundable(project, "Publishing comment", false) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Publishing comment", false) {
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     if (comment instanceof VersionedComment) {

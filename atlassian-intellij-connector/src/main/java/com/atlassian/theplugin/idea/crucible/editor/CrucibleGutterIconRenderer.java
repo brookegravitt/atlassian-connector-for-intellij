@@ -103,7 +103,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private class ClickAction extends AnAction {
 		public void actionPerformed(final AnActionEvent e) {
 			CommentTooltipPanel lctp = new CommentTooltipPanelWithRunners(e, review, fileInfo, comment, null);
-            CommentTooltipPanel.showCommentTooltipPopup(e, lctp);
+            CommentTooltipPanel.showCommentTooltipPopup(e, lctp, lctp, null);
         }
 	}
 
