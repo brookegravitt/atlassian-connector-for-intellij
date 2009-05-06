@@ -109,6 +109,8 @@ public class CommentAction extends AnAction {
 			return;
 		}
 
+        e.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, editor.getComponent());
+
 		final Document document = editor.getDocument();
 		final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 		if (virtualFile != null) {

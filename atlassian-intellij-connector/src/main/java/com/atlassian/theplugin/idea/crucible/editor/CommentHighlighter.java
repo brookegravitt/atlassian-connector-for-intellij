@@ -262,7 +262,7 @@ public final class CommentHighlighter {
 //					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
 //							+ ":</b> " + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-					rh.setGutterIconRenderer(new CrucibleGutterIconRenderer(review, fileInfo, comment));
+					rh.setGutterIconRenderer(new CrucibleGutterIconRenderer(editor, review, fileInfo, comment));
 					rh.putUserData(COMMENT_DATA_KEY, true);
 					rh.putUserData(VERSIONED_COMMENT_DATA_KEY, comment);
 				} catch (Exception e) {
