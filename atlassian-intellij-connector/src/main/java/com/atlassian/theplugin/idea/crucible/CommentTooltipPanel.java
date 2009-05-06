@@ -9,7 +9,6 @@ import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
@@ -28,8 +27,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * User: jgorycki
@@ -65,8 +62,6 @@ public abstract class CommentTooltipPanel extends JPanel {
         ADD
     }
 
-    private static Map<Project, JBPopup> popupMap = new HashMap<Project, JBPopup>();
-
     public static void showCommentTooltipPopup(AnActionEvent event, CommentTooltipPanel lctp,
                                                Component owner, Point location) {
 		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
@@ -78,12 +73,12 @@ public abstract class CommentTooltipPanel extends JPanel {
 				.setResizable(true)
 				.setCancelKeyEnabled(true)
 				.createPopup();
+
 		lctp.setParentPopup(popup);
 
         if (event != null) {
             Component parentComponent = (Component) event.getPresentation().getClientProperty(JBPOPUP_PARENT_COMPONENT);
             lctp.setPopupOwner(parentComponent);
-            popupMap.put(IdeaHelper.getCurrentProject(event), popup);
         }
         if (owner != null && location != null) {
             popup.showInScreenCoordinates(owner, location);
@@ -185,9 +180,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 		addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 				review.removeReviewListener(listener);
-                if (project != null) {
-                    popupMap.remove(project);
-                }
 			}
 		});
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -599,10 +591,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 					} else {
 						removeCommentPanel(CommentPanel.this);
                         if (commentPanelList.size() == 0 && project != null) {
-                            JBPopup popup = popupMap.get(project);
-                            if (popup != null) {
-                                popup.cancel();
-                            }
+                            popup.cancel();
                         }
 					}
 					setStatusText(" ", false);
