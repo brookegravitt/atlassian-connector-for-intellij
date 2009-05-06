@@ -55,6 +55,10 @@ public abstract class CommentTooltipPanel extends JPanel {
     private Mode mode;
     private Project project;
 
+    public static final String JBPOPUP_PARENT_COMPONENT = "JBPOPUP_PARENT_COMPONENT";
+
+    private Component popupOwner;
+
     public enum Mode {
         SHOW,
         EDIT,
@@ -63,7 +67,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
     private static Map<Project, JBPopup> popupMap = new HashMap<Project, JBPopup>();
 
-    public static void showCommentTooltipPopup(AnActionEvent anActionEvent, CommentTooltipPanel lctp,
+    public static void showCommentTooltipPopup(AnActionEvent event, CommentTooltipPanel lctp,
                                                Component owner, Point location) {
 		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
 				.setRequestFocus(true)
@@ -76,15 +80,17 @@ public abstract class CommentTooltipPanel extends JPanel {
 				.createPopup();
 		lctp.setParentPopup(popup);
 
-        if (anActionEvent != null) {
-            popupMap.put(IdeaHelper.getCurrentProject(anActionEvent), popup);
+        if (event != null) {
+            Component parentComponent = (Component) event.getPresentation().getClientProperty(JBPOPUP_PARENT_COMPONENT);
+            lctp.setPopupOwner(parentComponent);
+            popupMap.put(IdeaHelper.getCurrentProject(event), popup);
         }
         if (owner != null && location != null) {
             popup.showInScreenCoordinates(owner, location);
-        } else if (anActionEvent != null) {
-		    popup.showInBestPositionFor(anActionEvent.getDataContext());
+        } else if (event != null) {
+		    popup.showInBestPositionFor(event.getDataContext());
         } else {
-            popup.showInFocusCenter();
+            System.out.println("owner=" + owner + " location=" + location + " event=" + event);
         }
 	}
 
@@ -94,6 +100,14 @@ public abstract class CommentTooltipPanel extends JPanel {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+
+    public Component getPopupOwner() {
+        return popupOwner;
+    }
+
+    public void setPopupOwner(Component popupOwner) {
+        this.popupOwner = popupOwner;
     }
 
 	public CommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, Comment comment, Comment parent) {
@@ -494,10 +508,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
                     Point location = popup.getContent().getLocationOnScreen();
-                    Component owner = popup.getOwner();
 					popup.cancel();
 					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
-					showCommentTooltipPopup(null, CommentTooltipPanel.this, owner, location);
+					showCommentTooltipPopup(null, CommentTooltipPanel.this, getPopupOwner(), location);
 					if (agreed) {
 						removeComment(comment);
 					}

@@ -45,6 +45,7 @@ public class EditAction extends AbstractCommentAction {
 	public void actionPerformed(AnActionEvent event) {
 		AtlassianTreeNode node = getSelectedNode(event);
 		if (node != null) {
+            event.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(event));
 			editComment(event, node);
 		}
 	}

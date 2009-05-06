@@ -101,6 +101,7 @@ public class AddAction extends AbstractCommentAction {
 	public void actionPerformed(AnActionEvent e) {
 		com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode node = getSelectedNode(e);
 		if (node != null) {
+            e.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(e));
 			addComment(e, node);
 		}
 	}

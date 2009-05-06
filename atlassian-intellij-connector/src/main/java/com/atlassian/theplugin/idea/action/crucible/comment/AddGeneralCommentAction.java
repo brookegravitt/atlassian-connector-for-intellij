@@ -72,6 +72,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	private void addGeneralComment(AnActionEvent event, final ReviewAdapter review) {
 		final GeneralCommentBean newComment = new GeneralCommentBean();
 
+        event.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(event));
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD),

@@ -8,6 +8,7 @@ import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.editor.markup.GutterIconRenderer;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +17,15 @@ import javax.swing.*;
 public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private static final Icon CRUCIBLE_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
 
-	private final ReviewAdapter review;
+    private Editor editor;
+    private final ReviewAdapter review;
 	private final CrucibleFileInfo fileInfo;
 	private final VersionedComment comment;
 
-	public CrucibleGutterIconRenderer(ReviewAdapter review, CrucibleFileInfo fileInfo, VersionedComment comment) {
-		this.review = review;
+	public CrucibleGutterIconRenderer(Editor editor, ReviewAdapter review,
+                                      CrucibleFileInfo fileInfo, VersionedComment comment) {
+        this.editor = editor;
+        this.review = review;
 		this.fileInfo = fileInfo;
 		this.comment = comment;
 	}
@@ -103,6 +107,8 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 	private class ClickAction extends AnAction {
 		public void actionPerformed(final AnActionEvent e) {
 			CommentTooltipPanel lctp = new CommentTooltipPanelWithRunners(e, review, fileInfo, comment, null);
+            e.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, editor.getComponent());
+
             CommentTooltipPanel.showCommentTooltipPopup(e, lctp, lctp, null);
         }
 	}
