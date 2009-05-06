@@ -10,6 +10,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
@@ -37,6 +38,7 @@ import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
+import com.intellij.ui.HyperlinkLabel;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -119,11 +121,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project),
 				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
 
-		if (ip != null && ip.params != null && serverCfg != null) {
-			return serverCfg.isEnabled();
-		}
-		return false;
-	}
+        return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
+    }
 
 	public void refreshComments(String key) {
 		IssuePanel ip = getContentPanel(key);
@@ -298,7 +297,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving issue", false) {
 					private boolean retrieved = false;
 
-					public void run(final ProgressIndicator indicator) {
+					public void run(@NotNull final ProgressIndicator indicator) {
 						try {
 							params.issue = facade.getIssue(params.issue.getServer(), params.issue.getKey());
 							retrieved = true;
@@ -468,10 +467,25 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				body.add(issueType, gbc2);
 				gbc1.gridy++;
 				gbc2.gridy++;
+
 				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
 				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
 						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+                if (params.issue.isSubTask()) {
+                    String parent = params.issue.getParentIssueKey();
+                    body.add(new BoldLabel("Parent Issue"), gbc1);
+                    body.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
+                        public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                            IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+                            if (panel != null) {
+                                panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer());
+                            }
+                        }
+                    }), gbc2);
+                    gbc1.gridy++;
+                    gbc2.gridy++;
+                }
 				body.add(new BoldLabel("Status"), gbc1);
 				body.add(issueStatus, gbc2);
 				gbc1.gridy++;
@@ -974,6 +988,27 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
+        private class MyHyperlinkLabel extends JPanel {
+            private MyHyperlinkLabel(String label, HyperlinkListener listener) {
+                super(new GridBagLayout());
+                setOpaque(false);
+                
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.weightx = 0.0;
+                gbc.weighty = 0.0;
+                gbc.fill = GridBagConstraints.NONE;
+
+                HyperlinkLabel link = new HyperlinkLabel(label);
+                link.setOpaque(false);
+                link.addHyperlinkListener(listener);
+
+                add(link, gbc);
+                addFillerPanel(this, gbc);
+            }
+        }
+
 		private class UserLabel extends JPanel {
 			private JLabel label;
 
@@ -1000,15 +1035,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
 				add(label, gbc);
-				gbc.gridx++;
-				gbc.weightx = 1.0;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				JPanel filler = new JPanel();
-				filler.setOpaque(false);
-				add(filler, gbc);
+                addFillerPanel(this, gbc);
 			}
 
-			private void addListener(final String serverUrl, final String userNameId) {
+            private void addListener(final String serverUrl, final String userNameId) {
 				label.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
@@ -1230,4 +1260,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 	}
+
+    private static void addFillerPanel(JPanel parent, GridBagConstraints gbc) {
+        gbc.gridx++;
+        gbc.weightx = 1.0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        JPanel filler = new JPanel();
+        filler.setOpaque(false);
+        parent.add(filler, gbc);
+    }
 }
