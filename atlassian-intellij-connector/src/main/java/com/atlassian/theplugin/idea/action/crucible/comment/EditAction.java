@@ -69,14 +69,18 @@ public class EditAction extends AbstractCommentAction {
 	private void editGeneralComment(AnActionEvent event, final ReviewAdapter review,
                                     final GeneralComment comment, final GeneralComment parent) {
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, null, comment, parent, CommentTooltipPanel.Mode.EDIT));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, null, comment, parent, CommentTooltipPanel.Mode.EDIT),
+                null, null);
 	}
 
 	private void editVersionedComment(AnActionEvent event, final ReviewAdapter review,
 			final CrucibleFileInfo file, final VersionedComment comment, final VersionedComment parent) {
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, file, comment, parent, CommentTooltipPanel.Mode.EDIT));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, file, comment, parent, CommentTooltipPanel.Mode.EDIT),
+                null, null);
 	}
 }

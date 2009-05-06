@@ -9,10 +9,12 @@ import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.HyperlinkLabel;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -26,6 +28,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * User: jgorycki
@@ -36,7 +40,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private final ReviewAdapter review;
 	private MyReviewListener listener;
 	private final CrucibleFileInfo fileInfo;
-    private Comment parent;
     private Comment rootComment;
 	private final boolean useTextTwixie;
 
@@ -48,9 +51,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private static final int PANEL_WIDTH = 700;
 	private static final int PANEL_HEIGHT = 300;
 	private JBPopup popup;
-	private AnActionEvent anActionEvent;
     private Comment commentTemplate;
     private Mode mode;
+    private Project project;
 
     public enum Mode {
         SHOW,
@@ -58,7 +61,10 @@ public abstract class CommentTooltipPanel extends JPanel {
         ADD
     }
 
-    public static void showCommentTooltipPopup(AnActionEvent anActionEvent, CommentTooltipPanel lctp) {
+    private static Map<Project, JBPopup> popupMap = new HashMap<Project, JBPopup>();
+
+    public static void showCommentTooltipPopup(AnActionEvent anActionEvent, CommentTooltipPanel lctp,
+                                               Component owner, Point location) {
 		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
 				.setRequestFocus(true)
 				.setCancelOnClickOutside(true)
@@ -69,13 +75,26 @@ public abstract class CommentTooltipPanel extends JPanel {
 				.setCancelKeyEnabled(true)
 				.createPopup();
 		lctp.setParentPopup(popup);
-		lctp.setEvent(anActionEvent);
-		popup.showInBestPositionFor(anActionEvent.getDataContext());
+
+        if (anActionEvent != null) {
+            popupMap.put(IdeaHelper.getCurrentProject(anActionEvent), popup);
+        }
+        if (owner != null && location != null) {
+            popup.showInScreenCoordinates(owner, location);
+        } else if (anActionEvent != null) {
+		    popup.showInBestPositionFor(anActionEvent.getDataContext());
+        } else {
+            popup.showInFocusCenter();
+        }
 	}
 
-	private void setEvent(AnActionEvent e) {
-		this.anActionEvent = e;
-	}
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
 
 	public CommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, Comment comment, Comment parent) {
 		this(review, file, comment, parent, Mode.SHOW);
@@ -91,7 +110,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 		super(new BorderLayout());
 
 		this.fileInfo = file;
-        this.parent = parent;
         this.mode = mode;
 
         this.rootComment = parent != null ? parent : (mode != Mode.ADD ? comment : null);
@@ -153,6 +171,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 		addComponentListener(new ComponentAdapter() {
 			public void componentHidden(ComponentEvent e) {
 				review.removeReviewListener(listener);
+                if (project != null) {
+                    popupMap.remove(project);
+                }
 			}
 		});
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -178,7 +199,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 	private void removeCommentPanel(CommentPanel panel) {
 		commentsPanel.remove(panel);
 		commentPanelList.remove(panel);
-		validate();
+        validate();
 	}
 
 	protected ReviewAdapter getReview() {
@@ -241,6 +262,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private Comment comment;
         private boolean selectedPanel;
         private ReviewAdapter review;
+        private boolean replyPanel;
         private boolean panelForNewComment;
 
         private HyperlinkLabel btnEdit;
@@ -283,6 +305,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private CommentPanel(final ReviewAdapter review, final Comment comment,
                              boolean replyPanel, boolean selectedPanel, boolean panelForNewComment) {
 			this.review = review;
+            this.replyPanel = replyPanel;
             this.panelForNewComment = panelForNewComment;
             this.comment = comment != null ? comment : (replyPanel ? null : commentTemplate);
             this.selectedPanel = selectedPanel;
@@ -470,9 +493,11 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnDelete.setOpaque(false);
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
+                    Point location = popup.getContent().getLocationOnScreen();
+                    Component owner = popup.getOwner();
 					popup.cancel();
 					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
-					showCommentTooltipPopup(anActionEvent, CommentTooltipPanel.this);
+					showCommentTooltipPopup(null, CommentTooltipPanel.this, owner, location);
 					if (agreed) {
 						removeComment(comment);
 					}
@@ -560,6 +585,12 @@ public abstract class CommentTooltipPanel extends JPanel {
 						setCommentBodyEditable(CommentPanel.this, false);
 					} else {
 						removeCommentPanel(CommentPanel.this);
+                        if (commentPanelList.size() == 0 && project != null) {
+                            JBPopup popup = popupMap.get(project);
+                            if (popup != null) {
+                                popup.cancel();
+                            }
+                        }
 					}
 					setStatusText(" ", false);
 				}
@@ -711,7 +742,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			//removeCommentPanel(panel);
 			setCommentBodyEditable(panel, false);
 
-            if (parent != null) {
+            if (panel.replyPanel) {
                 setStatusText("Adding new reply...", false);
                 addNewReply(rootComment, text, draft);
             } else {
@@ -722,9 +753,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             }
 		} else {
             setStatusText("Updating comment...", false);
-            if (parent == null) {
-                updateDefectFields(comment, defect);
-            }
+            updateDefectFields(comment, defect);
             updateComment(comment, text);
 		}
 	}
@@ -843,10 +872,10 @@ public abstract class CommentTooltipPanel extends JPanel {
                             CommentPanel panel = commentPanelList.get(0);
                             if (comment.getMessage().equals(panel.getComment().getMessage())) {
                                 setStatusText("Comment aded", false);
-                                parent = comment;
                                 removeUnderConstructionPanel(comment);
                                 addCommentPanel(rev, comment);
                                 setAllButtonsVisible();
+                                mode = Mode.SHOW;
                             }
                         } else {
                             if (!isTheSameComment(rootComment, comment)) {
@@ -890,28 +919,38 @@ public abstract class CommentTooltipPanel extends JPanel {
 			});
 		}
 
-		public void publishedVersionedComment(final ReviewAdapter rev,
+        @Override
+        public void publishedGeneralComment(ReviewAdapter rev, GeneralComment comment) {
+            publishedComment(rev, null, comment);
+        }
+
+        @Override
+        public void publishedVersionedComment(final ReviewAdapter rev,
 				final PermId file, final VersionedComment comment) {
+            publishedComment(rev, file, comment);
+        }
+
+        private void publishedComment(final ReviewAdapter rev, final PermId file, final Comment comment) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					if (!rev.getPermId().equals(review.getPermId())) {
 						return;
 					}
 
-					if (!file.equals(fileInfo.getPermId())) {
-						return;
-					}
-
+                    if (file != null && fileInfo != null) {
+                        if (!file.equals(fileInfo.getPermId())) {
+                            return;
+                        }
+                    }
 					for (CommentPanel panel : commentPanelList) {
 						Comment cmt = panel.getComment();
 						if (isTheSameComment(cmt, comment)) {
 							setStatusText("Comment published", false);
-							((VersionedCommentBean) cmt).setDraft(false);
+							((CommentBean) cmt).setDraft(false);
 							panel.setComment(cmt);
 							return;
 						}
 					}
-
 				}
 			});
 		}

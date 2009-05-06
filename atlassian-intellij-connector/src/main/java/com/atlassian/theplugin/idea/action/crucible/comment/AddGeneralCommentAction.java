@@ -72,7 +72,9 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	private void addGeneralComment(AnActionEvent event, final ReviewAdapter review) {
 		final GeneralCommentBean newComment = new GeneralCommentBean();
 
-        CommentTooltipPanel.showCommentTooltipPopup(event,
-                new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD));
+        CommentTooltipPanel.showCommentTooltipPopup(
+                event,
+                new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD),
+                null, null);
 	}
 }
