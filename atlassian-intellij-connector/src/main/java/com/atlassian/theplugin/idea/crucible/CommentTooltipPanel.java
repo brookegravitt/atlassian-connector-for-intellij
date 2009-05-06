@@ -9,12 +9,14 @@ import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.util.Htmlizer;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.ide.BrowserUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -55,6 +57,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     public static final String JBPOPUP_PARENT_COMPONENT = "JBPOPUP_PARENT_COMPONENT";
 
     private Component popupOwner;
+    private static final int MAX_HREF_LINK_LENGTH = 40;
 
     public enum Mode {
         SHOW,
@@ -326,6 +329,13 @@ public abstract class CommentTooltipPanel extends JPanel {
 			CellConstraints cc = new CellConstraints();
 
 			commentBody = new JEditorPane();
+            commentBody.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        BrowserUtil.launchBrowser(e.getURL().toString());
+                    }
+                }
+            });
 			btnShowHide = new ShowHideButton(commentBody, this, useTextTwixie);
 			HeaderListener headerListener = new HeaderListener();
 
@@ -426,12 +436,11 @@ public abstract class CommentTooltipPanel extends JPanel {
             // PL-1407 - without setting a decent editor kit, lines wrap within word boundaries, which looks bad
             commentBody.setEditorKit(new StyledEditorKit());
 
-			commentBody.setText(comment != null ? comment.getMessage() : "");
 			commentBody.setRequestFocusEnabled(true);
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					setCommentBodyEditable(CommentPanel.this,
+					setCommentPanelEditable(CommentPanel.this,
                             comment == null || (selectedPanel && mode != Mode.SHOW));
 				}
 			});
@@ -545,7 +554,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 						btnShowHide.setState(true);
 						lastCommentBody = commentBody.getText();
 					}
-					setCommentBodyEditable(CommentPanel.this, !commentBody.isEditable());
+					setCommentPanelEditable(CommentPanel.this, !commentBody.isEditable());
 				}
 			});
 			btnEdit.setOpaque(false);
@@ -564,7 +573,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 							addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(), true,
 									boxIsDefect != null && boxIsDefect.isSelected());
 							btnCancel.setVisible(false);
-							setCommentBodyEditable(CommentPanel.this, false);
+							setCommentPanelEditable(CommentPanel.this, false);
 							btnEdit.setHyperlinkText(EDIT);
 						}
 					}
@@ -584,10 +593,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 					setButtonsVisible(true);
 
 					if (lastCommentBody != null) {
-						commentBody.setText(lastCommentBody);
+                        setCommentPanelText(CommentPanel.this, false, lastCommentBody);
 					}
 					if (!panelForNewComment) {
-						setCommentBodyEditable(CommentPanel.this, false);
+						setCommentPanelEditable(CommentPanel.this, false);
 					} else {
 						removeCommentPanel(CommentPanel.this);
                         if (commentPanelList.size() == 0 && project != null) {
@@ -613,7 +622,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                     createCommentInfoComponents(cmt);
                 }
                 this.comment = cmt;
-                setCommentText();
+                setCommentPanelText(this, false, cmt.getMessage());
                 setCommentDate();
                 updateDefectField();
 
@@ -654,10 +663,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 			return btnShowHide;
 		}
 
-		private void setCommentText() {
-			commentBody.setText(comment.getMessage());
-		}
-
 		private void setButtonsVisible(boolean visible) {
 			for (CommentPanel panel : commentPanelList) {
 				if (panel != this || visible) {
@@ -686,9 +691,24 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 	}
 
-	private void setCommentBodyEditable(CommentTooltipPanel.CommentPanel commentPanel, boolean editable) {
+    private void setCommentPanelText(CommentTooltipPanel.CommentPanel commentPanel, boolean editable, String text) {
+        JEditorPane pane = commentPanel.commentBody;
+        pane.setContentType(editable ? "text/plain" : "text/html");
+        String txt = text != null ? text : "";
+        if (!editable) {
+            Htmlizer lizer = new Htmlizer(MAX_HREF_LINK_LENGTH);
+            txt = lizer.htmlizeHyperlinks(txt);
+            txt = lizer.replaceWhitespace(txt);
+        }
+        pane.setText(txt);
+    }
+
+	private void setCommentPanelEditable(CommentTooltipPanel.CommentPanel commentPanel, boolean editable) {
 		JEditorPane pane = commentPanel.commentBody;
+
 		pane.setEditable(editable);
+        setCommentPanelText(commentPanel, editable, commentPanel.comment != null ? commentPanel.comment.getMessage() : "");
+
 		if (editable) {
 			pane.requestFocusInWindow();
 			pane.getCaret().setVisible(editable);
@@ -712,7 +732,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		if (commentPanel.btnSaveDraft != null) {
 			commentPanel.btnSaveDraft.setVisible(comment.isDraft());
 		}
-		setCommentBodyEditable(commentPanel, editable);
+		setCommentPanelEditable(commentPanel, editable);
 	}
 
 	public void setAllButtonsVisible() {
@@ -741,8 +761,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			String text, boolean draft, boolean defect) {
 
 		if (panel.panelForNewComment) {
-			//removeCommentPanel(panel);
-			setCommentBodyEditable(panel, false);
+			setCommentPanelEditable(panel, false);
 
             if (panel.replyPanel) {
                 setStatusText("Adding new reply...", false);
@@ -840,9 +859,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                 }
             }
             if (underConstructionPanel != null) {
-                if (underConstructionPanel.commentBody.getText().trim().equals(comment.getMessage().trim())) {
-                    removeCommentPanel(underConstructionPanel);
-                }
+                removeCommentPanel(underConstructionPanel);
             }
         }
 
