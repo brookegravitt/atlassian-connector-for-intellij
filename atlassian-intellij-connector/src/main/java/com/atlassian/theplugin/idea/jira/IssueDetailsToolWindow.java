@@ -396,7 +396,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							} catch (JIRAException e) {
 								// if we can not read actions, group will be disabled
 								LoggerImpl.getInstance()
-										.error("Unbale to read available actions for issue: " + issue.getKey());
+										.error("Unable to read available actions for issue: " + issue.getKey());
 							}
 						}
 					};
