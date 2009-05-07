@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.intellij.openapi.components.BaseComponent;
@@ -121,6 +122,9 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
+			public List<GeneralComment> getReplies2() {
+				return reply != null ? MiscUtil.buildArrayList(reply): MiscUtil.<GeneralComment>buildArrayList();
+			}
 		};
 	}
 
