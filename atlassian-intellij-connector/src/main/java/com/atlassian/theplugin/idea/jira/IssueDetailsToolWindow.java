@@ -39,6 +39,8 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
 import com.intellij.ui.HyperlinkLabel;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -52,8 +54,7 @@ import java.awt.event.MouseEvent;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * User: jgorycki
@@ -439,43 +440,88 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			private JPanel createBody() {
-				JPanel body = new JPanel();
+                JPanel details = createDetailsPanel();
 
-				body.setLayout(new GridBagLayout());
-				body.setOpaque(true);
-				body.setBackground(Color.WHITE);
+                JPanel subtasks = createSubtasksPanel();
 
-				GridBagConstraints gbc1 = new GridBagConstraints();
-				GridBagConstraints gbc2 = new GridBagConstraints();
-				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
-				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.fill = GridBagConstraints.HORIZONTAL;
-				gbc2.weightx = 1.0;
-				gbc1.gridx = 0;
-				gbc2.gridx = gbc1.gridx + 1;
-				gbc1.gridy = 0;
-				gbc2.gridy = 0;
+                JPanel panel = new JPanel(new FormLayout(
+                        "pref, fill:pref:grow", "fill:pref:grow"
+                ));
+                panel.setOpaque(true);
+                panel.setBackground(Color.WHITE);
 
-				body.add(new BoldLabel("Type"), gbc1);
+                CellConstraints cc = new CellConstraints();
 
-				fillBaseIssueDetails();
+                panel.add(details, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.TOP));
+                panel.add(subtasks, cc.xy(2, 1));
 
-				body.add(issueType, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
+				return panel;
+			}
 
-				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
-						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+            private JPanel createSubtasksPanel() {
+                JPanel panel = new JPanel(new BorderLayout());
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.weightx = 1.0;
+                gbc.weighty = 1.0;
+                gbc.fill = GridBagConstraints.BOTH;
+
+                panel.setOpaque(false);
+                java.util.List<String> keys = params.issue.getSubTaskKeys();
+                if (keys.size() > 0) {
+                    JList list = new JList();
+                    DefaultListModel model = new DefaultListModel();
+                    list.setModel(model);
+                    for (String key : keys) {
+                        model.addElement(key);
+                    }
+                    JScrollPane scrollPane = new JScrollPane(list);
+                    scrollPane.setBorder(BorderFactory.createTitledBorder("Subtasks"));
+                    scrollPane.setOpaque(false);
+                    panel.add(scrollPane, BorderLayout.CENTER);
+                }
+
+                return panel;
+            }
+
+            private JPanel createDetailsPanel() {
+                JPanel panel = new JPanel();
+
+                panel.setLayout(new GridBagLayout());
+                panel.setOpaque(false);
+
+                GridBagConstraints gbc1 = new GridBagConstraints();
+                GridBagConstraints gbc2 = new GridBagConstraints();
+                gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+                gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+                gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+                gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+                gbc2.fill = GridBagConstraints.HORIZONTAL;
+                gbc2.weightx = 1.0;
+                gbc1.gridx = 0;
+                gbc2.gridx = gbc1.gridx + 1;
+                gbc1.gridy = 0;
+                gbc2.gridy = 0;
+
+                panel.add(new BoldLabel("Type"), gbc1);
+
+                fillBaseIssueDetails();
+
+                panel.add(issueType, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+
+                gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+                gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
                 if (params.issue.isSubTask()) {
                     String parent = params.issue.getParentIssueKey();
-                    body.add(new BoldLabel("Parent Issue"), gbc1);
-                    body.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
+                    panel.add(new BoldLabel("Parent Issue"), gbc1);
+                    panel.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
                         public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
                             IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
                             if (panel != null) {
@@ -486,69 +532,62 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     gbc1.gridy++;
                     gbc2.gridy++;
                 }
-				body.add(new BoldLabel("Status"), gbc1);
-				body.add(issueStatus, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Priority"), gbc1);
-				body.add(issuePriority, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Assignee"), gbc1);
-				body.add(issueAssignee, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Reporter"), gbc1);
-				body.add(issueReporter, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Resolution"), gbc1);
-				body.add(issueResolution, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Created"), gbc1);
-				body.add(issueCreationTime, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Updated"), gbc1);
-				body.add(issueUpdateTime, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(affectsVersionsLabel, gbc1);
-				body.add(affectsVersions, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(fixVersionsLabel, gbc1);
-				body.add(fixVersions, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(componentsLabel, gbc1);
-				body.add(components, gbc2);
+                panel.add(new BoldLabel("Status"), gbc1);
+                panel.add(issueStatus, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Priority"), gbc1);
+                panel.add(issuePriority, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Assignee"), gbc1);
+                panel.add(issueAssignee, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Reporter"), gbc1);
+                panel.add(issueReporter, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Resolution"), gbc1);
+                panel.add(issueResolution, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Created"), gbc1);
+                panel.add(issueCreationTime, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Updated"), gbc1);
+                panel.add(issueUpdateTime, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(affectsVersionsLabel, gbc1);
+                panel.add(affectsVersions, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(fixVersionsLabel, gbc1);
+                panel.add(fixVersions, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(componentsLabel, gbc1);
+                panel.add(components, gbc2);
 
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Original Estimate"), gbc1);
-				body.add(originalEstimate, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Remaining Estimate"), gbc1);
-				body.add(remainingEstimate, gbc2);
-				gbc1.gridy++;
-				gbc2.gridy++;
-				body.add(new BoldLabel("Time Spent"), gbc1);
-				body.add(timeSpent, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Original Estimate"), gbc1);
+                panel.add(originalEstimate, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Remaining Estimate"), gbc1);
+                panel.add(remainingEstimate, gbc2);
+                gbc1.gridy++;
+                gbc2.gridy++;
+                panel.add(new BoldLabel("Time Spent"), gbc1);
+                panel.add(timeSpent, gbc2);
 
-				gbc1.gridy++;
-				gbc1.weighty = 1.0;
-				gbc1.fill = GridBagConstraints.VERTICAL;
-				JPanel filler = new JPanel();
-				filler.setBackground(Color.WHITE);
-				body.add(filler, gbc1);
+                return panel;
+            }
 
-				return body;
-			}
-
-			private void fillBaseIssueDetails() {
+            private void fillBaseIssueDetails() {
 				issueType = new JLabel(params.issue.getType(),
 						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
 						SwingConstants.LEFT);
@@ -988,7 +1027,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-        private class MyHyperlinkLabel extends JPanel {
+        private final class MyHyperlinkLabel extends JPanel {
             private MyHyperlinkLabel(String label, HyperlinkListener listener) {
                 super(new GridBagLayout());
                 setOpaque(false);
@@ -1005,7 +1044,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 link.addHyperlinkListener(listener);
 
                 add(link, gbc);
-                addFillerPanel(this, gbc);
+                addFillerPanel(this, gbc, true);
             }
         }
 
@@ -1035,7 +1074,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
 				add(label, gbc);
-                addFillerPanel(this, gbc);
+                addFillerPanel(this, gbc, true);
 			}
 
             private void addListener(final String serverUrl, final String userNameId) {
@@ -1261,10 +1300,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-    private static void addFillerPanel(JPanel parent, GridBagConstraints gbc) {
-        gbc.gridx++;
-        gbc.weightx = 1.0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+    private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
+        if (horizontal) {
+            gbc.gridx++;
+            gbc.weightx = 1.0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+        } else {
+            gbc.gridy++;
+            gbc.weighty = 1.0;
+            gbc.fill = GridBagConstraints.VERTICAL;
+        }
         JPanel filler = new JPanel();
         filler.setOpaque(false);
         parent.add(filler, gbc);
