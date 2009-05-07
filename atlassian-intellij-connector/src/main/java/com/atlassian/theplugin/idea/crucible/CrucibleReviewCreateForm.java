@@ -50,7 +50,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 
@@ -133,17 +136,17 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 		};
 
-		reviewersList.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					int index = reviewersList.getSelectedIndex();
-					setCheckboxState(index);
-					refreshUserModel();
-					reviewersList.setSelectedIndex(index);
-				}
-			}
-		});
+//		reviewersList.addKeyListener(new KeyAdapter() {
+//			@Override
+//			public void keyPressed(KeyEvent e) {
+//				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+//					int index = reviewersList.getSelectedIndex();
+//					setCheckboxState(index);
+//					refreshUserModel();
+//					reviewersList.setSelectedIndex(index);
+//				}
+//			}
+//		});
 
 		moderatorComboBox.addActionListener(new ActionListener() {
 
