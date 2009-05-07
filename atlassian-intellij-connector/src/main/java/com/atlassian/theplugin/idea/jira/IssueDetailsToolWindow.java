@@ -48,13 +48,15 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.List;
 
 /**
  * User: jgorycki
@@ -205,6 +207,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
 		private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
+        private Task.Backgroundable getSubTasksTask;
+        private DefaultListModel subtaskListModel;
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
@@ -235,6 +239,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentHidden(ComponentEvent componentEvent) {
+                    if (getSubTasksTask != null) {
+                        getSubTasksTask.onCancel();
+                    }
+                }
+            });
+            
 			refresh();
 		}
 
@@ -423,7 +437,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
 
-			public DetailsPanel() {
+            public DetailsPanel() {
 				setLayout(new GridBagLayout());
 
 				GridBagConstraints gbc = new GridBagConstraints();
@@ -433,6 +447,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				gbc.weighty = 1.0;
 				gbc.fill = GridBagConstraints.BOTH;
 
+                subtaskListModel = new DefaultListModel();
 
 				scroll = new JScrollPane(createBody());
 				scroll.setBorder(BorderFactory.createEmptyBorder());
@@ -445,7 +460,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 JPanel subtasks = createSubtasksPanel();
 
                 JPanel panel = new JPanel(new FormLayout(
-                        "pref, fill:pref:grow", "fill:pref:grow"
+                        "pref, 30dlu, fill:pref:grow", "pref"
                 ));
                 panel.setOpaque(true);
                 panel.setBackground(Color.WHITE);
@@ -453,7 +468,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 CellConstraints cc = new CellConstraints();
 
                 panel.add(details, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.TOP));
-                panel.add(subtasks, cc.xy(2, 1));
+                panel.add(subtasks, cc.xy(3, 1));
 
 				return panel;
 			}
@@ -465,24 +480,98 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 gbc.gridy = 0;
                 gbc.weightx = 1.0;
                 gbc.weighty = 1.0;
-                gbc.fill = GridBagConstraints.BOTH;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
 
                 panel.setOpaque(false);
-                java.util.List<String> keys = params.issue.getSubTaskKeys();
+                final java.util.List<String> keys = params.issue.getSubTaskKeys();
                 if (keys.size() > 0) {
-                    JList list = new JList();
-                    DefaultListModel model = new DefaultListModel();
-                    list.setModel(model);
-                    for (String key : keys) {
-                        model.addElement(key);
+                    final JList list = new JList();
+                    list.setCellRenderer(new SubtaskListCellRenderer());
+                    list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                    list.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent event) {
+                            if (event.getClickCount() == 2) {
+                                openSelectedSubtask(list);
+                            }
+                        }
+                    });
+                    list.addKeyListener(new KeyAdapter() {
+                        @Override
+                        public void keyPressed(KeyEvent event) {
+                            if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+                                openSelectedSubtask(list);                
+                            }
+                        }
+                    });
+                    subtaskListModel.clear();
+                    list.setModel(subtaskListModel);
+                    list.setBorder(BorderFactory.createTitledBorder("Subtasks"));
+                    panel.add(list, BorderLayout.CENTER);
+                    if (getSubTasksTask == null) {
+                        createFetchSubtasksBackgroundTask(keys);
+                        ProgressManager.getInstance().run(getSubTasksTask);
                     }
-                    JScrollPane scrollPane = new JScrollPane(list);
-                    scrollPane.setBorder(BorderFactory.createTitledBorder("Subtasks"));
-                    scrollPane.setOpaque(false);
-                    panel.add(scrollPane, BorderLayout.CENTER);
                 }
 
                 return panel;
+            }
+
+            private void openSelectedSubtask(JList list) {
+                Object o = list.getSelectedValue();
+                if (o != null && o instanceof JIRAIssue) {
+                    IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+                    if (panel != null) {
+                        panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer());
+                    }
+                }
+            }
+
+            private void createFetchSubtasksBackgroundTask(final List<String> keys) {
+                getSubTasksTask = new Task.Backgroundable(project,
+                        "Fetching subtasks for issue " + params.issue.getKey(), true) {
+                    private List<JIRAIssue> subtasks = new ArrayList<JIRAIssue>();
+
+                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                        JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+                        if (facade == null) {
+                            return;
+                        }
+                        Collection<JIRAIssue> subtasksInModel = params.model.getSubtasks(params.issue);
+                        Map<String, JIRAIssue> subKeysInModel = new HashMap<String, JIRAIssue>();
+                        for (JIRAIssue sub : subtasksInModel) {
+                            subKeysInModel.put(sub.getKey(), sub);
+                        }
+                        for (String key : keys) {
+                            try {
+                                if (subKeysInModel.keySet().contains(key)) {
+                                    subtasks.add(subKeysInModel.get(key));
+                                } else {
+                                    JIRAIssue subtask = facade.getIssue(params.issue.getServer(), key);
+                                    if (subtask != null) {
+                                        subtasks.add(subtask);
+                                    }
+                                }
+                            } catch (JIRAException e) {
+                                LoggerImpl.getInstance().error(e);
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        getSubTasksTask = null;
+                    }
+
+                    @Override
+                    public void onSuccess() {
+                        subtaskListModel.clear();
+                        for (JIRAIssue subtask : subtasks) {
+                            subtaskListModel.addElement(subtask);
+                        }
+                        getSubTasksTask = null;
+                    }
+                };
             }
 
             private JPanel createDetailsPanel() {
@@ -773,7 +862,26 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			public void refresh() {
 				getIssueDetails();
 			}
-		}
+
+            private class SubtaskListCellRenderer extends DefaultListCellRenderer {
+                public Component getListCellRendererComponent(JList jList, Object value, int i, boolean b, boolean b1) {
+                    JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, i, b, b1);
+                    if (comp != null && value != null && value instanceof JIRAIssue) {
+                        JIRAIssue issue = (JIRAIssue) value;
+                        comp.setText(issue.getKey() + ": " + issue.getSummary());
+                        Icon icon = CachedIconLoader.getIcon(issue.getTypeIconUrl());
+                        comp.setIcon(icon);
+                        if (issue.getTypeIconUrl() != null) {
+                            Icon disabledIcon = CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
+                            comp.setDisabledIcon(disabledIcon);
+                        } else {
+                            comp.setDisabledIcon(null);
+                        }
+                    }
+                    return comp;
+                }
+            }
+        }
 
 		private class SummaryPanel extends JPanel {
 
