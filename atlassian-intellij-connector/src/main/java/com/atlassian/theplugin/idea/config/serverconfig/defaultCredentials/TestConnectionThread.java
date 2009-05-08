@@ -23,8 +23,6 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 
-import java.util.Set;
-
 /**
  * User: pmaruszak
  */
