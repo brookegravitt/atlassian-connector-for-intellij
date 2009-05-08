@@ -54,14 +54,10 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	private AtomicInteger progress = new AtomicInteger(0);
 
 	JScrollPane scroll = new JScrollPane();
-	private final ProjectConfiguration projectConfiguration;
-	private final UserCfg defaultCredentials;
 
 	public TestDefaultCredentialsDialog(Project project, final ProjectConfiguration projectConfiguration,
 			final UserCfg defaultCredentials) {
 		super(project, false);
-		this.projectConfiguration = projectConfiguration;
-		this.defaultCredentials = defaultCredentials;
 		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllBambooServers()),
 				ServerType.BAMBOO_SERVER, defaultCredentials);
 
@@ -84,10 +80,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 
-//		progressMonitor = new ProgressMonitor(rootPanel, "Testing default credentials", "Wait", 0,
-//				servers.size() - 1 >= 0 ? servers.size() - 1 : 0);
 		buildServerContent();
-
 		init();
 	}
 
@@ -123,20 +116,16 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		builder.addSeparator("Servers", cc.xyw(1, 2, ALL_COLUMNS));
 
 		for (ServerDataExt server : servers) {
-			final ServerDataExt serverFinal = server;
-
-
 			builder.add(new JLabel(server.getServerData().getName()), cc.xy(1, row));
 			builder.add(new JLabel(server.getStatus().getIcon()), cc.xy(3, row));
 
 			if (server.getStatus() == ConnectionStatus.FAILED) {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
-				hyperlinkLabel.addMouseListener(getMouseListener(serverFinal));
+				hyperlinkLabel.addMouseListener(getMouseListener(server));
 				builder.add(hyperlinkLabel, cc.xy(5, row));
 			}
 			row++;
 		}
-
 		rootPanel.add(builder.getPanel(), BorderLayout.CENTER);
 		changeCancelActionName();
 	}
@@ -201,7 +190,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			setCancelButtonText("Close");
 
 		}
-
 	}
 
 	public void setServerDataExt(ServerDataExt server) {
@@ -222,23 +210,22 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 		public void onSuccess() {
 			serverDataExt.setStatus(ConnectionStatus.PASSED);
-			buildServerContent();
-			progress.addAndGet(1);
-
-			rootPanel.revalidate();
-			rootPanel.repaint();
+			refresh();
 		}
 
 		public void onError(final String errorMessage) {
 			serverDataExt.setErrorMessage(errorMessage);
 			serverDataExt.setStatus(ConnectionStatus.FAILED);
-			progress.addAndGet(1);
+			refresh();
+		}
 
+		private void refresh() {
+			progress.addAndGet(1);
 			buildServerContent();
 			rootPanel.revalidate();
 			rootPanel.repaint();
-
-
 		}
+
+
 	}
 }
