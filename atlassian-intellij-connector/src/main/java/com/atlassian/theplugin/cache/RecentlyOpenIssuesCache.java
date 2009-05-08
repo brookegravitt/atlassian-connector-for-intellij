@@ -31,10 +31,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -61,7 +58,7 @@ public class RecentlyOpenIssuesCache {
 		});
 	}
 
-	public LinkedList<JIRAIssue> loadRecenltyOpenIssues() {
+	public List<JIRAIssue> loadRecenltyOpenIssues() {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
 			items.clear();
@@ -80,7 +77,12 @@ public class RecentlyOpenIssuesCache {
 			}
 		}
 
-		return new LinkedList<JIRAIssue>(items.values());
+		return reverseList(new LinkedList<JIRAIssue>(items.values()));
+	}
+
+	private List<JIRAIssue> reverseList(final LinkedList<JIRAIssue> jiraIssues) {
+		Collections.reverse(jiraIssues);
+		return jiraIssues;
 	}
 
 	private JIRAIssue loadJiraIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
@@ -95,8 +97,8 @@ public class RecentlyOpenIssuesCache {
 		return null;
 	}
 
-	public LinkedList<JIRAIssue> getLoadedRecenltyOpenIssues() {
-		return new LinkedList<JIRAIssue>(items.values());
+	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
+		return reverseList(new LinkedList<JIRAIssue>(items.values()));
 	}
 
 	/**
