@@ -155,5 +155,5 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		}
 		return null;
 	}
-
+	
 }

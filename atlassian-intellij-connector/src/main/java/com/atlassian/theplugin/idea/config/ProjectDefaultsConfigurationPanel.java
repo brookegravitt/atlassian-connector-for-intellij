@@ -416,7 +416,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 	private void testDefaultCredentials() {
-		final TestDefaultCredentialsDialog dialog = new TestDefaultCredentialsDialog(project);
+		final TestDefaultCredentialsDialog dialog = new TestDefaultCredentialsDialog(project, projectConfiguration, 
+				defaultCredentials);
 
 		dialog.testConnection();
 
