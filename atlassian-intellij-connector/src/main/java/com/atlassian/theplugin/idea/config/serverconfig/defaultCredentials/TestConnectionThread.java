@@ -15,10 +15,6 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.project.Project;
-import com.atlassian.theplugin.idea.config.TestDefaultCredentials;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.ConnectionWrapper;

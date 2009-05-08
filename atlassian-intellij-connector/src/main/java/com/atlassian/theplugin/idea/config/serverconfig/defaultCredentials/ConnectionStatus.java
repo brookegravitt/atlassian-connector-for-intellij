@@ -16,8 +16,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.atlassian.theplugin.ConnectionWrapper;
 
 import javax.swing.*;
 
