@@ -61,6 +61,7 @@ public class TestConnectionTask extends Task.Modal {
 		this.processor = processor;
 		this.serverData = serverData;
 		testConnector = new ConnectionWrapper(connectionTester, serverData, "test thread");
+		
 	}
 
 	@Override
