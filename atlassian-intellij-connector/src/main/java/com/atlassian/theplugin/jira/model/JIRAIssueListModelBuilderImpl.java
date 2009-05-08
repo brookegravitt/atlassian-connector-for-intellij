@@ -13,7 +13,6 @@ import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
@@ -132,7 +131,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			return;
 		}
 
-		LinkedList<JIRAIssue> issues = null;
+		List<JIRAIssue> issues = null;
 
 		try {
 			model.setModelFrozen(true);
