@@ -50,7 +50,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	private Set<ServerDataExt> servers = new HashSet<ServerDataExt>();
 	private final JPanel rootPanel = new JPanel(new BorderLayout());
 	private final Collection<Thread> threads = new ArrayList<Thread>();
-	ProgressMonitor progressMonitor;
+	//	ProgressMonitor progressMonitor;
 	private AtomicInteger progress = new AtomicInteger(0);
 
 	JScrollPane scroll = new JScrollPane();
@@ -84,11 +84,16 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 
-
-		progressMonitor = new ProgressMonitor(rootPanel, "Testing default credentials", "Wait", 0,
-				servers.size() - 1 >= 0 ? servers.size() - 1 : 0);
+//		progressMonitor = new ProgressMonitor(rootPanel, "Testing default credentials", "Wait", 0,
+//				servers.size() - 1 >= 0 ? servers.size() - 1 : 0);
 		buildServerContent();
+
 		init();
+	}
+
+	@Override
+	protected Action[] createActions() {
+		return new Action[]{getCancelAction()};
 	}
 
 	private void addServerTypeServers(final Collection<ServerCfg> serversToAdd, final ServerType serverType,
@@ -132,12 +137,8 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			row++;
 		}
 
-//		builder.setPreferredSize(new Dimension(600, 200));
-//		builder.setMinimumSize(new Dimension(600, 200));
-//		builder.setMaximumSize(new Dimension(600, 200));
 		rootPanel.add(builder.getPanel(), BorderLayout.CENTER);
-		progressMonitor.setProgress(progress.get());
-
+		changeCancelActionName();
 	}
 
 	private MouseListener getMouseListener(final ServerDataExt serverFinal) {
@@ -162,8 +163,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 	@Nullable
 	protected JComponent createCenterPanel() {
-
-		//rootPanel.add(scroll, BorderLayout.CENTER);
 		return rootPanel;
 	}
 
@@ -172,9 +171,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		for (Thread thread : threads) {
 			thread.interrupt();
 		}
-
-		progressMonitor.close();
-		
 		super.doCancelAction();
 	}
 
@@ -187,7 +183,20 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			thread.start();
 		}
 
-		show();
+		super.show();
+	}
+
+	@Override
+	public void show() {
+
+	}
+
+	private void changeCancelActionName() {
+		if (progress.get() == servers.size()) {
+			setCancelButtonText("Close");
+
+		}
+
 	}
 
 	public void setServerDataExt(ServerDataExt server) {
@@ -209,20 +218,21 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		public void onSuccess() {
 			serverDataExt.setStatus(ConnectionStatus.PASSED);
 			buildServerContent();
+			progress.addAndGet(1);
 
 			rootPanel.revalidate();
 			rootPanel.repaint();
-			progress.addAndGet(1);
 		}
 
 		public void onError(final String errorMessage) {
 			serverDataExt.setErrorMessage(errorMessage);
 			serverDataExt.setStatus(ConnectionStatus.FAILED);
-			buildServerContent();
+			progress.addAndGet(1);
 
+			buildServerContent();
 			rootPanel.revalidate();
 			rootPanel.repaint();
-			progress.addAndGet(1);
+
 
 		}
 	}
