@@ -843,10 +843,6 @@
 				class="com.atlassian.theplugin.idea.action.issues.AssignIssueToUserAction"
 				icon="/icons/pin_assignuser.png"
 				text="Assign to User"/>
-		<!--<action id="ThePlugin.JiraIssues.AssignIssueAndStartWorkAction"-->
-		<!--class="com.atlassian.theplugin.idea.action.issues.AssignIssueAndStartWorkAction"-->
-		<!--icon="/icons/pin_assignandstart.png"-->
-		<!--text="Assign to Me and Start Working"/>-->
 		<action id="ThePlugin.JiraIssues.AddComment"
 				class="com.atlassian.theplugin.idea.action.issues.AddCommentAction"
 				text="Add Comment"

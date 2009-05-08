@@ -78,14 +78,14 @@ public class ActivateIssueItemAction extends AnAction {
 		}
 	}
 
-	public void onUpdate(final AnActionEvent event, final boolean enabled) {
-//		if (activeIssue != null) {
-//			event.getPresentation().setText(activeIssue.getIssueKey());
-//		} else {
-//			event.getPresentation().setEnabled(false);
-//			event.getPresentation().setText("unknown");
-//		}
-
-
-	}
+//	public void onUpdate(final AnActionEvent event, final boolean enabled) {
+////		if (activeIssue != null) {
+////			event.getPresentation().setText(activeIssue.getIssueKey());
+////		} else {
+////			event.getPresentation().setEnabled(false);
+////			event.getPresentation().setText("unknown");
+////		}
+//
+//
+//	}
 }

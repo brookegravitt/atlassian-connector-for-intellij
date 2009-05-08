@@ -170,7 +170,6 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		model.setModelFrozen(true);
 
 		try {
-//			JIRAIssue updatedIssue = facade.getIssueUpdate(jiraServerCfg, issue);
 			JIRAIssue updatedIssue = facade.getIssue(jiraServerCfg, issueKey);
 
 			if (recentlyOpenIssuesCache != null) {
@@ -186,6 +185,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	/**
 	 * Updates the given issue in the model. That method does not retrieve issue from the server.
+	 * Can be called from the UI thread
 	 *
 	 * @param issue fresh issue to update in the model
 	 */

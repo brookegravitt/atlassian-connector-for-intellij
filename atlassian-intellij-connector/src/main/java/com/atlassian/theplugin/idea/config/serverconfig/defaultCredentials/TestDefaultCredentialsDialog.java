@@ -47,7 +47,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	private final JPanel rootPanel = new JPanel(new BorderLayout());
 	private final Collection<Thread> threads = new ArrayList<Thread>();
 
-	JScrollPane scroll = new JScrollPane();
 
 	public TestDefaultCredentialsDialog(Project project) {
 		super(project, false);
@@ -61,6 +60,8 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 		setTitle("Testing default credentials");
 		setModal(true);
+
+		JScrollPane scroll = new JScrollPane();
 
 		scroll.getViewport().setOpaque(false);
 		scroll.setOpaque(false);
@@ -78,11 +79,11 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		String rowsSpecs = StringUtils.repeat("pref,", servers.size());
 
 		JPanel contentPanel = new JPanel(new FormLayout("pref, pref, pref:grow",
-				rowsSpecs.substring(0, rowsSpecs.length() -1)));
-		
+				rowsSpecs.substring(0, rowsSpecs.length() - 1)));
+
 		contentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-		rootPanel.add(contentPanel, BorderLayout.CENTER);		
+		rootPanel.add(contentPanel, BorderLayout.CENTER);
 		int row = 0;
 		final CellConstraints cc = new CellConstraints();
 
@@ -96,7 +97,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
 				hyperlinkLabel.addMouseListener(new MouseListener() {
 					public void mouseClicked(final MouseEvent e) {
-						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details",	serverFinal.errorMessage);							
+						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", serverFinal.errorMessage);
 					}
 
 					public void mousePressed(final MouseEvent e) {
@@ -140,7 +141,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		for (Thread thread : threads) {
 			thread.interrupt();
 		}
-		
+
 		super.doCancelAction();
 	}
 

@@ -18,8 +18,8 @@ import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
-import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
+import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
@@ -28,6 +28,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -418,6 +419,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
 							jiraIssueListModelBuilder.updateIssue(issue);
+							recentlyOpenIssuesCache.addIssue(issue);
 						} else {
 							exception = new RuntimeException("No JIRA server defined!");
 						}
@@ -447,6 +449,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	}
 
 	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
+		// todo remove if statement
 		if (issue == null) {
 			return;
 		}
@@ -456,6 +459,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				assignIssue(issue, jiraServer.getUserName());
 			}
 		} catch (NullPointerException ex) {
+			// todo remove NPE catch
 			// whatever, means action was called when no issue was selected. Let's just swallow it
 		}
 	}
@@ -585,53 +589,95 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return false;
 	}
 
-
-	public boolean startWorkingOnIssue(@NotNull final JIRAIssue issue) {
-//		if (issue == null) {
-//			return;
-//		}
+	/**
+	 * Blocking method. Must be called in the background thread.
+	 *
+	 * @param issue issue to work on
+	 * @return modified issue or the same issue if no modification performed
+	 */
+	private JIRAIssue assignIssueAndPutInProgress(@NotNull final JIRAIssue issue) {
+		JIRAIssue updatedIssue = issue;
 		final ServerData server = issue.getServer();
-		boolean isOk = createChangeListAction(issue);
 
-		Task.Backgroundable startWorkOnIssue = new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
-
-			@Override
-			public void run(@NotNull final ProgressIndicator indicator) {
-				try {
-					if (!issue.getAssigneeId().equals(server.getUserName())) {
-						setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
-						jiraServerFacade.setAssignee(server, issue, server.getUserName());
-					}
-					List<JIRAAction> actions = jiraServerFacade.getAvailableActions(server, issue);
-					boolean found = false;
-					for (JIRAAction a : actions) {
-						if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-							setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
-							jiraServerFacade.progressWorkflowAction(server, issue, a);
-							JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-							setStatusInfoMessage("Started progress on " + issue.getKey());
-							found = true;
-							break;
-						}
-					}
-					JIRAIssue newIssue = jiraServerFacade.getIssue(server, issue.getKey());
-					if (!found && newIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
-						setStatusInfoMessage("Progress on "
-								+ issue.getKey()
-								+ "  not started - no such workflow action available");
-					}
-					jiraIssueListModelBuilder.updateIssue(newIssue);
-				} catch (JIRAException e) {
-					setStatusErrorMessage("Error starting progress on issue: " + e.getMessage(), e);
-				}
+		if (!issue.getAssigneeId().equals(server.getUserName())) {
+			setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
+			try {
+				jiraServerFacade.setAssignee(server, issue, server.getUserName());
+			} catch (JIRAException e) {
+				final String msg = "Error starting progress on issue. Assigning failed: ";
+				setStatusErrorMessage(msg + e.getMessage(), e);
+				PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+				return updatedIssue;
 			}
-		};
-
-		if (isOk) {
-			ProgressManager.getInstance().run(startWorkOnIssue);
 		}
 
-		return isOk;
+		setStatusInfoMessage("Retrieving available actions for issue");
+		List<JIRAAction> actions;
+		try {
+			actions = jiraServerFacade.getAvailableActions(server, issue);
+		} catch (JIRAException e) {
+			final String msg = "Error starting progress on issue. Retrieving actions failed: ";
+			setStatusErrorMessage(msg + e.getMessage(), e);
+			PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+			return updatedIssue;
+		}
+
+		for (JIRAAction a : actions) {
+			if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+				setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
+				try {
+					jiraServerFacade.progressWorkflowAction(server, issue, a);
+				} catch (JIRAException e) {
+					final String msg = "Error starting progress on issue. Perform workflow action failed: ";
+					setStatusErrorMessage(msg + e.getMessage(), e);
+					PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+					return updatedIssue;
+				}
+				JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+				break;
+			}
+		}
+
+		setStatusInfoMessage("Refreshing issue");
+		try {
+			updatedIssue = jiraServerFacade.getIssue(server, issue.getKey());
+		} catch (JIRAException e) {
+			setStatusErrorMessage("Error starting progress on issue: " + e.getMessage(), e);
+			PluginUtil.getLogger().warn("Error refreshing issue: " + e.getMessage(), e);
+			return updatedIssue;
+		}
+
+		if (updatedIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
+			setStatusErrorMessage("Progress on " + issue.getKey() + " not started");
+		} else {
+			setStatusInfoMessage("Progress on " + issue.getKey() + " started");
+		}
+
+		return updatedIssue;
+	}
+
+	public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue) {
+
+		final boolean isOk = createChangeListAction(issue);
+
+		if (isOk) {
+			ProgressManager.getInstance().run(new Task.Backgroundable(getProject(), "Starting Work on Issue", false) {
+
+				private JIRAIssue updatedIssue = issue;
+
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
+					updatedIssue = assignIssueAndPutInProgress(issue);
+				}
+
+				public void onSuccess() {
+					jiraIssueListModelBuilder.updateIssue(updatedIssue);
+					ActiveIssueUtils.setActiveJiraIssue(project, newActiveIssue, updatedIssue);
+				}
+			});
+		} else {
+			ActiveIssueUtils.setActiveJiraIssue(project, null, issue);
+		}
 	}
 
 	private void refreshFilterModel() {
@@ -1048,20 +1094,20 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		JiraIssueListTree issueTree = new JiraIssueListTree();
 
 		new TreeSpeedSearch(issueTree) {
-            @Override
-            protected boolean isMatchingElement(Object o, String s) {
-                TreePath tp = (TreePath) o;
-                Object node = tp.getLastPathComponent();
-                if (node instanceof JIRAIssueTreeNode) {
-                    JIRAIssueTreeNode jitn = (JIRAIssueTreeNode) node;
-                    JIRAIssue issue = jitn.getIssue();
-                    return issue.getKey().toLowerCase().contains(s.toLowerCase())
-                            || issue.getSummary().toLowerCase().contains(s.toLowerCase());
-                } else {
-                    return super.isMatchingElement(o, s);
-                }
-            }
-        };
+			@Override
+			protected boolean isMatchingElement(Object o, String s) {
+				TreePath tp = (TreePath) o;
+				Object node = tp.getLastPathComponent();
+				if (node instanceof JIRAIssueTreeNode) {
+					JIRAIssueTreeNode jitn = (JIRAIssueTreeNode) node;
+					JIRAIssue issue = jitn.getIssue();
+					return issue.getKey().toLowerCase().contains(s.toLowerCase())
+							|| issue.getSummary().toLowerCase().contains(s.toLowerCase());
+				} else {
+					return super.isMatchingElement(o, s);
+				}
+			}
+		};
 
 		issueTreeBuilder.rebuild(issueTree, getRightPanel());
 		return issueTree;
