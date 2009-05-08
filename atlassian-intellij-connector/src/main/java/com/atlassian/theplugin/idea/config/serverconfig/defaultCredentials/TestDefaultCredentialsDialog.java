@@ -91,14 +91,15 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			final ServerDataExt serverFinal = server;
 			row++;
 
-			contentPanel.add(new JLabel(server.serverData.getName()), cc.xy(1, row));
-			contentPanel.add(new JLabel(server.status.getIcon()), cc.xy(2, row));
-			if (server.status == ConnectionStatus.FAILED) {
+			contentPanel.add(new JLabel(server.getServerData().getName()), cc.xy(1, row));
+			contentPanel.add(new JLabel(server.getStatus().getIcon()), cc.xy(2, row));
+			if (server.getStatus() == ConnectionStatus.FAILED) {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
 				hyperlinkLabel.addMouseListener(new MouseAdapter() {
 
 					public void mouseClicked(final MouseEvent e) {
-						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", serverFinal.errorMessage);
+						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", 
+                                serverFinal.getErrorMessage());
 					}
 				});
 
