@@ -48,8 +48,6 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
@@ -533,10 +531,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     private List<JIRAIssue> subtasks = new ArrayList<JIRAIssue>();
 
                     public void run(@NotNull ProgressIndicator progressIndicator) {
-                        JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
-                        if (facade == null) {
-                            return;
-                        }
                         Collection<JIRAIssue> subtasksInModel = params.model.getSubtasks(params.issue);
                         Map<String, JIRAIssue> subKeysInModel = new HashMap<String, JIRAIssue>();
                         for (JIRAIssue sub : subtasksInModel) {

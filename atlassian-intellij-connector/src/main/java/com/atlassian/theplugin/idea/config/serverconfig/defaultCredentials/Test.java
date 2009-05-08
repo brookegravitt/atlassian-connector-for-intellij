@@ -18,5 +18,5 @@ package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 /**
  * User: pmaruszak
  */
-public class test {
+public class Test {
 }

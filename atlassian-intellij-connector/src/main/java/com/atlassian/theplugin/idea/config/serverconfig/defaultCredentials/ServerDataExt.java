@@ -17,16 +17,15 @@ package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.ConnectionWrapper;
 
 /**
  * User: pmaruszak
  */
 class ServerDataExt {
-		ServerData serverData;
-		ServerType serverType;
-		ConnectionStatus status = ConnectionStatus.NONE;
-		String errorMessage;
+		private ServerData serverData;
+		private ServerType serverType;
+		private ConnectionStatus status = ConnectionStatus.NONE;
+		private String errorMessage;
 
 
 		public ServerDataExt(final ServerData serverData, final ServerType serverTpe) {
