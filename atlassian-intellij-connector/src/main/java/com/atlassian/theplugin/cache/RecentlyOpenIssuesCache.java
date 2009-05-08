@@ -24,8 +24,6 @@ import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -42,18 +40,14 @@ import java.util.Map;
  * User: pmaruszak
  */
 public class RecentlyOpenIssuesCache {
+	// ordered map
 	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
-	private final LocalModelListener localModelListener = new LocalModelListener();
 	private final Project project;
 	private final IntelliJProjectCfgManager projectCfgManager;
-	private final JIRAIssueListModel issueModel;
 
-	public RecentlyOpenIssuesCache(final Project project, final IntelliJProjectCfgManager cfgManager,
-			final JIRAIssueListModel issueModel) {
+	public RecentlyOpenIssuesCache(final Project project, final IntelliJProjectCfgManager cfgManager) {
 		this.project = project;
 		this.projectCfgManager = cfgManager;
-		this.issueModel = issueModel;
-		this.issueModel.addModelListener(localModelListener);
 	}
 
 	/**
@@ -111,7 +105,14 @@ public class RecentlyOpenIssuesCache {
 	 * @param issue Issue to add
 	 */
 	public void addIssue(final JIRAIssue issue) {
-		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey()), issue);
+		final IssueRecentlyOpenBean recenltyOpenIssueBean =
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+
+		items.remove(recenltyOpenIssueBean);
+		items.put(recenltyOpenIssueBean, issue);
+
+		// todo reverse order
+		// todo limit number to 10
 
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
@@ -129,20 +130,11 @@ public class RecentlyOpenIssuesCache {
 	}
 
 	public void updateIssue(final JIRAIssue issue) {
-		// old value is replaced
-		items.put(new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey()), issue);
-	}
-
-	private class LocalModelListener implements JIRAIssueListModelListener {
-
-		public void modelChanged(final JIRAIssueListModel model) {
+		final IssueRecentlyOpenBean recentlyOpenIssueBean =
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+		if (items.containsKey(recentlyOpenIssueBean)) {
+			// old value is replaced
+			items.put(recentlyOpenIssueBean, issue);
 		}
-
-		public void issuesLoaded(final JIRAIssueListModel model, final int loadedIssues) {
-		}
-	}
-
-	public void close() {
-		issueModel.removeModelListener(localModelListener);
 	}
 }
