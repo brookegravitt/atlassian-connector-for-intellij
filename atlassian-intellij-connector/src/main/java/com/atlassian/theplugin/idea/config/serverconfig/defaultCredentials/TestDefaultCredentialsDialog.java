@@ -17,13 +17,16 @@ package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.ui.HyperlinkLabel;
+import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.commons.lang.StringUtils;
@@ -31,92 +34,130 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * User: pmaruszak
  */
 public class TestDefaultCredentialsDialog extends DialogWrapper {
-
+	private static final int ALL_COLUMNS = 5;
 	private Set<ServerDataExt> servers = new HashSet<ServerDataExt>();
 	private final JPanel rootPanel = new JPanel(new BorderLayout());
 	private final Collection<Thread> threads = new ArrayList<Thread>();
+	ProgressMonitor progressMonitor;
+	private AtomicInteger progress = new AtomicInteger(0);
 
+	JScrollPane scroll = new JScrollPane();
+	private final ProjectConfiguration projectConfiguration;
+	private final UserCfg defaultCredentials;
 
-	public TestDefaultCredentialsDialog(Project project) {
+	public TestDefaultCredentialsDialog(Project project, final ProjectConfiguration projectConfiguration,
+			final UserCfg defaultCredentials) {
 		super(project, false);
-		for (ServerType serverType : ServerType.values()) {
-			for (ServerData serverData :
-					IdeaHelper.getProjectCfgManager(project)
-							.getAllEnabledServersWithDefaultCredentials(serverType)) {
-				servers.add(new ServerDataExt(serverData, serverType));
-			}
-		}
+		this.projectConfiguration = projectConfiguration;
+		this.defaultCredentials = defaultCredentials;
+		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllBambooServers()),
+				ServerType.BAMBOO_SERVER, defaultCredentials);
+
+		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllCrucibleServers()),
+				ServerType.CRUCIBLE_SERVER, defaultCredentials);
+
+		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllFisheyeServers()),
+				ServerType.FISHEYE_SERVER, defaultCredentials);
+
+		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllJIRAServers()),
+				ServerType.JIRA_SERVER, defaultCredentials);
+
 
 		setTitle("Testing default credentials");
 		setModal(true);
-
-		JScrollPane scroll = new JScrollPane();
 
 		scroll.getViewport().setOpaque(false);
 		scroll.setOpaque(false);
 		scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scroll.setBorder(BorderFactory.createEmptyBorder());
+
+
+		progressMonitor = new ProgressMonitor(rootPanel, "Testing default credentials", "Wait", 0,
+				servers.size() - 1 >= 0 ? servers.size() - 1 : 0);
 		buildServerContent();
 		init();
+	}
+
+	private void addServerTypeServers(final Collection<ServerCfg> serversToAdd, final ServerType serverType,
+			final UserCfg defaultCredentials) {
+		for (ServerCfg server : serversToAdd) {
+			if (server.isEnabled() && server.isUseDefaultCredentials()) {
+				this.servers.add(new ServerDataExt(ServerData.create(server, defaultCredentials), serverType));
+			}
+		}
 	}
 
 	private synchronized void buildServerContent() {
 		rootPanel.removeAll();
 		rootPanel.add(new JLabel("Testing default credentials for enabled servers"), BorderLayout.NORTH);
 
-		String rowsSpecs = StringUtils.repeat("pref,", servers.size());
+		String rowsSpecs = "3dlu, pref, 3dlu, " + StringUtils.repeat("pref,", servers.size());
 
-		JPanel contentPanel = new JPanel(new FormLayout("pref, pref, pref:grow",
-				rowsSpecs.substring(0, rowsSpecs.length() - 1)));
+		final FormLayout layout = new FormLayout("pref, 4dlu, pref, 4dlu, pref:grow",
+				rowsSpecs.substring(0, rowsSpecs.length() - 1));
 
-		contentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-		rootPanel.add(contentPanel, BorderLayout.CENTER);
-		int row = 0;
+		int row = 4;
 		final CellConstraints cc = new CellConstraints();
+		PanelBuilder builder = new PanelBuilder(layout);
+		builder.setDefaultDialogBorder();
+
+		builder.addSeparator("Servers", cc.xyw(1, 2, ALL_COLUMNS));
 
 		for (ServerDataExt server : servers) {
 			final ServerDataExt serverFinal = server;
-			row++;
 
-			contentPanel.add(new JLabel(server.getServerData().getName()), cc.xy(1, row));
-			contentPanel.add(new JLabel(server.getStatus().getIcon()), cc.xy(2, row));
+
+			builder.add(new JLabel(server.getServerData().getName()), cc.xy(1, row));
+			builder.add(new JLabel(server.getStatus().getIcon()), cc.xy(3, row));
+
 			if (server.getStatus() == ConnectionStatus.FAILED) {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
-				hyperlinkLabel.addMouseListener(new MouseAdapter() {
-
-					public void mouseClicked(final MouseEvent e) {
-						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", 
-                                serverFinal.getErrorMessage());
-					}
-				});
-
-				//
-				contentPanel.add(hyperlinkLabel, cc.xy(3, row));
-
-			} else {
-
-				//
-				contentPanel.add(new JLabel(""), cc.xy(3, row));
+				hyperlinkLabel.addMouseListener(getMouseListener(serverFinal));
+				builder.add(hyperlinkLabel, cc.xy(5, row));
 			}
+			row++;
 		}
 
-		contentPanel.setPreferredSize(new Dimension(600, 200));
-		contentPanel.setMinimumSize(new Dimension(600, 200));
-		contentPanel.setMaximumSize(new Dimension(600, 200));
+//		builder.setPreferredSize(new Dimension(600, 200));
+//		builder.setMinimumSize(new Dimension(600, 200));
+//		builder.setMaximumSize(new Dimension(600, 200));
+		rootPanel.add(builder.getPanel(), BorderLayout.CENTER);
+		progressMonitor.setProgress(progress.get());
 
+	}
+
+	private MouseListener getMouseListener(final ServerDataExt serverFinal) {
+		return new MouseListener() {
+			public void mouseClicked(final MouseEvent e) {
+				DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", serverFinal.getErrorMessage());
+			}
+
+			public void mousePressed(final MouseEvent e) {
+			}
+
+			public void mouseReleased(final MouseEvent e) {
+			}
+
+			public void mouseEntered(final MouseEvent e) {
+			}
+
+			public void mouseExited(final MouseEvent e) {
+			}
+		};
 	}
 
 	@Nullable
@@ -132,6 +173,8 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			thread.interrupt();
 		}
 
+		progressMonitor.close();
+		
 		super.doCancelAction();
 	}
 
@@ -169,6 +212,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 			rootPanel.revalidate();
 			rootPanel.repaint();
+			progress.addAndGet(1);
 		}
 
 		public void onError(final String errorMessage) {
@@ -178,6 +222,8 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 			rootPanel.revalidate();
 			rootPanel.repaint();
+			progress.addAndGet(1);
+
 		}
 	}
 }

@@ -50,8 +50,7 @@ public class TestConnectionTask extends Task.Modal {
 			String title, boolean canBeCanceled, boolean showOkMessage, boolean showErrorMessage) {
 		this(currentProject, connectionTester, serverData, processor, title, canBeCanceled);
 		this.showOkMessage = showOkMessage;
-		this.showErrorMessage = showErrorMessage;
-
+		this.showErrorMessage = showErrorMessage;		
 	}
 
 	public TestConnectionTask(Project currentProject, final Connector connectionTester,
@@ -75,7 +74,6 @@ public class TestConnectionTask extends Task.Modal {
 			indicator.setFraction(0);
 			indicator.setIndeterminate(true);
 		}
-
 		testConnector.start();
 
 		while (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.NOT_FINISHED) {
