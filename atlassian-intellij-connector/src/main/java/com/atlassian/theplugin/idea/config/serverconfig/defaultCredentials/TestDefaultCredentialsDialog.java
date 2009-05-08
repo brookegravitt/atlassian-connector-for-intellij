@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -95,21 +95,10 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			contentPanel.add(new JLabel(server.status.getIcon()), cc.xy(2, row));
 			if (server.status == ConnectionStatus.FAILED) {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
-				hyperlinkLabel.addMouseListener(new MouseListener() {
+				hyperlinkLabel.addMouseListener(new MouseAdapter() {
+
 					public void mouseClicked(final MouseEvent e) {
 						DialogWithDetails.showExceptionDialog(rootPanel, "Connection Details", serverFinal.errorMessage);
-					}
-
-					public void mousePressed(final MouseEvent e) {
-					}
-
-					public void mouseReleased(final MouseEvent e) {
-					}
-
-					public void mouseEntered(final MouseEvent e) {
-					}
-
-					public void mouseExited(final MouseEvent e) {
 					}
 				});
 
