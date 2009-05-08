@@ -51,7 +51,15 @@ class ServerDataExt {
 		return serverData;
 	}
 
-	public boolean equals(final Object o) {
+    public ConnectionStatus getStatus() {
+        return status;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public boolean equals(final Object o) {
 			if (this == o) {
 				return true;
 			}
