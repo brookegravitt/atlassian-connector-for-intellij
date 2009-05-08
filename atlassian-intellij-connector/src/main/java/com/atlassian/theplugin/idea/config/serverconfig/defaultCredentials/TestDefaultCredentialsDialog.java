@@ -184,6 +184,11 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		}
 
 		super.show();
+		for (Thread thread : threads) {
+			if (thread.isInterrupted()) {
+				thread.interrupt();
+			}
+		}
 	}
 
 	@Override
