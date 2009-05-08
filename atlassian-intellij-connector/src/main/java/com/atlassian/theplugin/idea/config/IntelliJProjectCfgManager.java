@@ -27,6 +27,7 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class IntelliJProjectCfgManager implements ProjectCfgManager {
@@ -121,6 +122,15 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 	}
 
 
+	public Collection<ServerData> getAllEnabledServersWithDefaultCredentials(final ServerType serverType) {
+		Collection<ServerData> servers = new ArrayList<ServerData>();
+		for (ServerCfg server : cfgManager.getAllEnabledServers(projectId, serverType)) {
+			if (server.isUseDefaultCredentials() && server.isEnabled()) {
+				servers.add(getServerData(server));
+			}
+		}
+		return servers;
+	}
 	@Nullable
 	public ServerData getDefaultCrucibleServer() {
 		ProjectConfiguration prjCfg = getProjectConfiguration();

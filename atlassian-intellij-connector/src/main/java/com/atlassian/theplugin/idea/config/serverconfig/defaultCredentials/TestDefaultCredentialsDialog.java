@@ -15,24 +15,28 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.project.Project;
-import com.intellij.ui.HyperlinkLabel;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.builder.DefaultFormBuilder;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.ConnectionWrapper;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.ui.HyperlinkLabel;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.util.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User: pmaruszak
@@ -41,6 +45,8 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 	private Set<ServerDataExt> servers = new HashSet<ServerDataExt>();
 	private final JPanel rootPanel = new JPanel(new BorderLayout());
+	private final Collection<Thread> threads = new ArrayList<Thread>();
+
 	JScrollPane scroll = new JScrollPane();
 
 	public TestDefaultCredentialsDialog(Project project) {
@@ -54,7 +60,6 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		}
 
 		setTitle("Testing default credentials");
-		rootPanel.setPreferredSize(new Dimension(300, 200));
 		setModal(true);
 
 		scroll.getViewport().setOpaque(false);
@@ -68,19 +73,25 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 
 	private synchronized void buildServerContent() {
 		rootPanel.removeAll();
-		final FormLayout layout = new FormLayout("left:pref, left:pref, left:pref, pref:grow", "");
-		DefaultFormBuilder builder = new DefaultFormBuilder(layout, rootPanel);
+		rootPanel.add(new JLabel("Testing default credentials for enabled servers"), BorderLayout.NORTH);
 
-		builder.setColumnSpan(200);
+		String rowsSpecs = StringUtils.repeat("pref,", servers.size());
 
+		JPanel contentPanel = new JPanel(new FormLayout("pref, pref, pref:grow",
+				rowsSpecs.substring(0, rowsSpecs.length() -1)));
 		
-		builder.setBorder(BorderFactory.createEtchedBorder());
+		contentPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+		rootPanel.add(contentPanel, BorderLayout.CENTER);		
+		int row = 0;
+		final CellConstraints cc = new CellConstraints();
 
 		for (ServerDataExt server : servers) {
 			final ServerDataExt serverFinal = server;
-			builder.append(new JLabel(server.serverData.getName()));
+			row++;
 
-			builder.append(new JLabel(server.status.getIcon()));
+			contentPanel.add(new JLabel(server.serverData.getName()), cc.xy(1, row));
+			contentPanel.add(new JLabel(server.status.getIcon()), cc.xy(2, row));
 			if (server.status == ConnectionStatus.FAILED) {
 				HyperlinkLabel hyperlinkLabel = new HyperlinkLabel("error details");
 				hyperlinkLabel.addMouseListener(new MouseListener() {
@@ -100,17 +111,20 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 					public void mouseExited(final MouseEvent e) {
 					}
 				});
-				builder.append(hyperlinkLabel);
+
+				//
+				contentPanel.add(hyperlinkLabel, cc.xy(3, row));
 
 			} else {
-				builder.append("");
-			}
 
-			builder.nextLine();
+				//
+				contentPanel.add(new JLabel(""), cc.xy(3, row));
+			}
 		}
 
-		//builder.getPanel().revalidate();
-		//builder.getPanel().repaint();				
+		contentPanel.setPreferredSize(new Dimension(600, 200));
+		contentPanel.setMinimumSize(new Dimension(600, 200));
+		contentPanel.setMaximumSize(new Dimension(600, 200));
 
 	}
 
@@ -122,13 +136,24 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	}
 
 
+	public void doCancelAction() {
+		for (Thread thread : threads) {
+			thread.interrupt();
+		}
+		
+		super.doCancelAction();
+	}
+
 	public void testConnection() {
 		for (ServerDataExt serverDataExt : servers) {
-			TestConnectionThread task = new TestConnectionThread("testing connection",
+			TestConnectionThread thread = new TestConnectionThread("testing connection",
 					new LocalTestConnectionProcessor(serverDataExt), serverDataExt);
 
-			task.start();
+			threads.add(thread);
+			thread.start();
 		}
+
+		show();
 	}
 
 	public void setServerDataExt(ServerDataExt server) {

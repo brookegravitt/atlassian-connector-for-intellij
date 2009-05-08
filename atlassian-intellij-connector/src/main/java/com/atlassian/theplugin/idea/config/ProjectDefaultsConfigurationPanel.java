@@ -28,11 +28,13 @@ import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials.TestDefaultCredentialsDialog;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -45,8 +47,6 @@ import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import org.jetbrains.annotations.NotNull;
 
 public class ProjectDefaultsConfigurationPanel extends JPanel {
 
@@ -416,15 +416,21 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 	private void testDefaultCredentials() {
-		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
-				fishEyeServerFacade, bambooServerFacade);
-		Collection<TestDefaultCredentials.ServerDataExt> data = MiscUtil.buildArrayList();
-		for (ServerCfg serverCfg : projectConfiguration.getAllServersWithDefaultCredentials()) {
-			data.add(new TestDefaultCredentials.ServerDataExt(
-					new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), defaultCredentials.getUserName(),
-							defaultCredentials.getPassword(), serverCfg.getUrl()), serverCfg.getServerType()));
-		}
-		test.run(data);
+		final TestDefaultCredentialsDialog dialog = new TestDefaultCredentialsDialog(project);
+
+		dialog.testConnection();
+
+
+
+//		TestDefaultCredentials test = new TestDefaultCredentials(project, this, jiraServerFacade, crucibleServerFacade,
+//				fishEyeServerFacade, bambooServerFacade);
+//		Collection<TestDefaultCredentials.ServerDataExt> data = MiscUtil.buildArrayList();
+//		for (ServerCfg serverCfg : projectConfiguration.getAllEnabledServersWithDefaultCredentials()) {
+//			data.add(new TestDefaultCredentials.ServerDataExt(
+//					new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), defaultCredentials.getUserName(),
+//							defaultCredentials.getPassword(), serverCfg.getUrl()), serverCfg.getServerType()));
+//		}
+//		test.run(data);
 	}
 
 	private void initializeControls() {
