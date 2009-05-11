@@ -1208,26 +1208,39 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						setStatusInfoMessage("Logged work for issue " + issue.getKey());
 					}
 					if (deactivateIssue) {
-						JIRAAction stopProgressAction = null;
-						setStatusInfoMessage("Checking workflow actions for issue " + issue.getKey() + "...");
+                        JIRAAction selectedAction = dialog.getSelectedAction();
+                        if (selectedAction != null) {
+                            setStatusInfoMessage("Running action [" + selectedAction.getName()
+                                    + "] on issue " + issue.getKey());
+                        }
+                        final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
+                                jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                riaa.runIssueAction(project);
+                            }
+                        });
 
-						List<JIRAAction> actions = jiraServerFacade.getAvailableActions(
-								jiraServer, issue);
-						for (JIRAAction a : actions) {
-							if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
-								List<JIRAActionField> fields =
-										jiraServerFacade.getFieldsForAction(
-												jiraServer, issue, a);
-								if (fields.isEmpty()) {
-									stopProgressAction = a;
-								}
-								break;
-							}
-						}
-						if (stopProgressAction != null) {
-							setStatusInfoMessage("Stopping work for issue " + issue.getKey() + "...");
-							jiraServerFacade.progressWorkflowAction(jiraServer, issue, stopProgressAction);
-						}
+//						JIRAAction stopProgressAction = null;
+//						setStatusInfoMessage("Checking workflow actions for issue " + issue.getKey() + "...");
+//
+//						List<JIRAAction> actions = jiraServerFacade.getAvailableActions(
+//								jiraServer, issue);
+//						for (JIRAAction a : actions) {
+//							if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
+//								List<JIRAActionField> fields =
+//										jiraServerFacade.getFieldsForAction(
+//												jiraServer, issue, a);
+//								if (fields.isEmpty()) {
+//									stopProgressAction = a;
+//								}
+//								break;
+//							}
+//						}
+//						if (stopProgressAction != null) {
+//							setStatusInfoMessage("Stopping work for issue " + issue.getKey() + "...");
+//							jiraServerFacade.progressWorkflowAction(jiraServer, issue, stopProgressAction);
+//						}
 
 						if (dialog.isCommitChanges()) {
 							final ChangeListManager changeListManager = ChangeListManager.getInstance(project);
