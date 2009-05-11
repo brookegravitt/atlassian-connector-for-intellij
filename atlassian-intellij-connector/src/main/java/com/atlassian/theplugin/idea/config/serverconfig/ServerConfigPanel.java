@@ -257,8 +257,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			public void run() {
 				if (projectConfigurationPanel.isShowing()) {
 					if (projectConfigurationPanel != null && !isDefaultCredentialsAsked
-							&& (defaultUser == null ||
-							(defaultUser.getPassword().equals("") && defaultUser.getPassword().equals(""))
+							&& (defaultUser == null
+                            || (defaultUser.getPassword().equals("") && defaultUser.getPassword().equals(""))
 									&& serverCfg.getUsername().length() > 0)) {
 						int answer = Messages.showYesNoDialog(projectConfigurationPanel,
 								"Do yo want to set this username and password"
