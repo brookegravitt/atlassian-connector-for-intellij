@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
@@ -26,6 +25,7 @@ import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -212,7 +212,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	}
 
 	public void init() {
-		recentlyOpenIssuesCache.init();
+		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
+			public void run(@NotNull final ProgressIndicator progressindicator) {
+				recentlyOpenIssuesCache.loadRecenltyOpenIssues();
+			}
+		});
 	}
 
 	@Override
@@ -1208,18 +1212,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						setStatusInfoMessage("Logged work for issue " + issue.getKey());
 					}
 					if (deactivateIssue) {
-                        JIRAAction selectedAction = dialog.getSelectedAction();
-                        if (selectedAction != null) {
-                            setStatusInfoMessage("Running action [" + selectedAction.getName()
-                                    + "] on issue " + issue.getKey());
-                        }
-                        final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
-                                jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                riaa.runIssueAction(project);
-                            }
-                        });
+						JIRAAction selectedAction = dialog.getSelectedAction();
+						if (selectedAction != null) {
+							setStatusInfoMessage("Running action [" + selectedAction.getName()
+									+ "] on issue " + issue.getKey());
+						}
+						final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
+								jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								riaa.runIssueAction(project);
+							}
+						});
 
 //						JIRAAction stopProgressAction = null;
 //						setStatusInfoMessage("Checking workflow actions for issue " + issue.getKey() + "...");

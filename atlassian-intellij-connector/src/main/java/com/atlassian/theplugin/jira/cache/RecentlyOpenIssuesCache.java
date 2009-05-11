@@ -13,23 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.cache;
+package com.atlassian.theplugin.jira.cache;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -39,37 +33,25 @@ import java.util.*;
 public class RecentlyOpenIssuesCache {
 	// ordered map
 	private final LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
-	private final Project project;
 	private final IntelliJProjectCfgManager projectCfgManager;
+	private JiraWorkspaceConfiguration jiraWorkspaceConf;
 
-	public RecentlyOpenIssuesCache(final Project project, final IntelliJProjectCfgManager cfgManager) {
-		this.project = project;
+	public RecentlyOpenIssuesCache(final IntelliJProjectCfgManager cfgManager, final JiraWorkspaceConfiguration jiraConf) {
 		this.projectCfgManager = cfgManager;
-	}
-
-	/**
-	 * Reloads cache from the model and server in the background task
-	 */
-	public void init() {
-		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving recently viewed issues", false) {
-			public void run(@NotNull final ProgressIndicator progressindicator) {
-				loadRecenltyOpenIssues();
-			}
-		});
+		this.jiraWorkspaceConf = jiraConf;
 	}
 
 	/**
 	 * Loads recenlty viewed issues from the server into cache.
 	 * BLOCKING METHOD. SHOULD BE CALLED IN THE BACKGROUND.
-	 * This method should be called only if you want to refresh the cache.
+	 * This method should be called only if you want to init or refresh the cache.
 	 *
 	 * @return local (cached) list of recently viewed issues
 	 */
 	public List<JIRAIssue> loadRecenltyOpenIssues() {
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-		if (conf != null) {
+		if (jiraWorkspaceConf != null) {
 			items.clear();
-			final List<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
+			final List<IssueRecentlyOpenBean> recentlyOpen = jiraWorkspaceConf.getRecentlyOpenIssues();
 			// we put elements in the map in reverse order (most fresh element is at the end)
 			// this is because map.put (used when adding new element) place alement at the end
 			// I don't know the way to put element at the top of the ordered map.
@@ -87,7 +69,6 @@ public class RecentlyOpenIssuesCache {
 				}
 			}
 		}
-
 		return reverseList(new LinkedList<JIRAIssue>(items.values()));
 	}
 
@@ -98,6 +79,18 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
 		return reverseList(new LinkedList<JIRAIssue>(items.values()));
+	}
+
+	/**
+	 * Returns recently viewed issue according to provided parameters
+	 * Non blocking method. Can be called in the UI thread.
+	 *
+	 * @param issueKey issue key to look for
+	 * @param serverId server to search
+	 * @return recently viewed issue from the local cache or null in case issue was not found in the cache
+	 */
+	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
+		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
 	}
 
 	/**
@@ -117,27 +110,14 @@ public class RecentlyOpenIssuesCache {
 		while (items.size() > JiraWorkspaceConfiguration.RECENLTY_OPEN_ISSUES_LIMIT) {
 			Iterator iter = items.values().iterator();
 			if (iter.hasNext()) {
-				JIRAIssue i = (JIRAIssue) iter.next();
+				iter.next();
 				iter.remove();
 			}
 		}
 
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-		if (conf != null) {
-			conf.addRecentlyOpenIssue(issue);
+		if (jiraWorkspaceConf != null) {
+			jiraWorkspaceConf.addRecentlyOpenIssue(issue);
 		}
-	}
-
-	/**
-	 * Returns recently viewed issue according to provided parameters
-	 * Non blocking method. Can be called in the UI thread.
-	 *
-	 * @param issueKey
-	 * @param serverId
-	 * @return recenlty viewed issue from the local cache or null in case issue was not found in the cache
-	 */
-	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
-		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
 	}
 
 	/**
