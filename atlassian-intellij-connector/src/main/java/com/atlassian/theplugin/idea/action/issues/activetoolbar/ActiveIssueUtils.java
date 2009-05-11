@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -30,6 +29,7 @@ import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.atlassian.theplugin.util.PluginUtil;

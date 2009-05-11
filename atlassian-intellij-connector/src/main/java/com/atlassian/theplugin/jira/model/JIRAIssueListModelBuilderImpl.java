@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
@@ -10,6 +9,7 @@ import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;

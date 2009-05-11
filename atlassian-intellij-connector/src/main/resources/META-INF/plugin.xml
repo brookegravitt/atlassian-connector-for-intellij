@@ -124,8 +124,8 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.cache.RecentlyOpenIssuesCache"
-						serviceImplementation="com.atlassian.theplugin.cache.RecentlyOpenIssuesCache"/>
+		<projectService serviceInterface="com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache"
+						serviceImplementation="com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModel"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelImpl"/>
