@@ -33,7 +33,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
-	static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
+	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 	private ActiveJiraIssueBean activeJiraIssue;
 
 	public JiraWorkspaceConfiguration() {
