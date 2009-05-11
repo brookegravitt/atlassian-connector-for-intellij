@@ -16,10 +16,10 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import org.jetbrains.annotations.NotNull;
 
 @State(name = "atlassian-ide-plugin-workspace",
@@ -33,6 +33,7 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
 
 	private UserCfgBean defaultCredentials = new UserCfgBean();
+	private boolean defaultCredentialsAsked;
 
 
 	public ProjectConfigurationBean() {
@@ -61,6 +62,7 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 		this.activeToolWindowTab = state.getActiveToolWindowTab();
 		defaultCredentials = new UserCfgBean(state.defaultCredentials.getUsername(),
 				state.defaultCredentials.getEncodedPassword());
+		defaultCredentialsAsked = state.defaultCredentialsAsked;
 	}
 
 	public String getActiveToolWindowTab() {
@@ -80,6 +82,14 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 //		projectConfigurationBean.copyConfiguration(state);
 	}
 
+	public boolean isDefaultCredentialsAsked() {
+		return defaultCredentialsAsked;
+	}
+
+	public void setDefaultCredentialsAsked(final boolean defaultCredentialsAsked) {
+		this.defaultCredentialsAsked = defaultCredentialsAsked;
+	}
+
 	@NotNull
 	public UserCfgBean getDefaultCredentials() {
 		return defaultCredentials;
@@ -87,5 +97,8 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 
 	public void setDefaultCredentials(@NotNull final UserCfgBean defaultCredentials) {
 		this.defaultCredentials = defaultCredentials;
+		if (defaultCredentials.getUsername().length() > 0) {
+			defaultCredentialsAsked = true;
+		}
 	}
 }

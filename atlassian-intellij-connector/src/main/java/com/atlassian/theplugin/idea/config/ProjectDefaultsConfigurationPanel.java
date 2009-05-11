@@ -68,7 +68,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private final BambooServerFacade bambooServerFacade;
 	private final JIRAServerFacade jiraServerFacade;
 	private final UiTaskExecutor uiTaskExecutor;
-	private final UserCfg defaultCredentials;
+	private UserCfg defaultCredentials;
 	private static final JiraServerCfgWrapper JIRA_SERVER_NONE = new JiraServerCfgWrapper(null);
 	private static final CrucibleServerCfgWrapper CRUCIBLE_SERVER_NONE = new CrucibleServerCfgWrapper(null);
 	private static final FishEyeServerWrapper FISHEYE_SERVER_NONE = new FishEyeServerWrapper(null);
@@ -452,6 +452,13 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	public void setData(final ProjectConfiguration aProjectConfiguration) {
 		this.projectConfiguration = aProjectConfiguration;
 		initializeControls();
+	}
+
+	public void setDefaultCredentials(final UserCfg userCfg) {
+		defaultCredentials.setUserName(userCfg.getUserName());
+		defaultCredentials.setPassword(userCfg.getPassword());
+		defaultUserName.setText(defaultCredentials.getUserName());
+		defaultPassword.setText(defaultCredentials.getPassword());
 	}
 
 

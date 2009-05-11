@@ -44,8 +44,6 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	private ProjectConfiguration projectConfiguration;
 
-	private final UserCfg defaultCredentials;
-
 	private static final int WIDTH = 800;
 
 	private static final int HEIGHT = 600;
@@ -56,18 +54,18 @@ public class ProjectConfigurationPanel extends JPanel {
 	}
 
 	public UserCfg getDefaultCredentials() {
-		return defaultCredentials;
+		return serverConfigPanel.getDefaultUser();
 	}
 
 	public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
 			@NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
 			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-			/*final IntelliJProjectCfgManager projectCfgManager, */@NotNull UserCfg defaultCredentials) {
+			/*final IntelliJProjectCfgManager projectCfgManager, */@NotNull UserCfg defaultCredentials,
+			final boolean defaultCredentialsAsked) {
 		this.projectConfiguration = projectConfiguration;
-		this.defaultCredentials = defaultCredentials;
-		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
-				projectConfiguration.getServers(), selectedServer);
+		serverConfigPanel = new ServerConfigPanel(this, project, defaultCredentials,
+				projectConfiguration, selectedServer, defaultCredentialsAsked);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
 		aboutBox = new AboutForm();
@@ -75,6 +73,9 @@ public class ProjectConfigurationPanel extends JPanel {
 		initLayout();
 	}
 
+	public boolean isDefaultCredentialsAsked() {
+		return serverConfigPanel.isDefaultCredentialsAsked();
+	}
 	private void initLayout() {
 		setLayout(new BorderLayout());
 		setMinimumSize(new Dimension(WIDTH, HEIGHT));
@@ -118,6 +119,8 @@ public class ProjectConfigurationPanel extends JPanel {
 			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
 		}
 
+
+
 	}
 
 
@@ -125,5 +128,9 @@ public class ProjectConfigurationPanel extends JPanel {
 		projectConfiguration = aProjectConfiguration;
 		serverConfigPanel.setData(projectConfiguration.getServers());
 		defaultsConfigurationPanel.setData(projectConfiguration);
+	}
+
+	public void setDefaultCredentials(final UserCfg userCfg) {
+		defaultsConfigurationPanel.setDefaultCredentials(userCfg);
 	}
 }

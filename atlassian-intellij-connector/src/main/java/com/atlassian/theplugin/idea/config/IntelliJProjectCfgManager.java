@@ -35,7 +35,6 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
 	private final ProjectConfigurationBean projectConfigurationBean;
-
 	public IntelliJProjectCfgManager(Project project,
 			CfgManager cfgManager, ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
@@ -49,6 +48,14 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		return cfgManager;
 	}
 
+
+	public boolean isDefaultCredentialsAsked() {
+		return projectConfigurationBean.isDefaultCredentialsAsked();
+	}
+
+	public void setDefaultCredentialsAsked(final boolean defaultCredentialsAsked) {
+		projectConfigurationBean.setDefaultCredentialsAsked(defaultCredentialsAsked);
+	}
 
 	@NotNull
 	public ServerData getServerData(@NotNull Server serverCfg) {
