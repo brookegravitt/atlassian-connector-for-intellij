@@ -51,21 +51,20 @@ public class RecentlyOpenIssuesCache {
 	public List<JIRAIssue> loadRecenltyOpenIssues() {
 		if (jiraWorkspaceConf != null) {
 			items.clear();
-			final List<IssueRecentlyOpenBean> recentlyOpen = jiraWorkspaceConf.getRecentlyOpenIssues();
+			final List<IssueRecentlyOpenBean> recentlyOpen =
+					new LinkedList<IssueRecentlyOpenBean>(jiraWorkspaceConf.getRecentlyOpenIssues());
 			// we put elements in the map in reverse order (most fresh element is at the end)
 			// this is because map.put (used when adding new element) place alement at the end
 			// I don't know the way to put element at the top of the ordered map.
 			Collections.reverse(recentlyOpen);
-			if (recentlyOpen != null) {
-				for (IssueRecentlyOpenBean i : recentlyOpen) {
-					try {
-						JIRAIssue loadedIssue = loadJiraIssue(i);
-						if (loadedIssue != null) {
-							items.put(i, loadedIssue);
-						}
-					} catch (JIRAException e) {
-						PluginUtil.getLogger().warn(e.getMessage());
+			for (IssueRecentlyOpenBean i : recentlyOpen) {
+				try {
+					JIRAIssue loadedIssue = loadJiraIssue(i);
+					if (loadedIssue != null) {
+						items.put(i, loadedIssue);
 					}
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().warn(e.getMessage());
 				}
 			}
 		}
