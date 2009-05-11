@@ -137,23 +137,7 @@ public class RecentlyOpenIssuesCache {
 	 * @return recenlty viewed issue from the local cache or null in case issue was not found in the cache
 	 */
 	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
-		for (JIRAIssue issue : getLoadedRecenltyOpenIssues()) {
-			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().equals(serverId)) {
-				return issue;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Returns recently viewed issue according to provided parameters
-	 * Non blocking method. Can be called in the UI thread.
-	 *
-	 * @param recenltyOpenIssueBean key to retrieve the issue
-	 * @return recenlty viewed issue from the local cache or null in case issue was not found in the cache
-	 */
-	public JIRAIssue getLoadedRecenltyOpenIssue(final IssueRecentlyOpenBean recenltyOpenIssueBean) {
-		return items.get(recenltyOpenIssueBean);
+		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
 	}
 
 	/**

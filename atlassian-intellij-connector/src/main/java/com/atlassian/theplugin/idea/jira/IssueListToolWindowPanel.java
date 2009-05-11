@@ -648,7 +648,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		if (updatedIssue.getStatusId() != Constants.JiraStatusId.IN_PROGRESS.getId()) {
-			setStatusErrorMessage("Progress on " + issue.getKey() + " not started");
+			setStatusErrorMessage("Progress on " + issue.getKey() + " not started on JIRA side");
 		} else {
 			setStatusInfoMessage("Progress on " + issue.getKey() + " started");
 		}
@@ -897,9 +897,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
 	}
 
-	public List<JIRAIssue> loadRecenltyOpenIssues() {
-		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.loadRecenltyOpenIssues());
-	}
+//	public List<JIRAIssue> loadRecenltyOpenIssues() {
+//		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.loadRecenltyOpenIssues());
+//	}
 
 
 	private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {

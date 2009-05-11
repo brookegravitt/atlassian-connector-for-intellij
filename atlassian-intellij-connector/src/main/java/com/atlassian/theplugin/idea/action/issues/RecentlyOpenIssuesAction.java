@@ -63,7 +63,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 		if (recentlyOpenIssues.size() > 0) {
 			// prepare list of recentlyOpenIssues from the config list
 
-			List<JIRAIssue> issues = issuesWindow.getLoadedRecenltyOpenIssues(/*recentlyOpenIssues*/);
+			List<JIRAIssue> issues = issuesWindow.getLoadedRecenltyOpenIssues();
 
 			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
 					new IssueListPopupStep("Recently Viewed Issues", issues, issuesWindow));
