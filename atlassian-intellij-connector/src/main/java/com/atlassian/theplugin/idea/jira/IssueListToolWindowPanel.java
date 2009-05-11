@@ -419,7 +419,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						if (jiraServer != null) {
 							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
 							jiraIssueListModelBuilder.updateIssue(issue);
-							recentlyOpenIssuesCache.addIssue(issue);
+//							recentlyOpenIssuesCache.addIssue(issue);
 						} else {
 							exception = new RuntimeException("No JIRA server defined!");
 						}
@@ -833,7 +833,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 							EventQueue.invokeLater(new Runnable() {
 								public void run() {
-									recentlyOpenIssuesCache.addIssue(createdIssue);
+//									recentlyOpenIssuesCache.addIssue(createdIssue);
 //									jiraIssueListModelBuilder.updateIssue(createdIssue);
 									openIssue(createdIssue);
 									refreshIssues(true);

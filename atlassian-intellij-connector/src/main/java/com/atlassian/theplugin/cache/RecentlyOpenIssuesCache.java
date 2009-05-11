@@ -38,7 +38,7 @@ import java.util.*;
  */
 public class RecentlyOpenIssuesCache {
 	// ordered map
-	private final Map<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
+	private final LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
 	private final Project project;
 	private final IntelliJProjectCfgManager projectCfgManager;
 
@@ -58,11 +58,22 @@ public class RecentlyOpenIssuesCache {
 		});
 	}
 
+	/**
+	 * Loads recenlty viewed issues from the server into cache.
+	 * BLOCKING METHOD. SHOULD BE CALLED IN THE BACKGROUND.
+	 * This method should be called only if you want to refresh the cache.
+	 *
+	 * @return local (cached) list of recently viewed issues
+	 */
 	public List<JIRAIssue> loadRecenltyOpenIssues() {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
 			items.clear();
-			final Collection<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
+			final List<IssueRecentlyOpenBean> recentlyOpen = conf.getRecentlyOpenIssues();
+			// we put elements in the map in reverse order (most fresh element is at the end)
+			// this is because map.put (used when adding new element) place alement at the end
+			// I don't know the way to put element at the top of the ordered map.
+			Collections.reverse(recentlyOpen);
 			if (recentlyOpen != null) {
 				for (IssueRecentlyOpenBean i : recentlyOpen) {
 					try {
@@ -80,6 +91,88 @@ public class RecentlyOpenIssuesCache {
 		return reverseList(new LinkedList<JIRAIssue>(items.values()));
 	}
 
+	/**
+	 * It is non blocking method and can be called in the UI thread
+	 *
+	 * @return list of recenlty viewed issues from the local cache
+	 */
+	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
+		return reverseList(new LinkedList<JIRAIssue>(items.values()));
+	}
+
+	/**
+	 * Add issue to cache and configuration.
+	 * This is the only method user has to call to store recently viewed issue.
+	 *
+	 * @param issue Issue to add
+	 */
+	public void addIssue(final JIRAIssue issue) {
+		final IssueRecentlyOpenBean recenltyOpenIssueBean =
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+
+		items.remove(recenltyOpenIssueBean);
+		items.put(recenltyOpenIssueBean, issue);
+
+		// reduce map size (remove items from the beginning of the list - the eldest ones)
+		while (items.size() > JiraWorkspaceConfiguration.RECENLTY_OPEN_ISSUES_LIMIT) {
+			Iterator iter = items.values().iterator();
+			if (iter.hasNext()) {
+				JIRAIssue i = (JIRAIssue) iter.next();
+				iter.remove();
+			}
+		}
+
+		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+		if (conf != null) {
+			conf.addRecentlyOpenIssue(issue);
+		}
+	}
+
+	/**
+	 * Returns recently viewed issue according to provided parameters
+	 * Non blocking method. Can be called in the UI thread.
+	 *
+	 * @param issueKey
+	 * @param serverId
+	 * @return recenlty viewed issue from the local cache or null in case issue was not found in the cache
+	 */
+	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
+		for (JIRAIssue issue : getLoadedRecenltyOpenIssues()) {
+			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().equals(serverId)) {
+				return issue;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns recently viewed issue according to provided parameters
+	 * Non blocking method. Can be called in the UI thread.
+	 *
+	 * @param recenltyOpenIssueBean key to retrieve the issue
+	 * @return recenlty viewed issue from the local cache or null in case issue was not found in the cache
+	 */
+	public JIRAIssue getLoadedRecenltyOpenIssue(final IssueRecentlyOpenBean recenltyOpenIssueBean) {
+		return items.get(recenltyOpenIssueBean);
+	}
+
+	/**
+	 * Updates issue in the cache. Issue is updated only if it exists.
+	 * Issue is not added if it does not exist in the cache.
+	 * Issue position on the list is not changed when updating.
+	 * This is not blocking method and can be called in the UI thread
+	 *
+	 * @param issue issue to update
+	 */
+	public void updateIssue(final JIRAIssue issue) {
+		final IssueRecentlyOpenBean recentlyOpenIssueBean =
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+		if (items.containsKey(recentlyOpenIssueBean)) {
+			// old value is replaced
+			items.put(recentlyOpenIssueBean, issue);
+		}
+	}
+
 	private List<JIRAIssue> reverseList(final LinkedList<JIRAIssue> jiraIssues) {
 		Collections.reverse(jiraIssues);
 		return jiraIssues;
@@ -95,48 +188,5 @@ public class RecentlyOpenIssuesCache {
 			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 		}
 		return null;
-	}
-
-	public List<JIRAIssue> getLoadedRecenltyOpenIssues() {
-		return reverseList(new LinkedList<JIRAIssue>(items.values()));
-	}
-
-	/**
-	 * Add issue to cache and configuration. This is the only method user has to call to store recently viewed issue.
-	 *
-	 * @param issue Issue to add
-	 */
-	public void addIssue(final JIRAIssue issue) {
-		final IssueRecentlyOpenBean recenltyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
-
-		items.remove(recenltyOpenIssueBean);
-		items.put(recenltyOpenIssueBean, issue);
-
-		// todo reverse order
-		// todo limit number to 10
-
-		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-		if (conf != null) {
-			conf.addRecentlyOpenIssue(issue);
-		}
-	}
-
-	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
-		for (JIRAIssue issue : getLoadedRecenltyOpenIssues()) {
-			if (issue.getKey().equals(issueKey) && issue.getServer().getServerId().equals(serverId)) {
-				return issue;
-			}
-		}
-		return null;
-	}
-
-	public void updateIssue(final JIRAIssue issue) {
-		final IssueRecentlyOpenBean recentlyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
-		if (items.containsKey(recentlyOpenIssueBean)) {
-			// old value is replaced
-			items.put(recentlyOpenIssueBean, issue);
-		}
 	}
 }

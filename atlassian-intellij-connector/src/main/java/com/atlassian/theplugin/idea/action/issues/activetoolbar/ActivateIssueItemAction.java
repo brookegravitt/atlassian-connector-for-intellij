@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -45,7 +46,9 @@ public class ActivateIssueItemAction extends AnAction {
 		JIRAIssue issue = null;
 
 		if (cache != null) {
-			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
+//			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
+			issue = cache.getLoadedRecenltyOpenIssue(
+					new IssueRecentlyOpenBean(activeIssue.getServerId(), activeIssue.getIssueKey()));
 
 			if (issue != null) {
 				summary = issue.getSummary();
@@ -72,7 +75,7 @@ public class ActivateIssueItemAction extends AnAction {
 
 	public void actionPerformed(final AnActionEvent event) {
 		JiraServerCfg jiraServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
-		if (activeIssue != null && jiraServer != null) {
+		if (jiraServer != null) {
 			activeIssue.resetTimeSpent();
 			ActiveIssueUtils.activateIssue(event, activeIssue, jiraServer);
 		}
