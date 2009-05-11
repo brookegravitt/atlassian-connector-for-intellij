@@ -19,14 +19,12 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -35,6 +33,8 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NonNls;
@@ -44,6 +44,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class ServerConfigPanel extends JPanel implements DataProvider {
@@ -61,14 +62,24 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final GenericServerConfigForm jiraServerConfigForm;
 	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
+	private final ProjectConfigurationPanel projectConfigurationPanel;
+	private final UserCfg defaultUser;
+	private final ProjectConfiguration projectConfiguration;
+	private boolean isDefaultCredentialsAsked = false;
 
-	public ServerConfigPanel(Project project, final UserCfg defaultUser, Collection<ServerCfg> serverCfgs,
-			final ServerCfg selectedServer) {
-		this.serverCfgs = serverCfgs;
+	public ServerConfigPanel(final ProjectConfigurationPanel projectConfigurationPanel,
+			Project project, final UserCfg defaultUser,
+			ProjectConfiguration projectConfiguration,
+			final ServerCfg selectedServer, final boolean isDefaultCredentialsAsked) {
+		this.projectConfigurationPanel = projectConfigurationPanel;
+		this.defaultUser = defaultUser;
+		this.projectConfiguration = projectConfiguration;
+		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		this.isDefaultCredentialsAsked = isDefaultCredentialsAsked;
 		final FishEyeServerFacadeImpl fishEyeServerFacade = FishEyeServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
@@ -81,9 +92,16 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 		serverTreePanel.setData(serverCfgs);
 		serverTreePanel.setSelectedServer(selectedServer);
-
 	}
 
+
+	public boolean isDefaultCredentialsAsked() {
+		return isDefaultCredentialsAsked;
+	}
+
+	public UserCfg getDefaultUser() {
+		return defaultUser;
+	}
 
 	public void setData(Collection<ServerCfg> aServerCfgs) {
 		serverCfgs = aServerCfgs;
@@ -225,7 +243,40 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
+
+
+		askForDefaultCredentials(serverCfg);
+
 	}
+
+
+	private void askForDefaultCredentials(final ServerCfg serverCfg) {
+
+		SwingUtilities.invokeLater(new Runnable() {
+
+			public void run() {
+				if (projectConfigurationPanel.isShowing()) {
+					if (projectConfigurationPanel != null && !isDefaultCredentialsAsked
+							&& (defaultUser == null ||
+							(defaultUser.getPassword().equals("") && defaultUser.getPassword().equals(""))
+									&& serverCfg.getUsername().length() > 0)) {
+						int answer = Messages.showYesNoDialog(projectConfigurationPanel,
+								"Do yo want to set this username and password"
+								+ " as default credentials for Atlassian IntelliJ Connector?", "Set as default",
+								Messages.getQuestionIcon());
+						isDefaultCredentialsAsked = true;
+						if (answer == DialogWrapper.OK_EXIT_CODE) {
+							projectConfigurationPanel.setDefaultCredentials(
+									new UserCfg(serverCfg.getUsername(), serverCfg.getPassword(), true));
+
+						}
+					}
+				}
+			}
+		});
+
+	}
+
 
 	public void showEmptyPanel() {
 		editPaneCardLayout.show(editPane, BLANK_CARD);

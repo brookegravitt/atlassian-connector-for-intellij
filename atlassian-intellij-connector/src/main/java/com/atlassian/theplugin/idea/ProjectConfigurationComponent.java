@@ -22,12 +22,12 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.SettingsSavingComponent;
@@ -354,14 +354,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer, projectCfgManager.getDefaultCredentials().getClone());
+				selectedServer, projectCfgManager.getDefaultCredentials().getClone(),
+				projectCfgManager.isDefaultCredentialsAsked());
 		return projectConfigurationPanel;
 	}
 
 	public boolean isModified() {
 		projectConfigurationPanel.saveData(false);
 		return !(projectCfgManager.getProjectConfiguration().equals(projectConfigurationPanel.getProjectConfiguration())
-				&& projectCfgManager.getDefaultCredentials().equals(projectConfigurationPanel.getDefaultCredentials()));
+				&& projectCfgManager.getDefaultCredentials().equals(projectConfigurationPanel.getDefaultCredentials())
+				&& projectCfgManager.isDefaultCredentialsAsked() == projectConfigurationPanel.isDefaultCredentialsAsked());
 	}
 
 	public void apply() throws ConfigurationException {
@@ -372,6 +374,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectCfgManager.updateProjectConfiguration(projectConfigurationPanel.getProjectConfiguration());
 		projectConfigurationPanel.setData(projectCfgManager.getProjectConfiguration().getClone());
 		projectCfgManager.setDefaultCredentials(projectConfigurationPanel.getDefaultCredentials());
+		projectCfgManager.setDefaultCredentialsAsked(projectConfigurationPanel.isDefaultCredentialsAsked());
 	}
 
 	public void reset() {

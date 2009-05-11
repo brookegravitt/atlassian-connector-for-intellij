@@ -15,11 +15,12 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.connector.cfg.ProjectCfgManager;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +29,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
-
-import org.jetbrains.annotations.NotNull;
 
 public final class ServerConfigPanelTestUi {
 	private ServerConfigPanelTestUi() {
@@ -55,7 +54,7 @@ public final class ServerConfigPanelTestUi {
 				new JiraServerCfg("2-Second Jira", new ServerId())
 		);
 
-		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, serverCfgs, null) {
+		ServerConfigPanel configPanel = new ServerConfigPanel(null, null, null, new ProjectConfiguration(serverCfgs), null, false) {
 			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
@@ -107,4 +106,5 @@ class LocalProjectCfgManager implements ProjectCfgManager {
 	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
 		throw new UnsupportedOperationException("not yet implemented");
 	}
+
 }
