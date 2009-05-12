@@ -31,6 +31,18 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 		super.tearDown();
 	}
 
+	public void testLoadRecenltyOpenIssues() {
+		/*final JiraWorkspaceConfiguration conf = new JiraWorkspaceConfiguration();
+		conf.addRecentlyOpenIssue(issue1);
+		conf.addRecentlyOpenIssue(issue2);
+		
+		cache = new RecentlyOpenIssuesCache(null, conf);*/
+
+		// can't test it as loadRecenltyOpenIssues uses facade while RecentlyOpenIssuesCache is project component
+		// I don't want to inject facade with setter used only by test method
+		// The solution would be to transform facade to project or application component
+	}
+
 	public void testGetLoadedRecenltyOpenIssues() throws Exception {
 		cache.addIssue(issue1);
 		cache.addIssue(issue2);
@@ -38,6 +50,7 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 		assertEquals(2, cache.getLoadedRecenltyOpenIssues().size());
 		assertTrue(cache.getLoadedRecenltyOpenIssues().contains(issue1));
 		assertTrue(cache.getLoadedRecenltyOpenIssues().contains(issue2));
+		assertFalse(cache.getLoadedRecenltyOpenIssues().contains(issue3));
 
 		// test order
 		assertEquals(issue2, cache.getLoadedRecenltyOpenIssues().get(0));
