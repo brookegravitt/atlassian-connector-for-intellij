@@ -116,7 +116,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		builder.addSeparator("Servers", cc.xyw(1, 2, ALL_COLUMNS));
 
 		for (ServerDataExt server : servers) {
-			builder.add(new JLabel(server.getServerData().getName()), cc.xy(1, row));
+			builder.add(new JLabel(server.getServerData().getName() + " (" + server.getServerType() + ")"), cc.xy(1, row));
 			builder.add(new JLabel(server.getStatus().getIcon()), cc.xy(3, row));
 
 			if (server.getStatus() == ConnectionStatus.FAILED) {
