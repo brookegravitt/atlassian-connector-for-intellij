@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.jira;
 
-import javax.swing.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;

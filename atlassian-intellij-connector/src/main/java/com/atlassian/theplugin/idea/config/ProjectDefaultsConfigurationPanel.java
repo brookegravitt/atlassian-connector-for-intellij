@@ -50,7 +50,7 @@ import java.util.Map;
 
 public class ProjectDefaultsConfigurationPanel extends JPanel {
 
-	private static final int ALL_COLUMNS = 5;
+	private static final int ALL_COLUMNS = 6;
 	private JComboBox defaultCrucibleServerCombo = new JComboBox();
 	private JComboBox defaultCrucibleProjectCombo = new JComboBox();
 	private JComboBox defaultCrucibleRepositoryCombo = new JComboBox();
@@ -257,10 +257,10 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 //		panel.setPreferredSize(new Dimension(300, 200));
 
 		final FormLayout layout = new FormLayout(
-				"3dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
-				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
-						+ "p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
+				"10dlu, 20dlu, right:pref, 3dlu, min(150dlu;default):grow, 3dlu", //columns
+				"p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 20dlu, p, 3dlu, p, 3dlu, p, 3dlu, "
+						+ "p, 3dlu, p, 3dlu, p, 10dlu, p, 3dlu, p, 3dlu, "
+						+ "p, 20dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, fill:p"); //rows
 
 		//CHECKSTYLE:MAGIC:OFF
 		PanelBuilder builder = new PanelBuilder(layout, this);
@@ -273,29 +273,29 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
 		// of producing one long line
 		cruHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(cruHelp, cc.xyw(1, 3, ALL_COLUMNS));
-		builder.addLabel("Default Server:", cc.xy(2, 5));
-		builder.add(defaultCrucibleServerCombo, cc.xy(4, 5));
-		builder.addLabel("Default Project:", cc.xy(2, 7));
-		builder.add(defaultCrucibleProjectCombo, cc.xy(4, 7));
-		builder.addLabel("Default Repository:", cc.xy(2, 9));
-		builder.add(defaultCrucibleRepositoryCombo, cc.xy(4, 9));
+		builder.add(cruHelp, cc.xyw(2, 3, ALL_COLUMNS - 1));
+		builder.addLabel("Default Server:", cc.xy(3, 5));
+		builder.add(defaultCrucibleServerCombo, cc.xy(5, 5));
+		builder.addLabel("Default Project:", cc.xy(3, 7));
+		builder.add(defaultCrucibleProjectCombo, cc.xy(5, 7));
+		builder.addLabel("Default Repository:", cc.xy(3, 9));
+		builder.add(defaultCrucibleRepositoryCombo, cc.xy(5, 9));
 
 		builder.addSeparator("FishEye", cc.xyw(1, 11, ALL_COLUMNS));
 		JLabel fshHelp1 = new JLabel(FISHEYE_HELP_TEXT_1);
 		fshHelp1.setFont(fshHelp1.getFont().deriveFont(10.0f));
 		fshHelp1.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(fshHelp1, cc.xyw(1, 13, ALL_COLUMNS));
-		builder.addLabel("Default Server:", cc.xy(2, 15));
-		builder.add(defaultFishEyeServerCombo, cc.xy(4, 15));
-		builder.addLabel("Default Repository:", cc.xy(2, 17));
-		builder.add(defaultFishEyeRepositoryCombo, cc.xy(4, 17));
-		builder.addLabel("Path to Project:", cc.xy(2, 19));
-		builder.add(pathToProjectEdit, cc.xy(4, 19));
+		builder.add(fshHelp1, cc.xyw(2, 13, ALL_COLUMNS - 1));
+		builder.addLabel("Default Server:", cc.xy(3, 15));
+		builder.add(defaultFishEyeServerCombo, cc.xy(5, 15));
+		builder.addLabel("Default Repository:", cc.xy(3, 17));
+		builder.add(defaultFishEyeRepositoryCombo, cc.xy(5, 17));
+		builder.addLabel("Path to Project:", cc.xy(3, 19));
+		builder.add(pathToProjectEdit, cc.xy(5, 19));
 		JLabel fshHelp2 = new JLabel(FISHEYE_HELP_TEXT_2);
 		fshHelp2.setFont(fshHelp2.getFont().deriveFont(10.0f));
 		fshHelp2.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(fshHelp2, cc.xy(4, 21));
+		builder.add(fshHelp2, cc.xy(5, 21));
 
 		builder.addSeparator("JIRA", cc.xyw(1, 23, ALL_COLUMNS));
 		JLabel jiraHelp = new JLabel(JIRA_HELP_TEXT);
@@ -304,24 +304,24 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		// if I set it to something sane, at least the JLabel seems to wrap its HTML contents properly, instead
 		// of producing one long line
 		jiraHelp.setMaximumSize(new Dimension(600, Integer.MAX_VALUE));
-		builder.add(jiraHelp, cc.xyw(1, 25, ALL_COLUMNS));
-		builder.addLabel("Default Server:", cc.xy(2, 27));
-		builder.add(defaultJiraServerCombo, cc.xy(4, 27));
+		builder.add(jiraHelp, cc.xyw(2, 25, ALL_COLUMNS - 1));
+		builder.addLabel("Default Server:", cc.xy(3, 27));
+		builder.add(defaultJiraServerCombo, cc.xy(5, 27));
 
 		builder.addSeparator("Default Credentials", cc.xyw(1, 29, ALL_COLUMNS));
 		final String DEFAULT_CREDENTIALS_TEXT = "Default credentials for selected servers";
 		JLabel defaultCredentialsLabel = new JLabel(DEFAULT_CREDENTIALS_TEXT);
 		defaultCredentialsLabel.setFont(defaultCredentialsLabel.getFont().deriveFont(10.0f));
-		builder.add(defaultCredentialsLabel, cc.xyw(1, 31, ALL_COLUMNS));
-		builder.addLabel("Username:", cc.xy(2, 33));
-		builder.add(defaultUserName, cc.xy(4, 33));
-		builder.addLabel("Password:", cc.xy(2, 35));
-		builder.add(defaultPassword, cc.xy(4, 35));
+		builder.add(defaultCredentialsLabel, cc.xyw(2, 31, ALL_COLUMNS - 1));
+		builder.addLabel("Username:", cc.xy(3, 33));
+		builder.add(defaultUserName, cc.xy(5, 33));
+		builder.addLabel("Password:", cc.xy(3, 35));
+		builder.add(defaultPassword, cc.xy(5, 35));
 		JPanel panel = new JPanel(new BorderLayout());
 		panel.add(defaultCredentialsTestButton, BorderLayout.EAST);
 		defaultCredentialsTestButton.setMaximumSize(defaultCredentialsTestButton.getPreferredSize());
 
-		builder.add(defaultCredentialsTestButton, cc.xy(4, 37, CellConstraints.RIGHT, CellConstraints.CENTER));
+		builder.add(defaultCredentialsTestButton, cc.xy(5, 37, CellConstraints.RIGHT, CellConstraints.CENTER));
 
 
 		initializeControls();
