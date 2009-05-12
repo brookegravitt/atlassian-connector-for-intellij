@@ -44,7 +44,7 @@ public class ServerTypeNode extends DefaultMutableTreeNode {
 	}
 
 	public String toString() {
-		return serverType.toString() + " Servers";
+		return serverType.toString();
 	}
 
 	public boolean equals(Object o) {
