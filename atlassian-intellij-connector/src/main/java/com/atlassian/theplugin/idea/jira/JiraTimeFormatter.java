@@ -13,7 +13,7 @@ import java.util.Locale;
  */
 public final class JiraTimeFormatter {
 
-    private JiraTimeFormatter() {}
+    private JiraTimeFormatter() { }
 
     public static String formatTimeFromJiraTimeString(String dateString) {
         DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
