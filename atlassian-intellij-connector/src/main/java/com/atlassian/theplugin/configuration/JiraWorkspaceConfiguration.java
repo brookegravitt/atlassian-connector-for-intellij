@@ -35,6 +35,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 	private ActiveJiraIssueBean activeJiraIssue;
+    private long selectedWorkflowAction;
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -44,6 +45,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.view = jiraConfiguration.view;
 		this.recentlyOpenIssues = jiraConfiguration.recentlyOpenIssues;
 		this.activeJiraIssue = jiraConfiguration.activeJiraIssue;
+        this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
 	}
 
 	public Map<String, JiraFilterConfigurationBean> getFilters() {
@@ -93,7 +95,15 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		}
 	}
 
-	@Transient
+    public long getSelectedWorkflowAction() {
+        return selectedWorkflowAction;
+    }
+
+    public void setSelectedWorkflowAction(long selectedWorkflowAction) {
+        this.selectedWorkflowAction = selectedWorkflowAction;
+    }
+
+    @Transient
 	public JiraFilterConfigurationBean getJiraFilterConfiguaration(String id) {
 		JiraFilterConfigurationBean filter = filters.get(id);
 		if (filter == null) {

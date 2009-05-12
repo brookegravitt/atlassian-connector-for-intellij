@@ -27,6 +27,7 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRAAction;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -76,13 +77,15 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
     private JIRAIssue issue;
     private final Project project;
 	private final boolean deactivateActiveIssue;
-	private Date endTime = Calendar.getInstance().getTime();
+    private JiraWorkspaceConfiguration config;
+    private Date endTime = Calendar.getInstance().getTime();
 
 	private WdhmInputListener timeSpentListener;
 	private WdhmInputListener remainingEstimateListener;
 	private MultipleChangeListBrowser changesBrowserPanel;
     private JIRAServerFacade facade;
     private JComboBox actionCombo;
+    private JCheckBox cbPerformWorkflowAction;
 
 
     /**
@@ -126,7 +129,14 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         gbc.weighty = 0.0;
         gbc.fill = GridBagConstraints.NONE;
 
-        p.add(new JLabel("Workflow Action to Perform"), gbc);
+        cbPerformWorkflowAction = new JCheckBox("Perform Workflow Action");
+        cbPerformWorkflowAction.setSelected(true);
+        cbPerformWorkflowAction.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                actionCombo.setEnabled(cbPerformWorkflowAction.isSelected());
+            }
+        });
+        p.add(cbPerformWorkflowAction, gbc);
 
         actionCombo = new JComboBox();
 
@@ -179,8 +189,17 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
     }
 
     private void fillActionCombo(List<JIRAAction> actions) {
+        long lastSelectedAction = config.getSelectedWorkflowAction();
+
+        JIRAAction actionToSelect = null;
         for (JIRAAction action : actions) {
+            if (action.getId() == lastSelectedAction) {
+                actionToSelect = action;
+            }
             actionCombo.addItem(action);
+        }
+        if (actionToSelect != null) {
+            actionCombo.setSelectedItem(actionToSelect);
         }
     }
 
@@ -382,7 +401,15 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		setOKActionEnabled(enable);
 	}
 
-	private static final long MILLIS_IN_HOUR = 1000 * 3600;
+    @Override
+    protected void doOKAction() {
+        if (actionCombo.getSelectedItem() != null) {
+            config.setSelectedWorkflowAction(((JIRAAction) actionCombo.getSelectedItem()).getId());
+        }
+        super.doOKAction();
+    }
+
+    private static final long MILLIS_IN_HOUR = 1000 * 3600;
 	private static final long MILLIS_IN_MINUTE = 1000 * 60;
 	private static final long MAX_ALLOWED_HOURS = 5;
 
@@ -418,12 +445,14 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 	public WorkLogCreateAndMaybeDeactivateDialog(final ServerData jiraServer, final JIRAIssue issue,
 			final Project project, final String timeSpent,
-			boolean deactivateActiveIssue) {
+			boolean deactivateActiveIssue, @NotNull JiraWorkspaceConfiguration config) {
+
 		super(false);
         this.issue = issue;
 
         this.project = project;
 		this.deactivateActiveIssue = deactivateActiveIssue;
+        this.config = config;
 
         facade = JIRAServerFacadeImpl.getInstance();
 
@@ -472,7 +501,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			public void actionPerformed(ActionEvent e) {
 				try {
 
-					//we catch NPE because of bug in  CalendaRpanel.java method  private boolean isShowing(Date date);
+					//we catch NPE because of bug in  CalendarPanel.java method  private boolean isShowing(Date date);
 					//null minDate. minDate sometines is not initialized see PL-1105
 					TimeDatePicker tdp = new TimeDatePicker(endTime);
 					if (tdp.isOK()) {
@@ -596,7 +625,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	}
 
     public JIRAAction getSelectedAction() {
-        if (actionCombo.getItemCount() == 0) {
+        if (!cbPerformWorkflowAction.isSelected() || actionCombo.getItemCount() == 0) {
             return null;
         }
         return (JIRAAction) actionCombo.getSelectedItem();
