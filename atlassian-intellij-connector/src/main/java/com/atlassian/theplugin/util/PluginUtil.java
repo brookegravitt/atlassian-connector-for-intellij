@@ -55,8 +55,6 @@ public final class PluginUtil {
 			"http://docs.atlassian.com/atlassian-idea-plugin/latestPossibleVersion.xml";
 	private static PluginUtil instance;
 
-	private static int dateWidth = -1;
-
 	static {
         doc = setDoc();
     }
@@ -153,26 +151,25 @@ public final class PluginUtil {
 		return result;
 	}
 
-	private static final int FALLBACK_DATE_WIDTH = 180;
+    private static final int FALLBACK_DATE_WIDTH = 180;
 
-	/**
-	 * This is crazy routine by jgorycki :)
-	 */
-	public static int getDateWidth(JLabel label, DateFormat dfo) {
-		if (dateWidth == -1) {
-			try {
-				DateFormat dfi = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
-				String t = dfo.format(dfi.parse("22 Dec 2008 11:22:22"));
-				final JLabel jLabel = new JLabel(t);
-				jLabel.setFont(label.getFont());
-				dateWidth = jLabel.getPreferredSize().width;
-			} catch (ParseException e) {
-				dateWidth = FALLBACK_DATE_WIDTH;
-			}
-		}
-		return dateWidth;
-	}
+    private static int dateWidth = -1;
 
+    public static int getTimeWidth(JLabel label) {
+        if (dateWidth == -1) {
+            try {
+                DateFormat dfi = new SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.US);
+                String t = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+                        .format(dfi.parse("22 Dec 2008 11:22:22"));
+                final JLabel jLabel = new JLabel(t);
+                jLabel.setFont(label.getFont());
+                dateWidth = jLabel.getPreferredSize().width;
+            } catch (ParseException e) {
+                dateWidth = FALLBACK_DATE_WIDTH;
+            }
+        }
+        return dateWidth;
+    }
 
 	@NotNull
 	public static final String PRODUCT_NAME = "Atlassian IntelliJ Connector"; 

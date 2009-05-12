@@ -13,9 +13,9 @@ import java.awt.*;
 
 public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 	protected static final int GAP = 6;
-	protected static final int ICON_WIDTH = 16;
-	protected static final int ICON_HEIGHT = 16;
-	protected static final int RIGHT_PADDING = 10;
+	public static final int ICON_WIDTH = 16;
+	public static final int ICON_HEIGHT = 16;
+	public static final int RIGHT_PADDING = 10;
 	protected String name;
 	protected Icon iconOpen;
 	protected Icon iconClosed;

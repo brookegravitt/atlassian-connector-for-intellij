@@ -5,8 +5,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -149,7 +149,7 @@ public class CrucibleReviewTreeNode extends ReviewTreeNode {
 			created.setHorizontalAlignment(SwingConstants.RIGHT);
 			Dimension minDimension = created.getPreferredSize();
 			minDimension.setSize(
-					Math.max(PluginUtil.getDateWidth(created, dfo), minDimension.getWidth()), minDimension.getHeight());
+					Math.max(PluginUtil.getTimeWidth(created), minDimension.getWidth()), minDimension.getHeight());
 			setFixedComponentSize(created, minDimension.width, ICON_HEIGHT);
 			rest.add(created, gbc);
 

@@ -1,179 +1,21 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.idea.jira.Html2text;
+import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import java.awt.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 public class JIRAIssueTreeNode extends AbstractTreeNode {
-	public static final String BODY_WITH_STYLE =
-			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
-
-	private static final int MAX_TOOLTIP_WIDTH = 400;
-	private static final int MAX_DESCRIPTION_LENGTH = 360;
-
 	private final JIRAIssue issue;
 
 	public JIRAIssueTreeNode(JIRAIssue issue) {
 		super(issue.getKey() + ": " + issue.getSummary(), null, null);
 		this.issue = issue;
-		renderer = new RendererPanel();
+		renderer = new JIRAIssueListOrTreeRendererPanel(issue);
 	}
 
-	private final class RendererPanel extends JPanel {
-		private JPanel padding;
-		private SelectableLabel updated;
-		private SelectableLabel prio;
-		private SelectableLabel state;
-
-		private SelectableLabel keyAndSummary;
-		private JLabel iconLabel;
-
-		private RendererPanel() {
-			super(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
-			CellConstraints cc = new CellConstraints();
-
-			setBackground(UIUtil.getTreeTextBackground());
-
-			iconLabel = new JLabel(CachedIconLoader.getIcon(issue.getTypeIconUrl()));
-			add(iconLabel, cc.xy(1, 1));
-
-			keyAndSummary = new SelectableLabel(true, true, issue.getKey() + ": " + issue.getSummary(),
-					null, SwingConstants.TRAILING, ICON_HEIGHT);
-			add(keyAndSummary, cc.xy(2 + 1, 1));
-
-			add(createPanelForOtherIssueDetails(), cc.xy(2 + 2, 1));
-
-			setParameters(true, true);
-
-			setToolTipText(buildTolltip(issue, 0));
-
-			// now black magic here: 2-pass creation of multiline tooltip, with maximum width of MAX_TOOLTIP_WIDTH
-			final JToolTip jToolTip = createToolTip();
-
-			try {
-				jToolTip.setTipText(buildTolltip(issue, 0));
-			} catch (ClassCastException e) {
-				// don't know why but sometimes setTipText throws CCE (most probably on IDEA start)
-				// we cannot do much about thtat
-				PluginUtil.getLogger().warn("ClassCastException when setting tooltip text", e);
-			}
-
-			final int prefWidth = jToolTip.getPreferredSize().width;
-			int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-			setToolTipText(buildTolltip(issue, width));
-		}
-
-		private JPanel createPanelForOtherIssueDetails() {
-			JPanel rest = new JPanel();
-			rest.setLayout(new GridBagLayout());
-
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 1.0;
-			gbc.weighty = 0.0;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.anchor = GridBagConstraints.FIRST_LINE_END;
-			state = new SelectableLabel(true, true, null, "    " + issue.getStatus(),
-					CachedIconLoader.getIcon(issue.getStatusTypeUrl()),
-					SwingConstants.LEADING, ICON_HEIGHT, false, true);
-			state.setHorizontalAlignment(SwingConstants.RIGHT);
-			state.setMinimumSize(state.getPreferredSize());
-			rest.add(state, gbc);
-
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
-			gbc.insets = new Insets(0, 0, 0, 0);
-			prio = new SelectableLabel(true, true, null, null,
-					CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
-					SwingConstants.LEADING, ICON_HEIGHT, false, true);
-			// setting minimum size is necessary as gridbag layout may
-			// ignore preffered size if some other lables do not fit!!!
-			prio.setMinimumSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
-			prio.setPreferredSize(new Dimension(ICON_WIDTH, ICON_HEIGHT));
-			rest.add(prio, gbc);
-
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
-			DateFormat dfo = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-			String t;
-			try {
-				t = dfo.format(df.parse(issue.getUpdated()));
-			} catch (java.text.ParseException e) {
-				t = "Invalid";
-			}
-			updated = new SelectableLabel(true, true, null, t, null, SwingConstants.LEADING, ICON_HEIGHT, false, true);
-			updated.setHorizontalAlignment(SwingConstants.RIGHT);
-			Dimension minDimension = updated.getPreferredSize();
-
-			minDimension.setSize(
-					Math.max(PluginUtil.getDateWidth(updated, dfo), minDimension.getWidth()), minDimension.getHeight());
-
-			updated.setPreferredSize(minDimension);
-			updated.setMinimumSize(minDimension);
-			updated.setMaximumSize(minDimension);
-			updated.setSize(minDimension);
-
-			rest.add(updated, gbc);
-
-			padding = new JPanel();
-			gbc.gridx++;
-			gbc.weightx = 0.0;
-			gbc.fill = GridBagConstraints.NONE;
-			padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-			padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-			padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-			padding.setOpaque(true);
-			rest.add(padding, gbc);
-			return rest;
-		}
-
-		public void setParameters(boolean selected, boolean enabled) {
-
-			Icon typeIcon = enabled ? CachedIconLoader.getIcon(issue.getTypeIconUrl())
-					: CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
-
-			iconLabel.setIcon(typeIcon);
-			keyAndSummary.setSelected(selected);
-			keyAndSummary.setEnabled(enabled);
-
-			final String iconTypeUrl = issue.getStatusTypeUrl();
-			Icon statusIcon = enabled
-					? CachedIconLoader.getIcon(iconTypeUrl) : CachedIconLoader.getDisabledIcon(iconTypeUrl);
-			state.setIcon(statusIcon);
-			state.setSelected(selected);
-			state.setEnabled(enabled);
-
-			final String iconUrl = issue.getPriorityIconUrl();
-			Icon prioIcon = enabled ? CachedIconLoader.getIcon(iconUrl) : CachedIconLoader.getDisabledIcon(iconUrl);
-			prio.setIcon(prioIcon);
-			prio.setSelected(selected);
-			prio.setEnabled(enabled);
-
-			updated.setSelected(selected);
-			updated.setEnabled(enabled);
-
-			padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-			padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
-		}
-	}
-
-	private RendererPanel renderer;
+	private JIRAIssueListOrTreeRendererPanel renderer;
 
 	@Override
 	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
@@ -181,90 +23,9 @@ public class JIRAIssueTreeNode extends AbstractTreeNode {
 		return renderer;
 	}
 
-	private static String buildTolltip(JIRAIssue issue, int width) {
-		StringBuilder sb = new StringBuilder(
-				"<html>"
-						+ BODY_WITH_STYLE);
-
-		final String widthString = width > 0 ? "width='" + width + "px'" : "";
-
-		sb.append("<table ").append(widthString).append(">");
-		sb.append("<tr><td colspan=5><b><font color=blue>");
-		sb.append(issue.getKey());
-		sb.append("</font></b>");
-
-		sb.append("<tr><td valign=\"top\"><b>Summary:</b></td><td valign=\"top\">");
-		String summary = issue.getSummary();
-//		if (summary.length() > MAX_LINE_LENGTH) {
-//			summary = summary.substring(0, MAX_LINE_LENGTH) + "...";
-//		}
-		sb.append(summary);
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Description:</b></td><td valign=\"top\">");
-		// issue.getDescription() can return null
-		String description = Html2text.translate(issue.getDescription());
-		if (description.length() > MAX_DESCRIPTION_LENGTH) {
-			description = description.substring(0, MAX_DESCRIPTION_LENGTH) + "...";
-		}
-		sb.append(description);
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Status:</b></td><td valign=\"top\">");
-		sb.append(issue.getStatus());
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Reporter:</b></td><td valign=\"top\">");
-		sb.append(issue.getReporter());
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Assignee:</b></td><td valign=\"top\">");
-		sb.append(issue.getAssignee());
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Resolution:</b></td><td valign=\"top\">");
-		sb.append(issue.getResolution());
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Created:</b></td><td valign=\"top\">");
-		DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-		DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-		try {
-			sb.append(ds.format(df.parse(issue.getCreated())));
-		} catch (ParseException e) {
-			sb.append("Invalid");
-		}
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("<tr><td valign=\"top\"><b>Updated:</b></td><td valign=\"top\">");
-		try {
-			sb.append(ds.format(df.parse(issue.getUpdated())));
-		} catch (ParseException e) {
-			sb.append("Invalid");
-		}
-		sb.append("");
-		sb.append("</td></tr>");
-
-		sb.append("</table>");
-		sb.append("</body></html>");
-		return sb.toString();
-	}
-
 	public JIRAIssue getIssue() {
 		return issue;
 	}
-
-//	@Override
-//	public void onSelect() {
-//		model.setSeletedIssue(issue);
-//	}
 
 	@Override
 	public String toString() {
