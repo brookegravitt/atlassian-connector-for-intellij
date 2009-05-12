@@ -8,9 +8,9 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
@@ -36,10 +36,9 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
-import com.intellij.ui.HyperlinkLabel;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -422,7 +421,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel affectsVersionsLabel = new BoldLabel("Affects Version/s");
 			private JLabel fixVersionsLabel = new BoldLabel("Fix Version/s");
 			private JLabel componentsLabel = new BoldLabel("Component/s");
-			private JScrollPane scroll;
 			private JLabel originalEstimate = new JLabel("Fetching...");
 			private JLabel remainingEstimate = new JLabel("Fetching...");
 			private JLabel timeSpent = new JLabel("Fetching...");
@@ -434,45 +432,43 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueResolution;
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
+            private static final float SPLIT_RATIO = 0.3f;
+            private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
             public DetailsPanel() {
-				setLayout(new GridBagLayout());
-
-				GridBagConstraints gbc = new GridBagConstraints();
-				gbc.gridx = 0;
-				gbc.gridy = 0;
-				gbc.weightx = 1.0;
-				gbc.weighty = 1.0;
-				gbc.fill = GridBagConstraints.BOTH;
+                super(new BorderLayout());
 
                 subtaskListModel = new DefaultListModel();
 
-				scroll = new JScrollPane(createBody());
-				scroll.setBorder(BorderFactory.createEmptyBorder());
-				add(scroll, gbc);
+                add(createBody(), BorderLayout.CENTER);
 			}
 
 			private JPanel createBody() {
+                boolean haveSubTasks = params.issue.getSubTaskKeys().size() > 0;
+
+                JPanel panel = new JPanel(new BorderLayout());
+
                 JPanel details = createDetailsPanel();
 
-                JPanel subtasks = createSubtasksPanel();
-
-                JPanel panel = new JPanel(new FormLayout(
-                        "pref, 30dlu, fill:pref:grow", "pref"
-                ));
-                panel.setOpaque(true);
-                panel.setBackground(Color.WHITE);
-
-                CellConstraints cc = new CellConstraints();
-
-                panel.add(details, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.TOP));
-                panel.add(subtasks, cc.xy(3, 1));
+                if (haveSubTasks) {
+                    Splitter split = new Splitter(false, SPLIT_RATIO);
+                    split.setFirstComponent(new JScrollPane(details));
+                    split.setHonorComponentsMinimumSize(true);
+                    JComponent subtasks = createSubtasksPanel();
+                    split.setSecondComponent(subtasks);
+                    panel.add(split, BorderLayout.CENTER);
+                } else {
+                    panel.setOpaque(true);
+                    panel.setBackground(Color.WHITE);
+                    panel.add(new JScrollPane(details), BorderLayout.CENTER);
+                }
 
 				return panel;
 			}
 
-            private JPanel createSubtasksPanel() {
-                JPanel panel = new JPanel(new BorderLayout());
+            private JComponent createSubtasksPanel() {
+                BorderLayout borderLayout = new BorderLayout();
+                JPanel panel = new JPanel(borderLayout);
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
@@ -504,8 +500,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     });
                     subtaskListModel.clear();
                     list.setModel(subtaskListModel);
-                    list.setBorder(BorderFactory.createTitledBorder("Subtasks"));
-                    panel.add(list, BorderLayout.CENTER);
+                    JLabel subtasksLabel = new JLabel("Subtasks");
+                    subtasksLabel.setPreferredSize(
+                            new Dimension(subtasksLabel.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT));
+                    panel.add(subtasksLabel, BorderLayout.NORTH);
+                    panel.add(new JScrollPane(list), BorderLayout.CENTER);
                     if (getSubTasksTask == null) {
                         createFetchSubtasksBackgroundTask(keys);
                         ProgressManager.getInstance().run(getSubTasksTask);
@@ -569,7 +568,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
             }
 
             private JPanel createDetailsPanel() {
-                JPanel panel = new JPanel();
+                JPanel panel = new ScrollablePanel();
 
                 panel.setLayout(new GridBagLayout());
                 panel.setOpaque(false);
@@ -667,6 +666,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 panel.add(new BoldLabel("Time Spent"), gbc1);
                 panel.add(timeSpent, gbc2);
 
+                addFillerPanel(panel, gbc1, false);
+                
                 return panel;
             }
 
@@ -789,7 +790,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						if (params != null && params.issue != null && params.issue.getServer() != null) {
 							// damn it! the XML view of the list of issues does not
 							// have estimates and time spent :(
-//							params.issue = facade.getIssue(params.server, params.issue.getKey());
 
 							final JIRAIssue issueDetails = facade.getIssueDetails(params.issue.getServer(), params.issue);
 							params.issue.setAffectsVersions(issueDetails.getAffectsVersions());
@@ -801,7 +801,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					}
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
-							scroll.setViewportView(createBody());
+                            removeAll();
+                            add(createBody(), BorderLayout.CENTER);
 							if (errorString == null) {
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 								setFixVersions(getStringArray(params.issue.getFixVersions()));
