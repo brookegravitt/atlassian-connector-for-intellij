@@ -67,8 +67,8 @@
       </hspacer>
       <component id="24ded" class="javax.swing.JLabel">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-          <forms/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+          <forms defaultalign-horz="false"/>
         </constraints>
         <properties>
           <text value="Popups:"/>
@@ -80,7 +80,7 @@
           <forms/>
         </constraints>
         <properties>
-          <text value="Check every:"/>
+          <text value="Background refresh  every:"/>
         </properties>
       </component>
       <grid id="3433c" layout-manager="GridLayoutManager" row-count="1" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
