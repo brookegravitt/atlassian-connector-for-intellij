@@ -242,7 +242,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		for (UserListItem user : selectedUsersTooltip) {
 			ret.append(user.getUser().getDisplayName());
-			ret.append("<br />");
+			ret.append("<br>");
 		}
 
 		ret.append("</html>");
