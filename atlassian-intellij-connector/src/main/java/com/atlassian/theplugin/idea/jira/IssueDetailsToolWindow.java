@@ -14,6 +14,7 @@ import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
+import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -39,7 +40,6 @@ import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
-import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +50,6 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -69,8 +68,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final CfgManager cfgManager;
 
-	public IssueDetailsToolWindow(@NotNull final Project project, @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
-			@NotNull CfgManager cfgManager) {
+	public IssueDetailsToolWindow(@NotNull final Project project,
+                                  @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+                                  @NotNull CfgManager cfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -402,7 +402,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-
 		public Object getData(@NonNls final String dataId) {
 			if (dataId.equals(Constants.ISSUE)) {
 				return params.issue;
@@ -479,7 +478,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                 panel.setOpaque(false);
                 final java.util.List<String> keys = params.issue.getSubTaskKeys();
                 if (keys.size() > 0) {
-                    final JList list = new JList();
+                    final JList list = new JList() {
+                        @Override
+                        public boolean getScrollableTracksViewportWidth() {
+                            return true;
+                        }
+                    };
                     list.setCellRenderer(new SubtaskListCellRenderer());
                     list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                     list.addMouseListener(new MouseAdapter() {
@@ -504,7 +508,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
                     subtasksLabel.setPreferredSize(
                             new Dimension(subtasksLabel.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT));
                     panel.add(subtasksLabel, BorderLayout.NORTH);
-                    panel.add(new JScrollPane(list), BorderLayout.CENTER);
+                    JScrollPane scrollPane = new JScrollPane(list);
+                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                    panel.add(scrollPane, BorderLayout.CENTER);
                     if (getSubTasksTask == null) {
                         createFetchSubtasksBackgroundTask(keys);
                         ProgressManager.getInstance().run(getSubTasksTask);
@@ -691,21 +697,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
 						params.issue.getReporterId(), true);
 				issueResolution = new JLabel(params.issue.getResolution());
-				DateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", Locale.US);
-				DateFormat ds = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
-				String t;
-				try {
-					t = ds.format(df.parse(params.issue.getCreated()));
-				} catch (ParseException e) {
-					t = "Invalid";
-				}
-				issueCreationTime = new JLabel(t);
-				try {
-					t = ds.format(df.parse(params.issue.getUpdated()));
-				} catch (ParseException e) {
-					t = "Invalid";
-				}
-				issueUpdateTime = new JLabel(t);
+				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
+				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
 			}
 
 			public JLabel getAffectVersionsLabel() {
@@ -802,6 +795,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
                             removeAll();
+                            rendererMap.clear();
                             add(createBody(), BorderLayout.CENTER);
 							if (errorString == null) {
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
@@ -858,27 +852,28 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				getIssueDetails();
 			}
 
+            private Map<JIRAIssue, JIRAIssueListOrTreeRendererPanel> rendererMap =
+                    new HashMap<JIRAIssue, JIRAIssueListOrTreeRendererPanel>();
+
             private class SubtaskListCellRenderer extends DefaultListCellRenderer {
-                public Component getListCellRendererComponent(JList jList, Object value, int i, boolean b, boolean b1) {
-                    JLabel comp = (JLabel) super.getListCellRendererComponent(jList, value, i, b, b1);
-                    if (comp != null && value != null && value instanceof JIRAIssue) {
+                public Component getListCellRendererComponent(JList list, Object value, int index,
+														  boolean isSelected, boolean cellHasFocus) {
+                    if (value != null && value instanceof JIRAIssue) {
                         JIRAIssue issue = (JIRAIssue) value;
-                        comp.setText(issue.getKey() + ": " + issue.getSummary());
-                        Icon icon = CachedIconLoader.getIcon(issue.getTypeIconUrl());
-                        comp.setIcon(icon);
-                        if (issue.getTypeIconUrl() != null) {
-                            Icon disabledIcon = CachedIconLoader.getDisabledIcon(issue.getTypeIconUrl());
-                            comp.setDisabledIcon(disabledIcon);
-                        } else {
-                            comp.setDisabledIcon(null);
+                        JIRAIssueListOrTreeRendererPanel r = rendererMap.get(issue);
+                        if (r == null) {
+                            r = new JIRAIssueListOrTreeRendererPanel(issue);
+                            rendererMap.put(issue, r);
                         }
+                        r.setParameters(isSelected, true);
+                        return r;
                     }
-                    return comp;
+                    return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 }
             }
         }
 
-		private class SummaryPanel extends JPanel {
+        private class SummaryPanel extends JPanel {
 
 			private JEditorPane summary;
 
