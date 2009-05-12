@@ -178,9 +178,9 @@ public class BambooGeneralForm extends JComponent {
 		rootComponent.add(spacer2, cc.xy(5, 11, CellConstraints.FILL, CellConstraints.DEFAULT));
 		final JLabel label1 = new JLabel();
 		label1.setText("Popups:");
-		rootComponent.add(label1, cc.xy(1, 1));
+		rootComponent.add(label1, cc.xy(1, 1, CellConstraints.RIGHT, CellConstraints.DEFAULT));
 		final JLabel label2 = new JLabel();
-		label2.setText("Check every:");
+		label2.setText("Background refresh  every:");
 		rootComponent.add(label2, cc.xy(1, 9));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
