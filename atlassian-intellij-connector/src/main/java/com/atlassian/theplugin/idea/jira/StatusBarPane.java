@@ -100,6 +100,9 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	}
 
 	public void setErrorMessage(String msg) {
+		if (msg == null || msg.length() == 0) {
+			msg = "Unknown error";
+		}
 		additionalPanel.setBackground(Constants.FAIL_COLOR);
 //		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
 		textPanel.setBackground(Constants.FAIL_COLOR);
@@ -109,6 +112,9 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	}
 
 	public void setErrorMessage(String msg, Throwable e) {
+		if (msg == null || msg.length() == 0) {
+			msg = "Unknown error";
+		}
 		additionalPanel.setBackground(Constants.FAIL_COLOR);
 //		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
 		textPanel.setBackground(Constants.FAIL_COLOR);
@@ -119,7 +125,10 @@ public class StatusBarPane extends JPanel implements StatusBar {
 	}
 
 
-	public void setErrorMessages(final String msg, final Collection<Throwable> exceptions) {
+	public void setErrorMessages(String msg, final Collection<Throwable> exceptions) {
+		if (msg == null || msg.length() == 0) {
+			msg = "Unknown error";
+		}
 		additionalPanel.setBackground(Constants.FAIL_COLOR);
 //		textPanel.setHorizontalAlignment(SwingConstants.LEFT);
 		textPanel.setBackground(Constants.FAIL_COLOR);
