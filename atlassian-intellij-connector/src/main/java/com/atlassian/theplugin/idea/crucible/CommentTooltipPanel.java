@@ -2,29 +2,29 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
 import com.atlassian.theplugin.idea.ui.ShowHideButton;
 import com.atlassian.theplugin.idea.ui.WhiteLabel;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.util.Htmlizer;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.project.Project;
 import com.intellij.ui.HyperlinkLabel;
-import com.intellij.ide.BrowserUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.text.StyledEditorKit;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.StyledEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -369,7 +369,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 				createDeleteButton(cc);
 			}
 
-			createCommentBody(cc);
+			JComponent commentBody = createCommentBody(cc);
+			addAltEnterKeyListener(commentBody);
 
 			if (this.comment != null && !this.comment.isReply()) {
 				createDefectClassificationPanel(cc);
@@ -379,7 +380,27 @@ public abstract class CommentTooltipPanel extends JPanel {
 			validate();
 		}
 
-        private void createCommentInfoComponents(Comment cmt) {
+		private void addAltEnterKeyListener(final JComponent component) {
+			component.addKeyListener(new KeyListener() {
+				int previousKey;				
+
+				public void keyTyped(final KeyEvent e) {
+				}
+
+				public void keyPressed(final KeyEvent e) {
+					if ((e.getKeyCode() == KeyEvent.VK_ENTER && previousKey == KeyEvent.VK_ALT)) {
+						postComment();
+						setCommentPanelEditable(CommentPanel.this, !commentBody.isEditable());
+					}
+					previousKey = e.getKeyCode();
+				}
+
+				public void keyReleased(final KeyEvent e) {
+				}
+			});
+		}
+
+		private void createCommentInfoComponents(Comment cmt) {
             CellConstraints cc = new CellConstraints();
             JLabel user = new JLabel(cmt.getAuthor().getDisplayName());
             user.setFont(user.getFont().deriveFont(Font.BOLD));
@@ -428,7 +449,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			defectLabel.setVisible(comment.isDefectRaised());
 		}
 
-		private void createCommentBody(CellConstraints cc) {
+		private JComponent createCommentBody(CellConstraints cc) {
 			commentBody.setOpaque(true);
 			commentBody.setContentType("text/plain");
 			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -445,6 +466,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 				}
 			});
 			add(commentBody, cc.xyw(indent ? USER_POS : TWIXIE_2_POS, TWIXIE_2_POS, indent ? WIDTH_INDENTED : WIDTH_ALL));
+
+			return commentBody;
 		}
 
 		private void createDefectClassificationPanel(CellConstraints cc) {
@@ -526,23 +549,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
 					if (commentBody.isEditable()) {
-						if (!validateText(commentBody.getText())) {
-							return;
-						}
-						commentBody.setBackground(Color.GRAY);
-						commentBody.setEnabled(false);
-						btnEdit.setVisible(false);
-                        btnCancel.setVisible(false);
-						if (comment != null) {
-							((CommentBean) comment).setDraft(false);
-						}
-						addOrUpdateCommentForReview(CommentPanel.this, comment, commentBody.getText(),
-								comment != null && comment.isDraft(),
-                                boxIsDefect != null && boxIsDefect.isSelected());
-						btnEdit.setHyperlinkText(EDIT);
-						if (btnSaveDraft != null) {
-							btnSaveDraft.setVisible(false);
-						}
+						if (postComment()) return;
 					} else {
 						setStatusText(" ", false);
 						setButtonsVisible(false);
@@ -609,6 +616,29 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnCancel.setOpaque(false);
 			btnCancel.setVisible(panelForNewComment || selectedPanel);
 			add(btnCancel, cc.xy(CANCEL_POS, 1));
+		}
+
+		private boolean postComment() {
+			if (commentBody.isEditable()) {
+				if (!validateText(commentBody.getText())) {
+					return true;
+				}
+				commentBody.setBackground(Color.GRAY);
+				commentBody.setEnabled(false);
+				btnEdit.setVisible(false);
+				btnCancel.setVisible(false);
+				if (comment != null) {
+					((CommentBean) comment).setDraft(false);
+				}
+				addOrUpdateCommentForReview(this, comment, commentBody.getText(),
+						comment != null && comment.isDraft(),
+						boxIsDefect != null && boxIsDefect.isSelected());
+				btnEdit.setHyperlinkText(EDIT);
+				if (btnSaveDraft != null) {
+					btnSaveDraft.setVisible(false);
+				}
+			}
+			return false;
 		}
 
 		public Comment getComment() {
