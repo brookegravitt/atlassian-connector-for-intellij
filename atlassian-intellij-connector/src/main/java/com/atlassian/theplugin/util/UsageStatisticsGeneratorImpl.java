@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
@@ -23,12 +24,15 @@ import com.atlassian.theplugin.commons.util.UrlUtil;
 public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	private final boolean reportStatistics;
 	private final long uid;
-	private final CfgManager cfgManager;
+    private GeneralConfigurationBean generalConfig;
+    private final CfgManager cfgManager;
 
-	public UsageStatisticsGeneratorImpl(boolean reportStatistics, final long uid, final CfgManager cfgManager) {
+	public UsageStatisticsGeneratorImpl(boolean reportStatistics, final long uid,
+                                        GeneralConfigurationBean generalConfig, final CfgManager cfgManager) {
 		this.reportStatistics = reportStatistics;
 		this.uid = uid;
-		this.cfgManager = cfgManager;
+        this.generalConfig = generalConfig;
+        this.cfgManager = cfgManager;
 	}
 
 	public String getStatisticsUrlSuffix() {
@@ -39,10 +43,18 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 			for (ServerCfg serverCfg : cfgManager.getAllUniqueServers()) {
 				counts[serverCfg.getServerType().ordinal()]++;
 			}
+
 			sb.append("&version=").append(UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion()));
 			sb.append("&bambooServers=").append(counts[ServerType.BAMBOO_SERVER.ordinal()]);
 			sb.append("&crucibleServers=").append(counts[ServerType.CRUCIBLE_SERVER.ordinal()]);
 			sb.append("&jiraServers=").append(counts[ServerType.JIRA_SERVER.ordinal()]);
+
+            if (generalConfig != null) {
+                for (String counter : generalConfig.getStatsCountersMap().keySet()) {
+                    sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
+                    generalConfig.resetCounter(counter);
+                }
+            }
 		}
 		return sb.toString();
 	}

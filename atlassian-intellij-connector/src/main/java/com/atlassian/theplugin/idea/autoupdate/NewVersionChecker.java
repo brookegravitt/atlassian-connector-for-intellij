@@ -113,6 +113,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		final Boolean anonymousFeedbackEnabled = configuration.getAnonymousEnhancedFeedbackEnabled();
 		return InfoServer.getLatestPluginVersion(
 				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : false,
-				configuration.getUid(), cfgManager), configuration.isCheckUnstableVersionsEnabled());
+				            configuration.getUid(), pluginConfiguration.getGeneralConfigurationData(), cfgManager),
+                configuration.isCheckUnstableVersionsEnabled());
 	}
 }

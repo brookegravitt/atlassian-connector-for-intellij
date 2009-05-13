@@ -683,6 +683,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		} else {
 			ActiveIssueUtils.setActiveJiraIssue(project, null, issue);
 		}
+
+        pluginConfiguration.getGeneralConfigurationData().bumpCounter("a");
 	}
 
 	private void refreshFilterModel() {
