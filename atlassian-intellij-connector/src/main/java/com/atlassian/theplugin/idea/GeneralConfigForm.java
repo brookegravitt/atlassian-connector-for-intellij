@@ -23,6 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.net.HTTPProxySettingsDialog;
+import com.intellij.ide.BrowserUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -47,10 +50,11 @@ public class GeneralConfigForm {
 	private JButton httpProxyButton;
 	private JRadioButton chkNoProxy;
 	private JRadioButton chkUseIdeaProxy;
-	private Boolean isAnonymousFeedbackEnabled;
+    private JEditorPane usageStatsHelp;
+    private Boolean isAnonymousFeedbackEnabled;
 	private final NewVersionChecker newVersionChecker;
 
-	public JRadioButton getCheckNewVersionStable() {
+    public JRadioButton getCheckNewVersionStable() {
 		return checkNewVersionStable;
 	}
 
@@ -283,5 +287,21 @@ public class GeneralConfigForm {
 	public JComponent $$$getRootComponent$$$() {
 		return mainPanel;
 	}
+
+    private void createUIComponents() {
+        usageStatsHelp = new JEditorPane();
+        usageStatsHelp.setContentType("text/html");
+        usageStatsHelp.setEditable(false);
+        usageStatsHelp.setOpaque(false);
+        usageStatsHelp.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+        usageStatsHelp.setText("<html>(&nbsp;<a href=\"http://confluence.atlassian.com/fixme\">Details</a>&nbsp;)");
+        usageStatsHelp.addHyperlinkListener(new HyperlinkListener() {
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                    BrowserUtil.launchBrowser(e.getURL().toString());
+                }
+            }
+        });
+    }
 }
 

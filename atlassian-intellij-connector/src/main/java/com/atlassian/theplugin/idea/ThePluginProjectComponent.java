@@ -61,10 +61,16 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
+import com.intellij.ide.BrowserUtil;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.event.HyperlinkEvent;
 import java.util.Collection;
+import java.awt.*;
 
 /**
  * Per-project plugin component.
@@ -327,16 +333,59 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private void askForUserStatistics() {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
-				if (pluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled() == null) {
-					int answer = Messages.showYesNoDialog("We would greatly appreciate if you allow us to collect anonymous "
-							+ "usage statistics to help us provide a better quality product. Is this ok?",
-							PluginUtil.getInstance().getName() + " request", Messages.getQuestionIcon());
-					pluginConfiguration.getGeneralConfigurationData().setAnonymousFeedbackEnabled(
+				if (pluginConfiguration.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled() == null) {
+                    UsageStatsDialog dlg = new UsageStatsDialog();
+                    dlg.show();
+                    int answer = dlg.getExitCode();
+					pluginConfiguration.getGeneralConfigurationData().setAnonymousEnhancedFeedbackEnabled(
 							answer == DialogWrapper.OK_EXIT_CODE);
 				}
 			}
 		}, ModalityState.defaultModalityState());
 	}
+
+    private class UsageStatsDialog extends DialogWrapper {
+        private static final String MSG_TEXT =
+                            "We would greatly appreciate if you allow us to collect anonymous"
+                            + "<br>usage statistics to help us provide a better quality product. Details"
+                            + "<br>of what will be tracked are described "
+                            + "<a href=\"http://confluence.atlassian.com/fixme\">here</a>. Is this ok?";
+
+        protected UsageStatsDialog() {
+            super((Project) null, false);
+            init();
+            setTitle(PluginUtil.getInstance().getName() + " Request");
+            setModal(true);
+            setOKButtonText("Yes");
+            setCancelButtonText("No");
+        }
+
+        protected JComponent createCenterPanel() {
+            JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
+            CellConstraints cc = new CellConstraints();
+
+            JEditorPane textPane = new JEditorPane();
+            textPane.setContentType("text/html");
+            textPane.setEditable(false);
+            textPane.setOpaque(false);
+            textPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+            textPane.setText("<html>" + MSG_TEXT);
+            textPane.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent e) {
+                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                        BrowserUtil.launchBrowser(e.getURL().toString());
+                    }
+                }
+            });
+
+            p.add(new JLabel(Messages.getQuestionIcon()), cc.xy(2, 2));
+            p.add(textPane, cc.xy(4, 2));
+
+            return p;
+        }
+
+
+    }
 
 	public void projectClosed() {
 		if (created) {
