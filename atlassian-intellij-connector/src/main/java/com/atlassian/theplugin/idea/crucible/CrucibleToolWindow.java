@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -64,18 +65,21 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	private final CfgManager cfgManager;
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
+    private PluginConfiguration pluginConfiguration;
 
-	private ContentPanel contentPanel;
+    private ContentPanel contentPanel;
 	private ReviewContentParameters contentParams;
 
 
 	protected CrucibleToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
-			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
+			@NotNull final ThePluginProjectComponent pluginProjectComponent,
+            @NotNull final PluginConfiguration pluginConfiguration) {
 		super(true);
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
-	}
+        this.pluginConfiguration = pluginConfiguration;
+    }
 
 	@Override
 	protected String getContentKey(ContentParameters params) {
@@ -91,10 +95,10 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 	@Override
 	protected ContentPanel createContentPanel(ContentParameters params) {
+        pluginConfiguration.getGeneralConfigurationData().bumpCounter("r");
 		contentPanel = new ReviewPanel((ReviewContentParameters) params);
 		return contentPanel;
 	}
-
 
 	public void closeToolWindow(AnActionEvent event) {
 		super.closeToolWindow(TOOL_WINDOW_TITLE, event);

@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -66,15 +67,18 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
-	private final CfgManager cfgManager;
+    private PluginConfiguration pluginConfiguration;
+    private final CfgManager cfgManager;
 
 	public IssueDetailsToolWindow(@NotNull final Project project,
                                   @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+                                  @NotNull final PluginConfiguration pluginConfiguration, 
                                   @NotNull CfgManager cfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
-		this.cfgManager = cfgManager;
+        this.pluginConfiguration = pluginConfiguration;
+        this.cfgManager = cfgManager;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
@@ -96,6 +100,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
+        pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
 		return new IssuePanel((IssueContentParameters) params);
 	}
 

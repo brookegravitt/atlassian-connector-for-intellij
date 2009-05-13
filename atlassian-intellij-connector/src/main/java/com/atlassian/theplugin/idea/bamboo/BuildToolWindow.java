@@ -6,6 +6,7 @@ import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -29,12 +30,14 @@ import java.awt.event.ActionListener;
 public class BuildToolWindow extends MultiTabToolWindow {
 
 	private final Project project;
-	private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
+    private PluginConfiguration pluginConfiguration;
+    private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
 
-	public BuildToolWindow(@NotNull final Project project) {
+	public BuildToolWindow(@NotNull final Project project, @NotNull final PluginConfiguration pluginConfiguration) {
 		super(false);
 		this.project = project;
-	}
+        this.pluginConfiguration = pluginConfiguration;
+    }
 
 	public void runTests(AnActionEvent ev, boolean debug) {
 		BuildPanel bp = getContentPanel(ev.getPlace());
@@ -111,6 +114,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 	@Override
 	protected ContentPanel createContentPanel(ContentParameters params) {
+        pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
 		BuildContentParameters bcp = (BuildContentParameters) params;
 		return new BuildPanel(bcp);
 	}

@@ -40,11 +40,11 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 				new BambooServerCfg("bamboo2", new ServerId()))).anyTimes();
 		EasyMock.replay(cfgManager);
 
-		final UsageStatisticsGeneratorImpl generator = new UsageStatisticsGeneratorImpl(true, 123, cfgManager);
+		final UsageStatisticsGeneratorImpl generator = new UsageStatisticsGeneratorImpl(true, 123, null, cfgManager);
 		assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
 				+ "&bambooServers=2&crucibleServers=1&jiraServers=0",
 				generator.getStatisticsUrlSuffix());
-		final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(false, 234, cfgManager);
+		final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(false, 234, null, cfgManager);
 		assertEquals("uid=234", generator2.getStatisticsUrlSuffix());
 	}
 
