@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -25,6 +26,7 @@ import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.HyperlinkLabel;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -54,10 +56,12 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	private AtomicInteger progress = new AtomicInteger(0);
 
 	JScrollPane scroll = new JScrollPane();
+	private Project project;
 
 	public TestDefaultCredentialsDialog(Project project, final ProjectConfiguration projectConfiguration,
 			final UserCfg defaultCredentials) {
 		super(project, false);
+		this.project = project;
 		addServerTypeServers(new ArrayList<ServerCfg>(projectConfiguration.getAllBambooServers()),
 				ServerType.BAMBOO_SERVER, defaultCredentials);
 
@@ -166,6 +170,12 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	}
 
 	public void testConnection() {
+
+		if (servers == null || servers.size() == 0) {
+			Messages.showInfoMessage(project, "Not any server uses default credentials", PluginUtil.PRODUCT_NAME);
+			return;
+		}
+
 		for (ServerDataExt serverDataExt : servers) {
 			TestConnectionThread thread = new TestConnectionThread("testing connection",
 					new LocalTestConnectionProcessor(serverDataExt), serverDataExt);
