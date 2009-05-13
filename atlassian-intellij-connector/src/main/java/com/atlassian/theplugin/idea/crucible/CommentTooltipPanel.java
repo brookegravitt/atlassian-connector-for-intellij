@@ -369,7 +369,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				createDeleteButton(cc);
 			}
 
-			JComponent commentBody = createCommentBody(cc);
+			createCommentBody(cc);
 			addAltEnterKeyListener();
 
 			if (this.comment != null && !this.comment.isReply()) {
@@ -449,7 +449,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			defectLabel.setVisible(comment.isDefectRaised());
 		}
 
-		private JComponent createCommentBody(CellConstraints cc) {
+		private void createCommentBody(CellConstraints cc) {
 			commentBody.setOpaque(true);
 			commentBody.setContentType("text/plain");
 			commentBody.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
@@ -466,8 +466,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 				}
 			});
 			add(commentBody, cc.xyw(indent ? USER_POS : TWIXIE_2_POS, TWIXIE_2_POS, indent ? WIDTH_INDENTED : WIDTH_ALL));
-
-			return commentBody;
 		}
 
 		private void createDefectClassificationPanel(CellConstraints cc) {
