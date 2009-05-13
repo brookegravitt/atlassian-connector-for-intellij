@@ -49,7 +49,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				|| dialog.getIsCheckUnstableVersionsEnabled()
 					!= globalPluginConfiguration.getGeneralConfigurationData().isCheckUnstableVersionsEnabled()
 				|| MiscUtil.isModified(dialog.getIsAnonymousFeedbackEnabled(),
-					globalPluginConfiguration.getGeneralConfigurationData().getAnonymousFeedbackEnabled())
+					globalPluginConfiguration.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled())
 				|| dialog.getUseIdeaProxySettings()
 					!= globalPluginConfiguration.getGeneralConfigurationData().getUseIdeaProxySettings()
 				|| MiscUtil.isModified(dialog.getCheckNotButtonOption(),
@@ -71,7 +71,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 		localPluginConfigurationCopy.getGeneralConfigurationData()
 				.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
-				.setAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
+				.setAnonymousEnhancedFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
 				.setUseIdeaProxySettings(dialog.getUseIdeaProxySettings());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
@@ -82,7 +82,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 		globalPluginConfiguration.getGeneralConfigurationData()
 				.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
 		globalPluginConfiguration.getGeneralConfigurationData()
-				.setAnonymousFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
+				.setAnonymousEnhancedFeedbackEnabled(dialog.getIsAnonymousFeedbackEnabled());
 		globalPluginConfiguration.getGeneralConfigurationData()
 				.setUseIdeaProxySettings(dialog.getUseIdeaProxySettings());
 		globalPluginConfiguration.getGeneralConfigurationData()
@@ -96,7 +96,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 		dialog.setIsCheckUnstableVersionsEnabled(localPluginConfigurationCopy.getGeneralConfigurationData()
 				.isCheckUnstableVersionsEnabled());
 		dialog.setIsAnonymousFeedbackEnabled(localPluginConfigurationCopy.getGeneralConfigurationData()
-				.getAnonymousFeedbackEnabled());
+				.getAnonymousEnhancedFeedbackEnabled());
 		dialog.setUseIdeaProxySettings(localPluginConfigurationCopy.getGeneralConfigurationData()
 				.getUseIdeaProxySettings());
 		dialog.setCheckNowButtonOption(localPluginConfigurationCopy.getGeneralConfigurationData()

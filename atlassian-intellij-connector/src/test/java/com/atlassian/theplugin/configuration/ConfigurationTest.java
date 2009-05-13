@@ -51,8 +51,9 @@ public class ConfigurationTest extends TestCase {
 		GeneralConfigurationBean generalConf = baseConf.getGeneralConfigurationData();
 
 		assertEquals(baseConf, newConf);
-		generalConf.setAnonymousFeedbackEnabled(
-				generalConf.getAnonymousFeedbackEnabled() == null || !generalConf.getAnonymousFeedbackEnabled());
+		generalConf.setAnonymousEnhancedFeedbackEnabled(
+				generalConf.getAnonymousEnhancedFeedbackEnabled() == null
+                        || !generalConf.getAnonymousEnhancedFeedbackEnabled());
 		assertNotEquals(baseConf, newConf);
 
 		newConf.setGeneralConfigurationData(new GeneralConfigurationBean(generalConf));

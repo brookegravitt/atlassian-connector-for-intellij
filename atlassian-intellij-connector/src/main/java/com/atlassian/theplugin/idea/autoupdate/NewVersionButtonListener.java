@@ -38,7 +38,7 @@ public class NewVersionButtonListener implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent event) {
-		updateConfig.setAnonymousFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
+		updateConfig.setAnonymousEnhancedFeedbackEnabled(generalConfigForm.getIsAnonymousFeedbackEnabled());
 		updateConfig.setAutoUpdateEnabled(true);	// check now button always checks for new version
 		updateConfig.setCheckUnstableVersionsEnabled(generalConfigForm.getCheckNewVersionAll().isSelected());
 		updateConfig.setUid(IdeaHelper.getAppComponent().getConfiguration().getState().getGeneralConfigurationData().getUid());

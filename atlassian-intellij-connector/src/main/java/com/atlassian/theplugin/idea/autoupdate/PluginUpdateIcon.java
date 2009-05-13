@@ -55,7 +55,7 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 				// check if newer version is available since last update
 				// prepare data for checker
 				GeneralConfigurationBean updateConfig = new GeneralConfigurationBean();
-				updateConfig.setAnonymousFeedbackEnabled(config.getAnonymousFeedbackEnabled());
+				updateConfig.setAnonymousEnhancedFeedbackEnabled(config.getAnonymousEnhancedFeedbackEnabled());
 				updateConfig.setAutoUpdateEnabled(true);	// check now button always checks for new version
 				updateConfig.setCheckUnstableVersionsEnabled(config.isCheckUnstableVersionsEnabled());
 				updateConfig.setUid(IdeaHelper.getAppComponent().getConfiguration().getState()

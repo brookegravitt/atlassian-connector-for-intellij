@@ -95,7 +95,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 			return;
 		}
 		if (action == null) {
-			throw new IllegalArgumentException("CrucibleAction handler not provided.");
+			throw new IllegalArgumentException("UpdateAction handler not provided.");
 		}
 
 		// get latest version
@@ -110,7 +110,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 
 	private InfoServer.VersionInfo getLatestVersion(GeneralConfigurationBean configuration)
 			throws VersionServiceException, IncorrectVersionException {
-		final Boolean anonymousFeedbackEnabled = configuration.getAnonymousFeedbackEnabled();
+		final Boolean anonymousFeedbackEnabled = configuration.getAnonymousEnhancedFeedbackEnabled();
 		return InfoServer.getLatestPluginVersion(
 				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : false,
 				configuration.getUid(), cfgManager), configuration.isCheckUnstableVersionsEnabled());
