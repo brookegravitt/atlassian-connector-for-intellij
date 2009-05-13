@@ -370,7 +370,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			}
 
 			JComponent commentBody = createCommentBody(cc);
-			addAltEnterKeyListener(commentBody);
+			addAltEnterKeyListener();
 
 			if (this.comment != null && !this.comment.isReply()) {
 				createDefectClassificationPanel(cc);
@@ -380,9 +380,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 			validate();
 		}
 
-		private void addAltEnterKeyListener(final JComponent component) {
-			component.addKeyListener(new KeyListener() {
-				int previousKey;				
+		private void addAltEnterKeyListener() {
+			commentBody.addKeyListener(new KeyListener() {
+				private int previousKey;
 
 				public void keyTyped(final KeyEvent e) {
 				}
@@ -548,8 +548,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnCancel = new HyperlinkLabel("Cancel");
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-					if (commentBody.isEditable()) {
-						if (postComment()) return;
+					if (commentBody.isEditable() && postComment()) {
+						return;
 					} else {
 						setStatusText(" ", false);
 						setButtonsVisible(false);
