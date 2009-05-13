@@ -403,7 +403,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (actionCombo.getSelectedItem() != null) {
+        if (actionCombo != null && actionCombo.getSelectedItem() != null) {
             config.setSelectedWorkflowAction(((JIRAAction) actionCombo.getSelectedItem()).getId());
         }
         super.doOKAction();
