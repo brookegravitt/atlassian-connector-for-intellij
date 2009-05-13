@@ -889,6 +889,7 @@
 			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
 			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
 			<separator/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<separator/>
