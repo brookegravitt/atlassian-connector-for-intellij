@@ -182,7 +182,7 @@
               <focusable value="false"/>
               <font size="10"/>
               <foreground color="-3407872"/>
-              <text value="Server version number &gt;= 2.0"/>
+              <text value=""/>
               <visible value="true"/>
             </properties>
           </component>

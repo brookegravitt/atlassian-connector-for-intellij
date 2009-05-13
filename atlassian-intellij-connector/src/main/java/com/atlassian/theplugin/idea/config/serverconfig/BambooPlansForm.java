@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.NotNull;
@@ -128,6 +127,7 @@ public class BambooPlansForm extends JPanel {
 	private void refreshServerPlans() {
 		serverPlans.remove(bambooServerCfg.getServerId());
 		serverPanel.saveData();
+		bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(ServerData.create(bambooServerCfg, defaultCredentials)));
 		retrievePlans(bambooServerCfg);
 	}
 
@@ -202,7 +202,10 @@ public class BambooPlansForm extends JPanel {
 			offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
 			timezoneOffsetSpinnerModel.setValue(offs);
 			if (bambooServerCfg.getUrl().length() > 0) {
+				bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(
+						ServerData.create(bambooServerCfg, defaultCredentials)));
 				retrievePlans(bambooServerCfg);
+
 			} else {
 				model.removeAllElements();
 			}
@@ -283,7 +286,7 @@ public class BambooPlansForm extends JPanel {
 		if (serverCfg.isBamboo2()) {
 			bambooVersionNumberInfo.setEnabled(false);
 			bambooVersionNumberInfo.setVisible(false);
-			bambooVersionNumberInfo.setText("Server version number >= 2.0");
+			bambooVersionNumberInfo.setText("");
 		} else {
 			bambooVersionNumberInfo.setEnabled(true);
 			bambooVersionNumberInfo.setVisible(true);
@@ -472,9 +475,8 @@ public class BambooPlansForm extends JPanel {
 		scrollPane1.setEnabled(true);
 		scrollPane1.setHorizontalScrollBarPolicy(31);
 		scrollPane1.setVerticalScrollBarPolicy(20);
-		statusPanel.add(scrollPane1,
-				new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, 1, 1,
-						new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
+		statusPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				1, 1, new Dimension(-1, 40), null, new Dimension(-1, 40), 0, false));
 		statusPane = new JEditorPane();
 		statusPane.setEditable(false);
 		scrollPane1.setViewportView(statusPane);
@@ -546,7 +548,7 @@ public class BambooPlansForm extends JPanel {
 		bambooVersionNumberInfo.setFont(
 				new Font(bambooVersionNumberInfo.getFont().getName(), bambooVersionNumberInfo.getFont().getStyle(), 10));
 		bambooVersionNumberInfo.setForeground(new Color(-3407872));
-		bambooVersionNumberInfo.setText("Server version number >= 2.0");
+		bambooVersionNumberInfo.setText("");
 		bambooVersionNumberInfo.setVisible(true);
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
