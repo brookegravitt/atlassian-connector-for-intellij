@@ -67,7 +67,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 	private JTextField remainingEstimateField;
 	private JTextPane explanationText;
 	private JPanel endTimePanel;
-	private JCheckBox chkDeactivateChangeSet;
+
+    private JRadioButton btnChangeSetDoNothing;
+    private JRadioButton btnChangeSetDeactivate;
+    private JRadioButton btnChangeSetRemove;
+    private ButtonGroup changeSetButtonGroup;
+
 	private JPanel changesetPanel;
 	private JPanel changesPanel;
 	private JPanel timePanel;
@@ -103,7 +108,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 				"3dlu, fill:pref:grow, 3dlu",
 				"3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, fill:pref:grow, 3dlu"));
 
-		chkLogWork = new JCheckBox("Log Work", true);
+		chkLogWork = new JCheckBox("Log Work", config.isActiveIssueLogWork());
 		contentPane.add(createTimePanel(), cc.xy(2, 6));
 
 		if (deactivateActiveIssue) {
@@ -111,7 +116,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
             contentPane.add(createWorkflowActionCombo(), cc.xy(2, 2));
 			contentPane.add(chkLogWork, cc.xy(2, 4));
-			chkCommitChanges = new JCheckBox("Commit Changes", true);
+			chkCommitChanges = new JCheckBox("Commit Changes", config.isActiveIssueCommitChanges());
 			contentPane.add(chkCommitChanges, cc.xy(2, 8));
 			contentPane.add(createChangesetPanel(), cc.xy(2, 10));
 
@@ -130,7 +135,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         gbc.fill = GridBagConstraints.NONE;
 
         cbPerformWorkflowAction = new JCheckBox("Perform Workflow Action");
-        cbPerformWorkflowAction.setSelected(true);
+        cbPerformWorkflowAction.setSelected(config.isActiveIssueProgressWorkflowAction());
         cbPerformWorkflowAction.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {
                 actionCombo.setEnabled(cbPerformWorkflowAction.isSelected());
@@ -203,12 +208,18 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         }
     }
 
+    public enum AfterCommit {
+        DO_NOTHING,
+        DEACTIVATE_CHANGESET,
+        REMOVE_CHANGESET
+    }
+
     private JPanel createChangesetPanel() {
 		CellConstraints cc = new CellConstraints();
 
 		changesetPanel = new JPanel(new FormLayout(
 				"3dlu, fill:pref:grow, 3dlu",
-				"3dlu, fill:d:grow, 3dlu, pref, 3dlu, pref, 3dlu"));
+				"3dlu, fill:d:grow, 3dlu, pref, 3dlu, pref, 3dlu, pref, pref, pref, 3dlu"));
 		changesetPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Changes"));
 		changesPanel = new JPanel(new BorderLayout(0, 0));
 		changesPanel.setPreferredSize(new Dimension(1, 1));
@@ -223,8 +234,29 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		commentPanel.add(scroll, cc.xy(2, 1, CellConstraints.FILL, CellConstraints.FILL));
 		changesetPanel.add(commentPanel, cc.xy(2, 4));
 
-		chkDeactivateChangeSet = new JCheckBox("Deactivate Change List After Commit", true);
-		changesetPanel.add(chkDeactivateChangeSet, cc.xy(2, 6));
+        btnChangeSetDoNothing =
+                new JRadioButton("Leave the current change list active",
+                        config.getActiveIssueAfterCommit() == AfterCommit.DO_NOTHING.ordinal());
+        btnChangeSetDeactivate =
+                new JRadioButton("Deactivate the currently active change list (activate the default change list)",
+                        config.getActiveIssueAfterCommit() == AfterCommit.DEACTIVATE_CHANGESET.ordinal());
+        btnChangeSetRemove =
+                new JRadioButton("Remove the currently active change list (activate the default change list)",
+                        config.getActiveIssueAfterCommit() == AfterCommit.REMOVE_CHANGESET.ordinal());
+
+        changeSetButtonGroup = new ButtonGroup();
+        changeSetButtonGroup.add(btnChangeSetDoNothing);
+        changeSetButtonGroup.add(btnChangeSetDeactivate);
+        changeSetButtonGroup.add(btnChangeSetRemove);
+
+        if (changeSetButtonGroup.getSelection() == null) {
+            btnChangeSetDoNothing.setSelected(true);
+        }
+
+        changesetPanel.add(new JLabel("After Commit:"), cc.xy(2, 6));
+        changesetPanel.add(btnChangeSetDoNothing, cc.xy(2, 8));
+        changesetPanel.add(btnChangeSetDeactivate, cc.xy(2, 9));
+        changesetPanel.add(btnChangeSetRemove, cc.xy(2, 10));
 
 		return changesetPanel;
 	}
@@ -241,7 +273,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		CellConstraints cc = new CellConstraints();
 		timePanel = new JPanel(new FormLayout(
 				"3dlu, right:pref, 3dlu, left:pref, 3dlu, 10dlu, left:pref, 3dlu, left:pref:grow, 3dlu",
-				"3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu, pref, 3dlu"));
+				"3dlu, pref, 3dlu, pref, pref, pref, 3dlu, pref, 3dlu"));
 
 		timePanel.add(new JLabel("Time Spent:"), cc.xy(2, 2));
 
@@ -269,12 +301,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		btnUpdateManually = new JRadioButton("Update Manually:");
 
 		timePanel.add(btnAutoUpdate, cc.xy(7, 4));
-		timePanel.add(btnLeaveUnchanged, cc.xy(7, 6));
-		timePanel.add(btnUpdateManually, cc.xy(7, 8));
+		timePanel.add(btnLeaveUnchanged, cc.xy(7, 5));
+		timePanel.add(btnUpdateManually, cc.xy(7, 6));
 
 		remainingEstimateField = createFixedTextField(120, 28);
 		remainingEstimateField.setEnabled(false);
-		timePanel.add(remainingEstimateField, cc.xy(9, 8));
+		timePanel.add(remainingEstimateField, cc.xy(9, 6));
 
 		ButtonGroup group = new ButtonGroup();
 		group.add(btnUpdateManually);
@@ -288,8 +320,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		endTimePanel.add(endDateChange, cc.xy(3, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
 
 		if (!deactivateActiveIssue) {
-			timePanel.add(new JLabel("End Time:"), cc.xy(2, 10));
-			timePanel.add(endTimePanel, cc.xy(4, 10));
+			timePanel.add(new JLabel("End Time:"), cc.xy(2, 8));
+			timePanel.add(endTimePanel, cc.xy(4, 8));
 		}
 
 		return timePanel;
@@ -403,8 +435,16 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        if (actionCombo != null && actionCombo.getSelectedItem() != null) {
-            config.setSelectedWorkflowAction(((JIRAAction) actionCombo.getSelectedItem()).getId());
+        if (deactivateActiveIssue) {
+            config.setActiveIssueLogWork(chkLogWork.isSelected());
+            if (actionCombo != null && actionCombo.getSelectedItem() != null) {
+                config.setSelectedWorkflowAction(((JIRAAction) actionCombo.getSelectedItem()).getId());
+            }
+            config.setActiveIssueCommitChanges(chkCommitChanges.isSelected());
+            config.setActiveIssueProgressWorkflowAction(cbPerformWorkflowAction.isSelected());
+            config.setActiveIssueAfterCommit(btnChangeSetDoNothing.isSelected() ? AfterCommit.DO_NOTHING.ordinal()
+                    : (btnChangeSetDeactivate.isSelected()
+                        ? AfterCommit.DEACTIVATE_CHANGESET.ordinal() : AfterCommit.REMOVE_CHANGESET.ordinal()));
         }
         super.doOKAction();
     }
@@ -445,7 +485,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 	public WorkLogCreateAndMaybeDeactivateDialog(final ServerData jiraServer, final JIRAIssue issue,
 			final Project project, final String timeSpent,
-			boolean deactivateActiveIssue, @NotNull JiraWorkspaceConfiguration config) {
+			boolean deactivateActiveIssue, @NotNull final JiraWorkspaceConfiguration config) {
 
 		super(false);
         this.issue = issue;
@@ -564,8 +604,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		if (deactivateActiveIssue) {
 			ChangeListManager changeListManager = ChangeListManager.getInstance(project);
 			LocalChangeList chList = changeListManager.getDefaultChangeList();
-			comment.setText(chList.getComment());
-		}
+            if (chList != null) {
+                comment.setText(chList.getComment());
+            } else {
+                comment.setText("");
+            }
+        }
 	}
 
 	public boolean isLogTime() {
@@ -576,8 +620,13 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return chkCommitChanges.isSelected();
 	}
 
-	public boolean isDeactivateCurrentChangeList() {
-		return chkDeactivateChangeSet.isSelected();
+	public AfterCommit getAfterCommitChangeSetAction() {
+        if (btnChangeSetDeactivate.isSelected()) {
+            return AfterCommit.DEACTIVATE_CHANGESET;
+        } else if (btnChangeSetRemove.isSelected()) {
+            return AfterCommit.REMOVE_CHANGESET;
+        }
+        return AfterCommit.DO_NOTHING;
 	}
 
 	public LocalChangeList getCurrentChangeList() {

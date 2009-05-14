@@ -36,6 +36,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 	private ActiveJiraIssueBean activeJiraIssue;
     private long selectedWorkflowAction;
+    private boolean activeIssueProgressWorkflowAction;
+    private boolean activeIssueLogWork;
+    private boolean activeIssueCommitChanges;
+    private int activeIssueAfterCommit;
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -46,6 +50,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.recentlyOpenIssues = jiraConfiguration.recentlyOpenIssues;
 		this.activeJiraIssue = jiraConfiguration.activeJiraIssue;
         this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
+        this.activeIssueProgressWorkflowAction = jiraConfiguration.activeIssueProgressWorkflowAction;
+        this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
+        this.activeIssueCommitChanges = jiraConfiguration.activeIssueCommitChanges;
+        this.activeIssueAfterCommit = jiraConfiguration.activeIssueAfterCommit;
 	}
 
 	public Map<String, JiraFilterConfigurationBean> getFilters() {
@@ -101,6 +109,38 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
     public void setSelectedWorkflowAction(long selectedWorkflowAction) {
         this.selectedWorkflowAction = selectedWorkflowAction;
+    }
+
+    public boolean isActiveIssueProgressWorkflowAction() {
+        return activeIssueProgressWorkflowAction;
+    }
+
+    public void setActiveIssueProgressWorkflowAction(boolean activeIssueProgressWorkflowAction) {
+        this.activeIssueProgressWorkflowAction = activeIssueProgressWorkflowAction;
+    }
+
+    public boolean isActiveIssueLogWork() {
+        return activeIssueLogWork;
+    }
+
+    public void setActiveIssueLogWork(boolean activeIssueLogWork) {
+        this.activeIssueLogWork = activeIssueLogWork;
+    }
+
+    public boolean isActiveIssueCommitChanges() {
+        return activeIssueCommitChanges;
+    }
+
+    public void setActiveIssueCommitChanges(boolean activeIssueCommitChanges) {
+        this.activeIssueCommitChanges = activeIssueCommitChanges;
+    }
+
+    public int getActiveIssueAfterCommit() {
+        return activeIssueAfterCommit;
+    }
+
+    public void setActiveIssueAfterCommit(int activeIssueAfterCommit) {
+        this.activeIssueAfterCommit = activeIssueAfterCommit;
     }
 
     @Transient

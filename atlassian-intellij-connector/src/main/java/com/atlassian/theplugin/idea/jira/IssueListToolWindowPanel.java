@@ -19,6 +19,7 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
+import static com.atlassian.theplugin.idea.jira.WorkLogCreateAndMaybeDeactivateDialog.AfterCommit.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
@@ -1241,14 +1242,19 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 								}
 							});
 
-							if (dialog.isDeactivateCurrentChangeList()) {
-								List<LocalChangeList> chLists = changeListManager.getChangeLists();
-								for (LocalChangeList chl : chLists) {
-									if ("Default".equals(chl.getName())) {
-										changeListManager.setDefaultChangeList(chl);
-										break;
-									}
-								}
+                            WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+                                    dialog.getAfterCommitChangeSetAction();
+
+                            switch (afterCommit) {
+                                case DEACTIVATE_CHANGESET:
+                                    activateDefaultChangeList(changeListManager);
+                                    break;
+                                case REMOVE_CHANGESET:
+                                    activateDefaultChangeList(changeListManager);
+                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                    break;
+                                default:
+                                    break;
 							}
 						}
 
@@ -1264,7 +1270,17 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				}
 			}
 		}
-	}
+
+        private void activateDefaultChangeList(ChangeListManager changeListManager) {
+            List<LocalChangeList> chLists = changeListManager.getChangeLists();
+            for (LocalChangeList chl : chLists) {
+                if ("Default".equals(chl.getName())) {
+                    changeListManager.setDefaultChangeList(chl);
+                    break;
+                }
+            }
+        }
+    }
 
 
 	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
