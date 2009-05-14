@@ -560,8 +560,10 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() >= 2) {
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-					AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
-					jumpToSource(node);
+                    if (path != null) {
+                        AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
+                        jumpToSource(node);
+                    }
 				}
 			}
 
