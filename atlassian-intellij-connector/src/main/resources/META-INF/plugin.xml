@@ -414,7 +414,9 @@
 
 		<action id="ThePlugin.Crucible.Comment.Reply"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
-				text="Add Comment" icon="/icons/pin_replycomment.png"/>
+				text="Add Comment" icon="/icons/pin_replycomment.png">
+            <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+        </action>
 		<action id="ThePlugin.Crucible.Comment.AddGeneralComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddGeneralCommentAction"
 				text="Add General Comment" icon="/icons/pin_addcomment.png"/>
