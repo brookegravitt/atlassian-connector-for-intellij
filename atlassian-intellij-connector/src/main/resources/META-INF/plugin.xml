@@ -527,13 +527,13 @@
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
-				text="Start Work"
+				text="Start/Stop Work"
 				icon="/icons/pin_assignandstart.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
-				text="Start Work"
+				text="Start/Stop Work"
 				icon="/icons/pin_assignandstart.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
@@ -541,7 +541,6 @@
 				text="Stop Work"
 				icon="/actions/pause.png">
 		</action>
-
 
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
@@ -913,6 +912,8 @@
 
 		<group id="ThePlugin.JiraIssues.IssuePopupMenu" popup="true">
 			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+            <!--<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>-->
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>
@@ -923,8 +924,6 @@
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
 			<separator/>
-			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
-			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
 			<separator/>

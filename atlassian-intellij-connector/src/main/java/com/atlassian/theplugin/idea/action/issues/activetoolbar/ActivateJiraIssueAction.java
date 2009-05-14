@@ -34,14 +34,17 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 		if (selectedIssue != null) {
 			jiraServerCfg = ActiveIssueUtils.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
-			ActiveJiraIssue newActiveIssue;
-			if (jiraServerCfg != null) {
-				newActiveIssue =
-						new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
-								new DateTime());
+			if (!isSelectedIssueActive(event, selectedIssue)) {
+                if (jiraServerCfg != null) {
+                    ActiveJiraIssue newActiveIssue =
+                            new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
+                                    new DateTime());
 
-				ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
-			}
+                    ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
+                }
+			} else {
+                DeactivateJiraIssuePopupAction.runDeactivateTask(event);
+            }
 		}
 	}
 
@@ -50,20 +53,29 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
-		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
-		if (selectedIssue != null && activeIssue != null
-				&& ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
-
-			final JiraServerCfg selectedServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
-			final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
-					&& selectedServer.getServerId().toString().equals(activeIssue.getServerId());
-			event.getPresentation().setEnabled(!equals);
+        if (isSelectedIssueActive(event, selectedIssue)) {
+            event.getPresentation().setEnabled(true);
+            event.getPresentation().setText("Stop Work");
 		} else if (selectedIssue != null) {
 			event.getPresentation().setEnabled(true);
+            event.getPresentation().setText("Start Work");
 		} else {
 			event.getPresentation().setEnabled(false);
 		}
 	}
 
+    private static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
+        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
+        if (selectedIssue != null && activeIssue != null
+                && ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
+
+            final JiraServerCfg selectedServer =
+                    ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
+            final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
+                    && selectedServer.getServerId().toString().equals(activeIssue.getServerId());
+            return equals;
+        }
+        return false;
+    }
 }
