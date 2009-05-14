@@ -124,6 +124,9 @@ public class DialogWithDetails extends DialogWrapper {
 	}
 
 	public static int showExceptionDialog(final Component component, final List<IdeaUiMultiTaskExecutor.ErrorObject> errors) {
+        if (errors == null || errors.size() == 0) {
+            return 0;
+        }
 		final DialogWithDetails dialog = new DialogWithDetails(component,
 				"(1/" + errors.size() + ") " + errors.get(0).getMessage(),
 				errors.get(0).getException()) {
