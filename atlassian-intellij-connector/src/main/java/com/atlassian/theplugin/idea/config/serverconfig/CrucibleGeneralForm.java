@@ -26,6 +26,8 @@ import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,21 +51,25 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static CrucibleGeneralForm instance;
+    private static final int MAX_VALUE = 1000;
 
-	private CrucibleGeneralForm(PluginConfiguration globalPluginConfiguration) {
+    private CrucibleGeneralForm(PluginConfiguration globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
 		$$$setupUI$$$();
 
-		pollTimeModel = new SpinnerNumberModel(1, 1, 1000, 1);
+		pollTimeModel = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		pollTimeSpinner.setModel(pollTimeModel);
 
-		reviewCreationTimeoutModel = new SpinnerNumberModel(1, 1, 1000, 1);
+		reviewCreationTimeoutModel = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		reviewCreationTimeoutSpinner.setModel(reviewCreationTimeoutModel);
 
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
+
+        new SpinnerKeyAdapter(pollTimeSpinner, pollTimeModel, MAX_VALUE, 1);
+        new SpinnerKeyAdapter(reviewCreationTimeoutSpinner, reviewCreationTimeoutModel, MAX_VALUE, 1);       
 	}
 
 	public static CrucibleGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
