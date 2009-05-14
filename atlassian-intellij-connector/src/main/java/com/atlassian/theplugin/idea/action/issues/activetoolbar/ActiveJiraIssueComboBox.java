@@ -74,7 +74,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 
 		event.getPresentation().setEnabled(ModelFreezeUpdater.getState(event));
 		
-		final int cacheSize = cache.getLoadedRecenltyOpenIssues().size();
+		final int cacheSize = cache != null ? cache.getLoadedRecenltyOpenIssues().size() : 0;
 		event.getPresentation().setEnabled(!(cacheSize == 0 || (cacheSize == 1 && issue != null)));
 	}
 
