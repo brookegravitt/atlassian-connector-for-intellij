@@ -418,7 +418,8 @@ public final class CrucibleHelper {
 
             // binary file
             if (doc == null) {
-                return null;
+                ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+                return getVersionedFileUrl(review, vf.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY));
             }
 
 			RangeHighlighter[] highlighters = doc.getMarkupModel(project).getAllHighlighters();

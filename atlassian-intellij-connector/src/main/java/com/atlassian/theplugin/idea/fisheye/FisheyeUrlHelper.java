@@ -125,20 +125,23 @@ public final class FisheyeUrlHelper {
 		}
 
         TextRange r = psiElement.getTextRange();
+        int offset = 0;
         // null is returned for binary files
-        if (r == null) {
-            return null;
+        if (r != null) {
+            offset = r.getStartOffset();
         }
-		int offset = r.getStartOffset();
 		VirtualFile virtualFile = psiElement.getContainingFile().getVirtualFile();
-
 		if (virtualFile == null) {
 			return null;
 		}
 		FileDocumentManager fileDocumentManager = FileDocumentManager.getInstance();
 		Document document = fileDocumentManager.getDocument(virtualFile);
 
-		final int lineNumber = document.getLineNumber(offset) + 1;
+		int lineNumber = -1;
+
+        if (document != null) {
+            lineNumber = document.getLineNumber(offset) + 1;
+        }
 		final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
 		if (relativePath == null) {
 			return null;
@@ -194,20 +197,33 @@ public final class FisheyeUrlHelper {
 		StringBuffer sb = new StringBuffer();
 		sb.append(fishEyeServer.getUrl());
 		sb.append("/browse/");
-		sb.append(repo);
-		sb.append('/');
-		sb.append(projectPath);
-		if (sb.charAt(sb.length() - 1) != '/') {
-			sb.append("/");
-		}
-		sb.append(fileRelativePath);
-		if (rev != null) {
-			sb.append("?r=");
-			sb.append(rev);
-			sb.append("#l");
-			sb.append(lineNumber);
-		}
-
+        if (lineNumber != -1) {
+            sb.append(repo);
+            sb.append('/');
+            sb.append(projectPath);
+            if (sb.charAt(sb.length() - 1) != '/') {
+                sb.append("/");
+            }
+            sb.append(fileRelativePath);
+            if (rev != null) {
+                sb.append("?r=");
+                sb.append(rev);
+                sb.append("#l");
+                sb.append(lineNumber);
+            }
+        } else {
+            // binary file
+            sb.append("~raw,r=");
+            sb.append(rev);
+            sb.append('/');
+            sb.append(repo);
+            sb.append('/');
+            sb.append(projectPath);
+            if (sb.charAt(sb.length() - 1) != '/') {
+                sb.append("/");
+            }
+            sb.append(fileRelativePath);
+        }
 		return sb.toString();
 	}
 }
