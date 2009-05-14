@@ -26,19 +26,24 @@ import javax.swing.*;
  */
 public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
-		SwingUtilities.invokeLater(new Runnable() {
+        runDeactivateTask(event);
+    }
 
-			public void run() {
-				boolean isOk = ActiveIssueUtils.deactivate(event);
-				final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-				if (isOk) {
-					conf.setActiveJiraIssue(null);
-				}
-			}
-		});
-	}
+    public static void runDeactivateTask(final AnActionEvent event) {
+        SwingUtilities.invokeLater(new Runnable() {
 
-	public void onUpdate(final AnActionEvent event) {
+            public void run() {
+                boolean isOk = ActiveIssueUtils.deactivate(event);
+                final JiraWorkspaceConfiguration conf =
+                        IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+                if (isOk) {
+                    conf.setActiveJiraIssue(null);
+                }
+            }
+        });
+    }
+
+    public void onUpdate(final AnActionEvent event) {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
