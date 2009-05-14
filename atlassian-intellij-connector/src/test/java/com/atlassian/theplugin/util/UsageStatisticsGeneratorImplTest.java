@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -48,5 +49,43 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 		assertEquals("uid=234", generator2.getStatisticsUrlSuffix());
 	}
 
+    public void testGetStatisticsUrlSuffixExtended() {
+        CfgManager cfgManager = EasyMock.createNiceMock(CfgManager.class);
+        EasyMock.expect(cfgManager.getAllUniqueServers()).andReturn(MiscUtil.buildArrayList(
+                new BambooServerCfg("bamboo1", new ServerId()),
+                new CrucibleServerCfg("crucible1", new ServerId()),
+                new BambooServerCfg("bamboo2", new ServerId()))).anyTimes();
+        EasyMock.replay(cfgManager);
+
+        GeneralConfigurationBean gcb = new GeneralConfigurationBean();
+        gcb.setAnonymousEnhancedFeedbackEnabled(false);
+        gcb.bumpCounter("i");
+        gcb.bumpCounter("i");
+        gcb.bumpCounter("b");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("a");
+
+        final UsageStatisticsGeneratorImpl generator = new UsageStatisticsGeneratorImpl(true, 123, gcb, cfgManager);
+        assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
+                + "&bambooServers=2&crucibleServers=1&jiraServers=0",
+                generator.getStatisticsUrlSuffix());
+
+        gcb.setAnonymousEnhancedFeedbackEnabled(true);
+        gcb.bumpCounter("i");
+        gcb.bumpCounter("i");
+        gcb.bumpCounter("b");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("r");
+        gcb.bumpCounter("a");
+
+        final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(true, 123, gcb, cfgManager);
+        assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
+                + "&bambooServers=2&crucibleServers=1&jiraServers=0&b=1&r=3&a=1&i=2",
+                generator2.getStatisticsUrlSuffix());
+
+    }
 
 }
