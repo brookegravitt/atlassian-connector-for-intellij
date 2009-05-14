@@ -21,6 +21,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
+import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 
@@ -122,7 +123,7 @@ public class BuildTree extends AbstractTree {
 		}
 
 		public void buildsChanged(@Nullable final Collection<String> additionalInfo,
-				@Nullable final Collection<String> errors) {
+				@Nullable final Collection<Pair<String, Throwable>> errors) {
 			refreshTree();
 		}
 

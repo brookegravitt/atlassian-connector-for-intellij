@@ -20,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.intellij.openapi.util.Pair;
+
 /**
  * @author Jacek Jaroczynski
  */
@@ -53,7 +55,7 @@ public abstract class AbstractBuildListModelDecorator implements BuildListModel,
 		}
 	}
 
-	public void buildsChanged(@Nullable final Collection<String> additionalInfo, @Nullable final Collection<String> errors) {
+	public void buildsChanged(@Nullable final Collection<String> additionalInfo, @Nullable final Collection<Pair<String, Throwable>> errors) {
 		for (BuildListModelListener listener : listeners) {
 			listener.buildsChanged(additionalInfo, errors);
 		}
