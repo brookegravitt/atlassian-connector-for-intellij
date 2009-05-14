@@ -83,7 +83,7 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 
         final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(true, 123, gcb, cfgManager);
         assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
-                + "&bambooServers=2&crucibleServers=1&jiraServers=0&b=1&r=3&a=1&i=2",
+                + "&bambooServers=2&crucibleServers=1&jiraServers=0&a=1&b=1&i=2&r=3",
                 generator2.getStatisticsUrlSuffix());
 
     }

@@ -21,6 +21,10 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 
+import java.util.Set;
+import java.util.Collections;
+import java.util.TreeSet;
+
 public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	private final boolean reportStatistics;
 	private final long uid;
@@ -50,7 +54,8 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 			sb.append("&jiraServers=").append(counts[ServerType.JIRA_SERVER.ordinal()]);
 
             if (generalConfig != null) {
-                for (String counter : generalConfig.getStatsCountersMap().keySet()) {
+                TreeSet<String> counters = new TreeSet<String>(generalConfig.getStatsCountersMap().keySet());
+                for (String counter : counters) {
                     sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
                     generalConfig.resetCounter(counter);
                 }
