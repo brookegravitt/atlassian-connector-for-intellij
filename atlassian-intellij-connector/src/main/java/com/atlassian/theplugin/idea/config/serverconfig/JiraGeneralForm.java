@@ -24,7 +24,12 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyAdapter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,17 +49,19 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 
 	private transient PluginConfiguration localPluginConfigurationCopy;
 	private static JiraGeneralForm instance;
+    private static final int MAX_VALUE = 1000;
 
-	private JiraGeneralForm(PluginConfiguration globalPluginConfiguration) {
+    private JiraGeneralForm(PluginConfiguration globalPluginConfiguration) {
 
 		this.globalPluginConfiguration = globalPluginConfiguration;
 
 		$$$setupUI$$$();
-		model = new SpinnerNumberModel(1, 1, 1000, 1);
+		model = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		issuePageSize.setModel(model);
-
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
+
+       new SpinnerKeyAdapter(issuePageSize, model, MAX_VALUE, 25);
 	}
 
 

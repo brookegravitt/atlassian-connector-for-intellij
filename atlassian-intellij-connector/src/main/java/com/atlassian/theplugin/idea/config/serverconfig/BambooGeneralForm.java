@@ -29,6 +29,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class BambooGeneralForm extends JComponent {
 	private JRadioButton allFailuresFirstSuccess;
@@ -44,12 +46,13 @@ public class BambooGeneralForm extends JComponent {
 	private final transient PluginConfiguration globalPluginConfiguration;
 
 	private static BambooGeneralForm instance;
+    private static final int MAX_VALUE = 1000;
 
-	private BambooGeneralForm(PluginConfiguration globalConfigurationBean /*BambooCfg bambooCfg*/) {
+    private BambooGeneralForm(PluginConfiguration globalConfigurationBean /*BambooCfg bambooCfg*/) {
 		this.globalPluginConfiguration = globalConfigurationBean;
 		$$$setupUI$$$();
 		setLayout(new CardLayout());
-		model = new SpinnerNumberModel(1, 1, 1000, 1);
+		model = new SpinnerNumberModel(1, 1, MAX_VALUE, 1);
 		pollTimeSpinner.setModel(model);
 		add(rootComponent, "BambooGeneralForm");
 
@@ -57,6 +60,9 @@ public class BambooGeneralForm extends JComponent {
 		never.addActionListener(popupSettingsListener);
 		firstFailureFirstSuccess.addActionListener(popupSettingsListener);
 		allFailuresFirstSuccess.addActionListener(popupSettingsListener);
+
+       new SpinnerKeyAdapter(pollTimeSpinner, model, MAX_VALUE, 1);
+        
 	}
 
 
