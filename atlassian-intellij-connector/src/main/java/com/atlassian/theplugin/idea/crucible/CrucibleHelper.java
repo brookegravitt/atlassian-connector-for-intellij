@@ -416,6 +416,11 @@ public final class CrucibleHelper {
 		if (vf != null) {
 			doc = FileDocumentManager.getInstance().getDocument(vf);
 
+            // binary file
+            if (doc == null) {
+                return null;
+            }
+
 			RangeHighlighter[] highlighters = doc.getMarkupModel(project).getAllHighlighters();
 
 			Editor editor = FileEditorManager.getInstance(project).getSelectedTextEditor();

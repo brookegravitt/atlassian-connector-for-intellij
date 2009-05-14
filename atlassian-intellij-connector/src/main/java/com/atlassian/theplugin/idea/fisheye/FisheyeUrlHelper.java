@@ -14,6 +14,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -123,7 +124,12 @@ public final class FisheyeUrlHelper {
 			fisheyeProjPath = "";
 		}
 
-		int offset = psiElement.getTextRange().getStartOffset();
+        TextRange r = psiElement.getTextRange();
+        // null is returned for binary files
+        if (r == null) {
+            return null;
+        }
+		int offset = r.getStartOffset();
 		VirtualFile virtualFile = psiElement.getContainingFile().getVirtualFile();
 
 		if (virtualFile == null) {
