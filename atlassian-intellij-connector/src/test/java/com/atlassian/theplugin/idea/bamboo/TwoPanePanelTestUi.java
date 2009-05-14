@@ -50,17 +50,12 @@ public final class TwoPanePanelTestUi {
 							if (new Random().nextBoolean()) {
 								setStatusMessage("All OK");
 							} else {
-								setStatusMessage(Arrays.asList("Very looooooooooooooooooong message",
-										"THIS IS VERY LOOOOOOOOOOOOOOOOOONG line", "The last line"),
-										Collections.<String>emptySet());
+								setStatusMessage("Very looooooooooooooooooong message");
 							}
 						} else {
-							setStatusMessage(Arrays.<String>asList("Very long message",
-									"THIS IS VERY LOOOOOOOOOOOOOOOOOONG line",
-									"Another line"), Arrays.asList("My Error", "Second line of my error",
-									"Last lineWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
+							setErrorMessage("Last lineWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
 											+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWXYZWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
-											+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWAAAAAAAAAMMMMWWWWWWZZZ!"));
+											+ "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWAAAAAAAAAMMMMWWWWWWZZZ! error");
 						}
 					}
 				});

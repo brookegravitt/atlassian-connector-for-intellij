@@ -19,7 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+import com.intellij.openapi.util.Pair;
+
 public interface BuildListModelListener {
 	void modelChanged();
-	void buildsChanged(@Nullable Collection<String> additionalInfo, @Nullable Collection<String> errors);
+	void buildsChanged(@Nullable Collection<String> additionalInfo, @Nullable Collection<Pair<String, Throwable>> errors);
 }

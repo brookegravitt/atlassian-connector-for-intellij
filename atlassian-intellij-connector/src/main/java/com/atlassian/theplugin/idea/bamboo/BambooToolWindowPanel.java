@@ -29,6 +29,7 @@ import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -99,8 +100,18 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			}
 
 			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
-					@Nullable final Collection<String> errors) {
-				setStatusMessage(additionalInfo, errors);
+					@Nullable final Collection<Pair<String, Throwable>> errors) {
+
+				// we do not support multiple messages in status bar yet (waiting for inbox to be implemented)
+				if (errors != null && !errors.isEmpty()) {
+
+					// get last error message
+					Pair<String, Throwable> error = (Pair<String, Throwable>) errors.toArray()[errors.size() - 1];
+
+					setErrorMessage(error.getFirst(), error.getSecond());
+				} else if (additionalInfo != null && !additionalInfo.isEmpty()) {
+					setStatusMessage(additionalInfo.toArray(new String[1])[additionalInfo.size() - 1]);
+				}
 				filterList.update();
 			}
 		});

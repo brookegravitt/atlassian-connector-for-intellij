@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -49,11 +50,12 @@ public class BuildListModelImpl implements BuildListModel {
 		boolean haveErrors = false;
 		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
 		Date lastPollingTime = null;
-		final Collection<String> errors = MiscUtil.buildArrayList();
+		final Collection<Pair<String, Throwable>> errors = MiscUtil.buildArrayList();
 		for (BambooBuild build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN && build.getErrorMessage() != null) {
-					errors.add(build.getPlanKey() + ": " + build.getErrorMessage());
+					errors.add(new Pair<String, Throwable>(build.getPlanKey() + ": " + build.getErrorMessage(),
+							build.getException()));
 					haveErrors = true;
 				}
 			}
