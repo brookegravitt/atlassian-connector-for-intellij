@@ -157,9 +157,9 @@ public class JIRASessionImpl implements JIRASession {
 		RemoteWorklog workLog = new RemoteWorklog();
 		workLog.setStartDate(startDate);
 		workLog.setTimeSpent(timeSpent);
-        if (comment != null) {
-		    workLog.setComment(comment);
-        }
+		if (comment != null) {
+			workLog.setComment(comment);
+		}
 		try {
 			if (updateEstimate) {
 				if (newEstimate != null) {
@@ -223,7 +223,9 @@ public class JIRASessionImpl implements JIRASession {
 		} catch (RemoteException e) {
 			PluginUtil.getLogger().warn(
 					"Soap method 'getSecurityLevel' thrown exception. "
-							+ "Probably there is no 'SecurityLevel' on JIRA (non enterprise version of JIRA).",
+							+ "Probably there is no 'SecurityLevel' on JIRA (non enterprise version of JIRA).", e);
+		} catch (ClassCastException e) {
+			PluginUtil.getLogger().warn("Soap method 'getSecurityLevel' thrown ClassCastException. Probably some JIRA error.",
 					e);
 		}
 
