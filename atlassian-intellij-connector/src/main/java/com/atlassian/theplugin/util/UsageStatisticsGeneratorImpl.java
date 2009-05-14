@@ -16,27 +16,25 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 
-import java.util.Set;
-import java.util.Collections;
 import java.util.TreeSet;
 
 public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	private final boolean reportStatistics;
 	private final long uid;
-    private GeneralConfigurationBean generalConfig;
-    private final CfgManager cfgManager;
+	private GeneralConfigurationBean generalConfig;
+	private final CfgManager cfgManager;
 
 	public UsageStatisticsGeneratorImpl(boolean reportStatistics, final long uid,
-                                        GeneralConfigurationBean generalConfig, final CfgManager cfgManager) {
+			GeneralConfigurationBean generalConfig, final CfgManager cfgManager) {
 		this.reportStatistics = reportStatistics;
 		this.uid = uid;
-        this.generalConfig = generalConfig;
-        this.cfgManager = cfgManager;
+		this.generalConfig = generalConfig;
+		this.cfgManager = cfgManager;
 	}
 
 	public String getStatisticsUrlSuffix() {
@@ -53,13 +51,13 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 			sb.append("&crucibleServers=").append(counts[ServerType.CRUCIBLE_SERVER.ordinal()]);
 			sb.append("&jiraServers=").append(counts[ServerType.JIRA_SERVER.ordinal()]);
 
-            if (generalConfig != null) {
-                TreeSet<String> counters = new TreeSet<String>(generalConfig.getStatsCountersMap().keySet());
-                for (String counter : counters) {
-                    sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
-                    generalConfig.resetCounter(counter);
-                }
-            }
+			if (generalConfig != null) {
+				TreeSet<String> counters = new TreeSet<String>(generalConfig.getStatsCountersMap().keySet());
+				for (String counter : counters) {
+					sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
+					generalConfig.resetCounter(counter);
+				}
+			}
 		}
 		return sb.toString();
 	}
