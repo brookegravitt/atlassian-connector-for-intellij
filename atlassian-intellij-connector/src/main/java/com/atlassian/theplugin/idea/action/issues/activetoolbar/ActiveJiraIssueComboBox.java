@@ -46,11 +46,11 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		String text = "No active issue";
 		String tooltip = "";
 		JIRAIssue issue = null;
+		RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
 
 		if (activeIssue != null) {
 			text = activeIssue.getIssueKey();
 
-			RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(event, RecentlyOpenIssuesCache.class);
 			if (cache != null) {
 				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
@@ -73,6 +73,9 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		}
 
 		event.getPresentation().setEnabled(ModelFreezeUpdater.getState(event));
+		
+		final int cacheSize = cache.getLoadedRecenltyOpenIssues().size();
+		event.getPresentation().setEnabled(!(cacheSize == 0 || (cacheSize == 1 && issue != null)));
 	}
 
 	@NotNull
