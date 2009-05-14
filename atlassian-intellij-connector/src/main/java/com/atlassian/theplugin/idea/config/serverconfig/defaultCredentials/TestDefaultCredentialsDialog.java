@@ -172,7 +172,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 	public void testConnection() {
 
 		if (servers == null || servers.size() == 0) {
-			Messages.showInfoMessage(project, "Not any server uses default credentials", PluginUtil.PRODUCT_NAME);
+			Messages.showInfoMessage(project, "No server uses default credentials", PluginUtil.PRODUCT_NAME);
 			return;
 		}
 
