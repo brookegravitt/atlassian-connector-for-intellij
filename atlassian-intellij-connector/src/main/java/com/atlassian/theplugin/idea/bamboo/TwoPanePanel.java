@@ -17,23 +17,13 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.jira.StatusBarPane;
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Splitter;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
-import javax.swing.text.Style;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 
 public abstract class TwoPanePanel extends JPanel {
 
@@ -41,7 +31,7 @@ public abstract class TwoPanePanel extends JPanel {
 	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
-//	private JPanel statusBarPane;
+	//	private JPanel statusBarPane;
 	private StatusBarPane statusBarPane;
 	private final Splitter splitPane = new Splitter(true, PANEL_SPLIT_RATIO);
 	private JScrollPane rightScrollPane;
@@ -53,7 +43,6 @@ public abstract class TwoPanePanel extends JPanel {
 	private String message;
 	private String infos;
 	private String errors;
-
 
 	/*private static class JDialogX extends DialogWrapper {
 
