@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
+import com.intellij.ide.BrowserUtil;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -55,14 +56,16 @@ public class StatusBarPane extends JPanel implements StatusBar {
 				if (e.getEventType().equals(javax.swing.event.HyperlinkEvent.EventType.ACTIVATED)) {
 					if (errors.size() == 1) {
 						DialogWithDetails.showExceptionDialog(StatusBarPane.this, errors.get(0).getMessage(), errors.get(0));
-					} else if (errors != null) {
+					} else if (errors != null && errors.size() > 0) {
 						List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects =
 								new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 						for (Throwable err : errors) {
 							errorObjects.add(new IdeaUiMultiTaskExecutor.ErrorObject(err.getMessage(), err));
 						}
 						DialogWithDetails.showExceptionDialog(StatusBarPane.this, errorObjects);
-					}
+					} else {
+                        BrowserUtil.launchBrowser(e.getURL().toString());
+                    }
 				}
 			}
 		});
