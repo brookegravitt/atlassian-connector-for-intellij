@@ -64,7 +64,6 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 	private final ProjectConfigurationPanel projectConfigurationPanel;
 	private final UserCfg defaultUser;
-	private final ProjectConfiguration projectConfiguration;
 	private boolean isDefaultCredentialsAsked = false;
 
 	public ServerConfigPanel(final ProjectConfigurationPanel projectConfigurationPanel,
@@ -73,7 +72,6 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			final ServerCfg selectedServer, final boolean isDefaultCredentialsAsked) {
 		this.projectConfigurationPanel = projectConfigurationPanel;
 		this.defaultUser = defaultUser;
-		this.projectConfiguration = projectConfiguration;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
@@ -91,7 +89,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		initLayout();
 
 		serverTreePanel.setData(serverCfgs);
-		serverTreePanel.setSelectedServer(selectedServer);
+        //this line duplicates selction setData does it
+		//serverTreePanel.setSelectedServer(selectedServer);
 	}
 
 
@@ -261,8 +260,9 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
                             || (defaultUser.getPassword().equals("") && defaultUser.getPassword().equals(""))
 									&& serverCfg.getUsername().length() > 0)) {
 						int answer = Messages.showYesNoDialog(projectConfigurationPanel,
-								"Do yo want to set this username and password"
-								+ " as default credentials for Atlassian IntelliJ Connector?", "Set as default",
+								"<html>Do yo want to set server <b>" + serverCfg.getName()
+                                + "</b> <i>username</i> and <i>password</i>"
+								+ " as default credentials for Atlassian IntelliJ Connector?</html>", "Set as default",
 								Messages.getQuestionIcon());
 						isDefaultCredentialsAsked = true;
 						if (answer == DialogWrapper.OK_EXIT_CODE) {
