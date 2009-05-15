@@ -474,6 +474,7 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 			<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
+            <add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>
 		</action>
 
 		<!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
