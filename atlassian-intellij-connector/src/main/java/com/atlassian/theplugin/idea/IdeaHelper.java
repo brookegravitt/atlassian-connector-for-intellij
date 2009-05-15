@@ -42,6 +42,8 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+
 /**
  * Simple helper methods for the IDEA plugin
  */
@@ -49,6 +51,20 @@ public final class IdeaHelper {
 
 	private IdeaHelper() {
 	}
+
+    public static int getSpinnerValue(final JSpinner spinner) {
+        if (spinner == null || spinner.getModel() == null) {
+            return 1;
+        }
+        
+        int value = Integer.valueOf(spinner.getModel().getValue().toString());
+        try {
+            value = Integer.valueOf(((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText());
+        } catch (NumberFormatException e) {
+          ///not important
+        }
+        return value;
+    }
 
 	@Nullable
 	public static Project getCurrentProject(DataContext dataContext) {

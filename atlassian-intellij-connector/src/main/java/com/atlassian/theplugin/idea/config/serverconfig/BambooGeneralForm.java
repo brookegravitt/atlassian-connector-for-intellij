@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -29,8 +30,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class BambooGeneralForm extends JComponent {
 	private JRadioButton allFailuresFirstSuccess;
@@ -46,7 +45,7 @@ public class BambooGeneralForm extends JComponent {
 	private final transient PluginConfiguration globalPluginConfiguration;
 
 	private static BambooGeneralForm instance;
-    private static final int MAX_VALUE = 1000;
+    private static final int MAX_VALUE = 998;
 
     private BambooGeneralForm(PluginConfiguration globalConfigurationBean /*BambooCfg bambooCfg*/) {
 		this.globalPluginConfiguration = globalConfigurationBean;
@@ -60,9 +59,6 @@ public class BambooGeneralForm extends JComponent {
 		never.addActionListener(popupSettingsListener);
 		firstFailureFirstSuccess.addActionListener(popupSettingsListener);
 		allFailuresFirstSuccess.addActionListener(popupSettingsListener);
-
-       new SpinnerKeyAdapter(pollTimeSpinner, model, MAX_VALUE, 1);
-        
 	}
 
 
@@ -138,7 +134,8 @@ public class BambooGeneralForm extends JComponent {
 			return true;
 		}
 
-		return (Integer) model.getValue() != localBambooConfigurationCopy.getPollTime();
+
+		return IdeaHelper.getSpinnerValue(pollTimeSpinner) != localBambooConfigurationCopy.getPollTime();
 
 	}
 
