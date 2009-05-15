@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
+import com.atlassian.theplugin.util.UsageStatisticsGenerator;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
@@ -179,7 +180,9 @@ public class GeneralConfigForm {
 		usageStatsHelp.setEditable(false);
 		usageStatsHelp.setOpaque(false);
 		usageStatsHelp.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-		usageStatsHelp.setText("<html>(&nbsp;<a href=\"http://confluence.atlassian.com/fixme\">Details</a>&nbsp;)");
+		usageStatsHelp.setText("<html>(&nbsp;<a href=\""
+                        + UsageStatisticsGenerator.USAGE_STATS_HREF 
+                        + "\">Details</a>&nbsp;)");
 		usageStatsHelp.addHyperlinkListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
 				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
