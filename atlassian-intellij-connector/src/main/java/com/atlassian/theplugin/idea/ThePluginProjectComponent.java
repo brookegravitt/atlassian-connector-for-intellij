@@ -45,6 +45,7 @@ import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.util.UsageStatisticsGenerator;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -349,7 +350,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
                             "We would greatly appreciate if you allow us to collect anonymous"
                             + "<br>usage statistics to help us provide a better quality product. Details"
                             + "<br>of what will be tracked are described "
-                            + "<a href=\"http://confluence.atlassian.com/fixme\">here</a>. Is this ok?";
+                            + "<a href=\""
+                            + UsageStatisticsGenerator.USAGE_STATS_HREF
+                            + "\">here</a>. Is this ok?";
 
         protected UsageStatsDialog() {
             super((Project) null, false);
