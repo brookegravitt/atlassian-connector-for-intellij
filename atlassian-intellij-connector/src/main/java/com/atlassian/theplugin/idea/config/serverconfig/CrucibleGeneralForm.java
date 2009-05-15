@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
@@ -26,8 +27,6 @@ import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 /**
  * Created by IntelliJ IDEA.
@@ -67,9 +66,6 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
-
-        new SpinnerKeyAdapter(pollTimeSpinner, pollTimeModel, MAX_VALUE, 1);
-        new SpinnerKeyAdapter(reviewCreationTimeoutSpinner, reviewCreationTimeoutModel, MAX_VALUE, 1);       
 	}
 
 	public static CrucibleGeneralForm getInstance(PluginConfiguration globalPluginConfiguration) {
@@ -93,10 +89,11 @@ public class CrucibleGeneralForm extends JComponent implements ContentPanel {
 		} else if (getCrucibleTooltipOption() != CrucibleTooltipOption.UNREAD_REVIEWS) {
 			return true;
 		}
-		if (crucibleConfiguration.getReviewCreationTimeout() != ((Integer) reviewCreationTimeoutModel.getValue())) {
+		if (crucibleConfiguration.getReviewCreationTimeout()
+                != IdeaHelper.getSpinnerValue(reviewCreationTimeoutSpinner)) {
 			return true;
 		}
-		return (Integer) pollTimeModel.getValue() != crucibleConfiguration.getPollTime();
+		return IdeaHelper.getSpinnerValue(pollTimeSpinner) != crucibleConfiguration.getPollTime();
 	}
 
 	public String getTitle() {

@@ -18,18 +18,14 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.configuration.JiraConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ContentPanel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
 import java.awt.*;
-import java.awt.event.KeyListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,8 +56,6 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 		issuePageSize.setModel(model);
 		this.setLayout(new BorderLayout());
 		add(rootComponent, BorderLayout.WEST);
-
-       new SpinnerKeyAdapter(issuePageSize, model, MAX_VALUE, 25);
 	}
 
 
@@ -73,7 +67,7 @@ public class JiraGeneralForm extends JComponent implements ContentPanel {
 	}
 
 	public boolean isModified() {
-		return (Integer) model.getValue() != jiraConfiguration.getPageSize();
+		return IdeaHelper.getSpinnerValue(issuePageSize) != jiraConfiguration.getPageSize();
 	}
 
 	public String getTitle() {
