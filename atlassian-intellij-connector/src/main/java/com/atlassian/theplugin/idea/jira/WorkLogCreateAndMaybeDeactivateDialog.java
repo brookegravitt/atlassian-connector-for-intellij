@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -189,6 +188,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         p.add(filler, gbc);
+
+        actionCombo.setEnabled(cbPerformWorkflowAction.isSelected());
         
         return p;
     }
@@ -258,6 +259,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
         changesetPanel.add(btnChangeSetDeactivate, cc.xy(2, 9));
         changesetPanel.add(btnChangeSetRemove, cc.xy(2, 10));
 
+        UIUtil.setEnabled(changesetPanel, chkCommitChanges.isSelected(), true);
+
 		return changesetPanel;
 	}
 
@@ -323,6 +326,8 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			timePanel.add(new JLabel("End Time:"), cc.xy(2, 8));
 			timePanel.add(endTimePanel, cc.xy(4, 8));
 		}
+
+        UIUtil.setEnabled(timePanel, chkLogWork.isSelected(), true);
 
 		return timePanel;
 	}
