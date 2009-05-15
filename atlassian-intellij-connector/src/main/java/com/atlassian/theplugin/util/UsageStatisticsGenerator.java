@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.util;
 
 public interface UsageStatisticsGenerator {
-    static String USAGE_STATS_HREF
+    String USAGE_STATS_HREF
             = "http://confluence.atlassian.com/display/IDEPLUGIN/Collecting+Usage+Statistics+for+the+IntelliJ+Connector";
 	String getStatisticsUrlSuffix();
 }
