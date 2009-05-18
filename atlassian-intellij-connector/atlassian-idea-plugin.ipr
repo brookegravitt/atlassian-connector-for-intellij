@@ -26,6 +26,9 @@
       <entry name="!?*.java" />
     </wildcardResourcePatterns>
   </component>
+  <component name="CopyrightManager" default="">
+    <module2copyright />
+  </component>
   <component name="DependenciesAnalyzeManager">
     <option name="myForwardDirection" value="false" />
   </component>
@@ -234,13 +237,17 @@
     <option name="projectName" value="atlassian-idea-plugin" />
   </component>
   <component name="ProjectFileVersion" converted="true" />
+  <component name="ProjectKey">
+    <option name="state" value="project:///Users/pniewiadomski/Development/atlassian-intellij-connector/atlassian-idea-plugin.ipr" />
+  </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file:///development/Connector/commons/atlassian-connector-commons.iml" filepath="/development/Connector/commons/atlassian-connector-commons.iml" />
+      <module fileurl="file:///Users/pniewiadomski/Development/workspace/com.atlassian.connector.buildtools/atlassian-connector-build-tools.iml" filepath="/Users/pniewiadomski/Development/workspace/com.atlassian.connector.buildtools/atlassian-connector-build-tools.iml" />
+      <module fileurl="file:///Users/pniewiadomski/Development/workspace/com.atlassian.connector.commons/atlassian-connector-commons.iml" filepath="/Users/pniewiadomski/Development/workspace/com.atlassian.connector.commons/atlassian-connector-commons.iml" />
       <module fileurl="file://$PROJECT_DIR$/atlassian-idea-plugin.iml" filepath="$PROJECT_DIR$/atlassian-idea-plugin.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="true" jdk-15="true" project-jdk-name="IDEA 7941" project-jdk-type="IDEA JDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_5" assert-keyword="true" jdk-15="true" project-jdk-name="IDEA 9833" project-jdk-type="IDEA JDK" />
   <component name="ResourceManagerContainer">
     <option name="myResourceBundles">
       <value>
@@ -274,11 +281,15 @@
         </entry>
       </map>
     </option>
-    <option name="myVersion" value="123" />
+    <option name="myVersion" value="124" />
+    <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
+  <UsedPathMacros>
+    <macro name="MAVEN_REPOSITORY" description="Maven Local Repostiry" />
+  </UsedPathMacros>
 </project>
 

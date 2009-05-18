@@ -18,7 +18,6 @@ package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
@@ -231,7 +230,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		};
 	}
 
-	private List<ReviewAdapter> prepareReviewData(State state) throws ValueNotYetInitialized {
+	private List<ReviewAdapter> prepareReviewData(State state) {
 //		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 
 		PermIdBean reviewId1 = new PermIdBean("CR-1");

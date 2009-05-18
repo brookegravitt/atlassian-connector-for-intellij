@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -508,22 +507,18 @@ class DetailsPanel extends JPanel {
 		reviewers.setLayout(layout);
 
 		Icon reviewCompletedIcon = IconLoader.getIcon("/icons/icn_complete.gif");
-		try {
-			for (Reviewer reviewer : ra.getReviewers()) {
-				JLabel label = new JLabel(reviewer.getDisplayName(),
-						reviewer.isCompleted() ? reviewCompletedIcon : null,
-						SwingConstants.LEFT);
-				label.setOpaque(true);
-				label.setBackground(Color.WHITE);
-				label.setHorizontalTextPosition(SwingUtilities.LEFT);
-				label.setHorizontalAlignment(SwingUtilities.LEFT);
-				reviewers.add(label);
-			}
-
-			body.add(reviewers, gbc2);
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			//do not care
+		for (Reviewer reviewer : ra.getReviewers()) {
+			JLabel label = new JLabel(reviewer.getDisplayName(),
+					reviewer.isCompleted() ? reviewCompletedIcon : null,
+					SwingConstants.LEFT);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			label.setHorizontalTextPosition(SwingUtilities.LEFT);
+			label.setHorizontalAlignment(SwingUtilities.LEFT);
+			reviewers.add(label);
 		}
+
+		body.add(reviewers, gbc2);
 
 		gbc1.gridy++;
 		gbc1.weighty = 1.0;

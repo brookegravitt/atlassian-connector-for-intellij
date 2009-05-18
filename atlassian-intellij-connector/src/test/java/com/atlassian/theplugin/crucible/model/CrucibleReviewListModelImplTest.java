@@ -3,7 +3,6 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -488,7 +487,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	}
 
 	private ReviewAdapter createReviewAdapterWithComments(int id, ServerData server)
-			throws RemoteApiException, ValueNotYetInitialized, ServerPasswordNotProvidedException {
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		ReviewBean rb = new ReviewBean("test_" + id);
 		PermId pId = new PermIdBean("permId_" + id);
 		rb.setPermId(pId);
@@ -543,7 +542,6 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		}
 
 		public void addReview(ReviewAdapter review) {
-
 			super.addReview(PredefinedFilter.Open, review, UpdateReason.REFRESH);
 		}
 

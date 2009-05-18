@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.ui.tree.comment;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -52,13 +51,7 @@ public class GeneralSectionNode extends AtlassianTreeNode {
 	}
 
 	void initRenderer() {
-			int noOfGeneralComments = 0;
-		try {
-			noOfGeneralComments = review.getGeneralComments().size();
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
-			PluginUtil.getLogger().error("No General Comments");
-		}		
-		this.myRenderer = new MyRenderer(noOfGeneralComments);
+		this.myRenderer = new MyRenderer(review.getGeneralComments().size());
 	}
 
 	public GeneralSectionNode(GeneralSectionNode node) {

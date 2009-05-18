@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.crucible.comment.gutter;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -26,8 +25,6 @@ public class RemoveAction extends AbstractGutterCommentAction {
 						IdeaHelper.handleRemoteApiException(project, e);
 					} catch (ServerPasswordNotProvidedException e) {
 						IdeaHelper.handleMissingPassword(e);
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						Messages.showErrorDialog(project, valueNotYetInitialized.getMessage(), "Error");
 					}
 				}
 			};

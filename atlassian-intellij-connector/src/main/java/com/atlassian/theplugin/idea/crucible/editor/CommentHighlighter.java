@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible.editor;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -154,56 +153,48 @@ public final class CommentHighlighter {
 					final CrucibleFileInfo file = virtualFile.getUserData(REVIEWITEM_DATA_KEY);
 					if (data != null && file != null) {
 						if (data.getPermId().equals(review.getPermId())) {
-							try {
-								for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
-									if (crucibleFileInfo.equals(file)) {
-										applyHighlighters(project, editor, review, crucibleFileInfo);
-										virtualFile.putUserData(REVIEW_DATA_KEY, review);
-										virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
-										virtualFile.putUserData(COMMENT_DATA_KEY, true);
-									}
+							for (CrucibleFileInfo crucibleFileInfo : data.getFiles()) {
+								if (crucibleFileInfo.equals(file)) {
+									applyHighlighters(project, editor, review, crucibleFileInfo);
+									virtualFile.putUserData(REVIEW_DATA_KEY, review);
+									virtualFile.putUserData(REVIEWITEM_DATA_KEY, crucibleFileInfo);
+									virtualFile.putUserData(COMMENT_DATA_KEY, true);
 								}
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								throw new RuntimeException(valueNotYetInitialized);
 							}
 						} else {
 							removeHighlightersAndContextData(editor.getDocument().getMarkupModel(project), virtualFile);
 						}
 					}
 				} else {
-					try {
-						Set<CrucibleFileInfo> files = review.getFiles();
-						if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
-							final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-									virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
-							if (fileInfo != null) {
-								CrucibleHelper.openFileWithDiffs(project
-										, false
-										, review
-										, fileInfo
-										, 1
-										, 1
-										,
-										new UpdateEditorWithContextActionImpl(project, editor, review,
-												fileInfo));
-							}
-						} else {
-							CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
-									virtualFile.getPath(), files);
-							if (fileInfo != null) {
-								CrucibleHelper.openFileWithDiffs(project
-										, false
-										, review
-										, fileInfo
-										, 1
-										, 1
-										,
-										new UpdateEditorCurrentContentActionImpl(project, editor, review,
-												fileInfo));
-							}
+					Set<CrucibleFileInfo> files = review.getFiles();
+					if (virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY) != null) {
+						final CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+								virtualFile.getUserData(CommentHighlighter.CRUCIBLE_REVIEW_CONTEXT_KEY), files);
+						if (fileInfo != null) {
+							CrucibleHelper.openFileWithDiffs(project
+									, false
+									, review
+									, fileInfo
+									, 1
+									, 1
+									,
+									new UpdateEditorWithContextActionImpl(project, editor, review,
+											fileInfo));
 						}
-					} catch (ValueNotYetInitialized valueNotYetInitialized) {
-						// don't do anything - should not happen, but even if happens - we don't want to break file opening
+					} else {
+						CrucibleFileInfo fileInfo = CodeNavigationUtil.getBestMatchingCrucibleFileInfo(
+								virtualFile.getPath(), files);
+						if (fileInfo != null) {
+							CrucibleHelper.openFileWithDiffs(project
+									, false
+									, review
+									, fileInfo
+									, 1
+									, 1
+									,
+									new UpdateEditorCurrentContentActionImpl(project, editor, review,
+											fileInfo));
+						}
 					}
 				}
 			}

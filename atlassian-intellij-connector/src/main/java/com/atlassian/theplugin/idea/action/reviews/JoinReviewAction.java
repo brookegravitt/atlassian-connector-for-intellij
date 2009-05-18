@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.idea.Constants;
@@ -35,29 +34,24 @@ public class JoinReviewAction extends AnAction {
 			event.getPresentation().setEnabled(false);
 		} else {
 			if (review.isAllowReviewerToJoin()) {
-				try {
-					String userName = review.getServerData().getUserName();
-					if (review.getAuthor().getUserName().equals(userName)) {
-						event.getPresentation().setVisible(false);
-						event.getPresentation().setEnabled(false);
-						return;
-					}
-					if (review.getModerator().getUserName().equals(userName)) {
-						event.getPresentation().setVisible(false);
-						event.getPresentation().setEnabled(false);
-						return;
-					}
-
-					for (Reviewer reviewer : review.getReviewers()) {
-						if (userName.equals(reviewer.getUserName())) {
-							event.getPresentation().setVisible(false);
-							event.getPresentation().setEnabled(false);
-							return;
-						}
-					}
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
+				String userName = review.getServerData().getUserName();
+				if (review.getAuthor().getUserName().equals(userName)) {
 					event.getPresentation().setVisible(false);
 					event.getPresentation().setEnabled(false);
+					return;
+				}
+				if (review.getModerator().getUserName().equals(userName)) {
+					event.getPresentation().setVisible(false);
+					event.getPresentation().setEnabled(false);
+					return;
+				}
+
+				for (Reviewer reviewer : review.getReviewers()) {
+					if (userName.equals(reviewer.getUserName())) {
+						event.getPresentation().setVisible(false);
+						event.getPresentation().setEnabled(false);
+						return;
+					}
 				}
 			} else {
 				event.getPresentation().setVisible(false);

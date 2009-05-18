@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
@@ -123,11 +122,7 @@ public class CrucibleGutterIconRenderer extends GutterIconRenderer {
 		if (review == null) {
 			return false;
 		}
-		try {
-			if (!review.getActions().contains(CrucibleAction.COMMENT)) {
-				return false;
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+		if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 			return false;
 		}
 		return true;

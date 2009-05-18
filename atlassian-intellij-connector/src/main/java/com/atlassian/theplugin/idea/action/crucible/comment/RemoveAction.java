@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -115,8 +114,6 @@ public class RemoveAction extends AbstractCommentAction {
 					IdeaHelper.handleRemoteApiException(project, e);
 				} catch (ServerPasswordNotProvidedException e) {
 					IdeaHelper.handleMissingPassword(e);
-				} catch (ValueNotYetInitialized valueNotYetInitialized) {
-					Messages.showErrorDialog(project, valueNotYetInitialized.getMessage(), "Error");
 				}
 			}
 		};

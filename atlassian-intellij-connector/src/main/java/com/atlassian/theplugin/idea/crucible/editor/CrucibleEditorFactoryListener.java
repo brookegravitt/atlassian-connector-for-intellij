@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -39,13 +38,8 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 					Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
 					if (!reviews.isEmpty()) {
 						for (ReviewAdapter review : reviews) {
-							try {
-								crucibleFile = CodeNavigationUtil
-										.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
-							} catch (ValueNotYetInitialized valueNotYetInitialized) {
-								// don't do anything - should not happen
-								// but even if happens - we don't want to break file opening
-							}
+							crucibleFile = CodeNavigationUtil
+									.getBestMatchingCrucibleFileInfo(virtualFile.getPath(), review.getFiles());
 
 							if (crucibleFile != null) {
 								showVirtualFileWithComments(project, editorFactoryEvent.getEditor(), virtualFile,

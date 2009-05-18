@@ -233,7 +233,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		pluginProjectComponent.getCfgManager().addProjectConfigurationListener(
 				CfgUtil.getProjectId(project), configurationListener);
 //				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
-	}
+	}                                                     	
 
 	public void stopListeningForCredentialChanges() {
 		pluginProjectComponent.getCfgManager().removeProjectConfigurationListener(

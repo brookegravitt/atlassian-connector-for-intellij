@@ -19,7 +19,6 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -835,30 +834,24 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 							}
 
 							if (!leaveAsDraftCheckBox.isSelected()) {
-								try {
-									Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
-									if (newReview.getModerator().getUserName().equals(server.getUserName())) {
-										if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
-											crucibleServerFacade.approveReview(server, draftReview.getPermId());
-										} else {
-											Messages.showErrorDialog(project,
-													newReview.getAuthor().getDisplayName() +
-															" is authorized to approve review.\n"
-															+ "Leaving review in draft state.", "Permission denied");
-										}
+								Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
+								if (newReview.getModerator().getUserName().equals(server.getUserName())) {
+									if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
+										crucibleServerFacade.approveReview(server, draftReview.getPermId());
 									} else {
-										if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
-											crucibleServerFacade.submitReview(server, draftReview.getPermId());
-										} else {
-											Messages.showErrorDialog(project,
-													newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
-															+ "Leaving review in draft state.", "Permission denied");
-										}
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() +
+														" is authorized to approve review.\n"
+														+ "Leaving review in draft state.", "Permission denied");
 									}
-								} catch (ValueNotYetInitialized valueNotYetInitialized) {
-									Messages.showErrorDialog(project,
-											"Unable to change review state. Leaving review in draft state.",
-											"Permission denied");
+								} else {
+									if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
+										crucibleServerFacade.submitReview(server, draftReview.getPermId());
+									} else {
+										Messages.showErrorDialog(project,
+												newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
+														+ "Leaving review in draft state.", "Permission denied");
+									}
 								}
 							}
 

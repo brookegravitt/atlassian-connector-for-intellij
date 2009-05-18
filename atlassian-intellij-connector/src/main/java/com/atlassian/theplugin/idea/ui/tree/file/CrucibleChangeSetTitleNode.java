@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -74,12 +73,11 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 					Color.GRAY));
 			append(" ", SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
 			append(node.getReview().getName(), SimpleTextAttributes.REGULAR_BOLD_ATTRIBUTES);
-			try {
-				int noOfDefects = node.getReview().getNumberOfVersionedCommentsDefects()
-						+ node.getReview().getNumberOfGeneralCommentsDefects();
+			int noOfDefects = node.getReview().getNumberOfVersionedCommentsDefects()
+					+ node.getReview().getNumberOfGeneralCommentsDefects();
 
-				int noOfComments = node.getReview().getNumberOfGeneralComments() 
-						+ node.getReview().getNumberOfVersionedComments();
+			int noOfComments = node.getReview().getNumberOfGeneralComments()
+					+ node.getReview().getNumberOfVersionedComments();
 
 //				for (GeneralComment comment : generalComments) {
 //					noOfComments += comment.getReplies().size();
@@ -92,23 +90,20 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 //						++noOfDefects;
 //					}
 //				}
-				append(" ",	TEXT_ITALIC);
-				append(String.valueOf(noOfComments), TEXT_ITALIC);
-				append(" comment", TEXT_ITALIC);
-				if (noOfComments != 1) {
-					append("s", TEXT_ITALIC);
+			append(" ",	TEXT_ITALIC);
+			append(String.valueOf(noOfComments), TEXT_ITALIC);
+			append(" comment", TEXT_ITALIC);
+			if (noOfComments != 1) {
+				append("s", TEXT_ITALIC);
+			}
+			if (noOfDefects > 0) {
+				append(" (", TEXT_ITALIC);
+				append(String.valueOf(noOfDefects),	RED_ITALIC);
+				append(" defect", RED_ITALIC);
+				if (noOfDefects != 1) {
+					append("s", RED_ITALIC);
 				}
-				if (noOfDefects > 0) {
-					append(" (", TEXT_ITALIC);
-					append(String.valueOf(noOfDefects),	RED_ITALIC);
-					append(" defect", RED_ITALIC);
-					if (noOfDefects != 1) {
-						append("s", RED_ITALIC);
-					}
-					append(")", TEXT_ITALIC);
-				}
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				// ignore
+				append(")", TEXT_ITALIC);
 			}
 			setIcon(expanded ? Icons.DIRECTORY_OPEN_ICON : Icons.DIRECTORY_CLOSED_ICON);
 		}

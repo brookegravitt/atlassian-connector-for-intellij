@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleChangeStateWorker;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -33,14 +32,9 @@ public abstract class AbstractReviewAction extends AnAction {
 		if (review == null) {
 			event.getPresentation().setEnabled(false);
 		} else {
-			try {
-				final boolean isThere = review.getActions().contains(getRequestedAction());
-				event.getPresentation().setEnabled(isThere);
-				event.getPresentation().setVisible(isThere);
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				LoggerImpl.getInstance().error(valueNotYetInitialized);
-			}
+			final boolean isThere = review.getActions().contains(getRequestedAction());
+			event.getPresentation().setEnabled(isThere);
+			event.getPresentation().setVisible(isThere);
 		}
-
 	}
 }

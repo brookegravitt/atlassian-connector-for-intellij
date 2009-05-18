@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
@@ -72,11 +71,7 @@ public class AddAction extends AbstractCommentAction {
 		if (review == null) {
 			return false;
 		}
-		try {
-			if (!review.getActions().contains(CrucibleAction.COMMENT)) {
-				return false;
-			}
-		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+		if (!review.getActions().contains(CrucibleAction.COMMENT)) {
 			return false;
 		}
 		return true;
