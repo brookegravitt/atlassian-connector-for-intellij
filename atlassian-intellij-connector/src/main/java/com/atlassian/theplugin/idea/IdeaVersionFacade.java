@@ -2,8 +2,7 @@ package com.atlassian.theplugin.idea;
 
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
 import com.intellij.openapi.editor.Editor;
@@ -152,6 +151,16 @@ public final class IdeaVersionFacade {
 		}
 		return null;
 	}
+
+    public void addActionToDiffGroup(@NotNull AnAction action) {
+        if (isIdea8) {
+            DefaultActionGroup diffToolbar =
+                    (DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
+            if (diffToolbar != null) {
+                diffToolbar.add(action);
+            }
+        }
+    }
 
 	public void showEditorHints(LightweightHint lightweightHint, Editor anEditor, Point point) {
 		try {

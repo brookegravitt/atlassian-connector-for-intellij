@@ -35,6 +35,8 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -94,9 +96,18 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();
 
 		startHttpServer();
+
+        addActionToDiffToolbar();
 	}
 
-	@Nls
+    private void addActionToDiffToolbar() {
+        AnAction addCommentAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Add.Comment.In.Editor");
+        if (addCommentAction != null) {
+            IdeaVersionFacade.getInstance().addActionToDiffGroup(addCommentAction);
+        }
+    }
+
+    @Nls
 	public String getDisplayName() {
 		return "Atlassian\nConnector";
 	}

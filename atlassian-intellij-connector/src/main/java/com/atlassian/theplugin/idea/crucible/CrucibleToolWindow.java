@@ -24,10 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleN
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.MultiTabToolWindow;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.*;
 import com.atlassian.theplugin.idea.crucible.editor.ChangeViewer;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
