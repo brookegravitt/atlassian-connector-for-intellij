@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.ui.tree.file;
 import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -83,17 +82,13 @@ public final class FileTreeModelBuilder {
 		model.insertNode(new CrucibleGeneralCommentsNode(review, null), model.getRoot());
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
-		try {
-			for (final CrucibleFileInfo file : review.getFiles()) {
-				//according to filter show only "proper files"
-				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-						new CrucibleFileClickAction(project, review, file));
+		for (final CrucibleFileInfo file : review.getFiles()) {
+			//according to filter show only "proper files"
+			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
+					new CrucibleFileClickAction(project, review, file));
 
-				fillFileComments(childNode, model, review, file, project);
-				model.insertNode(childNode, filesNode);
-			}
-		} catch (ValueNotYetInitialized e) {
-			IdeaHelper.handleError(project, e);
+			fillFileComments(childNode, model, review, file, project);
+			model.insertNode(childNode, filesNode);
 		}
 		return model;
 	}
@@ -112,33 +107,29 @@ public final class FileTreeModelBuilder {
 		FileNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
 
-		try {
-			for (final CrucibleFileInfo file : review.getFiles()) {
-				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-						new CrucibleFileClickAction(project, review, file));
+		for (final CrucibleFileInfo file : review.getFiles()) {
+			CrucibleFileNode childNode = new CrucibleFileNode(review, file,
+					new CrucibleFileClickAction(project, review, file));
 
-				FileNode node = model.createPlace(filesNode, file);
+			FileNode node = model.createPlace(filesNode, file);
 
-				// find duplicates
-				for (String key : node.getChildren().keySet()) {
-					if (key.equals(childNode.getName())) {
-						FileNode fileNode = node.getChildren().get(key);
-						if (!(fileNode instanceof CrucibleFileNode) && childNode instanceof CrucibleFileNode) {
-							for (String s : fileNode.getChildren().keySet()) {
-								childNode.addChild(fileNode.getChildren().get(s));
-							}
-							fileNode.removeChildren();
-							node.removeChild(fileNode);
-							break;
+			// find duplicates
+			for (String key : node.getChildren().keySet()) {
+				if (key.equals(childNode.getName())) {
+					FileNode fileNode = node.getChildren().get(key);
+					if (!(fileNode instanceof CrucibleFileNode) && childNode instanceof CrucibleFileNode) {
+						for (String s : fileNode.getChildren().keySet()) {
+							childNode.addChild(fileNode.getChildren().get(s));
 						}
+						fileNode.removeChildren();
+						node.removeChild(fileNode);
+						break;
 					}
 				}
-
-				fillFileComments(childNode, model, review, file, project);
-				node.addChild(childNode);
 			}
-		} catch (ValueNotYetInitialized e) {
-			IdeaHelper.handleError(project, e);
+
+			fillFileComments(childNode, model, review, file, project);
+			node.addChild(childNode);
 		}
 		model.compactModel(filesNode);
 		return model;

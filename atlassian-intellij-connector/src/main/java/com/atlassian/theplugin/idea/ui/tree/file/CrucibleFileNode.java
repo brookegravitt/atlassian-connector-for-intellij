@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
@@ -71,15 +70,11 @@ public class CrucibleFileNode extends FileNode {
 
 	public void setReview(ReviewAdapter review) {
 		this.review = review;
-		try {
-			for (CrucibleFileInfo info : review.getFiles()) {
-				if (info.getPermId().equals(file.getPermId())) {
-					file.setVersionedComments(info.getVersionedComments());
-					break;
-				}
+		for (CrucibleFileInfo info : review.getFiles()) {
+			if (info.getPermId().equals(file.getPermId())) {
+				file.setVersionedComments(info.getVersionedComments());
+				break;
 			}
-		} catch (ValueNotYetInitialized e) {
-			PluginUtil.getLogger().warn(e);
 		}
 	}
 

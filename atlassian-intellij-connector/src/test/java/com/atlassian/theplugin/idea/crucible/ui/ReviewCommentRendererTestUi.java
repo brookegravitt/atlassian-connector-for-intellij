@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea.crucible.ui;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
@@ -34,7 +33,7 @@ public final class ReviewCommentRendererTestUi {
 	private ReviewCommentRendererTestUi() {
 	}
 
-	public static void main(String[] args) throws ValueNotYetInitialized {
+	public static void main(String[] args) {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
 		ServerData cruc = new ServerData("my crucible server", new ServerId().toString(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");

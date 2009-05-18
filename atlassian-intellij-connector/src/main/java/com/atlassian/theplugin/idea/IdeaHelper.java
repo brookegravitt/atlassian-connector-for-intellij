@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
@@ -191,16 +190,6 @@ public final class IdeaHelper {
 				DialogWithDetails.showExceptionDialog(project, "The following error has occurred while using remote service:\n"
 						+ e.getMessage(), DialogWithDetails.getExceptionString(e)
 						+ (e.getServerStackTrace() != null ? e.getServerStackTrace() : ""));
-			}
-		});
-	}
-
-	public static void handleError(final Project project, final ValueNotYetInitialized valueNotYetInitialized) {
-		ApplicationManager.getApplication().invokeLater(new Runnable() {
-			public void run() {
-				PluginUtil.getLogger().warn(valueNotYetInitialized);
-				Messages.showErrorDialog(project, "The following error has occurred:\n"
-						+ valueNotYetInitialized.getMessage(), "Error");
 			}
 		});
 	}

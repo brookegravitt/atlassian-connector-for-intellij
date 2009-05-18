@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
@@ -399,20 +398,15 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			body.add(new BoldLabel("Reviewers"), gbc1);
 
-			try {
-				for (Reviewer reviewer : review.getReviewers()) {
-					if (reviewer.isCompleted()) {
-						body.add(new JLabel(reviewer.getDisplayName(), ICON_COMPLETED, SwingConstants.LEFT), gbc2);
-					} else {
-						body.add(new JLabel(reviewer.getDisplayName(), SwingConstants.LEFT), gbc2);
-					}
-					gbc1.gridy++;
-					gbc2.gridy++;
+			for (Reviewer reviewer : review.getReviewers()) {
+				if (reviewer.isCompleted()) {
+					body.add(new JLabel(reviewer.getDisplayName(), ICON_COMPLETED, SwingConstants.LEFT), gbc2);
+				} else {
+					body.add(new JLabel(reviewer.getDisplayName(), SwingConstants.LEFT), gbc2);
 				}
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				LoggerImpl.getInstance().error(valueNotYetInitialized);
+				gbc1.gridy++;
+				gbc2.gridy++;
 			}
-
 
 			gbc1.gridy++;
 			gbc1.weighty = 1.0;
@@ -458,52 +452,19 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 			String userName = review.getServerData().getUserName();
 
-			String totalComments;
-			try {
-				totalComments = review.getNumberOfGeneralComments() + review.getNumberOfVersionedComments() + "";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				totalComments = "Value not initialized yet";
-			}
+			String totalComments = review.getNumberOfGeneralComments() + review.getNumberOfVersionedComments() + "";
 
+			String myAllComments = review.getNumberOfGeneralComments(userName) + review.getNumberOfVersionedComments(userName) + "";
 
-			String myAllComments;
-			try {
-				myAllComments = review.getNumberOfGeneralComments(userName) + review.getNumberOfVersionedComments(userName) +
-						"";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				myAllComments = "Value not initialized yet";
-			}
-
-
-			String myDrafts;
-			try {
-				myDrafts = review.getNumberOfGeneralCommentsDrafts(userName)
+			String myDrafts = review.getNumberOfGeneralCommentsDrafts(userName)
 						+ review.getNumberOfVersionedCommentsDrafts(userName) + "";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				myDrafts = "Value not initialized yet";
-			}
 
-			String myDefects;
-			try {
-				myDefects = review.getNumberOfGeneralCommentsDefects(userName)
+			String myDefects = review.getNumberOfGeneralCommentsDefects(userName)
 						+ review.getNumberOfVersionedCommentsDefects(userName) + "";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				myDefects = "Value not initialized yet";
-			}
 
-			String allDefects;
-			try {
-				allDefects = review.getNumberOfGeneralCommentsDefects() + review.getNumberOfVersionedCommentsDefects() + "";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				allDefects = "Value not initialized yet";
-			}
+			String allDefects = review.getNumberOfGeneralCommentsDefects() + review.getNumberOfVersionedCommentsDefects() + "";
 
-			String allDrafts;
-			try {
-				allDrafts = review.getNumberOfVersionedCommentsDrafts() + review.getNumberOfGeneralCommentsDrafts() + "";
-			} catch (ValueNotYetInitialized valueNotYetInitialized) {
-				allDrafts = "Value not initialized yet";
-			}
+			String allDrafts = review.getNumberOfVersionedCommentsDrafts() + review.getNumberOfGeneralCommentsDrafts() + "";
 
 			body.add(new BoldLabel("My Draft Comments"), gbc1);
 			body.add(new JLabel(myDrafts, SwingConstants.LEFT), gbc2);

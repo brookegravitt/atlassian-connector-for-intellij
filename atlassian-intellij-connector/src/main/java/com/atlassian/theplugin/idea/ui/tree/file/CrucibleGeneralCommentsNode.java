@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.ui.tree.file;
 
-import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
@@ -19,20 +18,16 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 				addNode(n);
 			}
 		} else {
-			try {
-				List<GeneralComment> comments = review.getGeneralComments();
-				for (GeneralComment c : comments) {
-					if (!c.isDeleted()) {
-						GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, c, null);
-						addNode(commentNode);
+			List<GeneralComment> comments = review.getGeneralComments();
+			for (GeneralComment c : comments) {
+				if (!c.isDeleted()) {
+					GeneralCommentTreeNode commentNode = new GeneralCommentTreeNode(review, c, null);
+					addNode(commentNode);
 
-						for (Comment reply : c.getReplies()) {
-							commentNode.addNode(new GeneralCommentTreeNode(review, (GeneralComment) reply, null));
-						}
+					for (Comment reply : c.getReplies()) {
+						commentNode.addNode(new GeneralCommentTreeNode(review, (GeneralComment) reply, null));
 					}
 				}
-			} catch (ValueNotYetInitialized e) {
-				// now what?
 			}
 		}
 	}
@@ -54,15 +49,9 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 	}
 
 	private int getNumberOfGeneralComments() {
-		int n = 0;
-
-		try {
-			n = getReview().getGeneralComments().size();
-			for (GeneralComment gc : getReview().getGeneralComments()) {
-				n += gc.getReplies().size();
-			}
-		} catch (ValueNotYetInitialized e) {
-			return 0;
+		int n = getReview().getGeneralComments().size();
+		for (GeneralComment gc : getReview().getGeneralComments()) {
+			n += gc.getReplies().size();
 		}
 		return n;
 	}
