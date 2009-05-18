@@ -5,9 +5,9 @@ import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
@@ -67,18 +67,18 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
-    private PluginConfiguration pluginConfiguration;
-    private final CfgManager cfgManager;
+	private PluginConfiguration pluginConfiguration;
+	private final CfgManager cfgManager;
 
 	public IssueDetailsToolWindow(@NotNull final Project project,
-                                  @NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
-                                  @NotNull final PluginConfiguration pluginConfiguration, 
-                                  @NotNull CfgManager cfgManager) {
+			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
+			@NotNull final PluginConfiguration pluginConfiguration,
+			@NotNull CfgManager cfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
-        this.pluginConfiguration = pluginConfiguration;
-        this.cfgManager = cfgManager;
+		this.pluginConfiguration = pluginConfiguration;
+		this.cfgManager = cfgManager;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
@@ -100,7 +100,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	}
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
-        pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
+		pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
 		return new IssuePanel((IssueContentParameters) params);
 	}
 
@@ -126,8 +126,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project),
 				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
 
-        return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
-    }
+		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
+	}
 
 	public void refreshComments(String key) {
 		IssuePanel ip = getContentPanel(key);
@@ -201,16 +201,16 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	private class IssuePanel extends ContentPanel
-			implements JIRAIssueListModelListener, DataProvider, IssueActionProvider {
+	private class IssuePanel extends ContentPanel implements DataProvider, IssueActionProvider {
 		private DescriptionAndCommentsPanel descriptionAndCommentsPanel;
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
 		private final IssueContentParameters params;
 		private int stackTraceCounter = 0;
 		private IssueDetailsToolWindow.IssuePanel.LocalConfigListener configurationListener = new LocalConfigListener();
-        private Task.Backgroundable getSubTasksTask;
-        private DefaultListModel subtaskListModel;
+		private Task.Backgroundable getSubTasksTask;
+		private DefaultListModel subtaskListModel;
+		private IssueDetailsToolWindow.IssuePanel.LocalModelListener modelListener;
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
@@ -237,35 +237,26 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			add(tabs, gbc);
 
 			if (params.model != null) {
-				params.model.addModelListener(this);
+				modelListener = new LocalModelListener();
+				params.model.addModelListener(modelListener);
 			}
 
 			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 
-            addComponentListener(new ComponentAdapter() {
-                @Override
-                public void componentHidden(ComponentEvent componentEvent) {
-                    if (getSubTasksTask != null) {
-                        getSubTasksTask.onCancel();
-                    }
-                }
-            });
-            
+			addComponentListener(new ComponentAdapter() {
+				@Override
+				public void componentHidden(ComponentEvent componentEvent) {
+					if (getSubTasksTask != null) {
+						getSubTasksTask.onCancel();
+					}
+				}
+			});
+
 			refresh();
 		}
 
 		public String getTitle() {
 			return params.issue.getKey();
-		}
-
-		public void modelChanged(JIRAIssueListModel m) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-//					refresh();
-					retrieveIssueFromModel();
-					issueReloaded();
-				}
-			});
 		}
 
 		public void setStatusInfoMessage(final String message) {
@@ -285,12 +276,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					: null;
 		}
 
-		public void issuesLoaded(JIRAIssueListModel m, int loadedIssues) {
-		}
-
 		public void unregister() {
 			if (params.model != null) {
-				params.model.removeModelListener(this);
+				params.model.removeModelListener(modelListener);
 			}
 			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
 		}
@@ -330,6 +318,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 					public void onSuccess() {
 						if (retrieved) {
+							ActiveIssueUtils.checkIssueState(project, params.issue);
 							issueReloaded();
 							jiraIssueListModelBuilder.updateIssue(params.issue);
 						}
@@ -343,7 +332,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			for (JIRAIssue i : params.model.getIssues()) {
 				if (i.getKey().equals(params.issue.getKey()) && i.getServerUrl().equals(jiraServerCfg.getUrl())) {
 					params.issue = i;
-					ActiveIssueUtils.checkIssueState(project, i);
+					// todo check active issue
+//					ActiveIssueUtils.checkIssueState(project, i);
 					break;
 				}
 			}
@@ -436,253 +426,253 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private JLabel issueResolution;
 			private JLabel issueCreationTime;
 			private JLabel issueUpdateTime;
-            private static final float SPLIT_RATIO = 0.3f;
-            private static final int SUBTASKS_LABEL_HEIGHT = 24;
+			private static final float SPLIT_RATIO = 0.3f;
+			private static final int SUBTASKS_LABEL_HEIGHT = 24;
 
-            public DetailsPanel() {
-                super(new BorderLayout());
+			public DetailsPanel() {
+				super(new BorderLayout());
 
-                subtaskListModel = new DefaultListModel();
+				subtaskListModel = new DefaultListModel();
 
-                add(createBody(), BorderLayout.CENTER);
+				add(createBody(), BorderLayout.CENTER);
 			}
 
 			private JPanel createBody() {
-                boolean haveSubTasks = params.issue.getSubTaskKeys().size() > 0;
+				boolean haveSubTasks = params.issue.getSubTaskKeys().size() > 0;
 
-                JPanel panel = new JPanel(new BorderLayout());
+				JPanel panel = new JPanel(new BorderLayout());
 
-                JPanel details = createDetailsPanel();
+				JPanel details = createDetailsPanel();
 
-                if (haveSubTasks) {
-                    Splitter split = new Splitter(false, SPLIT_RATIO);
-                    split.setFirstComponent(new JScrollPane(details));
-                    split.setHonorComponentsMinimumSize(true);
-                    JComponent subtasks = createSubtasksPanel();
-                    split.setSecondComponent(subtasks);
-                    panel.add(split, BorderLayout.CENTER);
-                } else {
-                    panel.setOpaque(true);
-                    panel.setBackground(Color.WHITE);
-                    panel.add(new JScrollPane(details), BorderLayout.CENTER);
-                }
+				if (haveSubTasks) {
+					Splitter split = new Splitter(false, SPLIT_RATIO);
+					split.setFirstComponent(new JScrollPane(details));
+					split.setHonorComponentsMinimumSize(true);
+					JComponent subtasks = createSubtasksPanel();
+					split.setSecondComponent(subtasks);
+					panel.add(split, BorderLayout.CENTER);
+				} else {
+					panel.setOpaque(true);
+					panel.setBackground(Color.WHITE);
+					panel.add(new JScrollPane(details), BorderLayout.CENTER);
+				}
 
 				return panel;
 			}
 
-            private JComponent createSubtasksPanel() {
-                BorderLayout borderLayout = new BorderLayout();
-                JPanel panel = new JPanel(borderLayout);
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.weightx = 1.0;
-                gbc.weighty = 1.0;
-                gbc.fill = GridBagConstraints.HORIZONTAL;
+			private JComponent createSubtasksPanel() {
+				BorderLayout borderLayout = new BorderLayout();
+				JPanel panel = new JPanel(borderLayout);
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.weightx = 1.0;
+				gbc.weighty = 1.0;
+				gbc.fill = GridBagConstraints.HORIZONTAL;
 
-                panel.setOpaque(false);
-                final java.util.List<String> keys = params.issue.getSubTaskKeys();
-                if (keys.size() > 0) {
-                    final JList list = new JList() {
-                        @Override
-                        public boolean getScrollableTracksViewportWidth() {
-                            return true;
-                        }
-                    };
-                    list.setCellRenderer(new SubtaskListCellRenderer());
-                    list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-                    list.addMouseListener(new MouseAdapter() {
-                        @Override
-                        public void mouseClicked(MouseEvent event) {
-                            if (event.getClickCount() == 2) {
-                                openSelectedSubtask(list);
-                            }
-                        }
-                    });
-                    list.addKeyListener(new KeyAdapter() {
-                        @Override
-                        public void keyPressed(KeyEvent event) {
-                            if (event.getKeyCode() == KeyEvent.VK_ENTER) {
-                                openSelectedSubtask(list);                
-                            }
-                        }
-                    });
-                    subtaskListModel.clear();
-                    list.setModel(subtaskListModel);
-                    JLabel subtasksLabel = new JLabel("Subtasks");
-                    subtasksLabel.setPreferredSize(
-                            new Dimension(subtasksLabel.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT));
-                    panel.add(subtasksLabel, BorderLayout.NORTH);
-                    JScrollPane scrollPane = new JScrollPane(list);
-                    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-                    panel.add(scrollPane, BorderLayout.CENTER);
-                    if (getSubTasksTask == null) {
-                        createFetchSubtasksBackgroundTask(keys);
-                        ProgressManager.getInstance().run(getSubTasksTask);
-                    }
-                }
+				panel.setOpaque(false);
+				final java.util.List<String> keys = params.issue.getSubTaskKeys();
+				if (keys.size() > 0) {
+					final JList list = new JList() {
+						@Override
+						public boolean getScrollableTracksViewportWidth() {
+							return true;
+						}
+					};
+					list.setCellRenderer(new SubtaskListCellRenderer());
+					list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+					list.addMouseListener(new MouseAdapter() {
+						@Override
+						public void mouseClicked(MouseEvent event) {
+							if (event.getClickCount() == 2) {
+								openSelectedSubtask(list);
+							}
+						}
+					});
+					list.addKeyListener(new KeyAdapter() {
+						@Override
+						public void keyPressed(KeyEvent event) {
+							if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+								openSelectedSubtask(list);
+							}
+						}
+					});
+					subtaskListModel.clear();
+					list.setModel(subtaskListModel);
+					JLabel subtasksLabel = new JLabel("Subtasks");
+					subtasksLabel.setPreferredSize(
+							new Dimension(subtasksLabel.getPreferredSize().width, SUBTASKS_LABEL_HEIGHT));
+					panel.add(subtasksLabel, BorderLayout.NORTH);
+					JScrollPane scrollPane = new JScrollPane(list);
+					scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+					panel.add(scrollPane, BorderLayout.CENTER);
+					if (getSubTasksTask == null) {
+						createFetchSubtasksBackgroundTask(keys);
+						ProgressManager.getInstance().run(getSubTasksTask);
+					}
+				}
 
-                return panel;
-            }
+				return panel;
+			}
 
-            private void openSelectedSubtask(JList list) {
-                Object o = list.getSelectedValue();
-                if (o != null && o instanceof JIRAIssue) {
-                    IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-                    if (panel != null) {
-                        panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer());
-                    }
-                }
-            }
+			private void openSelectedSubtask(JList list) {
+				Object o = list.getSelectedValue();
+				if (o != null && o instanceof JIRAIssue) {
+					IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+					if (panel != null) {
+						panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer());
+					}
+				}
+			}
 
-            private void createFetchSubtasksBackgroundTask(final List<String> keys) {
-                getSubTasksTask = new Task.Backgroundable(project,
-                        "Fetching subtasks for issue " + params.issue.getKey(), true) {
-                    private List<JIRAIssue> subtasks = new ArrayList<JIRAIssue>();
+			private void createFetchSubtasksBackgroundTask(final List<String> keys) {
+				getSubTasksTask = new Task.Backgroundable(project,
+						"Fetching subtasks for issue " + params.issue.getKey(), true) {
+					private List<JIRAIssue> subtasks = new ArrayList<JIRAIssue>();
 
-                    public void run(@NotNull ProgressIndicator progressIndicator) {
-                        Collection<JIRAIssue> subtasksInModel = params.model.getSubtasks(params.issue);
-                        Map<String, JIRAIssue> subKeysInModel = new HashMap<String, JIRAIssue>();
-                        for (JIRAIssue sub : subtasksInModel) {
-                            subKeysInModel.put(sub.getKey(), sub);
-                        }
-                        for (String key : keys) {
-                            try {
-                                if (subKeysInModel.keySet().contains(key)) {
-                                    subtasks.add(subKeysInModel.get(key));
-                                } else {
-                                    JIRAIssue subtask = facade.getIssue(params.issue.getServer(), key);
-                                    if (subtask != null) {
-                                        subtasks.add(subtask);
-                                    }
-                                }
-                            } catch (JIRAException e) {
-                                LoggerImpl.getInstance().error(e);
-                            }
-                        }
-                    }
+					public void run(@NotNull ProgressIndicator progressIndicator) {
+						Collection<JIRAIssue> subtasksInModel = params.model.getSubtasks(params.issue);
+						Map<String, JIRAIssue> subKeysInModel = new HashMap<String, JIRAIssue>();
+						for (JIRAIssue sub : subtasksInModel) {
+							subKeysInModel.put(sub.getKey(), sub);
+						}
+						for (String key : keys) {
+							try {
+								if (subKeysInModel.keySet().contains(key)) {
+									subtasks.add(subKeysInModel.get(key));
+								} else {
+									JIRAIssue subtask = facade.getIssue(params.issue.getServer(), key);
+									if (subtask != null) {
+										subtasks.add(subtask);
+									}
+								}
+							} catch (JIRAException e) {
+								LoggerImpl.getInstance().error(e);
+							}
+						}
+					}
 
-                    @Override
-                    public void onCancel() {
-                        getSubTasksTask = null;
-                    }
+					@Override
+					public void onCancel() {
+						getSubTasksTask = null;
+					}
 
-                    @Override
-                    public void onSuccess() {
-                        subtaskListModel.clear();
-                        for (JIRAIssue subtask : subtasks) {
-                            subtaskListModel.addElement(subtask);
-                        }
-                        getSubTasksTask = null;
-                    }
-                };
-            }
+					@Override
+					public void onSuccess() {
+						subtaskListModel.clear();
+						for (JIRAIssue subtask : subtasks) {
+							subtaskListModel.addElement(subtask);
+						}
+						getSubTasksTask = null;
+					}
+				};
+			}
 
-            private JPanel createDetailsPanel() {
-                JPanel panel = new ScrollablePanel();
+			private JPanel createDetailsPanel() {
+				JPanel panel = new ScrollablePanel();
 
-                panel.setLayout(new GridBagLayout());
-                panel.setOpaque(false);
+				panel.setLayout(new GridBagLayout());
+				panel.setOpaque(false);
 
-                GridBagConstraints gbc1 = new GridBagConstraints();
-                GridBagConstraints gbc2 = new GridBagConstraints();
-                gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
-                gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
-                gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-                gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
-                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-                gbc2.fill = GridBagConstraints.HORIZONTAL;
-                gbc2.weightx = 1.0;
-                gbc1.gridx = 0;
-                gbc2.gridx = gbc1.gridx + 1;
-                gbc1.gridy = 0;
-                gbc2.gridy = 0;
+				GridBagConstraints gbc1 = new GridBagConstraints();
+				GridBagConstraints gbc2 = new GridBagConstraints();
+				gbc1.anchor = GridBagConstraints.FIRST_LINE_START;
+				gbc2.anchor = GridBagConstraints.FIRST_LINE_START;
+				gbc1.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.fill = GridBagConstraints.HORIZONTAL;
+				gbc2.weightx = 1.0;
+				gbc1.gridx = 0;
+				gbc2.gridx = gbc1.gridx + 1;
+				gbc1.gridy = 0;
+				gbc2.gridy = 0;
 
-                panel.add(new BoldLabel("Type"), gbc1);
+				panel.add(new BoldLabel("Type"), gbc1);
 
-                fillBaseIssueDetails();
+				fillBaseIssueDetails();
 
-                panel.add(issueType, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
+				panel.add(issueType, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
 
-                gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
-                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-                gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
-                        Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
-                if (params.issue.isSubTask()) {
-                    String parent = params.issue.getParentIssueKey();
-                    panel.add(new BoldLabel("Parent Issue"), gbc1);
-                    panel.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
-                        public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
-                            IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
-                            if (panel != null) {
-                                panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer());
-                            }
-                        }
-                    }), gbc2);
-                    gbc1.gridy++;
-                    gbc2.gridy++;
-                }
-                panel.add(new BoldLabel("Status"), gbc1);
-                panel.add(issueStatus, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Priority"), gbc1);
-                panel.add(issuePriority, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Assignee"), gbc1);
-                panel.add(issueAssignee, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Reporter"), gbc1);
-                panel.add(issueReporter, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Resolution"), gbc1);
-                panel.add(issueResolution, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Created"), gbc1);
-                panel.add(issueCreationTime, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Updated"), gbc1);
-                panel.add(issueUpdateTime, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(affectsVersionsLabel, gbc1);
-                panel.add(affectsVersions, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(fixVersionsLabel, gbc1);
-                panel.add(fixVersions, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(componentsLabel, gbc1);
-                panel.add(components, gbc2);
+				gbc1.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				gbc2.insets = new Insets(0, Constants.DIALOG_MARGIN,
+						Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN);
+				if (params.issue.isSubTask()) {
+					String parent = params.issue.getParentIssueKey();
+					panel.add(new BoldLabel("Parent Issue"), gbc1);
+					panel.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
+						public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+							IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+							if (panel != null) {
+								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer());
+							}
+						}
+					}), gbc2);
+					gbc1.gridy++;
+					gbc2.gridy++;
+				}
+				panel.add(new BoldLabel("Status"), gbc1);
+				panel.add(issueStatus, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Priority"), gbc1);
+				panel.add(issuePriority, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Assignee"), gbc1);
+				panel.add(issueAssignee, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Reporter"), gbc1);
+				panel.add(issueReporter, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Resolution"), gbc1);
+				panel.add(issueResolution, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Created"), gbc1);
+				panel.add(issueCreationTime, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Updated"), gbc1);
+				panel.add(issueUpdateTime, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(affectsVersionsLabel, gbc1);
+				panel.add(affectsVersions, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(fixVersionsLabel, gbc1);
+				panel.add(fixVersions, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(componentsLabel, gbc1);
+				panel.add(components, gbc2);
 
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Original Estimate"), gbc1);
-                panel.add(originalEstimate, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Remaining Estimate"), gbc1);
-                panel.add(remainingEstimate, gbc2);
-                gbc1.gridy++;
-                gbc2.gridy++;
-                panel.add(new BoldLabel("Time Spent"), gbc1);
-                panel.add(timeSpent, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Original Estimate"), gbc1);
+				panel.add(originalEstimate, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Remaining Estimate"), gbc1);
+				panel.add(remainingEstimate, gbc2);
+				gbc1.gridy++;
+				gbc2.gridy++;
+				panel.add(new BoldLabel("Time Spent"), gbc1);
+				panel.add(timeSpent, gbc2);
 
-                addFillerPanel(panel, gbc1, false);
-                
-                return panel;
-            }
+				addFillerPanel(panel, gbc1, false);
 
-            private void fillBaseIssueDetails() {
+				return panel;
+			}
+
+			private void fillBaseIssueDetails() {
 				issueType = new JLabel(params.issue.getType(),
 						CachedIconLoader.getIcon(params.issue.getTypeIconUrl()),
 						SwingConstants.LEFT);
@@ -799,9 +789,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					}
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
-                            removeAll();
-                            rendererMap.clear();
-                            add(createBody(), BorderLayout.CENTER);
+							removeAll();
+							rendererMap.clear();
+							add(createBody(), BorderLayout.CENTER);
 							if (errorString == null) {
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 								setFixVersions(getStringArray(params.issue.getFixVersions()));
@@ -857,28 +847,28 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				getIssueDetails();
 			}
 
-            private Map<JIRAIssue, JIRAIssueListOrTreeRendererPanel> rendererMap =
-                    new HashMap<JIRAIssue, JIRAIssueListOrTreeRendererPanel>();
+			private Map<JIRAIssue, JIRAIssueListOrTreeRendererPanel> rendererMap =
+					new HashMap<JIRAIssue, JIRAIssueListOrTreeRendererPanel>();
 
-            private class SubtaskListCellRenderer extends DefaultListCellRenderer {
-                public Component getListCellRendererComponent(JList list, Object value, int index,
-														  boolean isSelected, boolean cellHasFocus) {
-                    if (value != null && value instanceof JIRAIssue) {
-                        JIRAIssue issue = (JIRAIssue) value;
-                        JIRAIssueListOrTreeRendererPanel r = rendererMap.get(issue);
-                        if (r == null) {
-                            r = new JIRAIssueListOrTreeRendererPanel(issue);
-                            rendererMap.put(issue, r);
-                        }
-                        r.setParameters(isSelected, true);
-                        return r;
-                    }
-                    return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                }
-            }
-        }
+			private class SubtaskListCellRenderer extends DefaultListCellRenderer {
+				public Component getListCellRendererComponent(JList list, Object value, int index,
+						boolean isSelected, boolean cellHasFocus) {
+					if (value != null && value instanceof JIRAIssue) {
+						JIRAIssue issue = (JIRAIssue) value;
+						JIRAIssueListOrTreeRendererPanel r = rendererMap.get(issue);
+						if (r == null) {
+							r = new JIRAIssueListOrTreeRendererPanel(issue);
+							rendererMap.put(issue, r);
+						}
+						r.setParameters(isSelected, true);
+						return r;
+					}
+					return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				}
+			}
+		}
 
-        private class SummaryPanel extends JPanel {
+		private class SummaryPanel extends JPanel {
 
 			private JEditorPane summary;
 
@@ -1130,26 +1120,26 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-        private final class MyHyperlinkLabel extends JPanel {
-            private MyHyperlinkLabel(String label, HyperlinkListener listener) {
-                super(new GridBagLayout());
-                setOpaque(false);
-                
-                GridBagConstraints gbc = new GridBagConstraints();
-                gbc.gridx = 0;
-                gbc.gridy = 0;
-                gbc.weightx = 0.0;
-                gbc.weighty = 0.0;
-                gbc.fill = GridBagConstraints.NONE;
+		private final class MyHyperlinkLabel extends JPanel {
+			private MyHyperlinkLabel(String label, HyperlinkListener listener) {
+				super(new GridBagLayout());
+				setOpaque(false);
 
-                HyperlinkLabel link = new HyperlinkLabel(label);
-                link.setOpaque(false);
-                link.addHyperlinkListener(listener);
+				GridBagConstraints gbc = new GridBagConstraints();
+				gbc.gridx = 0;
+				gbc.gridy = 0;
+				gbc.weightx = 0.0;
+				gbc.weighty = 0.0;
+				gbc.fill = GridBagConstraints.NONE;
 
-                add(link, gbc);
-                addFillerPanel(this, gbc, true);
-            }
-        }
+				HyperlinkLabel link = new HyperlinkLabel(label);
+				link.setOpaque(false);
+				link.addHyperlinkListener(listener);
+
+				add(link, gbc);
+				addFillerPanel(this, gbc, true);
+			}
+		}
 
 		private class UserLabel extends JPanel {
 			private JLabel label;
@@ -1177,10 +1167,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					label.setText("<html><body>" + userNameFixed + "</body></html>");
 				}
 				add(label, gbc);
-                addFillerPanel(this, gbc, true);
+				addFillerPanel(this, gbc, true);
 			}
 
-            private void addListener(final String serverUrl, final String userNameId) {
+			private void addListener(final String serverUrl, final String userNameId) {
 				label.addMouseListener(new MouseAdapter() {
 					public void mouseClicked(MouseEvent e) {
 						BrowserUtil.launchBrowser(serverUrl + "/secure/ViewProfile.jspa?name=" + userNameId);
@@ -1401,20 +1391,53 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				((JIRAIssueBean) params.issue).setServer(params.issue.getServer());
 			}
 		}
+
+		private class LocalModelListener implements JIRAIssueListModelListener {
+			private boolean singleIssueChanged = false;
+
+			public void issueUpdated(final JIRAIssue issue) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						singleIssueChanged = true;
+//						if (issue.equals(params.issue)) {
+//							ActiveIssueUtils.checkIssueState(project, params.issue);
+//						}
+					}
+				});
+
+			}
+
+			public void modelChanged(final JIRAIssueListModel model) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						retrieveIssueFromModel();
+						issueReloaded();
+						if (!singleIssueChanged) {
+							ActiveIssueUtils.checkIssueState(project, params.issue);
+						}
+						singleIssueChanged = false;
+					}
+				});
+			}
+
+			public void issuesLoaded(final JIRAIssueListModel model, final int loadedIssues) {
+
+			}
+		}
 	}
 
-    private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
-        if (horizontal) {
-            gbc.gridx++;
-            gbc.weightx = 1.0;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-        } else {
-            gbc.gridy++;
-            gbc.weighty = 1.0;
-            gbc.fill = GridBagConstraints.VERTICAL;
-        }
-        JPanel filler = new JPanel();
-        filler.setOpaque(false);
-        parent.add(filler, gbc);
-    }
+	private static void addFillerPanel(JPanel parent, GridBagConstraints gbc, boolean horizontal) {
+		if (horizontal) {
+			gbc.gridx++;
+			gbc.weightx = 1.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+		} else {
+			gbc.gridy++;
+			gbc.weighty = 1.0;
+			gbc.fill = GridBagConstraints.VERTICAL;
+		}
+		JPanel filler = new JPanel();
+		filler.setOpaque(false);
+		parent.add(filler, gbc);
+	}
 }

@@ -76,6 +76,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
 				startFrom += l != null ? l.size() : 0;
+				// todo check active issue
 				checkActiveIssue(l);
 			}
 		} finally {
@@ -200,6 +201,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		model.setModelFrozen(true);
 		model.updateIssue(issue);
 		model.setModelFrozen(false);
+		model.fireIssueUpdated(issue);
 		model.fireModelChanged();
 	}
 

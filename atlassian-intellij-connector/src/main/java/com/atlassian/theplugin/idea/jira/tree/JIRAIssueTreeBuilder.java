@@ -12,7 +12,6 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import org.joda.time.DateMidnight;
@@ -91,15 +90,15 @@ public class JIRAIssueTreeBuilder {
 		this.projectCfgManager = projectCfgManager;
 		lastTree = null;
 
-		issueModel.addModelListener(new JIRAIssueListModelListener() {
-
-			public void modelChanged(JIRAIssueListModel aModel) {
-			}
-
-			public void issuesLoaded(JIRAIssueListModel aModel, int loadedIssues) {
-			}
-
-		});
+//		issueModel.addModelListener(new JIRAIssueListModelListener() {
+//
+//			public void modelChanged(JIRAIssueListModel aModel) {
+//			}
+//
+//			public void issuesLoaded(JIRAIssueListModel aModel, int loadedIssues) {
+//			}
+//
+//		});
 
 		issueModel.addFrozenModelListener(new FrozenModelListener() {
 			public void modelFrozen(FrozenModel aModel, boolean frozen) {

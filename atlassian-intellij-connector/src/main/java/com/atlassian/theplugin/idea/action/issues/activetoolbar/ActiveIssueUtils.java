@@ -233,8 +233,6 @@ public final class ActiveIssueUtils {
 							}
 						}
 					});
-
-
 				}
 			}
 		}

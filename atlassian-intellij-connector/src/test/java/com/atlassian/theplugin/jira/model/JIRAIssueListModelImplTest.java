@@ -71,6 +71,10 @@ public class JIRAIssueListModelImplTest extends TestCase {
 	public void testListeners() {
 		final JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelListener l = new JIRAIssueListModelListener() {
+			public void issueUpdated(final JIRAIssue issue) {
+
+			}
+
 			public void modelChanged(JIRAIssueListModel m) {
 				if (model == m) {
 					listenerCalled = true;

@@ -33,6 +33,8 @@ public interface JIRAIssueListModel extends FrozenModel {
 
 	void fireIssuesLoaded(int numberOfLoadedIssues);
 
+	void fireIssueUpdated(final JIRAIssue issue);
+
 	void fireModelChanged();
 
 	void addModelListener(JIRAIssueListModelListener listener);

@@ -380,7 +380,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	public void openIssue(@NotNull JIRAIssue issue) {
 		if (issue.getServer() != null) {
 			recentlyOpenIssuesCache.addIssue(issue);
-			ActiveIssueUtils.checkIssueState(project, issue);
+			// todo check active issue
+//			ActiveIssueUtils.checkIssueState(project, issue);
 			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue, baseIssueListModel);
 
 		}
@@ -813,11 +814,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		if (server != null) {
 			final IssueCreateDialog issueCreateDialog =
-                    new IssueCreateDialog(this, project, jiraServerModel, server, jiraWorkspaceConfiguration);
+					new IssueCreateDialog(this, project, jiraServerModel, server, jiraWorkspaceConfiguration);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();
-        }
+		}
 	}
 
 	public ConfigurationListener getConfigListener() {
@@ -1245,6 +1246,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
 	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
+		public void issueUpdated(final JIRAIssue issue) {
+			// ignore (modelChanged will be called)
+		}
+
 		public void modelChanged(JIRAIssueListModel model) {
 			SwingUtilities.invokeLater(new ModelChangedRunnable());
 		}
