@@ -564,6 +564,20 @@
 				icon="/icons/icn_comment.gif">
 		</action>
 
+        <action id="ThePlugin.JiraIssues.CreateIssue"
+                class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
+                text="Create JIRA Issue"
+                icon="/icons/add_jira.png">
+            <keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
+        </action>
+
+        <action id="ThePlugin.Reviews.QuickSearch"
+                class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
+                text="Search Review"
+                icon="/icons/find-crucible.png">
+            <keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+        </action>
+        
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink"/>
 			<reference id="CopyFisheyeLink"/>
@@ -575,6 +589,8 @@
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+            <reference id="ThePlugin.JiraIssues.CreateIssue"/>
+            <reference id="ThePlugin.Reviews.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
@@ -806,12 +822,6 @@
 				class="com.atlassian.theplugin.idea.action.issues.CollapseIssuesAction"
 				text="Collapse All Issues"
 				icon="/actions/collapseall.png"/>
-		<action id="ThePlugin.JiraIssues.CreateIssue"
-				class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
-				text="Create JIRA Issue"
-				icon="/icons/add_jira.png">
-			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
-		</action>
 
 		<action id="ThePlugin.JiraIssues.CopyIssueKey"
 				class="com.atlassian.theplugin.idea.action.issues.CopyIssueKeyAction"
@@ -995,12 +1005,6 @@
 				class="com.atlassian.theplugin.idea.action.reviews.OpenReviewAction"
 				text="Open Review"
 				icon="/actions/showChangesOnly.png"/>
-		<action id="ThePlugin.Reviews.QuickSearch"
-				class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
-				text="Search Review"
-				icon="/actions/find.png">
-			<keyboard-shortcut first-keystroke="control alt r" keymap="$default"/>
-		</action>
 		<action id="ThePlugin.Reviews.CompleteReview"
 				class="com.atlassian.theplugin.idea.action.reviews.CompleteReviewAction"
 				text="Complete Review"

@@ -2,6 +2,8 @@ package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -25,6 +27,12 @@ public abstract class AbstractCrucibleToolbarAction extends AnAction {
 	public final void update(AnActionEvent e) {
 		super.update(e);
 		Boolean windowEnabled = e.getData(Constants.REVIEW_WINDOW_ENABLED_KEY);
+
+        if (windowEnabled == null) {
+            ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
+            windowEnabled = panel != null && (Boolean) panel.getData(Constants.REVIEW_WINDOW_ENABLED);
+        }
+
 		boolean result = false;
 		if (windowEnabled != null && windowEnabled) {
 			result = onUpdate(e);
