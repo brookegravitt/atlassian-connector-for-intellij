@@ -275,7 +275,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 
-	private ServerCfg getSelectedServer() {
+	public ServerCfg getSelectedServer() {
 		if (selectedNode instanceof ServerNode) {
 			return ((ServerNode) selectedNode).getServer();
 		}

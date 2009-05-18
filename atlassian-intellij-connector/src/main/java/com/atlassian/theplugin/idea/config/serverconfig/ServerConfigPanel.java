@@ -33,8 +33,6 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NonNls;
@@ -63,15 +61,17 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 	private final ProjectConfigurationPanel projectConfigurationPanel;
-	private final UserCfg defaultUser;
+    private Project project;
+    private final UserCfg defaultUser;
 	private boolean isDefaultCredentialsAsked = false;
 
 	public ServerConfigPanel(final ProjectConfigurationPanel projectConfigurationPanel,
-			Project project, final UserCfg defaultUser,
+			final Project project, final UserCfg defaultUser,
 			ProjectConfiguration projectConfiguration,
 			final ServerCfg selectedServer, final boolean isDefaultCredentialsAsked) {
 		this.projectConfigurationPanel = projectConfigurationPanel;
-		this.defaultUser = defaultUser;
+        this.project = project;
+        this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
@@ -242,41 +242,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
-
-
-		askForDefaultCredentials(serverCfg);
-
 	}
-
-
-	private void askForDefaultCredentials(final ServerCfg serverCfg) {
-
-		SwingUtilities.invokeLater(new Runnable() {
-
-			public void run() {
-				if (projectConfigurationPanel.isShowing()) {
-					if (projectConfigurationPanel != null && !isDefaultCredentialsAsked
-							&& (defaultUser == null
-                            || (defaultUser.getPassword().equals("") && defaultUser.getPassword().equals(""))
-									&& serverCfg.getUsername().length() > 0)) {
-						int answer = Messages.showYesNoDialog(projectConfigurationPanel,
-								"<html>Do yo want to set server <b>" + serverCfg.getName()
-                                + "</b> <i>username</i> and <i>password</i>"
-								+ " as default credentials for Atlassian IntelliJ Connector?</html>", "Set as default",
-								Messages.getQuestionIcon());
-						isDefaultCredentialsAsked = true;
-						if (answer == DialogWrapper.OK_EXIT_CODE) {
-							projectConfigurationPanel.setDefaultCredentials(
-									new UserCfg(serverCfg.getUsername(), serverCfg.getPassword(), true));
-
-						}
-					}
-				}
-			}
-		});
-
-	}
-
 
 	public void showEmptyPanel() {
 		editPaneCardLayout.show(editPane, BLANK_CARD);
@@ -289,7 +255,12 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		fisheyeServerConfigFrom.finalizeData();
 	}
 
-	private class BlankPanel extends JPanel {
+    public ServerCfg getSelectedServer() {
+        return serverTreePanel.getSelectedServer();
+    }
+
+
+    private class BlankPanel extends JPanel {
 
 		public BlankPanel() {
 			initLayout();
