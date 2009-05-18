@@ -812,52 +812,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		final ServerData server = getSelectedServer();
 
 		if (server != null) {
-			final IssueCreateDialog issueCreateDialog = new IssueCreateDialog(jiraServerModel, server,
-					jiraWorkspaceConfiguration);
+			final IssueCreateDialog issueCreateDialog =
+                    new IssueCreateDialog(this, project, jiraServerModel, server, jiraWorkspaceConfiguration);
 
 			issueCreateDialog.initData();
 			issueCreateDialog.show();
-			if (issueCreateDialog.isOK()) {
-
-				Task.Backgroundable createTask = new Task.Backgroundable(getProject(), "Creating Issue", false) {
-					@Override
-					public void run(@NotNull final ProgressIndicator indicator) {
-						setStatusInfoMessage("Creating new issue...");
-						String message;
-						boolean isError = false;
-						try {
-							JIRAIssue issueToCreate = issueCreateDialog.getJIRAIssue();
-							final JIRAIssue createdIssue = jiraServerFacade.createIssue(server,
-									issueToCreate);
-
-							message = "New issue created: <a href="
-									+ createdIssue.getIssueUrl()
-									+ ">"
-									+ createdIssue.getKey()
-									+ "</a>";
-
-							setStatusInfoMessage(message);
-
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
-//									recentlyOpenIssuesCache.addIssue(createdIssue);
-//									jiraIssueListModelBuilder.updateIssue(createdIssue);
-									openIssue(createdIssue);
-									refreshIssues(true);
-								}
-							});
-
-						} catch (JIRAException e) {
-							setStatusErrorMessage("Failed to create new issue: " + e.getMessage(), e);
-						}
-					}
-
-				};
-
-				ProgressManager.getInstance().run(createTask);
-			}
-		}
-
+        }
 	}
 
 	public ConfigurationListener getConfigListener() {

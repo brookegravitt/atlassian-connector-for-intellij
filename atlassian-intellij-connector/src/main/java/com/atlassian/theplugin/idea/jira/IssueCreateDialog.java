@@ -24,11 +24,17 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -56,14 +62,19 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JTextField assignee;
 	private JList componentsList;
 	private final ServerData jiraServer;
-	private final JIRAServerModel model;
+    private IssueListToolWindowPanel issueListToolWindowPanel;
+    private Project project;
+    private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 	private ActionListener projectComboListener;
 
-	public IssueCreateDialog(JIRAServerModel model, ServerData server,
-			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
+	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
+                             @NotNull Project project, JIRAServerModel model, ServerData server,
+                             @NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
-		this.model = model;
+        this.issueListToolWindowPanel = issueListToolWindowPanel;
+        this.project = project;
+        this.model = model;
 		this.jiraConfiguration = jiraProjectCfg;
 		$$$setupUI$$$();
 		componentsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -377,10 +388,49 @@ public class IssueCreateDialog extends DialogWrapper {
 			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId(), p.getKey(), selectedComponents);
 		}
 
-		super.doOKAction();
+        createIssueAndCloseOnSuccess();
 	}
 
-	@Override
+    private void createIssueAndCloseOnSuccess() {
+        Task createTask = new Task.Modal(project, "Creating Issue", false) {
+            @Override
+            public void run(@NotNull final ProgressIndicator indicator) {
+                String message;
+                try {
+                    JIRAIssue issueToCreate = getJIRAIssue();
+                    final JIRAIssue createdIssue =
+                            JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, issueToCreate);
+
+                    message = "New issue created: <a href="
+                            + createdIssue.getIssueUrl()
+                            + ">"
+                            + createdIssue.getKey()
+                            + "</a>";
+
+                    issueListToolWindowPanel.setStatusInfoMessage(message);
+
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            issueListToolWindowPanel.openIssue(createdIssue);
+                            issueListToolWindowPanel.refreshIssues(true);
+                            close(0);
+                        }
+                    });
+                } catch (final JIRAException e) {
+                    EventQueue.invokeLater(new Runnable() {
+                        public void run() {
+                            DialogWithDetails.showExceptionDialog(project, "Failed to create new issue", e);
+                        }
+                    });
+                }
+            }
+
+        };
+
+        ProgressManager.getInstance().run(createTask);
+    }
+
+    @Override
 	public JComponent getPreferredFocusedComponent() {
 		return summary;
 	}
