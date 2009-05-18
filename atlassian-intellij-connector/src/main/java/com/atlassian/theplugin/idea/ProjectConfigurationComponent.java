@@ -367,6 +367,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void apply() throws ConfigurationException {
+        projectConfigurationPanel.askForDefaultCredentials();
 		if (projectConfigurationPanel == null) {
 			return;
 		}

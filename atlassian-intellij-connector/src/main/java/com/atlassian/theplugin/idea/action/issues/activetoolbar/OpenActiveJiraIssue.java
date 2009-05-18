@@ -49,7 +49,7 @@ public class OpenActiveJiraIssue extends AnAction {
 						issue = ActiveIssueUtils.getJIRAIssue(currentProject);
 						if (issue != null) {
 							if (panel != null) {
-								panel.openIssueWithSelectedServer(issue);
+								panel.openIssue(issue);
 							}
 						}
 					} catch (JIRAException e) {

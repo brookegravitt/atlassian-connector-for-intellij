@@ -273,7 +273,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			public void keyPressed(KeyEvent e) {
 				JIRAIssue issue = getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
-					openIssueWithSelectedServer(issue);
+					openIssue(issue);
 				}
 			}
 		});
@@ -284,7 +284,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			public void mouseClicked(final MouseEvent e) {
 				final JIRAIssue issue = getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
-					openIssueWithSelectedServer(issue);
+					openIssue(issue);
 				}
 			}
 
@@ -386,19 +386,19 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 	}
 
-	public void openIssueWithSelectedServer(@NotNull JIRAIssue issue) {
-		if (getSelectedServer() != null) {
-			openIssue(issue);
-		} else if (isRecentlyOpenFilterSelected()) {
-			for (JiraServerCfg server
-					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-				if (server.getUrl().equals(issue.getServerUrl())) {
-					openIssue(issue);
-					break;
-				}
-			}
-		}
-	}
+//	public void openIssueWithSelectedServer(@NotNull JIRAIssue issue) {
+//		if (getSelectedServer() != null) {
+//			openIssue(issue);
+//		} else if (isRecentlyOpenFilterSelected()) {
+//			for (JiraServerCfg server
+//					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+//				if (server.getUrl().equals(issue.getServerUrl())) {
+//					openIssue(issue);
+//					break;
+//				}
+//			}
+//		}
+//	}
 
 	public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer) {
 		JIRAIssue issue = null;
