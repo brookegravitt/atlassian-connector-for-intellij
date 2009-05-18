@@ -69,11 +69,14 @@ public class OpenEditorDiffActionImpl implements OpenDiffAction {
 						return;
 					}
 
-					if (referenceFile != null) {
-						final Document displayDocument = new FileContent(project, displayFile.getFile())
-								.getDocument();
+					if (referenceFile != null
+                            && reviewItem.getOldFileDescriptor() != null
+                            && reviewItem.getFileDescriptor() != null) {
+
+						final Document displayDocument = new FileContent(project, displayFile.getFile()).getDocument();
 						final Document referenceDocument = new FileContent(project, referenceFile).getDocument();
-						ChangeViewer.highlightChangesInEditor(project, /*editor, */referenceDocument, displayDocument
+
+                        ChangeViewer.highlightChangesInEditor(project, referenceDocument, displayDocument
 								, reviewItem.getOldFileDescriptor().getRevision()
 								, reviewItem.getFileDescriptor().getRevision());
 					}
