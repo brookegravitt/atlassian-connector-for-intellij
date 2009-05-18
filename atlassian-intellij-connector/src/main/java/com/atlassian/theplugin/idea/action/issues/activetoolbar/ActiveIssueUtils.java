@@ -267,15 +267,11 @@ public final class ActiveIssueUtils {
 
 			public void onSuccess() {
 				if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
-
 					final ProjectConfigurationBean conf = IdeaHelper.getProjectComponent(event, ProjectConfigurationBean.class);
-
-					final boolean cond1 = !jiraServerCfg.isUseDefaultCredentials() &&
-							!jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId());
-
+					final boolean cond1 = !jiraServerCfg.isUseDefaultCredentials()
+							&& !jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId());
 					final boolean cond2 = jiraServerCfg.isUseDefaultCredentials()
 							&& (conf == null || !conf.getDefaultCredentials().getUsername().equals(jiraIssue.getAssigneeId()));
-
 					if ((cond1 || cond2) && !"-1".equals(jiraIssue.getAssigneeId())) {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
@@ -283,7 +279,6 @@ public final class ActiveIssueUtils {
 								"Issue " + jiraIssue.getKey(),
 								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 					}
-
 					if (isOk) {
 						//assign to me and start working
 						panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue);
