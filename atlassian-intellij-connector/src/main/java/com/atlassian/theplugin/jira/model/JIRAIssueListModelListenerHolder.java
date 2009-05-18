@@ -54,6 +54,12 @@ public abstract class JIRAIssueListModelListenerHolder
 		}
 	}
 
+	public void issueUpdated(JIRAIssue issue) {
+		for (JIRAIssueListModelListener l : listeners) {
+			l.issueUpdated(issue);
+		}
+	}
+
 	public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
 		for (JIRAIssueListModelListener l : listeners) {
 			l.issuesLoaded(model, loadedIssues);
@@ -122,6 +128,10 @@ public abstract class JIRAIssueListModelListenerHolder
 
 	public void fireModelChanged() {
 		modelChanged(this);
+	}
+
+	public void fireIssueUpdated(final JIRAIssue issue) {
+		issueUpdated(issue);
 	}
 
 	public void fireIssuesLoaded(int numberOfLoadedIssues) {

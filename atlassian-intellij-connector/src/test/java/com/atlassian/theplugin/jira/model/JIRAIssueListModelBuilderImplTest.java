@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -110,7 +109,9 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			}
 
 			public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {
+			}
 
+			public void issueUpdated(final JIRAIssue issue) {
 			}
 		});
 		try {
