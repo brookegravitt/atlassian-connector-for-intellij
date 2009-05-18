@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
+import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -266,8 +267,16 @@ public final class ActiveIssueUtils {
 
 			public void onSuccess() {
 				if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
-					if (!jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId())
-							&& !"-1".equals(jiraIssue.getAssigneeId())) {
+
+					final ProjectConfigurationBean conf = IdeaHelper.getProjectComponent(event, ProjectConfigurationBean.class);
+
+					final boolean cond1 = !jiraServerCfg.isUseDefaultCredentials() &&
+							!jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId());
+
+					final boolean cond2 = jiraServerCfg.isUseDefaultCredentials()
+							&& (conf == null || !conf.getDefaultCredentials().getUsername().equals(jiraIssue.getAssigneeId()));
+
+					if ((cond1 || cond2) && !"-1".equals(jiraIssue.getAssigneeId())) {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
 										+ ".\nDo you want to overwrite assignee and start progress?",
