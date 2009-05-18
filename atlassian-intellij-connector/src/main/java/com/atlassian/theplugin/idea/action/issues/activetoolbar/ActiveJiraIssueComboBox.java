@@ -77,13 +77,6 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		
 		final int cacheSize = cache != null ? cache.getLoadedRecenltyOpenIssues().size() : 0;
 		
-//		if (cacheSize == 0 || (cacheSize == 1 && issue != null)) {
-//			event.getPresentation().setDescription("No recently viewed issues found");
-//			event.getPresentation().setEnabled(false);
-//		} else {
-//			event.getPresentation().setDescription("");
-//			event.getPresentation().setEnabled(true);
-//		}
 	}
 
 	@NotNull
