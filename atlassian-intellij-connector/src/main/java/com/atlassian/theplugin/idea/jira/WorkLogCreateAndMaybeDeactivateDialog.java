@@ -380,7 +380,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		private Period hours = new Period("h");
 		private Period minutes = new Period("m");
 
-
 		@Override
 		public boolean stateChanged() {
 			if (!getField().isEnabled()) {
@@ -428,7 +427,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 
 	private void updateOKAction() {
 		boolean enable = timeSpentListener.isOk();
-		if (remainingEstimateField.isEnabled() && enable) {
+		if (remainingEstimateField.isEnabled() && btnUpdateManually.isSelected() && enable) {
 			enable = remainingEstimateListener.isOk();
 		}
         if (deactivateActiveIssue) {
@@ -518,14 +517,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 				}
 			});
 
-
 			getOKAction().putValue(Action.NAME, "Stop Work");
 		} else {
 			setTitle("Add Worklog for " + issue.getKey());
 			getOKAction().putValue(Action.NAME, "Add Worklog");
 		}
 		setOKActionEnabled(false);
-
 
 		timeSpentField.setText(timeSpent);
 
@@ -535,7 +532,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		if (startProgressTimestamp != null) {
 			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
 		}
-
 
 		final Calendar now = Calendar.getInstance();
 		endTime = now.getTime();
@@ -576,6 +572,9 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		chkLogWork.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UIUtil.setEnabled(timePanel, chkLogWork.isSelected(), true);
+                timeSpentListener.stateChanged();
+                remainingEstimateListener.stateChanged();
+                updateOKAction();
 				if (timePanel.isEnabled()) {
 					remainingEstimateField.setEnabled(btnUpdateManually.isSelected());
 				}
