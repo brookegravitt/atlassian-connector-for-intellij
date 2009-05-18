@@ -64,11 +64,15 @@ public class ProjectConfigurationPanel extends JPanel {
         return serverConfigPanel.getDefaultUser();
     }
 
-    public ProjectConfigurationPanel(@NotNull final Project project, @NotNull final ProjectConfiguration projectConfiguration,
-                                     @NotNull final CrucibleServerFacade crucibleServerFacade, @NotNull final FishEyeServerFacade fishEyeServerFacade,
-                                     final BambooServerFacade bambooServerFacade, final JIRAServerFacade jiraServerFacade,
+    public ProjectConfigurationPanel(@NotNull final Project project,
+                                     @NotNull final ProjectConfiguration projectConfiguration,
+                                     @NotNull final CrucibleServerFacade crucibleServerFacade,
+                                     @NotNull final FishEyeServerFacade fishEyeServerFacade,
+                                     final BambooServerFacade bambooServerFacade,
+                                     final JIRAServerFacade jiraServerFacade,
                                      @NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-                                     /*final IntelliJProjectCfgManager projectCfgManager, */@NotNull final UserCfg defaultCredentials,
+                                     /*final IntelliJProjectCfgManager projectCfgManager, */
+                                     @NotNull final UserCfg defaultCredentials,
                                      final boolean defaultCredentialsAsked) {
         this.project = project;
         this.projectConfiguration = projectConfiguration;
@@ -154,15 +158,17 @@ public class ProjectConfigurationPanel extends JPanel {
 
                         if (!alreadyExists && !defaultCredentialsAsked
                                 && (defaultCredentials == null
-                                || (defaultCredentials.getPassword().equals("") && defaultCredentials.getPassword().equals(""))
+                                || (defaultCredentials.getPassword().equals("")
+                                && defaultCredentials.getPassword().equals(""))
                                 && serverCfg.getUsername().length() > 0)) {
                             int answer = Messages.showYesNoDialog(project,
-                                    "<html>Do yo want to set server <b>" + serverCfg.getName()
-                                            + "</b> <i>username</i> and <i>password</i>"
-                                            + " as default credentials for Atlassian IntelliJ Connector?</html>", "Set as default",
+                                   "<html>Do yo want to set server <b>" + serverCfg.getName()
+                                 + "</b> <i>username</i> and <i>password</i>"
+                                 + " as default credentials for Atlassian IntelliJ Connector?</html>", "Set as default",
                                     Messages.getQuestionIcon());
                             if (answer == DialogWrapper.OK_EXIT_CODE) {
-                                UserCfg credentials = new UserCfg(serverCfg.getUsername(), serverCfg.getPassword(), true);
+                                UserCfg credentials = new UserCfg(serverCfg.getUsername(),
+                                        serverCfg.getPassword(), true);
                                 IdeaHelper.getProjectCfgManager(project).setDefaultCredentials(credentials);
                                 defaultsConfigurationPanel.setDefaultCredentials(credentials);
 
