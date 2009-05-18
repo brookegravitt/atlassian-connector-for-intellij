@@ -149,7 +149,7 @@ public class JIRAIssueTreeBuilder {
 		treeModel.nodeStructureChanged(root);
 
 		// expand tree
-		for (int i = 0; i < tree.getVisibleRowCount(); i++) {
+		for (int i = 0; i < tree.getRowCount(); i++) {
 			tree.expandRow(i);
 		}
 
