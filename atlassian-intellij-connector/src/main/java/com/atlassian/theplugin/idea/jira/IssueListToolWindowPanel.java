@@ -19,7 +19,6 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
-import static com.atlassian.theplugin.idea.jira.WorkLogCreateAndMaybeDeactivateDialog.AfterCommit.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
@@ -583,7 +582,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		if (issue != null) {
 			final WorkLogCreateAndMaybeDeactivateDialog dialog =
 					new WorkLogCreateAndMaybeDeactivateDialog(jiraServer, issue, getProject(), initialLog,
-                            deactivateIssue, jiraWorkspaceConfiguration);
+							deactivateIssue, jiraWorkspaceConfiguration);
 			dialog.show();
 			if (dialog.isOK()) {
 				Task.Backgroundable logWork = new LogWorkWorkerTask(issue, dialog, jiraServer, deactivateIssue);
@@ -685,7 +684,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			ActiveIssueUtils.setActiveJiraIssue(project, null, issue);
 		}
 
-        pluginConfiguration.getGeneralConfigurationData().bumpCounter("a");
+		pluginConfiguration.getGeneralConfigurationData().bumpCounter("a");
 	}
 
 	private void refreshFilterModel() {
@@ -798,7 +797,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		this.groupBy = groupBy;
 		issueTreeBuilder.setGroupBy(groupBy);
 		issueTreeBuilder.rebuild(getRightTree(), getRightPanel());
-		expandAllRightTreeNodes();
+//		expandAllRightTreeNodes();
 
 		// store in project workspace
 		jiraWorkspaceConfiguration.getView().setGroupBy(groupBy);
@@ -874,7 +873,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			groupSubtasksUnderParent = state;
 			issueTreeBuilder.setGroupSubtasksUnderParent(groupSubtasksUnderParent);
 			issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-			expandAllRightTreeNodes();
+//			expandAllRightTreeNodes();
 			jiraWorkspaceConfiguration.getView().setCollapseSubtasksUnderParent(groupSubtasksUnderParent);
 		}
 	}
@@ -1220,13 +1219,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						if (selectedAction != null) {
 							setStatusInfoMessage("Running action [" + selectedAction.getName()
 									+ "] on issue " + issue.getKey());
-                            final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
-                                    jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
-                            SwingUtilities.invokeLater(new Runnable() {
-                                public void run() {
-                                    riaa.runIssueAction(project);
-                                }
-                            });
+							final RunIssueActionAction riaa = new RunIssueActionAction(IssueListToolWindowPanel.this,
+									jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									riaa.runIssueAction(project);
+								}
+							});
 						}
 
 						if (dialog.isCommitChanges()) {
@@ -1242,21 +1241,21 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 								}
 							});
 
-                            WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
-                                    dialog.getAfterCommitChangeSetAction();
+							WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+									dialog.getAfterCommitChangeSetAction();
 
-                            switch (afterCommit) {
-                                case DEACTIVATE_CHANGESET:
-                                    activateDefaultChangeList(changeListManager);
-                                    break;
-                                case REMOVE_CHANGESET:
-                                    activateDefaultChangeList(changeListManager);
-                                    if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
-                                        changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                                    }
-                                    break;
-                                default:
-                                    break;
+							switch (afterCommit) {
+								case DEACTIVATE_CHANGESET:
+									activateDefaultChangeList(changeListManager);
+									break;
+								case REMOVE_CHANGESET:
+									activateDefaultChangeList(changeListManager);
+									if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
+										changeListManager.removeChangeList(dialog.getCurrentChangeList());
+									}
+									break;
+								default:
+									break;
 							}
 						}
 
@@ -1273,16 +1272,16 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			}
 		}
 
-        private void activateDefaultChangeList(ChangeListManager changeListManager) {
-            List<LocalChangeList> chLists = changeListManager.getChangeLists();
-            for (LocalChangeList chl : chLists) {
-                if ("Default".equals(chl.getName())) {
-                    changeListManager.setDefaultChangeList(chl);
-                    break;
-                }
-            }
-        }
-    }
+		private void activateDefaultChangeList(ChangeListManager changeListManager) {
+			List<LocalChangeList> chLists = changeListManager.getChangeLists();
+			for (LocalChangeList chl : chLists) {
+				if ("Default".equals(chl.getName())) {
+					changeListManager.setDefaultChangeList(chl);
+					break;
+				}
+			}
+		}
+	}
 
 
 	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
@@ -1335,7 +1334,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					}
 					issueTreeBuilder.setProjectKeysToNames(projectMap);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
-					expandAllRightTreeNodes();
+//					expandAllRightTreeNodes();
 				}
 			}
 		}
