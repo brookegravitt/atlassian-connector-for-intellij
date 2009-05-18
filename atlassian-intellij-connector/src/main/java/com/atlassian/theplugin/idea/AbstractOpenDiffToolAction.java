@@ -32,7 +32,11 @@ public abstract class AbstractOpenDiffToolAction implements OpenDiffAction {
 		this.toRevision = toRevision;
 	}
 
-	@NotNull
+    protected Project getProject() {
+        return project;
+    }
+
+    @NotNull
 	private DiffContent createDiffContent(@NotNull final Project aProject, @NotNull final VirtualFile virtualFile) {
 		if (!FileTypeManager.getInstance().getFileTypeByFile(virtualFile).isBinary()) {
 			return new FileContent(aProject, virtualFile);

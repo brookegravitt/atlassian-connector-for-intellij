@@ -92,7 +92,7 @@ public final class CrucibleHelper {
 				, reviewItem
 				, 1
 				, 1
-				, new OpenCrucibleDiffToolAction(project, reviewItem));
+				, new OpenCrucibleDiffToolAction(project, review, reviewItem));
 	}
 
 	public static void openFileOnComment(final Project project, final ReviewAdapter review, final CrucibleFileInfo file,
