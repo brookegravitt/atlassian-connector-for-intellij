@@ -468,13 +468,14 @@
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 		</action>
 
-		<action id="ThePlugin.Crucible.Add.Commont.In.Editor" class="com.atlassian.theplugin.idea.action.CommentAction"
+		<action id="ThePlugin.Crucible.Add.Comment.In.Editor" class="com.atlassian.theplugin.idea.action.CommentAction"
 				text="Add Crucible Comment"
 				description="Review lines of code with Crucible" icon="/icons/crucible-blue-16.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 			<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
-            <add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>
+            <!-- version specific, have to add this group from code -->
+            <!--<add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>-->
 		</action>
 
 		<!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
