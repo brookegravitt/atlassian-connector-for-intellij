@@ -1251,7 +1251,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                     break;
                                 case REMOVE_CHANGESET:
                                     activateDefaultChangeList(changeListManager);
-                                    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                    if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
+                                        changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                    }
                                     break;
                                 default:
                                     break;
