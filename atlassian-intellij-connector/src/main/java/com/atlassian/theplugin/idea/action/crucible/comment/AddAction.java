@@ -28,6 +28,7 @@ import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.Date;
 
 public class AddAction extends AbstractCommentAction {
@@ -68,7 +69,13 @@ public class AddAction extends AbstractCommentAction {
 		e.getPresentation().setText(text);
 	}
 
-	private boolean checkIfAuthorized(final ReviewAdapter review) {
+    @Override
+    public void beforeActionPerformedUpdate(AnActionEvent event) {
+        JTree tree = getTree(event);
+        event.getPresentation().setEnabled(tree != null && tree.isFocusOwner());
+    }
+
+    private boolean checkIfAuthorized(final ReviewAdapter review) {
 		if (review == null) {
 			return false;
 		}
