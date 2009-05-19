@@ -695,8 +695,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
             this.server = server;
         }
 
-        @Nullable
-        @Override
+        @NotNull
+		@Override
         public User getAuthor() {
             if (authorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
                 return ((UserComboBoxItem) authorComboBox.getSelectedItem()).getUser();
@@ -717,8 +717,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
             return statementArea.getText();
         }
 
-        @Nullable
-        @Override
+        @NotNull
+		@Override
         public User getModerator() {
             if (moderatorComboBox.getSelectedItem() instanceof UserComboBoxItem) {
                 return ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getUser();
@@ -744,7 +744,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
             return null;
         }
 
-        @Override
+        @NotNull
+		@Override
         public String getProjectKey() {
             return ((ProjectComboBoxItem) projectsComboBox.getSelectedItem()).getWrappedProject().getKey();
         }
