@@ -101,7 +101,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
                 updateFilterServer(oldServer);
             }
 
-            // we need to also handle adding server. Use case:
+            // we need to also handle adding server. Consider scenario:
             // 1. remove the last CRU server, that is also a filter's server
             // 2. custom filter details panel disappears
             // 3. add some other CRU server
