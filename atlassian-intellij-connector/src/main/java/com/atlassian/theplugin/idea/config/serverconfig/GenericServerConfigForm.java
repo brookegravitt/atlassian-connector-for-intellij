@@ -130,9 +130,8 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
     }
 
     private synchronized void enableDisableSever(boolean quiet) {
-        if (serverUrl.getText().length() > 0) {
+        if (serverUrl.getText().length() > 0) {            
             cbEnabled.setEnabled(true);
-            cbEnabled.setSelected(true);
         } else {
             if (cbEnabled.isEnabled() && cbEnabled.isSelected() && !quiet) {
                 emptyURLMessage();
