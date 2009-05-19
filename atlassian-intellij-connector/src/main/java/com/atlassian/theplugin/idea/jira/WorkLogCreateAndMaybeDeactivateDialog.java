@@ -327,7 +327,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 			timePanel.add(endTimePanel, cc.xy(4, 8));
 		}
 
-        UIUtil.setEnabled(timePanel, chkLogWork.isSelected(), true);
+        UIUtil.setEnabled(timePanel, chkLogWork.isSelected() || !deactivateActiveIssue, true);
 
 		return timePanel;
 	}
