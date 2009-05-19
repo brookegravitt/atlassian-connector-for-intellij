@@ -3,9 +3,8 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -93,9 +92,34 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 				}
 			}
 		});
+
+        projectCfgManager.getCfgManager()
+                .addProjectConfigurationListener(CfgUtil.getProjectId(project), new ConfigurationListenerAdapter() {
+
+            @Override
+            public void serverRemoved(ServerCfg oldServer) {
+                updateFilterServer(oldServer);
+            }
+
+            // we need to also handle adding server. Use case:
+            // 1. remove the last CRU server, that is also a filter's server
+            // 2. custom filter details panel disappears
+            // 3. add some other CRU server
+            // 4. custom filter details panel reappears and it has to have correct data (info about invalid server)        
+            @Override
+            public void serverAdded(ServerCfg newServer) {
+                updateFilterServer(newServer);
+            }
+
+            private void updateFilterServer(ServerCfg oldServer) {
+                if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
+                    updateDetails(filter);
+                }
+            }
+        });
 	}
 
-	private synchronized void updateDetails(final CustomFilterBean manualFilter) {
+    private synchronized void updateDetails(final CustomFilterBean manualFilter) {
 		filter = manualFilter;
 		if (panel != null) {
 			remove(panel);
@@ -170,9 +194,11 @@ class MyUiTask implements UiTask {
 		final String serverId = customFilter.getServerUid();
 		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
 				CfgUtil.getProjectId(project), new ServerId(serverId));
-		final CrucibleServerCfg crucibleServerCfg = (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
+		final CrucibleServerCfg crucibleServerCfg =
+                (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
-		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server", (server != null ? server.getName() : "???")));
+		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server", 
+                (server != null ? server.getName() : "Server Unknown or Removed"), server == null));
 		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
 			String projectName = customFilter.getProjectKey() + " <i>(fetching full name...)</i>";
 			if (fetchRemoteData) {
@@ -191,8 +217,8 @@ class MyUiTask implements UiTask {
 				}
 			}
 			myEntries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
-
 		}
+
 		final State[] selStates = customFilter.getState();
 		if (selStates != null && selStates.length > 0) {
 			final StringBuilder states = new StringBuilder();
@@ -216,7 +242,7 @@ class MyUiTask implements UiTask {
 		}
 
 		final Boolean orRoles = customFilter.isOrRoles();
-		myEntries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles == true) ? "Any" : "All"));
+		myEntries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles) ? "Any" : "All"));
 
 		return myEntries;
 	}
@@ -231,8 +257,6 @@ class MyUiTask implements UiTask {
 					: username;
 			entriesToFill.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
 		}
-
 	}
-
 }
 

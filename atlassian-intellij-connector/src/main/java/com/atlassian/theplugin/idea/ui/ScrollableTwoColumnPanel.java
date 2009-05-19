@@ -33,13 +33,19 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 
 	public static class Entry {
 		private final String label;
+        private boolean error;
 
-		private final String value;
+        private final String value;
 
-		public Entry(final String label,  final String value) {
+        public Entry(String label, String value) {
+            this(label, value, false);
+        }
+
+        public Entry(final String label,  final String value, boolean error) {
 			this.value = value;
 			this.label = label;
-		}
+            this.error = error;
+        }
 
 		public String getLabel() {
 			return label;
@@ -48,7 +54,11 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 		public String getValue() {
 			return value;
 		}
-	}
+
+        public boolean isError() {
+            return error;
+        }
+    }
 
 	private final JPanel panel = new JPanel();
 
@@ -89,7 +99,11 @@ public class ScrollableTwoColumnPanel extends JScrollPane {
 			cc.xy(2, row * 2).vAlign = CellConstraints.TOP;
 			builder.addLabel(entry.getLabel() + ":", cc);
 			cc.xy(VAL_COL, row * 2).vAlign = CellConstraints.TOP;
-			builder.addLabel("<html>" + entry.getValue(), cc);
+            if (entry.isError()) {
+                builder.addLabel("<html>" + "<font color=\"red\">" + entry.getValue(), cc);    
+            } else {
+			    builder.addLabel("<html>" + entry.getValue(), cc);
+            }
 			row++;
 		}
 		// this lines (simulating JScrollPane resize)
