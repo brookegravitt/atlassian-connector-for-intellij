@@ -26,6 +26,8 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
+import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -71,8 +73,8 @@ public class AddAction extends AbstractCommentAction {
 
     @Override
     public void beforeActionPerformedUpdate(AnActionEvent event) {
-        JTree tree = getTree(event);
-        event.getPresentation().setEnabled(tree != null && tree.isFocusOwner());
+        Editor editor = event.getData(DataKeys.EDITOR);
+        event.getPresentation().setEnabled(editor == null);
     }
 
     private boolean checkIfAuthorized(final ReviewAdapter review) {
@@ -122,7 +124,9 @@ public class AddAction extends AbstractCommentAction {
 			addCommentToFile(event, node.getReview(), node.getFile());
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
-			addReplyToVersionedComment(event, node.getReview(), node.getFile(), node.getComment());
+            if (!node.getComment().isReply()) {
+			    addReplyToVersionedComment(event, node.getReview(), node.getFile(), node.getComment());
+            }
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
 			addCommentToFile(event, node.getReview(), node.getFile());
