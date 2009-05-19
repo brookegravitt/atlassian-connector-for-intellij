@@ -267,7 +267,7 @@ public class ReviewCommentPanel extends JPanel {
 	public static String getRankingString(ReviewAdapter review, Comment comment) {
 		StringBuilder sb = new StringBuilder();
 
-		if (!comment.getCustomFields().isEmpty()) {
+		if (comment.isDefectRaised() && !comment.getCustomFields().isEmpty()) {
 
 			if (comment.getCustomFields().size() > 0) {
 				sb.append("(");
