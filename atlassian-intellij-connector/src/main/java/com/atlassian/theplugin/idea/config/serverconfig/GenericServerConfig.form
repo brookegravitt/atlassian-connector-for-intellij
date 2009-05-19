@@ -125,6 +125,7 @@
               </grid>
             </constraints>
             <properties>
+              <enabled value="false"/>
               <horizontalTextPosition value="11"/>
               <text value="Server &amp;Enabled"/>
             </properties>

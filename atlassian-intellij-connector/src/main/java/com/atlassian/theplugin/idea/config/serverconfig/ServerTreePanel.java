@@ -133,13 +133,13 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		switch (serverType) {
 			// CHECKSTYLE:ON
 			case BAMBOO_SERVER:
-				return new BambooServerCfg(true, name, id);
+				return new BambooServerCfg(false, name, id);
 			case CRUCIBLE_SERVER:
-				return new CrucibleServerCfg(name, id);
+				return new CrucibleServerCfg(false, name, id);
 			case JIRA_SERVER:
-				return new JiraServerCfg(name, id);
+				return new JiraServerCfg(false, name, id);
 			case FISHEYE_SERVER:
-				return new FishEyeServerCfg(name, id);
+				return new FishEyeServerCfg(false, name, id);
 		}
 		throw new RuntimeException("Unhandled server type [" + serverType + "]");
 	}
