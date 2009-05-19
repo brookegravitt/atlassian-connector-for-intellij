@@ -89,7 +89,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
         final RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
         final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
         if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
-                && activeIssue != null || cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
+                || cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
 
 
             if (cache != null) {
