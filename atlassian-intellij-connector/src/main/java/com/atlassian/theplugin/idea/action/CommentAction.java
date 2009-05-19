@@ -102,7 +102,13 @@ public class CommentAction extends AnAction {
 		e.getPresentation().setEnabled(visible);
 	}
 
-	@Override
+    @Override
+    public void beforeActionPerformedUpdate(AnActionEvent event) {
+        Editor editor = event.getData(DataKeys.EDITOR);
+        event.getPresentation().setEnabled(editor != null);
+    }
+
+    @Override
 	public void actionPerformed(final AnActionEvent e) {
 		Editor editor = e.getData(DataKeys.EDITOR);
 		if (editor == null) {
