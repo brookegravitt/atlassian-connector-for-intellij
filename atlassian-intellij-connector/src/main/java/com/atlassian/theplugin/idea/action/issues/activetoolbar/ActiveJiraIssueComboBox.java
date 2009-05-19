@@ -23,9 +23,9 @@ import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.ide.DataManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
@@ -87,9 +87,11 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 
         DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
         final RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
-        if (cache != null && cache.getLoadedRecenltyOpenIssues().size() > 0) {
+        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+        if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
+                && activeIssue != null || cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
 
-            final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+
             if (cache != null) {
                 for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
                     if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
