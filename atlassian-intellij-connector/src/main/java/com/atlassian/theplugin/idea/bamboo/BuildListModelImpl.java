@@ -45,7 +45,7 @@ public class BuildListModelImpl implements BuildListModel {
 		allBuilds.addAll(builds);
 	}
 
-	public void update(Collection<BambooBuild> builds) {
+	public void update(Collection<BambooBuild> builds, final Collection<Exception> generalExceptions) {
 
 		boolean haveErrors = false;
 		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
@@ -81,6 +81,7 @@ public class BuildListModelImpl implements BuildListModel {
 		notifyListeners(new Notifier() {
 			public void notify(final BuildListModelListener listener) {
 				listener.buildsChanged(Collections.singleton(info.toString()), errors);
+                listener.generalProblemsHappened(generalExceptions);
 			}
 		});
 	}
