@@ -24,8 +24,12 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 	private final CrucibleFileInfo fileInfo;
@@ -40,35 +44,44 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
 		return fileInfo;
 	}
 
-	public IdeaReviewFileContent getContent(final ReviewAdapter review,
-			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
-		try {
+    public IdeaReviewFileContent getContent(final ReviewAdapter review,
+                                            final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
+        try {
 
-			// doggy workaround - PL-1287
-			String serverUrl = review.getServerData().getUrl();
-			String contentUrl = versionedVirtualFile.getContentUrl();
+            // doggy workaround - PL-1287
+            String serverUrl = review.getServerData().getUrl();
+            String contentUrl = versionedVirtualFile.getContentUrl();
 
-			String[] serverTokens = serverUrl.split("/");
-			String[] contentTokens = contentUrl.split("/");
+            String[] serverTokens = serverUrl.split("/");
+            String[] contentTokens = contentUrl.split("/");
 
-			if (serverTokens.length > 0 && contentTokens.length > 0) {
-				if (serverTokens[serverTokens.length - 1].equals(contentTokens[0])) {
-					contentUrl = contentUrl.substring(contentTokens[0].length(), contentUrl.length());
-				}
-			}
+            if (serverTokens.length > 0 && contentTokens.length > 0) {
+                if (serverTokens[serverTokens.length - 1].equals(contentTokens[0])) {
+                    contentUrl = contentUrl.substring(contentTokens[0].length(), contentUrl.length());
+                }
+            }
 
-			byte[] content = CrucibleServerFacadeImpl.getInstance()
-					.getFileContent(review.getServerData(), contentUrl);
+            byte[] content = CrucibleServerFacadeImpl.getInstance()
+                    .getFileContent(review.getServerData(), contentUrl);
 
-			VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
-					versionedVirtualFile.getRevision(),
-					virtualFile.getFileSystem());
+            try {
+                if (Arrays.equals(virtualFile.contentsToByteArray(), content)) {
+                    //virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.TRUE);
+                    return new IdeaReviewFileContent(virtualFile, null);
+                }
+            } catch (IOException e) {
+                PluginUtil.getLogger().warn("Cannot retrieve content for " + virtualFile.getPath() + virtualFile.getName());
+            }
 
-			return new IdeaReviewFileContent(file, null);
-		} catch (RemoteApiException e) {
-			throw new ReviewFileContentException(e);
-		} catch (ServerPasswordNotProvidedException e) {
-			throw new ReviewFileContentException(e);
-		}
-	}
+            VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
+                    versionedVirtualFile.getRevision(),
+                    virtualFile.getFileSystem());
+
+            return new IdeaReviewFileContent(file, null);
+        } catch (RemoteApiException e) {
+            throw new ReviewFileContentException(e);
+        } catch (ServerPasswordNotProvidedException e) {
+            throw new ReviewFileContentException(e);
+        }
+    }
 }

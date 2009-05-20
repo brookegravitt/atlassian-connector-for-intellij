@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentExc
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.VcsException;
@@ -31,6 +32,9 @@ import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
+
+import java.io.IOException;
+import java.util.Arrays;
 
 public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 	private final Project project;
@@ -77,6 +81,15 @@ public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 				final String strContent = contentRevision.getContent();
 				content = (strContent != null) ? strContent.getBytes() : null;
 			}
+            
+            try {
+                 if (Arrays.equals(virtualFile.contentsToByteArray(), content)) {
+                     //virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.TRUE);
+                     return new IdeaReviewFileContent(virtualFile, null);
+                 }
+             } catch (IOException e) {
+                 PluginUtil.getLogger().warn("Cannot retrieve content for " + virtualFile.getPath() + virtualFile.getName());
+             }
 
 			VirtualFile file = new VcsVirtualFile(contentRevision.getFile().getPath(), content,
 					contentRevision.getRevisionNumber().asString(),
