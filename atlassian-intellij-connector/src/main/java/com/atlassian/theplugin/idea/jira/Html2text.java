@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 
 public final class Html2text {
 
-	private static final String HTML_TAG = "<.*>";
+	private static final String HTML_TAG = "<.*?>";
 	private static final String LT_TAG = "&lt;";
 	private static final String GT_TAG = "&gt;";
 	private static final String P_TAG = "<p>";
