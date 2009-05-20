@@ -70,6 +70,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private PluginConfiguration pluginConfiguration;
 	private final CfgManager cfgManager;
 
+    private ContentPanel selectedContent = null;
+
 	public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final PluginConfiguration pluginConfiguration,
@@ -101,7 +103,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
 		pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
-		return new IssuePanel((IssueContentParameters) params);
+        selectedContent = new IssuePanel((IssueContentParameters) params);
+		return selectedContent; 
 	}
 
 	protected String getContentKey(ContentParameters params) {
@@ -195,6 +198,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					&& contentManagerEvent.getContent().isSelected()) {
 				IssuePanel ip = getContentPanel(contentKey);
 				if (ip != null) {
+                    selectedContent = ip;
 					ip.reloadAvailableActions();
 				}
 			}
@@ -251,6 +255,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					}
 				}
 			});
+
+            getAvailableActionsGroup().clearActions(project);
 
 			refresh();
 		}
@@ -343,18 +349,19 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
-			reloadAvailableActions();
+            if (selectedContent == this) {
+			    reloadAvailableActions();
+            }
 		}
 
 		void reloadAvailableActions() {
-			final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
-					.getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
+            final RunJiraActionGroup actionGroup = getAvailableActionsGroup();
 
-			final JIRAIssue issue = params.issue;
+            final JIRAIssue issue = params.issue;
 			if (issue != null) {
+                actionGroup.clearActions(project);
 				java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 				if (actions != null) {
-					actionGroup.clearActions(project);
 					for (JIRAAction a : actions) {
 						actionGroup.addAction(project,
 								new RunIssueActionAction(this, facade, issue, a, jiraIssueListModelBuilder));
@@ -397,7 +404,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-		public Object getData(@NonNls final String dataId) {
+        private RunJiraActionGroup getAvailableActionsGroup() {
+            final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
+                    .getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
+            return actionGroup;
+        }
+
+        public Object getData(@NonNls final String dataId) {
 			if (dataId.equals(Constants.ISSUE)) {
 				return params.issue;
 			}
@@ -793,6 +806,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							rendererMap.clear();
 							add(createBody(), BorderLayout.CENTER);
 							if (errorString == null) {
+                                colorLabels(Color.BLACK);
+
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 								setFixVersions(getStringArray(params.issue.getFixVersions()));
 								setComponents(getStringArray(params.issue.getComponents()));
@@ -800,24 +815,28 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								setRemainingEstimate(params.issue.getRemainingEstimate());
 								setTimeSpent(params.issue.getTimeSpent());
 							} else {
-								getAffectVersionsLabel().setForeground(Color.RED);
-								getFixVersionsLabel().setForeground(Color.RED);
-								getComponentsLabel().setForeground(Color.RED);
-								originalEstimate.setForeground(Color.RED);
-								remainingEstimate.setForeground(Color.RED);
-								timeSpent.setForeground(Color.RED);
+                                colorLabels(Color.RED);
+
 								setAffectsVersions(errorString);
 								setFixVersions(errorString);
 								setComponents(errorString);
 								setOriginalEstimate(errorString[0]);
 								setRemainingEstimate(errorString[0]);
 								setTimeSpent(errorString[0]);
-
 							}
 						}
 					});
 				}
-			}
+
+                private void colorLabels(Color color) {
+                    getAffectVersionsLabel().setForeground(color);
+                    getFixVersionsLabel().setForeground(color);
+                    getComponentsLabel().setForeground(color);
+                    originalEstimate.setForeground(color);
+                    remainingEstimate.setForeground(color);
+                    timeSpent.setForeground(color);
+                }
+            }
 
 			private void setTimeSpent(String t) {
 				if (t != null) {
