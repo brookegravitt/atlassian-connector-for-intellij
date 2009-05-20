@@ -127,7 +127,10 @@ public class BuildTree extends AbstractTree {
 			refreshTree();
 		}
 
-		private void refreshTree() {
+        public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+        }
+
+        private void refreshTree() {
 			//		long begin = System.currentTimeMillis();
 			try {
 				buildTreeUiSetup.setTreeRebuilding(true);

@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +31,10 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
 		super(buildModel);
 	}
 
-	@Override
+    public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+    }
+
+    @Override
 	public Collection<BambooBuildAdapterIdea> getBuilds() {
 		return search(parent.getBuilds());
 	}

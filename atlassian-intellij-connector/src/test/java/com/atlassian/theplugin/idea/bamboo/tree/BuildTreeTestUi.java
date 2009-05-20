@@ -91,7 +91,7 @@ public final class BuildTreeTestUi {
 		for (BambooBuildAdapterIdea build : buildAdapters) {
 			builds.add(build.getBuild());
 		}
-		buildListModel.update(builds);
+		buildListModel.update(builds, null);
 		SwingAppRunner.run(jScrollPane);
 	}
 }

@@ -24,4 +24,5 @@ import com.intellij.openapi.util.Pair;
 public interface BuildListModelListener {
 	void modelChanged();
 	void buildsChanged(@Nullable Collection<String> additionalInfo, @Nullable Collection<Pair<String, Throwable>> errors);
+    void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions);
 }

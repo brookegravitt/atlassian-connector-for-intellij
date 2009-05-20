@@ -1280,7 +1280,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {
-							setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]."
+							setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]. "
 									+ e.getMessage(), e);
 						}
 					}
@@ -1294,7 +1294,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 									p.getName());
 						}
 					} catch (JIRAException e) {
-						setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]."
+						setStatusErrorMessage("Cannot retrieve projects from server [" + srvcfg.getName() + "]. "
 								+ e.getMessage(), e);
 					}
 					issueTreeBuilder.setProjectKeysToNames(projectMap);

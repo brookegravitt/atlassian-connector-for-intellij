@@ -232,11 +232,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
-				public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses) {
-					bambooModel.update(buildStatuses);
+                public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses,
+                                                final Collection<Exception> generalExceptions) {
+
+					bambooModel.update(buildStatuses, generalExceptions);
 				}
 
-				public void resetState() {
+                public void resetState() {
 				}
 			});
 

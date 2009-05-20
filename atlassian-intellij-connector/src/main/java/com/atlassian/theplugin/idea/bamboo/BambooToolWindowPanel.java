@@ -99,7 +99,14 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			public void modelChanged() {
 			}
 
-			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
+            public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+                if (generalExceptions != null && generalExceptions.size() > 0) {
+                    Exception e = generalExceptions.iterator().next();
+                    setErrorMessage(e.getMessage(), e);
+                }
+            }
+
+            public void buildsChanged(@Nullable final Collection<String> additionalInfo,
 					@Nullable final Collection<Pair<String, Throwable>> errors) {
 
 				// we do not support multiple messages in status bar yet (waiting for inbox to be implemented)
@@ -115,7 +122,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				filterList.update();
 			}
 		});
-
 
 		searchBuildModel = new SearchBuildListModel(bambooModel);
 		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel), getRightScrollPane());
@@ -135,9 +141,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		}
 
 		setLeftPaneVisible(filterList.getBambooFilterType() != null);
-
 	}
-
 
 	private void addBuildTreeListeners() {
 		buildTree.addKeyListener(new KeyAdapter() {
@@ -198,7 +202,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		}
 	}
 
-
 	protected void addSearchBoxListener() {
 		searchField.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
@@ -237,7 +240,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public JTree getRightTree() {
 		return buildTree;
 	}
-
 
 	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
@@ -308,7 +310,6 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		}
 		return null;
 	}
-
 
 	public BuildGroupBy getGroupBy() {
 		return groupBy;
