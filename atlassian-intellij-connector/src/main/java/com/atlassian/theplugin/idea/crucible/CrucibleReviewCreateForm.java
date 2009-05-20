@@ -779,14 +779,13 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
     @Override
     protected void doOKAction() {
-        runCreateReviewTask(false);
+        runCreateReviewTask(true);
         super.doOKAction();
     }
 
     protected void setReviewCreationTimeout(int reviewCreationTimeout) {
         this.reviewCreationTimeout = reviewCreationTimeout;
     }
-
 
     protected void runCreateReviewTask(final boolean runUntilSuccessful) {
         final ServerComboBoxItem selectedItem = (ServerComboBoxItem) crucibleServersComboBox.getSelectedItem();
@@ -796,6 +795,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
             final ServerData server = selectedItem.getServer();
 
             Task.Backgroundable changesTask = new Task.Backgroundable(project, "Creating review...", runUntilSuccessful) {
+                
                 public boolean isCancelled = false;
 
                 @Override
@@ -873,45 +873,61 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
                                 ApplicationManager.getApplication().invokeAndWait(new Runnable() {
                                     public void run() {
                                         String message = "Error creating review: " + server.getUrl();
-                                        if (e != null && e.getMessage() != null &&
-                                                e.getMessage().contains("Specified change set id does not exist")) {
-                                            message
-                                                    += "\nSpecified change set could not be found on server. Check selected repository";
+                                        if (isUnknownChangeSetException(e)) {
+                                            message += "\nSpecified change set could not be found on server. Check selected repository";
                                         }
                                         DialogWithDetails.showExceptionDialog(project, message, e);
                                     }
                                 }, modalityState);
                             } else {
-                                try {
-                                    Date now = new Date();
-                                    if (reviewCreationTimeout > 0
-                                            && now.getTime() - startDate.getTime() >
-                                            reviewCreationTimeout * MILLISECONDS_IN_MINUTE) {
-                                        SwingUtilities.invokeLater(new Runnable() {
-                                            public void run() {
-                                                Messages.showErrorDialog(project,
-                                                        "Creation of the review on server\n"
-                                                                + selectedItem.getServer().getName()
-                                                                + " timed out after "
-                                                                + reviewCreationTimeout + " minutes",
-                                                        "Review Creation Timeout");
-                                            }
-                                        });
-                                        break;
-                                    }
-                                    indicator.setText("Waiting for Crucible to update to newest change set...");
-                                    for (int i = 0; i < 10; ++i) {
-                                        if (indicator.isCanceled()) {
+                                if (isUnknownChangeSetException(e)) {
+                                    try {
+                                        Date now = new Date();
+                                        if (reviewCreationTimeout > 0
+                                                && now.getTime() - startDate.getTime() >
+                                                reviewCreationTimeout * MILLISECONDS_IN_MINUTE) {
+                                            SwingUtilities.invokeLater(new Runnable() {
+                                                public void run() {
+                                                    Messages.showErrorDialog(project,
+                                                            "Creation of the review on server\n"
+                                                                    + selectedItem.getServer().getName()
+                                                                    + " timed out after "
+                                                                    + reviewCreationTimeout + " minutes",
+                                                            "Review Creation Timeout");
+                                                }
+                                            });
                                             break;
                                         }
-                                        Thread.sleep(1000);
+                                        indicator.setText("Waiting for Crucible to update to newest change set...");
+                                        for (int i = 0; i < 10; ++i) {
+                                            if (indicator.isCanceled()) {
+                                                isCancelled = true;
+                                                break;
+                                            }
+                                            Thread.sleep(1000);
+                                        }
+                                    } catch (InterruptedException e1) {
+                                        // eeeem, now what?
                                     }
-                                } catch (InterruptedException e1) {
-                                    // eeeem, now what?
+                                } else {
+                                    ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+                                        public void run() {
+                                            DialogWithDetails.showExceptionDialog(project,
+                                                    "Error creating review: " + server.getUrl(), e);
+                                        }
+                                    }, modalityState);
+                                    isCancelled = true;
                                 }
                             }
                         }
-                    } while (runUntilSuccessful && !submissionSuccess && !indicator.isCanceled());
+                    } while (runUntilSuccessful && !submissionSuccess && !isCancelled && !indicator.isCanceled());
+                }
+
+                private boolean isUnknownChangeSetException(Throwable e) {
+                    return e != null
+                            && e.getMessage() != null
+                            && e.getMessage().contains("Specified change set id does not exist");
+
                 }
             };
             ProgressManager.getInstance().run(changesTask);
