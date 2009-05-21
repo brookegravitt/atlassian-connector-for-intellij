@@ -37,7 +37,11 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1144,8 +1148,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		private final WorkLogCreateAndMaybeDeactivateDialog dialog;
 		private final ServerData jiraServer;
 		private final boolean deactivateIssue;
+        private boolean commitSuccess;
 
-		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
+        public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
 				ServerData jiraServer, boolean deactivateIssue) {
 			super(IssueListToolWindowPanel.this.getProject(),
 					deactivateIssue ? "Stopping Work" : "Logging Work", false);
@@ -1194,34 +1199,43 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 							final LocalChangeList list = dialog.getCurrentChangeList();
 							list.setComment(dialog.getComment());
 
-							SwingUtilities.invokeLater(new Runnable() {
-								public void run() {
-									setStatusInfoMessage("Committing changes...");
-									changeListManager.commitChanges(list, dialog.getSelectedChanges());
-									setStatusInfoMessage("Deactivated issue " + issue.getKey());
-								}
-							});
+                            ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+                                public void run() {
+                                    setStatusInfoMessage("Committing changes...");
+                                    FileDocumentManager.getInstance().saveAllDocuments();
+                                    List<Change> selectedChanges = dialog.getSelectedChanges();
+                                    commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(
+                                            list, selectedChanges);
+                                }
+                            }, ModalityState.defaultModalityState());
 
-							WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
-									dialog.getAfterCommitChangeSetAction();
+                            if (commitSuccess) {
+                                WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+                                        dialog.getAfterCommitChangeSetAction();
 
-							switch (afterCommit) {
-								case DEACTIVATE_CHANGESET:
-									activateDefaultChangeList(changeListManager);
-									break;
-								case REMOVE_CHANGESET:
-									activateDefaultChangeList(changeListManager);
-									if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
-										changeListManager.removeChangeList(dialog.getCurrentChangeList());
-									}
-									break;
-								default:
-									break;
-							}
+                                switch (afterCommit) {
+                                    case DEACTIVATE_CHANGESET:
+
+                                        activateDefaultChangeList(changeListManager);
+                                        break;
+                                    case REMOVE_CHANGESET:
+                                        activateDefaultChangeList(changeListManager);
+                                        if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
+                                            changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                setStatusInfoMessage("Deactivated issue " + issue.getKey());
+                            } else {
+                                setStatusErrorMessage(
+                                        "Failed to commit change list while deactivating issue " + issue.getKey());
+                            }
 						}
 
-						setStatusInfoMessage("Deactivated issue " + issue.getKey());
-						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
+                        setStatusInfoMessage("Deactivated issue " + issue.getKey());
+                        jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				}
 			} catch (JIRAException e) {
