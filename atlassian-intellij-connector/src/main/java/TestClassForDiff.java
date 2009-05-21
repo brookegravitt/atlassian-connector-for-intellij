@@ -19,9 +19,9 @@
  */
 public class TestClassForDiff {
 
+    public TestClassForDiff() {
 
-    
 
-
-    
+        
+    }
 }
