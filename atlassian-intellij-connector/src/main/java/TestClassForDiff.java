@@ -18,8 +18,4 @@
  * User: pmaruszak
  */
 public class TestClassForDiff {
-    public TestClassForDiff() {
-        // comment
-        // some more comment
-    }
 }
