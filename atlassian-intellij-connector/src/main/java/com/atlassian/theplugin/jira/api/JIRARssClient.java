@@ -47,7 +47,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	}
 
 	@Override
-	public void adjustHttpHeader(HttpMethod method) {
+	protected void adjustHttpHeader(HttpMethod method) {
 	}
 
 	@Override

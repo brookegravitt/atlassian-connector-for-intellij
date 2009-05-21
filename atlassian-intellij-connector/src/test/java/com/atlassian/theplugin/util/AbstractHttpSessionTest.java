@@ -139,7 +139,7 @@ public class AbstractHttpSessionTest extends TestCase {
 		}
 
 		@Override
-		public void adjustHttpHeader(HttpMethod method) {
+		protected void adjustHttpHeader(HttpMethod method) {
 
 		}
 
