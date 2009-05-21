@@ -165,8 +165,12 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
                                 }
                             });
                         }
-                    } catch (JIRAException e) {
-                        DialogWithDetails.showExceptionDialog(project, "Failed to retrieve available actions", e);
+                    } catch (final JIRAException e) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                DialogWithDetails.showExceptionDialog(project, "Failed to retrieve available actions", e);
+                            }
+                        });
                     }
                 }
             };
