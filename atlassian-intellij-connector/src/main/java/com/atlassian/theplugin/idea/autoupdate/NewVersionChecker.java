@@ -111,9 +111,16 @@ public final class NewVersionChecker implements SchedulableChecker {
 	private InfoServer.VersionInfo getLatestVersion(GeneralConfigurationBean configuration)
 			throws VersionServiceException, IncorrectVersionException {
 		final Boolean anonymousFeedbackEnabled = configuration.getAnonymousEnhancedFeedbackEnabled();
-		return InfoServer.getLatestPluginVersion(
+		InfoServer.VersionInfo info = InfoServer.getLatestPluginVersion(
 				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : false,
 				            configuration.getUid(), pluginConfiguration.getGeneralConfigurationData(), cfgManager),
                 configuration.isCheckUnstableVersionsEnabled());
+
+        // reset counters only after successful version info poll
+        for (String counter : pluginConfiguration.getGeneralConfigurationData().getStatsCountersMap().keySet()) {
+            pluginConfiguration.getGeneralConfigurationData().resetCounter(counter);
+        }
+
+        return info;
 	}
 }

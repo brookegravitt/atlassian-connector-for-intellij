@@ -55,7 +55,6 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 				TreeSet<String> counters = new TreeSet<String>(generalConfig.getStatsCountersMap().keySet());
 				for (String counter : counters) {
 					sb.append("&").append(counter).append("=").append(generalConfig.getStatsCountersMap().get(counter));
-					generalConfig.resetCounter(counter);
 				}
 			}
 		}
