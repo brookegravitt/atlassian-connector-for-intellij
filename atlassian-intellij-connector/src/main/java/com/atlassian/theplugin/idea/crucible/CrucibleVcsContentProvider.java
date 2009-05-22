@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
@@ -36,7 +36,7 @@ import com.intellij.vcsUtil.VcsUtil;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
+public class CrucibleVcsContentProvider implements IdeaReviewFileContentProvider {
 	private final Project project;
 	private final CrucibleFileInfo fileInfo;
 	private final VirtualFile virtualFile;
@@ -51,7 +51,15 @@ public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 		return fileInfo;
 	}
 
-	public IdeaReviewFileContent getContent(final ReviewAdapter review,
+    public boolean isLocalFileDirty() {
+        return VcsIdeaHelper.isFileDirty(project, virtualFile);
+    }
+
+    public VirtualFile getVirtualFile() {
+        return virtualFile;
+    }
+
+    public IdeaReviewFileContent getContent(final ReviewAdapter review,
 			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
 		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
 		if (vcs == null) {
@@ -85,7 +93,9 @@ public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
             try {
                  if (Arrays.equals(virtualFile.contentsToByteArray(), content)) {
                      //virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.TRUE);
-                     return new IdeaReviewFileContent(virtualFile, null);
+
+                     IdeaReviewFileContent localContent = new IdeaReviewFileContent(virtualFile, null, true);
+                     return localContent;
                  }
              } catch (IOException e) {
                  PluginUtil.getLogger().warn("Cannot retrieve content for " + virtualFile.getPath() + virtualFile.getName());
@@ -94,7 +104,8 @@ public class CrucibleVcsContentProvider implements ReviewFileContentProvider {
 			VirtualFile file = new VcsVirtualFile(contentRevision.getFile().getPath(), content,
 					contentRevision.getRevisionNumber().asString(),
 					virtualFile.getFileSystem());
-			return new IdeaReviewFileContent(file, null);
+            IdeaReviewFileContent remoteContent = new IdeaReviewFileContent(file, null, false);
+            return remoteContent;
 
 		} catch (VcsException e) {
 			throw new ReviewFileContentException(e);

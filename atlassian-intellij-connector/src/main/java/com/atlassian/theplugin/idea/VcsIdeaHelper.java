@@ -30,14 +30,10 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.AbstractVcs;
-import com.intellij.openapi.vcs.CommittedChangesProvider;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.actions.VcsContextFactory;
 import com.intellij.openapi.vcs.changes.BinaryContentRevision;
+import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.ContentRevision;
 import com.intellij.openapi.vcs.diff.DiffProvider;
 import com.intellij.openapi.vcs.history.VcsFileRevision;
@@ -97,6 +93,7 @@ public final class VcsIdeaHelper {
 		if (plm == null) {
 			return null;
 		}
+
 		AbstractVcs vcs = plm.getVcsFor(vFile);
 		if (vcs == null) {
 			return null;
@@ -183,26 +180,9 @@ public final class VcsIdeaHelper {
 		return vcvf;
 	}
 
-	// not used method causing incompatibility 7.0 -> 8.0
-	/*
-	private static boolean isFileDirty(final Project project, final VirtualFile virtualFile) {
-		AbstractVcs vcs = VcsUtil.getVcsFor(project, virtualFile);
-		if (vcs == null) {
-			return true;
-		}
-
-		VcsDirtyScopeManager manager = VcsDirtyScopeManager.getInstance(project);
-		List<VcsDirtyScope> dirtyScopes = manager.retrieveScopes();
-		VcsContextFactory vcsContextFactory = PeerFactory.getInstance().getVcsContextFactory();
-		FilePath filePath = vcsContextFactory.createFilePathOn(virtualFile);
-		for (VcsDirtyScope dirtyScope : dirtyScopes) {
-			if (dirtyScope.getDirtyFiles().contains(filePath)) {
-				return true;
-			}
-		}
-		return false;
+	public static boolean isFileDirty(final Project project, final VirtualFile virtualFile) {
+		return ChangeListManager.getInstance(project).getAffectedFiles().contains(virtualFile);
 	}
-	*/
 
 
 	@Nullable
