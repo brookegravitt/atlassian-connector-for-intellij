@@ -18,5 +18,4 @@
  * User: pmaruszak
  */
 public class TestClassForDiff {
-
 }
