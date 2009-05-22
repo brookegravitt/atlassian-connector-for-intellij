@@ -11,8 +11,8 @@ import com.intellij.openapi.vfs.VirtualFile;
 public class IdeaReviewFileContent extends ReviewFileContent {
 	private final VirtualFile virtualFile;
 
-	public IdeaReviewFileContent(VirtualFile virtualFile, final byte[] content) {
-		super(content);
+	public IdeaReviewFileContent(VirtualFile virtualFile, final byte[] content, final boolean revisionOnStorage) {
+		super(content, revisionOnStorage);
 		this.virtualFile = virtualFile;
 	}
 

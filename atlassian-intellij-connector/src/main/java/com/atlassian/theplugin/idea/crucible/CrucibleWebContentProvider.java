@@ -19,30 +19,37 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-public class CrucibleWebContentProvider implements ReviewFileContentProvider {
+public class CrucibleWebContentProvider implements IdeaReviewFileContentProvider {
 	private final CrucibleFileInfo fileInfo;
 	private final VirtualFile virtualFile;
+    private final Project project;
 
-	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
+    public boolean isLocalFileDirty() {
+        return VcsIdeaHelper.isFileDirty(project, virtualFile);
+    }
+	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile, final Project project) {
 		this.fileInfo = fileInfo;
 		this.virtualFile = virtualFile;
-	}
+        this.project = project;
+    }
 
 	public CrucibleFileInfo getFileInfo() {
 		return fileInfo;
 	}
+
+    public VirtualFile getVirtualFile() {
+        return virtualFile;
+    }
 
     public IdeaReviewFileContent getContent(final ReviewAdapter review,
                                             final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
@@ -51,6 +58,7 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
             // doggy workaround - PL-1287
             String serverUrl = review.getServerData().getUrl();
             String contentUrl = versionedVirtualFile.getContentUrl();
+            boolean revisionOnStorage = false;
 
             String[] serverTokens = serverUrl.split("/");
             String[] contentTokens = contentUrl.split("/");
@@ -60,24 +68,24 @@ public class CrucibleWebContentProvider implements ReviewFileContentProvider {
                     contentUrl = contentUrl.substring(contentTokens[0].length(), contentUrl.length());
                 }
             }
-
             byte[] content = CrucibleServerFacadeImpl.getInstance()
                     .getFileContent(review.getServerData(), contentUrl);
 
-            try {
-                if (Arrays.equals(virtualFile.contentsToByteArray(), content)) {
-                    //virtualFile.putUserData(CommentHighlighter.REVIEWITEM_CURRENT_CONTENT_KEY, Boolean.TRUE);
-                    return new IdeaReviewFileContent(virtualFile, null);
-                }
-            } catch (IOException e) {
-                PluginUtil.getLogger().warn("Cannot retrieve content for " + virtualFile.getPath() + virtualFile.getName());
-            }
+            VcsRevisionNumber revisionNumber = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
+            //!(the same revision on disk in localfile system as requested)
+            revisionOnStorage = (revisionNumber != null
+                        && revisionNumber.asString().equals(versionedVirtualFile.getRevision()));
+
+//            if (!VcsIdeaHelper.isFileDirty(project, virtualFile)) {
+//                return new IdeaReviewFileContent(virtualFile, null, revisionOnStorage);
+//            }
+
 
             VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
                     versionedVirtualFile.getRevision(),
                     virtualFile.getFileSystem());
 
-            return new IdeaReviewFileContent(file, null);
+            return new IdeaReviewFileContent(file, null, revisionOnStorage);
         } catch (RemoteApiException e) {
             throw new ReviewFileContentException(e);
         } catch (ServerPasswordNotProvidedException e) {
