@@ -11,7 +11,7 @@ public class LogWorkAction extends JIRAAbstractAction {
 		final JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
 		if (panel != null && issue != null) {
-			panel.logWorkOrDeactivateIssue(issue, issue.getServer(), "", false);
+			panel.logWorkOrDeactivateIssue(issue, issue.getServer(), null, false);
 		}
 	}
 

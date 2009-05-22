@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
@@ -7,6 +7,7 @@ import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewDelayedForm;
+import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitExecutor;

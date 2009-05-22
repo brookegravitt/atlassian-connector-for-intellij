@@ -528,14 +528,16 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
 		setOKActionEnabled(false);
 
-		timeSpentField.setText(timeSpent);
+        if (timeSpent != null) {
+		    timeSpentField.setText(timeSpent);
+        } else {
+            Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
+                    jiraServer, issue);
 
-		Date startProgressTimestamp = JIRAIssueProgressTimestampCache.getInstance().getTimestamp(
-				jiraServer, issue);
-		
-		if (startProgressTimestamp != null) {
-			timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
-		}
+            if (startProgressTimestamp != null) {
+                timeSpentField.setText(getFormatedDurationString(startProgressTimestamp));
+            }
+        }
 
 		final Calendar now = Calendar.getInstance();
 		endTime = now.getTime();
@@ -653,6 +655,10 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return remainingEstimateField.getText();
 	}
 
+    public void setRemainingEstimateString(String newRemainingEstimate) {
+        remainingEstimateField.setText(newRemainingEstimate);
+    }
+    
 	public Date getEndDate() {
 		return (Date) endTime.clone();
 	}
@@ -669,17 +675,30 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		return comment.getText();
 	}
 
-	public boolean getAutoUpdateRemaining() {
-		return btnAutoUpdate.isSelected();
-	}
+    public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
+        if (btnAutoUpdate.isSelected()) {
+            return RemainingEstimateUpdateMode.AUTO;
+        }
+        if (btnLeaveUnchanged.isSelected()) {
+            return RemainingEstimateUpdateMode.UNCHANGED;
+        }
+        return RemainingEstimateUpdateMode.MANUAL;
+    }
 
-	public boolean getLeaveRemainingUnchanged() {
-		return btnLeaveUnchanged.isSelected();
-	}
-
-	public boolean getUpdateRemainingManually() {
-		return btnUpdateManually.isSelected();
-	}
+    public void setRemainingEstimateUpdateMode(RemainingEstimateUpdateMode mode) {
+        switch (mode) {
+            case MANUAL:
+                btnUpdateManually.setSelected(true);
+                break;
+            case UNCHANGED:
+                btnLeaveUnchanged.setSelected(true);
+                break;
+            case AUTO:
+            default:
+                btnAutoUpdate.setSelected(true);
+                break;
+        }
+    }
 
     public JIRAAction getSelectedAction() {
         if (!cbPerformWorkflowAction.isSelected() || actionCombo.getItemCount() == 0) {

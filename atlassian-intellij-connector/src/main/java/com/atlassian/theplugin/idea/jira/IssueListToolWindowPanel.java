@@ -1171,11 +1171,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						Calendar cal = Calendar.getInstance();
 						cal.setTime(dialog.getStartDate());
 
-						String newRemainingEstimate = dialog.getUpdateRemainingManually()
-								? dialog.getRemainingEstimateString() : null;
+						String newRemainingEstimate = dialog.getRemainingEstimateUpdateMode()
+                                .equals(RemainingEstimateUpdateMode.MANUAL)
+                                ? dialog.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
 								cal, null,
-								!dialog.getLeaveRemainingUnchanged(), newRemainingEstimate);
+								!dialog.getRemainingEstimateUpdateMode()
+                                        .equals(RemainingEstimateUpdateMode.UNCHANGED),
+                                newRemainingEstimate);
 						JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
 								jiraServer, issue);
 						setStatusInfoMessage("Logged work for issue " + issue.getKey());

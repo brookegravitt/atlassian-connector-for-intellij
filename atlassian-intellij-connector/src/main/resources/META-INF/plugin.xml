@@ -103,7 +103,8 @@
 		<customScopesProvider implementation="com.atlassian.theplugin.idea.crucible.CrucibleReviewScopeProvider"/>
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
-		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.PostCommitReviewCheckinHandlerFactory"/>
+		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
+        <checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"
