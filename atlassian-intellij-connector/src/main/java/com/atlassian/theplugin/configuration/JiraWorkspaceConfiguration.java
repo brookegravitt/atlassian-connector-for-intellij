@@ -18,6 +18,7 @@ package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
+import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -40,6 +41,8 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
     private boolean activeIssueLogWork;
     private boolean activeIssueCommitChanges;
     private int activeIssueAfterCommit;
+    private boolean logWorkOnCommit;
+    private RemainingEstimateUpdateMode remainingEstimateUpdateMode;
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -54,6 +57,8 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
         this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
         this.activeIssueCommitChanges = jiraConfiguration.activeIssueCommitChanges;
         this.activeIssueAfterCommit = jiraConfiguration.activeIssueAfterCommit;
+        this.logWorkOnCommit = jiraConfiguration.logWorkOnCommit;
+        this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
 	}
 
 	public Map<String, JiraFilterConfigurationBean> getFilters() {
@@ -141,6 +146,22 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
     public void setActiveIssueAfterCommit(int activeIssueAfterCommit) {
         this.activeIssueAfterCommit = activeIssueAfterCommit;
+    }
+
+    public boolean isLogWorkOnCommit() {
+        return logWorkOnCommit;
+    }
+
+    public void setLogWorkOnCommit(boolean logWorkOnCommit) {
+        this.logWorkOnCommit = logWorkOnCommit;
+    }
+
+    public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
+        return remainingEstimateUpdateMode;
+    }
+
+    public void setRemainingEstimateUpdateMode(RemainingEstimateUpdateMode remainingEstimateUpdateMode) {
+        this.remainingEstimateUpdateMode = remainingEstimateUpdateMode;
     }
 
     @Transient
