@@ -76,11 +76,6 @@ public class CrucibleWebContentProvider implements IdeaReviewFileContentProvider
             revisionOnStorage = (revisionNumber != null
                         && revisionNumber.asString().equals(versionedVirtualFile.getRevision()));
 
-//            if (!VcsIdeaHelper.isFileDirty(project, virtualFile)) {
-//                return new IdeaReviewFileContent(virtualFile, null, revisionOnStorage);
-//            }
-
-
             VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
                     versionedVirtualFile.getRevision(),
                     virtualFile.getFileSystem());
