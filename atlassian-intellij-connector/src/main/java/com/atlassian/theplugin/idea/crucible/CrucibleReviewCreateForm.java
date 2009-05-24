@@ -47,6 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import static javax.swing.Action.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -108,7 +109,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
         customComponentPanel.setLayout(new BorderLayout());
         titleText.setText(commitMessage);
-        getOKAction().putValue(Action.NAME, "Create review...");
+        getOKAction().putValue(NAME, "Create review...");
         crucibleServersComboBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (crucibleServersComboBox.getItemCount() > 0 && crucibleServersComboBox.getSelectedItem() != null &&

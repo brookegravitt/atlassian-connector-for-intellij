@@ -48,6 +48,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import static javax.swing.Action.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -91,7 +92,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
 		setTitle("Add revision to review... ");
-		getOKAction().putValue(Action.NAME, "Add revision...");
+		getOKAction().putValue(NAME, "Add revision...");
 	}
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
@@ -105,7 +106,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		changesBrowser = IdeaVersionFacade.getInstance().getChangesListBrowser(project, changeListManager, changes);
 		setCustomComponent(changesBrowser);
 		setTitle("Add files");
-		getOKAction().putValue(Action.NAME, "Add files...");
+		getOKAction().putValue(NAME, "Add files...");
 	}
 
 	private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
