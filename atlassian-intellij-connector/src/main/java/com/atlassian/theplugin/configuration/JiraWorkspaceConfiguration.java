@@ -157,7 +157,7 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
     }
 
     public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
-        return remainingEstimateUpdateMode;
+        return remainingEstimateUpdateMode != null ? remainingEstimateUpdateMode : RemainingEstimateUpdateMode.AUTO;
     }
 
     public void setRemainingEstimateUpdateMode(RemainingEstimateUpdateMode remainingEstimateUpdateMode) {
