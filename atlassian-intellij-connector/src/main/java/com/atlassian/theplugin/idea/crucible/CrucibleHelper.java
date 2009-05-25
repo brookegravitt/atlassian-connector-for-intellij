@@ -363,7 +363,7 @@ public final class CrucibleHelper {
                 return virtualFile;
             }
 
-            IdeaReviewFileContent content = (IdeaReviewFileContent)review.getFileContent(fileInfo);
+            IdeaReviewFileContent content = (IdeaReviewFileContent) review.getFileContent(fileInfo);
             ReviewFileContentProvider provider = review.getContentProvider(fileInfo);
 
             //get local file if not dirty and has the same revision as remote
