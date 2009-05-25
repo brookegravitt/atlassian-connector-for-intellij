@@ -23,32 +23,14 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 
-public class CrucibleWebContentProvider implements IdeaReviewFileContentProvider {
-	private final CrucibleFileInfo fileInfo;
-	private final VirtualFile virtualFile;
-    private final Project project;
+public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
 
-    public boolean isLocalFileDirty() {
-        return VcsIdeaHelper.isFileDirty(project, virtualFile);
-    }
 	public CrucibleWebContentProvider(CrucibleFileInfo fileInfo, VirtualFile virtualFile, final Project project) {
-		this.fileInfo = fileInfo;
-		this.virtualFile = virtualFile;
-        this.project = project;
-    }
-
-	public CrucibleFileInfo getFileInfo() {
-		return fileInfo;
-	}
-
-    public VirtualFile getVirtualFile() {
-        return virtualFile;
+        super(project, virtualFile, fileInfo);
     }
 
     public IdeaReviewFileContent getContent(final ReviewAdapter review,
@@ -58,7 +40,6 @@ public class CrucibleWebContentProvider implements IdeaReviewFileContentProvider
             // doggy workaround - PL-1287
             String serverUrl = review.getServerData().getUrl();
             String contentUrl = versionedVirtualFile.getContentUrl();
-            boolean revisionOnStorage = false;
 
             String[] serverTokens = serverUrl.split("/");
             String[] contentTokens = contentUrl.split("/");
@@ -71,16 +52,11 @@ public class CrucibleWebContentProvider implements IdeaReviewFileContentProvider
             byte[] content = CrucibleServerFacadeImpl.getInstance()
                     .getFileContent(review.getServerData(), contentUrl);
 
-            VcsRevisionNumber revisionNumber = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
-            //!(the same revision on disk in localfile system as requested)
-            revisionOnStorage = (revisionNumber != null
-                        && revisionNumber.asString().equals(versionedVirtualFile.getRevision()));
-
             VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
                     versionedVirtualFile.getRevision(),
                     virtualFile.getFileSystem());
 
-            return new IdeaReviewFileContent(file, null, revisionOnStorage);
+            return new IdeaReviewFileContent(file, content);
         } catch (RemoteApiException e) {
             throw new ReviewFileContentException(e);
         } catch (ServerPasswordNotProvidedException e) {

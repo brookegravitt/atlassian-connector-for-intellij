@@ -10,19 +10,13 @@ import com.intellij.openapi.vfs.VirtualFile;
  */
 public class IdeaReviewFileContent extends ReviewFileContent {
 	private final VirtualFile virtualFile;
-    private boolean revisionOnLocalFS = false;
 
-	public IdeaReviewFileContent(VirtualFile virtualFile, final byte[] content, final boolean revisionOnStorage) {
+	public IdeaReviewFileContent(VirtualFile virtualFile, final byte[] content) {
 		super(content);
 		this.virtualFile = virtualFile;
-        this.revisionOnLocalFS = revisionOnStorage;
 	}
 
 	public VirtualFile getVirtualFile() {
 		return virtualFile;
 	}
-
-      public boolean isRevisionOnLocalFS() {
-        return revisionOnLocalFS;
-    }
 }
