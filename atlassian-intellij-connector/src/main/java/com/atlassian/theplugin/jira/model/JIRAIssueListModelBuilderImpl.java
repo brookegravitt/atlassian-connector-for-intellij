@@ -13,6 +13,7 @@ import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBuilder {
@@ -76,8 +77,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 				l = facade.getIssues(jiraServerCfg, manualFilter.getQueryFragment(), SORT_BY, SORT_ORDER, startFrom, size);
 				model.addIssues(l);
 				startFrom += l != null ? l.size() : 0;
-				// todo check active issue
-				checkActiveIssue(l);
+//				checkActiveIssue(l);
 			}
 		} finally {
 			if (model != null) {
@@ -116,7 +116,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 			model.addIssues(l);
 
 			startFrom += l != null ? l.size() : 0;
-			checkActiveIssue(l);
+//			checkActiveIssue(l);
 		} finally {
 			if (model != null) {
 				model.fireModelChanged();
@@ -145,7 +145,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 			model.addIssues(issues);
 			startFrom += issues.size();
-			checkActiveIssue(issues);
+//			checkActiveIssue(issues);
 
 		} finally {
 			if (model != null) {
@@ -214,7 +214,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 //		}
 	}
 
-	public void checkActiveIssue(final List<JIRAIssue> newIssues) {
+	public void checkActiveIssue(final Collection<JIRAIssue> newIssues) {
 		ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
 		if (activeIssue != null) {
 			for (JIRAIssue issue : newIssues) {

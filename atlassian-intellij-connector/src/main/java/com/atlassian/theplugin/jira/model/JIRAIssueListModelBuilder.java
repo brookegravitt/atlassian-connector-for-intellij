@@ -7,6 +7,8 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.intellij.openapi.project.Project;
 
+import java.util.Collection;
+
 public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void setModel(JIRAIssueListModel model);
 
@@ -29,4 +31,6 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 	void setProject(final Project project);
 
 	void setProjectCfgManager(final IntelliJProjectCfgManager projectCfgManager);
+
+	void checkActiveIssue(Collection<JIRAIssue> newIssues);
 }
