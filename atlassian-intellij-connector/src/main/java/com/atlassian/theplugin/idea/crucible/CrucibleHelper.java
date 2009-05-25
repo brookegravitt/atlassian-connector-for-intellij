@@ -19,7 +19,6 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContent;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -364,13 +363,12 @@ public final class CrucibleHelper {
                 return virtualFile;
             }
 
-            ReviewFileContent content = review.getFileContent(fileInfo);
+            IdeaReviewFileContent content = (IdeaReviewFileContent)review.getFileContent(fileInfo);
             ReviewFileContentProvider provider = review.getContentProvider(fileInfo);
 
             //get local file if not dirty and has the same revision as remote
             if (content.isRevisionOnLocalFS() && provider != null && !provider.isLocalFileDirty()
                     && provider instanceof IdeaReviewFileContentProvider) {
-
                 VirtualFile providerVirtualFile = ((IdeaReviewFileContentProvider) provider).getVirtualFile();
                 providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
                 providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
