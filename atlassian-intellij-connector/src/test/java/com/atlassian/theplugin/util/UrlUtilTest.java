@@ -156,6 +156,14 @@ public class UrlUtilTest extends TestCase {
 			fail("correct url validation failed");
 		}
 
+		url = "http://invalid url";
+		try {
+			UrlUtil.validateUrl(url);
+			fail(url);
+		} catch(MalformedURLException e) {
+			// ok
+		}
+
 	}
 
 }
