@@ -24,6 +24,8 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
@@ -148,7 +150,8 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		if (!users.isEmpty()) {
 			for (User user : users) {
 				if (!user.getUserName().equals(server.getUserName())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName()) && !user.getUserName().equals(reviewData.getModerator().getUserName())) {
+						&& !user.getUserName().equals(reviewData.getAuthor().getUserName())
+                        && !user.getUserName().equals(reviewData.getModerator().getUserName())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
 						if (reviewer.getUserName().equals(user.getUserName())) {
@@ -219,6 +222,14 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 					crucibleServerFacade.removeReviewer(reviewData.getServerData(), reviewData.getPermId(), reviewer);
 				}
 			}
+            // this sucks a bit, because efreshing one review should not equire refreshing all reviews.
+            // Posted PL-1506 to fix this
+            if (!(reviewersForAdd.isEmpty() && reviewersForRemove.isEmpty())) {
+                final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
+                if (panel != null) {
+                    panel.refresh(UpdateReason.REFRESH);
+                }
+            }
 		} catch (RemoteApiException e) {
 			DialogWithDetails.showExceptionDialog(project,
 					e.getMessage() + "Error creating review: " + reviewData.getServerData().getUrl(), e);
