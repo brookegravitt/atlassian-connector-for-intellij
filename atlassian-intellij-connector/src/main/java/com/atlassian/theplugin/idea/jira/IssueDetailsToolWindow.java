@@ -70,7 +70,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private PluginConfiguration pluginConfiguration;
 	private final CfgManager cfgManager;
 
-    private ContentPanel selectedContent = null;
+	private ContentPanel selectedContent = null;
 
 	public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
@@ -103,8 +103,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	protected ContentPanel createContentPanel(ContentParameters params) {
 		pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
-        selectedContent = new IssuePanel((IssueContentParameters) params);
-		return selectedContent; 
+		selectedContent = new IssuePanel((IssueContentParameters) params);
+		return selectedContent;
 	}
 
 	protected String getContentKey(ContentParameters params) {
@@ -198,7 +198,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					&& contentManagerEvent.getContent().isSelected()) {
 				IssuePanel ip = getContentPanel(contentKey);
 				if (ip != null) {
-                    selectedContent = ip;
+					selectedContent = ip;
 					ip.reloadAvailableActions();
 				}
 			}
@@ -256,7 +256,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				}
 			});
 
-            getAvailableActionsGroup().clearActions(project);
+			getAvailableActionsGroup().clearActions(project);
 
 			refresh();
 		}
@@ -324,7 +324,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 					public void onSuccess() {
 						if (retrieved) {
-							ActiveIssueUtils.checkIssueState(project, params.issue);
+//							ActiveIssueUtils.checkIssueState(project, params.issue);
 							issueReloaded();
 							jiraIssueListModelBuilder.updateIssue(params.issue);
 						}
@@ -349,17 +349,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			descriptionAndCommentsPanel.refreshDescriptionAndComments();
 			detailsPanel.refresh();
 			summaryPanel.refresh();
-            if (selectedContent == this) {
-			    reloadAvailableActions();
-            }
+			if (selectedContent == this) {
+				reloadAvailableActions();
+			}
 		}
 
 		void reloadAvailableActions() {
-            final RunJiraActionGroup actionGroup = getAvailableActionsGroup();
+			final RunJiraActionGroup actionGroup = getAvailableActionsGroup();
 
-            final JIRAIssue issue = params.issue;
+			final JIRAIssue issue = params.issue;
 			if (issue != null) {
-                actionGroup.clearActions(project);
+				actionGroup.clearActions(project);
 				java.util.List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
 				if (actions != null) {
 					for (JIRAAction a : actions) {
@@ -404,13 +404,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			}
 		}
 
-        private RunJiraActionGroup getAvailableActionsGroup() {
-            final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
-                    .getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
-            return actionGroup;
-        }
+		private RunJiraActionGroup getAvailableActionsGroup() {
+			final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
+					.getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
+			return actionGroup;
+		}
 
-        public Object getData(@NonNls final String dataId) {
+		public Object getData(@NonNls final String dataId) {
 			if (dataId.equals(Constants.ISSUE)) {
 				return params.issue;
 			}
@@ -806,7 +806,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 							rendererMap.clear();
 							add(createBody(), BorderLayout.CENTER);
 							if (errorString == null) {
-                                colorLabels(Color.BLACK);
+								colorLabels(Color.BLACK);
 
 								setAffectsVersions(getStringArray(params.issue.getAffectsVersions()));
 								setFixVersions(getStringArray(params.issue.getFixVersions()));
@@ -815,7 +815,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 								setRemainingEstimate(params.issue.getRemainingEstimate());
 								setTimeSpent(params.issue.getTimeSpent());
 							} else {
-                                colorLabels(Color.RED);
+								colorLabels(Color.RED);
 
 								setAffectsVersions(errorString);
 								setFixVersions(errorString);
@@ -828,15 +828,15 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					});
 				}
 
-                private void colorLabels(Color color) {
-                    getAffectVersionsLabel().setForeground(color);
-                    getFixVersionsLabel().setForeground(color);
-                    getComponentsLabel().setForeground(color);
-                    originalEstimate.setForeground(color);
-                    remainingEstimate.setForeground(color);
-                    timeSpent.setForeground(color);
-                }
-            }
+				private void colorLabels(Color color) {
+					getAffectVersionsLabel().setForeground(color);
+					getFixVersionsLabel().setForeground(color);
+					getComponentsLabel().setForeground(color);
+					originalEstimate.setForeground(color);
+					remainingEstimate.setForeground(color);
+					timeSpent.setForeground(color);
+				}
+			}
 
 			private void setTimeSpent(String t) {
 				if (t != null) {
@@ -1418,9 +1418,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
 						singleIssueChanged = true;
-//						if (issue.equals(params.issue)) {
-//							ActiveIssueUtils.checkIssueState(project, params.issue);
-//						}
+						if (issue.equals(params.issue)) {
+							ActiveIssueUtils.checkIssueState(project, params.issue);
+						}
 					}
 				});
 
