@@ -20,7 +20,6 @@ import com.atlassian.theplugin.commons.VersionedVirtualFile;
 import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.VcsException;
@@ -32,28 +31,11 @@ import com.intellij.openapi.vcs.vfs.VcsVirtualFile;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.vcsUtil.VcsUtil;
 
-public class CrucibleVcsContentProvider implements IdeaReviewFileContentProvider {
-	private final Project project;
-	private final CrucibleFileInfo fileInfo;
-	private final VirtualFile virtualFile;
+public class CrucibleVcsContentProvider extends IdeaReviewFileContentProvider {
 
     public CrucibleVcsContentProvider(Project project, CrucibleFileInfo fileInfo, VirtualFile virtualFile) {
-		this.project = project;
-		this.fileInfo = fileInfo;
-		this.virtualFile = virtualFile;
+        super(project, virtualFile, fileInfo);
 	}
-
-	public CrucibleFileInfo getFileInfo() {
-		return fileInfo;
-	}
-
-    public boolean isLocalFileDirty() {
-        return VcsIdeaHelper.isFileDirty(project, virtualFile);
-    }
-
-    public VirtualFile getVirtualFile() {
-        return virtualFile;
-    }
 
     public IdeaReviewFileContent getContent(final ReviewAdapter review,
 			final VersionedVirtualFile versionedVirtualFile) throws ReviewFileContentException {
@@ -86,15 +68,11 @@ public class CrucibleVcsContentProvider implements IdeaReviewFileContentProvider
 				content = (strContent != null) ? strContent.getBytes() : null;
 			}
 
-            VcsRevisionNumber revisionNumber = VcsIdeaHelper.getVcsRevisionNumber(project, virtualFile);
-            boolean revisionOnStorage = (revisionNumber != null
-                        && revisionNumber.asString().equals(versionedVirtualFile.getRevision()));
-
 			VirtualFile file = new VcsVirtualFile(contentRevision.getFile().getPath(), content,
 					contentRevision.getRevisionNumber().asString(),
 					virtualFile.getFileSystem());
 
-            return new IdeaReviewFileContent(file, null, revisionOnStorage);
+            return new IdeaReviewFileContent(file, content);
 
 		} catch (VcsException e) {
 			throw new ReviewFileContentException(e);
