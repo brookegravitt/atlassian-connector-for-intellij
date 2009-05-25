@@ -30,18 +30,18 @@ import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
-import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
-import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -1148,9 +1148,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		private final WorkLogCreateAndMaybeDeactivateDialog dialog;
 		private final ServerData jiraServer;
 		private final boolean deactivateIssue;
-        private boolean commitSuccess;
+		private boolean commitSuccess;
 
-        public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
+		public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
 				ServerData jiraServer, boolean deactivateIssue) {
 			super(IssueListToolWindowPanel.this.getProject(),
 					deactivateIssue ? "Stopping Work" : "Logging Work", false);
@@ -1172,13 +1172,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						cal.setTime(dialog.getStartDate());
 
 						String newRemainingEstimate = dialog.getRemainingEstimateUpdateMode()
-                                .equals(RemainingEstimateUpdateMode.MANUAL)
-                                ? dialog.getRemainingEstimateString() : null;
+								.equals(RemainingEstimateUpdateMode.MANUAL)
+								? dialog.getRemainingEstimateString() : null;
 						jiraServerFacade.logWork(jiraServer, issue, dialog.getTimeSpentString(),
 								cal, null,
 								!dialog.getRemainingEstimateUpdateMode()
-                                        .equals(RemainingEstimateUpdateMode.UNCHANGED),
-                                newRemainingEstimate);
+										.equals(RemainingEstimateUpdateMode.UNCHANGED),
+								newRemainingEstimate);
 						JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
 								jiraServer, issue);
 						setStatusInfoMessage("Logged work for issue " + issue.getKey());
@@ -1202,43 +1202,43 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 							final LocalChangeList list = dialog.getCurrentChangeList();
 							list.setComment(dialog.getComment());
 
-                            ApplicationManager.getApplication().invokeAndWait(new Runnable() {
-                                public void run() {
-                                    setStatusInfoMessage("Committing changes...");
-                                    FileDocumentManager.getInstance().saveAllDocuments();
-                                    List<Change> selectedChanges = dialog.getSelectedChanges();
-                                    commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(
-                                            list, selectedChanges);
-                                }
-                            }, ModalityState.defaultModalityState());
+							ApplicationManager.getApplication().invokeAndWait(new Runnable() {
+								public void run() {
+									setStatusInfoMessage("Committing changes...");
+									FileDocumentManager.getInstance().saveAllDocuments();
+									List<Change> selectedChanges = dialog.getSelectedChanges();
+									commitSuccess = changeListManager.commitChangesSynchronouslyWithResult(
+											list, selectedChanges);
+								}
+							}, ModalityState.defaultModalityState());
 
-                            if (commitSuccess) {
-                                WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
-                                        dialog.getAfterCommitChangeSetAction();
+							if (commitSuccess) {
+								WorkLogCreateAndMaybeDeactivateDialog.AfterCommit afterCommit =
+										dialog.getAfterCommitChangeSetAction();
 
-                                switch (afterCommit) {
-                                    case DEACTIVATE_CHANGESET:
+								switch (afterCommit) {
+									case DEACTIVATE_CHANGESET:
 
-                                        activateDefaultChangeList(changeListManager);
-                                        break;
-                                    case REMOVE_CHANGESET:
-                                        activateDefaultChangeList(changeListManager);
-                                        if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
-                                            changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                                        }
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                setStatusInfoMessage("Deactivated issue " + issue.getKey());
-                            } else {
-                                setStatusErrorMessage(
-                                        "Failed to commit change list while deactivating issue " + issue.getKey());
-                            }
+										activateDefaultChangeList(changeListManager);
+										break;
+									case REMOVE_CHANGESET:
+										activateDefaultChangeList(changeListManager);
+										if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
+											changeListManager.removeChangeList(dialog.getCurrentChangeList());
+										}
+										break;
+									default:
+										break;
+								}
+								setStatusInfoMessage("Deactivated issue " + issue.getKey());
+							} else {
+								setStatusErrorMessage(
+										"Failed to commit change list while deactivating issue " + issue.getKey());
+							}
 						}
 
-                        setStatusInfoMessage("Deactivated issue " + issue.getKey());
-                        jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
+						setStatusInfoMessage("Deactivated issue " + issue.getKey());
+						jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 					}
 				}
 			} catch (JIRAException e) {
@@ -1263,12 +1263,29 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
 	private class LocalJiraIssueListModelListener implements JIRAIssueListModelListener {
+		private boolean singleIssueChanged = false;
+
 		public void issueUpdated(final JIRAIssue issue) {
-			// ignore (modelChanged will be called)
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					singleIssueChanged = true;
+					ActiveIssueUtils.checkIssueState(project, issue);
+				}
+			});
+
 		}
 
 		public void modelChanged(JIRAIssueListModel model) {
 			SwingUtilities.invokeLater(new ModelChangedRunnable());
+
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (!singleIssueChanged) {
+						jiraIssueListModelBuilder.checkActiveIssue(currentIssueListModel.getIssues());
+					}
+					singleIssueChanged = false;
+				}
+			});
 		}
 
 		public void issuesLoaded(JIRAIssueListModel model, int loadedIssues) {

@@ -13,7 +13,6 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
-import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
@@ -1412,18 +1411,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		private class LocalModelListener implements JIRAIssueListModelListener {
-			private boolean singleIssueChanged = false;
 
 			public void issueUpdated(final JIRAIssue issue) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						singleIssueChanged = true;
-						if (issue.equals(params.issue)) {
-							ActiveIssueUtils.checkIssueState(project, params.issue);
-						}
-					}
-				});
-
 			}
 
 			public void modelChanged(final JIRAIssueListModel model) {
@@ -1431,10 +1420,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					public void run() {
 						retrieveIssueFromModel();
 						issueReloaded();
-						if (!singleIssueChanged) {
-							ActiveIssueUtils.checkIssueState(project, params.issue);
-						}
-						singleIssueChanged = false;
 					}
 				});
 			}
