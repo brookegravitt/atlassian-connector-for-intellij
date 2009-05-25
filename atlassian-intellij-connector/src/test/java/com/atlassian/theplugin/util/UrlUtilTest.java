@@ -164,6 +164,14 @@ public class UrlUtilTest extends TestCase {
 			// ok
 		}
 
+		url = "https://studio.atlassian.com/secure/CommentAssignIssue!default.jspa?action=2&id=21061";
+		try {
+			UrlUtil.validateUrl(url);
+			// ok
+		} catch(MalformedURLException e) {
+			fail("correct url validation failed");
+		}
+
 	}
 
 }
