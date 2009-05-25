@@ -24,7 +24,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 
 	private Set<JIRAIssue> issues;
 
-	private JIRAIssue selectedIssue;
 	private boolean modelFrozen = false;
 
 	public JIRAIssueListModelImpl() {
@@ -44,10 +43,6 @@ public final class JIRAIssueListModelImpl extends JIRAIssueListModelListenerHold
 		if (issue != null && issues.contains(issue)) {
 			issues.remove(issue);
 			issues.add(issue);
-
-			if (selectedIssue != null && selectedIssue.getKey().equals(issue.getKey())) {
-				selectedIssue = issue;
-			}
 		}
 	}
 
