@@ -157,6 +157,9 @@ public class DialogWithDetails extends DialogWrapper {
 
 		ctrlDetailsText.setText(exceptionStr);
 		ctrlDetailsText.setCaretPosition(0);
+        ctrlDetailsText.setEditable(false);
+        ctrlDetailsText.setSelectionStart(0);
+        ctrlDetailsText.setSelectionEnd(exceptionStr.length());
 
 		ctrlDetailsPane.setVisible(false);
 	}
@@ -262,6 +265,7 @@ public class DialogWithDetails extends DialogWrapper {
 				putValue(Action.NAME, SHOW_TXT);
 			} else {
 				ctrlDetailsPane.setVisible(true);
+                ctrlDetailsText.requestFocusInWindow();
 				putValue(Action.NAME, HIDE_TXT);
 			}
 
