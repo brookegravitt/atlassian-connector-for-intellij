@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -92,6 +93,8 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 						indicator.setFraction(0);
 
+                        List<Throwable> problems = new ArrayList<Throwable>();
+
 						// find serverReviews on all selected servers
 						for (CrucibleServerCfg server : servers) {
 							try {
@@ -103,13 +106,16 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 											IdeaHelper.getProjectCfgManager(project).getServerData(server)));
 								}
 							} catch (final RemoteApiException e) {
-								failed = true;
-								reportProblem(e, reviewsWindow, project);
+                                problems.add(e);
 							} catch (final ServerPasswordNotProvidedException e) {
-								failed = true;
-								reportProblem(e, reviewsWindow, project);
+                                problems.add(e);
 							}
 						}
+                        failed = problems.size() == servers.size();
+
+                        if (failed) {
+                            reportProblem(problems, reviewsWindow);
+                        }
 					}
 
 					public void onSuccess() {
@@ -125,12 +131,20 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		}
 	}
 
-	private void reportProblem(final Throwable e, final ReviewsToolWindowPanel reviewsWindow, final Project project) {
-		EventQueue.invokeLater(new Runnable() {
+	private void reportProblem(final List<Throwable> problems,
+                               final ReviewsToolWindowPanel reviewsWindow) {
+
+        EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				PluginUtil.getLogger().warn("Error getting review", e);
-				reviewsWindow.setStatusErrorMessage(e.getMessage(), e);
-				DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+                List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
+
+                for (Throwable problem : problems) {
+                    PluginUtil.getLogger().warn("Error getting review", problem);
+                    errorObjects.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", problem));
+                }
+
+				reviewsWindow.setStatusErrorMessages("Error getting review", problems);
+				DialogWithDetails.showExceptionDialog(reviewsWindow.getStatusBarPane(), errorObjects);
 			}
 		});
 	}
