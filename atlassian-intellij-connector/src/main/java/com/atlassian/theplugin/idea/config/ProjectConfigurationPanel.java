@@ -147,8 +147,8 @@ public class ProjectConfigurationPanel extends JPanel {
 	public void askForDefaultCredentials() {
 		final ServerCfg serverCfg = serverConfigPanel.getSelectedServer();
 		final boolean alreadyExists =
-				IdeaHelper.getProjectCfgManager(project).getProjectConfiguration().getServerCfg(serverCfg.getServerId()) !=
-						null;
+				IdeaHelper.getProjectCfgManager(project).getProjectConfiguration().getServerCfg(serverCfg.getServerId())
+                        != null;
 
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
