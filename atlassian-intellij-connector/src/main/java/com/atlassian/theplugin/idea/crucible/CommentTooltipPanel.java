@@ -304,6 +304,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private static final int WIDTH_ALL = 16;
         private JLabel underConstruction;
         private boolean indent;
+        private static final String POST_COMMENT_TOOLTIP_TEXT = "Post Comment (Alt-Enter)";
 
         private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
@@ -542,7 +543,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 
 		private void createCommentEditButtons(@NotNull CellConstraints cc) {
-			btnEdit = new HyperlinkLabel(comment != null && !selectedPanel ? EDIT : APPLY);
+            boolean editOrApply = comment != null && !selectedPanel;
+			btnEdit = new HyperlinkLabel(editOrApply ? EDIT : APPLY);
+            btnEdit.setToolTipText(editOrApply ? null : POST_COMMENT_TOOLTIP_TEXT);
+
 			btnCancel = new HyperlinkLabel("Cancel");
 			btnEdit.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -552,6 +556,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 						setStatusText(" ", false);
 						setButtonsVisible(false);
 						btnEdit.setHyperlinkText(APPLY);
+                        btnEdit.setToolTipText(POST_COMMENT_TOOLTIP_TEXT);
                         btnCancel.setVisible(true);
 						if (btnSaveDraft != null && (panelForNewComment || comment.isDraft())) {
 							btnSaveDraft.setVisible(true);
@@ -632,6 +637,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 						comment != null && comment.isDraft(),
 						boxIsDefect != null && boxIsDefect.isSelected());
 				btnEdit.setHyperlinkText(EDIT);
+                btnEdit.setToolTipText(null);
 				if (btnSaveDraft != null) {
 					btnSaveDraft.setVisible(false);
 				}
