@@ -24,7 +24,6 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -60,18 +59,13 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 	private final GenericServerConfigForm jiraServerConfigForm;
 	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
-	private final ProjectConfigurationPanel projectConfigurationPanel;
-    private Project project;
-    private final UserCfg defaultUser;
+	private final UserCfg defaultUser;
 	private boolean isDefaultCredentialsAsked = false;
 
-	public ServerConfigPanel(final ProjectConfigurationPanel projectConfigurationPanel,
-			final Project project, final UserCfg defaultUser,
+	public ServerConfigPanel(final Project project, final UserCfg defaultUser,
 			ProjectConfiguration projectConfiguration,
 			final ServerCfg selectedServer, final boolean isDefaultCredentialsAsked) {
-		this.projectConfigurationPanel = projectConfigurationPanel;
-        this.project = project;
-        this.defaultUser = defaultUser;
+		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
@@ -89,8 +83,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		initLayout();
 
 		serverTreePanel.setData(serverCfgs);
-        //this line duplicates selction setData does it
-		//serverTreePanel.setSelectedServer(selectedServer);
+		// This line selects server currently selected in the main panel
+		serverTreePanel.setSelectedServer(selectedServer);
 	}
 
 
@@ -255,12 +249,12 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		fisheyeServerConfigFrom.finalizeData();
 	}
 
-    public ServerCfg getSelectedServer() {
-        return serverTreePanel.getSelectedServer();
-    }
+	public ServerCfg getSelectedServer() {
+		return serverTreePanel.getSelectedServer();
+	}
 
 
-    private class BlankPanel extends JPanel {
+	private class BlankPanel extends JPanel {
 
 		public BlankPanel() {
 			initLayout();
@@ -273,57 +267,57 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 			setLayout(new BorderLayout());
 
-            JPanel instructionsPanel = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.weightx = 0.0;
-            instructionsPanel.setOpaque(false);
-            instructionsPanel.add(new JLabel(TEXT_BEGIN), gbc);
-            gbc.gridx++;
-            JLabel addServerLabel = new JLabel(IconLoader.getIcon("/general/add.png"));
-            addServerLabel.addMouseListener(new MouseAdapter() {
-                private Cursor oldCursor;
+			JPanel instructionsPanel = new JPanel(new GridBagLayout());
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.gridx = 0;
+			gbc.gridy = 0;
+			gbc.fill = GridBagConstraints.NONE;
+			gbc.weightx = 0.0;
+			instructionsPanel.setOpaque(false);
+			instructionsPanel.add(new JLabel(TEXT_BEGIN), gbc);
+			gbc.gridx++;
+			JLabel addServerLabel = new JLabel(IconLoader.getIcon("/general/add.png"));
+			addServerLabel.addMouseListener(new MouseAdapter() {
+				private Cursor oldCursor;
 
-                @Override
-                public void mouseEntered(MouseEvent mouseEvent) {
-                    oldCursor = getCursor();
-                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                }
+				@Override
+				public void mouseEntered(MouseEvent mouseEvent) {
+					oldCursor = getCursor();
+					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+				}
 
-                @Override
-                public void mouseExited(MouseEvent mouseEvent) {
-                    if (oldCursor != null) {
-                        setCursor(oldCursor);
-                        oldCursor = null;
-                    }
-                }
+				@Override
+				public void mouseExited(MouseEvent mouseEvent) {
+					if (oldCursor != null) {
+						setCursor(oldCursor);
+						oldCursor = null;
+					}
+				}
 
-                @Override
-                public void mouseClicked(MouseEvent mouseEvent) {
-                    runAddServerAction(mouseEvent);
-                }
-            });
-            instructionsPanel.add(addServerLabel, gbc);
-            gbc.gridx++;
-            gbc.weightx = 1.0;
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            instructionsPanel.add(new JLabel(TEXT_END), gbc);
-            add(instructionsPanel, BorderLayout.NORTH);
+				@Override
+				public void mouseClicked(MouseEvent mouseEvent) {
+					runAddServerAction(mouseEvent);
+				}
+			});
+			instructionsPanel.add(addServerLabel, gbc);
+			gbc.gridx++;
+			gbc.weightx = 1.0;
+			gbc.fill = GridBagConstraints.HORIZONTAL;
+			instructionsPanel.add(new JLabel(TEXT_END), gbc);
+			add(instructionsPanel, BorderLayout.NORTH);
 		}
 
-        private void runAddServerAction(MouseEvent mouseEvent) {
-            ServerType type = serverTreePanel.getSelectedServerType();
-            if (type != null) {
-                addServer(type);
-            } else {
-                AddServerAction.showAddServerPopup(mouseEvent);
-            }
-        }
+		private void runAddServerAction(MouseEvent mouseEvent) {
+			ServerType type = serverTreePanel.getSelectedServerType();
+			if (type != null) {
+				addServer(type);
+			} else {
+				AddServerAction.showAddServerPopup(mouseEvent);
+			}
+		}
 
 
-    }
+	}
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
