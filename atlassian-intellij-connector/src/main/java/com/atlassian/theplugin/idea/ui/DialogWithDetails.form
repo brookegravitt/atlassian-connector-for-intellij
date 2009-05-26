@@ -10,7 +10,7 @@
     <children>
       <component id="bb810" class="javax.swing.JLabel" binding="ctrlDescription">
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="9" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <text value="Label"/>
@@ -27,7 +27,11 @@
         <children>
           <component id="41990" class="javax.swing.JTextArea" binding="ctrlDetailsText">
             <constraints/>
-            <properties/>
+            <properties>
+              <background color="-1"/>
+              <editable value="false"/>
+              <enabled value="true"/>
+            </properties>
           </component>
         </children>
       </scrollpane>

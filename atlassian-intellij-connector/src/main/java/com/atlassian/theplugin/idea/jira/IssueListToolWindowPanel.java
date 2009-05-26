@@ -855,7 +855,16 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		if (server != null) {
 			return server;
 		}
-		return projectCfgManager.getDefaultJiraServer();
+
+		if (projectCfgManager.getDefaultJiraServer() != null) {
+			return projectCfgManager.getDefaultJiraServer();
+		}
+
+		if (getSelectedIssue() != null) {
+			return getSelectedIssue().getServer();
+		}
+
+		return null;
 	}
 
 	public boolean isRecentlyOpenFilterSelected() {

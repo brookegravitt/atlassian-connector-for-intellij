@@ -55,9 +55,9 @@ public final class ServerConfigPanelTestUi {
 		);
 
 		ServerConfigPanel configPanel = new ServerConfigPanel(
-                null, null, null, new ProjectConfiguration(serverCfgs), null, false) {
+				null, null, new ProjectConfiguration(serverCfgs), null, false) {
 
-            @Override
+			@Override
 			protected JComponent createToolbar() {
 				JToolBar toolbar = new JToolBar("My Fake Toolbar", JToolBar.HORIZONTAL);
 				final JButton button = new JButton("Test Only");
