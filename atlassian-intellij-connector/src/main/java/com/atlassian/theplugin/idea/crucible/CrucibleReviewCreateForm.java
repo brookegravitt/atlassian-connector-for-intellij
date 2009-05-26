@@ -811,6 +811,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 						ModalityState modalityState = ModalityState
 								.stateForComponent(CrucibleReviewCreateForm.this.getRootComponent());
 
+                        Review newlyCreated = null;
 						try {
 							final Review draftReview = createReview(server, new ReviewProvider(server));
 							if (draftReview == null) {
@@ -841,7 +842,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 									Review newReview = crucibleServerFacade.getReview(server, draftReview.getPermId());
 									if (newReview.getModerator().getUserName().equals(server.getUserName())) {
 										if (newReview.getActions().contains(CrucibleAction.APPROVE)) {
-											crucibleServerFacade.approveReview(server, draftReview.getPermId());
+											newlyCreated = crucibleServerFacade.approveReview(server, draftReview.getPermId());
 										} else {
 											Messages.showErrorDialog(project,
 													newReview.getAuthor().getDisplayName() +
@@ -850,7 +851,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 										}
 									} else {
 										if (newReview.getActions().contains(CrucibleAction.SUBMIT)) {
-											crucibleServerFacade.submitReview(server, draftReview.getPermId());
+											newlyCreated = crucibleServerFacade.submitReview(server, draftReview.getPermId());
 										} else {
 											Messages.showErrorDialog(project,
 													newReview.getAuthor().getDisplayName() + " is authorized submit review.\n"
@@ -862,13 +863,19 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 											"Unable to change review state. Leaving review in draft state.",
 											"Permission denied");
 								}
-							}
+							} else {
+                                newlyCreated = draftReview;
+                            }
+
+                            final Review newRevewFinal = newlyCreated != null
+                                    ? crucibleServerFacade.getReview(server, newlyCreated.getPermId()) : null;
 
 							ApplicationManager.getApplication().invokeLater(new Runnable() {
 								public void run() {
 									final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
-									if (panel != null) {
+									if (panel != null && newRevewFinal != null) {
 										panel.refresh(UpdateReason.REFRESH);
+                                        panel.openReview(new ReviewAdapter(newRevewFinal, server));
 									}
 								}
 							}, modalityState);
