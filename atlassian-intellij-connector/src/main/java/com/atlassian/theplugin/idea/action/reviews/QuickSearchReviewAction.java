@@ -29,6 +29,7 @@ import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -40,6 +41,7 @@ import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.containers.HashSet;
 import org.jetbrains.annotations.NotNull;
 
@@ -125,7 +127,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
                         failed = problems.size() == servers.size();
 
                         if (failed) {
-                            reportProblem(problems, reviewsWindow);
+                            reportProblem(problems, e.getData(DataKeys.PROJECT));
                         }
 					}
 
@@ -143,7 +145,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	}
 
 	private void reportProblem(final List<IdeaUiMultiTaskExecutor.ErrorObject> problems,
-                               final ReviewsToolWindowPanel reviewsWindow) {
+                               final Project project) {
 
         EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -154,7 +156,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
                     errorObjects.add(problem);
                 }
 
-				DialogWithDetails.showExceptionDialog(reviewsWindow.getStatusBarPane(), errorObjects);
+				DialogWithDetails.showExceptionDialog(WindowManager.getInstance().getFrame(project), errorObjects);
 			}
 		});
 	}
