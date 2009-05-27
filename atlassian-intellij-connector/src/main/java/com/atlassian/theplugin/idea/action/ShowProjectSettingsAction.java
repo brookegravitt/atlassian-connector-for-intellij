@@ -17,15 +17,15 @@
 package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
 import com.atlassian.theplugin.idea.PluginToolWindow;
+import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -78,8 +78,7 @@ public class ShowProjectSettingsAction extends AnAction {
 			return null;
 		}
 
-		Collection<ServerCfg> servers = cfgManager.getAllEnabledServers(
-					CfgUtil.getProjectId(project), serverType);
+		Collection<ServerCfg> servers = cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType);
 
 		if (!servers.isEmpty()) {
 			return servers.iterator().next();
