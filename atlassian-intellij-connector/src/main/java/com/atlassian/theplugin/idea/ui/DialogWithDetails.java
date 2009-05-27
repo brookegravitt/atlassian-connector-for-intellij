@@ -158,8 +158,6 @@ public class DialogWithDetails extends DialogWrapper {
 		ctrlDetailsText.setText(exceptionStr);
 		ctrlDetailsText.setCaretPosition(0);
         ctrlDetailsText.setEditable(false);
-        ctrlDetailsText.setSelectionStart(0);
-        ctrlDetailsText.setSelectionEnd(exceptionStr.length());
 
 		ctrlDetailsPane.setVisible(false);
 	}
