@@ -130,7 +130,7 @@ public class DialogWithDetails extends DialogWrapper {
 			return 0;
 		}
 		final DialogWithDetails dialog = new DialogWithDetails(component,
-				"(1/" + errors.size() + ") " + errors.get(0).getMessage(),
+				"<html>(1/" + errors.size() + ") " + errors.get(0).getMessage(),
 				errors.get(0).getException()) {
 
 			@Override
@@ -302,7 +302,7 @@ public class DialogWithDetails extends DialogWrapper {
 			currentErrorIndex.setValue((currentErrorIndex.intValue() + 1));
 
 			int index = currentErrorIndex.intValue();
-			ctrlDescription.setText("(" + (index + 1) + "/" + errors.size() + ") " + errors.get(index).getMessage());
+			ctrlDescription.setText("<html>(" + (index + 1) + "/" + errors.size() + ") " + errors.get(index).getMessage());
 			ctrlDetailsText.setText(getExceptionString(errors.get(index).getException()));
 			ctrlDetailsText.setCaretPosition(0);
 
@@ -342,7 +342,7 @@ public class DialogWithDetails extends DialogWrapper {
 			currentErrorIndex.setValue((currentErrorIndex.intValue() + 1) % errors.size());
 
 			int index = currentErrorIndex.intValue();
-			ctrlDescription.setText("(" + (index + 1) + "/" + errors.size() + ") " + errors.get(index).getMessage());
+			ctrlDescription.setText("<html>(" + (index + 1) + "/" + errors.size() + ") " + errors.get(index).getMessage());
 			ctrlDetailsText.setText(getExceptionString(errors.get(index).getException()));
 			ctrlDetailsText.setCaretPosition(0);
 

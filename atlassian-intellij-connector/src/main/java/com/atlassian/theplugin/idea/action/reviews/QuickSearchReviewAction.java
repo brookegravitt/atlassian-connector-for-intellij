@@ -53,8 +53,13 @@ import java.util.Set;
  * @author Jacek Jaroczynski
  */
 public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
+    private static final String NOT_FOUND_TEXT =
+            "Unable to find review <b>%1$2s</b> not found on server <b>%2$2s</b>.<br>"
+            + "This most likely means that the review does not exist on this server,<br>"
+            + "but it can also be cause by server misconfiguration.<br>"
+            + "See the stack trace for detailed information.";
 
-	public void actionPerformed(final AnActionEvent e) {
+    public void actionPerformed(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		if (project == null) {
 			return;
@@ -93,7 +98,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 
 						indicator.setFraction(0);
 
-                        List<Throwable> problems = new ArrayList<Throwable>();
+                        List<IdeaUiMultiTaskExecutor.ErrorObject> problems = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
 						// find serverReviews on all selected servers
 						for (CrucibleServerCfg server : servers) {
@@ -106,9 +111,15 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 											IdeaHelper.getProjectCfgManager(project).getServerData(server)));
 								}
 							} catch (final RemoteApiException e) {
-                                problems.add(e);
+                                if (e.getCause().getMessage().equals("HTTP 400 (Bad Request)")
+                                        || e.getCause().getMessage().equals("HTTP 404 (Not Found)")) {
+                                    String msg = String.format(NOT_FOUND_TEXT, dialog.getSearchKey(), server.getName());
+                                    problems.add(new IdeaUiMultiTaskExecutor.ErrorObject(msg, e));
+                                } else {
+                                    problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
+                                }
 							} catch (final ServerPasswordNotProvidedException e) {
-                                problems.add(e);
+                                problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
 							}
 						}
                         failed = problems.size() == servers.size();
@@ -131,19 +142,18 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		}
 	}
 
-	private void reportProblem(final List<Throwable> problems,
+	private void reportProblem(final List<IdeaUiMultiTaskExecutor.ErrorObject> problems,
                                final ReviewsToolWindowPanel reviewsWindow) {
 
         EventQueue.invokeLater(new Runnable() {
 			public void run() {
                 List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
-                for (Throwable problem : problems) {
-                    PluginUtil.getLogger().warn("Error getting review", problem);
-                    errorObjects.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", problem));
+                for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
+                    PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
+                    errorObjects.add(problem);
                 }
 
-				reviewsWindow.setStatusErrorMessages("Error getting review", problems);
 				DialogWithDetails.showExceptionDialog(reviewsWindow.getStatusBarPane(), errorObjects);
 			}
 		});
