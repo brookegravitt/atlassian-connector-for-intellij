@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.configuration.CrucibleViewConfigurationBean;
+import com.atlassian.theplugin.idea.ui.KeyPressGobbler;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
@@ -58,6 +59,8 @@ public class SearchReviewDialog extends DialogWrapper {
 				}
 			}
 		});
+		KeyPressGobbler.gobbleKeyPress(ctrlReviewSearch);
+		setOKActionEnabled(false);
 	}
 
 	protected void doOKAction() {

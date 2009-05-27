@@ -113,11 +113,11 @@ public class DialogWithDetails extends DialogWrapper {
 	}
 
 	public static int showExceptionDialog(final Project project, final String description, final Exception exception,
-			final String helpUrl) {
+										  final String helpUrl) {
 		final DialogWithDetails dialog = new DialogWithDetails(project, description, exception) {
 			@Override
 			protected Action[] createActions() {
-				return new Action[]{getOKAction(), getDetailsAction(), getWebHelpAction(helpUrl)};
+				return new Action[]{ getOKAction(), getDetailsAction(), getWebHelpAction(helpUrl) };
 			}
 		};
 		dialog.show();
@@ -140,7 +140,7 @@ public class DialogWithDetails extends DialogWrapper {
 				NextErrorAction nextAction = (NextErrorAction) getNextErrorAction(currentErrorIndex, errors);
 				prevAction.setNextAction(nextAction);
 				nextAction.setPrevAction(prevAction);
-				return new Action[]{getOKAction(), getDetailsAction(), prevAction, nextAction};
+				return new Action[]{ getOKAction(), getDetailsAction(), prevAction, nextAction };
 			}
 		};
 		dialog.show();
@@ -157,7 +157,7 @@ public class DialogWithDetails extends DialogWrapper {
 
 		ctrlDetailsText.setText(exceptionStr);
 		ctrlDetailsText.setCaretPosition(0);
-        ctrlDetailsText.setEditable(false);
+		ctrlDetailsText.setEditable(false);
 
 		ctrlDetailsPane.setVisible(false);
 	}
@@ -174,7 +174,7 @@ public class DialogWithDetails extends DialogWrapper {
 
 	@Override
 	protected Action[] createActions() {
-		return new Action[]{getOKAction(), getDetailsAction()};
+		return new Action[]{ getOKAction(), getDetailsAction() };
 	}
 
 	public static String getExceptionString(Throwable t) {
@@ -192,12 +192,12 @@ public class DialogWithDetails extends DialogWrapper {
 	}
 
 	public Action getNextErrorAction(final MutableInt currentErrorIndex,
-			final List<IdeaUiMultiTaskExecutor.ErrorObject> errors) {
+									 final List<IdeaUiMultiTaskExecutor.ErrorObject> errors) {
 		return new NextErrorAction(currentErrorIndex, errors);
 	}
 
 	public Action getPrevErrorAction(final MutableInt currentErrorIndex,
-			final List<IdeaUiMultiTaskExecutor.ErrorObject> errors) {
+									 final List<IdeaUiMultiTaskExecutor.ErrorObject> errors) {
 		return new PrevErrorAction(currentErrorIndex, errors);
 	} // CHECKSTYLE:OFF
 
@@ -224,14 +224,9 @@ public class DialogWithDetails extends DialogWrapper {
 		rootPane.setLayout(new GridLayoutManager(2, 1, new Insets(10, 10, 10, 10), -1, -1));
 		ctrlDescription = new JLabel();
 		ctrlDescription.setText("Label");
-		rootPane.add(ctrlDescription, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH,
-				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null,
-				null, 0, false));
+		rootPane.add(ctrlDescription, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		ctrlDetailsPane = new JScrollPane();
-		rootPane.add(ctrlDetailsPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(600, 250),
-				null, 0, false));
+		rootPane.add(ctrlDetailsPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(600, 250), null, 0, false));
 		ctrlDetailsText = new JTextArea();
 		ctrlDetailsText.setBackground(new Color(-1));
 		ctrlDetailsText.setEditable(false);
@@ -263,7 +258,7 @@ public class DialogWithDetails extends DialogWrapper {
 				putValue(Action.NAME, SHOW_TXT);
 			} else {
 				ctrlDetailsPane.setVisible(true);
-                ctrlDetailsText.requestFocusInWindow();
+				ctrlDetailsText.requestFocusInWindow();
 				putValue(Action.NAME, HIDE_TXT);
 			}
 
