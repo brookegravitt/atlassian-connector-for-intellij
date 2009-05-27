@@ -184,17 +184,20 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
 
 	@Override
 	protected void doOKAction() {
-		new Thread(new Runnable() {
-			public void run() {
-				try {
+        Task.Backgroundable task = new Task.Backgroundable(project, "Changing review state") {
+
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+            	try {
 					runTransition(descriptionPanel != null ? descriptionPanel.getText() : null);
 				} catch (RemoteApiException e) {
 					showErrorMessage(e.getMessage());
 				} catch (ServerPasswordNotProvidedException e) {
 					showErrorMessage(e.getMessage());
 				}
-			}
-		}).start();
+            }
+        };
+
+        ProgressManager.getInstance().run(task);
 
 		super.doOKAction();
 	}
