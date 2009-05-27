@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
@@ -99,14 +100,14 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 			public void modelChanged() {
 			}
 
-            public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
-                if (generalExceptions != null && generalExceptions.size() > 0) {
-                    Exception e = generalExceptions.iterator().next();
-                    setErrorMessage(e.getMessage(), e);
-                }
-            }
+			public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+				if (generalExceptions != null && generalExceptions.size() > 0) {
+					Exception e = generalExceptions.iterator().next();
+					setErrorMessage(e.getMessage(), e);
+				}
+			}
 
-            public void buildsChanged(@Nullable final Collection<String> additionalInfo,
+			public void buildsChanged(@Nullable final Collection<String> additionalInfo,
 					@Nullable final Collection<Pair<String, Throwable>> errors) {
 
 				// we do not support multiple messages in status bar yet (waiting for inbox to be implemented)
@@ -243,10 +244,31 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
+			// return server of selected build
 			if (buildTree.getSelectedBuild() != null) {
 				return buildTree.getSelectedBuild().getServer();
 			}
+
+			final BambooBuildFilter filter = filterList.getSelection();
+
+			// return server of selected filter in case of server filtering
+			if (getBambooFilterType() == BambooFilterType.SERVER
+					&& filter != null && filter instanceof BambooCompositeOrFilter) {
+
+				BambooCompositeOrFilter filterImpl = (BambooCompositeOrFilter) filter;
+
+				Collection<BambooBuildFilter> filters = filterImpl.getFilters();
+				for (BambooBuildFilter buildFilter : filters) {
+					if (buildFilter instanceof BambooFilterList.BambooServerFilter) {
+						BambooFilterList.BambooServerFilter serverFilter =
+								(BambooFilterList.BambooServerFilter) buildFilter;
+
+						return serverFilter.getBambooServerCfg();
+					}
+				}
+			}
 		}
+
 		return null;
 	}
 

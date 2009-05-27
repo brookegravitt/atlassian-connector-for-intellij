@@ -18,13 +18,21 @@ package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.commons.exception.ThePluginException;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ProjectConfigurationComponent;
+import com.atlassian.theplugin.idea.PluginToolWindow;
+import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.options.ShowSettingsUtil;
 import com.intellij.openapi.project.Project;
+
+import java.util.Collection;
 
 /**
  * Simple action to show the settings for the plugin.
@@ -41,12 +49,49 @@ public class ShowProjectSettingsAction extends AnAction {
 		if (project != null) {
 			ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
 			ServerData server = event.getData(Constants.SERVER_KEY);
-			component.setSelectedServer(IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server));
+			if (server != null) {
+				component.setSelectedServer(IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server));
+			} else {
+				PluginToolWindow toolWindow = IdeaHelper.getProjectComponent(project, PluginToolWindow.class);
+				if (toolWindow != null) {
+					if (toolWindow.getSelectedContent() != null) {
+						component.setSelectedServer(findBestServerToSelect(project, toolWindow.getSelectedContent(),
+								IdeaHelper.getCfgManager(event)));
+					}
+				}
+			}
 			final ShowSettingsUtil settingsUtil = ShowSettingsUtil.getInstance();
 			if (settingsUtil != null) {
 				settingsUtil.editConfigurable(project, component);
 			}
 		}
+	}
+
+	private ServerCfg findBestServerToSelect(final Project project, final PluginToolWindow.ToolWindowPanels selectedContent,
+			final CfgManager cfgManager) {
+
+		final ServerType serverType;
+		try {
+			serverType = Util.toolWindowPanelsToServerType(selectedContent);
+		} catch (ThePluginException e) {
+			// unknown tool window tab
+			return null;
+		}
+
+		Collection<ServerCfg> servers = cfgManager.getAllEnabledServers(
+					CfgUtil.getProjectId(project), serverType);
+
+		if (!servers.isEmpty()) {
+			return servers.iterator().next();
+		}
+
+		servers = cfgManager.getAllServers(CfgUtil.getProjectId(project), serverType);
+
+		if (!servers.isEmpty()) {
+			return servers.iterator().next();
+		}
+
+		return null;
 	}
 
 }

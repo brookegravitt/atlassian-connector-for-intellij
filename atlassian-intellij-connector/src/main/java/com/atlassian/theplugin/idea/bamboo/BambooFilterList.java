@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
 import com.intellij.ui.ListSpeedSearch;
@@ -103,7 +104,8 @@ public class BambooFilterList extends JList {
 						.getAllEnabledBambooServers(projectId);
 
 				for (BambooServerCfg bambooServer : bambooServers) {
-					final BambooServerFilter serverFilter = new BambooServerFilter(bambooServer);
+					final BambooServerFilter serverFilter = new BambooServerFilter(
+							projectCfgManager.getServerData(bambooServer));
 					final BamboServerFilterWrapper obj = new BamboServerFilterWrapper(serverFilter,
 							bambooModel);
 					if (!listModel.contains(obj)) {
@@ -139,12 +141,17 @@ public class BambooFilterList extends JList {
 		}
 	}
 
-	private static class BambooServerFilter implements BambooBuildFilter {
+	public static class BambooServerFilter implements BambooBuildFilter {
 		@NotNull
-		private final BambooServerCfg bambooServerCfg;
+		private final ServerData bambooServerCfg;
 
-		public BambooServerFilter(@NotNull final BambooServerCfg bambooServerCfg) {
+		public BambooServerFilter(@NotNull final ServerData bambooServerCfg) {
 			this.bambooServerCfg = bambooServerCfg;
+		}
+
+		@NotNull
+		public ServerData getBambooServerCfg() {
+			return bambooServerCfg;
 		}
 
 		public boolean doesMatch(final BambooBuildAdapterIdea build) {

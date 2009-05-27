@@ -341,6 +341,10 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
+	public Collection<ServerCfg> getAllServers(final ProjectId projectId, final ServerType serverType) {
+		return null;
+	}
+
 	public ServerCfg getEnabledServer(final ProjectId projectId, final ServerId serverId) {
 		return null;
 	}
