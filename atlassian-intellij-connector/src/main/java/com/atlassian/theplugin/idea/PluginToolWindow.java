@@ -151,7 +151,7 @@ public class PluginToolWindow {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty() == false) {
+				if (!cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty()) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 						// show tab
@@ -196,8 +196,7 @@ public class PluginToolWindow {
 				if (content != null) {
 					addContentSorted(content);
 				}
-			}
-			if (content != null) {
+			} else {
 				contentManager.setSelectedContent(content);
 			}
 		}
@@ -334,6 +333,16 @@ public class PluginToolWindow {
 		content.setIcon(IconLoader.getIcon("/icons/tab_jira-white.png"));
 		content.putUserData(com.intellij.openapi.wm.ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
 		return content;
+	}
+
+	public ToolWindowPanels getSelectedContent() {
+		Content selectedContent  = ideaToolWindow.getContentManager().getSelectedContent();
+
+		if (selectedContent != null) {
+			return ToolWindowPanels.valueOfTitle(selectedContent.getToolwindowTitle());
+		}
+
+		return null;
 	}
 
 

@@ -24,6 +24,10 @@ class BambooCompositeOrFilter implements BambooBuildFilter {
 		this.filters = filters;
 	}
 
+	public Collection<BambooBuildFilter> getFilters() {
+		return filters;
+	}
+
 	public boolean doesMatch(final BambooBuildAdapterIdea build) {
 		for (BambooBuildFilter filter : filters) {
 			if (filter.doesMatch(build)) {
