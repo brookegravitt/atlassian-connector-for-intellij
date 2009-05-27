@@ -99,7 +99,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		}
 	}
 
-    private class QuickSearchTask extends Task.Modal {
+    private final class QuickSearchTask extends Task.Modal {
         private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
         private boolean failed = false;
         private AnActionEvent event;
