@@ -657,10 +657,10 @@
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<separator/>
-			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
+            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<separator/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
@@ -732,11 +732,11 @@
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
-			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<reference id="ThePlugin.Crucible.Comment.Publish"/>
+            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 		</group>
@@ -768,11 +768,11 @@
 		<group id="ThePlugin.EmptyToolBar" popup="false" text=""/>
 
 		<group id="ThePlugin.Crucible.Comment.ToolBar" popup="true">
-			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<reference id="ThePlugin.Crucible.Comment.Publish"/>
+            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 
