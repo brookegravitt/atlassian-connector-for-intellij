@@ -51,7 +51,9 @@ public final class JiraEditorLinkParser {
 
 
 	private String getDefaultJiraServerUrl() {
-		final ProjectConfiguration projectConfiguration = projectCfgManager.getProjectConfiguration();
+        //projectCfgManager cannot be null but due to PL-1435 added some safety code
+		final ProjectConfiguration projectConfiguration =
+                projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
 		// kalamon: not sure why this could be null, but see PL-1348.
 		// I am too stupid to grok the project configuration code
 		if (projectConfiguration != null) {
