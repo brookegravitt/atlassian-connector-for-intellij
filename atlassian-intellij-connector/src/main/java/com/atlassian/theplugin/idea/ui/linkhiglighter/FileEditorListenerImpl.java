@@ -19,7 +19,7 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -45,13 +45,13 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
-	private final IntelliJProjectCfgManager cfgManager;
+	private final ProjectCfgManagerImpl cfgManager;
 	private boolean isRegistered;
 	private LocalConfigurationListener localConfigurationListener;
 	private JiraServerCfg lastJiraServer;
 
 
-	public FileEditorListenerImpl(@NotNull Project project, @NotNull final IntelliJProjectCfgManager cfgManager) {
+	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManagerImpl cfgManager) {
 
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -112,11 +112,11 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void deactivate() {
-        // PL-1346 - this seems to be some sort of a race condition in IDEA.
-        // Checking if project still good to avoid assertion failure
-        if (!project.isDisposed()) {
-		    FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
-        }
+		// PL-1346 - this seems to be some sort of a race condition in IDEA.
+		// Checking if project still good to avoid assertion failure
+		if (!project.isDisposed()) {
+			FileEditorManager.getInstance(project).removeFileEditorManagerListener(this);
+		}
 		isRegistered = false;
 	}
 

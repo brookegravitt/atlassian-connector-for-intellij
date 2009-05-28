@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
@@ -30,7 +30,7 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 
 	void setProject(final Project project);
 
-	void setProjectCfgManager(final IntelliJProjectCfgManager projectCfgManager);
+	void setProjectCfgManager(final ProjectCfgManagerImpl projectCfgManager);
 
 	void checkActiveIssue(Collection<JIRAIssue> newIssues);
 }

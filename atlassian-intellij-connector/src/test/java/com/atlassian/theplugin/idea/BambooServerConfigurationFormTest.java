@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooServerConfigForm;
 import com.atlassian.theplugin.util.PluginUtil;
 import junit.framework.Test;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
-	private IntelliJProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
+	private ProjectCfgManagerImpl projectCfgManager = new LocalProjectCfgManager();
 
 	@Override
 	protected void setUp() throws Exception {
@@ -161,7 +161,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 }
 
-class LocalProjectCfgManager extends IntelliJProjectCfgManager {
+class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
 		super(null, null, null);

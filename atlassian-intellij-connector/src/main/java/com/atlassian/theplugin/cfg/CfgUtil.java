@@ -17,7 +17,7 @@ package com.atlassian.theplugin.cfg;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 
 public final class CfgUtil {
@@ -45,7 +45,7 @@ public final class CfgUtil {
 	}
 
 	public static JiraServerCfg getJiraServerCfgbyServerId(final Project project,
-			final IntelliJProjectCfgManager projectCfgManager, final String serverId) {
+			final ProjectCfgManagerImpl projectCfgManager, final String serverId) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 			if (server.getServerId().toString().equals(serverId)) {
 				return server;
@@ -55,7 +55,7 @@ public final class CfgUtil {
 		return null;
 	}
 
-	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final IntelliJProjectCfgManager projectCfgManager,
+	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final ProjectCfgManagerImpl projectCfgManager,
 			final String serverUrl) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
 			if (server.getUrl().equals(serverUrl)) {

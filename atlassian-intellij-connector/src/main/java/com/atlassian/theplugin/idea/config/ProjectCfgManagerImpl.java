@@ -30,12 +30,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class IntelliJProjectCfgManager implements ProjectCfgManager {
+public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
 	private final ProjectConfigurationBean projectConfigurationBean;
-	public IntelliJProjectCfgManager(Project project,
+
+	public ProjectCfgManagerImpl(Project project,
 			CfgManager cfgManager, ProjectConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.projectId = CfgUtil.getProjectId(project);
@@ -138,6 +139,7 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		}
 		return servers;
 	}
+
 	@Nullable
 	public ServerData getDefaultCrucibleServer() {
 		ProjectConfiguration prjCfg = getProjectConfiguration();
@@ -162,5 +164,5 @@ public class IntelliJProjectCfgManager implements ProjectCfgManager {
 		}
 		return null;
 	}
-	
+
 }

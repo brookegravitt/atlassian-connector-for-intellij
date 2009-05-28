@@ -28,7 +28,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.ReviewKeyComparator;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.application.ApplicationManager;
@@ -47,8 +47,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static javax.swing.Action.NAME;
 import javax.swing.*;
-import static javax.swing.Action.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -78,7 +78,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private final Project project;
 	private PermId permId;
 	private String patch;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private AddMode mode;
 	private ServerData server;
 	private Collection<Change> localChanges;
@@ -87,7 +87,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	private RepositoryComboBoxItem NON_REPO;
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			ChangeList[] changes, final IntelliJProjectCfgManager projectCfgManager) {
+			ChangeList[] changes, final ProjectCfgManagerImpl projectCfgManager) {
 		this(project, crucibleServerFacade, projectCfgManager);
 		this.changes = changes;
 		this.mode = AddMode.ADDREVISION;
@@ -96,7 +96,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	public CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			Collection<Change> changes, final IntelliJProjectCfgManager projectCfgManager) {
+			Collection<Change> changes, final ProjectCfgManagerImpl projectCfgManager) {
 		this(project, crucibleServerFacade, projectCfgManager);
 		localChanges = changes;
 		this.mode = AddMode.ADDITEMS;
@@ -110,7 +110,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 	}
 
 	private CrucibleHelperForm(Project project, CrucibleServerFacade crucibleServerFacade,
-			final IntelliJProjectCfgManager projectCfgManager) {
+			final ProjectCfgManagerImpl projectCfgManager) {
 		super(false);
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.project = project;
@@ -368,14 +368,14 @@ public class CrucibleHelperForm extends DialogWrapper {
 					try {
 						final ServerData serverData = projectCfgManager.getServerData(server);
 						addToReviewAdapterList(drafts,
-								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts), 
-                                serverData);
+								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts),
+								serverData);
 						addToReviewAdapterList(outForReview,
 								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.OutForReview),
-                                serverData);
+								serverData);
 						addToReviewAdapterList(toSummarize,
 								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.ToSummarize),
-                                serverData);
+								serverData);
 					} catch (RemoteApiException e) {
 						// nothing can be done here
 					} catch (ServerPasswordNotProvidedException e) {

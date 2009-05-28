@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.ChangeList;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +39,7 @@ public class CrucibleCreatePostCommitReviewFromChangeListForm extends AbstractCr
 
 	public CrucibleCreatePostCommitReviewFromChangeListForm(final Project project,
 			final CrucibleServerFacade crucibleServerFacade,
-			final ChangeList[] changes, @NotNull final IntelliJProjectCfgManager projectCfgManager) {
+			final ChangeList[] changes, @NotNull final ProjectCfgManagerImpl projectCfgManager) {
 		super(project, crucibleServerFacade, getReviewTitle(changes), projectCfgManager);
 		this.changes = changes;
 		setCustomComponent(null);

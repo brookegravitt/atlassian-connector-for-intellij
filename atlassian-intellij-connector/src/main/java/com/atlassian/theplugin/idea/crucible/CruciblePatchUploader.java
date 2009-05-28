@@ -17,27 +17,27 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
 
 import java.util.Collection;
 
 public class CruciblePatchUploader implements Runnable {
-	private final IntelliJProjectCfgManager cfgManager;
+	private final ProjectCfgManagerImpl cfgManager;
 	private final CrucibleServerFacade crucibleServerFacade;
 	private Project project;
 	private Collection<Change> changes;
 
 	public CruciblePatchUploader(Project project, CrucibleServerFacade crucibleServerFacade,
-			final IntelliJProjectCfgManager projectCfgManager) {
+			final ProjectCfgManagerImpl projectCfgManager) {
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.cfgManager = projectCfgManager;
 	}
 
 	public CruciblePatchUploader(Project project, CrucibleServerFacade crucibleServerFacade,
-			Collection<Change> changes, final IntelliJProjectCfgManager projectCfgManager) {
+			Collection<Change> changes, final ProjectCfgManagerImpl projectCfgManager) {
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.changes = changes;

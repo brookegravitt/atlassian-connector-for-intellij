@@ -18,10 +18,10 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.ui.ListSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,14 +32,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class BambooFilterList extends JList {
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final ProjectId projectId;
 	private final BuildListModelImpl bambooModel;
 	private BambooFilterType bambooFilterType; // = BambooFilterType.NONE;
 	private final BamboAllFilterWrapper allFilterWrapper;
 
 
-	public BambooFilterList(final IntelliJProjectCfgManager projectCfgManager,
+	public BambooFilterList(final ProjectCfgManagerImpl projectCfgManager,
 			final ProjectId projectId, final BuildListModelImpl model) {
 		super(new DefaultListModel());
 		this.projectCfgManager = projectCfgManager;
@@ -126,7 +126,7 @@ public class BambooFilterList extends JList {
 					}
 				}
 
-			break;
+				break;
 			case STATE:
 				for (AdjustedBuildStatus buildStatus : AdjustedBuildStatus.values()) {
 					final BuildStatusFilterWrapper obj = new BuildStatusFilterWrapper(new BuildStatusFilter(buildStatus),
@@ -294,7 +294,7 @@ public class BambooFilterList extends JList {
 
 		@Override
 		public String toString() {
-				return "All (" + getCount() + ")";
+			return "All (" + getCount() + ")";
 		}
 	}
 

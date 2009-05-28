@@ -23,7 +23,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -54,7 +54,7 @@ public class CrucibleCreatePostCommitReviewForm extends AbstractCrucibleCreatePo
 	private int revisionsNumber = 30;
 
 	public CrucibleCreatePostCommitReviewForm(final Project project, final CrucibleServerFacade crucibleServerFacade,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager, @NotNull final UiTaskExecutor taskExecutor) {
+			@NotNull final ProjectCfgManagerImpl projectCfgManager, @NotNull final UiTaskExecutor taskExecutor) {
 		super(project, crucibleServerFacade, "", projectCfgManager);
 		this.taskExecutor = taskExecutor;
 

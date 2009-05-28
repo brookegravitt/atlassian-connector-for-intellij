@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
@@ -52,19 +52,19 @@ public final class IdeaHelper {
 	private IdeaHelper() {
 	}
 
-    public static int getSpinnerValue(final JSpinner spinner) {
-        if (spinner == null || spinner.getModel() == null) {
-            return 1;
-        }
-        
-        int value = Integer.valueOf(spinner.getModel().getValue().toString());
-        try {
-            value = Integer.valueOf(((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText());
-        } catch (NumberFormatException e) {
-          ///not important
-        }
-        return value;
-    }
+	public static int getSpinnerValue(final JSpinner spinner) {
+		if (spinner == null || spinner.getModel() == null) {
+			return 1;
+		}
+
+		int value = Integer.valueOf(spinner.getModel().getValue().toString());
+		try {
+			value = Integer.valueOf(((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText());
+		} catch (NumberFormatException e) {
+			///not important
+		}
+		return value;
+	}
 
 	@Nullable
 	public static Project getCurrentProject(DataContext dataContext) {
@@ -104,13 +104,13 @@ public final class IdeaHelper {
 //		return null;
 //	}
 
-	public static IntelliJProjectCfgManager getProjectCfgManager(Project p) {
-		return getProjectComponent(p, IntelliJProjectCfgManager.class);
+	public static ProjectCfgManagerImpl getProjectCfgManager(Project p) {
+		return getProjectComponent(p, ProjectCfgManagerImpl.class);
 	}
 
 
-	public static IntelliJProjectCfgManager getProjectCfgManager(AnActionEvent e) {
-		return getProjectComponent(e, IntelliJProjectCfgManager.class);
+	public static ProjectCfgManagerImpl getProjectCfgManager(AnActionEvent e) {
+		return getProjectComponent(e, ProjectCfgManagerImpl.class);
 	}
 
 	public static IssueListToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {

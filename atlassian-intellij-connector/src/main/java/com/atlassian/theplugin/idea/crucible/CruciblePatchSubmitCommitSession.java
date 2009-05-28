@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -32,10 +32,10 @@ import java.util.Collection;
 public class CruciblePatchSubmitCommitSession implements CommitSession {
 	private final Project project;
 	protected final CrucibleServerFacade crucibleServerFacade;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 
 	public CruciblePatchSubmitCommitSession(Project project, CrucibleServerFacade crucibleServerFacade,
-			final IntelliJProjectCfgManager cfgManager) {
+			final ProjectCfgManagerImpl cfgManager) {
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;
 		this.projectCfgManager = cfgManager;

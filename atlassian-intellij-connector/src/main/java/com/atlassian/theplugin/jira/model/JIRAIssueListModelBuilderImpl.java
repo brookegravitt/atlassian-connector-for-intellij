@@ -2,7 +2,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -25,7 +25,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	private int startFrom;
 	private JIRAIssueListModel model;
 	private Project project;
-	private IntelliJProjectCfgManager projectCfgManager;
+	private ProjectCfgManagerImpl projectCfgManager;
 	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
@@ -246,7 +246,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		this.project = project;
 	}
 
-	public void setProjectCfgManager(final IntelliJProjectCfgManager projectCfgManager) {
+	public void setProjectCfgManager(final ProjectCfgManagerImpl projectCfgManager) {
 		this.projectCfgManager = projectCfgManager;
 	}
 }

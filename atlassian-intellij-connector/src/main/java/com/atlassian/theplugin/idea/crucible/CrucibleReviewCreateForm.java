@@ -27,7 +27,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.comboitems.RepositoryComboBoxItem;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -79,7 +79,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 	protected Project project;
 	protected CrucibleServerFacade crucibleServerFacade;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private int reviewCreationTimeout = -1;
 	private static final int MILLISECONDS_IN_MINUTE = 1000 * 60;
 
@@ -92,7 +92,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 	}
 
 	public CrucibleReviewCreateForm(Project project, CrucibleServerFacade crucibleServerFacade, String commitMessage,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager, @NotNull String dialogTitle) {
+			@NotNull final ProjectCfgManagerImpl projectCfgManager, @NotNull String dialogTitle) {
 		super(false);
 		this.project = project;
 		this.crucibleServerFacade = crucibleServerFacade;

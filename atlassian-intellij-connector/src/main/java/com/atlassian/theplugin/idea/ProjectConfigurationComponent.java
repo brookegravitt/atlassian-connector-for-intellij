@@ -23,7 +23,7 @@ import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -59,7 +59,7 @@ import java.util.List;
 public class ProjectConfigurationComponent implements ProjectComponent, SettingsSavingComponent, Configurable {
 
 	private final Project project;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
 	private final ProjectConfigurationBean projectConfigurationBean;
@@ -76,7 +76,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private ServerCfg selectedServer;
 
 
-	public ProjectConfigurationComponent(final Project project, final IntelliJProjectCfgManager projectCfgManager,
+	public ProjectConfigurationComponent(final Project project, final ProjectCfgManagerImpl projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
 			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull ProjectConfigurationBean projectConfigurationBean) {
 		this.project = project;
@@ -367,7 +367,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void apply() throws ConfigurationException {
-        projectConfigurationPanel.askForDefaultCredentials();
+		projectConfigurationPanel.askForDefaultCredentials();
 		if (projectConfigurationPanel == null) {
 			return;
 		}

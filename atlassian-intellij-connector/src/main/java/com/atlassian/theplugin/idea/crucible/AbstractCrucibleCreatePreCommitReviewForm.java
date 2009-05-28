@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.Change;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +31,7 @@ import java.util.Collection;
 public abstract class AbstractCrucibleCreatePreCommitReviewForm extends CrucibleReviewCreateForm {
 	public AbstractCrucibleCreatePreCommitReviewForm(Project project, CrucibleServerFacade crucibleServerFacade,
 			String commitMessage,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager) {
+			@NotNull final ProjectCfgManagerImpl projectCfgManager) {
 		super(project, crucibleServerFacade, commitMessage, projectCfgManager, "Create Pre-Commit Review");
 	}
 

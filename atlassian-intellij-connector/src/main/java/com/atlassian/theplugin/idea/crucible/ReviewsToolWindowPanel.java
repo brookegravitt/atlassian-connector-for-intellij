@@ -29,7 +29,7 @@ import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.*;
@@ -76,7 +76,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private FilterTree filterTree;
 	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
@@ -86,7 +86,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 
 
 	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager,
+			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, "ThePlugin.Reviews.LeftToolBar", "ThePlugin.Reviews.RightToolBar");
@@ -296,21 +296,21 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 			reviewTree = new ReviewTree(new ReviewTreeModel(currentReviewListModel, projectCfgManager,
 					CfgUtil.getProjectId(project)));
 
-            new TreeSpeedSearch(reviewTree) {
-                @Override
-                protected boolean isMatchingElement(Object o, String s) {
-                    TreePath tp = (TreePath) o;
-                    Object node = tp.getLastPathComponent();
-                    if (node instanceof CrucibleReviewTreeNode) {
-                        ReviewTreeNode rtn = (ReviewTreeNode) node;
-                        ReviewAdapter review = rtn.getReview();
-                        return review.getPermId().getId().toLowerCase().contains(s.toLowerCase())
-                                || review.getName().toLowerCase().contains(s.toLowerCase());
-                    } else {
-                        return super.isMatchingElement(o, s);
-                    }
-                }
-            };
+			new TreeSpeedSearch(reviewTree) {
+				@Override
+				protected boolean isMatchingElement(Object o, String s) {
+					TreePath tp = (TreePath) o;
+					Object node = tp.getLastPathComponent();
+					if (node instanceof CrucibleReviewTreeNode) {
+						ReviewTreeNode rtn = (ReviewTreeNode) node;
+						ReviewAdapter review = rtn.getReview();
+						return review.getPermId().getId().toLowerCase().contains(s.toLowerCase())
+								|| review.getName().toLowerCase().contains(s.toLowerCase());
+					} else {
+						return super.isMatchingElement(o, s);
+					}
+				}
+			};
 		}
 		return reviewTree;
 	}
