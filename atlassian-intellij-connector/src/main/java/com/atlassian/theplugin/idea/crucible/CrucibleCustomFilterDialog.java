@@ -30,7 +30,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -81,7 +81,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		}
 	};
 
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final Project project;
 	private final CustomFilterBean filter;
 	private final UiTaskExecutor uiTaskExecutor;
@@ -102,7 +102,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
 
-	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final IntelliJProjectCfgManager cfgManager,
+	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.project = project;

@@ -25,7 +25,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.project.Project;
@@ -71,7 +71,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BuildListModelImpl bambooModel,
 			@NotNull final ProjectConfigurationBean projectConfiguration,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager) {
+			@NotNull final ProjectCfgManagerImpl projectCfgManager) {
 
 		this.project = project;
 		this.bambooModel = bambooModel;

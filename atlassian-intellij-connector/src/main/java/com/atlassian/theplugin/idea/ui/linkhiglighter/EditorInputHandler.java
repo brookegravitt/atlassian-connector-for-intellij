@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.event.EditorMouseEvent;
@@ -36,14 +36,14 @@ import java.awt.event.KeyEvent;
  */
 class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener, EditorMouseListener {
 	private Point lastPointLocation = null;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final Project project;
 	private final Editor editor;
 	private final PsiFile file;
 	private final JiraEditorLinkParser jiraEditorLinkParser;
 	private boolean handCursor;
 
-	public EditorInputHandler(@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull Project project,
+	public EditorInputHandler(@NotNull ProjectCfgManagerImpl projectCfgManager, @NotNull Project project,
 			@NotNull Editor editor, PsiFile file, JiraEditorLinkParser jiraEditorLinkParser) {
 		this.projectCfgManager = projectCfgManager;
 		this.project = project;
@@ -75,11 +75,11 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 		JiraURLTextRange hoverRange = jiraEditorLinkParser.getJiraURLTextRange(editor, file, lastPointLocation);
 		if (hoverRange != null && hoverRange.isActive()) {
 			editor.getContentComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            editor.getContentComponent().setToolTipText(hoverRange.getBrowserUrl());
+			editor.getContentComponent().setToolTipText(hoverRange.getBrowserUrl());
 			handCursor = true;
 		} else if (handCursor) {
 			editor.getContentComponent().setCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
-            editor.getContentComponent().setToolTipText(null);
+			editor.getContentComponent().setToolTipText(null);
 			handCursor = false;
 		}
 

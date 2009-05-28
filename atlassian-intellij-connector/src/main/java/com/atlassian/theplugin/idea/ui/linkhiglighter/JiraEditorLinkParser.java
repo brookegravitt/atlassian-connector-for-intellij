@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.DataKeys;
@@ -42,18 +42,18 @@ import java.util.regex.Pattern;
 public final class JiraEditorLinkParser {
 	private static final Pattern JIRA_ISSUE_LINK_SEARCH_PATTERN = Pattern.compile("\\b(\\p{Upper}{2,}\\-\\d+)\\b");
 	private final Project project;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 
-	JiraEditorLinkParser(Project project, IntelliJProjectCfgManager projectCfgManager) {
+	JiraEditorLinkParser(Project project, ProjectCfgManagerImpl projectCfgManager) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 	}
 
 
 	private String getDefaultJiraServerUrl() {
-        //projectCfgManager cannot be null but due to PL-1435 added some safety code
+		//projectCfgManager cannot be null but due to PL-1435 added some safety code
 		final ProjectConfiguration projectConfiguration =
-                projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
+				projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
 		// kalamon: not sure why this could be null, but see PL-1348.
 		// I am too stupid to grok the project configuration code
 		if (projectConfiguration != null) {

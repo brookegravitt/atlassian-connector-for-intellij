@@ -17,12 +17,14 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
+import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
-import com.atlassian.theplugin.cfg.IdeaCfgManager;
 import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
@@ -39,7 +41,7 @@ public final class BambooFilterListTestUi {
 	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
 	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
 	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
-	private static IntelliJProjectCfgManager projectCfgManager = new LocalProjectCfgManager();
+	private static ProjectCfgManagerImpl projectCfgManager = new LocalProjectCfgManager();
 
 	private BambooFilterListTestUi() {
 	}
@@ -50,7 +52,7 @@ public final class BambooFilterListTestUi {
 //		EasyMock.expect(mock.getName()).andReturn("My-test-Project");
 		EasyMock.expect(mock.getPresentableUrl()).andReturn("projectId").anyTimes();
 		EasyMock.replay(mock);
-		final AbstractCfgManager cfgManager = new IdeaCfgManager();
+		final CfgManagerImpl cfgManager = new CfgManagerImpl();
 		cfgManager.addProjectSpecificServer(projectId1, B1);
 		cfgManager.addProjectSpecificServer(projectId1, B2);
 		cfgManager.addProjectSpecificServer(projectId1, B3);
@@ -59,7 +61,7 @@ public final class BambooFilterListTestUi {
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
 				final BambooFilterList bambooFilterList = new BambooFilterList(
-						new IntelliJProjectCfgManager(null, cfgManager, null),
+						new ProjectCfgManagerImpl(null, cfgManager, null),
 						projectId1, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
@@ -132,7 +134,7 @@ public final class BambooFilterListTestUi {
 }
 
 
-class LocalProjectCfgManager extends IntelliJProjectCfgManager {
+class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
 		super(null, null, null);

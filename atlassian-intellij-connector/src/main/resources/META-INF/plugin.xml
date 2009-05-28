@@ -104,7 +104,7 @@
 		<errorHandler implementation="com.atlassian.theplugin.idea.BlameAtlassian"/>
 
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
-        <checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
+		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
 
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"
@@ -148,8 +148,8 @@
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
 						serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager"
-						serviceImplementation="com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"
+						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
 						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>
@@ -175,7 +175,7 @@
 
 
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"
-							serviceImplementation="com.atlassian.theplugin.cfg.IdeaCfgManager"/>
+							serviceImplementation="com.atlassian.theplugin.cfg.AbstractCfgManager"/>
 
 		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
 		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>
@@ -416,8 +416,8 @@
 		<action id="ThePlugin.Crucible.Comment.Reply"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddAction"
 				text="Add Comment" icon="/icons/pin_replycomment.png">
-            <keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
-        </action>
+			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
+		</action>
 		<action id="ThePlugin.Crucible.Comment.AddGeneralComment"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.AddGeneralCommentAction"
 				text="Add General Comment" icon="/icons/pin_addcomment.png"/>
@@ -475,8 +475,8 @@
 			<keyboard-shortcut keymap="$default" first-keystroke="alt C"/>
 			<add-to-group group-id="EditorPopupMenu" anchor="last"/>
 			<add-to-group group-id="EditorGutterPopupMenu" anchor="last"/>
-            <!-- version specific, have to add this group from code -->
-            <!--<add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>-->
+			<!-- version specific, have to add this group from code -->
+			<!--<add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>-->
 		</action>
 
 		<!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
@@ -565,20 +565,20 @@
 				icon="/icons/icn_comment.gif">
 		</action>
 
-        <action id="ThePlugin.JiraIssues.CreateIssue"
-                class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
-                text="Create JIRA Issue"
-                icon="/icons/add_jira.png">
-            <keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
-        </action>
+		<action id="ThePlugin.JiraIssues.CreateIssue"
+				class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
+				text="Create JIRA Issue"
+				icon="/icons/add_jira.png">
+			<keyboard-shortcut first-keystroke="shift alt n" keymap="$default"/>
+		</action>
 
-        <action id="ThePlugin.Reviews.QuickSearch"
-                class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
-                text="Search Review"
-                icon="/icons/find-crucible.png">
-            <keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
-        </action>
-        
+		<action id="ThePlugin.Reviews.QuickSearch"
+				class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
+				text="Search Review"
+				icon="/icons/find-crucible.png">
+			<keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+		</action>
+
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink"/>
 			<reference id="CopyFisheyeLink"/>
@@ -590,8 +590,8 @@
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
-            <reference id="ThePlugin.JiraIssues.CreateIssue"/>
-            <reference id="ThePlugin.Reviews.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
@@ -660,7 +660,7 @@
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
-            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<separator/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
@@ -736,7 +736,7 @@
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<reference id="ThePlugin.Crucible.Comment.Publish"/>
-            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 		</group>
@@ -772,7 +772,7 @@
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>
 			<reference id="ThePlugin.Crucible.Comment.Remove"/>
 			<reference id="ThePlugin.Crucible.Comment.Publish"/>
-            <reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
+			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
 
@@ -927,8 +927,8 @@
 
 		<group id="ThePlugin.JiraIssues.IssuePopupMenu" popup="true">
 			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
-            <reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
-            <!--<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>-->
+			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
+			<!--<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>-->
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>

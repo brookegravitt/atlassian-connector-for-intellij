@@ -19,7 +19,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -33,10 +33,10 @@ import java.util.*;
 public class RecentlyOpenIssuesCache {
 	// ordered map
 	private final LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue> items = new LinkedHashMap<IssueRecentlyOpenBean, JIRAIssue>();
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private JiraWorkspaceConfiguration jiraWorkspaceConf;
 
-	public RecentlyOpenIssuesCache(final IntelliJProjectCfgManager cfgManager, final JiraWorkspaceConfiguration jiraConf) {
+	public RecentlyOpenIssuesCache(final ProjectCfgManagerImpl cfgManager, final JiraWorkspaceConfiguration jiraConf) {
 		this.projectCfgManager = cfgManager;
 		this.jiraWorkspaceConf = jiraConf;
 	}

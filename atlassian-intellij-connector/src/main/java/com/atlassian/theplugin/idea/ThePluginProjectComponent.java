@@ -33,7 +33,7 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
@@ -46,6 +46,7 @@ import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
@@ -62,16 +63,14 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
-import com.intellij.ide.BrowserUtil;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import java.util.Collection;
-import java.awt.*;
 
 /**
  * Per-project plugin component.
@@ -107,7 +106,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
@@ -131,7 +130,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final CrucibleStatusChecker crucibleStatusChecker,
 			@NotNull final CrucibleReviewNotifier crucibleReviewNotifier,
 			@NotNull final CrucibleReviewListModel crucibleReviewListModel,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager,
+			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
 		this.cfgManager = cfgManager;
@@ -232,13 +231,13 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
-                public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses,
-                                                final Collection<Exception> generalExceptions) {
+				public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses,
+						final Collection<Exception> generalExceptions) {
 
 					bambooModel.update(buildStatuses, generalExceptions);
 				}
 
-                public void resetState() {
+				public void resetState() {
 				}
 			});
 
@@ -337,9 +336,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		ApplicationManager.getApplication().invokeLater(new Runnable() {
 			public void run() {
 				if (pluginConfiguration.getGeneralConfigurationData().getAnonymousEnhancedFeedbackEnabled() == null) {
-                    UsageStatsDialog dlg = new UsageStatsDialog();
-                    dlg.show();
-                    int answer = dlg.getExitCode();
+					UsageStatsDialog dlg = new UsageStatsDialog();
+					dlg.show();
+					int answer = dlg.getExitCode();
 					pluginConfiguration.getGeneralConfigurationData().setAnonymousEnhancedFeedbackEnabled(
 							answer == DialogWrapper.OK_EXIT_CODE);
 				}
@@ -347,50 +346,50 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}, ModalityState.defaultModalityState());
 	}
 
-    private class UsageStatsDialog extends DialogWrapper {
-        private static final String MSG_TEXT =
-                            "We would greatly appreciate if you allow us to collect anonymous"
-                            + "<br>usage statistics to help us provide a better quality product. Details"
-                            + "<br>of what will be tracked are described "
-                            + "<a href=\""
-                            + UsageStatisticsGenerator.USAGE_STATS_HREF
-                            + "\">here</a>. Is this ok?";
+	private class UsageStatsDialog extends DialogWrapper {
+		private static final String MSG_TEXT =
+				"We would greatly appreciate if you allow us to collect anonymous"
+						+ "<br>usage statistics to help us provide a better quality product. Details"
+						+ "<br>of what will be tracked are described "
+						+ "<a href=\""
+						+ UsageStatisticsGenerator.USAGE_STATS_HREF
+						+ "\">here</a>. Is this ok?";
 
-        protected UsageStatsDialog() {
-            super((Project) null, false);
-            init();
-            setTitle(PluginUtil.getInstance().getName() + " Request");
-            setModal(true);
-            setOKButtonText("Yes");
-            setCancelButtonText("No");
-        }
+		protected UsageStatsDialog() {
+			super((Project) null, false);
+			init();
+			setTitle(PluginUtil.getInstance().getName() + " Request");
+			setModal(true);
+			setOKButtonText("Yes");
+			setCancelButtonText("No");
+		}
 
-        protected JComponent createCenterPanel() {
-            JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
-            CellConstraints cc = new CellConstraints();
+		protected JComponent createCenterPanel() {
+			JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
+			CellConstraints cc = new CellConstraints();
 
-            JEditorPane textPane = new JEditorPane();
-            textPane.setContentType("text/html");
-            textPane.setEditable(false);
-            textPane.setOpaque(false);
-            textPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-            textPane.setText("<html>" + MSG_TEXT);
-            textPane.addHyperlinkListener(new HyperlinkListener() {
-                public void hyperlinkUpdate(HyperlinkEvent e) {
-                    if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                        BrowserUtil.launchBrowser(e.getURL().toString());
-                    }
-                }
-            });
+			JEditorPane textPane = new JEditorPane();
+			textPane.setContentType("text/html");
+			textPane.setEditable(false);
+			textPane.setOpaque(false);
+			textPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
+			textPane.setText("<html>" + MSG_TEXT);
+			textPane.addHyperlinkListener(new HyperlinkListener() {
+				public void hyperlinkUpdate(HyperlinkEvent e) {
+					if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+						BrowserUtil.launchBrowser(e.getURL().toString());
+					}
+				}
+			});
 
-            p.add(new JLabel(Messages.getQuestionIcon()), cc.xy(2, 2));
-            p.add(textPane, cc.xy(4, 2));
+			p.add(new JLabel(Messages.getQuestionIcon()), cc.xy(2, 2));
+			p.add(textPane, cc.xy(4, 2));
 
-            return p;
-        }
+			return p;
+		}
 
 
-    }
+	}
 
 	public void projectClosed() {
 		if (created) {

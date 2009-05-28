@@ -14,7 +14,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeBuilder;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
@@ -61,7 +61,7 @@ import java.util.List;
 public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
 	public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
-	private IntelliJProjectCfgManager projectCfgManager;
+	private ProjectCfgManagerImpl projectCfgManager;
 	private final CfgManager cfgManager;
 	private final PluginConfiguration pluginConfiguration;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
@@ -98,7 +98,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	private static final int ONE_SECOND = 1000;
 
 	public IssueListToolWindowPanel(@NotNull final Project project,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager,
+			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final CfgManager cfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
@@ -211,7 +211,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 	}
 
-	public IntelliJProjectCfgManager getProjectCfgManager() {
+	public ProjectCfgManagerImpl getProjectCfgManager() {
 		return projectCfgManager;
 	}
 

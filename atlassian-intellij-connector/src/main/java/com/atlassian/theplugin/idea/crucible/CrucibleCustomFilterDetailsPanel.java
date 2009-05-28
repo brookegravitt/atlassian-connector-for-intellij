@@ -1,10 +1,13 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -16,7 +19,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
-import com.atlassian.theplugin.idea.config.IntelliJProjectCfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
 import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
@@ -37,7 +40,7 @@ import java.util.Collection;
 public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private CustomFilterBean filter;
 	private ScrollableTwoColumnPanel panel;
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final CrucibleWorkspaceConfiguration projectCrucibleCfg;
 	private final Project project;
 	private final CrucibleServerFacade crucibleFacade;
@@ -45,7 +48,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 	private Collection<CustomFilterChangeListener> listeners = new ArrayList<CustomFilterChangeListener>();
 
 	public CrucibleCustomFilterDetailsPanel(@NotNull final Project project,
-			@NotNull final IntelliJProjectCfgManager projectCfgManager,
+			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			final CrucibleWorkspaceConfiguration crucibleCfg, final FilterTree tree,
 			@NotNull final CrucibleServerFacade crucibleFacade, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(new BorderLayout());
@@ -93,33 +96,33 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			}
 		});
 
-        projectCfgManager.getCfgManager()
-                .addProjectConfigurationListener(CfgUtil.getProjectId(project), new ConfigurationListenerAdapter() {
+		projectCfgManager.getCfgManager()
+				.addProjectConfigurationListener(CfgUtil.getProjectId(project), new ConfigurationListenerAdapter() {
 
-            @Override
-            public void serverRemoved(ServerCfg oldServer) {
-                updateFilterServer(oldServer);
-            }
+					@Override
+					public void serverRemoved(ServerCfg oldServer) {
+						updateFilterServer(oldServer);
+					}
 
-            // we need to also handle adding server. Consider scenario:
-            // 1. remove the last CRU server, that is also a filter's server
-            // 2. custom filter details panel disappears
-            // 3. add some other CRU server
-            // 4. custom filter details panel reappears and it has to have correct data (info about invalid server)        
-            @Override
-            public void serverAdded(ServerCfg newServer) {
-                updateFilterServer(newServer);
-            }
+					// we need to also handle adding server. Consider scenario:
+					// 1. remove the last CRU server, that is also a filter's server
+					// 2. custom filter details panel disappears
+					// 3. add some other CRU server
+					// 4. custom filter details panel reappears and it has to have correct data (info about invalid server)
+					@Override
+					public void serverAdded(ServerCfg newServer) {
+						updateFilterServer(newServer);
+					}
 
-            private void updateFilterServer(ServerCfg oldServer) {
-                if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
-                    updateDetails(filter);
-                }
-            }
-        });
+					private void updateFilterServer(ServerCfg oldServer) {
+						if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
+							updateDetails(filter);
+						}
+					}
+				});
 	}
 
-    private synchronized void updateDetails(final CustomFilterBean manualFilter) {
+	private synchronized void updateDetails(final CustomFilterBean manualFilter) {
 		filter = manualFilter;
 		if (panel != null) {
 			remove(panel);
@@ -150,13 +153,13 @@ class MyUiTask implements UiTask {
 	@NotNull
 	private final ScrollableTwoColumnPanel panel;
 	@NotNull
-	private final IntelliJProjectCfgManager projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	@NotNull
 	private final CrucibleServerFacade crucibleFacade;
 	private final Project project;
 
 	public MyUiTask(@Nullable CustomFilterBean filter, @NotNull final ScrollableTwoColumnPanel panel,
-			@NotNull IntelliJProjectCfgManager projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
+			@NotNull ProjectCfgManagerImpl projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
 			@NotNull final Project project) {
 		this.filter = filter;
 		this.panel = panel;
@@ -195,10 +198,10 @@ class MyUiTask implements UiTask {
 		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
 				CfgUtil.getProjectId(project), new ServerId(serverId));
 		final CrucibleServerCfg crucibleServerCfg =
-                (server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
+				(server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
-		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server", 
-                (server != null ? server.getName() : "Server Unknown or Removed"), server == null));
+		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server",
+				(server != null ? server.getName() : "Server Unknown or Removed"), server == null));
 		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
 			String projectName = customFilter.getProjectKey() + " <i>(fetching full name...)</i>";
 			if (fetchRemoteData) {
