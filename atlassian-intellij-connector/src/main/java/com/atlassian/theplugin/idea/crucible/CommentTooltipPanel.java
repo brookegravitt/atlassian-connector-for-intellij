@@ -58,6 +58,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
     private Component popupOwner;
     private static final int MAX_HREF_LINK_LENGTH = 40;
+    private static final Color EDITABLE_BACKGROUND_COLOR = new Color(0xd0, 0xd0, 0xd0);
 
     public enum Mode {
         SHOW,
@@ -87,8 +88,8 @@ public abstract class CommentTooltipPanel extends JPanel {
             popup.showInScreenCoordinates(owner, location);
         } else if (event != null) {
 		    popup.showInBestPositionFor(event.getDataContext());
-        } else {
-            System.out.println("owner=" + owner + " location=" + location + " event=" + event);
+//        } else {
+//            System.out.println("owner=" + owner + " location=" + location + " event=" + event);
         }
 	}
 
@@ -305,6 +306,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         private JLabel underConstruction;
         private boolean indent;
         private static final String POST_COMMENT_TOOLTIP_TEXT = "Post Comment (Alt-Enter)";
+        private static final int SET_FOCUS_DELAY = 100;
 
         private class HeaderListener extends MouseAdapter {
 			public void mouseClicked(MouseEvent e) {
@@ -466,8 +468,18 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					setCommentPanelEditable(CommentPanel.this,
-                            comment == null || (selectedPanel && mode != Mode.SHOW));
+                    boolean editable = comment == null || (selectedPanel && mode != Mode.SHOW);
+					setCommentPanelEditable(CommentPanel.this, editable);
+
+                    if (editable) {
+                        Timer t = new Timer(SET_FOCUS_DELAY, new ActionListener() {
+                            public void actionPerformed(ActionEvent actionEvent) {
+                                commentBody.requestFocusInWindow();
+                            }
+                        });
+                        t.setRepeats(false);
+                        t.start();
+                    }                    
 				}
 			});
 			add(commentBody, cc.xyw(indent ? USER_POS : TWIXIE_2_POS, TWIXIE_2_POS, indent ? WIDTH_INDENTED : WIDTH_ALL));
@@ -759,7 +771,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 			pane.setCaretPosition(0);
 			pane.selectAll();
 		}
-		pane.setBackground(editable ? CommentHighlighter.VERSIONED_COMMENT_BACKGROUND_COLOR : Color.WHITE);
+		pane.setBackground(editable ? EDITABLE_BACKGROUND_COLOR : Color.WHITE);
+//        pane.setBackground(editable ? new Color(0xd0, 0xd0, 0xd0) : Color.WHITE);
+
 
 		if (commentPanel.defectClassificationPanel != null) {
 			commentPanel.defectClassificationPanel.setVisible(editable);
