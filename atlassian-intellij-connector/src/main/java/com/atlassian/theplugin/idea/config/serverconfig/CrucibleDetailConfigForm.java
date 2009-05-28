@@ -86,7 +86,8 @@ public class CrucibleDetailConfigForm {
 	private void $$$setupUI$$$() {
 		rootComponent = new JPanel();
 		rootComponent.setLayout(new GridBagLayout());
-		rootComponent.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Additional Configuration"));
+		rootComponent
+				.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Additional Configuration"));
 		final JPanel panel1 = new JPanel();
 		panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
 		GridBagConstraints gbc;
@@ -99,7 +100,9 @@ public class CrucibleDetailConfigForm {
 		rootComponent.add(panel1, gbc);
 		cbFisheye = new JCheckBox();
 		cbFisheye.setText("Crucible Server Contains Fisheye Instance");
-		panel1.add(cbFisheye, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		panel1.add(cbFisheye, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
+				null, null, null, 0, false));
 		final JPanel spacer1 = new JPanel();
 		gbc = new GridBagConstraints();
 		gbc.gridx = 0;
