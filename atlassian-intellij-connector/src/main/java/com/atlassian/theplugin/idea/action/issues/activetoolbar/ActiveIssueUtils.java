@@ -274,8 +274,7 @@ public final class ActiveIssueUtils {
 					if ((cond1 || cond2) && !"-1".equals(jiraIssue.getAssigneeId())) {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
-										+ ".\nDo you want to overwrite assignee and start progress?",
-								"Issue " + jiraIssue.getKey(),
+									+ ".\nDo you want to overwrite assignee and start progress?", "Issue " + jiraIssue.getKey(),
 								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 					}
 					if (isOk) {
