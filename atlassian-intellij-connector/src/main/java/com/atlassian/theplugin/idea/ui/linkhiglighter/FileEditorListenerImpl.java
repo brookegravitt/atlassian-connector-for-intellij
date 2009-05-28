@@ -148,6 +148,9 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 	public void scanOpenEditors() {
 		final FileEditorManager editorManager = FileEditorManager.getInstance(project);
+        if (editorManager == null) {
+            return;
+        }
 		for (VirtualFile openFile : editorManager.getSelectedFiles()) {
 			if (!linkHighlighters.containsKey(openFile)) {
 				PsiFile psiFile = PsiManager.getInstance(project).findFile(openFile);
@@ -182,16 +185,17 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			if (currentJiraServer == null) {
 				FileEditorListenerImpl.this.deactivate();
 				removeAllLinkHighlighers();
-
-
 			} else if (!currentJiraServer.equals(lastJiraServer)) {
-				Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
+				final Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 				FileEditorListenerImpl.this.activate();
-				ProgressManager.getInstance().run(task);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        ProgressManager.getInstance().run(task);
+                    }
+                });
 			}
 
 			lastJiraServer = currentJiraServer;
-
 		}
 	}
 
