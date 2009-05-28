@@ -334,6 +334,10 @@ public abstract class CommentTooltipPanel extends JPanel {
                 public void hyperlinkUpdate(HyperlinkEvent e) {
                     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                         BrowserUtil.launchBrowser(e.getURL().toString());
+                    } else if (e.getEventType() == HyperlinkEvent.EventType.ENTERED) {
+                        commentBody.setToolTipText(e.getURL().toString());
+                    } else if (e.getEventType() == HyperlinkEvent.EventType.EXITED) {
+                        commentBody.setToolTipText(null);
                     }
                 }
             });
@@ -594,26 +598,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			}
 			btnCancel.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
-					btnCancel.setVisible(false);
-					btnEdit.setHyperlinkText(EDIT);
-
-					if (btnSaveDraft != null) {
-						btnSaveDraft.setVisible(false);
-					}
-					setButtonsVisible(true);
-
-					if (lastCommentBody != null) {
-                        setCommentPanelText(CommentPanel.this, false, lastCommentBody);
-					}
-					if (!panelForNewComment) {
-						setCommentPanelEditable(CommentPanel.this, false);
-					} else {
-						removeCommentPanel(CommentPanel.this);
-                        if (commentPanelList.size() == 0 && project != null) {
-                            popup.cancel();
-                        }
-					}
-					setStatusText(" ", false);
+                    cancelEditing();
 				}
 			});
 			btnCancel.setOpaque(false);
@@ -621,7 +606,30 @@ public abstract class CommentTooltipPanel extends JPanel {
 			add(btnCancel, cc.xy(CANCEL_POS, 1));
 		}
 
-		private boolean postComment() {
+        private void cancelEditing() {
+            btnCancel.setVisible(false);
+            btnEdit.setHyperlinkText(EDIT);
+
+            if (btnSaveDraft != null) {
+                btnSaveDraft.setVisible(false);
+            }
+            setButtonsVisible(true);
+
+            if (lastCommentBody != null) {
+                setCommentPanelText(this, false, lastCommentBody);
+            }
+            if (!panelForNewComment) {
+                setCommentPanelEditable(this, false);
+            } else {
+                removeCommentPanel(this);
+                if (commentPanelList.size() == 0 && project != null) {
+                    popup.cancel();
+                }
+            }
+            setStatusText(" ", false);
+        }
+
+        private boolean postComment() {
 			if (commentBody.isEditable()) {
 				if (!validateText(commentBody.getText())) {
 					return true;
@@ -659,6 +667,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                 setCommentPanelText(this, false, cmt.getMessage());
                 setCommentDate();
                 updateDefectField();
+                cancelEditing();
 
                 commentBody.setBackground(Color.WHITE);
                 commentBody.setEnabled(true);
@@ -731,6 +740,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         String txt = text != null ? text : "";
         if (!editable) {
             Htmlizer lizer = new Htmlizer(MAX_HREF_LINK_LENGTH);
+            txt = lizer.replaceBrackets(txt);
             txt = lizer.htmlizeHyperlinks(txt);
             txt = lizer.replaceWhitespace(txt);
         }
@@ -757,7 +767,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 	}
 
-	private void setCommentEditable(final CommentBean comment, CommentTooltipPanel.CommentPanel commentPanel,
+	private void setCommentEditable(final Comment comment, CommentTooltipPanel.CommentPanel commentPanel,
 			boolean editable) {
 		commentPanel.commentBody.setEnabled(editable);
 		commentPanel.btnEdit.setHyperlinkText(CommentPanel.APPLY);

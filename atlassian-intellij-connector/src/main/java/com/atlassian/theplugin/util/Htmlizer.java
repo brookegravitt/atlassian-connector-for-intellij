@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
  */
 public class Htmlizer {
 
-    public static final String HYPERLINK_PATTERN = "(https?://\\S+)";
+    public static final String HYPERLINK_PATTERN = "(https?://[\\w|:|-|/|\\.]+)";
 
     public static final String A_PATTERN = "(<a\\s+.*</a>)";
     private boolean haveA;
@@ -58,6 +58,12 @@ public class Htmlizer {
         return result.toString();
     }
 
+    public String replaceBrackets(String text) {
+        String result = text.replaceAll("<", "&lt;");
+        result = result.replaceAll(">", "&gt;");
+        return result;
+    }
+    
     public String replaceWhitespace(String text) {
         String result = text.replaceAll("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
         result = result.replaceAll("   ", "&nbsp;&nbsp;&nbsp;");

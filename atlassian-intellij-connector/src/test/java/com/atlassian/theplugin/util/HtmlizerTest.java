@@ -84,4 +84,16 @@ public class HtmlizerTest extends TestCase {
         String result = new Htmlizer().htmlizeHyperlinks(txt);
         assertEquals(expected, result);
     }
+
+    // test for bug PL-1508
+    public void testHtmlizePervertedXml() {
+        String txt = "<link rel=\"self\" href=\"http://localhost:8085/bamboo/rest/api/latest/project\"/>";
+        String expected =
+                "&lt;link rel=\"self\" href=\"<a href=\"http://localhost:8085/bamboo/rest/api/latest/project\">"
+                        + "http://localhost:8085/bamboo/rest/api/latest/project</a>\"/&gt;";
+        Htmlizer h = new Htmlizer();
+        txt = h.replaceBrackets(txt);
+        String result = h.htmlizeHyperlinks(txt);
+        assertEquals(expected, result);
+    }
 }
