@@ -19,8 +19,8 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
-import com.atlassian.theplugin.configuration.BambooProjectConfiguration;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
@@ -60,7 +60,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
 	private JComponent toolBar;
-	private BambooProjectConfiguration bambooConfiguration;
+	private BambooWorkspaceConfiguration bambooConfiguration;
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 	private SearchBuildListModel searchBuildModel;
 
@@ -70,7 +70,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 	public BambooToolWindowPanel(@NotNull final Project project,
 			@NotNull final BuildListModelImpl bambooModel,
-			@NotNull final ProjectConfigurationBean projectConfiguration,
+			@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager) {
 
 		this.project = project;

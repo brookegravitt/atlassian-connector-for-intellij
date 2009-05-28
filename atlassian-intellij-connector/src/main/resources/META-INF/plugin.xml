@@ -119,8 +119,8 @@
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilderImpl"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.configuration.ProjectConfigurationBean"
-						serviceImplementation="com.atlassian.theplugin.configuration.ProjectConfigurationBean"/>
+		<projectService serviceInterface="com.atlassian.theplugin.configuration.WorkspaceConfigurationBean"
+						serviceImplementation="com.atlassian.theplugin.configuration.WorkspaceConfigurationBean"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel"/>

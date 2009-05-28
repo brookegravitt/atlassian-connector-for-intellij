@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -62,7 +62,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final ProjectCfgManagerImpl projectCfgManager;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
-	private final ProjectConfigurationBean projectConfigurationBean;
+	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
@@ -78,7 +78,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public ProjectConfigurationComponent(final Project project, final ProjectCfgManagerImpl projectCfgManager,
 			final UiTaskExecutor uiTaskExecutor,
-			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull ProjectConfigurationBean projectConfigurationBean) {
+			@NotNull PrivateConfigurationDao privateCfgDao, @NotNull WorkspaceConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.uiTaskExecutor = uiTaskExecutor;

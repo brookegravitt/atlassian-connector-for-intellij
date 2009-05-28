@@ -22,7 +22,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,10 +34,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
 	private final ProjectId projectId;
-	private final ProjectConfigurationBean projectConfigurationBean;
+	private final WorkspaceConfigurationBean projectConfigurationBean;
 
 	public ProjectCfgManagerImpl(Project project,
-			CfgManager cfgManager, ProjectConfigurationBean projectConfigurationBean) {
+			CfgManager cfgManager, WorkspaceConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.projectId = CfgUtil.getProjectId(project);
 		this.cfgManager = cfgManager;
