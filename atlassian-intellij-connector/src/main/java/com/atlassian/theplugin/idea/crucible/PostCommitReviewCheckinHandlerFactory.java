@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
@@ -27,7 +27,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 	private final ProjectCfgManagerImpl projectCfgManager;
 	private CrucibleConfigurationBean cruciblePluginConfig;
 
-	public PostCommitReviewCheckinHandlerFactory(@NotNull final ProjectConfigurationBean projectConfiguration,
+	public PostCommitReviewCheckinHandlerFactory(@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull ProjectCfgManagerImpl cfgManager,
 			@NotNull PluginConfigurationBean pluginCfg) {
 		this.projectCfgManager = cfgManager;

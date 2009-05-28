@@ -24,27 +24,26 @@ import org.jetbrains.annotations.NotNull;
 
 @State(name = "atlassian-ide-plugin-workspace",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-id", file = "$WORKSPACE_FILE$")})
-public class ProjectConfigurationBean implements PersistentStateComponent<ProjectConfigurationBean> {
+public class WorkspaceConfigurationBean implements PersistentStateComponent<WorkspaceConfigurationBean> {
 
-	private BambooProjectConfiguration bambooConfiguration = new BambooProjectConfiguration();
-
+	private BambooWorkspaceConfiguration bambooConfiguration = new BambooWorkspaceConfiguration();
+	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
 
 	private String activeToolWindowTab = ""; //PluginToolWindow.ToolWindowPanels.JIRA.toString();
-	private CrucibleWorkspaceConfiguration crucibleConfiguration = new CrucibleWorkspaceConfiguration();
 
 	private UserCfgBean defaultCredentials = new UserCfgBean();
 	private boolean defaultCredentialsAsked;
 
 
-	public ProjectConfigurationBean() {
+	public WorkspaceConfigurationBean() {
 
 	}
 
-	public BambooProjectConfiguration getBambooConfiguration() {
+	public BambooWorkspaceConfiguration getBambooConfiguration() {
 		return bambooConfiguration;
 	}
 
-	public void setBambooConfiguration(BambooProjectConfiguration bambooConfiguration) {
+	public void setBambooConfiguration(BambooWorkspaceConfiguration bambooConfiguration) {
 		this.bambooConfiguration = bambooConfiguration;
 	}
 
@@ -56,7 +55,7 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 		this.crucibleConfiguration = crucibleConfiguration;
 	}
 
-	public void copyConfiguration(ProjectConfigurationBean state) {
+	public void copyConfiguration(WorkspaceConfigurationBean state) {
 		bambooConfiguration.copyConfiguration(state.getBambooConfiguration());
 		crucibleConfiguration.copyConfiguration(state.getCrucibleConfiguration());
 		this.activeToolWindowTab = state.getActiveToolWindowTab();
@@ -73,11 +72,11 @@ public class ProjectConfigurationBean implements PersistentStateComponent<Projec
 		this.activeToolWindowTab = activeToolWindowTab;
 	}
 
-	public ProjectConfigurationBean getState() {
+	public WorkspaceConfigurationBean getState() {
 		return this;
 	}
 
-	public void loadState(ProjectConfigurationBean state) {
+	public void loadState(WorkspaceConfigurationBean state) {
 		copyConfiguration(state);
 //		projectConfigurationBean.copyConfiguration(state);
 	}

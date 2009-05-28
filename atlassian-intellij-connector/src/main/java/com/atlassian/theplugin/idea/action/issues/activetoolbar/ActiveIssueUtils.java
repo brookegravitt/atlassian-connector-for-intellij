@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -265,7 +265,8 @@ public final class ActiveIssueUtils {
 
 			public void onSuccess() {
 				if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
-					final ProjectConfigurationBean conf = IdeaHelper.getProjectComponent(event, ProjectConfigurationBean.class);
+					final WorkspaceConfigurationBean conf = IdeaHelper
+							.getProjectComponent(event, WorkspaceConfigurationBean.class);
 					final boolean cond1 = !jiraServerCfg.isUseDefaultCredentials()
 							&& !jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId());
 					final boolean cond2 = jiraServerCfg.isUseDefaultCredentials()

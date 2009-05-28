@@ -26,7 +26,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
@@ -79,7 +79,7 @@ import java.util.Collection;
 public class ThePluginProjectComponent implements ProjectComponent {
 	private static final String THE_PLUGIN_TOOL_WINDOW_ICON = "/icons/ico_plugin_16.png";
 
-	private final ProjectConfigurationBean projectConfigurationBean;
+	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private final Project project;
 
 	public CfgManager getCfgManager() {
@@ -123,7 +123,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
-			ProjectConfigurationBean projectConfigurationBean, CfgManager cfgManager,
+			WorkspaceConfigurationBean projectConfigurationBean, CfgManager cfgManager,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
@@ -436,7 +436,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		}
 	}
 
-	public ProjectConfigurationBean getProjectConfigurationBean() {
+	public WorkspaceConfigurationBean getProjectConfigurationBean() {
 		return projectConfigurationBean;
 	}
 

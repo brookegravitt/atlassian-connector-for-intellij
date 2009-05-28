@@ -24,7 +24,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -85,7 +85,8 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleReviewListModel currentReviewListModel;
 
 
-	public ReviewsToolWindowPanel(@NotNull final Project project, @NotNull final ProjectConfigurationBean projectConfiguration,
+	public ReviewsToolWindowPanel(@NotNull final Project project,
+			@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
 			@NotNull final UiTaskExecutor uiTaskExecutor) {

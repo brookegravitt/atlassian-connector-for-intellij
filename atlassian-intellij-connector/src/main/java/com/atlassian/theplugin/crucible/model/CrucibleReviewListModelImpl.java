@@ -9,7 +9,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExcept
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
-import com.atlassian.theplugin.configuration.ProjectConfigurationBean;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 
@@ -31,7 +31,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private AtomicLong epoch = new AtomicLong(0);
 
 	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
-			final ProjectConfigurationBean projectConfigurationBean) {
+			final WorkspaceConfigurationBean projectConfigurationBean) {
 		this.reviewListModelBuilder = reviewListModelBuilder;
 		this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
 		reviews.put(PredefinedFilter.OpenInIde, new HashSet<ReviewAdapter>());
@@ -99,8 +99,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			// this exception is just to notify that query was interrupted and
 			// new request is performed
 		} catch (Exception e) {
-            NewExceptionNotification nen = new NewExceptionNotification(e, null);
-            notifications.add(nen);
+			NewExceptionNotification nen = new NewExceptionNotification(e, null);
+			notifications.add(nen);
 			notifyReviewListUpdateFinished(new UpdateContext(updateReason, null, notifications));
 			// comment from wseliga:
 			// todo this is somewhat crazy. We swallow here all the problems and stop building the model, which SUCKS!!!
@@ -266,9 +266,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			if (crucibleFilter == PredefinedFilter.OpenInIde) {
-                if (updatedReviews.get(crucibleFilter).getException() != null) {
-                    continue;
-                }
+				if (updatedReviews.get(crucibleFilter).getException() != null) {
+					continue;
+				}
 				openInIde = updatedReviews.get(crucibleFilter).getReviews();
 				if (openInIde != null) {
 					getCollectionForFilter(reviews, PredefinedFilter.OpenInIde);
@@ -283,9 +283,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			if (crucibleFilter == PredefinedFilter.OpenInIde) {
 				continue;
 			}
-            if (updatedReviews.get(crucibleFilter).getException() != null) {
-                continue;
-            }
+			if (updatedReviews.get(crucibleFilter).getException() != null) {
+				continue;
+			}
 
 			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 			if (updated != null) {
@@ -303,11 +303,11 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-            if (updatedReviews.get(crucibleFilter).getException() != null) {
-                reviewSet.addAll(getReviews());    
-            } else {
-			    reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
-            }
+			if (updatedReviews.get(crucibleFilter).getException() != null) {
+				reviewSet.addAll(getReviews());
+			} else {
+				reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
+			}
 		}
 
 		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
@@ -326,9 +326,9 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				continue;
 			}
 
-            if (updatedReviews.get(crucibleFilter).getException() != null) {
-                continue;
-            }
+			if (updatedReviews.get(crucibleFilter).getException() != null) {
+				continue;
+			}
 
 			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 
