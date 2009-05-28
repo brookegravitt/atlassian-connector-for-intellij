@@ -175,7 +175,7 @@
 
 
 		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"
-							serviceImplementation="com.atlassian.theplugin.cfg.AbstractCfgManager"/>
+							serviceImplementation="com.atlassian.theplugin.commons.cfg.CfgManagerImpl"/>
 
 		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
 		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>

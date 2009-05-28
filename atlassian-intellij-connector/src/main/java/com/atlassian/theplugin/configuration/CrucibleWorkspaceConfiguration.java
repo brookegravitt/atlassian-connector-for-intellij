@@ -24,8 +24,8 @@ public class CrucibleWorkspaceConfiguration {
 
 	private CrucibleViewConfigurationBean view = new CrucibleViewConfigurationBean();
 	private CrucibleFiltersBean crucibleFilters = new CrucibleFiltersBean();
-	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
-    private boolean createReviewOnCommit;
+	//	private ProjectToolWindowTableConfiguration tableConfiguration = new ProjectToolWindowTableConfiguration();
+	private boolean createReviewOnCommit;
 
 	public CrucibleWorkspaceConfiguration() {
 	}
@@ -46,28 +46,28 @@ public class CrucibleWorkspaceConfiguration {
 		this.crucibleFilters = filters;
 	}
 
-	public ProjectToolWindowTableConfiguration getTableConfiguration() {
-		return tableConfiguration;
+//	public ProjectToolWindowTableConfiguration getTableConfiguration() {
+//		return tableConfiguration;
+//	}
+//
+//	public void setTableConfiguration(ProjectToolWindowTableConfiguration tableConfiguration) {
+//		this.tableConfiguration = tableConfiguration;
+//	}
+
+	public boolean isCreateReviewOnCommit() {
+		return createReviewOnCommit;
 	}
 
-	public void setTableConfiguration(ProjectToolWindowTableConfiguration tableConfiguration) {
-		this.tableConfiguration = tableConfiguration;
+	public void setCreateReviewOnCommit(boolean createReviewOnCommit) {
+		this.createReviewOnCommit = createReviewOnCommit;
 	}
 
-    public boolean isCreateReviewOnCommit() {
-        return createReviewOnCommit;
-    }
-
-    public void setCreateReviewOnCommit(boolean createReviewOnCommit) {
-        this.createReviewOnCommit = createReviewOnCommit;
-    }
-
-    public void copyConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
-		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
+	public void copyConfiguration(CrucibleWorkspaceConfiguration crucibleConfiguration) {
+//		tableConfiguration.copyConfiguration(crucibleConfiguration.getTableConfiguration());
 		crucibleFilters.setReadStored(crucibleConfiguration.getCrucibleFilters().getReadStored());
 		crucibleFilters.setManualFilter(crucibleConfiguration.getCrucibleFilters().getManualFilter());
 		crucibleFilters.setRecenltyOpenFilter(crucibleConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
-        createReviewOnCommit = crucibleConfiguration.createReviewOnCommit;
+		createReviewOnCommit = crucibleConfiguration.createReviewOnCommit;
 
 		final CustomFilterBean manualFilter = crucibleFilters.getManualFilter();
 		// support just for transition perdiod, as State used to be kept as String and now its normal domain object
