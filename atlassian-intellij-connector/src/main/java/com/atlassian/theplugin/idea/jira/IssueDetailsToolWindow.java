@@ -701,8 +701,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				} else {
 					issueAssignee = new JLabel("Unassigned");
 				}
-				issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-						params.issue.getReporterId(), true);
+                if (params.issue.getReporterId().equals("-1")) {
+                    issueReporter = new JLabel("Anonymous");
+                } else {
+				    issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
+					    	params.issue.getReporterId(), true);
+                }
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));
