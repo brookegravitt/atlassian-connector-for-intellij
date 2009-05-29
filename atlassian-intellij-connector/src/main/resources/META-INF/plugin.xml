@@ -400,6 +400,12 @@
 				text="Open Revision for Review" icon="/actions/menu-open.png">
 			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
 		</action>
+        <action id="ThePlugin.Crucible.ShowCommentAction"
+                class="com.atlassian.theplugin.idea.action.crucible.ShowCommentAction"
+                text="Open Revision on Comment" icon="/actions/menu-open.png">
+            <keyboard-shortcut first-keystroke="control O" keymap="$default"/>
+        </action>
+
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction"
 				class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction"
 				text="Open Diff View for Review"
@@ -655,6 +661,7 @@
 		<group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
+            <reference id="ThePlugin.Crucible.ShowCommentAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<separator/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
@@ -731,6 +738,7 @@
 		<group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
+            <reference id="ThePlugin.Crucible.ShowCommentAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>

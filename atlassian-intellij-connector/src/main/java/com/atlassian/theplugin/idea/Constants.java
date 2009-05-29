@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
@@ -31,8 +32,7 @@ import java.awt.*;
 import java.util.Collection;
 
 public final class Constants {
-
-	// TODO - very uncool to hardcode the particular action ID.
+    // TODO - very uncool to hardcode the particular action ID.
 	// What if Anton's people decide to change the ID of this action?
 	public enum JiraActionId {
 		START_PROGRESS(4),
@@ -71,6 +71,8 @@ public final class Constants {
 	public static final String CRUCIBLE_BOTTOM_WINDOW = "theplugin.crucible_bottom_window";
 	public static final String REVIEW_TOOL_WINDOW = "theplugin.crucible.bottom.crucible_tool_window";
 	public static final String CRUCIBLE_FILE_NODE = "theplugin.crucible_file_node";
+    public static final String CRUCIBLE_VERSIONED_COMMENT_NODE =  "theplugin.crucible_versioned_comment_node";
+
 	public static final Icon CRUCIBLE_ICON = IconLoader.getIcon("/icons/crucible-16.png");
 	public static final DataKey<Boolean> REVIEW_TOOL_WINDOW_KEY = DataKey.create(REVIEW_TOOL_WINDOW);
 
@@ -83,6 +85,8 @@ public final class Constants {
 	public static final DataKey<ServerConfigPanel> SERVER_CONFIG_PANEL_KEY = DataKey.create(SERVER_CONFIG_PANEL);
 	public static final DataKey<ServerData> SERVER_KEY = DataKey.create(SERVER);
 	public static final DataKey<CrucibleFileNode> CRUCIBLE_FILE_NODE_KEY = DataKey.create(CRUCIBLE_FILE_NODE);
+    public static final DataKey<VersionedCommentTreeNode> CRUCIBLE_VERSIONED_COMMENT_NODE_KEY =
+            DataKey.create(CRUCIBLE_VERSIONED_COMMENT_NODE);
 	public static final DataKey<ServerCfg> SERVER_CFG_KEY = DataKey.create("com.atlassian.connector.cfg.server");
 
 

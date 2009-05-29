@@ -43,6 +43,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
@@ -131,6 +132,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				}
 			});
 
+            // disable collapsing tree on double click - use 3 clicks to collapse/expand - see PL-1513
+            reviewFilesAndCommentsTree.getTreeComponent().setToggleClickCount(2 + 1);
+            
 			final ActionGroup group = (ActionGroup) ActionManager.getInstance()
 					.getAction(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR);
 			final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
@@ -351,15 +355,19 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	@Nullable
 	public Object getData(@NonNls final String dataId) {
-		if (dataId.equals(Constants.CRUCIBLE_FILE_NODE)) {
+		if (dataId.equals(Constants.CRUCIBLE_FILE_NODE) || dataId.equals(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE)) {
 			final TreePath selectionPath = reviewFilesAndCommentsTree.getTreeComponent().getSelectionPath();
 			if (selectionPath == null) {
 				return null;
 			}
 			Object selection = selectionPath.getLastPathComponent();
-			if (selection instanceof CrucibleFileNode) {
+			if (dataId.equals(Constants.CRUCIBLE_FILE_NODE)
+                    && selection instanceof CrucibleFileNode) {
 				return selection;
-			}
+			} else if (dataId.equals(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE)
+                    && selection instanceof VersionedCommentTreeNode) {
+                return selection;
+            }
 		}
 		return null;
 
