@@ -140,8 +140,10 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
                                 IdeaHelper.getProjectCfgManager(project).getServerData(server)));
                     }
                 } catch (final RemoteApiException e) {
-                    if (e.getCause().getMessage().equals("HTTP 400 (Bad Request)")
-                            || e.getCause().getMessage().equals("HTTP 404 (Not Found)")) {
+                    Throwable cause = e.getCause();
+                    if (cause != null
+                            && (cause.getMessage().equals("HTTP 400 (Bad Request)")
+                                || cause.getMessage().equals("HTTP 404 (Not Found)"))) {
                         String msg = String.format(NOT_FOUND_TEXT, dialog.getSearchKey(), server.getName());
                         problems.add(new IdeaUiMultiTaskExecutor.ErrorObject(msg, e));
                     } else {
