@@ -28,6 +28,7 @@ import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.axis.AxisProperties;
+import org.xml.sax.SAXException;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
@@ -225,9 +226,17 @@ public class JIRASessionImpl implements JIRASession {
 					"Soap method 'getSecurityLevel' thrown exception. "
 							+ "Probably there is no 'SecurityLevel' on JIRA (non enterprise version of JIRA).", e);
 		} catch (ClassCastException e) {
-			PluginUtil.getLogger().warn("Soap method 'getSecurityLevel' thrown ClassCastException. Probably some JIRA error.",
-					e);
-		}
+			PluginUtil.getLogger().warn(
+                    "Soap method 'getSecurityLevel' thrown ClassCastException. Probably some JIRA error.", e);
+		} catch (Exception e) {
+            // PL-1492
+            if (e instanceof SAXException) {
+                PluginUtil.getLogger().warn(
+                        "Soap method 'getSecurityLevel' thrown SAXException. Probably some JIRA error.", e);
+            } else {
+                throw new RemoteApiException(e);
+            }
+        }
 
 		try {
 			RemoteIssue rIssue = service.getIssue(token, issue.getKey());
