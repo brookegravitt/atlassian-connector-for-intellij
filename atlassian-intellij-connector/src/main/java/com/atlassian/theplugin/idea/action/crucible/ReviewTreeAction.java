@@ -43,23 +43,29 @@ public abstract class ReviewTreeAction extends TreeAction {
 
 	protected static class ReviewActionData {
 		protected final ReviewAdapter review;
-		protected final CrucibleFileInfo file;
+		protected CrucibleFileInfo file;
 
 		ReviewActionData(AtlassianTreeWithToolbar tree) {
-			AtlassianTreeNode node = tree.getSelectedTreeNode();
+			AtlassianTreeNode node = tree != null ? tree.getSelectedTreeNode() : null;
 			if (node != null) {
-				if (node instanceof CrucibleFileNode) {
-					file = ((CrucibleFileNode) node).getFile();
-				} else {
-					file = null;
-				}
+                while (node != null) {
+                    if (node instanceof CrucibleFileNode) {
+                        file = ((CrucibleFileNode) node).getFile();
+                        break;
+                    } else {
+                        node = (AtlassianTreeNode) node.getParent();
+                        file = null;
+                    }
+                }
 				ReviewAdapter rd = null;
-				for (TreeNode n : node.getPath()) {
-					if (n instanceof CrucibleChangeSetTitleNode) {
-						rd = ((CrucibleChangeSetTitleNode) n).getReview();
-						break;
-					}
-				}
+                if (node != null) {
+                    for (TreeNode n : node.getPath()) {
+                        if (n instanceof CrucibleChangeSetTitleNode) {
+                            rd = ((CrucibleChangeSetTitleNode) n).getReview();
+                            break;
+                        }
+                    }
+                }
 				review = rd;
 			} else {
 				review = null;
