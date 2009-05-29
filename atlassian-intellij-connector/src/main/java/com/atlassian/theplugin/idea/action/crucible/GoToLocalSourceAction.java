@@ -2,9 +2,7 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.clickaction.CrucibleVersionedCommentClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.intellij.openapi.project.Project;
