@@ -56,7 +56,7 @@ public final class BambooFilterListTestUi {
 		cfgManager.addProjectSpecificServer(projectId1, B1);
 		cfgManager.addProjectSpecificServer(projectId1, B2);
 		cfgManager.addProjectSpecificServer(projectId1, B3);
-		final BuildListModelImpl model = new BuildListModelImpl();
+		final BuildListModelImpl model = new BuildListModelImpl(null, null);
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{

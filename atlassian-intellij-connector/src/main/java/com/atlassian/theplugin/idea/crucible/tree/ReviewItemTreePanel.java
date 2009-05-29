@@ -368,7 +368,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		@Override
 		public void serverConnectionDataChanged(ServerId serverId) {
-			if (getCrucibleReview().getServerData().getServerId().equals(serverId)) {
+			if (getCrucibleReview().getServerData().getServerId().equals(serverId.toString())) {
 				reviewFilesAndCommentsTree.clear();
 				stopListeningForCredentialChanges();
 			}

@@ -15,9 +15,12 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
@@ -37,7 +40,14 @@ public class BuildListModelImpl implements BuildListModel {
 	private final Collection<BambooBuildAdapterIdea> allBuilds = MiscUtil.buildArrayList();
 
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
+	private Project project;
+	private CfgManager cfgManager;
 
+
+	public BuildListModelImpl(Project project, CfgManager cfgManager) {
+		this.project = project;
+		this.cfgManager = cfgManager;
+	}
 
 	// for unit tests only
 	void setBuilds(Collection<BambooBuildAdapterIdea> builds) {
@@ -62,7 +72,11 @@ public class BuildListModelImpl implements BuildListModel {
 			if (build.getPollingTime() != null) {
 				lastPollingTime = build.getPollingTime();
 			}
-			buildAdapters.add(new BambooBuildAdapterIdea(build));
+			final BambooBuildAdapterIdea buildAdapterIdea = new BambooBuildAdapterIdea(build);
+			if (cfgManager != null && project != null) {
+				cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), buildAdapterIdea);
+			}
+			buildAdapters.add(buildAdapterIdea);
 		}
 		allBuilds.clear();
 		allBuilds.addAll(buildAdapters);

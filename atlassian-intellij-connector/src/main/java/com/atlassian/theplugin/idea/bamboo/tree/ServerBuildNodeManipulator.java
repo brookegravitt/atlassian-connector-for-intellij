@@ -98,8 +98,8 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 
 	private int gentNumOfBuildsForServer(ServerId serverId) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea review : buildModel.getBuilds()) {
-			if (review.getServer().getServerId().equals(serverId)) {
+		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+			if (build.getServer().getServerId().equals(serverId.toString())) {
 				++ret;
 			}
 		}
@@ -112,7 +112,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 
 		// get all builds for server
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
-			if (build.getServer().getServerId().equals(serverId)) {
+			if (build.getServer().getServerId().equals(serverId.toString())) {
 				array.add(build);
 			}
 		}
