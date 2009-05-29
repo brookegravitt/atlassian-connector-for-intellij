@@ -486,6 +486,8 @@ public class JIRASessionImpl implements JIRASession {
 			return actionList;
 		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
+		} catch (ClassCastException e) {
+			throw new RemoteApiException(e.toString(), e);
 		}
 	}
 
