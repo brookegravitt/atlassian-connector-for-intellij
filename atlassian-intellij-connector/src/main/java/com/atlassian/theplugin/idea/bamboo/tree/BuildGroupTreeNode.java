@@ -24,7 +24,7 @@ import javax.swing.*;
  */
 public class BuildGroupTreeNode extends AbstractTreeNode {
 	public BuildGroupTreeNode(String name) {
-		super(name, null, null);
+		super(name != null && name.length() > 0 ? name : "Unknown", null, null);
 	}
 
 	@Override
