@@ -63,6 +63,6 @@ public class SearchIssueDialog extends DialogWrapper {
 	}
 
 	public String getSearchQueryString() {
-		return queryField.getText();
+		return queryField.getText().trim();
 	}
 }
