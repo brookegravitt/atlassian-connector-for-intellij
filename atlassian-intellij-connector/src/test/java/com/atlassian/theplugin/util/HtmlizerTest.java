@@ -96,4 +96,11 @@ public class HtmlizerTest extends TestCase {
         String result = h.htmlizeHyperlinks(txt);
         assertEquals(expected, result);
     }
+
+    public void testHtmlizeUrlWithParams() {
+        String txt = "http://b.com?a=1&b=2";
+        String expected = "<a href=\"http://b.com?a=1&b=2\">http://b.com?a=1&b=2</a>";
+        String result = new Htmlizer().htmlizeHyperlinks(txt);
+        assertEquals(expected, result);
+    }
 }

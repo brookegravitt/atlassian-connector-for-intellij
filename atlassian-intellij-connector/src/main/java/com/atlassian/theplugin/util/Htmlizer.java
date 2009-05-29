@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
  */
 public class Htmlizer {
 
-    public static final String HYPERLINK_PATTERN = "(https?://[\\w|:|-|/|\\.]+)";
+    public static final String HYPERLINK_PATTERN = "(https?://[\\w|:|-|/|\\.|\\?|\\&|=]+)";
 
     public static final String A_PATTERN = "(<a\\s+.*</a>)";
     private boolean haveA;
