@@ -582,7 +582,7 @@
 				class="com.atlassian.theplugin.idea.action.reviews.QuickSearchReviewAction"
 				text="Search Review"
 				icon="/icons/find-crucible.png">
-			<keyboard-shortcut first-keystroke="shift alt r" keymap="$default"/>
+			<keyboard-shortcut first-keystroke="control shift alt r" keymap="$default"/>
 		</action>
 
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
