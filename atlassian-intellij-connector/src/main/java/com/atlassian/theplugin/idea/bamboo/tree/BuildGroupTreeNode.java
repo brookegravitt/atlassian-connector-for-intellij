@@ -24,12 +24,12 @@ import javax.swing.*;
  */
 public class BuildGroupTreeNode extends AbstractTreeNode {
 	public BuildGroupTreeNode(String name) {
-		super(name != null && name.length() > 0 ? name : "Unknown", null, null);
+		super(name, null, null);
 	}
 
 	@Override
 	public String toString() {
-		return name;
+		return name != null && name.length() > 0 ? name : "Unknown";
 	}
 
 	@Override

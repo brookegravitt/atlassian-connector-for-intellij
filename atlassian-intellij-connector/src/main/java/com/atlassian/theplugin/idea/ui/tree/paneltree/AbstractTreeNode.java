@@ -118,7 +118,7 @@ public abstract class AbstractTreeNode extends DefaultMutableTreeNode {
 			renderer.setIcon(expanded ? disabledIconOpen : disabledIconClosed);
 		}
 
-		renderer.setParameters(name, getChildCount(), selected, c.isEnabled());
+		renderer.setParameters(toString(), getChildCount(), selected, c.isEnabled());
 		return renderer;
 
 	}
