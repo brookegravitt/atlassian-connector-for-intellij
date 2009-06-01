@@ -158,7 +158,7 @@
             <properties>
               <enabled value="true"/>
               <selected value="false"/>
-              <text value="&amp;Report anonymous usage statistics to help us develop a better plugin"/>
+              <text value="&amp;Provide anonymous usage statistics to help us develop a better plugin"/>
             </properties>
           </component>
           <component id="13745" class="javax.swing.JEditorPane" binding="usageStatsHelp" custom-create="true">
