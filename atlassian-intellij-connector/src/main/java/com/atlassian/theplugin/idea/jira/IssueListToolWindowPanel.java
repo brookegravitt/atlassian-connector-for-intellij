@@ -1191,6 +1191,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                 logWork();
 
                                 // 3.
+
+                                // I should use a temporary variable to make the code more readable,
+                                // but the code is now indented funny in a weird way, so I am leaving
+                                // it as is so that the future generations have some fun looking at it too :P 
                                 if (!runWorkflowAction(new DeactivateIssueResultHandler() {
                                     public void success() {
                                         if (resultHandler != null) {
