@@ -355,7 +355,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
 				selectedServer, projectCfgManager.getDefaultCredentials().getClone(),
-				projectCfgManager.isDefaultCredentialsAsked());
+				projectCfgManager.isDefaultCredentialsAsked(), projectConfigurationBean);
 		return projectConfigurationPanel;
 	}
 

@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -50,8 +51,9 @@ public class ProjectConfigurationPanel extends JPanel {
 	private ProjectConfiguration projectConfiguration;
 	private UserCfg defaultCredentials;
 	private boolean defaultCredentialsAsked;
+    private WorkspaceConfigurationBean projectConfigurationBean;
 
-	private static final int WIDTH = 800;
+    private static final int WIDTH = 800;
 
 	private static final int HEIGHT = 700;
 
@@ -65,20 +67,22 @@ public class ProjectConfigurationPanel extends JPanel {
 	}
 
 	public ProjectConfigurationPanel(@NotNull final Project project,
-			@NotNull final ProjectConfiguration projectConfiguration,
-			@NotNull final CrucibleServerFacade crucibleServerFacade,
-			@NotNull final FishEyeServerFacade fishEyeServerFacade,
-			final BambooServerFacade bambooServerFacade,
-			final JIRAServerFacade jiraServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-			/*final IntelliJProjectCfgManager projectCfgManager, */
-			@NotNull final UserCfg defaultCredentials,
-			final boolean defaultCredentialsAsked) {
+                                     @NotNull final ProjectConfiguration projectConfiguration,
+                                     @NotNull final CrucibleServerFacade crucibleServerFacade,
+                                     @NotNull final FishEyeServerFacade fishEyeServerFacade,
+                                     final BambooServerFacade bambooServerFacade,
+                                     final JIRAServerFacade jiraServerFacade,
+                                     @NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
+                                     /*final IntelliJProjectCfgManager projectCfgManager, */
+                                     @NotNull final UserCfg defaultCredentials,
+                                     final boolean defaultCredentialsAsked,
+                                     WorkspaceConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.defaultCredentials = defaultCredentials;
 		this.defaultCredentialsAsked = defaultCredentialsAsked;
-		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
+        this.projectConfigurationBean = projectConfigurationBean;
+        serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
 				projectConfiguration, selectedServer, defaultCredentialsAsked);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
@@ -122,6 +126,7 @@ public class ProjectConfigurationPanel extends JPanel {
 		serverConfigPanel.saveData();
 		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
 			projectConfiguration.setDefaultFishEyeServerId(null);
+            projectConfigurationBean.setDefaultFishEyeServerAsked(false);
 			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 		}
 		if (!projectConfiguration.isDefaultCrucibleServerValid()) {
@@ -131,6 +136,7 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		if (!projectConfiguration.isDefaultJiraServerValid()) {
 			projectConfiguration.setDefaultJiraServerId(null);
+            projectConfigurationBean.setDefaultJiraServerAsked(false);
 			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
 		}
 
