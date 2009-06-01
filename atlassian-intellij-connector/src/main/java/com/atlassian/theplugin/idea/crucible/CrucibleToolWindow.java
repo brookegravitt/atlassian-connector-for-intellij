@@ -374,7 +374,8 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 	}
 }
 
-
+// kalamon: I absolutely bloody hate hate hate package-scope non-inner classes
+// piggy-backed on the main class of the file. To the author of this class - you suck.
 class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
