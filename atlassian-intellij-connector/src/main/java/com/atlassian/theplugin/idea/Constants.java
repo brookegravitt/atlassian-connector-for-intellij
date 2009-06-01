@@ -21,8 +21,8 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
@@ -133,5 +133,8 @@ public final class Constants {
 
 	public static final String ACTIVE_TOOLBAR_NAME = "ThePlugin.ActiveToolbar";
 	public static final String ACTIVE_JIRA_ISSUE_ACTION = "ThePlugin.ActiveTaskBar.ShowActiveJiraIssue";
+
+    public static final String BODY_WITH_STYLE =
+			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 }
 

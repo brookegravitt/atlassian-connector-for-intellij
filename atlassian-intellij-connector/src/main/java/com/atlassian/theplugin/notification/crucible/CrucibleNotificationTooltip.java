@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.notification.crucible;
 
-import com.atlassian.theplugin.commons.bamboo.StatusIconBambooListener;
 import com.atlassian.theplugin.commons.configuration.CrucibleTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.GenericHyperlinkListener;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.PluginToolWindow;
@@ -145,7 +145,7 @@ public class CrucibleNotificationTooltip implements CrucibleNotificationListener
 					content.setEditable(false);
 					content.setContentType("text/html");
 					content.setEditorKit(new ClasspathHTMLEditorKit());
-					content.setText("<html>" + StatusIconBambooListener.BODY_WITH_STYLE + sb.toString() + "</body></html>");
+					content.setText("<html>" + Constants.BODY_WITH_STYLE + sb.toString() + "</body></html>");
 					content.setBackground(BACKGROUND_COLOR);
 					content.addHyperlinkListener(new GenericHyperlinkListener());
 

@@ -165,4 +165,15 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
+    	@Nullable
+	public ServerData getDefaultFishEyeServer() {
+		ProjectConfiguration prjCfg = getProjectConfiguration();
+		if (prjCfg != null) {
+			FishEyeServer fishEyeServer = prjCfg.getDefaultFishEyeServer();
+			if (fishEyeServer != null) {
+				return getServerData(fishEyeServer);
+			}
+		}
+		return null;
+	}
 }

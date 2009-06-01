@@ -39,6 +39,7 @@ import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusIcon;
 import com.atlassian.theplugin.idea.crucible.editor.CrucibleEditorFactoryListener;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
+import com.atlassian.theplugin.idea.ui.InformationDialogWithCheckBox;
 import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
@@ -309,6 +310,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			registerCrucibleNotifier();
 			issuesToolWindowPanel.init();
+            checkDefaultServerValues();
 		}
 	}
 
@@ -328,7 +330,34 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	}
 
-	public FileEditorListenerImpl getFileEditorListener() {
+    private void checkDefaultServerValues() {
+        final InformationDialogWithCheckBox jiraDialog = new InformationDialogWithCheckBox(project,
+                "No default JIRA server defined!",
+                "Please set up default server in order to get all cool features of Atlassian IntelliJ Connector.");
+        if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    jiraDialog.show();
+                    projectConfigurationBean.setDefaultJiraServerAsked(jiraDialog.isDoNotShowChecked());
+                }
+            });
+        }
+         final InformationDialogWithCheckBox fishEyeDialog = new InformationDialogWithCheckBox(project,
+                "No default FishEye server defined!",
+                "Please set up default server in order to get all cool features of Atlassian IntelliJ Connector.");
+
+        if (projectCfgManager.getDefaultFishEyeServer() == null
+                && !projectConfigurationBean.isDefaultFishEyeServerAsked()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    fishEyeDialog.show();
+                    projectConfigurationBean.setDefaultFishEyeServerAsked(fishEyeDialog.isDoNotShowChecked());
+                }
+            });
+        }
+    }
+
+    public FileEditorListenerImpl getFileEditorListener() {
 		return fileEditorListener;
 	}
 
