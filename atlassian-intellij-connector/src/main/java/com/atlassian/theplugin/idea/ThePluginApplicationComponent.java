@@ -73,7 +73,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
-	private static final int HTTP_SERVER_PORT = 6666;
+	private static final int HTTP_SERVER_PORT = 51235;
 
 	public Collection<SchedulableChecker> getSchedulableCheckers() {
 		return schedulableCheckers;
