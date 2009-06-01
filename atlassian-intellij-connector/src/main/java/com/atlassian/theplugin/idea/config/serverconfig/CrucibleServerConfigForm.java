@@ -35,117 +35,109 @@ import java.awt.*;
  */
 public class CrucibleServerConfigForm {
 
-	private JPanel rootComponent;
+    private JPanel rootComponent;
 
-	private transient GenericServerConfigForm genericServerConfigForm;
-	private CrucibleDetailConfigForm crucibleDetailConfigForm;
-	private final Project project;
-	private final UserCfg defaultUser;
-	private final transient CrucibleServerFacade crucibleServerFacade;
-	private FishEyeServerFacade fishEyeServerFacade;
+    private transient GenericServerConfigForm genericServerConfigForm;
+    private CrucibleDetailConfigForm crucibleDetailConfigForm;
+    private final Project project;
+    private final UserCfg defaultUser;
+    private final transient CrucibleServerFacade crucibleServerFacade;
+    private FishEyeServerFacade fishEyeServerFacade;
 
-	public CrucibleServerCfg getCrucibleServerCfg() {
-		return crucibleServerCfg;
-	}
+    public CrucibleServerCfg getCrucibleServerCfg() {
+        return crucibleServerCfg;
+    }
 
-	private CrucibleServerCfg crucibleServerCfg;
+    private CrucibleServerCfg crucibleServerCfg;
 
-	public CrucibleServerConfigForm(Project project, final UserCfg defaultUser,
-			@NotNull CrucibleServerFacade crucibleServerFacade,
-			@NotNull FishEyeServerFacade fishEyeServerFacade) {
-		this.project = project;
-		this.defaultUser = defaultUser;
-		this.crucibleServerFacade = crucibleServerFacade;
-		this.fishEyeServerFacade = fishEyeServerFacade;
+    public CrucibleServerConfigForm(Project project, final UserCfg defaultUser,
+                                    @NotNull CrucibleServerFacade crucibleServerFacade,
+                                    @NotNull FishEyeServerFacade fishEyeServerFacade) {
+        this.project = project;
+        this.defaultUser = defaultUser;
+        this.crucibleServerFacade = crucibleServerFacade;
+        this.fishEyeServerFacade = fishEyeServerFacade;
 
-		$$$setupUI$$$();
-	}
+        $$$setupUI$$$();
+    }
 
-	public void setData(@NotNull final CrucibleServerCfg serverCfg) {
-		crucibleServerCfg = serverCfg;
-		genericServerConfigForm.setData(serverCfg);
-		crucibleDetailConfigForm.setData(serverCfg);
-	}
+    public void setData(@NotNull final CrucibleServerCfg serverCfg) {
+        crucibleServerCfg = serverCfg;
+        genericServerConfigForm.setData(serverCfg);
+        crucibleDetailConfigForm.setData(serverCfg);
+    }
 
-	public void finalizeData() {
-		genericServerConfigForm.finalizeData();
-	}
+    public void finalizeData() {
+        genericServerConfigForm.finalizeData();
+    }
 
-	public void saveData() {
-		genericServerConfigForm.saveData();
-		crucibleDetailConfigForm.saveData();
-	}
+    public void saveData() {
+        genericServerConfigForm.saveData();
+        crucibleDetailConfigForm.saveData();
+    }
 
-	public JComponent getRootComponent() {
-		return rootComponent;
-	}
+    public JComponent getRootComponent() {
+        return rootComponent;
+    }
 
-	public void setVisible(boolean visible) {
-		rootComponent.setVisible(visible);
-	}
+    public void setVisible(boolean visible) {
+        rootComponent.setVisible(visible);
+    }
 
-	private void createUIComponents() {
-		crucibleDetailConfigForm = new CrucibleDetailConfigForm(crucibleServerFacade);
-		final CrucibleConnector connector = new CrucibleConnector(crucibleServerFacade,
-				fishEyeServerFacade);
-		genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, connector) {
-			@Override
-			public void onSuccess() {
-				if (connector.isFisheye() == true && !crucibleDetailConfigForm.isFishEyeInstance()) {
-					int res = Messages.showYesNoDialog(project,
-							"This Crucible server is connected to Fisheye.\nWould you like to connect to the Fisheye server as well?",
-							"Combined FishEye & Crucible detected", Messages.getQuestionIcon());
-					if (res == DialogWrapper.OK_EXIT_CODE) {
-						crucibleDetailConfigForm.setIsFishEyeInstance(true);
-					}
-				}
-			}
-		};
-	}
+    private void createUIComponents() {
+        crucibleDetailConfigForm = new CrucibleDetailConfigForm(crucibleServerFacade);
+        final CrucibleConnector connector = new CrucibleConnector(crucibleServerFacade,
+                fishEyeServerFacade);
+        genericServerConfigForm = new GenericServerConfigForm(project, defaultUser, connector) {
+            @Override
+            public void onSuccess() {
+                if (connector.isFisheye() == true && !crucibleDetailConfigForm.isFishEyeInstance()) {
+                    int res = Messages.showYesNoDialog(project,
+                            "This Crucible server is connected to Fisheye.\nWould you like to connect to the Fisheye server as well?",
+                            "Combined FishEye & Crucible detected", Messages.getQuestionIcon());
+                    if (res == DialogWrapper.OK_EXIT_CODE) {
+                        crucibleDetailConfigForm.setIsFishEyeInstance(true);
+                    }
+                }
+            }
+        };
+    }
 
-	// CHECKSTYLE:OFF
+    // CHECKSTYLE:OFF
 
-	// CHECKSTYLE:ON
+    // CHECKSTYLE:ON
 
-	// for use by unit test only
+    // for use by unit test only
 
-	public GenericServerConfigForm getGenericServerConfigForm() {
-		return genericServerConfigForm;
-	}
+    public GenericServerConfigForm getGenericServerConfigForm() {
+        return genericServerConfigForm;
+    }
 
-	/**
-	 * Method generated by IntelliJ IDEA GUI Designer
-	 * >>> IMPORTANT!! <<<
-	 * DO NOT edit this method OR call it in your code!
-	 *
-	 * @noinspection ALL
-	 */
-	private void $$$setupUI$$$() {
-		createUIComponents();
-		rootComponent = new JPanel();
-		rootComponent.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		final JPanel panel1 = new JPanel();
-		panel1.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-		rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		panel1.add(genericServerConfigForm.$$$getRootComponent$$$(), new GridConstraints(0, 0, 1, 1,
-				GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, 1, 1, null, null, null, 0, false));
-		final JPanel panel2 = new JPanel();
-		panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		panel1.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		panel2.add(crucibleDetailConfigForm.$$$getRootComponent$$$(), new GridConstraints(0, 0, 1, 1,
-				GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-	}
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        createUIComponents();
+        rootComponent = new JPanel();
+        rootComponent.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        final JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        rootComponent.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel1.add(genericServerConfigForm.$$$getRootComponent$$$(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, 1, 1, null, null, null, 0, false));
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel2.add(crucibleDetailConfigForm.$$$getRootComponent$$$(), new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+    }
 
-	/**
-	 * @noinspection ALL
-	 */
-	public JComponent $$$getRootComponent$$$() {
-		return rootComponent;
-	}
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return rootComponent;
+    }
 }

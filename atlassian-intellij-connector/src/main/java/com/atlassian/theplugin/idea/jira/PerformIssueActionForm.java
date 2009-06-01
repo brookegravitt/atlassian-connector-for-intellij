@@ -41,278 +41,278 @@ import java.util.List;
  * @author Jacek Jaroczynski
  */
 public class PerformIssueActionForm extends DialogWrapper implements FreezeListener {
-	private JPanel root;
-	private JPanel contentPanel;
-	private Project project;
-	private JIRAIssue issue;
-	private List<JIRAActionField> fields;
-	private HashMap<String, Boolean> fieldsStatus = new HashMap<String, Boolean>();
-	private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
-	private int semaphore = 0;
-	private CommentTextArea commentTextArea;
+    private JPanel root;
+    private JPanel contentPanel;
+    private Project project;
+    private JIRAIssue issue;
+    private List<JIRAActionField> fields;
+    private HashMap<String, Boolean> fieldsStatus = new HashMap<String, Boolean>();
+    private List<ActionFieldEditor> createdFieldEditors = new ArrayList<ActionFieldEditor>();
+    private int semaphore = 0;
+    private CommentTextArea commentTextArea;
 
-	public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
-			final String name) {
+    public PerformIssueActionForm(final Project project, final JIRAIssue issue, final List<JIRAActionField> fields,
+                                  final String name) {
 
-		super(project, true);
-		this.project = project;
-		this.issue = issue;
-		this.fields = fields;
+        super(project, true);
+        this.project = project;
+        this.issue = issue;
+        this.fields = fields;
 
-		setupUI();
+        setupUI();
 
-		init();
-		pack();
-		createContent(fields);
+        init();
+        pack();
+        createContent(fields);
 
-		setTitle(name);
-		root.setMinimumSize(new Dimension(600, 300));
-		root.setPreferredSize(new Dimension(600, 300));
+        setTitle(name);
+        root.setMinimumSize(new Dimension(600, 300));
+        root.setPreferredSize(new Dimension(600, 300));
 //		getOKAction().putValue(Action.NAME, name);
-	}
+    }
 
-	private void createContent(final List<JIRAActionField> fieldList) {
+    private void createContent(final List<JIRAActionField> fieldList) {
 
-		String columns = "3dlu, right:pref, 3dlu, fill:1dlu:grow, 3dlu";
-		String rows = "3dlu";
+        String columns = "3dlu, right:pref, 3dlu, fill:1dlu:grow, 3dlu";
+        String rows = "3dlu";
 
-		Collection<JIRAActionField> sortedFieldList = JiraActionFieldType.sortFieldList(fieldList);
+        Collection<JIRAActionField> sortedFieldList = JiraActionFieldType.sortFieldList(fieldList);
 
-		JIRAServerModel jiraServerModel = IdeaHelper.getJIRAServerModel(project);
+        JIRAServerModel jiraServerModel = IdeaHelper.getJIRAServerModel(project);
 
-		List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
-		List<String> unsupportedFields = new ArrayList<String>();
+        List<ActionFieldEditor> editors = new ArrayList<ActionFieldEditor>();
+        List<String> unsupportedFields = new ArrayList<String>();
 
-		for (JIRAActionField field : sortedFieldList) {
+        for (JIRAActionField field : sortedFieldList) {
 
-			ActionFieldEditor editor = null;
-			String row = null;
+            ActionFieldEditor editor = null;
+            String row = null;
 
-			switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
-				case SUMMARY:
-					editor = new FieldTextField(issue.getSummary(), field);
-					row = ", pref, 3dlu";
-					break;
-				case DESCRIPTION:
-					// we use wiki markup version from field (not html version from issue)
-					editor = new FieldTextArea(field.getValues().get(0), field);
-					row = ", fill:pref:grow, 3dlu";
-					break;
-				case ISSUE_TYPE:
-					editor = new FieldIssueType(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case RESOLUTION:
-					editor = new FieldResolution(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case ASSIGNEE:
-					editor = new FieldUser(issue.getAssigneeId(), field);
-					row = ", p, 3dlu";
-					break;
-				case PRIORITY:
-					editor = new FieldPriority(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case VERSIONS:
-					editor = new FieldAffectsVersion(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case FIX_VERSIONS:
-					editor = new FieldFixForVersion(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case COMPONENTS:
-					editor = new FieldComponents(jiraServerModel, issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case REPORTER:
-					editor = new FieldUser(issue.getReporterId(), field);
-					row = ", p, 3dlu";
-					break;
-				case ENVIRONMENT:
-					editor = new FieldTextArea(field.getValues().get(0), field);
-					row = ", fill:pref:grow, 3dlu";
-					break;
-				case TIMETRACKING:
-					editor = new FieldTimeTracking(field.getValues().get(0), issue, field, this);
-					row = ", p, 3dlu";
-					break;
-				case DUE_DATE:
-					String content = "";
-					if (field.getValues() != null && field.getValues().size() > 0) {
-						content = field.getValues().get(0);
-					}
-					editor = new FieldDueDate(content, field, this);
-					row = ", p, 3dlu";
-					break;
-				case UNSUPPORTED:
-				default:
-					unsupportedFields.add(field.getName());
-					break;
-			}
+            switch (JiraActionFieldType.getFiledTypeForFieldId(field)) {
+                case SUMMARY:
+                    editor = new FieldTextField(issue.getSummary(), field);
+                    row = ", pref, 3dlu";
+                    break;
+                case DESCRIPTION:
+                    // we use wiki markup version from field (not html version from issue)
+                    editor = new FieldTextArea(field.getValues().get(0), field);
+                    row = ", fill:pref:grow, 3dlu";
+                    break;
+                case ISSUE_TYPE:
+                    editor = new FieldIssueType(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case RESOLUTION:
+                    editor = new FieldResolution(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case ASSIGNEE:
+                    editor = new FieldUser(issue.getAssigneeId(), field);
+                    row = ", p, 3dlu";
+                    break;
+                case PRIORITY:
+                    editor = new FieldPriority(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case VERSIONS:
+                    editor = new FieldAffectsVersion(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case FIX_VERSIONS:
+                    editor = new FieldFixForVersion(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case COMPONENTS:
+                    editor = new FieldComponents(jiraServerModel, issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case REPORTER:
+                    editor = new FieldUser(issue.getReporterId(), field);
+                    row = ", p, 3dlu";
+                    break;
+                case ENVIRONMENT:
+                    editor = new FieldTextArea(field.getValues().get(0), field);
+                    row = ", fill:pref:grow, 3dlu";
+                    break;
+                case TIMETRACKING:
+                    editor = new FieldTimeTracking(field.getValues().get(0), issue, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case DUE_DATE:
+                    String content = "";
+                    if (field.getValues() != null && field.getValues().size() > 0) {
+                        content = field.getValues().get(0);
+                    }
+                    editor = new FieldDueDate(content, field, this);
+                    row = ", p, 3dlu";
+                    break;
+                case UNSUPPORTED:
+                default:
+                    unsupportedFields.add(field.getName());
+                    break;
+            }
 
-			if (editor != null && row != null) {
-				editors.add(editor);
-				rows += row;
-			}
-		}
+            if (editor != null && row != null) {
+                editors.add(editor);
+                rows += row;
+            }
+        }
 
-		rows += ", fill:pref:grow, 3dlu";	// Comments text area
+        rows += ", fill:pref:grow, 3dlu";    // Comments text area
 
-		if (!unsupportedFields.isEmpty()) {
-			rows += ", pref, 3dlu";	// warning status line about not handled
-		}
+        if (!unsupportedFields.isEmpty()) {
+            rows += ", pref, 3dlu";    // warning status line about not handled
+        }
 
-		contentPanel.setLayout(new FormLayout(columns, rows));
-		final CellConstraints cc = new CellConstraints();
+        contentPanel.setLayout(new FormLayout(columns, rows));
+        final CellConstraints cc = new CellConstraints();
 
-		int y = 2;
+        int y = 2;
 
-		for (ActionFieldEditor editor : editors) {
-			final JLabel label = new JLabel(editor.getFieldName() + ":");
-			contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
-			contentPanel.add(editor.getComponent(), cc.xy(4, y));
-			createdFieldEditors.add(editor);
-			y += 2;
-		}
+        for (ActionFieldEditor editor : editors) {
+            final JLabel label = new JLabel(editor.getFieldName() + ":");
+            contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
+            contentPanel.add(editor.getComponent(), cc.xy(4, y));
+            createdFieldEditors.add(editor);
+            y += 2;
+        }
 
-		final JLabel label = new JLabel("Comment :");
-		contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
-		// todo create field for Comments
-		commentTextArea = new CommentTextArea();
-		contentPanel.add(commentTextArea, cc.xy(4, y));
+        final JLabel label = new JLabel("Comment :");
+        contentPanel.add(label, cc.xy(2, y, CellConstraints.RIGHT, CellConstraints.TOP));
+        // todo create field for Comments
+        commentTextArea = new CommentTextArea();
+        contentPanel.add(commentTextArea, cc.xy(4, y));
 
-		y += 2;
+        y += 2;
 
-		if (!unsupportedFields.isEmpty()) {
-			String warning = "Unsupported fields (original values copied): ";
-			warning += StringUtils.join(unsupportedFields, ", ");
-			contentPanel.add(new JLabel(warning), cc.xyw(2, y, 3, CellConstraints.LEFT, CellConstraints.CENTER));
-		}
+        if (!unsupportedFields.isEmpty()) {
+            String warning = "Unsupported fields (original values copied): ";
+            warning += StringUtils.join(unsupportedFields, ", ");
+            contentPanel.add(new JLabel(warning), cc.xyw(2, y, 3, CellConstraints.LEFT, CellConstraints.CENTER));
+        }
 
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				contentPanel.validate();
-			}
-		});
-	}
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                contentPanel.validate();
+            }
+        });
+    }
 
-	public List<JIRAActionField> getFields() {
+    public List<JIRAActionField> getFields() {
 
-		List<JIRAActionField> ret = new ArrayList<JIRAActionField>();
+        List<JIRAActionField> ret = new ArrayList<JIRAActionField>();
 
-		ret.addAll(fields);
+        ret.addAll(fields);
 
-		for (ActionFieldEditor editor : createdFieldEditors) {
-			if (ret.contains(editor.getEditedFieldValue())) {
-				ret.remove(editor.getEditedFieldValue());
-			}
-			ret.add(editor.getEditedFieldValue());
-		}
+        for (ActionFieldEditor editor : createdFieldEditors) {
+            if (ret.contains(editor.getEditedFieldValue())) {
+                ret.remove(editor.getEditedFieldValue());
+            }
+            ret.add(editor.getEditedFieldValue());
+        }
 
-		return ret;
-	}
+        return ret;
+    }
 
-	public String getComment() {
-		return commentTextArea.getComment();
-	}
+    public String getComment() {
+        return commentTextArea.getComment();
+    }
 
-	protected void doOKAction() {
-		super.doOKAction();
-	}
+    protected void doOKAction() {
+        super.doOKAction();
+    }
 
-	@Nullable
-	protected JComponent createCenterPanel() {
-		return root;
-	}
+    @Nullable
+    protected JComponent createCenterPanel() {
+        return root;
+    }
 
-	public void freeze() {
-		semaphore++;
-		getOKAction().setEnabled(false);
-		root.validate();
-	}
+    public void freeze() {
+        semaphore++;
+        getOKAction().setEnabled(false);
+        root.validate();
+    }
 
-	public void unfreeze() {
-		semaphore--;
-		if (semaphore == 0) {
-			getOKAction().setEnabled(true);
-			root.validate();
-		}
-	}
+    public void unfreeze() {
+        semaphore--;
+        if (semaphore == 0) {
+            getOKAction().setEnabled(true);
+            root.validate();
+        }
+    }
 
-	public void fieldSyntaxError(final String fieldName) {
-		if (fieldsStatus.containsKey(fieldName)) {
-			if (!fieldsStatus.get(fieldName)) {
-				fieldsStatus.put(fieldName, true);
-				semaphore++;
-			}
+    public void fieldSyntaxError(final String fieldName) {
+        if (fieldsStatus.containsKey(fieldName)) {
+            if (!fieldsStatus.get(fieldName)) {
+                fieldsStatus.put(fieldName, true);
+                semaphore++;
+            }
 
-		} else {
-			fieldsStatus.put(fieldName, true);
-			semaphore++;
-		}
+        } else {
+            fieldsStatus.put(fieldName, true);
+            semaphore++;
+        }
 
-		if (semaphore > 0) {
-			getOKAction().setEnabled(false);
-		}
-	}
+        if (semaphore > 0) {
+            getOKAction().setEnabled(false);
+        }
+    }
 
-	public void fieldSyntaxOk(final String fieldName) {
-		if (fieldsStatus.containsKey(fieldName)) {
-			if (fieldsStatus.get(fieldName)) {
-				fieldsStatus.put(fieldName, false);
-				semaphore--;
-			}
-		}
+    public void fieldSyntaxOk(final String fieldName) {
+        if (fieldsStatus.containsKey(fieldName)) {
+            if (fieldsStatus.get(fieldName)) {
+                fieldsStatus.put(fieldName, false);
+                semaphore--;
+            }
+        }
 
-		if (semaphore == 0) {
-			getOKAction().setEnabled(true);
-		}
-	}
+        if (semaphore == 0) {
+            getOKAction().setEnabled(true);
+        }
+    }
 
-	private void setupUI() {
-		root = new JPanel();
-		root.setOpaque(false);
-		root.setLayout(new BorderLayout(0, 0));
-		final JScrollPane scroll = new JScrollPane();
-		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setOpaque(false);
-		scroll.getViewport().setOpaque(false);
-		root.add(scroll, BorderLayout.CENTER);
-		contentPanel = new ScrollablePanel();
-		scroll.setViewportView(contentPanel);
-	}
+    private void setupUI() {
+        root = new JPanel();
+        root.setOpaque(false);
+        root.setLayout(new BorderLayout(0, 0));
+        final JScrollPane scroll = new JScrollPane();
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.setOpaque(false);
+        scroll.getViewport().setOpaque(false);
+        root.add(scroll, BorderLayout.CENTER);
+        contentPanel = new ScrollablePanel();
+        scroll.setViewportView(contentPanel);
+    }
 
-	{
+    {
 // GUI initializer generated by IntelliJ IDEA GUI Designer
 // >>> IMPORTANT!! <<<
 // DO NOT EDIT OR ADD ANY CODE HERE!
-		$$$setupUI$$$();
-	}
+        $$$setupUI$$$();
+    }
 
-	/**
-	 * Method generated by IntelliJ IDEA GUI Designer
-	 * >>> IMPORTANT!! <<<
-	 * DO NOT edit this method OR call it in your code!
-	 *
-	 * @noinspection ALL
-	 */
-	private void $$$setupUI$$$() {
-		root = new JPanel();
-		root.setLayout(new BorderLayout(0, 0));
-		final JScrollPane scrollPane1 = new JScrollPane();
-		scrollPane1.setHorizontalScrollBarPolicy(31);
-		root.add(scrollPane1, BorderLayout.CENTER);
-		contentPanel = new JPanel();
-		contentPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-		scrollPane1.setViewportView(contentPanel);
-	}
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        root = new JPanel();
+        root.setLayout(new BorderLayout(0, 0));
+        final JScrollPane scrollPane1 = new JScrollPane();
+        scrollPane1.setHorizontalScrollBarPolicy(31);
+        root.add(scrollPane1, BorderLayout.CENTER);
+        contentPanel = new JPanel();
+        contentPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        scrollPane1.setViewportView(contentPanel);
+    }
 
-	/**
-	 * @noinspection ALL
-	 */
-	public JComponent $$$getRootComponent$$$() {
-		return root;
-	}
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return root;
+    }
 }
