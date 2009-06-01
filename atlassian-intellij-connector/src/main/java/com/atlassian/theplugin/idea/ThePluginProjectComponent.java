@@ -348,12 +348,12 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private class UsageStatsDialog extends DialogWrapper {
 		private static final String MSG_TEXT =
-				"We would greatly appreciate if you allow us to collect anonymous"
+				"We would greatly appreciate it if you would allow us to collect anonymous"
 						+ "<br>usage statistics to help us provide a better quality product. Details"
-						+ "<br>of what will be tracked are described "
+						+ "<br>of what will be tracked are given "
 						+ "<a href=\""
 						+ UsageStatisticsGenerator.USAGE_STATS_HREF
-						+ "\">here</a>. Is this ok?";
+						+ "\">here</a>. Is this OK?";
 
 		protected UsageStatsDialog() {
 			super((Project) null, false);
