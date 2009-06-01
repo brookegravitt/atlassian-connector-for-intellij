@@ -29,7 +29,6 @@ import javax.swing.*;
  */
 public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 
-
 	public void actionPerformed(final AnActionEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -42,9 +41,9 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 						isOk = panel.logWorkOrDeactivateIssue(ActiveIssueUtils.getJIRAIssue(event),
 								getActiveJiraServerData(event),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-								false);
+								false, null);
 					} catch (JIRAException e) {
-						panel.setStatusErrorMessage("Erroro logging work: " + e.getMessage(), e);
+						panel.setStatusErrorMessage("Error logging work: " + e.getMessage(), e);
 					}
 
 					if (isOk) {

@@ -3,9 +3,7 @@ package com.atlassian.theplugin.idea.action.issues;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.jira.IssueActionProvider;
-import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
-import com.atlassian.theplugin.idea.jira.PerformIssueActionForm;
+import com.atlassian.theplugin.idea.jira.*;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -45,20 +43,22 @@ public class RunIssueActionAction extends AnAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		runIssueAction(IdeaHelper.getCurrentProject(event));
+		runIssueAction(IdeaHelper.getCurrentProject(event), null);
 	}
 
-	public void runIssueAction(Project project) {
-		ProgressManager.getInstance().run(new IssueActionRunnable(project));
+	public void runIssueAction(Project project, DeactivateIssueResultHandler resultHandler) {
+		ProgressManager.getInstance().run(new IssueActionRunnable(project, resultHandler));
 	}
 
 	private class IssueActionRunnable extends Task.Modal {
 		private Project project;
+        private DeactivateIssueResultHandler resultHandler;
 
-		IssueActionRunnable(Project project) {
+        IssueActionRunnable(Project project, DeactivateIssueResultHandler resultHandler) {
 			super(project, "Running Issue Action", true);
 			this.project = project;
-		}
+            this.resultHandler = resultHandler;
+        }
 
 		public void run(final ProgressIndicator indicator) {
 
@@ -80,6 +80,7 @@ public class RunIssueActionAction extends AnAction {
 							"Cannot retrieve fields for action [" + action.getName() + "] on issue [" + issue.getKey() + "]"
 									+ e.getMessage(), e);
 					showDialogDetailedInfo(project, e);
+                    notifyResultHandler(resultHandler, e);
 					return;
 				}
 
@@ -92,6 +93,7 @@ public class RunIssueActionAction extends AnAction {
 				} catch (JIRAException e) {
 					showError("Cannot retrieve issue details for [" + issue.getKey() + "]: " + e.getMessage(), e);
 					showDialogDetailedInfo(project, e);
+                    notifyResultHandler(resultHandler, e);
 					return;
 				}
 
@@ -108,10 +110,11 @@ public class RunIssueActionAction extends AnAction {
 						showError("Unable to run action [" + action.getName() + "] on issue [" + issue.getKey() + "]: "
 								+ e.getMessage(), e);
 						showDialogDetailedInfo(project, e);
+                        notifyResultHandler(resultHandler, e);
 					}
 				} else {
-					EventQueue.invokeLater(
-							new LocalDisplayActionDialogRunnable(project, detailedIssue, preFilleddfields, server));
+					EventQueue.invokeLater(new LocalDisplayActionDialogRunnable(project, detailedIssue,
+                            preFilleddfields, server, resultHandler));
 				}
 			}
 		}
@@ -148,7 +151,6 @@ public class RunIssueActionAction extends AnAction {
 
 		JiraIssueAdapter.get(issue).clearCachedActions();
 
-
 		if (jiraIssueListModelBuilder != null) {
 			jiraIssueListModelBuilder.reloadIssue(issue.getKey(), server);
 		}
@@ -160,14 +162,17 @@ public class RunIssueActionAction extends AnAction {
 		private JIRAIssue detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
 		private ServerData server;
+        private DeactivateIssueResultHandler resultHandler;
 
-		public LocalDisplayActionDialogRunnable(final Project project,
-				final JIRAIssue detailedIssue, final List<JIRAActionField> preFilleddfields, final ServerData server) {
+        public LocalDisplayActionDialogRunnable(final Project project, final JIRAIssue detailedIssue,
+                                                final List<JIRAActionField> preFilleddfields, final ServerData server,
+                                                DeactivateIssueResultHandler resultHandler) {
 			this.project = project;
 			this.detailedIssue = detailedIssue;
 			this.preFilleddfields = preFilleddfields;
 			this.server = server;
-		}
+            this.resultHandler = resultHandler;
+        }
 
 		public void run() {
 			// show action fields dialog
@@ -190,7 +195,8 @@ public class RunIssueActionAction extends AnAction {
 									showError("Unable to run action [" + action.getName() + "] on issue ["
 											+ issue.getKey() + "]: " + e.getMessage(), e);
 									showDialogDetailedInfo(project, e);
-									return;
+                                    notifyResultHandler(resultHandler, e);
+                                    return;
 								}
 								try {
 									if (dialog.getComment() != null && dialog.getComment().length() > 0) {
@@ -200,18 +206,29 @@ public class RunIssueActionAction extends AnAction {
 									showError("Unable to add comment to action [" + action.getName()
 											+ "] on issue [" + issue.getKey() + "]: " + e.getMessage(), e);
 									showDialogDetailedInfo(project, e);
-								}
+                                    notifyResultHandler(resultHandler, e);
+                                }
 								try {
 									performPostActionActivity(server);
+                                    if (resultHandler != null) {
+                                        resultHandler.success();
+                                    }
 								} catch (JIRAException e) {
 									showError(e.getMessage(), e);
 									showDialogDetailedInfo(project, e);
-								}
+                                    notifyResultHandler(resultHandler, e);
+                                }
 							}
 						});
 			} else {
 				showInfo("Running workflow action [" + action.getName() + "] cancelled");
 			}
 		}
-	}
+    }
+
+    private void notifyResultHandler(DeactivateIssueResultHandler resultHandler, JIRAException e) {
+        if (resultHandler != null) {
+            resultHandler.failure(e);
+        }
+    }
 }
