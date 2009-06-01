@@ -25,6 +25,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
+import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAAction;
@@ -44,6 +45,8 @@ import com.intellij.openapi.ui.Messages;
 
 import javax.swing.*;
 import java.util.List;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * User: pmaruszak
@@ -184,10 +187,17 @@ public final class ActiveIssueUtils {
 					"Deactivating current issue",
 					Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 		}
-		if (isDeactivated && ActiveIssueUtils.deactivate(event)) {
-			ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
-		}
-	}
+		if (isDeactivated) {
+            ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+                public void success() {
+                    ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
+                }
+
+                public void failure(Throwable problem) {
+                }
+            });
+        }
+    }
 
 	private static boolean isInProgress(final JIRAIssue issue) {
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
@@ -223,13 +233,18 @@ public final class ActiveIssueUtils {
 									Messages.getQuestionIcon());
 
 							if (isOk == DialogWrapper.OK_EXIT_CODE) {
-								if (deactivate(project)) {
-									final JiraWorkspaceConfiguration conf = IdeaHelper
-											.getProjectComponent(project, JiraWorkspaceConfiguration.class);
-									if (conf != null) {
-										conf.setActiveJiraIssue(null);
-									}
-								}
+								deactivate(project, new DeactivateIssueResultHandler() {
+                                    public void success() {
+                                        final JiraWorkspaceConfiguration conf = IdeaHelper
+                                                .getProjectComponent(project, JiraWorkspaceConfiguration.class);
+                                        if (conf != null) {
+                                            conf.setActiveJiraIssue(null);
+                                        }
+                                    }
+
+                                    public void failure(Throwable problem) {
+                                    }
+                                });
 							}
 						}
 					});
@@ -242,13 +257,17 @@ public final class ActiveIssueUtils {
 			final JiraServerCfg jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 
+        if (project == null) {
+            return;
+        }
+        
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
 
 		ProgressManager.getInstance().run(new Task.Backgroundable(project, "Refreshing Issue Information", false) {
 			private JIRAIssue jiraIssue = null;
 			private boolean isOk = false;
 
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
 					// retrieve fresh issue instance from the server
 					jiraIssue = ActiveIssueUtils.getJIRAIssue(
@@ -286,11 +305,11 @@ public final class ActiveIssueUtils {
 		});
 	}
 
-	public static boolean deactivate(final AnActionEvent event) {
-		return deactivate(IdeaHelper.getCurrentProject(event));
+	public static boolean deactivate(final AnActionEvent event, final DeactivateIssueResultHandler resultHandler) {
+		return deactivate(IdeaHelper.getCurrentProject(event), resultHandler);
 	}
 
-	public static boolean deactivate(final Project project) {
+	public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
 			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
@@ -305,7 +324,7 @@ public final class ActiveIssueUtils {
 						isOk = panel.logWorkOrDeactivateIssue(jiraIssue,
 								IdeaHelper.getProjectCfgManager(project).getServerData(jiraServer),
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),
-								true);
+								true, resultHandler);
 
 						return isOk;
 					}
@@ -314,7 +333,9 @@ public final class ActiveIssueUtils {
 						panel.setStatusErrorMessage("Error stopping work on issue: " + e.getMessage(), e);
 					}
 				}
-			}
+			} else if (resultHandler != null) {
+                resultHandler.success();
+            }
 		}
 		return true;
 	}

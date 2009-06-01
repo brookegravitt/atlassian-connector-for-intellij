@@ -17,6 +17,8 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
@@ -33,12 +35,22 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
-                boolean isOk = ActiveIssueUtils.deactivate(event);
-                final JiraWorkspaceConfiguration conf =
-                        IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-                if (isOk) {
-                    conf.setActiveJiraIssue(null);
-                }
+                ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+                    public void success() {
+                        final JiraWorkspaceConfiguration conf =
+                                IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+                        conf.setActiveJiraIssue(null);
+                    }
+
+                    public void failure(final Throwable problem) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                DialogWithDetails.showExceptionDialog(
+                                        IdeaHelper.getCurrentProject(event), "Failed to Deactivate Issue", problem);
+                            }
+                        });
+                    }
+                });
             }
         });
     }
