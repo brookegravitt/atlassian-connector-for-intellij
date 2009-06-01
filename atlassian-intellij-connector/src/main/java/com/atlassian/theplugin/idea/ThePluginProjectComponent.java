@@ -332,8 +332,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
     private void checkDefaultServerValues() {
         final InformationDialogWithCheckBox jiraDialog = new InformationDialogWithCheckBox(project,
-                "No default JIRA server defined!",
-                "Please set up default server in order to get all cool features of Atlassian IntelliJ Connector.");
+                PluginUtil.PRODUCT_NAME,
+                "Please set up default JIRA server in order to get all cool features of Atlassian IntelliJ Connector.");
         if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -343,8 +343,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
             });
         }
          final InformationDialogWithCheckBox fishEyeDialog = new InformationDialogWithCheckBox(project,
-                "No default FishEye server defined!",
-                "Please set up default server in order to get all cool features of Atlassian IntelliJ Connector.");
+                 PluginUtil.PRODUCT_NAME,
+                "Please set up default FishEye server in order to get all cool features of Atlassian IntelliJ Connector.");
 
         if (projectCfgManager.getDefaultFishEyeServer() == null
                 && !projectConfigurationBean.isDefaultFishEyeServerAsked()) {
