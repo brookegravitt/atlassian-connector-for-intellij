@@ -1223,7 +1223,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                 }
                                 throw e;
                             }
-                        } else if (resultHandler != null){
+                        } else if (resultHandler != null) {
                             resultHandler.failure(new JIRAException("Failed to commit changes"));
                         }
 					}
@@ -1282,7 +1282,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             }
         }
 
-        private boolean runWorkflowAction(final DeactivateIssueResultHandler resultHandler) {
+        private boolean runWorkflowAction(final DeactivateIssueResultHandler handler) {
             JIRAAction selectedAction = dialog.getSelectedAction();
             if (selectedAction != null) {
                 setStatusInfoMessage("Running action [" + selectedAction.getName()
@@ -1291,7 +1291,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                         jiraServerFacade, issue, selectedAction, jiraIssueListModelBuilder);
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        riaa.runIssueAction(project, resultHandler);
+                        riaa.runIssueAction(project, handler);
                     }
                 });
                 return true;
