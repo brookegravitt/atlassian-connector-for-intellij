@@ -204,8 +204,8 @@ public final class ActiveIssueUtils {
 
 	/**
 	 * Bloking method. Refills cache if necessary.
-	 * @param issue
-	 * @return
+	 * @param issue issue
+	 * @return boolean
 	 */
 	private static boolean isInProgress(final JIRAIssue issue) {
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
@@ -238,6 +238,11 @@ public final class ActiveIssueUtils {
 		return true;
 	}
 
+	/**
+	 * Should be called from the UI thread
+	 * @param project project
+	 * @param issue issue
+	 */
 	public static void checkIssueState(final Project project, final JIRAIssue issue) {
 		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
 		if (issue != null && activeIssue != null) {
@@ -281,7 +286,12 @@ public final class ActiveIssueUtils {
 		}
 	}
 
-    // this has to be run from the dispatch thread - see PL-1544
+	/**
+	 * this has to be run from the dispatch thread - see PL-1544
+	 * @param event event
+	 * @param newActiveIssue issue
+	 * @param jiraServerCfg server
+	 */
 	private static void activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
 			final JiraServerCfg jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);

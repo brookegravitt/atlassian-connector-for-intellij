@@ -62,10 +62,10 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 			if (server.isUseDefaultCredentials()) {
 				Messages.showInfoMessage(project,
 						"Either do not use default credentials for " + server.getName() + " or change default credentials",
-						"Please change default credentials");
+						PluginUtil.PRODUCT_NAME);
 			} else {
 				answer = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), panel,
-						PluginUtil.getInstance().getName(), OK_CANCEL_OPTION, PLAIN_MESSAGE);
+						PluginUtil.PRODUCT_NAME, OK_CANCEL_OPTION, PLAIN_MESSAGE);
 			}
 
 			if (!server.isUseDefaultCredentials() && answer == JOptionPane.OK_OPTION) {
