@@ -11,6 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class ExpandCommentsAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).setCommentsExpanded(e.getPlace(), true);
+		IdeaHelper.getIssueDetailsToolWindow(e).setCommentsExpanded(e.getPlace(), true);
 	}
 }

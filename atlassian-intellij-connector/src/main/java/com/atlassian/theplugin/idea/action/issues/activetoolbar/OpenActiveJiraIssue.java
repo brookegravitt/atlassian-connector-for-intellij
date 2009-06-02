@@ -44,7 +44,7 @@ public class OpenActiveJiraIssue extends AnAction {
 						.getCurrentProject(event);
 				final JIRAIssue issue;
 				if (currentProject != null) {
-					final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(currentProject);
 					try {
 						issue = ActiveIssueUtils.getJIRAIssue(currentProject);
 						if (issue != null) {

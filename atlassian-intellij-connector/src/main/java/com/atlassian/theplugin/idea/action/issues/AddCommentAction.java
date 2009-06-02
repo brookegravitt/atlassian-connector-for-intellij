@@ -6,7 +6,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class AddCommentAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent anActionEvent) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(anActionEvent);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(anActionEvent);
 		if (panel != null) {
 			panel.addCommentToSelectedIssue();
 		}

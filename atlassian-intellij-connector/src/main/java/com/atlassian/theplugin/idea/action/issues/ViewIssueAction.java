@@ -25,7 +25,7 @@ public class ViewIssueAction extends JIRAAbstractAction {
 		if (enabled && issue != null) {
 			event.getPresentation().setEnabled(true);
 		} else if (ModelFreezeUpdater.getState(event) && issue != null) {
-			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 			boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 			event.getPresentation().setEnabled(e);
 		} else {

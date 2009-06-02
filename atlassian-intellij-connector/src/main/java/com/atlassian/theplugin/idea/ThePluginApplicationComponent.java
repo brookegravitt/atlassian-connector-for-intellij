@@ -25,6 +25,8 @@ import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.util.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
@@ -35,8 +37,6 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
@@ -244,7 +244,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new LocalHttpHandler(iconArray), true);
 		} catch (Exception e) {
 			PluginUtil.getLogger().error("Failed to start http server", e);
-//			e.printStackTrace();
 		}
 	}
 
@@ -300,6 +299,42 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							}
 						}
 					});
+				}
+			} else if (method.equals("issue")) {
+				writeIcon(response);
+
+				final String issueKey = parameters.get("issue_key");
+				final String serverUrl = parameters.get("server_url");
+				if (issueKey != null && serverUrl != null) {
+					EventQueue.invokeLater(new Runnable() {
+						public void run() {
+							boolean found = false;
+							// try to open received issueKey in all open projects
+							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+								WindowManager.getInstance().getFrame(project).setVisible(true);
+
+								String osName = System.getProperty("os.name");
+								osName = osName.toLowerCase();
+
+								if (osName.contains("windows") || osName.contains("mac os x")) {
+									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
+									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
+								} else { //for linux
+									WindowManager.getInstance().getFrame(project).toFront();
+								}
+
+								if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
+									found = true;
+								}
+							}
+
+							if (!found) {
+								Messages.showInfoMessage("Cannot find issue " + issueKey, PluginUtil.PRODUCT_NAME);
+							}
+						}
+					});
+				} else {
+					PluginUtil.getLogger().warn("Cannot open issue: issue_key or server_url parameter is null");
 				}
 			} else {
 				response.setNoContent();

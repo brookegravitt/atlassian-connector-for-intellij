@@ -12,7 +12,7 @@ import com.intellij.openapi.actionSystem.ToggleAction;
  */
 public class GroupSubtasksAction extends ToggleAction {
 	public boolean isSelected(AnActionEvent e) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 		if (panel != null) {
 			return panel.isGroupSubtasksUnderParent();
 		}
@@ -20,7 +20,7 @@ public class GroupSubtasksAction extends ToggleAction {
 	}
 
 	public void setSelected(AnActionEvent e, boolean state) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 		if (panel != null) {
 			panel.setGroupSubtasksUnderParent(state);
 		}

@@ -12,7 +12,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 public class CreateChangeListAction extends JIRAAbstractAction {
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(anActionEvent);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(anActionEvent);
 		final JIRAIssue issue = anActionEvent.getData(Constants.ISSUE_KEY);
 		if (panel != null && issue != null) {
 			panel.createChangeListAction(issue);

@@ -11,7 +11,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
 		JIRAIssue issue = e.getData(Constants.ISSUE_KEY);
 		if (issue != null) {
-			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 			if (panel != null) {
 				panel.openIssue(issue);
 			}
@@ -28,7 +28,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 		if (enabled && issue != null) {
 			event.getPresentation().setEnabled(true);
 		} else if (ModelFreezeUpdater.getState(event) && issue != null) {
-			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 			boolean e = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 			event.getPresentation().setEnabled(e);
 		} else {

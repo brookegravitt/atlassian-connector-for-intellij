@@ -113,31 +113,19 @@ public final class IdeaHelper {
 		return getProjectComponent(e, ProjectCfgManagerImpl.class);
 	}
 
-	public static IssueListToolWindowPanel getIssuesToolWindowPanel(AnActionEvent event) {
+	public static IssueListToolWindowPanel getIssueListToolWindowPanel(AnActionEvent event) {
 		return getProjectComponent(event, IssueListToolWindowPanel.class);
-//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
-//		if (pluginProjectComponent != null) {
-//			return pluginProjectComponent.getIssuesToolWindowPanel();
-//		}
-//
-//		return null;
 	}
 
-	public static IssueListToolWindowPanel getIssuesToolWindowPanel(@NotNull final Project project) {
+	public static IssueListToolWindowPanel getIssueListToolWindowPanel(@NotNull final Project project) {
 		return getProjectComponent(project, IssueListToolWindowPanel.class);
-//		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(project);
-//		if (pluginProjectComponent != null) {
-//			return pluginProjectComponent.getIssuesToolWindowPanel();
-//		}
-//
-//		return null;
 	}
 
-	public static IssueDetailsToolWindow getIssueToolWindow(AnActionEvent event) {
+	public static IssueDetailsToolWindow getIssueDetailsToolWindow(AnActionEvent event) {
 		return getProjectComponent(event, IssueDetailsToolWindow.class);
 	}
 
-	public static IssueDetailsToolWindow getIssueToolWindow(@NotNull final Project project) {
+	public static IssueDetailsToolWindow getIssueDetailsToolWindow(@NotNull final Project project) {
 		return getProjectComponent(project, IssueDetailsToolWindow.class);
 	}
 

@@ -18,7 +18,7 @@ public class QuickSearchAction extends AnAction {
 			return;
 		}
 
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 
 		if (panel == null) {
 			return;
@@ -45,7 +45,7 @@ public class QuickSearchAction extends AnAction {
 
 	@Override
 	public void update(AnActionEvent event) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
 		boolean enabled = panel != null && panel.getSelectedServer() != null;
 		event.getPresentation().setEnabled(enabled);

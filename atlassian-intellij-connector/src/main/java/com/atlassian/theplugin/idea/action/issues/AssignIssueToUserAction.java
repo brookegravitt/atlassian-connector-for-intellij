@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class AssignIssueToUserAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final JIRAIssue issue = anActionEvent.getData(Constants.ISSUE_KEY);
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(anActionEvent);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(anActionEvent);
 		if (issue != null && panel != null) {
 			panel.assignIssueToSomebody(issue);
 		}

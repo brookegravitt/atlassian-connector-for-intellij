@@ -11,6 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class CollapseCommentsAction extends AnAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).setCommentsExpanded(e.getPlace(), false);
+		IdeaHelper.getIssueDetailsToolWindow(e).setCommentsExpanded(e.getPlace(), false);
 	}
 }
