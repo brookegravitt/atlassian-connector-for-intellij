@@ -470,7 +470,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			stringUrl.append(":").append(url.getPort());
 		}
 
-		if (url.getFile() != null && !url.getFile().isEmpty() && !url.getFile().equals("/")) {
+		if (url.getFile() != null && url.getFile().length() > 0 && !url.getFile().equals("/")) {
 			stringUrl.append(url.getFile());
 		}
 
