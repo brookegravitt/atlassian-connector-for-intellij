@@ -346,7 +346,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				@Override
 				public void run() {
 					try {
-						ServerData jiraServer = issue.getServer(); // was: getSelectedServer();
+						ServerData jiraServer = issue.getServer();
 
 						if (jiraServer != null) {
 							final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
@@ -446,8 +446,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public boolean openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
-		ServerData server =
-				findServer(serverUrl, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER));
+		ServerData server = CfgUtil.findServer(
+				serverUrl, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER), projectCfgManager);
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -455,9 +455,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
-
 		URL url;
-		StringBuilder stringUrl = new StringBuilder();
 
 		try {
 			url = new URL(serverUrl);
@@ -466,7 +464,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return false;
 		}
 
-		server = findServer(url, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER));
+		server = CfgUtil.findServer(url, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER),
+				projectCfgManager);
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -474,84 +473,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		return false;
-	}
-
-	/**
-	 * Finds server with specified url in collection of servers.
-	 * It tries to find enabled server. If not found then tries to find disabled server.
-	 * It compares host, port and path (skips protocol and query string)
-	 * @param serverUrl url of server
-	 * @param allServers collection of servers
-	 * @return ServerData or null if not found
-	 */
-	private ServerData findServer(final URL serverUrl, final Collection<ServerCfg> allServers) {
-
-		ServerData enabledServer = null;
-		ServerData disabledServer = null;
-
-		// find matching server
-		for (ServerCfg server : allServers) {
-
-			URL url;
-
-			try {
-				url = new URL(server.getUrl());
-			} catch (MalformedURLException e) {
-				// skip the server if url is broken
-				continue;
-			}
-
-			// compare urls (skip protocols and query string)
-			if (url.getHost().equalsIgnoreCase(serverUrl.getHost())
-					&& url.getPort() == serverUrl.getPort()
-					&& (((url.getPath() == null || url.getPath().equals("") || url.getPath().equals("/"))
-						 && (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
-					  || (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
-
-				if (server.isEnabled()) {
-					enabledServer = projectCfgManager.getServerData(server.getServerId());
-					break;
-				} else if (disabledServer == null) {
-					disabledServer = projectCfgManager.getServerData(server.getServerId());
-				}
-			}
-		}
-
-		if (enabledServer != null) {
-			return enabledServer;
-		}
-
-		return disabledServer;
-	}
-
-	/**
-	 * Finds server with specified url in collection of servers.
-	 * It tries to find enabled server. If not found then tries to find disabled server.
-	 * @param serverUrl url of server
-	 * @param allServers collection of servers
-	 * @return ServerData or null if not found
-	 */
-	private ServerData findServer(final String serverUrl, final Collection<ServerCfg> allServers) {
-		ServerData enabledServer = null;
-		ServerData disabledServer = null;
-
-		// find matching server
-		for (ServerCfg server : allServers) {
-			if (server.getUrl().equals(serverUrl)) {
-				if (server.isEnabled()) {
-					enabledServer = projectCfgManager.getServerData(server.getServerId());
-					break;
-				} else if (disabledServer == null) {
-					disabledServer = projectCfgManager.getServerData(server.getServerId());
-				}
-			}
-		}
-
-		if (enabledServer != null) {
-			return enabledServer;
-		}
-
-		return disabledServer;
 	}
 
 	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
@@ -1434,6 +1355,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					singleIssueChanged = true;
+					JiraIssueAdapter.clearCache(issue);
 					ActiveIssueUtils.checkIssueState(project, issue);
 				}
 			});

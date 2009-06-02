@@ -196,14 +196,35 @@ public final class ActiveIssueUtils {
                     });
                 }
 
-                public void failure(Throwable problem) {
-                }
-            });
-        }
-    }
+				public void failure(Throwable problem) {
+				}
+			});
+		}
+	}
 
+	/**
+	 * Bloking method. Refills cache if necessary.
+	 * @param issue
+	 * @return
+	 */
 	private static boolean isInProgress(final JIRAIssue issue) {
 		List<JIRAAction> actions = JiraIssueAdapter.get(issue).getCachedActions();
+
+		if (actions == null) {
+
+			ServerData jiraServer = issue.getServer();
+
+			if (jiraServer != null) {
+				try {
+					actions = JIRAServerFacadeImpl.getInstance().getAvailableActions(jiraServer, issue);
+				} catch (JIRAException e) {
+					PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
+				}
+
+				JiraIssueAdapter.get(issue).setCachedActions(actions);
+			}
+		}
+
 		if (actions != null) {
 			for (JIRAAction a : actions) {
 				if (a.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
@@ -223,35 +244,40 @@ public final class ActiveIssueUtils {
 
 			if (issue.getServer() != null && issue.getKey().equals(activeIssue.getIssueKey())
 					&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
-				if (!issue.getServer().getUserName().equals(issue.getAssigneeId())
-						|| !isInProgress(issue)) {
 
-					SwingUtilities.invokeLater(new Runnable() {
+				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
+					public void run(final ProgressIndicator indicator) {
 
-						public void run() {
-							int isOk = Messages.showYesNoDialog(project,
-									"Issue " + issue.getKey() + " has changed status (assigned to:" + issue.getAssignee()
-											+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
-									"Issue " + issue.getKey(),
-									Messages.getQuestionIcon());
+						if (!issue.getServer().getUserName().equals(issue.getAssigneeId()) || !isInProgress(issue)) {
 
-							if (isOk == DialogWrapper.OK_EXIT_CODE) {
-								deactivate(project, new DeactivateIssueResultHandler() {
-                                    public void success() {
-                                        final JiraWorkspaceConfiguration conf = IdeaHelper
-                                                .getProjectComponent(project, JiraWorkspaceConfiguration.class);
-                                        if (conf != null) {
-                                            conf.setActiveJiraIssue(null);
-                                        }
-                                    }
+							SwingUtilities.invokeLater(new Runnable() {
+								public void run() {
+									int isOk = Messages.showYesNoDialog(project,
+											"Issue " + issue.getKey() + " has changed status (assigned to:" +
+													issue.getAssignee()
+													+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
+											"Issue " + issue.getKey(),
+											Messages.getQuestionIcon());
 
-                                    public void failure(Throwable problem) {
-                                    }
-                                });
-							}
+									if (isOk == DialogWrapper.OK_EXIT_CODE) {
+										deactivate(project, new DeactivateIssueResultHandler() {
+											public void success() {
+												final JiraWorkspaceConfiguration conf = IdeaHelper
+														.getProjectComponent(project, JiraWorkspaceConfiguration.class);
+												if (conf != null) {
+													conf.setActiveJiraIssue(null);
+												}
+											}
+
+											public void failure(Throwable problem) {
+											}
+										});
+									}
+								}
+							});
 						}
-					});
-				}
+					}
+				});
 			}
 		}
 	}
@@ -262,8 +288,8 @@ public final class ActiveIssueUtils {
 		final Project project = IdeaHelper.getCurrentProject(event);
 
 		if (project == null) {
-            return;
-        }
+			return;
+		}
 
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 
@@ -297,7 +323,8 @@ public final class ActiveIssueUtils {
 					if ((cond1 || cond2) && !"-1".equals(jiraIssue.getAssigneeId())) {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
-									+ ".\nDo you want to overwrite assignee and start progress?", "Issue " + jiraIssue.getKey(),
+										+ ".\nDo you want to overwrite assignee and start progress?",
+								"Issue " + jiraIssue.getKey(),
 								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 					}
 					if (isOk) {
@@ -338,8 +365,8 @@ public final class ActiveIssueUtils {
 					}
 				}
 			} else if (resultHandler != null) {
-                resultHandler.success();
-            }
+				resultHandler.success();
+			}
 		}
 		return true;
 	}

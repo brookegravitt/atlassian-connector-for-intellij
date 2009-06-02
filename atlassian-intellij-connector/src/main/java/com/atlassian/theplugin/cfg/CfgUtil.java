@@ -15,10 +15,17 @@
  */
 package com.atlassian.theplugin.cfg;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectId;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Collection;
 
 public final class CfgUtil {
 
@@ -64,5 +71,87 @@ public final class CfgUtil {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Finds server with specified url in collection of servers.
+	 * It tries to find enabled server. If not found then tries to find disabled server.
+	 * It compares host, port and path (skips protocol and query string)
+	 * @param serverUrl url of server
+	 * @param servers collection of servers
+	 * @param cfg project configuration
+	 * @return ServerData or null if not found
+	 */
+	public static ServerData findServer(final URL serverUrl, final Collection<ServerCfg> servers, final ProjectCfgManager cfg) {
+
+		ServerData enabledServer = null;
+		ServerData disabledServer = null;
+
+		// find matching server
+		for (ServerCfg server : servers) {
+
+			URL url;
+
+			try {
+				url = new URL(server.getUrl());
+			} catch (MalformedURLException e) {
+				// skip the server if url is broken
+				continue;
+			}
+
+			// compare urls (skip protocols and query string)
+			if (url.getHost().equalsIgnoreCase(serverUrl.getHost())
+					&& url.getPort() == serverUrl.getPort()
+					&& (((url.getPath() == null || url.getPath().equals("") || url.getPath().equals("/"))
+						 && (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
+					  || (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
+
+				if (server.isEnabled()) {
+					enabledServer = cfg.getServerData(server);
+					break;
+				} else if (disabledServer == null) {
+					disabledServer = cfg.getServerData(server);
+				}
+			}
+		}
+
+		if (enabledServer != null) {
+			return enabledServer;
+		}
+
+		return disabledServer;
+	}
+
+	/**
+	 * Finds server with specified url in collection of servers.
+	 * It tries to find enabled server. If not found then tries to find disabled server.
+	 * @param serverUrl url of server
+	 * @param servers collection of servers
+	 * @param cfg project configuration
+	 * @return ServerData or null if not found
+	 */
+	public static ServerData findServer(final String serverUrl, final Collection<ServerCfg> servers,
+			final ProjectCfgManager cfg) {
+
+		ServerData enabledServer = null;
+		ServerData disabledServer = null;
+
+		// find matching server
+		for (ServerCfg server : servers) {
+			if (server.getUrl().equals(serverUrl)) {
+				if (server.isEnabled()) {
+					enabledServer = cfg.getServerData(server);
+					break;
+				} else if (disabledServer == null) {
+					disabledServer = cfg.getServerData(server);
+				}
+			}
+		}
+
+		if (enabledServer != null) {
+			return enabledServer;
+		}
+
+		return disabledServer;
 	}
 }
