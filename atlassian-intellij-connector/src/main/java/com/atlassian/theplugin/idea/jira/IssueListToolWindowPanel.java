@@ -1465,6 +1465,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		private class ModelChangedRunnable implements Runnable {
 			public void run() {
+
+                // kalamon: not sure how this is possible given that both are @NotNull annotated, but see PL-1540
+                if (jiraServerModel == null || projectCfgManager == null) {
+                    return;
+                }
+                
 				JiraIssueAdapter.clearCache();
 				ServerData srvcfg = getSelectedServer();
 				if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
