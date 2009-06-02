@@ -91,16 +91,13 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
         if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
                 || cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
 
-
-            if (cache != null) {
                 for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
                     if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
-                        ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId().toString(),
+                        ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId(),
                                 issue.getKey(), new DateTime());
                         group.add(new ActivateIssueItemAction(newActiveIsse, project));
                     }
                 }
-            }
         } else {
             createEmptyList(group);
         }

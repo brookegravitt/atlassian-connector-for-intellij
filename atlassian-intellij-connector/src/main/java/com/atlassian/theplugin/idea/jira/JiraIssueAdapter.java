@@ -22,9 +22,9 @@ import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.management.timer.Timer;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 public final class JiraIssueAdapter {
 	private JIRAIssue issue;
@@ -175,5 +175,9 @@ public final class JiraIssueAdapter {
 	}
 	public static void clearCache() {
 		issueAdapterMap.clear();
+	}
+
+	public static void clearCache(final JIRAIssue issue) {
+		issueAdapterMap.remove(issue);
 	}
 }
