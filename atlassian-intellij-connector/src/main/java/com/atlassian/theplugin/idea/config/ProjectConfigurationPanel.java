@@ -169,9 +169,9 @@ public class ProjectConfigurationPanel extends JPanel {
 								&& defaultCredentials.getPassword().equals(""))
 								&& serverCfg.getUsername().length() > 0)) {
 							int answer = Messages.showYesNoDialog(project,
-									"<html>Do yo want to set server <b>" + serverCfg.getName()
+									"<html>Do you want to set server <b>" + serverCfg.getName()
 											+ "</b> <i>username</i> and <i>password</i>"
-											+ " as default credentials for Atlassian IntelliJ Connector?</html>",
+											+ " as default credentials for the Atlassian IntelliJ Connector?</html>",
 									"Set as default",
 									Messages.getQuestionIcon());
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
