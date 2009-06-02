@@ -273,25 +273,13 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							// try to open received file in all open projects
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
-								WindowManager.getInstance().getFrame(project).setVisible(true);
-
-//										WindowManager.getInstance().getFrame(finalProject).repaint();
-								String osName = System.getProperty("os.name");
-								osName = osName.toLowerCase();
-
-								if (osName.contains("windows") || osName.contains("mac os x")) {
-									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
-									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
-
-								} else { //for linux
-									WindowManager.getInstance().getFrame(project).toFront();
-
-								}
 
 								if (psiFile != null) {
 									psiFile.navigate(true);
 									found = true;
 								}
+
+								bringIdeaToFront(project);
 							}
 
 							if (!found) {
@@ -311,21 +299,12 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 							boolean found = false;
 							// try to open received issueKey in all open projects
 							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-								WindowManager.getInstance().getFrame(project).setVisible(true);
-
-								String osName = System.getProperty("os.name");
-								osName = osName.toLowerCase();
-
-								if (osName.contains("windows") || osName.contains("mac os x")) {
-									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
-									WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
-								} else { //for linux
-									WindowManager.getInstance().getFrame(project).toFront();
-								}
 
 								if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
 									found = true;
 								}
+
+								bringIdeaToFront(project);
 							}
 
 							if (!found) {
@@ -341,6 +320,21 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 				PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
 			}
 			return response;
+		}
+
+		private void bringIdeaToFront(final Project project) {
+			WindowManager.getInstance().getFrame(project).setVisible(true);
+
+			String osName = System.getProperty("os.name");
+			osName = osName.toLowerCase();
+
+			if (osName.contains("windows") || osName.contains("mac os x")) {
+				WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
+				WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
+
+			} else { //for linux
+				WindowManager.getInstance().getFrame(project).toFront();
+			}
 		}
 
 		private void writeIcon(final Response response) {
