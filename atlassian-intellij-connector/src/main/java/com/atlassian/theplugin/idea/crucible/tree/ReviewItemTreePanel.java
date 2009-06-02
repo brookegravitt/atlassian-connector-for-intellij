@@ -316,7 +316,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			reviewFilesAndCommentsTree.setModelProvider(provider);
 			reviewFilesAndCommentsTree.setRootVisible(true);
 			reviewFilesAndCommentsTree.expandAll();
-			reviewFilesAndCommentsTree.requestFocus();
+
+            // commenting out due to PL-1273
+//			reviewFilesAndCommentsTree.requestFocus();
+            
 			CommentHighlighter.updateCommentsInEditors(project, review);
 		}
 
