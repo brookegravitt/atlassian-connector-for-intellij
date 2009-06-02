@@ -189,7 +189,11 @@ public final class ActiveIssueUtils {
 		if (isDeactivated) {
             ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
                 public void success() {
-                    ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
+                        }
+                    });
                 }
 
                 public void failure(Throwable problem) {
@@ -252,6 +256,7 @@ public final class ActiveIssueUtils {
 		}
 	}
 
+    // this has to be run from the dispatch thread - see PL-1544
 	private static void activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
 			final JiraServerCfg jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);
