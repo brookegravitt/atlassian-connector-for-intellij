@@ -9,14 +9,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class CollapseIssuesAction extends JIRAAbstractAction {
 	public void actionPerformed(final AnActionEvent e) {
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 		if (panel != null) {
 			panel.collapseAllRightTreeNodes();
 		}
 	}
 
 	public void onUpdate(AnActionEvent event) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 		boolean enabled = panel != null && (panel.getSelectedServer() != null || panel.isRecentlyOpenFilterSelected());
 		event.getPresentation().setEnabled(enabled);
 	}

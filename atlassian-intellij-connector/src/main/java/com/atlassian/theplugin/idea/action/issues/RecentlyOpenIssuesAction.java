@@ -48,7 +48,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 			return;
 		}
 
-		final IssueListToolWindowPanel issuesWindow = IdeaHelper.getIssuesToolWindowPanel(e);
+		final IssueListToolWindowPanel issuesWindow = IdeaHelper.getIssueListToolWindowPanel(e);
 		if (issuesWindow == null) {
 			return;
 		}

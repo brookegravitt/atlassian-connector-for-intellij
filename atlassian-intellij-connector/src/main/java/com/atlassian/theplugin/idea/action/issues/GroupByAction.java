@@ -29,7 +29,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 
 		Project project = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext());
 		if (project != null) {
-			IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 			updateSelection(panel, combo);
 		}
 
@@ -38,7 +38,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 			public void actionPerformed(ActionEvent e) {
 				final Project currentProject = IdeaHelper.getCurrentProject(DataManager.getInstance().getDataContext(combo));
 				if (currentProject != null) {
-					IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(currentProject);
+					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(currentProject);
 					if (panel != null) {
 						panel.setGroupBy((JiraIssueGroupBy) combo.getSelectedItem());
 					} else {
@@ -67,7 +67,7 @@ public class GroupByAction extends JIRAAbstractAction implements CustomComponent
 	@Override
 	public void onUpdate(AnActionEvent event, boolean enabled) {
 		Object myProperty = event.getPresentation().getClientProperty(COMBOBOX_KEY);
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 		if (myProperty instanceof JComboBox) {
 			final JComboBox jComboBox = (JComboBox) myProperty;
 			updateSelection(panel, jComboBox);

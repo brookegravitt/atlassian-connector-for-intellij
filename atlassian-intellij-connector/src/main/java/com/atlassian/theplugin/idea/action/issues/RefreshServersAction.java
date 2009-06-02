@@ -6,14 +6,14 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class RefreshServersAction extends JIRAAbstractAction {
 	public void actionPerformed(AnActionEvent e) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(e);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 		if (panel != null) {
 			panel.refreshModels();
 		}
 	}
 
 	public void onUpdate(AnActionEvent event) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 		boolean enabled = panel != null;
 		event.getPresentation().setEnabled(enabled);
 	}

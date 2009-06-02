@@ -10,6 +10,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class AddCommentAction extends AbstractEditorIssueAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).addComment(e.getPlace());
+		IdeaHelper.getIssueDetailsToolWindow(e).addComment(e.getPlace());
 	}
 }

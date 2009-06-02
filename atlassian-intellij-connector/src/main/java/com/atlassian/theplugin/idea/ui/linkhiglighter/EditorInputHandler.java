@@ -90,7 +90,7 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 			JiraURLTextRange hoverRange =
 					jiraEditorLinkParser.getJiraURLTextRange(editor, file, event.getMouseEvent().getPoint());
 			if (hoverRange != null && hoverRange.isActive()) {
-				IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+				IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 				final ServerData jiraServer = projectCfgManager.getDefaultJiraServer();
 				if (jiraServer != null) {
 					panel.openIssue(hoverRange.getIssueKey(), jiraServer);

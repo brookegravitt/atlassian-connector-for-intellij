@@ -530,7 +530,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			private void openSelectedSubtask(JList list) {
 				Object o = list.getSelectedValue();
 				if (o != null && o instanceof JIRAIssue) {
-					IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 					if (panel != null) {
 						panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer());
 					}
@@ -618,7 +618,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 					panel.add(new BoldLabel("Parent Issue"), gbc1);
 					panel.add(new MyHyperlinkLabel(parent, new HyperlinkListener() {
 						public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
-							IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(project);
+							IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 							if (panel != null) {
 								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer());
 							}

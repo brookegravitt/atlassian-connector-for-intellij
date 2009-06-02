@@ -10,6 +10,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class EditorRefreshAction extends AbstractEditorIssueAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).refresh(e.getPlace());
+		IdeaHelper.getIssueDetailsToolWindow(e).refresh(e.getPlace());
 	}
 }

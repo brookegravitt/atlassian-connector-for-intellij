@@ -14,7 +14,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(AnActionEvent event) {
-		IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+		IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 		if (panel == null) {
 			return;
 		}

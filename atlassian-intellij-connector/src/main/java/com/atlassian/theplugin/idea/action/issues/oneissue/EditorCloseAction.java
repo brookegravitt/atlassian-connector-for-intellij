@@ -12,6 +12,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class EditorCloseAction extends AnAction {
 	@Override
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).closeToolWindow(e);
+		IdeaHelper.getIssueDetailsToolWindow(e).closeToolWindow(e);
 	}
 }

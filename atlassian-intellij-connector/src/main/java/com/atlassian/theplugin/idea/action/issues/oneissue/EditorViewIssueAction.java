@@ -10,6 +10,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class EditorViewIssueAction extends AbstractEditorIssueAction {
 	public void actionPerformed(AnActionEvent e) {
-		IdeaHelper.getIssueToolWindow(e).viewIssueInBrowser(e.getPlace());
+		IdeaHelper.getIssueDetailsToolWindow(e).viewIssueInBrowser(e.getPlace());
 	}
 }

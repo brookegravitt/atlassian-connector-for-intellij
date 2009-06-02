@@ -341,6 +341,10 @@ class CfgManagerTest implements CfgManager {
 		return null;
 	}
 
+	public Collection<JiraServerCfg> getAllJiraServers(final ProjectId projectId) {
+		return null;
+	}
+
 	public Collection<ServerCfg> getAllServers(final ProjectId projectId, final ServerType serverType) {
 		return null;
 	}

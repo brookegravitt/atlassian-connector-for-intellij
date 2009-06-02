@@ -55,6 +55,8 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -385,25 +387,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		if (issue.getServer() != null) {
 			recentlyOpenIssuesCache.addIssue(issue);
 			// todo check active issue
-//			ActiveIssueUtils.checkIssueState(project, issue);
-			IdeaHelper.getIssueToolWindow(getProject()).showIssue(issue, baseIssueListModel);
+			IdeaHelper.getIssueDetailsToolWindow(getProject()).showIssue(issue, baseIssueListModel);
 
 		}
 	}
-
-//	public void openIssueWithSelectedServer(@NotNull JIRAIssue issue) {
-//		if (getSelectedServer() != null) {
-//			openIssue(issue);
-//		} else if (isRecentlyOpenFilterSelected()) {
-//			for (JiraServerCfg server
-//					: projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
-//				if (server.getUrl().equals(issue.getServerUrl())) {
-//					openIssue(issue);
-//					break;
-//				}
-//			}
-//		}
-//	}
 
 	public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer) {
 		JIRAIssue issue = null;
@@ -455,6 +442,69 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			};
 			task.queue();
 		}
+	}
+
+	public boolean openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
+
+		ServerData server = findJiraServer(serverUrl);
+
+		if (server != null) {
+			openIssue(issueKey, server);
+			return true;
+		}
+
+		// server not found, trying to remove protocol from the address (http vs https) and slash at the end
+
+		URL url;
+		StringBuilder stringUrl = new StringBuilder();
+
+		try {
+			 url = new URL(serverUrl);
+		} catch (MalformedURLException e) {
+			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + serverUrl + "]", e);
+			return false;
+		}
+
+		stringUrl.append(url.getHost());
+		if (url.getPort() != -1) {
+			stringUrl.append(":").append(url.getPort());
+		}
+
+		if (url.getFile() != null && !url.getFile().isEmpty() && !url.getFile().equals("/")) {
+			stringUrl.append(url.getFile());
+		}
+
+		server =  findJiraServer(stringUrl.toString());
+
+		if (server != null) {
+			openIssue(issueKey, server);
+			return true;
+		}
+
+		return false;
+	}
+
+	private ServerData findJiraServer(final String stringUrl) {
+		ServerData enabledServer = null;
+		ServerData disabledServer = null;
+
+		// find first matching server
+		for (JiraServerCfg jiraServer : cfgManager.getAllJiraServers(CfgUtil.getProjectId(project))) {
+			if (jiraServer.getUrl().contains(stringUrl) || stringUrl.contains(jiraServer.getUrl())) {
+				if (jiraServer.isEnabled()) {
+					enabledServer = projectCfgManager.getServerData(jiraServer.getServerId());
+					break;
+				} else if (disabledServer == null) {
+					disabledServer = projectCfgManager.getServerData(jiraServer.getServerId());
+				}
+			}
+		}
+
+		if (enabledServer != null) {
+			return enabledServer;
+		}
+
+		return disabledServer;
 	}
 
 	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {

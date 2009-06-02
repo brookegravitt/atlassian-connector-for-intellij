@@ -32,7 +32,7 @@ public class ActiveIssueLogWorkAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				final IssueListToolWindowPanel panel = IdeaHelper.getIssuesToolWindowPanel(event);
+				final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 				final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
 				if (activeIssue != null && panel != null) {
