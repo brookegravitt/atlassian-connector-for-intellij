@@ -505,9 +505,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			if (url.getHost().equalsIgnoreCase(serverUrl.getHost())
 					&& url.getPort() == serverUrl.getPort()
 					&& (((url.getPath() == null || url.getPath().equals("") || url.getPath().equals("/"))
-						  && (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
-						|| (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath()))))
-			{
+						 && (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
+					  || (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
+
 				if (server.isEnabled()) {
 					enabledServer = projectCfgManager.getServerData(server.getServerId());
 					break;
