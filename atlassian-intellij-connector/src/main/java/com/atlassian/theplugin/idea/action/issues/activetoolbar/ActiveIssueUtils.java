@@ -324,8 +324,7 @@ public final class ActiveIssueUtils {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()
 										+ ".\nDo you want to overwrite assignee and start progress?",
-								"Issue " + jiraIssue.getKey(),
-								Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
+								"Issue " + jiraIssue.getKey(), Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 					}
 					if (isOk) {
 						//assign to me and start working
