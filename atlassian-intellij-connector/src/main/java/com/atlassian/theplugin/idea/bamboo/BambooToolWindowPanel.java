@@ -134,6 +134,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		if (bambooConfiguration != null && bambooConfiguration.getView() != null) {
 			if (bambooConfiguration.getView().getGroupBy() != null) {
 				groupBy = bambooConfiguration.getView().getGroupBy();
+                setGroupingType(groupBy);
 			}
 			if (bambooConfiguration.getView().getFilterType() != null) {
 				setBambooFilterType(bambooConfiguration.getView().getFilterType());
