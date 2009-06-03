@@ -204,6 +204,18 @@ public class JIRASessionImpl implements JIRASession {
 			remoteIssue.setComponents(remoteComponents);
 		}
 
+        final List<JIRAConstant> versions = issue.getAffectsVersions();
+        if (versions != null && versions.size() > 0) {
+            RemoteVersion[] remoteVersions = new RemoteVersion[versions.size()];
+            int i = 0;
+            for (JIRAConstant version : versions) {
+                remoteVersions[i] = new RemoteVersion();
+                remoteVersions[i].setId(String.valueOf(version.getId()));
+                ++i;
+            }
+            remoteIssue.setAffectsVersions(remoteVersions);
+        }
+
 		try {
 			remoteIssue = service.createIssue(token, remoteIssue);
 		} catch (RemoteException e) {
