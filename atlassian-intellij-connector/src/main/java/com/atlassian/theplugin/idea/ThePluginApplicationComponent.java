@@ -307,8 +307,8 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 										}
 									} catch (NumberFormatException e) {
 										PluginUtil.getLogger().warn(
-												"Wrong line number format when requesting to open file in the IDE [" +
-														line + "]", e);
+												"Wrong line number format when requesting to open file in the IDE ["
+														+ line + "]", e);
 									}
 								}
 							}
