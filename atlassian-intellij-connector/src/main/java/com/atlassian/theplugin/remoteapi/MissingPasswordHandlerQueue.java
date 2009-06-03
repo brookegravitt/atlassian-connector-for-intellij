@@ -17,26 +17,26 @@ public final class MissingPasswordHandlerQueue {
         void go();
     }
 
-    private static final Queue<Handler> handlers = new LinkedList<Handler>();
+    private static final Queue<Handler> HANDLERS = new LinkedList<Handler>();
 
     private MissingPasswordHandlerQueue() {
     }
     
     public static void addHandler(Handler handler) {
-        synchronized (handlers) {
-            handlers.offer(handler);
-            if (handlers.size() > 1) {
+        synchronized (HANDLERS) {
+            HANDLERS.offer(handler);
+            if (HANDLERS.size() > 1) {
                 return;
             }
         }
 
         ApplicationManager.getApplication().invokeLater(new Runnable() {
             public void run() {
-                synchronized (handlers) {
-                    while (handlers.size() > 0) {
-                        Handler h = handlers.peek();
+                synchronized (HANDLERS) {
+                    while (HANDLERS.size() > 0) {
+                        Handler h = HANDLERS.peek();
                         h.go();
-                        handlers.remove();
+                        HANDLERS.remove();
                     }
                 }
             }
