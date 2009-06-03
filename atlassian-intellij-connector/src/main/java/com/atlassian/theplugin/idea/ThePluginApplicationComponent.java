@@ -30,12 +30,14 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
+import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
@@ -97,17 +99,17 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		startHttpServer();
 
-        addActionToDiffToolbar();
+		addActionToDiffToolbar();
 	}
 
-    private void addActionToDiffToolbar() {
-        AnAction addCommentAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Add.Comment.In.Editor");
-        if (addCommentAction != null) {
-            IdeaVersionFacade.getInstance().addActionToDiffGroup(addCommentAction);
-        }
-    }
+	private void addActionToDiffToolbar() {
+		AnAction addCommentAction = ActionManager.getInstance().getAction("ThePlugin.Crucible.Add.Comment.In.Editor");
+		if (addCommentAction != null) {
+			IdeaVersionFacade.getInstance().addActionToDiffGroup(addCommentAction);
+		}
+	}
 
-    @Nls
+	@Nls
 	public String getDisplayName() {
 		return "Atlassian\nConnector";
 	}
@@ -264,62 +266,89 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 				writeIcon(response);
 			} else if (method.equals("file")) {
 				writeIcon(response);
-
-				final String file = parameters.get("file");
-				if (file != null) {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							boolean found = false;
-							// try to open received file in all open projects
-							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-								final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, file);
-
-								if (psiFile != null) {
-									psiFile.navigate(true);
-									found = true;
-								}
-
-								bringIdeaToFront(project);
-							}
-
-							if (!found) {
-								Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
-							}
-						}
-					});
-				}
+				handleOpenFileRequest(parameters);
 			} else if (method.equals("issue")) {
 				writeIcon(response);
-
-				final String issueKey = parameters.get("issue_key");
-				final String serverUrl = parameters.get("server_url");
-				if (issueKey != null && serverUrl != null) {
-					EventQueue.invokeLater(new Runnable() {
-						public void run() {
-							boolean found = false;
-							// try to open received issueKey in all open projects
-							for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-
-								if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
-									found = true;
-								}
-
-								bringIdeaToFront(project);
-							}
-
-							if (!found) {
-								Messages.showInfoMessage("Cannot find issue " + issueKey, PluginUtil.PRODUCT_NAME);
-							}
-						}
-					});
-				} else {
-					PluginUtil.getLogger().warn("Cannot open issue: issue_key or server_url parameter is null");
-				}
+				handleOpenIssueRequest(parameters);
 			} else {
 				response.setNoContent();
 				PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
 			}
 			return response;
+		}
+
+		private void handleOpenFileRequest(final Map<String, String> parameters) {
+			final String file = StringUtil.removePrefixSlashes(parameters.get("file"));
+			final String path = StringUtil.removeSuffixSlashes(parameters.get("path"));
+			final String line = parameters.get("line");
+			if (file != null) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						boolean found = false;
+						// try to open received file in all open projects
+						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+							final String filePath = (path == null || path.length() == 0 ? file : path + "/" + file);
+							final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
+
+							if (psiFile != null) {
+								psiFile.navigate(true);	// open file
+								found = true;
+
+								if (line != null && line.length() > 0) {	// try to place cursor in specified line
+									try {
+										Integer iLine = Integer.valueOf(line);
+										final VirtualFile virtualFile = psiFile.getVirtualFile();
+
+										if (virtualFile != null && iLine != null) {
+											OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, iLine, 0);
+											if (display.canNavigateToSource()) {
+												display.navigate(false);
+											}
+										}
+									} catch (NumberFormatException e) {
+										PluginUtil.getLogger().warn(
+												"Wrong line number format when requesting to open file in the IDE [" +
+														line + "]", e);
+									}
+								}
+							}
+							bringIdeaToFront(project);
+						}
+
+						// message box showed only if the file was not found at all (in all project)
+						if (!found) {
+							Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
+						}
+					}
+				});
+			}
+		}
+
+		private void handleOpenIssueRequest(final Map<String, String> parameters) {
+			final String issueKey = parameters.get("issue_key");
+			final String serverUrl = parameters.get("server_url");
+			if (issueKey != null && serverUrl != null) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						boolean found = false;
+						// try to open received issueKey in all open projects
+						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+
+							if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
+								found = true;
+							}
+
+							bringIdeaToFront(project);
+						}
+
+						if (!found) {
+							Messages.showInfoMessage("Cannot find issue " + issueKey, PluginUtil.PRODUCT_NAME);
+						}
+					}
+				});
+			} else {
+				PluginUtil.getLogger().warn("Cannot open issue: issue_key or server_url parameter is null");
+			}
 		}
 
 		private void bringIdeaToFront(final Project project) {
