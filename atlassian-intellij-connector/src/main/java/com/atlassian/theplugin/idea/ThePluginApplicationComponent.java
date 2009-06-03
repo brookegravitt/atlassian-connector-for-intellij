@@ -64,7 +64,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 
-
 	private ConfigPanel configPanel;
 
 	private final IdeaPluginConfigurationBean configuration;
@@ -191,16 +190,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		if (configPanel != null) {
 			// Get data from configPanel to component
 			configPanel.saveData();
-			//configPanel.setData();
-
-//			for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-//				ThePluginProjectComponent projectComponent = project.getComponent(ThePluginProjectComponent.class);
-//				// show icons if necessary
-//				projectComponent.getStatusBarBambooIcon().showOrHideIcon();
-//				projectComponent.getStatusBarCrucibleIcon().showOrHideIcon();
-//
-//				projectComponent.getToolWindow().showHidePanels();
-//			}
 			rescheduleStatusCheckers(true);
 		}
 
