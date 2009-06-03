@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Shows a dialog for each Bamboo server that has not the password set.
  */
-public class MissingPasswordHandler implements Runnable {
+public class MissingPasswordHandler implements MissingPasswordHandlerQueue.Handler {
 
 	private static boolean isDialogShown = false;
 
@@ -63,7 +63,7 @@ public class MissingPasswordHandler implements Runnable {
 		return shouldStop;
 	}
 
-	public void run() {
+	public void go() {
 
 		if (!isDialogShown && !shouldStop()) {
 

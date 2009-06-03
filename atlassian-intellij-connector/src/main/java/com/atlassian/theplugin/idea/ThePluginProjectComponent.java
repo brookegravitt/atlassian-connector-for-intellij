@@ -45,6 +45,7 @@ import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
 import com.intellij.ide.BrowserUtil;
@@ -206,11 +207,21 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
-			this.bambooStatusChecker = new BambooStatusChecker(actionScheduler,
-					projectCfgManager, pluginConfiguration,
-					new MissingPasswordHandler(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), projectCfgManager,
-							project),
-					PluginUtil.getLogger());
+			this.bambooStatusChecker = new BambooStatusChecker(
+                    actionScheduler,
+					projectCfgManager,
+                    pluginConfiguration,
+					new Runnable() {
+                        public void run() {
+                            MissingPasswordHandlerQueue.addHandler(
+                                    new MissingPasswordHandler(
+                                            BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
+                                            projectCfgManager,
+                                            project)
+                            );
+                        }
+                    },
+                    PluginUtil.getLogger());
 
 			// DependencyValidationManager.getHolder(project, "", )
 

@@ -10,9 +10,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
 
 import java.util.*;
@@ -90,14 +89,12 @@ public class CrucibleQueryExecutor {
 								predefinedFiterNotificationBean.getReviews().addAll(reviewData);
 
 							} catch (ServerPasswordNotProvidedException exception) {
-								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-										ModalityState.defaultModalityState());
+								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 								predefinedFiterNotificationBean.setException(exception);
 								predefinedFiterNotificationBean.setServer(projectCfgManager.getServerData(server));
 								break;
 							} catch (RemoteApiLoginFailedException exception) {
-								ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-										ModalityState.defaultModalityState());
+								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 								predefinedFiterNotificationBean.setException(exception);
 								predefinedFiterNotificationBean.setServer(projectCfgManager.getServerData(server));
 								break;
@@ -154,9 +151,8 @@ public class CrucibleQueryExecutor {
 								.add(new ReviewAdapter(r, projectCfgManager.getServerData(server)));
 
 					} catch (ServerPasswordNotProvidedException exception) {
-						ApplicationManager.getApplication().invokeLater(
-								new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project),
-								ModalityState.defaultModalityState());
+						MissingPasswordHandlerQueue.addHandler(
+								new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
 						recenltyOpenFilterNotificationBean.setException(exception);
 						recenltyOpenFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
 					} catch (RemoteApiException e) {
@@ -204,9 +200,8 @@ public class CrucibleQueryExecutor {
 					customFilterNotificationBean.getReviews().addAll(reviewData);
 
 				} catch (ServerPasswordNotProvidedException exception) {
-					ApplicationManager.getApplication().invokeLater(
-							new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project),
-							ModalityState.defaultModalityState());
+                    MissingPasswordHandlerQueue.addHandler(
+							new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
 					customFilterNotificationBean.setException(exception);
 					customFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
 				} catch (RemoteApiException e) {
@@ -241,13 +236,11 @@ public class CrucibleQueryExecutor {
 							review.getPermId());
 					reviewNotificationBean.getReviews().add(new ReviewAdapter(r, review.getServerData()));
 				} catch (ServerPasswordNotProvidedException exception) {
-					ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-							ModalityState.defaultModalityState());
+					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 					reviewNotificationBean.setException(exception);
 					reviewNotificationBean.setServer(review.getServerData());
 				} catch (RemoteApiLoginFailedException exception) {
-					ApplicationManager.getApplication().invokeLater(missingPasswordHandler,
-							ModalityState.defaultModalityState());
+					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 					reviewNotificationBean.setException(exception);
 					reviewNotificationBean.setServer(review.getServerData());
 				} catch (RemoteApiException e) {
