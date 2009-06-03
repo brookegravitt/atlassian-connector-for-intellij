@@ -126,7 +126,7 @@ public class SearchReviewDialog extends DialogWrapper {
     }
 
     public String getSearchKey() {
-        return ctrlReviewSearch.getText();
+        return ctrlReviewSearch.getText().trim();
     }
 
     /**
