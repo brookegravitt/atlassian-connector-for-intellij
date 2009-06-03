@@ -30,7 +30,7 @@ import static javax.swing.JOptionPane.PLAIN_MESSAGE;
 /**
  * Shows a dialog for each JIRA server that has not the password set.
  */
-public class MissingPasswordHandlerJIRA implements Runnable {
+public class MissingPasswordHandlerJIRA implements MissingPasswordHandlerQueue.Handler {
 
 	private static boolean isDialogShown = false;
 
@@ -44,7 +44,7 @@ public class MissingPasswordHandlerJIRA implements Runnable {
 		this.project = project;
 	}
 
-	public void run() {
+	public void go() {
 
 		if (!isDialogShown) {
 

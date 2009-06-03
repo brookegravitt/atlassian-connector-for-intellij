@@ -28,6 +28,7 @@ import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.ApplicationManager;
@@ -946,7 +947,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						Boolean serverCheck = jiraServerModel.checkServer(server);
 						if (serverCheck == null || !serverCheck) {
 							setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
-							EventQueue.invokeLater(new MissingPasswordHandlerJIRA(jiraServerFacade,
+							MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
 									(JiraServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), server), project));
 							continue;
 						}//@todo remove  saved filters download or merge with existing in listModel
