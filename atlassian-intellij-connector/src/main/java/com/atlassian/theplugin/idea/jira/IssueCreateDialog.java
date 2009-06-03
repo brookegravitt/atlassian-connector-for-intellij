@@ -61,6 +61,7 @@ public class IssueCreateDialog extends DialogWrapper {
     private JComboBox priorityComboBox;
     private JTextField assignee;
     private JList componentsList;
+    private JList versionsList;
     private final ServerData jiraServer;
     private IssueListToolWindowPanel issueListToolWindowPanel;
     private Project project;
@@ -122,6 +123,7 @@ public class IssueCreateDialog extends DialogWrapper {
                 List<UiTask> tasks = new ArrayList<UiTask>();
                 tasks.add(updateIssueTypes(p));
                 tasks.add(updateComponents(p));
+                tasks.add(updateVersions(p));
                 IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
             }
         };
@@ -272,6 +274,36 @@ public class IssueCreateDialog extends DialogWrapper {
         };
     }
 
+    private UiTask updateVersions(final JIRAProject project) {
+        versionsList.setEnabled(false);
+        getOKAction().setEnabled(false);
+        return new UiTaskAdapter("fetching versions", getContentPane()) {
+            private List<JIRAVersionBean> versions;
+
+            public void run() throws Exception {
+                versions = model.getVersions(jiraServer, project, false);
+            }
+
+            @Override
+            public void onSuccess() {
+                addVersions(versions);
+            }
+        };
+    }
+
+    private void addVersions(List<JIRAVersionBean> versions) {
+        versionsList.removeAll();
+        final DefaultListModel listModel = new DefaultListModel();
+        for (JIRAVersionBean version : versions) {
+            if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
+                listModel.addElement(new VersionWrapper(version));
+            }
+        }
+        versionsList.setModel(listModel);
+        versionsList.setEnabled(true);
+        getOKAction().setEnabled(true);
+    }
+
 
     private void addIssueTypes(List<JIRAConstant> issueTypes) {
         typeComboBox.removeAllItems();
@@ -372,6 +404,14 @@ public class IssueCreateDialog extends DialogWrapper {
                 components.add(componentWrapper.getWrapped());
                 selectedComponents.add(componentWrapper.getWrapped().getId());
             }
+        }
+        if (versionsList.getSelectedValues().length > 0) {
+            List<JIRAConstant> versions = new ArrayList<JIRAConstant>();
+            for (Object ver : versionsList.getSelectedValues()) {
+                VersionWrapper vw = (VersionWrapper) ver;
+                versions.add(vw.getWrapped());
+            }
+            issueProxy.setAffectsVersions(versions);
         }
 
         if (components.size() > 0) {
@@ -520,6 +560,18 @@ public class IssueCreateDialog extends DialogWrapper {
     private static class ComponentWrapper extends GenericComboBoxItemWrapper<JIRAComponentBean> {
 
         public ComponentWrapper(@NotNull final JIRAComponentBean wrapped) {
+            super(wrapped);
+        }
+
+        @Override
+        public String toString() {
+            return wrapped.getName();
+        }
+    }
+
+    private static class VersionWrapper extends GenericComboBoxItemWrapper<JIRAVersionBean> {
+
+        public VersionWrapper(@NotNull final JIRAVersionBean wrapped) {
             super(wrapped);
         }
 
