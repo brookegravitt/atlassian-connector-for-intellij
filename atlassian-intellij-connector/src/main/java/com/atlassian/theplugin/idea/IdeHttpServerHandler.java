@@ -128,8 +128,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 			final VirtualFile virtualFile = psiFile.getVirtualFile();
 
-			if (virtualFile != null && line != null &&
-					line.length() > 0) {	//place cursor in specified line
+			if (virtualFile != null && line != null && line.length() > 0) {	//place cursor in specified line
 				try {
 					Integer iLine = Integer.valueOf(line);
 					if (iLine != null) {
