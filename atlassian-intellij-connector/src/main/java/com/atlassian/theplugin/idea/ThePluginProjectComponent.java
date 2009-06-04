@@ -207,18 +207,18 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
+            final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
+                    BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
+                    projectCfgManager,
+                    project);
+
 			this.bambooStatusChecker = new BambooStatusChecker(
                     actionScheduler,
 					projectCfgManager,
                     pluginConfiguration,
 					new Runnable() {
                         public void run() {
-                            MissingPasswordHandlerQueue.addHandler(
-                                    new MissingPasswordHandler(
-                                            BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
-                                            projectCfgManager,
-                                            project)
-                            );
+                            MissingPasswordHandlerQueue.addHandler(pwdHandler);
                         }
                     },
                     PluginUtil.getLogger());
