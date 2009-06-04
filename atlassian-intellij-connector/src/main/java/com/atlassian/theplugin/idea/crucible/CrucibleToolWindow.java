@@ -154,7 +154,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 			tabs.addTab("Details", detailsPanel);
 			commentsPanel = new CommentsPanel();
-			tabs.addTab("Comments", commentsPanel);
+			tabs.addTab("Files and Comments", commentsPanel);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
