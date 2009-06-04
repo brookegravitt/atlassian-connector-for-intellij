@@ -20,36 +20,28 @@ import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
-import com.atlassian.theplugin.util.*;
+import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
+import com.atlassian.theplugin.util.PicoUtil;
+import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.extensions.AreaPicoContainer;
 import com.intellij.openapi.extensions.Extensions;
-import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.veryquick.embweb.EmbeddedServer;
-import org.veryquick.embweb.HttpRequestHandler;
-import org.veryquick.embweb.Response;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -232,134 +224,10 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		// create and start server
 		try {
-			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new LocalHttpHandler(iconArray), true);
+			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new IdeHttpServerHandler(iconArray), true);
 		} catch (Exception e) {
 			PluginUtil.getLogger().error("Failed to start http server", e);
 		}
 	}
 
-	private class LocalHttpHandler implements HttpRequestHandler {
-		private byte[] icon;
-
-		public LocalHttpHandler(final byte[] iconArray) {
-			this.icon = iconArray;
-		}
-
-		public Response handleRequest(final Type type, final String url, final Map<String, String> parameters) {
-
-			final String method = StringUtil.removeTrailingSlashes(url);
-
-			Response response = new Response();
-
-			if (method.equals("icon")) {
-				writeIcon(response);
-			} else if (method.equals("file")) {
-				writeIcon(response);
-				handleOpenFileRequest(parameters);
-			} else if (method.equals("issue")) {
-				writeIcon(response);
-				handleOpenIssueRequest(parameters);
-			} else {
-				response.setNoContent();
-				PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
-			}
-			return response;
-		}
-
-		private void handleOpenFileRequest(final Map<String, String> parameters) {
-			final String file = StringUtil.removePrefixSlashes(parameters.get("file"));
-			final String path = StringUtil.removeSuffixSlashes(parameters.get("path"));
-			final String line = parameters.get("line");
-			if (file != null) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						boolean found = false;
-						// try to open received file in all open projects
-						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-							final String filePath = (path == null || path.length() == 0 ? file : path + "/" + file);
-							final PsiFile psiFile = CodeNavigationUtil.guessCorrespondingPsiFile(project, filePath);
-
-							if (psiFile != null) {
-								psiFile.navigate(true);	// open file
-								found = true;
-
-								if (line != null && line.length() > 0) {	// try to place cursor in specified line
-									try {
-										Integer iLine = Integer.valueOf(line);
-										final VirtualFile virtualFile = psiFile.getVirtualFile();
-
-										if (virtualFile != null && iLine != null) {
-											OpenFileDescriptor display = new OpenFileDescriptor(project, virtualFile, iLine, 0);
-											if (display.canNavigateToSource()) {
-												display.navigate(false);
-											}
-										}
-									} catch (NumberFormatException e) {
-										PluginUtil.getLogger().warn(
-												"Wrong line number format when requesting to open file in the IDE ["
-														+ line + "]", e);
-									}
-								}
-							}
-							bringIdeaToFront(project);
-						}
-
-						// message box showed only if the file was not found at all (in all project)
-						if (!found) {
-							Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
-						}
-					}
-				});
-			}
-		}
-
-		private void handleOpenIssueRequest(final Map<String, String> parameters) {
-			final String issueKey = parameters.get("issue_key");
-			final String serverUrl = parameters.get("server_url");
-			if (issueKey != null && serverUrl != null) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						boolean found = false;
-						// try to open received issueKey in all open projects
-						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-
-							if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
-								found = true;
-							}
-
-							bringIdeaToFront(project);
-						}
-
-						if (!found) {
-							Messages.showInfoMessage("Cannot find issue " + issueKey, PluginUtil.PRODUCT_NAME);
-						}
-					}
-				});
-			} else {
-				PluginUtil.getLogger().warn("Cannot open issue: issue_key or server_url parameter is null");
-			}
-		}
-
-		private void bringIdeaToFront(final Project project) {
-			WindowManager.getInstance().getFrame(project).setVisible(true);
-
-			String osName = System.getProperty("os.name");
-			osName = osName.toLowerCase();
-
-			if (osName.contains("windows") || osName.contains("mac os x")) {
-				WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
-				WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
-
-			} else { //for linux
-				WindowManager.getInstance().getFrame(project).toFront();
-			}
-		}
-
-		private void writeIcon(final Response response) {
-			response.setContentType("image/png");
-			response.setBinaryContent(icon);
-			response.setOk();
-		}
-
-	}
 }

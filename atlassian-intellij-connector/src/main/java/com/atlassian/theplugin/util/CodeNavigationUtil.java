@@ -18,6 +18,7 @@ package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
@@ -25,6 +26,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
 
 public final class CodeNavigationUtil {
@@ -66,6 +69,31 @@ public final class CodeNavigationUtil {
 			}
 		}
 		return bestMatch;
+	}
+
+	/**
+	 * Get files from the provided collection which absolute path contains provided filePath
+	 *
+	 * @param filePath searched file path
+	 * @param psiFiles collection of files to search for filePath
+	 * @return collection of files matching provided filePath
+	 */
+	private static Collection<PsiFile> getMatchingFiles(String filePath, final PsiFile[] psiFiles) {
+		filePath = filePath.replace('\\', '/');
+
+		Collection<PsiFile> match = new ArrayList<PsiFile>();
+
+		for (PsiFile psiFile : psiFiles) {
+			String absolutePath = psiFile.getVirtualFile().getUrl();
+			if (absolutePath == null) {
+				continue;
+			}
+
+			if (absolutePath.contains(filePath)) {
+				match.add(psiFile);
+			}
+		}
+		return match;
 	}
 
 	public static CrucibleFileInfo getBestMatchingCrucibleFileInfo(String path, Set<CrucibleFileInfo> files) {
@@ -117,4 +145,41 @@ public final class CodeNavigationUtil {
 		return CodeNavigationUtil.guessMatchingFile(filepath, psifiles, project.getBaseDir());
 	}
 
+	/**
+	 * Note: must be run from event dispatch thread or inside read-action only!
+	 *
+	 * @param project  project
+	 * @param filePath filePath
+	 * @return collection of matching PsiFiles
+	 */
+	@Nullable
+	public static Collection<PsiFile> findPsiFiles(final Project project, final String filePath) {
+		// find files (do not care about path - IDEA7 compatibility)
+		final PsiFile[] psifiles = IdeaVersionFacade.getInstance().getFiles(FilenameUtils.getName(filePath), project);
+
+		return CodeNavigationUtil.getMatchingFiles(filePath, psifiles);
+	}
+
+	/**
+	 * In the collection of provided files looks for those which match vcs url
+	 *
+	 * @param psiFiles collection of files to search
+	 * @param vcsUrl   searched vcs url
+	 * @param project  project
+	 * @return collection of found PsiFiles
+	 */
+	public static Collection<PsiFile> findPsiFilesWithVcsUrl(final Collection<PsiFile> psiFiles, final String vcsUrl,
+			final Project project) {
+		Collection<PsiFile> retFiles = new ArrayList<PsiFile>();
+		if (psiFiles != null && vcsUrl != null && project != null) {
+			for (PsiFile psiFile : psiFiles) {
+				String repositoryUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, psiFile.getVirtualFile());
+				if (repositoryUrl.equals(vcsUrl)) {
+					retFiles.add(psiFile);
+				}
+			}
+		}
+
+		return retFiles;
+	}
 }
