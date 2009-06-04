@@ -44,9 +44,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuListener;
+import javax.swing.event.PopupMenuEvent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -67,7 +67,6 @@ public class IssueCreateDialog extends DialogWrapper {
 	private Project project;
 	private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
-	private ActionListener projectComboListener;
 
 	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
 			@NotNull Project project, JIRAServerModel model, ServerData server,
@@ -117,22 +116,49 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 		});
 
-		projectComboListener = new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-				List<UiTask> tasks = new ArrayList<UiTask>();
-				tasks.add(updateIssueTypes(p));
-				tasks.add(updateComponents(p));
-				tasks.add(updateVersions(p));
-				IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
-			}
-		};
-		projectComboBox.addActionListener(projectComboListener);
+        projectComboBox.addPopupMenuListener(new PopupMenuListener() {
+
+            private Object item = null;
+            public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
+                item = projectComboBox.getSelectedItem();
+            }
+
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
+                if (item != null && item != projectComboBox.getSelectedItem()) {
+                    updateProjectRelatedItems();
+                }
+            }
+
+            public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
+                item = null;
+            }
+        });
 		getOKAction().setEnabled(false);
 		getOKAction().putValue(Action.NAME, "Create");
 	}
 
-	public void initData() {
+    private boolean issueTypesUpdated = false;
+    private boolean componentsUpdated = false;
+    private boolean versionsUpdated = false;
+
+    private void updateProjectRelatedItems() {
+        JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
+        List<UiTask> tasks = new ArrayList<UiTask>();
+        issueTypesUpdated = false;
+        componentsUpdated = false;
+        versionsUpdated = false;
+        setProjectComboBoxEnableState();
+        tasks.add(updateIssueTypes(p));
+        tasks.add(updateComponents(p));
+        tasks.add(updateVersions(p));
+        IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
+    }
+
+    private void setProjectComboBoxEnableState() {
+        projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated);
+    }
+
+    public void initData() {
 		List<UiTask> tasks = new ArrayList<UiTask>();
 		tasks.add(updatePriorities());
 		tasks.add(updateProject());
@@ -163,16 +189,11 @@ public class IssueCreateDialog extends DialogWrapper {
 	private void addProjects(List<JIRAProject> projects) {
 		projectComboBox.removeAllItems();
 
-		// adding elements to combo triggers selection changed action which updates components for selected project
-		// we do not want to call jira several time for the same project here
-		projectComboBox.removeActionListener(projectComboListener);
 		for (JIRAProject project : projects) {
 			if (project.getId() != JIRAServerCache.ANY_ID) {
 				projectComboBox.addItem(project);
 			}
 		}
-		projectComboBox.addActionListener(projectComboListener);
-
 
 		if (projectComboBox.getModel().getSize() > 0) {
 
@@ -200,7 +221,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				projectComboBox.setSelectedIndex(0);
 			}
 		}
-		projectComboBox.setEnabled(true);
+        updateProjectRelatedItems();
 	}
 
 	private UiTask updatePriorities() {
@@ -249,10 +270,14 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			public void onSuccess() {
 				addIssueTypes(issueTypes);
+                issueTypesUpdated = true;
+                setProjectComboBoxEnableState();
 			}
 
 			public void onError() {
 				addIssueTypes(issueTypes);
+                issueTypesUpdated = true;
+                setProjectComboBoxEnableState();
 			}
 		};
 	}
@@ -269,9 +294,17 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
+                componentsUpdated = true;
+                setProjectComboBoxEnableState();
 				addComponents(components);
 			}
-		};
+
+            @Override
+            public void onError() {
+                componentsUpdated = true;
+                setProjectComboBoxEnableState();
+            }
+        };
 	}
 
 	private UiTask updateVersions(final JIRAProject project) {
@@ -286,9 +319,17 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
+                versionsUpdated = true;
+                setProjectComboBoxEnableState();
 				addVersions(versions);
 			}
-		};
+
+            @Override
+            public void onError() {
+                versionsUpdated = true;
+                setProjectComboBoxEnableState();
+            }
+        };
 	}
 
 	private void addVersions(List<JIRAVersionBean> versions) {
@@ -591,7 +632,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		return mainPanel;
 	}
 
-	private static class ComponentWrapper extends GenericComboBoxItemWrapper<JIRAComponentBean> {
+    private static class ComponentWrapper extends GenericComboBoxItemWrapper<JIRAComponentBean> {
 
 		public ComponentWrapper(@NotNull final JIRAComponentBean wrapped) {
 			super(wrapped);
