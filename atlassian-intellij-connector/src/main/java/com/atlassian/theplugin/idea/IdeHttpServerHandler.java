@@ -91,7 +91,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 						bringIdeaToFront(project);
 
 						ProgressManager.getInstance().run(new Task.Modal(project, "Looking for Review " + reviewKey, false) {
-							boolean found = false;
+							private boolean found = false;
 
 							public void run(final ProgressIndicator indicator) {
 								found = IdeaHelper.getReviewsToolWindowPanel(project).openReview(reviewKey, serverUrl);
