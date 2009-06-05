@@ -16,8 +16,10 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -54,7 +56,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -369,7 +374,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
 	}
 
-	public List<ReviewAdapter> getReviews(final String searchKey) {
+	public List<ReviewAdapter> getLocalReviews(final String searchKey) {
 		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
 		for (ReviewAdapter review : currentReviewListModel.getReviews()) {
 			if (searchKey.toUpperCase().equals(review.getPermId().getId().toUpperCase())) {
@@ -384,10 +389,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return crucibleProjectConfiguration;
 	}
 
-//	public void addReview(final ReviewAdapter selectedValue) {
-//		reviewListModel.openReview(PredefinedFilter.OpenInIde, selectedValue, UpdateReason.SEARCH);
-//	}
-
+	/**
+	 * Blocking method. Should be called in the background thread.
+	 *
+	 * @param recentlyOpenReviews list of recenlty open reviews
+	 * @return list of review adapters
+	 */
 	public List<ReviewAdapter> getReviewAdapters(final List<ReviewRecentlyOpenBean> recentlyOpenReviews) {
 
 		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
@@ -397,45 +404,101 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		}
 
 		for (ReviewRecentlyOpenBean recentlyOpenReview : recentlyOpenReviews) {
-			boolean found = false;
-
 			// search local list for recently open reviews
-			if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
-				for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
-					if (localReview.getPermId().getId().equals(recentlyOpenReview.getReviewId())
-							&& localReview.getServerData().getServerId().equals(recentlyOpenReview.getServerId())) {
-						reviews.add(localReview);
-						found = true;
-						break;
-					}
-				}
-			}
+			ReviewAdapter ra = getReviewFromLocalModel(recentlyOpenReview.getReviewId(), recentlyOpenReview.getServerId());
 
-			if (!found) {
+			if (ra != null) {
+				reviews.add(ra);
+			} else {
+				// search review on the servers
+				ReviewAdapter rra = getReviewFromServer(recentlyOpenReview.getReviewId(), recentlyOpenReview.getServerId());
 
-				// search servers
-				for (CrucibleServerCfg server
-						: projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project))) {
-					if (server.getServerId().toString().equals(recentlyOpenReview.getServerId())) {
-						try {
-							final ServerData serverData = projectCfgManager.getServerData(server);
-							Review r = CrucibleServerFacadeImpl.getInstance().getReview(
-									serverData, new PermIdBean(recentlyOpenReview.getReviewId()));
-							reviews.add(new ReviewAdapter(r, serverData));
-						} catch (RemoteApiException e) {
-							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
-							setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
-						} catch (ServerPasswordNotProvidedException e) {
-							PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
-							setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
-						}
-						break;
-					}
+				if (rra != null) {
+					reviews.add(rra);
 				}
 			}
 		}
 
 		return reviews;
+	}
+
+	/**
+	 * Blocking method. Should be called in the background thread.
+	 *
+	 * @param reviewKey review key
+	 * @param serverId  server id
+	 * @return review if found or null otherwise
+	 */
+	private ReviewAdapter getReviewFromServer(final String reviewKey, final String serverId) {
+
+		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(project, projectCfgManager, serverId);
+		if (server != null) {
+			try {
+				final ServerData serverData = projectCfgManager.getServerData(server);
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(serverData, new PermIdBean(reviewKey));
+				return new ReviewAdapter(r, serverData);
+			} catch (RemoteApiException e) {
+				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
+			} catch (ServerPasswordNotProvidedException e) {
+				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
+			}
+		}
+
+		return null;
+	}
+
+	private ReviewAdapter getReviewFromLocalModel(final String reviewKey, final String serverId) {
+		if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
+			for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
+				if (localReview.getPermId().getId().equals(reviewKey)
+						&& localReview.getServerData().getServerId().equals(serverId)) {
+					return localReview;
+				}
+			}
+		}
+		return null;
+	}
+
+	public boolean openReview(final String reviewKey, final String serverUrl) {
+		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getCfgManager().
+				getAllServers(CfgUtil.getProjectId(project), ServerType.CRUCIBLE_SERVER), projectCfgManager);
+
+		if (server == null) {
+			// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
+			URL url;
+
+			try {
+				url = new URL(serverUrl);
+			} catch (MalformedURLException e) {
+				PluginUtil.getLogger().warn("Error opening review. Invalid url [" + serverUrl + "]", e);
+				return false;
+			}
+
+			server = CfgUtil.findServer(url, projectCfgManager.getCfgManager().
+					getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER), projectCfgManager);
+		}
+
+		if (server != null) {
+			ReviewAdapter ra = getReviewFromLocalModel(reviewKey, server.getServerId());
+
+			if (ra == null) {
+				ra = getReviewFromServer(reviewKey, server.getServerId());
+			}
+
+			if (ra != null) {
+				final ReviewAdapter reviewAdapter = ra;
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						openReview(reviewAdapter);
+					}
+				});
+
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {
