@@ -225,7 +225,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			final VirtualFile virtualFile = value.getVirtualFile();
 
 			if (virtualFile != null) {
-				display += " (" + virtualFile.getUrl() + ")";
+				display += " (" + virtualFile.getPath() + ")";
 			}
 			return display;
 		}

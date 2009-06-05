@@ -171,5 +171,8 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
 		// non existing file should not be found
 		assertEquals(0, CodeNavigationUtil.getMatchingFiles("NonExistingFile", psiFiles).size());
+
+		// "main" should not be found
+		assertEquals(0, CodeNavigationUtil.getMatchingFiles("main", psiFiles).size());
 	}
 }
