@@ -102,8 +102,7 @@ public final class VcsIdeaHelper {
 		if (provider == null) {
 			return null;
 		}
-		RepositoryLocation repositoryLocation
-				= provider.getLocationFor(VcsUtil.getFilePath(vFile.getPath()));
+		RepositoryLocation repositoryLocation = provider.getLocationFor(VcsUtil.getFilePath(vFile.getPath()));
 		if (repositoryLocation == null) {
 			return null;
 		}
