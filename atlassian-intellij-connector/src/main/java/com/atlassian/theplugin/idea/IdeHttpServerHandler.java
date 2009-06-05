@@ -85,10 +85,10 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 						String filePath = (path == null ? file : path + "/" + file);
 
-						// find file by path
+						// find file by name (and path if provided)
 						Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
 
-						// narrow found files by VCS
+						// narrow found list of files by VCS
 						if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
 							Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
 							// if VCS narrowed to empty list then return without narrowing 
