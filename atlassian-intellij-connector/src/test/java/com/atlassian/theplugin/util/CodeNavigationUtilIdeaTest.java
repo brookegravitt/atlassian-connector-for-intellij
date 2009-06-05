@@ -20,6 +20,8 @@ import static com.atlassian.theplugin.util.CodeNavigationUtil.guessMatchingFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.LightIdeaTestCase;
 import org.easymock.EasyMock;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
@@ -128,26 +130,46 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
 	public void testGetMatchingFiles() {
 
-		String file1 = "HtmlizerTest.java";
-		String file2 = "UrlUtilTest.java";
-		String file3 = "UtilTest.java";
+		String file1 = "file1";
+		String file2 = "src/main/file1";
+		String file3 = "file3";
 
-		PsiFile psiMock1 = EasyMock.createMock(PsiFile.class);
-		PsiFile psiMock2 = EasyMock.createMock(PsiFile.class);
-		PsiFile psiMock3 = EasyMock.createMock(PsiFile.class);
+		PsiFile psiMock1 = mock(PsiFile.class);
+		PsiFile psiMock2 = mock(PsiFile.class);
+		PsiFile psiMock3 = mock(PsiFile.class);
 
 		PsiFile[] psiFiles = {psiMock1, psiMock2, psiMock3};
 
-		EasyMock.expect(psiMock1.getVirtualFile()).andReturn(new MockVirtualFile(file1));
-		EasyMock.expect(psiMock2.getVirtualFile()).andReturn(new MockVirtualFile(file2));
-		EasyMock.expect(psiMock3.getVirtualFile()).andReturn(new MockVirtualFile(file3));
+		when(psiMock1.getVirtualFile()).thenReturn(new MockVirtualFile(file1));
+		when(psiMock2.getVirtualFile()).thenReturn(new MockVirtualFile(file2));
+		when(psiMock3.getVirtualFile()).thenReturn(new MockVirtualFile(file3));
 
-		EasyMock.replay(psiFiles);
+		// "file1" should be found twice
+		assertTrue(CodeNavigationUtil.getMatchingFiles(file1, psiFiles).contains(psiMock1));
+		assertTrue(CodeNavigationUtil.getMatchingFiles(file1, psiFiles).contains(psiMock2));
+		assertEquals(2, CodeNavigationUtil.getMatchingFiles(file1, psiFiles).size());
 
-//		assertTrue(CodeNavigationUtil.getMatchingFiles(file1, psiFiles).contains(psiMock1));
-		assertFalse(CodeNavigationUtil.getMatchingFiles("NonExistingFile", psiFiles).contains(psiMock1));
+		// "src/main/file1" should be found once
+		assertTrue(CodeNavigationUtil.getMatchingFiles(file2, psiFiles).contains(psiMock2));
+		assertEquals(1, CodeNavigationUtil.getMatchingFiles(file2, psiFiles).size());
 
+		// "file3" should be found once
+		assertTrue(CodeNavigationUtil.getMatchingFiles(file3, psiFiles).contains(psiMock3));
+		assertEquals(1, CodeNavigationUtil.getMatchingFiles(file3, psiFiles).size());
+
+		// "main/file1" should be found once
+		assertEquals(1, CodeNavigationUtil.getMatchingFiles("main/file1", psiFiles).size());
+
+		// "dir/src/main/file1" should not be found
+		assertEquals(0, CodeNavigationUtil.getMatchingFiles("dir/" + file2, psiFiles).size());
+
+		// "file" should not be found
+		assertEquals(0, CodeNavigationUtil.getMatchingFiles("file", psiFiles).size());
+
+		// "/file" should not be found
+		assertEquals(0, CodeNavigationUtil.getMatchingFiles("file", psiFiles).size());
+
+		// non existing file should not be found
+		assertEquals(0, CodeNavigationUtil.getMatchingFiles("NonExistingFile", psiFiles).size());
 	}
-
-
 }
