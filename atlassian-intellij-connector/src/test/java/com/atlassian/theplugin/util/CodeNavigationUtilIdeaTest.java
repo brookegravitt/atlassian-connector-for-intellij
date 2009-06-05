@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,63 +23,68 @@ import org.easymock.EasyMock;
 
 public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 
-    private final String changedFile = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java";
-    private final String TEST_FILE_2 = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action2.java";
-    private final String TEST_FILE = "/PL/trunk/ThePlugin/commons/src/test/java/com/atlassian/theplugin/commons/CrucibleAction.java";
-    private final String PARENT_FILE = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons";
+	private final String changedFile
+			= "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java";
+	private final String TEST_FILE_2 = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons/Action2.java";
+	private final String TEST_FILE
+			= "/PL/trunk/ThePlugin/commons/src/test/java/com/atlassian/theplugin/commons/CrucibleAction.java";
+	private final String PARENT_FILE = "/PL/trunk/ThePlugin/commons/src/main/java/com/atlassian/theplugin/commons";
 
 	public void testGuessMatchingFile() {
-        String vf1s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/idea/crucible/table/CommentNode.java";
-        String vf2s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/table/CommentNode.java";
-        String vf3s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java";
-        String vf4s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.xml";
-        final String myExistingFileInProject = "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java";
-        MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/pazu-test", true);
+		String vf1s
+				= "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/idea/crucible/table/CommentNode.java";
+		String vf2s
+				= "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/table/CommentNode.java";
+		String vf3s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java";
+		String vf4s = "/home/wseliga/lab/pazu-test/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.xml";
+		final String myExistingFileInProject
+				= "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java";
+		MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/pazu-test", true);
 
-        String[] wrongOnes = {
-                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java",
-                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java1",
-                "PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode1.java",
-                //"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/CommentNode.java",
-                //"PL/trunk/ThePlugin/idea1/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java",
-                //"com/atlassian/theplugin/common/crucible/CommentNode.java",
-                "",
-        };
+		String[] wrongOnes = {
+				"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/commons/CrucibleAction.java",
+				"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java1",
+				"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode1.java",
+				//"PL/trunk/ThePlugin/idea/src/main/java/com/atlassian/theplugin/common/CommentNode.java",
+				//"PL/trunk/ThePlugin/idea1/src/main/java/com/atlassian/theplugin/common/crucible/CommentNode.java",
+				//"com/atlassian/theplugin/common/crucible/CommentNode.java",
+				"",
+		};
 
-        PsiFile mock1 = EasyMock.createMock(PsiFile.class);
-        PsiFile mock2 = EasyMock.createMock(PsiFile.class);
-        PsiFile mock3 = EasyMock.createMock(PsiFile.class);
-        PsiFile mock4 = EasyMock.createMock(PsiFile.class);
+		PsiFile mock1 = EasyMock.createMock(PsiFile.class);
+		PsiFile mock2 = EasyMock.createMock(PsiFile.class);
+		PsiFile mock3 = EasyMock.createMock(PsiFile.class);
+		PsiFile mock4 = EasyMock.createMock(PsiFile.class);
 
-        EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
-        EasyMock.expect(mock2.getVirtualFile()).andReturn(new MockVirtualFile(vf2s)).anyTimes();
-        EasyMock.expect(mock3.getVirtualFile()).andReturn(new MockVirtualFile(vf3s)).anyTimes();
-        EasyMock.expect(mock4.getVirtualFile()).andReturn(new MockVirtualFile(vf4s)).anyTimes();
-        EasyMock.replay(mock1, mock2, mock3, mock4);
+		EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
+		EasyMock.expect(mock2.getVirtualFile()).andReturn(new MockVirtualFile(vf2s)).anyTimes();
+		EasyMock.expect(mock3.getVirtualFile()).andReturn(new MockVirtualFile(vf3s)).anyTimes();
+		EasyMock.expect(mock4.getVirtualFile()).andReturn(new MockVirtualFile(vf4s)).anyTimes();
+		EasyMock.replay(mock1, mock2, mock3, mock4);
 
-        final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
-        for (String wrongOne : wrongOnes) {
-            assertNull(guessMatchingFile(wrongOne, psiFiles, baseDir));
-        }
-        assertSame(mock3, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
+		final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
+		for (String wrongOne : wrongOnes) {
+			assertNull(guessMatchingFile(wrongOne, psiFiles, baseDir));
+		}
+		assertSame(mock3, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
 
-        assertNull(guessMatchingFile(myExistingFileInProject, new PsiFile[0], baseDir));
+		assertNull(guessMatchingFile(myExistingFileInProject, new PsiFile[0], baseDir));
 
-        assertSame(mock3, guessMatchingFile(myExistingFileInProject, new PsiFile[]{mock2, mock4, mock1, mock3}, baseDir));
-    }
+		assertSame(mock3, guessMatchingFile(myExistingFileInProject, new PsiFile[]{mock2, mock4, mock1, mock3}, baseDir));
+	}
 
 	public void testGuessMatchingFileMoreTricky() {
-        final String vf1s = "/home/wseliga/lab/ide-connector/pom.xml";
-        final String vf2s = "/home/wseliga/lab/ide-connector/commons/pom.xml";
-        final String vf3s = "/home/wseliga/lab/ide-connector/idea/pom.xml";
+		final String vf1s = "/home/wseliga/lab/ide-connector/pom.xml";
+		final String vf2s = "/home/wseliga/lab/ide-connector/commons/pom.xml";
+		final String vf3s = "/home/wseliga/lab/ide-connector/idea/pom.xml";
 		final String vf4s = "/home/wseliga/lab/ide-connector/idea/idea/pom.xml";
 
-        final String myExistingFileInProject = "PL/trunk/ThePlugin/commons/pom.xml";
-        MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/ide-connector", true);
+		final String myExistingFileInProject = "PL/trunk/ThePlugin/commons/pom.xml";
+		MockVirtualFile baseDir = new MockVirtualFile("/home/wseliga/lab/ide-connector", true);
 
-        final PsiFile mock1 = EasyMock.createMock(PsiFile.class);
-        final PsiFile mock2 = EasyMock.createMock(PsiFile.class);
-        final PsiFile mock3 = EasyMock.createMock(PsiFile.class);
+		final PsiFile mock1 = EasyMock.createMock(PsiFile.class);
+		final PsiFile mock2 = EasyMock.createMock(PsiFile.class);
+		final PsiFile mock3 = EasyMock.createMock(PsiFile.class);
 		final PsiFile mock4 = EasyMock.createMock(PsiFile.class);
 
 		EasyMock.expect(mock1.getVirtualFile()).andReturn(new MockVirtualFile(vf1s)).anyTimes();
@@ -88,8 +93,8 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 		EasyMock.expect(mock4.getVirtualFile()).andReturn(new MockVirtualFile(vf4s)).anyTimes();
 
 		EasyMock.replay(mock1, mock2, mock3, mock4);
-        final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
-        assertSame(mock2, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
+		final PsiFile[] psiFiles = new PsiFile[]{mock1, mock2, mock3};
+		assertSame(mock2, guessMatchingFile(myExistingFileInProject, psiFiles, baseDir));
 
 		final PsiFile[] psiFiles2 = new PsiFile[]{mock1, mock2, mock3, mock4};
 
@@ -98,7 +103,7 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 	}
 
 
-    public void testSanity() {
+	public void testSanity() {
 		MockVirtualFile mvf1 = new MockVirtualFile(changedFile);
 		MockVirtualFile mvf2 = new MockVirtualFile(new String(changedFile));
 		MockVirtualFile mvf3 = new MockVirtualFile(TEST_FILE);
@@ -117,6 +122,30 @@ public class CodeNavigationUtilIdeaTest extends LightIdeaTestCase {
 		assertEquals(mvf1.getFileSystem(), mvf3.getFileSystem());
 		assertFalse(mvf4.equals(mvf1));
 		assertEquals(mvf1.getParent(), mvf4.getParent());
+
+	}
+
+
+	public void testGetMatchingFiles() {
+
+		String file1 = "HtmlizerTest.java";
+		String file2 = "UrlUtilTest.java";
+		String file3 = "UtilTest.java";
+
+		PsiFile psiMock1 = EasyMock.createMock(PsiFile.class);
+		PsiFile psiMock2 = EasyMock.createMock(PsiFile.class);
+		PsiFile psiMock3 = EasyMock.createMock(PsiFile.class);
+
+		PsiFile[] psiFiles = {psiMock1, psiMock2, psiMock3};
+
+		EasyMock.expect(psiMock1.getVirtualFile()).andReturn(new MockVirtualFile(file1));
+		EasyMock.expect(psiMock2.getVirtualFile()).andReturn(new MockVirtualFile(file2));
+		EasyMock.expect(psiMock3.getVirtualFile()).andReturn(new MockVirtualFile(file3));
+
+		EasyMock.replay(psiFiles);
+
+//		assertTrue(CodeNavigationUtil.getMatchingFiles(file1, psiFiles).contains(psiMock1));
+		assertFalse(CodeNavigationUtil.getMatchingFiles("NonExistingFile", psiFiles).contains(psiMock1));
 
 	}
 

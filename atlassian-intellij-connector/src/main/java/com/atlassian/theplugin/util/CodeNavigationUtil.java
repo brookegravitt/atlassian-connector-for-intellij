@@ -78,7 +78,7 @@ public final class CodeNavigationUtil {
 	 * @param psiFiles collection of files to search for filePath
 	 * @return collection of files matching provided filePath
 	 */
-	private static Collection<PsiFile> getMatchingFiles(String filePath, final PsiFile[] psiFiles) {
+	static Collection<PsiFile> getMatchingFiles(String filePath, final PsiFile[] psiFiles) {
 		filePath = filePath.replace('\\', '/');
 
 		Collection<PsiFile> match = new ArrayList<PsiFile>();
