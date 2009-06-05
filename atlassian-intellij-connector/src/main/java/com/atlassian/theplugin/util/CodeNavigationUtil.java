@@ -85,11 +85,12 @@ public final class CodeNavigationUtil {
 
 		for (PsiFile psiFile : psiFiles) {
 			String absolutePath = psiFile.getVirtualFile().getUrl();
+			absolutePath = absolutePath.replace('\\', '/');
 			if (absolutePath == null) {
 				continue;
 			}
 
-			if (absolutePath.contains(filePath)) {
+			if (absolutePath.endsWith(FilenameUtils.getName(filePath)) && absolutePath.contains(filePath)) {
 				match.add(psiFile);
 			}
 		}
