@@ -19,6 +19,9 @@ import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.Messages;
@@ -64,12 +67,50 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		} else if (method.equals("issue")) {
 			writeIcon(response);
 			handleOpenIssueRequest(parameters);
+		} else if (method.equals("review")) {
+			writeIcon(response);
+			handleOpenReviewRequest(parameters);
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
 		}
 
 		return response;
+	}
+
+	private void handleOpenReviewRequest(final Map<String, String> parameters) {
+		final String reviewKey = parameters.get("review_key");
+		final String serverUrl = parameters.get("server_url");
+		if (reviewKey != null && serverUrl != null) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+
+					// try to open received reviewKey in all open projects
+					for (final Project project : ProjectManager.getInstance().getOpenProjects()) {
+
+						bringIdeaToFront(project);
+
+						ProgressManager.getInstance().run(new Task.Modal(project, "Looking for Review " + reviewKey, false) {
+							boolean found = false;
+
+							public void run(final ProgressIndicator indicator) {
+								found = IdeaHelper.getReviewsToolWindowPanel(project).openReview(reviewKey, serverUrl);
+							}
+
+							public void onSuccess() {
+								if (!found) {
+									Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
+								}
+							}
+						});
+
+
+					}
+				}
+			});
+		} else {
+			PluginUtil.getLogger().warn("Cannot open review: review_key or server_url parameter is null");
+		}
 	}
 
 	private void handleOpenFileRequest(final Map<String, String> parameters) {

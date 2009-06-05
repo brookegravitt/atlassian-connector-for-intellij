@@ -23,10 +23,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -55,13 +55,13 @@ import java.util.Set;
  * @author Jacek Jaroczynski
  */
 public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
-    private static final String NOT_FOUND_TEXT =
-            "Unable to find review <b>%1$2s</b> not found on server <b>%2$2s</b>.<br>"
-            + "This most likely means that the review does not exist on this server,<br>"
-            + "but it can also be cause by server misconfiguration.<br>"
-            + "See the stack trace for detailed information.";
+	private static final String NOT_FOUND_TEXT =
+			"Unable to find review <b>%1$2s</b> not found on server <b>%2$2s</b>.<br>"
+					+ "This most likely means that the review does not exist on this server,<br>"
+					+ "but it can also be cause by server misconfiguration.<br>"
+					+ "See the stack trace for detailed information.";
 
-    public void actionPerformed(final AnActionEvent e) {
+	public void actionPerformed(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		if (project == null) {
 			return;
@@ -86,99 +86,99 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE) {
 
 			// find reviews in the local list
-			final List<ReviewAdapter> localReviews = reviewsWindow.getReviews(dialog.getSearchKey());
+			final List<ReviewAdapter> localReviews = reviewsWindow.getLocalReviews(dialog.getSearchKey());
 
 			final Collection<CrucibleServerCfg> servers = dialog.getSelectedServers();
 
 			if (servers.size() > 0) {
 				ProgressManager.getInstance().run(
-                        new QuickSearchTask(e, project, dialog, localReviews, servers, reviewsWindow));
+						new QuickSearchTask(e, project, dialog, localReviews, servers, reviewsWindow));
 			} else {
 				showPopup(localReviews, project, e.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
 			}
 		}
 	}
 
-    private final class QuickSearchTask extends Task.Modal {
-        private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
-        private boolean failed = false;
-        private AnActionEvent event;
-        @Nullable
-        private Project project;
-        private SearchReviewDialog dialog;
-        private List<ReviewAdapter> localReviews;
-        private Collection<CrucibleServerCfg> servers;
-        private ReviewsToolWindowPanel reviewsWindow;
+	private final class QuickSearchTask extends Task.Modal {
+		private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
+		private boolean failed = false;
+		private AnActionEvent event;
+		@Nullable
+		private Project project;
+		private SearchReviewDialog dialog;
+		private List<ReviewAdapter> localReviews;
+		private Collection<CrucibleServerCfg> servers;
+		private ReviewsToolWindowPanel reviewsWindow;
 
-        private QuickSearchTask(AnActionEvent event, @Nullable Project project, SearchReviewDialog dialog,
-                                List<ReviewAdapter> localReviews, Collection<CrucibleServerCfg> servers,
-                                ReviewsToolWindowPanel reviewsWindow) {
-            super(project, "Searching review", true);
-            this.event = event;
-            this.project = project;
-            this.dialog = dialog;
-            this.localReviews = localReviews;
-            this.servers = servers;
-            this.reviewsWindow = reviewsWindow;
-        }
+		private QuickSearchTask(AnActionEvent event, @Nullable Project project, SearchReviewDialog dialog,
+				List<ReviewAdapter> localReviews, Collection<CrucibleServerCfg> servers,
+				ReviewsToolWindowPanel reviewsWindow) {
+			super(project, "Searching review", true);
+			this.event = event;
+			this.project = project;
+			this.dialog = dialog;
+			this.localReviews = localReviews;
+			this.servers = servers;
+			this.reviewsWindow = reviewsWindow;
+		}
 
-        public void run(@NotNull final ProgressIndicator indicator) {
+		public void run(@NotNull final ProgressIndicator indicator) {
 
-            indicator.setFraction(0);
+			indicator.setFraction(0);
 
-            List<IdeaUiMultiTaskExecutor.ErrorObject> problems =
-                    new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
+			List<IdeaUiMultiTaskExecutor.ErrorObject> problems =
+					new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
-            // find serverReviews on all selected servers
-            for (CrucibleServerCfg server : servers) {
-                try {
-                    Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-                            IdeaHelper.getProjectCfgManager(project).getServerData(server),
-                            new PermIdBean(dialog.getSearchKey()));
-                    if (review != null) {
-                        serverReviews.add(new ReviewAdapter(review,
-                                IdeaHelper.getProjectCfgManager(project).getServerData(server)));
-                    }
-                } catch (final RemoteApiException e) {
-                    Throwable cause = e.getCause();
-                    if (cause != null
-                            && (cause.getMessage().equals("HTTP 400 (Bad Request)")
-                                || cause.getMessage().equals("HTTP 404 (Not Found)"))) {
-                        String msg = String.format(NOT_FOUND_TEXT, dialog.getSearchKey(), server.getName());
-                        problems.add(new IdeaUiMultiTaskExecutor.ErrorObject(msg, e));
-                    } else {
-                        problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
-                    }
-                } catch (final ServerPasswordNotProvidedException e) {
-                    problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
-                }
-            }
-            failed = problems.size() == servers.size();
+			// find serverReviews on all selected servers
+			for (CrucibleServerCfg server : servers) {
+				try {
+					Review review = CrucibleServerFacadeImpl.getInstance().getReview(
+							IdeaHelper.getProjectCfgManager(project).getServerData(server),
+							new PermIdBean(dialog.getSearchKey()));
+					if (review != null) {
+						serverReviews.add(new ReviewAdapter(review,
+								IdeaHelper.getProjectCfgManager(project).getServerData(server)));
+					}
+				} catch (final RemoteApiException e) {
+					Throwable cause = e.getCause();
+					if (cause != null
+							&& (cause.getMessage().equals("HTTP 400 (Bad Request)")
+							|| cause.getMessage().equals("HTTP 404 (Not Found)"))) {
+						String msg = String.format(NOT_FOUND_TEXT, dialog.getSearchKey(), server.getName());
+						problems.add(new IdeaUiMultiTaskExecutor.ErrorObject(msg, e));
+					} else {
+						problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
+					}
+				} catch (final ServerPasswordNotProvidedException e) {
+					problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting review", e));
+				}
+			}
+			failed = problems.size() == servers.size();
 
-            if (failed) {
-                reportProblem(problems, project);
-            }
-        }
+			if (failed) {
+				reportProblem(problems, project);
+			}
+		}
 
-        public void onSuccess() {
-            if (!failed) {
-                List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
-                showPopup(reviews, project, event.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
-            }
-        }
-    }
+		public void onSuccess() {
+			if (!failed) {
+				List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
+				showPopup(reviews, project, event.getInputEvent().getComponent(), dialog.getSearchKey(), reviewsWindow);
+			}
+		}
+	}
 
 	private void reportProblem(final List<IdeaUiMultiTaskExecutor.ErrorObject> problems,
-                               final Project project) {
+			final Project project) {
 
-        EventQueue.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-                List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
+				List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
-                for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
-                    PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
-                    errorObjects.add(problem);
-                }
+				for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
+					PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
+					errorObjects.add(problem);
+				}
 
 				DialogWithDetails.showExceptionDialog(WindowManager.getInstance().getFrame(project), errorObjects);
 			}

@@ -62,6 +62,17 @@ public final class CfgUtil {
 		return null;
 	}
 
+	public static ServerCfg getEnabledServerCfgbyServerId(final Project project,
+			final ProjectCfgManagerImpl projectCfgManager, final String serverId) {
+		for (ServerCfg server : projectCfgManager.getCfgManager().getAllEnabledServers(CfgUtil.getProjectId(project))) {
+			if (server.getServerId().toString().equals(serverId)) {
+				return server;
+
+			}
+		}
+		return null;
+	}
+
 	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final ProjectCfgManagerImpl projectCfgManager,
 			final String serverUrl) {
 		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
@@ -77,9 +88,10 @@ public final class CfgUtil {
 	 * Finds server with specified url in collection of servers.
 	 * It tries to find enabled server. If not found then tries to find disabled server.
 	 * It compares host, port and path (skips protocol and query string)
+	 *
 	 * @param serverUrl url of server
-	 * @param servers collection of servers
-	 * @param cfg project configuration
+	 * @param servers   collection of servers
+	 * @param cfg	   project configuration
 	 * @return ServerData or null if not found
 	 */
 	public static ServerData findServer(final URL serverUrl, final Collection<ServerCfg> servers, final ProjectCfgManager cfg) {
@@ -103,8 +115,8 @@ public final class CfgUtil {
 			if (url.getHost().equalsIgnoreCase(serverUrl.getHost())
 					&& url.getPort() == serverUrl.getPort()
 					&& (((url.getPath() == null || url.getPath().equals("") || url.getPath().equals("/"))
-						 && (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
-					  || (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
+					&& (serverUrl.getPath() == null || serverUrl.getPath().equals("") || serverUrl.getPath().equals("/")))
+					|| (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
 
 				if (server.isEnabled()) {
 					enabledServer = cfg.getServerData(server);
@@ -125,9 +137,10 @@ public final class CfgUtil {
 	/**
 	 * Finds server with specified url in collection of servers.
 	 * It tries to find enabled server. If not found then tries to find disabled server.
+	 *
 	 * @param serverUrl url of server
-	 * @param servers collection of servers
-	 * @param cfg project configuration
+	 * @param servers   collection of servers
+	 * @param cfg	   project configuration
 	 * @return ServerData or null if not found
 	 */
 	public static ServerData findServer(final String serverUrl, final Collection<ServerCfg> servers,
