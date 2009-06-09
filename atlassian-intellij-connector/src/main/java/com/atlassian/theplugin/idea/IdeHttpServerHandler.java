@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
@@ -316,12 +317,30 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 									// open requested file
 									if (isDefined(commentId)) {
 										final List<VersionedComment> comments = file.getVersionedComments();
+										boolean commentFound = false;
 										for (VersionedComment comment : comments) {
-											if (comment.getReviewItemId().getId().equals(commentId)) {
+											if (comment.getPermId().getId().equals(commentId)) {
+												commentFound = true;
 												CrucibleHelper.openFileOnComment(project, review, file, comment);
 												break;
 											}
+											for (Comment reply : comment.getReplies()) {
+												if (reply.getPermId().getId().equals(commentId)) {
+													commentFound = true;
+													CrucibleHelper.openFileOnComment(project, review, file, comment);
+													break;
+												}
+											}
+											if (commentFound) {
+												break;
+											}
 										}
+
+										// comment not found, simply open file
+										if (!commentFound) {
+											CrucibleHelper.showVirtualFileWithComments(project, review, file);
+										}
+
 									} else {
 										CrucibleHelper.showVirtualFileWithComments(project, review, file);
 									}
