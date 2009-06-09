@@ -63,7 +63,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.List;
-import java.util.Set;
 
 public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
@@ -132,9 +131,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				}
 			});
 
-            // disable collapsing tree on double click - use 3 clicks to collapse/expand - see PL-1513
-            reviewFilesAndCommentsTree.getTreeComponent().setToggleClickCount(2 + 1);
-            
+			// disable collapsing tree on double click - use 3 clicks to collapse/expand - see PL-1513
+			reviewFilesAndCommentsTree.getTreeComponent().setToggleClickCount(2 + 1);
+
 			final ActionGroup group = (ActionGroup) ActionManager.getInstance()
 					.getAction(THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR);
 			final AnAction globalShowNextAction = ActionManager.getInstance().getAction("VcsShowNextChangeMarker");
@@ -249,19 +248,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 		setCrucibleReview(reviewItem);
 
-		Set<CrucibleFileInfo> files;
 		try {
-			List<VersionedComment> comments;
-			comments = CrucibleServerFacadeImpl.getInstance().getVersionedComments(
-					reviewItem.getServerData(), reviewItem.getPermId());
-
-			reviewItem.setGeneralComments(CrucibleServerFacadeImpl.getInstance().getGeneralComments(
-					reviewItem.getServerData(), reviewItem.getPermId()));
-
-			files = CrucibleServerFacadeImpl.getInstance().getFiles(reviewItem.getServerData(),
-					reviewItem.getPermId());
-			reviewItem.setFilesAndVersionedComments(files, comments);
-
+			CrucibleServerFacadeImpl.getInstance().getDetailsForReview(reviewItem);
 		} catch (RemoteApiException e) {
 			IdeaHelper.handleRemoteApiException(project, e);
 			return;
@@ -317,9 +305,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			reviewFilesAndCommentsTree.setRootVisible(true);
 			reviewFilesAndCommentsTree.expandAll();
 
-            // commenting out due to PL-1273
+			// commenting out due to PL-1273
 //			reviewFilesAndCommentsTree.requestFocus();
-            
+
 			CommentHighlighter.updateCommentsInEditors(project, review);
 		}
 
@@ -365,12 +353,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 			}
 			Object selection = selectionPath.getLastPathComponent();
 			if (dataId.equals(Constants.CRUCIBLE_FILE_NODE)
-                    && selection instanceof CrucibleFileNode) {
+					&& selection instanceof CrucibleFileNode) {
 				return selection;
 			} else if (dataId.equals(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE)
-                    && selection instanceof VersionedCommentTreeNode) {
-                return selection;
-            }
+					&& selection instanceof VersionedCommentTreeNode) {
+				return selection;
+			}
 		}
 		return null;
 

@@ -30,6 +30,7 @@ import com.atlassian.theplugin.idea.crucible.editor.OpenDiffAction;
 import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -151,7 +152,7 @@ public final class CrucibleHelper {
 				Messages.showErrorDialog(project,
 						"Your project does not contain requested file "
 								+ reviewItem.getFileDescriptor().getAbsoluteUrl() + "."
-						, "Your project does not contain requested file");
+						, PluginUtil.PRODUCT_NAME);
 			}
 		});
 	}
@@ -160,17 +161,17 @@ public final class CrucibleHelper {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
 			final Document document = editor.getDocument();
-            final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-            if (virtualFile != null) {
-                final ReviewAdapter mr = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-                final CrucibleFileInfo mf = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
-                if (mr != null && mf != null) {
-                    if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
-                        return editor;
-                    }
-                }
-            }
-        }
+			final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+			if (virtualFile != null) {
+				final ReviewAdapter mr = virtualFile.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+				final CrucibleFileInfo mf = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
+				if (mr != null && mf != null) {
+					if (review.getPermId().equals(mr.getPermId()) && file.getPermId().equals(mf.getPermId())) {
+						return editor;
+					}
+				}
+			}
+		}
 		return null;
 	}
 
@@ -282,10 +283,10 @@ public final class CrucibleHelper {
 	}
 
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {
-        private OpenFileDescriptor displayDescriptor;
-        private VirtualFile referenceVirtualFile;
+		private OpenFileDescriptor displayDescriptor;
+		private VirtualFile referenceVirtualFile;
 
-        private ReviewFileContentException exception;
+		private ReviewFileContentException exception;
 		private final Project project;
 		private final String niceFileMessage;
 		private final ReviewAdapter review;
@@ -342,7 +343,7 @@ public final class CrucibleHelper {
 					default:
 						break;
 				}
-				if (displayVirtualFile != null) {                      
+				if (displayVirtualFile != null) {
 					displayDescriptor = new OpenFileDescriptor(project, displayVirtualFile, line - 1, column);
 				}
 			} catch (ReviewFileContentException e) {
@@ -350,61 +351,60 @@ public final class CrucibleHelper {
 			}
 		}
 
-        private VirtualFile getVirtualFile(VersionedVirtualFile fileInfo) throws ReviewFileContentException {
+		private VirtualFile getVirtualFile(VersionedVirtualFile fileInfo) throws ReviewFileContentException {
 
+			// check if requested file is already opened
+			// doesn't haeve to be in cache :)
+			VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
+			if (virtualFile != null) {
+				return virtualFile;
+			}
 
-            // check if requested file is already opened
-            // doesn't have to be in cache :)
-            VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
-            if (virtualFile != null) {
-                return virtualFile;
-            }
+			IdeaReviewFileContent content = (IdeaReviewFileContent) review.getFileContent(fileInfo);
+			IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
 
-            IdeaReviewFileContent content = (IdeaReviewFileContent) review.getFileContent(fileInfo);
-            IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
+			//get local file if not dirty and has the same revision as remote
+			if (provider != null && !provider.isLocalFileDirty() && provider.isContentIdentical(content.getContent())) {
+				VirtualFile providerVirtualFile = provider.getVirtualFile();
+				providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
+				providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
+				return providerVirtualFile;
+			}
 
-            //get local file if not dirty and has the same revision as remote
-            if (provider != null && !provider.isLocalFileDirty() && provider.isContentIdentical(content.getContent())) {
-                VirtualFile providerVirtualFile = provider.getVirtualFile();
-                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
-                providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
-                return providerVirtualFile;
-            }
+			if (content instanceof IdeaReviewFileContent) {
+				virtualFile = content.getVirtualFile();
+				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
+				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
 
-            if (content instanceof IdeaReviewFileContent) {
-                virtualFile = content.getVirtualFile();
-                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
-                virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
+				return virtualFile;
+			} else {
+				return null;
+			}
+		}
 
-                return virtualFile;
-            } else {
-                return null;
-            }
-        }
+		//get non dirty file and priority has local file than remote
+		private VirtualFile getEditorForRevisionFile(VersionedVirtualFile fileInfo) {
+			VirtualFile foundFile = null;
+			Editor[] editors = EditorFactory.getInstance().getAllEditors();
+			for (Editor editor : editors) {
+				final Document document = editor.getDocument();
+				final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
+				if (virtualFile != null) {
+					final String fileUrl = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_URL);
+					final String fileRevision = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_REVISION);
+					if (fileUrl != null && fileRevision != null) {
+						if (fileInfo.getAbsoluteUrl().equals(fileUrl) && fileInfo.getRevision().equals(fileRevision)
+								&& !FileDocumentManager.getInstance().isFileModified(virtualFile)) {
 
-        //get non dirty file and priority has local file than remote
-        private VirtualFile getEditorForRevisionFile(VersionedVirtualFile fileInfo) {
-            VirtualFile foundFile = null;
-            Editor[] editors = EditorFactory.getInstance().getAllEditors();
-            for (Editor editor : editors) {
-                final Document document = editor.getDocument();
-                final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
-                if (virtualFile != null) {
-                    final String fileUrl = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_URL);
-                    final String fileRevision = virtualFile.getUserData(CommentHighlighter.REVIEW_FILE_REVISION);
-                    if (fileUrl != null && fileRevision != null) {
-                        if (fileInfo.getAbsoluteUrl().equals(fileUrl) && fileInfo.getRevision().equals(fileRevision)
-                                && !FileDocumentManager.getInstance().isFileModified(virtualFile)) {
-
-                            if (VcsUtil.getVcsFor(project, virtualFile) == null || foundFile == null) {
-                                foundFile = virtualFile;
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
-        }
+							if (VcsUtil.getVcsFor(project, virtualFile) == null || foundFile == null) {
+								foundFile = virtualFile;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
 
 
 		@Override
@@ -429,11 +429,11 @@ public final class CrucibleHelper {
 		if (vf != null) {
 			doc = FileDocumentManager.getInstance().getDocument(vf);
 
-            // binary file
-            if (doc == null) {
-                ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
-                return getVersionedFileUrl(review, vf.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY));
-            }
+			// binary file
+			if (doc == null) {
+				ReviewAdapter review = vf.getUserData(CommentHighlighter.REVIEW_DATA_KEY);
+				return getVersionedFileUrl(review, vf.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY));
+			}
 
 			RangeHighlighter[] highlighters = doc.getMarkupModel(project).getAllHighlighters();
 

@@ -461,7 +461,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		return null;
 	}
 
-	public boolean openReview(final String reviewKey, final String serverUrl) {
+	public ReviewAdapter openReview(final String reviewKey, final String serverUrl) {
 		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getCfgManager().
 				getAllServers(CfgUtil.getProjectId(project), ServerType.CRUCIBLE_SERVER), projectCfgManager);
 
@@ -473,7 +473,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 				url = new URL(serverUrl);
 			} catch (MalformedURLException e) {
 				PluginUtil.getLogger().warn("Error opening review. Invalid url [" + serverUrl + "]", e);
-				return false;
+				return null;
 			}
 
 			server = CfgUtil.findServer(url, projectCfgManager.getCfgManager().
@@ -495,10 +495,10 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 					}
 				});
 
-				return true;
+				return ra;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {

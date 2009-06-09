@@ -135,7 +135,7 @@ public final class CfgUtil {
 	}
 
 	/**
-	 * Finds server with specified url in collection of servers.
+	 * Finds server with specified url in collection of servers (exact String match).
 	 * It tries to find enabled server. If not found then tries to find disabled server.
 	 *
 	 * @param serverUrl url of server

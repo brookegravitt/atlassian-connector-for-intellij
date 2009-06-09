@@ -18,20 +18,7 @@ package com.atlassian.theplugin.crucible.model;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
-import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
-import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
-import com.atlassian.theplugin.commons.crucible.api.model.User;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -80,6 +67,10 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	public Review addItemsToReview(final ServerData server, final PermId permId, final Collection<UploadItem> items)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return null;
+	}
+
+	public void getDetailsForReview(final ReviewAdapter reviewItem)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
 	public Review createReviewFromRevision(ServerData server, Review review, List<String> revisions)

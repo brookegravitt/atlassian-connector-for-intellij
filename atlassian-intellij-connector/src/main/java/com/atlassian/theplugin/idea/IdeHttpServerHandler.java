@@ -15,7 +15,15 @@
  */
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -81,6 +89,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 	private void handleOpenReviewRequest(final Map<String, String> parameters) {
 		final String reviewKey = parameters.get("review_key");
 		final String serverUrl = parameters.get("server_url");
+		final String filePath = parameters.get("file_path");
+		final String commentId = parameters.get("comment_id");
 		if (reviewKey != null && serverUrl != null) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -90,21 +100,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 						bringIdeaToFront(project);
 
-						ProgressManager.getInstance().run(new Task.Modal(project, "Looking for Review " + reviewKey, false) {
-							private boolean found = false;
-
-							public void run(final ProgressIndicator indicator) {
-								found = IdeaHelper.getReviewsToolWindowPanel(project).openReview(reviewKey, serverUrl);
-							}
-
-							public void onSuccess() {
-								if (!found) {
-									Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
-								}
-							}
-						});
-
-
+						ProgressManager.getInstance().run(new FindAndOpenReviewTask(
+								project, "Looking for Review " + reviewKey, false, reviewKey, serverUrl, filePath, commentId));
 					}
 				}
 			});
@@ -162,10 +159,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private void openFile(final Project project, final PsiFile psiFile, final String line) {
+	private static void openFile(final Project project, final PsiFile psiFile, final String line) {
 		if (psiFile != null) {
 			psiFile.navigate(true);	// open file
-
 
 			final VirtualFile virtualFile = psiFile.getVirtualFile();
 
@@ -187,7 +183,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private boolean isDefined(final String param) {
+	private static boolean isDefined(final String param) {
 		return param != null && param.length() > 0;
 	}
 
@@ -218,7 +214,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private void bringIdeaToFront(final Project project) {
+	private static void bringIdeaToFront(final Project project) {
 		WindowManager.getInstance().getFrame(project).setVisible(true);
 
 		String osName = System.getProperty("os.name");
@@ -245,7 +241,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		response.setOk();
 	}
 
-	private class FileListPopupStep extends BaseListPopupStep<PsiFile> {
+	private static class FileListPopupStep extends BaseListPopupStep<PsiFile> {
 		private String line;
 		private Project project;
 
@@ -279,6 +275,78 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 
 			return null;
+		}
+	}
+
+	private static class FindAndOpenReviewTask extends Task.Modal {
+		private Project project;
+		private String reviewKey;
+		private String serverUrl;
+		private String filePath;
+		private String commentId;
+
+		private ReviewAdapter review;
+
+
+		public FindAndOpenReviewTask(final Project project, final String title, final boolean cancellable,
+				final String reviewKey, final String serverUrl, final String filePath, final String commentId) {
+
+			super(project, title, cancellable);
+
+			this.project = project;
+			this.reviewKey = reviewKey;
+			this.serverUrl = serverUrl;
+			this.filePath = filePath;
+			this.commentId = commentId;
+		}
+
+		public void run(final ProgressIndicator indicator) {
+			indicator.setIndeterminate(true);
+
+			// open review
+			review = IdeaHelper.getReviewsToolWindowPanel(project).openReview(reviewKey, serverUrl);
+			try {
+				if (review != null && isDefined(filePath)) {
+					// get details for review (files and comments)
+					CrucibleServerFacadeImpl.getInstance().getDetailsForReview(review);
+					for (final CrucibleFileInfo file : review.getFiles()) {
+						if (file.getFileDescriptor().getUrl().endsWith(filePath)) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									// open requested file
+									if (isDefined(commentId)) {
+										final List<VersionedComment> comments = file.getVersionedComments();
+										for (VersionedComment comment : comments) {
+											if (comment.getReviewItemId().getId().equals(commentId)) {
+												CrucibleHelper.openFileOnComment(project, review, file, comment);
+												break;
+											}
+										}
+									} else {
+										CrucibleHelper.showVirtualFileWithComments(project, review, file);
+									}
+								}
+							});
+							break;
+						}
+					}
+				}
+			} catch (RemoteApiException e) {
+				PluginUtil.getLogger().warn("Error when retrieving review details", e);
+			} catch (ServerPasswordNotProvidedException e) {
+				PluginUtil.getLogger().warn(
+						"Missing password exception caught when retrieving review details", e);
+			} catch (ValueNotYetInitialized e) {
+				PluginUtil.getLogger().warn("Files collection not initialized", e);
+			}
+		}
+
+		public void onSuccess() {
+			if (review == null) {
+				Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
+			} else {
+				bringIdeaToFront(project);
+			}
 		}
 	}
 }
