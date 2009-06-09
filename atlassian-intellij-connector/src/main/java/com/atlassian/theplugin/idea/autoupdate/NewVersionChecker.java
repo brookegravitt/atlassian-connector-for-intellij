@@ -111,6 +111,13 @@ public final class NewVersionChecker implements SchedulableChecker {
 	private InfoServer.VersionInfo getLatestVersion(GeneralConfigurationBean configuration)
 			throws VersionServiceException, IncorrectVersionException {
 		final Boolean anonymousFeedbackEnabled = configuration.getAnonymousEnhancedFeedbackEnabled();
+
+        // I was asked for all counters to always be present, so adding them here with zero values
+        pluginConfiguration.getGeneralConfigurationData().addCounterIfNotPresent("a");
+        pluginConfiguration.getGeneralConfigurationData().addCounterIfNotPresent("i");
+        pluginConfiguration.getGeneralConfigurationData().addCounterIfNotPresent("r");
+        pluginConfiguration.getGeneralConfigurationData().addCounterIfNotPresent("b");
+        
 		InfoServer.VersionInfo info = InfoServer.getLatestPluginVersion(
 				new UsageStatisticsGeneratorImpl(anonymousFeedbackEnabled != null ? anonymousFeedbackEnabled : false,
 				            configuration.getUid(), pluginConfiguration.getGeneralConfigurationData(), cfgManager),
