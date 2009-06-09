@@ -23,6 +23,7 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public enum ConnectionStatus {
+    
 		NONE(IconLoader.getIcon("/actions/help.png")),
 		PASSED(IconLoader.getIcon("/actions/er-state.png")),
 		FAILED(IconLoader.getIcon("/actions/breakpoint.png"));
