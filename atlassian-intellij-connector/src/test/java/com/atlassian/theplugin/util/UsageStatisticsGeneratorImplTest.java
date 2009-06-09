@@ -88,4 +88,30 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 
     }
 
+    public void testGetStatisticsUrlSuffixExtendedWithZeroCounters() {
+        CfgManager cfgManager = EasyMock.createNiceMock(CfgManager.class);
+        EasyMock.expect(cfgManager.getAllUniqueServers()).andReturn(MiscUtil.buildArrayList(
+                new BambooServerCfg("bamboo1", new ServerId()),
+                new CrucibleServerCfg("crucible1", new ServerId()),
+                new BambooServerCfg("bamboo2", new ServerId()))).anyTimes();
+        EasyMock.replay(cfgManager);
+
+        GeneralConfigurationBean gcb = new GeneralConfigurationBean();
+
+        gcb.setAnonymousEnhancedFeedbackEnabled(true);
+        gcb.bumpCounter("i");
+        gcb.bumpCounter("i");
+
+        gcb.addCounterIfNotPresent("a");
+        gcb.addCounterIfNotPresent("i");
+        gcb.addCounterIfNotPresent("r");
+        gcb.addCounterIfNotPresent("b");
+
+        final UsageStatisticsGeneratorImpl generator2 = new UsageStatisticsGeneratorImpl(true, 123, gcb, cfgManager);
+        assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
+                + "&bambooServers=2&crucibleServers=1&jiraServers=0&a=0&b=0&i=2&r=0",
+                generator2.getStatisticsUrlSuffix());
+
+    }
+
 }
