@@ -414,7 +414,7 @@ public final class CrucibleHelper {
 					}
 				}
 			}
-			return null;
+			return foundFile;
 		}
 
 
