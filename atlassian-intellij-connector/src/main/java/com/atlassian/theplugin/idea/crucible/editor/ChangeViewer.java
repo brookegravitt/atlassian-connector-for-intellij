@@ -17,17 +17,14 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.LineMarkerRenderer;
-import com.intellij.openapi.editor.markup.MarkupEditorFilterFactory;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Key;
@@ -94,7 +91,26 @@ public final class ChangeViewer {
 					continue;
 				}
 				for (RangeHighlighter rangeHighlighter : ranges) {
-					document.getMarkupModel(project).removeHighlighter(rangeHighlighter);
+                    // see PL-1566 - attempt at blind fix, so sorry that it looks so ugly
+                    //
+                    // It looks like MarkupModelImpl's internal bookkeeping gets b0rked sometimes.
+                    // Decompiling removeHilighter() method shows something like this:
+                    //
+                    // public void removeHighlighter(RangeHighlighter rangehighlighter)
+                    // {
+                    //    boolean flag = d.remove(rangehighlighter);
+                    //    a.assertTrue(flag);
+                    //    ...
+                    // }
+                    //
+                    // No way to test if "d" contains the hilighter prior to attempting to remove it though,
+                    // because the containsHighlighter() method of MarkupModelImpl, which could tell us that,
+                    // is not exposed in the MarkupModel interface :(
+                    try {
+					    document.getMarkupModel(project).removeHighlighter(rangeHighlighter);
+                    } catch (Throwable t) {
+                        LoggerImpl.getInstance().error(t);
+                    }
 				}
 			}
 		}
