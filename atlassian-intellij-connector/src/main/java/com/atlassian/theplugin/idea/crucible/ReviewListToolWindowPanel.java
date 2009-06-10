@@ -160,7 +160,6 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 	public void openReview(final ReviewAdapter review) {
 		CommentHighlighter.removeCommentsInEditors(project);
-		crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(review);
 		reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
 		IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review);
 	}

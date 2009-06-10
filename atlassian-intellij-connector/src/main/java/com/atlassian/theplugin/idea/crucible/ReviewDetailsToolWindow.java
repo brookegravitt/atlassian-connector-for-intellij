@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
@@ -66,20 +67,23 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private PluginConfiguration pluginConfiguration;
+    private WorkspaceConfigurationBean workspaceConfiguration;
 
-	private ReviewPanel contentPanel;
+    private ReviewPanel contentPanel;
 	private ReviewContentParameters contentParams;
 
 
 	protected ReviewDetailsToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent,
-			@NotNull final PluginConfiguration pluginConfiguration) {
+			@NotNull final PluginConfiguration pluginConfiguration,
+            @NotNull final WorkspaceConfigurationBean workspaceConfiguration) {
 		super(true);
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
 		this.pluginConfiguration = pluginConfiguration;
-	}
+        this.workspaceConfiguration = workspaceConfiguration;
+    }
 
 	@Override
 	protected String getContentKey(ContentParameters params) {
@@ -126,12 +130,16 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		}
 	}
 
-	public void showReview(ReviewAdapter adapter) {
-		this.reviewAdapter = adapter;
-		contentParams = new ReviewContentParameters(adapter);
-		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
-				Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
-	}
+    public void showReview(ReviewAdapter adapter) {
+        this.reviewAdapter = adapter;
+        if (workspaceConfiguration.getCrucibleConfiguration() != null) {
+            workspaceConfiguration.getCrucibleConfiguration()
+                    .getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(adapter);
+        }
+        contentParams = new ReviewContentParameters(adapter);
+        showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
+                Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
+    }
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
 		if (contentParams != null && getContentPanel(getContentKey(contentParams)) != null) {
