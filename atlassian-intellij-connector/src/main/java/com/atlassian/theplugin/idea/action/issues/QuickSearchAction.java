@@ -31,8 +31,8 @@ public class QuickSearchAction extends AnAction {
 			if (dlg.isOK()) {
 				String query = dlg.getSearchQueryString();
 				if (query != null) {
-					if (query.matches("[A-Z]+\\-\\d+")) {
-						panel.openIssue(query, server);
+					if (query.toUpperCase().matches("[A-Z]+\\-\\d+")) {
+						panel.openIssue(query.toUpperCase(), server);
 
 					} else {
 						BrowserUtil.launchBrowser(server.getUrl()
