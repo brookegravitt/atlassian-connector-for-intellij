@@ -88,7 +88,9 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		ConfigurationFactory.setConfiguration(configuration);
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();
 
-		startHttpServer();
+		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {
+			startHttpServer(HTTP_SERVER_PORT);
+		}
 
 		addActionToDiffToolbar();
 	}
@@ -198,7 +200,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		configPanel = null;
 	}
 
-	private void startHttpServer() {
+	private void startHttpServer(final int httpServerPort) {
 
 		// load icon
 		InputStream iconStream = ThePluginProjectComponent.class.getResourceAsStream("/icons/idea_small.png");
@@ -224,7 +226,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		// create and start server
 		try {
-			EmbeddedServer.createInstance(HTTP_SERVER_PORT, new IdeHttpServerHandler(iconArray), true);
+			EmbeddedServer.createInstance(httpServerPort, new IdeHttpServerHandler(iconArray), true);
 		} catch (Exception e) {
 			PluginUtil.getLogger().error("Failed to start http server", e);
 		}

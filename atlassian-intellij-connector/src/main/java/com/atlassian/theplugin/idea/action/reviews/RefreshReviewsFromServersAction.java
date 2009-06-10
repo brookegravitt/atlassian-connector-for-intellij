@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -12,7 +12,7 @@ public class RefreshReviewsFromServersAction extends AbstractCrucibleToolbarActi
 
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
-		final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
+		final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(e);
 		if (panel != null) {
 			panel.refresh(UpdateReason.REFRESH);
 		}

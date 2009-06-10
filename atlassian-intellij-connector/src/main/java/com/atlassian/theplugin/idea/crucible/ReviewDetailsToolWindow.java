@@ -17,14 +17,17 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.*;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.MultiTabToolWindow;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.crucible.editor.ChangeViewer;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
@@ -56,27 +59,27 @@ import java.util.Date;
 /**
  * User: pmaruszak
  */
-public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvider {
+public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataProvider {
 	private static final String TOOL_WINDOW_TITLE = "Reviews - Crucible";
 	private ReviewAdapter reviewAdapter;
 	private final CfgManager cfgManager;
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
-    private PluginConfiguration pluginConfiguration;
+	private PluginConfiguration pluginConfiguration;
 
-    private ContentPanel contentPanel;
+	private ReviewPanel contentPanel;
 	private ReviewContentParameters contentParams;
 
 
-	protected CrucibleToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
+	protected ReviewDetailsToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent,
-            @NotNull final PluginConfiguration pluginConfiguration) {
+			@NotNull final PluginConfiguration pluginConfiguration) {
 		super(true);
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
-        this.pluginConfiguration = pluginConfiguration;
-    }
+		this.pluginConfiguration = pluginConfiguration;
+	}
 
 	@Override
 	protected String getContentKey(ContentParameters params) {
@@ -92,7 +95,7 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 
 	@Override
 	protected ContentPanel createContentPanel(ContentParameters params) {
-        pluginConfiguration.getGeneralConfigurationData().bumpCounter("r");
+		pluginConfiguration.getGeneralConfigurationData().bumpCounter("r");
 		contentPanel = new ReviewPanel((ReviewContentParameters) params);
 		return contentPanel;
 	}
@@ -109,6 +112,10 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 			return reviewAdapter;
 		}
 		return null;
+	}
+
+	public void selectComment(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment) {
+		contentPanel.selectComment(review, file, comment);
 	}
 
 	private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
@@ -145,16 +152,19 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		private DetailsPanel detailsPanel;
 		private SummaryPanel summaryPanel;
 		private CommentsPanel commentsPanel;
+		private static final String TAB_DETAILS = "Details";
+		private static final String TAB_FILES_AND_COMMENTS = "Files and Comments";
+		private JTabbedPane tabs;
 
 		private ReviewPanel(ReviewContentParameters params) {
 			this.params = params;
 
-			JTabbedPane tabs = new JTabbedPane();
+			tabs = new JTabbedPane();
 			detailsPanel = new DetailsPanel(params.reviewAdapter);
 
-			tabs.addTab("Details", detailsPanel);
+			tabs.addTab(TAB_DETAILS, detailsPanel);
 			commentsPanel = new CommentsPanel();
-			tabs.addTab("Files and Comments", commentsPanel);
+			tabs.addTab(TAB_FILES_AND_COMMENTS, commentsPanel);
 
 			setLayout(new GridBagLayout());
 			GridBagConstraints gbc = new GridBagConstraints();
@@ -241,6 +251,15 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 		public void reviewChanged(final ReviewAdapter review, final java.util.List<CrucibleNotification> notifications) {
 			summaryPanel.refresh();
 			detailsPanel.refresh();
+		}
+
+		public void selectComment(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment) {
+			// select tab
+			tabs.setSelectedComponent(commentsPanel);
+
+			// select comment
+
+
 		}
 
 		private final class CommentsPanel extends JPanel {
@@ -375,14 +394,15 @@ public class CrucibleToolWindow extends MultiTabToolWindow implements DataProvid
 }
 
 // kalamon: I absolutely bloody hate hate hate package-scope non-inner classes
+
 // piggy-backed on the main class of the file. To the author of this class - you suck.
 class DetailsPanel extends JPanel {
 	private JScrollPane scroll;
 
 	private final ReviewAdapter ra;
-    private static final int MAX_DISPLAYED_LINK_LENGTH = 80;
+	private static final int MAX_DISPLAYED_LINK_LENGTH = 80;
 
-    public DetailsPanel(final ReviewAdapter reviewAdapter) {
+	public DetailsPanel(final ReviewAdapter reviewAdapter) {
 		this.ra = reviewAdapter;
 		setLayout(new GridBagLayout());
 
@@ -432,17 +452,17 @@ class DetailsPanel extends JPanel {
 		statementOfObjectives.setBackground(Color.WHITE);
 		statementOfObjectives.setContentType("text/html");
 		statementOfObjectives.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
-        Htmlizer htmlizer = new Htmlizer(MAX_DISPLAYED_LINK_LENGTH);
-        String sooText = htmlizer.htmlizeHyperlinks(ra.getDescription());
-        sooText = htmlizer.replaceWhitespace(sooText);
+		Htmlizer htmlizer = new Htmlizer(MAX_DISPLAYED_LINK_LENGTH);
+		String sooText = htmlizer.htmlizeHyperlinks(ra.getDescription());
+		sooText = htmlizer.replaceWhitespace(sooText);
 		statementOfObjectives.setText("<html><body>" + sooText + "</body></html>");
-        statementOfObjectives.addHyperlinkListener(new HyperlinkListener() {
-            public void hyperlinkUpdate(HyperlinkEvent e) {
-                if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                    BrowserUtil.launchBrowser(e.getURL().toString());
-                }
-            }
-        });
+		statementOfObjectives.addHyperlinkListener(new HyperlinkListener() {
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+					BrowserUtil.launchBrowser(e.getURL().toString());
+				}
+			}
+		});
 
 		statementOfObjectives.setBorder(null);
 		body.add(statementOfObjectives, gbc2);
@@ -537,7 +557,7 @@ class DetailsPanel extends JPanel {
 		return body;
 	}
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 		ServerData cruc = new ServerData("my crucible server", (new ServerId()).toString(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);

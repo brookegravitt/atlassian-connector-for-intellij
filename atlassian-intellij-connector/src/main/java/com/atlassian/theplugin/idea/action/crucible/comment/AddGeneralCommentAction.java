@@ -21,7 +21,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralCommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.*;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
+import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
@@ -47,7 +50,7 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 
 	@Nullable
 	private ReviewAdapter getReview(final AnActionEvent e) {
-		CrucibleToolWindow crucibleDetailsWindow = IdeaHelper.getProjectComponent(e, CrucibleToolWindow.class);
+		ReviewDetailsToolWindow crucibleDetailsWindow = IdeaHelper.getProjectComponent(e, ReviewDetailsToolWindow.class);
 		if (crucibleDetailsWindow != null) {
 			return crucibleDetailsWindow.getReview();
 		}
@@ -72,10 +75,10 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 	private void addGeneralComment(AnActionEvent event, final ReviewAdapter review) {
 		final GeneralCommentBean newComment = new GeneralCommentBean();
 
-        event.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(event));
-        CommentTooltipPanel.showCommentTooltipPopup(
-                event,
-                new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD),
-                null, null);
+		event.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, getTree(event));
+		CommentTooltipPanel.showCommentTooltipPopup(
+				event,
+				new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD),
+				null, null);
 	}
 }

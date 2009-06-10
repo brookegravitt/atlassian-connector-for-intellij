@@ -67,9 +67,9 @@ import java.util.List;
 /**
  * @author Jacek Jaroczynski
  */
-public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
+public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements DataProvider {
 
-	public static final String PLACE_PREFIX = ReviewsToolWindowPanel.class.getSimpleName();
+	public static final String PLACE_PREFIX = ReviewListToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
 
 	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
@@ -90,7 +90,7 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 	private CrucibleReviewListModel currentReviewListModel;
 
 
-	public ReviewsToolWindowPanel(@NotNull final Project project,
+	public ReviewListToolWindowPanel(@NotNull final Project project,
 			@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
@@ -162,12 +162,12 @@ public class ReviewsToolWindowPanel extends PluginToolWindowPanel implements Dat
 		CommentHighlighter.removeCommentsInEditors(project);
 		crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(review);
 		reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
-		IdeaHelper.getCrucibleToolWindow(getProject()).showReview(review);
+		IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
 		reviewListModel.clearOpenInIde(UpdateReason.OPEN_IN_IDE);
-		IdeaHelper.getCrucibleToolWindow(project).closeToolWindow(event);
+		IdeaHelper.getReviewDetailsToolWindow(project).closeToolWindow(event);
 	}
 
 

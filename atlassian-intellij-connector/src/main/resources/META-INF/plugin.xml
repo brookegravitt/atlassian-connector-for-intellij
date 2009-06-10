@@ -134,14 +134,14 @@
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.CrucibleToolWindow"
-						serviceImplementation="com.atlassian.theplugin.idea.crucible.CrucibleToolWindow"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow"
+						serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration"
 						serviceImplementation="com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel"
-						serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel"/>
+		<projectService serviceInterface="com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel"
+						serviceImplementation="com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel"/>
 		<!--<projectService serviceInterface="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration" -->
 		<!--serviceImplementation="com.atlassian.theplugin.configuration.CrucibleProjectConfiguration"/>-->
 
@@ -400,11 +400,11 @@
 				text="Open Revision for Review" icon="/actions/menu-open.png">
 			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
 		</action>
-        <action id="ThePlugin.Crucible.ShowCommentAction"
-                class="com.atlassian.theplugin.idea.action.crucible.ShowCommentAction"
-                text="Open Revision on Comment" icon="/actions/menu-open.png">
-            <keyboard-shortcut first-keystroke="control O" keymap="$default"/>
-        </action>
+		<action id="ThePlugin.Crucible.ShowCommentAction"
+				class="com.atlassian.theplugin.idea.action.crucible.ShowCommentAction"
+				text="Open Revision on Comment" icon="/actions/menu-open.png">
+			<keyboard-shortcut first-keystroke="control O" keymap="$default"/>
+		</action>
 
 		<action id="ThePlugin.Crucible.ShowReviewItemDiffAction"
 				class="com.atlassian.theplugin.idea.action.crucible.DiffRevisionsAction"
@@ -661,7 +661,7 @@
 		<group id="ThePlugin.Crucible.ReviewFileListToolBar" popup="false">
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
-            <reference id="ThePlugin.Crucible.ShowCommentAction"/>
+			<reference id="ThePlugin.Crucible.ShowCommentAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<separator/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
@@ -738,7 +738,7 @@
 		<group id="ThePlugin.Crucible.ReviewFileListPopupMenuExt" popup="true">
 			<reference id="ThePlugin.Crucible.GoToLocalSource"/>
 			<reference id="ThePlugin.Crucible.ShowFileAction"/>
-            <reference id="ThePlugin.Crucible.ShowCommentAction"/>
+			<reference id="ThePlugin.Crucible.ShowCommentAction"/>
 			<reference id="ThePlugin.Crucible.ShowReviewItemDiffAction"/>
 			<reference id="ThePlugin.Crucible.Comment.Reply"/>
 			<reference id="ThePlugin.Crucible.Comment.Edit"/>

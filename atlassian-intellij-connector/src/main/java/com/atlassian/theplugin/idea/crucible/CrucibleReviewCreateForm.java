@@ -872,7 +872,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 							ApplicationManager.getApplication().invokeLater(new Runnable() {
 								public void run() {
-									final ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(project);
+									final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
 									if (panel != null && newRevewFinal != null) {
 										panel.refresh(UpdateReason.REFRESH);
 										panel.openReview(new ReviewAdapter(newRevewFinal, server));

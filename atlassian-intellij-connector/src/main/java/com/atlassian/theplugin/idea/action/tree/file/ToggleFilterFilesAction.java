@@ -17,7 +17,7 @@
 package com.atlassian.theplugin.idea.action.tree.file;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.Presentation;
@@ -46,7 +46,7 @@ public class ToggleFilterFilesAction extends AnAction {
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
 
-		CrucibleToolWindow window = IdeaHelper.getCrucibleToolWindow(e);
+		ReviewDetailsToolWindow window = IdeaHelper.getReviewDetailsToolWindow(e);
 
 		if (window != null) {
 			window.switchFilter();
