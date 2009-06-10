@@ -21,7 +21,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.Util;
@@ -50,7 +50,7 @@ public class PluginToolWindow {
 
 	private ToolWindow ideaToolWindow;
 	private Project project;
-	private final ReviewsToolWindowPanel reviewsToolWindowPanel;
+	private final ReviewListToolWindowPanel reviewsToolWindowPanel;
 	private final IssueListToolWindowPanel issuesToolWindowPanel;
 	//private String selectedContent = null;
 	// one space to have better horizontal separation between the header and the tabs
@@ -84,7 +84,7 @@ public class PluginToolWindow {
 
 	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
-			@NotNull ReviewsToolWindowPanel reviewsToolWindowPanel,
+			@NotNull ReviewListToolWindowPanel reviewsToolWindowPanel,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
 		this.cfgManager = cfgManager;
 		this.bambooToolWindowPanel = bambooToolWindowPanel;
@@ -336,7 +336,7 @@ public class PluginToolWindow {
 	}
 
 	public ToolWindowPanels getSelectedContent() {
-		Content selectedContent  = ideaToolWindow.getContentManager().getSelectedContent();
+		Content selectedContent = ideaToolWindow.getContentManager().getSelectedContent();
 
 		if (selectedContent != null) {
 			return ToolWindowPanels.valueOfTitle(selectedContent.getToolwindowTitle());

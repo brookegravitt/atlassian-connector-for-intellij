@@ -23,8 +23,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueDetailsToolWindow;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -129,26 +129,26 @@ public final class IdeaHelper {
 		return getProjectComponent(project, IssueDetailsToolWindow.class);
 	}
 
-	public static CrucibleToolWindow getCrucibleToolWindow(@NotNull final Project project) {
-		return getProjectComponent(project, CrucibleToolWindow.class);
+	public static ReviewDetailsToolWindow getReviewDetailsToolWindow(@NotNull final Project project) {
+		return getProjectComponent(project, ReviewDetailsToolWindow.class);
 	}
 
 	@Nullable
-	public static CrucibleToolWindow getCrucibleToolWindow(@NotNull final AnActionEvent event) {
+	public static ReviewDetailsToolWindow getReviewDetailsToolWindow(@NotNull final AnActionEvent event) {
 		Project project = getCurrentProject(event);
 		if (project == null) {
 			return null;
 		}
-		return getProjectComponent(project, CrucibleToolWindow.class);
+		return getProjectComponent(project, ReviewDetailsToolWindow.class);
 	}
 
 	@Nullable
-	public static ReviewsToolWindowPanel getReviewsToolWindowPanel(AnActionEvent event) {
-		return getProjectComponent(event, ReviewsToolWindowPanel.class);
+	public static ReviewListToolWindowPanel getReviewListToolWindowPanel(AnActionEvent event) {
+		return getProjectComponent(event, ReviewListToolWindowPanel.class);
 	}
 
-	public static ReviewsToolWindowPanel getReviewsToolWindowPanel(@NotNull final Project project) {
-		return getProjectComponent(project, ReviewsToolWindowPanel.class);
+	public static ReviewListToolWindowPanel getReviewListToolWindowPanel(@NotNull final Project project) {
+		return getProjectComponent(project, ReviewListToolWindowPanel.class);
 	}
 
 	public static BuildToolWindow getBuildToolWindow(AnActionEvent event) {

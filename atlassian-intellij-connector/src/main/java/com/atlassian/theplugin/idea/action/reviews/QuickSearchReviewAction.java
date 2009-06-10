@@ -23,7 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
@@ -73,7 +73,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 //			return;
 //		}
 
-		final ReviewsToolWindowPanel reviewsWindow = IdeaHelper.getReviewsToolWindowPanel(e);
+		final ReviewListToolWindowPanel reviewsWindow = IdeaHelper.getReviewListToolWindowPanel(e);
 
 		if (reviewsWindow == null) {
 			return;
@@ -108,11 +108,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		private SearchReviewDialog dialog;
 		private List<ReviewAdapter> localReviews;
 		private Collection<CrucibleServerCfg> servers;
-		private ReviewsToolWindowPanel reviewsWindow;
+		private ReviewListToolWindowPanel reviewsWindow;
 
 		private QuickSearchTask(AnActionEvent event, @Nullable Project project, SearchReviewDialog dialog,
 				List<ReviewAdapter> localReviews, Collection<CrucibleServerCfg> servers,
-				ReviewsToolWindowPanel reviewsWindow) {
+				ReviewListToolWindowPanel reviewsWindow) {
 			super(project, "Searching review", true);
 			this.event = event;
 			this.project = project;
@@ -186,7 +186,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	}
 
 	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component component,
-			final String searchKey, final ReviewsToolWindowPanel reviewsWindow) {
+			final String searchKey, final ReviewListToolWindowPanel reviewsWindow) {
 		if (reviews.size() == 0) {
 			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian IntelliJ Connector");
 //			reviewsWindow.setStatusInfoMessage("Review " + searchKey + " not found.");
@@ -211,11 +211,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	}
 
 	public static final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
-		private ReviewsToolWindowPanel reviewsWindow;
+		private ReviewListToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
 		public ReviewListPopupStep(final String title, final List<ReviewAdapter> reviews,
-				final ReviewsToolWindowPanel reviewsWindow) {
+				final ReviewListToolWindowPanel reviewsWindow) {
 			super(title, reviews, IconLoader.getIcon("/icons/crucible-16.png"));
 			this.reviewsWindow = reviewsWindow;
 		}

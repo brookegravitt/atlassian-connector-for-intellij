@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -46,7 +46,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 			return;
 		}
 
-		final ReviewsToolWindowPanel reviewsWindow = IdeaHelper.getReviewsToolWindowPanel(e);
+		final ReviewListToolWindowPanel reviewsWindow = IdeaHelper.getReviewListToolWindowPanel(e);
 		if (reviewsWindow == null) {
 			return;
 		}

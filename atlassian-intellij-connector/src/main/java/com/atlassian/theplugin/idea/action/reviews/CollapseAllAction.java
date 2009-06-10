@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewsToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -11,7 +11,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public class CollapseAllAction extends AbstractCrucibleToolbarAction {
 	public void actionPerformed(AnActionEvent e) {
-		ReviewsToolWindowPanel panel = IdeaHelper.getReviewsToolWindowPanel(e);
+		ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(e);
 		if (panel != null) {
 			panel.collapseAllRightTreeNodes();
 		}

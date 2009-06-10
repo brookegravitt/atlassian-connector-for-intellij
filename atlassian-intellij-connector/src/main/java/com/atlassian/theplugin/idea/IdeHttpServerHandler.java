@@ -305,7 +305,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			indicator.setIndeterminate(true);
 
 			// open review
-			review = IdeaHelper.getReviewsToolWindowPanel(project).openReview(reviewKey, serverUrl);
+			review = IdeaHelper.getReviewListToolWindowPanel(project).openReview(reviewKey, serverUrl);
 			try {
 				if (review != null && isDefined(filePath)) {
 					// get details for review (files and comments)
@@ -321,13 +321,15 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 										for (VersionedComment comment : comments) {
 											if (comment.getPermId().getId().equals(commentId)) {
 												commentFound = true;
-												CrucibleHelper.openFileOnComment(project, review, file, comment);
+												CrucibleHelper.openFileOnCommentAndSelectComment(
+														project, review, file, comment);
 												break;
 											}
 											for (Comment reply : comment.getReplies()) {
 												if (reply.getPermId().getId().equals(commentId)) {
 													commentFound = true;
-													CrucibleHelper.openFileOnComment(project, review, file, comment);
+													CrucibleHelper.openFileOnCommentAndSelectComment(
+															project, review, file, comment);
 													break;
 												}
 											}

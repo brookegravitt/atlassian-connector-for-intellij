@@ -32,7 +32,7 @@ public class ToggleViewAction extends TreeAction {
 
 	protected void executeTreeAction(final Project project, AtlassianTreeWithToolbar tree) {
 		if (tree == null) {
-			tree = IdeaHelper.getCrucibleToolWindow(project).getAtlassianTreeWithToolbar();
+			tree = IdeaHelper.getReviewDetailsToolWindow(project).getAtlassianTreeWithToolbar();
 		}
 		if (tree != null) {
 			tree.changeState();

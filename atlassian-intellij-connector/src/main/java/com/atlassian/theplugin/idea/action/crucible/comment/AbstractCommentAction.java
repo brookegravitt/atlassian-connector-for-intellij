@@ -20,7 +20,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.CrucibleToolWindow;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
@@ -43,7 +43,7 @@ public abstract class AbstractCommentAction extends AnAction {
 		Component component = null;
 		AtlassianTreeWithToolbar twtb = (AtlassianTreeWithToolbar) dataContext.getData(Constants.FILE_TREE);
 		if (twtb == null) {
-			CrucibleToolWindow ctw = IdeaHelper.getCrucibleToolWindow(e);
+			ReviewDetailsToolWindow ctw = IdeaHelper.getReviewDetailsToolWindow(e);
 			if (ctw != null) {
 				twtb = ctw.getAtlassianTreeWithToolbar();
 			}

@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentExc
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.editor.OpenCrucibleDiffToolAction;
@@ -282,6 +283,16 @@ public final class CrucibleHelper {
 				.queue();
 	}
 
+	public static void openFileOnCommentAndSelectComment(final Project project, final ReviewAdapter review,
+			final CrucibleFileInfo file, final VersionedComment comment) {
+		// open file
+		openFileOnComment(project, review, file, comment);
+
+		// select comment
+		IdeaHelper.getReviewDetailsToolWindow(project).selectComment(review, file, comment);
+
+	}
+
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {
 		private OpenFileDescriptor displayDescriptor;
 		private VirtualFile referenceVirtualFile;
@@ -371,7 +382,7 @@ public final class CrucibleHelper {
 				return providerVirtualFile;
 			}
 
-			if (content instanceof IdeaReviewFileContent) {
+			if (content != null) {
 				virtualFile = content.getVirtualFile();
 				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
 				virtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
