@@ -158,10 +158,10 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		reviewTree.setGroupBy(groupBy);
 	}
 
-	public void openReview(final ReviewAdapter review) {
+	public void openReview(final ReviewAdapter review, boolean retrieveDetails) {
 		CommentHighlighter.removeCommentsInEditors(project);
 		reviewListModel.openReview(review, UpdateReason.OPEN_IN_IDE);
-		IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review);
+		IdeaHelper.getReviewDetailsToolWindow(getProject()).showReview(review, retrieveDetails);
 	}
 
 	public void closeReviewDetailsWindow(final AnActionEvent event) {
@@ -176,7 +176,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 			public void keyPressed(final KeyEvent e) {
 				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && review != null) {
-					openReview(review);
+					openReview(review, true);
 				}
 			}
 		});
@@ -187,7 +187,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 			public void mouseClicked(final MouseEvent e) {
 				final ReviewAdapter review = reviewTree.getSelectedReview();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && review != null) {
-					openReview(review);
+					openReview(review, true);
 				}
 			}
 
@@ -448,6 +448,36 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		return null;
 	}
 
+	/**
+	 * Blocking method. Should be called in the background thread.
+	 *
+	 * @param reviewKey review key
+	 * @param serverId  server id
+	 * @return review if found or null otherwise
+	 */
+	// todo remove that method if review contains details (ValueNotYetInitialized problem)
+	private ReviewAdapter getReviewWithDetailsFromServer(final String reviewKey, final String serverId) {
+
+		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(project, projectCfgManager, serverId);
+		if (server != null) {
+			try {
+				final ServerData serverData = projectCfgManager.getServerData(server);
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(serverData, new PermIdBean(reviewKey));
+				ReviewAdapter ra = new ReviewAdapter(r, serverData);
+				CrucibleServerFacadeImpl.getInstance().getDetailsForReview(ra);
+				return ra;
+			} catch (RemoteApiException e) {
+				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
+			} catch (ServerPasswordNotProvidedException e) {
+				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
+				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
+			}
+		}
+
+		return null;
+	}
+
 	private ReviewAdapter getReviewFromLocalModel(final String reviewKey, final String serverId) {
 		if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
 			for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
@@ -460,7 +490,14 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		return null;
 	}
 
-	public ReviewAdapter openReview(final String reviewKey, final String serverUrl) {
+	/**
+	 * Should be called from the background thread. It downloads review from the server if not found in the local model.
+	 *
+	 * @param reviewKey
+	 * @param serverUrl
+	 * @return review
+	 */
+	public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
 		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getCfgManager().
 				getAllServers(CfgUtil.getProjectId(project), ServerType.CRUCIBLE_SERVER), projectCfgManager);
 
@@ -480,17 +517,20 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		}
 
 		if (server != null) {
-			ReviewAdapter ra = getReviewFromLocalModel(reviewKey, server.getServerId());
+			// todo uncomment that if local review contains details
+			// (will be implemented together with removed ValueNotYetInitialized)
+//			ReviewAdapter ra = getReviewFromLocalModel(reviewKey, server.getServerId());
+//			if (ra == null) {
+//				ra = getReviewFromServer(reviewKey, server.getServerId());
+//			}
 
-			if (ra == null) {
-				ra = getReviewFromServer(reviewKey, server.getServerId());
-			}
+			ReviewAdapter ra = getReviewWithDetailsFromServer(reviewKey, server.getServerId());
 
 			if (ra != null) {
 				final ReviewAdapter reviewAdapter = ra;
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						openReview(reviewAdapter);
+						openReview(reviewAdapter, false);
 					}
 				});
 

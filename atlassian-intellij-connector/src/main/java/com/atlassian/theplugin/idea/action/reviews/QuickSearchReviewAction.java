@@ -191,7 +191,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian IntelliJ Connector");
 //			reviewsWindow.setStatusInfoMessage("Review " + searchKey + " not found.");
 		} else if (reviews.size() == 1) {
-			reviewsWindow.openReview(reviews.iterator().next());
+			reviewsWindow.openReview(reviews.iterator().next(), true);
 		} else if (reviews.size() > 1) {
 			ListPopup popup = JBPopupFactory.getInstance().createListPopup(
 					new ReviewListPopupStep("Found " + reviews.size() + " reviews", reviews, reviewsWindow));
@@ -249,7 +249,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		@Override
 		public PopupStep onChosen(final ReviewAdapter selectedValue, final boolean finalChoice) {
 			// add review to the model (to show it in the main list) and open the review
-			reviewsWindow.openReview(selectedValue);
+			reviewsWindow.openReview(selectedValue, true);
 
 			return null;
 		}

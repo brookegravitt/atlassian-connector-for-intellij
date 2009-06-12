@@ -67,23 +67,23 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private PluginConfiguration pluginConfiguration;
-    private WorkspaceConfigurationBean workspaceConfiguration;
+	private WorkspaceConfigurationBean workspaceConfiguration;
 
-    private ReviewPanel contentPanel;
+	private ReviewPanel contentPanel;
 	private ReviewContentParameters contentParams;
 
 
 	protected ReviewDetailsToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent,
 			@NotNull final PluginConfiguration pluginConfiguration,
-            @NotNull final WorkspaceConfigurationBean workspaceConfiguration) {
+			@NotNull final WorkspaceConfigurationBean workspaceConfiguration) {
 		super(true);
 		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
 		this.pluginConfiguration = pluginConfiguration;
-        this.workspaceConfiguration = workspaceConfiguration;
-    }
+		this.workspaceConfiguration = workspaceConfiguration;
+	}
 
 	@Override
 	protected String getContentKey(ContentParameters params) {
@@ -118,28 +118,51 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		return null;
 	}
 
-	public void selectComment(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment) {
-		contentPanel.selectComment(review, file, comment);
+	/**
+	 * Select 'file and comments' tab and required comment but only if panel contains provided review
+	 *
+	 * @param review
+	 * @param file
+	 * @param comment
+	 */
+	public void selectVersionedComment(final ReviewAdapter review, final CrucibleFileInfo file, final Comment comment) {
+		if (contentParams.reviewAdapter.equals(review)) {
+			contentPanel.selectVersionedComment(file, comment);
+		}
+	}
+
+	public void selectGeneralComment(final ReviewAdapter review, final Comment comment) {
+		if (contentParams.reviewAdapter.equals(review)) {
+			contentPanel.selectGeneralComment(comment);
+		}
+	}
+
+	public void selectFile(final ReviewAdapter review, final CrucibleFileInfo file) {
+		if (contentParams.reviewAdapter.equals(review)) {
+			contentPanel.selectFile(file);
+		}
 	}
 
 	private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
+		private boolean refreshDetails;
 
-		private ReviewContentParameters(ReviewAdapter reviewAdapter) {
+		private ReviewContentParameters(ReviewAdapter reviewAdapter, final boolean refreshDetails) {
 			this.reviewAdapter = reviewAdapter;
+			this.refreshDetails = refreshDetails;
 		}
 	}
 
-    public void showReview(ReviewAdapter adapter) {
-        this.reviewAdapter = adapter;
-        if (workspaceConfiguration.getCrucibleConfiguration() != null) {
-            workspaceConfiguration.getCrucibleConfiguration()
-                    .getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(adapter);
-        }
-        contentParams = new ReviewContentParameters(adapter);
-        showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
-                Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
-    }
+	public void showReview(ReviewAdapter adapter, boolean refreshDetails) {
+		this.reviewAdapter = adapter;
+		if (workspaceConfiguration.getCrucibleConfiguration() != null) {
+			workspaceConfiguration.getCrucibleConfiguration()
+					.getCrucibleFilters().getRecenltyOpenFilter().addRecentlyOpenReview(adapter);
+		}
+		contentParams = new ReviewContentParameters(adapter, refreshDetails);
+		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
+				Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
+	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {
 		if (contentParams != null && getContentPanel(getContentKey(contentParams)) != null) {
@@ -171,7 +194,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 			detailsPanel = new DetailsPanel(params.reviewAdapter);
 
 			tabs.addTab(TAB_DETAILS, detailsPanel);
-			commentsPanel = new CommentsPanel();
+			commentsPanel = new CommentsPanel(params.refreshDetails);
 			tabs.addTab(TAB_FILES_AND_COMMENTS, commentsPanel);
 
 			setLayout(new GridBagLayout());
@@ -261,20 +284,35 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 			detailsPanel.refresh();
 		}
 
-		public void selectComment(final ReviewAdapter review, final CrucibleFileInfo file, final VersionedComment comment) {
+		public void selectVersionedComment(final CrucibleFileInfo file, final Comment comment) {
 			// select tab
 			tabs.setSelectedComponent(commentsPanel);
 
 			// select comment
+			commentsPanel.selectVersionedComment(file, comment);
+		}
 
+		public void selectGeneralComment(final Comment comment) {
+			// select tab
+			tabs.setSelectedComponent(commentsPanel);
 
+			// select comment
+			commentsPanel.selectGeneralComment(comment);
+		}
+
+		public void selectFile(final CrucibleFileInfo file) {
+			// select tab
+			tabs.setSelectedComponent(commentsPanel);
+
+			// select comment
+			commentsPanel.selectFile(file);
 		}
 
 		private final class CommentsPanel extends JPanel {
 			private ReviewItemTreePanel reviewItemTreePanel;
 			private ProgressAnimationProvider progressAnimation = new ProgressAnimationProvider();
 
-			private CommentsPanel() {
+			private CommentsPanel(final boolean retrieveDetails) {
 				super(new BorderLayout());
 				setBackground(UIUtil.getTreeTextBackground());
 				reviewItemTreePanel = new ReviewItemTreePanel(cfgManager, project,
@@ -291,7 +329,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 				Task.Backgroundable task = new Task.Backgroundable(project, "Retrieving Crucible Data", false) {
 					@Override
 					public void run(@NotNull final ProgressIndicator indicator) {
-						reviewItemTreePanel.showReview(params.reviewAdapter);
+						reviewItemTreePanel.showReview(params.reviewAdapter, retrieveDetails);
 					}
 
 					@Override
@@ -320,6 +358,18 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 			public ReviewItemTreePanel getReviewItemTreePanel() {
 				return reviewItemTreePanel;
+			}
+
+			public void selectVersionedComment(final CrucibleFileInfo file, final Comment comment) {
+				reviewItemTreePanel.selectVersionedComment(file, comment);
+			}
+
+			public void selectGeneralComment(final Comment comment) {
+				reviewItemTreePanel.selectGeneralComment(comment);
+			}
+
+			public void selectFile(final CrucibleFileInfo file) {
+				reviewItemTreePanel.selectFile(file);
 			}
 		}
 
