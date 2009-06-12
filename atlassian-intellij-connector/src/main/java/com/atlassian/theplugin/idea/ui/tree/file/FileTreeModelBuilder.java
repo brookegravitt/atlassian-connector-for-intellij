@@ -20,10 +20,10 @@ import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -123,7 +123,7 @@ public final class FileTreeModelBuilder {
 				for (String key : node.getChildren().keySet()) {
 					if (key.equals(childNode.getName())) {
 						FileNode fileNode = node.getChildren().get(key);
-						if (!(fileNode instanceof CrucibleFileNode) && childNode instanceof CrucibleFileNode) {
+						if (!(fileNode instanceof CrucibleFileNode) /* && childNode instanceof CrucibleFileNode always true*/) {
 							for (String s : fileNode.getChildren().keySet()) {
 								childNode.addChild(fileNode.getChildren().get(s));
 							}
@@ -155,7 +155,7 @@ public final class FileTreeModelBuilder {
 
 				for (Comment reply : c.getReplies()) {
 					model.insertNode(
-                            new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
+							new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
 				}
 			}
 		}
@@ -168,7 +168,7 @@ public final class FileTreeModelBuilder {
 
 				for (Comment reply : c.getReplies()) {
 					model.insertNode(
-                            new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
+							new VersionedCommentTreeNode(review, file, (VersionedComment) reply, action), commentNode);
 				}
 			}
 		}
