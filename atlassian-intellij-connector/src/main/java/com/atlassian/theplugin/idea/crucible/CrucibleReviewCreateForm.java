@@ -875,7 +875,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 									final ReviewListToolWindowPanel panel = IdeaHelper.getReviewListToolWindowPanel(project);
 									if (panel != null && newRevewFinal != null) {
 										panel.refresh(UpdateReason.REFRESH);
-										panel.openReview(new ReviewAdapter(newRevewFinal, server));
+										panel.openReview(new ReviewAdapter(newRevewFinal, server), true);
 									}
 								}
 							}, modalityState);

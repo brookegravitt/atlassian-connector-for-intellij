@@ -17,10 +17,7 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -47,10 +44,8 @@ import org.veryquick.embweb.Response;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Jacek Jaroczynski
@@ -305,60 +300,127 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			indicator.setIndeterminate(true);
 
 			// open review
-			review = IdeaHelper.getReviewListToolWindowPanel(project).openReview(reviewKey, serverUrl);
-			try {
-				if (review != null && isDefined(filePath)) {
+			review = IdeaHelper.getReviewListToolWindowPanel(project).openReviewWithDetails(reviewKey, serverUrl);
+
+
+			if (review != null && (isDefined(filePath) || isDefined(commentId))) {
+				try {
 					// get details for review (files and comments)
 					CrucibleServerFacadeImpl.getInstance().getDetailsForReview(review);
-					for (final CrucibleFileInfo file : review.getFiles()) {
-						if (file.getFileDescriptor().getUrl().endsWith(filePath)) {
-							EventQueue.invokeLater(new Runnable() {
-								public void run() {
-									// open requested file
-									if (isDefined(commentId)) {
-										final List<VersionedComment> comments = file.getVersionedComments();
-										boolean commentFound = false;
-										for (VersionedComment comment : comments) {
-											if (comment.getPermId().getId().equals(commentId)) {
-												commentFound = true;
-												CrucibleHelper.openFileOnCommentAndSelectComment(
-														project, review, file, comment);
-												break;
-											}
-											for (Comment reply : comment.getReplies()) {
-												if (reply.getPermId().getId().equals(commentId)) {
-													commentFound = true;
-													CrucibleHelper.openFileOnCommentAndSelectComment(
-															project, review, file, comment);
-													break;
-												}
-											}
-											if (commentFound) {
-												break;
-											}
-										}
+				} catch (RemoteApiException e) {
+					PluginUtil.getLogger().warn("Error when retrieving review details", e);
+					return;
+				} catch (ServerPasswordNotProvidedException e) {
+					PluginUtil.getLogger().warn("Missing password exception caught when retrieving review details", e);
+					return;
+				}
 
-										// comment not found, simply open file
-										if (!commentFound) {
-											CrucibleHelper.showVirtualFileWithComments(project, review, file);
-										}
+				CrucibleFileInfo file = null;
 
-									} else {
-										CrucibleHelper.showVirtualFileWithComments(project, review, file);
-									}
-								}
-							});
+				// find file
+				if (isDefined(filePath)) {
+					final Set<CrucibleFileInfo> files;
+					try {
+						files = review.getFiles();
+					} catch (ValueNotYetInitialized e) {
+						PluginUtil.getLogger().warn("Files collection not available for review", e);
+						return;
+					}
+
+					for (final CrucibleFileInfo f : files) {
+						if (f.getFileDescriptor().getUrl().endsWith(filePath)) {
+							file = f;
 							break;
 						}
 					}
 				}
-			} catch (RemoteApiException e) {
-				PluginUtil.getLogger().warn("Error when retrieving review details", e);
-			} catch (ServerPasswordNotProvidedException e) {
-				PluginUtil.getLogger().warn(
-						"Missing password exception caught when retrieving review details", e);
-			} catch (ValueNotYetInitialized e) {
-				PluginUtil.getLogger().warn("Files collection not initialized", e);
+
+				// find comment
+				VersionedComment versionedComment = null;
+				Comment versionedCommentReply = null;
+				Comment generalComment = null;
+
+				if (isDefined(commentId)) {
+
+					// try to find general comment with specified ID
+					final List<GeneralComment> generalComments;
+					try {
+						generalComments = review.getGeneralComments();
+					} catch (ValueNotYetInitialized e) {
+						PluginUtil.getLogger().warn("General comments collection not available for review", e);
+						return;
+					}
+
+					for (GeneralComment comment : generalComments) {
+						if (comment.getPermId().getId().equals(commentId)) {
+							generalComment = comment;
+							break;
+						}
+						boolean commentFound = false;
+						for (Comment reply : comment.getReplies()) {
+							if (reply.getPermId().getId().equals(commentId)) {
+								commentFound = true;
+								generalComment = reply;
+								break;
+							}
+						}
+						if (commentFound) {
+							break;
+						}
+					}
+
+					// try to find versioned comment with specified ID if general comment not found
+					if (file != null && generalComment == null) {
+						final List<VersionedComment> versionedComments = file.getVersionedComments();
+						for (VersionedComment comment : versionedComments) {
+							if (comment.getPermId().getId().equals(commentId)) {
+								versionedComment = comment;
+								break;
+							}
+							boolean commentFound = false;
+							for (Comment reply : comment.getReplies()) {
+								if (reply.getPermId().getId().equals(commentId)) {
+									commentFound = true;
+									versionedComment = comment;
+									versionedCommentReply = reply;
+									break;
+								}
+							}
+							if (commentFound) {
+								break;
+							}
+						}
+					}
+				}
+
+				if (generalComment != null) {
+					// select comment in the tree
+					CrucibleHelper.selectGeneralComment(project, review, generalComment);
+				}
+
+				if (file != null) {
+					if (versionedComment == null) {
+						// simply open file (versioned comment not found)
+						CrucibleHelper.showVirtualFileWithComments(project, review, file);
+
+						// select file in the tree if general comment not selected
+						if (generalComment == null) {
+							CrucibleHelper.selectFile(project, review, file);
+						}
+					} else {
+						// open file and focus on comment
+						CrucibleHelper.openFileOnComment(project, review, file, versionedComment);
+
+						// select comment in the tree
+						if (versionedCommentReply != null) {
+							CrucibleHelper.selectVersionedComment(project, review, file, versionedCommentReply);
+						} else {
+							CrucibleHelper.selectVersionedComment(project, review, file, versionedComment);
+						}
+					}
+				}
+
+
 			}
 		}
 

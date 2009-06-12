@@ -55,6 +55,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -283,14 +284,32 @@ public final class CrucibleHelper {
 				.queue();
 	}
 
-	public static void openFileOnCommentAndSelectComment(final Project project, final ReviewAdapter review,
-			final CrucibleFileInfo file, final VersionedComment comment) {
-		// open file
-		openFileOnComment(project, review, file, comment);
-
+	public static void selectVersionedComment(final Project project, final ReviewAdapter review,
+			final CrucibleFileInfo file, final Comment comment) {
 		// select comment
-		IdeaHelper.getReviewDetailsToolWindow(project).selectComment(review, file, comment);
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				IdeaHelper.getReviewDetailsToolWindow(project).selectVersionedComment(review, file, comment);
+			}
+		});
+	}
 
+	public static void selectGeneralComment(final Project project, final ReviewAdapter review, final Comment comment) {
+		// select comment
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				IdeaHelper.getReviewDetailsToolWindow(project).selectGeneralComment(review, comment);
+			}
+		});
+	}
+
+	public static void selectFile(final Project project, final ReviewAdapter review, final CrucibleFileInfo file) {
+		// select comment
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				IdeaHelper.getReviewDetailsToolWindow(project).selectFile(review, file);
+			}
+		});
 	}
 
 	private static class FetchingTwoFilesTask extends Task.Backgroundable {

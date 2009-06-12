@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -43,6 +44,7 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.GeneralCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
@@ -244,18 +246,36 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 //				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), configurationListener);
 	}
 
-	public void showReview(ReviewAdapter reviewItem) {
+	/**
+	 * Blocking method. Should be called in the background thread.
+	 * If refreshDetails is true or review has no details (files and comments) data is retrieved from server.
+	 *
+	 * @param reviewItem	 review to open
+	 * @param refreshDetails force to refresh review data
+	 */
+	public void showReview(ReviewAdapter reviewItem, boolean refreshDetails) {
 
 		setCrucibleReview(reviewItem);
 
+		boolean hasNoDetails = false;
+
 		try {
-			CrucibleServerFacadeImpl.getInstance().getDetailsForReview(reviewItem);
-		} catch (RemoteApiException e) {
-			IdeaHelper.handleRemoteApiException(project, e);
-			return;
-		} catch (ServerPasswordNotProvidedException e) {
-			IdeaHelper.handleMissingPassword(e);
-			return;
+			reviewItem.getGeneralComments();
+			reviewItem.getFiles();
+		} catch (ValueNotYetInitialized valueNotYetInitialized) {
+			hasNoDetails = true;
+		}
+
+		if (hasNoDetails || refreshDetails) {
+			try {
+				CrucibleServerFacadeImpl.getInstance().getDetailsForReview(reviewItem);
+			} catch (RemoteApiException e) {
+				IdeaHelper.handleRemoteApiException(project, e);
+				return;
+			} catch (ServerPasswordNotProvidedException e) {
+				IdeaHelper.handleMissingPassword(e);
+				return;
+			}
 		}
 		EventQueue.invokeLater(new MyRunnable(reviewItem));
 	}
@@ -272,6 +292,52 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	public CrucibleReviewListener getReviewListener() {
 		return reviewListener;
+	}
+
+	public void selectVersionedComment(final CrucibleFileInfo file, final Comment comment) {
+		final JTree tree = reviewFilesAndCommentsTree.getTreeComponent();
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			Object o = tree.getPathForRow(i).getLastPathComponent();
+			if (o instanceof VersionedCommentTreeNode) {
+				VersionedCommentTreeNode node = (VersionedCommentTreeNode) o;
+				if (node.getFile().getPermId().equals(file.getPermId())
+						&& node.getComment().getPermId().equals(comment.getPermId())) {
+					tree.setSelectionRow(i);
+					tree.scrollRowToVisible(i);
+					break;
+				}
+			}
+		}
+	}
+
+	public void selectGeneralComment(final Comment comment) {
+		final JTree tree = reviewFilesAndCommentsTree.getTreeComponent();
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			Object o = tree.getPathForRow(i).getLastPathComponent();
+			if (o instanceof GeneralCommentTreeNode) {
+				GeneralCommentTreeNode node = (GeneralCommentTreeNode) o;
+				if (node.getComment().getPermId().equals(comment.getPermId())) {
+					tree.setSelectionRow(i);
+					tree.scrollRowToVisible(i);
+					break;
+				}
+			}
+		}
+	}
+
+	public void selectFile(final CrucibleFileInfo file) {
+		final JTree tree = reviewFilesAndCommentsTree.getTreeComponent();
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			Object o = tree.getPathForRow(i).getLastPathComponent();
+			if (o instanceof CrucibleFileNode) {
+				CrucibleFileNode node = (CrucibleFileNode) o;
+				if (node.getFile().getPermId().equals(file.getPermId())) {
+					tree.setSelectionRow(i);
+					tree.scrollRowToVisible(i);
+					break;
+				}
+			}
+		}
 	}
 
 	private class MyRunnable implements Runnable {
@@ -345,7 +411,9 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 	@Nullable
-	public Object getData(@NonNls final String dataId) {
+	public Object getData
+			(
+					@NonNls final String dataId) {
 		if (dataId.equals(Constants.CRUCIBLE_FILE_NODE) || dataId.equals(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE)) {
 			final TreePath selectionPath = reviewFilesAndCommentsTree.getTreeComponent().getSelectionPath();
 			if (selectionPath == null) {

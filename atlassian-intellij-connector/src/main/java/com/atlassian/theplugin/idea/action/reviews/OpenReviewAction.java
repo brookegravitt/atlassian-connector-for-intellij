@@ -26,7 +26,7 @@ public class OpenReviewAction extends AbstractCrucibleToolbarAction {
 			} else {
 				ReviewAdapter review = e.getData(Constants.REVIEW_KEY);
 				if (review != null) {
-					IdeaHelper.getReviewDetailsToolWindow(project).showReview(review);
+					IdeaHelper.getReviewDetailsToolWindow(project).showReview(review, true);
 				}
 			}
 		}
