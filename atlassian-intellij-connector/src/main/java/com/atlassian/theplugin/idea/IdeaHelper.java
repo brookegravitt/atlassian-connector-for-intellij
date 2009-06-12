@@ -214,7 +214,7 @@ public final class IdeaHelper {
 
 	@Nullable
 	public static <T> T getProjectComponent(final Project project, final Class<T> clazz) {
-		if (project == null || project.getPicoContainer() == null) {
+		if (project == null) {
 			return null;
 		}
 		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));

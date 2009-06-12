@@ -28,6 +28,7 @@ import com.intellij.openapi.vcs.FileStatus;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.Icons;
+import com.intellij.util.ui.UIUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -133,7 +134,12 @@ public class CrucibleFileNode extends FileNode {
 					break;
 			}
 			txt.append(")");
-			append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+
+			if (selected) {
+				append(txt.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null));
+			} else {
+				append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+			}
 
 			int noOfComments = node.getFile().getNumberOfComments();
 			if (noOfComments > 0) {
@@ -185,6 +191,13 @@ public class CrucibleFileNode extends FileNode {
 					setForeground(FileStatus.COLOR_UNKNOWN);
 					break;
 			}
+
+			if (selected) {
+//				setOpaque(true);
+				setBackground(UIUtil.getTreeSelectionBackground());
+				setForeground(UIUtil.getTreeSelectionForeground());
+			}
+
 		}
 	}
 
