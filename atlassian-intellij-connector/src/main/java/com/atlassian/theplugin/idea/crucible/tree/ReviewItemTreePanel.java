@@ -411,9 +411,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	}
 
 	@Nullable
-	public Object getData
-			(
-					@NonNls final String dataId) {
+	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.CRUCIBLE_FILE_NODE) || dataId.equals(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE)) {
 			final TreePath selectionPath = reviewFilesAndCommentsTree.getTreeComponent().getSelectionPath();
 			if (selectionPath == null) {
