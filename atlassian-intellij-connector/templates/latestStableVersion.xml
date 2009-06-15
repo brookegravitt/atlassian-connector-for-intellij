@@ -3,6 +3,42 @@
 		<number>${project.version}, SVN:${buildNumber}</number>
         <downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
         <releaseNotes><![CDATA[
+   <html><body>
+        <p>
+        With pleasure, Atlassian presents the Atlassian IntelliJ Connector 2.1.0
+        Over the past weeks, we have been working on the IntelliJ Connector and issuing regular snapshot releases. Now we are proud to release the final version 2.1.0
+        </p>
+        <p>
+        <ul>
+     <li>What's New for JIRA Issues</li>
+        <ul>
+          <li>New Active Issue Toolbar</li>
+          <li>Log Work on an Issue During Commit</li>
+          <li>Three New Issue Quick-Access Options</li>
+          <li>Issue Workflow Actions Now with Data Input</li>
+        </ul>
+    <li>What's New for Crucible Reviews</li>
+        <ul>
+          <li>Pre-Commit Reviews</li>
+          <li>Review Creation upon Commit</li>
+          <li>Improved Interface for Review Comments</li>
+          <li>Improved Navigation in Reviews</li>
+          <li>Two New Review Quick-Access Options</li>
+          <li>Quick Key to Open Review in Crucible Browser</li>
+         </ul>
+    <li>What's New for FishEye Code Insight</li>
+        <ul>
+          <li>Quick Key to Open File in FishEye Browser
+        </ul>
+    <li>Other Highlights</li>
+        <ul>
+          <li>Improved Usability and Error Messages</li>
+          <li>Additional Usage Statistics Collected</li>
+        </ul>
+    <li>Complete List of Fixes in this Release</li>
+    </ul>
+        </p>
+        </body></html>                
         ]]></releaseNotes>
 <releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/IDE+Plugin+Documentation</releaseNotesUrl>
 </version>

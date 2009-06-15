@@ -5,23 +5,42 @@
 		<releaseNotes><![CDATA[
         <html><body>
         <p>
-        With pleasure, Atlassian presents the Atlassian IntelliJ Connector 2.0.x
-        Over the past weeks, we have been working on the IntelliJ Connector and issuing regular beta releases. Now we are proud to release the final version 2.0.
+        With pleasure, Atlassian presents the Atlassian IntelliJ Connector 2.1.0
+        Over the past weeks, we have been working on the IntelliJ Connector and issuing regular snapshot releases. Now we are proud to release the final version 2.1.0
         </p>
         <p>
-        The connector now offers the same look and feel for JIRA issues, Bamboo builds and Crucible reviews.
-        The connector's windows all open as IDEA tool windows, appearing by default at the bottom of your IDE. Take a look at the release notes, to see the new things you can do with issues, builds and reviews.
-        </p>
-        <p>
-        You can open a FishEye view directly from a file in the IDEA editor, or open files in IDEA by supplying a FishEye URL.
-        There is a new FishEye-only connection for those who do not have a Crucible server.
-        </p>
-        <p>
-        Share your server connections across your project team while retaining your own IDE settings. The connector is now also compatible with IntelliJ IDEA 8.
+        <ul>
+     <li>What's New for JIRA Issues</li>
+        <ul>
+          <li>New Active Issue Toolbar</li>
+          <li>Log Work on an Issue During Commit</li>
+          <li>Three New Issue Quick-Access Options</li>
+          <li>Issue Workflow Actions Now with Data Input</li>
+        </ul>
+    <li>What's New for Crucible Reviews</li>
+        <ul>
+          <li>Pre-Commit Reviews</li>
+          <li>Review Creation upon Commit</li>
+          <li>Improved Interface for Review Comments</li>
+          <li>Improved Navigation in Reviews</li>
+          <li>Two New Review Quick-Access Options</li>
+          <li>Quick Key to Open Review in Crucible Browser</li>
+         </ul>
+    <li>What's New for FishEye Code Insight</li>
+        <ul>
+          <li>Quick Key to Open File in FishEye Browser
+        </ul>
+    <li>Other Highlights</li>
+        <ul>
+          <li>Improved Usability and Error Messages</li>
+          <li>Additional Usage Statistics Collected</li>
+        </ul>
+    <li>Complete List of Fixes in this Release</li>
+    </ul>    
         </p>
         </body></html>
         ]]></releaseNotes>
-		<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.0+Release+Notes
+		<releaseNotesUrl>http://confluence.atlassian.com/display/IDEPLUGIN/Atlassian+IntelliJ+Connector+2.1+Release+Notes
 		</releaseNotesUrl>
 	</version>
 </response>

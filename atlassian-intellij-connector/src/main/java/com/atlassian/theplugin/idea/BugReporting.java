@@ -68,6 +68,8 @@ public final class BugReporting {
 		versionMap.put("2.0.0", "10661");
 		versionMap.put("2.0.1", "10890");
         versionMap.put("2.1.0", "10927");
+        versionMap.put("2.2.0", "11075");
+
 	}
 
     private static final int MAX_URI_LENGTH = 4096;
@@ -144,7 +146,6 @@ public final class BugReporting {
         final int charsLeft = MAX_URI_LENGTH - urlStart.length();
         return urlStart + getBoundedEncodedString(description, charsLeft);
     }
-
 
     static String getBoundedEncodedString(String description, int maxLen) {
         String encoded = UrlUtil.encodeUrl(description);
