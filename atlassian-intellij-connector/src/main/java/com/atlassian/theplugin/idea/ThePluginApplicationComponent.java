@@ -66,7 +66,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	private static final int TIMER_START_DELAY = 20000;
 
 	private final Collection<TimerTask> scheduledComponents = new HashSet<TimerTask>();
-	private static final int HTTP_SERVER_PORT = 51235;
 
 	public Collection<SchedulableChecker> getSchedulableCheckers() {
 		return schedulableCheckers;
@@ -89,7 +88,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();
 
 		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {
-			startHttpServer(HTTP_SERVER_PORT);
+			startHttpServer(configuration.getGeneralConfigurationData().getHttpServerPort());
 		}
 
 		addActionToDiffToolbar();

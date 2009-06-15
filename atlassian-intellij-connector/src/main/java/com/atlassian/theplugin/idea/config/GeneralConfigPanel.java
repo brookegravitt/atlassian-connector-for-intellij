@@ -48,6 +48,8 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				!= globalPluginConfiguration.getGeneralConfigurationData().isAutoUpdateEnabled()
 				|| dialog.isHttpServerEnabled()
 				!= globalPluginConfiguration.getGeneralConfigurationData().isHttpServerEnabled()
+				|| dialog.getHttpServerPort()
+				!= globalPluginConfiguration.getGeneralConfigurationData().getHttpServerPort()
 				|| dialog.getIsCheckUnstableVersionsEnabled()
 				!= globalPluginConfiguration.getGeneralConfigurationData().isCheckUnstableVersionsEnabled()
 				|| MiscUtil.isModified(dialog.getIsAnonymousFeedbackEnabled(),
@@ -70,6 +72,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 	public void saveData() {
 		localPluginConfigurationCopy.getGeneralConfigurationData().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData().setHttpServerEnabled(dialog.isHttpServerEnabled());
+		localPluginConfigurationCopy.getGeneralConfigurationData().setHttpServerPort(dialog.getHttpServerPort());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
 				.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
 		localPluginConfigurationCopy.getGeneralConfigurationData()
@@ -79,6 +82,7 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 
 		globalPluginConfiguration.getGeneralConfigurationData().setAutoUpdateEnabled(dialog.getIsAutoUpdateEnabled());
 		globalPluginConfiguration.getGeneralConfigurationData().setHttpServerEnabled(dialog.isHttpServerEnabled());
+		globalPluginConfiguration.getGeneralConfigurationData().setHttpServerPort(dialog.getHttpServerPort());
 		globalPluginConfiguration.getGeneralConfigurationData()
 				.setCheckUnstableVersionsEnabled(dialog.getIsCheckUnstableVersionsEnabled());
 		globalPluginConfiguration.getGeneralConfigurationData()
@@ -93,6 +97,8 @@ public final class GeneralConfigPanel extends JPanel implements ContentPanel {
 				.isAutoUpdateEnabled());
 		dialog.setHttpServerEnabled(localPluginConfigurationCopy.getGeneralConfigurationData()
 				.isHttpServerEnabled());
+		dialog.setHttpServerPort(localPluginConfigurationCopy.getGeneralConfigurationData()
+				.getHttpServerPort());
 		dialog.setIsCheckUnstableVersionsEnabled(localPluginConfigurationCopy.getGeneralConfigurationData()
 				.isCheckUnstableVersionsEnabled());
 		dialog.setIsAnonymousFeedbackEnabled(localPluginConfigurationCopy.getGeneralConfigurationData()
