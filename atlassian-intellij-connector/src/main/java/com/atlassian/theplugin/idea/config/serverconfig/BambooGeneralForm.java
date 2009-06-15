@@ -135,7 +135,7 @@ public class BambooGeneralForm extends JComponent {
 		}
 
 
-		return IdeaHelper.getSpinnerValue(pollTimeSpinner) != localBambooConfigurationCopy.getPollTime();
+		return IdeaHelper.getSpinnerIntValue(pollTimeSpinner) != localBambooConfigurationCopy.getPollTime();
 
 	}
 

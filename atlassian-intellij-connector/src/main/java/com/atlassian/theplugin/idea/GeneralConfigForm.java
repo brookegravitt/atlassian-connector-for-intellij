@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
+import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionButtonListener;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
@@ -53,6 +54,7 @@ public class GeneralConfigForm {
 	private JRadioButton chkUseIdeaProxy;
 	private JEditorPane usageStatsHelp;
 	private JCheckBox ctrlHttpServer;
+	private JSpinner ctrlHttpServerPort;
 	private Boolean isAnonymousFeedbackEnabled;
 	private final NewVersionChecker newVersionChecker;
 
@@ -98,6 +100,8 @@ public class GeneralConfigForm {
 			}
 		});
 
+		ctrlHttpServerPort.setModel(new SpinnerNumberModel(GeneralConfigurationBean.HTTP_SERVER_PORT, 1, 65535, 1));
+
 	}
 
 	public Component getRootPane() {
@@ -119,6 +123,14 @@ public class GeneralConfigForm {
 
 	public void setHttpServerEnabled(boolean startServer) {
 		this.ctrlHttpServer.setSelected(startServer);
+	}
+
+	public int getHttpServerPort() {
+		return IdeaHelper.getSpinnerIntValue(ctrlHttpServerPort);
+	}
+
+	public void setHttpServerPort(int port) {
+		ctrlHttpServerPort.getModel().setValue(port);
 	}
 
 	public boolean getIsCheckUnstableVersionsEnabled() {
@@ -300,8 +312,8 @@ public class GeneralConfigForm {
 		panel2.add(reportAnonymousUsageStatisticsCheckBox, cc.xy(1, 1));
 		panel2.add(usageStatsHelp, cc.xy(2, 1, CellConstraints.LEFT, CellConstraints.CENTER));
 		final JPanel panel3 = new JPanel();
-		panel3.setLayout(new GridLayoutManager(3, 2, new Insets(0, 12, 12, 12), -1, -1));
-		mainPanel.add(panel3, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.FILL));
+		panel3.setLayout(new GridLayoutManager(5, 3, new Insets(0, 12, 12, 12), -1, -1));
+		mainPanel.add(panel3, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.TOP));
 		panel3.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Direct Click Through"));
 		ctrlHttpServer = new JCheckBox();
 		ctrlHttpServer.setSelected(false);
@@ -310,16 +322,27 @@ public class GeneralConfigForm {
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
 		final Spacer spacer4 = new Spacer();
-		panel3.add(spacer4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-		final Spacer spacer5 = new Spacer();
-		panel3.add(spacer5, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+		panel3.add(spacer4, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
 				GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setFont(new Font(label2.getFont().getName(), label2.getFont().getStyle(), 10));
 		label2.setText("Information: You have to restart IDEA to apply changes (start/stop http server)");
-		panel3.add(label2, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+		panel3.add(label2, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final JLabel label3 = new JLabel();
+		label3.setText("  Direct Click Through TCP/IP Port: ");
+		panel3.add(label3, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+		final Spacer spacer5 = new Spacer();
+		panel3.add(spacer5, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+				GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+		final Spacer spacer6 = new Spacer();
+		panel3.add(spacer6, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+				GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+		ctrlHttpServerPort = new JSpinner();
+		panel3.add(ctrlHttpServerPort, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST,
+				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED,
+				new Dimension(60, -1), new Dimension(60, -1), null, 0, false));
 		ButtonGroup buttonGroup;
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(checkNewVersionStable);

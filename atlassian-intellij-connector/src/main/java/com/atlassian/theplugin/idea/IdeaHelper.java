@@ -43,6 +43,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 /**
  * Simple helper methods for the IDEA plugin
@@ -52,15 +54,19 @@ public final class IdeaHelper {
 	private IdeaHelper() {
 	}
 
-	public static int getSpinnerValue(final JSpinner spinner) {
+	public static int getSpinnerIntValue(final JSpinner spinner) {
 		if (spinner == null || spinner.getModel() == null) {
 			return 1;
 		}
 
 		int value = Integer.valueOf(spinner.getModel().getValue().toString());
 		try {
-			value = Integer.valueOf(((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText());
+			value = NumberFormat.getIntegerInstance().parse(
+					((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText()).intValue();
+//			value = Integer.valueOf(((JSpinner.DefaultEditor) spinner.getEditor()).getTextField().getText());
 		} catch (NumberFormatException e) {
+			///not important
+		} catch (ParseException e) {
 			///not important
 		}
 		return value;
