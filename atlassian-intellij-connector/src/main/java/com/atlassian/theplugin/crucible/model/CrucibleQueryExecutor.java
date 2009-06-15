@@ -90,19 +90,19 @@ public class CrucibleQueryExecutor {
 
 							} catch (ServerPasswordNotProvidedException exception) {
 								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-								predefinedFiterNotificationBean.setException(exception);
-								predefinedFiterNotificationBean.setServer(projectCfgManager.getServerData(server));
+								predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
+                                        exception);
 								break;
 							} catch (RemoteApiLoginFailedException exception) {
 								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-								predefinedFiterNotificationBean.setException(exception);
-								predefinedFiterNotificationBean.setServer(projectCfgManager.getServerData(server));
+                                predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
+                                        exception);
 								break;
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 										+ " server", e);
-								predefinedFiterNotificationBean.setException(e);
-								predefinedFiterNotificationBean.setServer(projectCfgManager.getServerData(server));
+                                predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
+                                        e);
 								break;
 							}
 						}
@@ -153,13 +153,12 @@ public class CrucibleQueryExecutor {
 					} catch (ServerPasswordNotProvidedException exception) {
 						MissingPasswordHandlerQueue.addHandler(
 								new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
-						recenltyOpenFilterNotificationBean.setException(exception);
-						recenltyOpenFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
+						recenltyOpenFilterNotificationBean.addException(projectCfgManager.getServerData(server),
+                                exception);
 					} catch (RemoteApiException e) {
 						PluginUtil.getLogger().info("Error getting Crucible review for " + server.getName()
 								+ " server", e);
-						recenltyOpenFilterNotificationBean.setException(e);
-						recenltyOpenFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
+						recenltyOpenFilterNotificationBean.addException(projectCfgManager.getServerData(server), e);
 					}
 				}
 			}
@@ -202,13 +201,11 @@ public class CrucibleQueryExecutor {
 				} catch (ServerPasswordNotProvidedException exception) {
                     MissingPasswordHandlerQueue.addHandler(
 							new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
-					customFilterNotificationBean.setException(exception);
-					customFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
+					customFilterNotificationBean.addException(projectCfgManager.getServerData(server), exception);
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 							+ " server", e);
-					customFilterNotificationBean.setException(e);
-					customFilterNotificationBean.setServer(projectCfgManager.getServerData(server));
+					customFilterNotificationBean.addException(projectCfgManager.getServerData(server), e);
 				}
 			}
 		}
@@ -237,17 +234,14 @@ public class CrucibleQueryExecutor {
 					reviewNotificationBean.getReviews().add(new ReviewAdapter(r, review.getServerData()));
 				} catch (ServerPasswordNotProvidedException exception) {
 					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-					reviewNotificationBean.setException(exception);
-					reviewNotificationBean.setServer(review.getServerData());
+					reviewNotificationBean.addException(review.getServerData(), exception);
 				} catch (RemoteApiLoginFailedException exception) {
 					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-					reviewNotificationBean.setException(exception);
-					reviewNotificationBean.setServer(review.getServerData());
+					reviewNotificationBean.addException(review.getServerData(),exception);
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().info("Error getting Crucible reviews for " + review.getServerData().getName()
 							+ " server", e);
-					reviewNotificationBean.setException(e);
-					reviewNotificationBean.setServer(review.getServerData());
+					reviewNotificationBean.addException(review.getServerData(), e);
 				}
 			}
 		}
