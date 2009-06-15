@@ -533,7 +533,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		Map<CrucibleFilter, ReviewNotificationBean> updatedReviews = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
 		public CrucibleReviewListModelImplAdapter() {
-			super(null, new WorkspaceConfigurationBean());
+			super(null, new WorkspaceConfigurationBean(), null);
 			final ReviewNotificationBean bean = new ReviewNotificationBean();
 			updatedReviews.put(PredefinedFilter.Open, bean);
 			bean.setReviews(new ArrayList<ReviewAdapter>());

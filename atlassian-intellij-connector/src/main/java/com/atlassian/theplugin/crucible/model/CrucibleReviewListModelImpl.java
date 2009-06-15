@@ -1,5 +1,8 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
@@ -8,8 +11,10 @@ import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleN
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NotVisibleReviewNotification;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
 
@@ -26,15 +31,21 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	//	private ReviewAdapter selectedReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
-	private CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
+    private ProjectConfiguration projectConfiguration;
+    private CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
+    //private LocalConfigurationListenerAdapater configurationListenerAdapater = new LocalConfigurationListenerAdapater();
 
 	private AtomicLong epoch = new AtomicLong(0);
 
 	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
-			final WorkspaceConfigurationBean projectConfigurationBean) {
+			final WorkspaceConfigurationBean projectConfigurationBean, final ProjectCfgManagerImpl projectCfgManager) {
+
 		this.reviewListModelBuilder = reviewListModelBuilder;
-		this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
+        this.projectConfiguration = projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
+        this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
 		reviews.put(PredefinedFilter.OpenInIde, new HashSet<ReviewAdapter>());
+
+        
 	}
 
 	public Collection<ReviewAdapter> getReviews() {
@@ -262,15 +273,18 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		final List<CrucibleNotification> notifications = new ArrayList<CrucibleNotification>();
 
-		Collection<ReviewAdapter> openInIde = null;
+		Collection<ReviewAdapter> openInIde = new ArrayList<ReviewAdapter>();
 
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
 			if (crucibleFilter == PredefinedFilter.OpenInIde) {
-				if (updatedReviews.get(crucibleFilter).getException() != null) {
-					continue;
+
+                openInIde = updatedReviews.get(crucibleFilter).getReviews();
+
+				if (updatedReviews.get(crucibleFilter).getExceptionServers().size() > 0) {
+					openInIde.addAll(getExistingReviewsFromServers(crucibleFilter, updatedReviews.get(crucibleFilter).getExceptionServers()));
 				}
-				openInIde = updatedReviews.get(crucibleFilter).getReviews();
-				if (openInIde != null) {
+
+				if (openInIde != null && openInIde.size() > 0) {
 					getCollectionForFilter(reviews, PredefinedFilter.OpenInIde);
 					for (ReviewAdapter reviewAdapter : openInIde) {
 						notifications.addAll(addReview(PredefinedFilter.OpenInIde, reviewAdapter, updateReason));
@@ -280,14 +294,18 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
+            Collection<ReviewAdapter> oldReviews = new ArrayList<ReviewAdapter>();
+
 			if (crucibleFilter == PredefinedFilter.OpenInIde) {
 				continue;
 			}
-			if (updatedReviews.get(crucibleFilter).getException() != null) {
-				continue;
+
+            Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
+			if (updatedReviews.get(crucibleFilter).getExceptionServers().size() > 0) {
+                updated.addAll(getExistingReviewsFromServers(crucibleFilter, updatedReviews.get(crucibleFilter).getExceptionServers()));
 			}
 
-			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
+
 			if (updated != null) {
 				for (ReviewAdapter reviewAdapter : updated) {
 					if (openInIde != null && openInIde.contains(reviewAdapter)) {
@@ -303,17 +321,15 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 
 		Set<ReviewAdapter> reviewSet = new HashSet<ReviewAdapter>();
 		for (CrucibleFilter crucibleFilter : updatedReviews.keySet()) {
-			if (updatedReviews.get(crucibleFilter).getException() != null) {
-				reviewSet.addAll(getReviews());
-			} else {
+				reviewSet.addAll(getExistingReviewsFromServers(crucibleFilter, updatedReviews.get(crucibleFilter).getExceptionServers()));
 				reviewSet.addAll(updatedReviews.get(crucibleFilter).getReviews());
-			}
 		}
 
 		List<ReviewAdapter> removed = new ArrayList<ReviewAdapter>();
 
 		removed.addAll(getReviews());
 		removed.removeAll(reviewSet);
+
 
 		for (ReviewAdapter r : removed) {
 			notifications.addAll(removeReview(r, updateReason));
@@ -326,11 +342,11 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 				continue;
 			}
 
-			if (updatedReviews.get(crucibleFilter).getException() != null) {
-				continue;
-			}
+            Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
+            if (updatedReviews.get(crucibleFilter).getExceptionServers().size() > 0) {
+                updated.addAll(getExistingReviewsFromServers(crucibleFilter, updatedReviews.get(crucibleFilter).getExceptionServers()));
+            }
 
-			Collection<ReviewAdapter> updated = updatedReviews.get(crucibleFilter).getReviews();
 
 			final Set<ReviewAdapter> filterReviews = getCollectionForFilter(reviews, crucibleFilter);
 			final Set<ReviewAdapter> reviewsForDeleteFromCategory = new HashSet<ReviewAdapter>();
@@ -362,16 +378,38 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		}
 
 		for (ReviewNotificationBean bean : updatedReviews.values()) {
-			if (bean.getException() != null) {
-				notifications.add(new NewExceptionNotification(bean.getException(), bean.getServer()));
-				notifyReviewListUpdateError(new UpdateContext(updateReason, null, notifications), bean.getException());
+			for (ServerData server : bean.getExceptionServers()) {
+				notifications.add(new NewExceptionNotification(bean.getException(server), server));
+				notifyReviewListUpdateError(new UpdateContext(updateReason, null, notifications), bean.getException(server));
 			}
 		}
 
 		return notifications;
 	}
 
-	private void notifyReviewAdded(UpdateContext updateContext) {
+    private Collection<ReviewAdapter> getExistingReviewsFromServers(CrucibleFilter crucibleFilter, Collection<ServerData> servers) {
+        Collection<ReviewAdapter> reviewList = new ArrayList<ReviewAdapter>();
+
+        if (reviews != null && reviews.get(crucibleFilter) != null) {
+            for (ReviewAdapter reviewAdapter : reviews.get(crucibleFilter)) {
+
+                for (ServerData s : servers) {
+                    ServerCfg serverCfg =
+                            projectConfiguration != null
+                                    ? projectConfiguration.getServerCfg(new ServerId(s.getServerId())) : null;
+                    //server disabled or communication problem
+                    if((serverCfg != null && !serverCfg.isEnabled())
+                            || s.getServerId().equals(reviewAdapter.getServerData().getServerId())) {
+                        reviewList.add(reviewAdapter);
+                    }                            
+                }
+            }
+        }
+
+        return reviewList;
+    }
+
+    private void notifyReviewAdded(UpdateContext updateContext) {
 		for (CrucibleReviewListModelListener listener : modelListeners) {
 			listener.reviewAdded(updateContext);
 		}
@@ -406,4 +444,31 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			listener.reviewListUpdateError(updateContext, exception);
 		}
 	}
+
+//    private class LocalConfigurationListenerAdapater extends ConfigurationListenerAdapter {
+//        @Override
+//        public void serverConnectionDataChanged(ServerId serverId) {
+//            conditionalModelRefresh(serverId);
+//        }
+//
+//        @Override
+//        public void serverDataChanged(ServerId serverId) {
+//           conditionalModelRefresh(serverId);
+//        }
+//
+//        private void conditionalModelRefresh(ServerId serverId) {
+//            if (reviews != null) {
+//                for (ReviewAdapter reviewAdapter : getReviews()) {
+//                    if (reviewAdapter.getServerData().getServerId().toString().equals(serverId)) {
+//                        CrucibleReviewListModelImpl.this.rebuildModel(UpdateReason.REFRESH);
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//    }
 }
+
+

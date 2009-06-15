@@ -19,12 +19,13 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class ReviewNotificationBean {
 	private List<ReviewAdapter> reviews;
-	private Exception exception;
-	private ServerData server;
+	private HashMap<ServerData, Exception> exceptions = new HashMap<ServerData, Exception>();
 
 	public ReviewNotificationBean() {
 	}
@@ -37,19 +38,15 @@ public class ReviewNotificationBean {
 		this.reviews = reviews;
 	}
 
-	public Exception getException() {
-		return exception;
+	public Exception getException(ServerData serverData) {
+		return exceptions.get(serverData);
 	}
 
-	public void setException(final Exception exception) {
-		this.exception = exception;
+	public void addException(final ServerData serverData, final Exception exception) {
+		exceptions.put(serverData, exception);
 	}
 
-	public ServerData getServer() {
-		return server;
-	}
-
-	public void setServer(final ServerData server) {
-		this.server = server;
-	}
+    public Collection<ServerData> getExceptionServers() {
+        return exceptions.keySet();
+    }
 }
