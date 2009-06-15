@@ -38,7 +38,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
     private AtomicLong epoch = new AtomicLong(0);
 
     public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
-                                       final WorkspaceConfigurationBean projectConfigurationBean, final ProjectCfgManagerImpl projectCfgManager) {
+                                       final WorkspaceConfigurationBean projectConfigurationBean,
+                                       final ProjectCfgManagerImpl projectCfgManager) {
 
         this.reviewListModelBuilder = reviewListModelBuilder;
         this.projectConfiguration = projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
@@ -394,7 +395,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
         return notifications;
     }
 
-    private Collection<ReviewAdapter> getExistingReviewsFromServers(CrucibleFilter crucibleFilter, Collection<ServerData> servers) {
+    private Collection<ReviewAdapter> getExistingReviewsFromServers(CrucibleFilter crucibleFilter,
+                                                                    Collection<ServerData> servers) {
         Collection<ReviewAdapter> reviewList = new ArrayList<ReviewAdapter>();
 
         if (reviews != null && reviews.get(crucibleFilter) != null) {
