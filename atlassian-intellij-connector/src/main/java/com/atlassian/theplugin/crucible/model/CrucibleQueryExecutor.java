@@ -237,7 +237,7 @@ public class CrucibleQueryExecutor {
 					reviewNotificationBean.addException(review.getServerData(), exception);
 				} catch (RemoteApiLoginFailedException exception) {
 					MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-					reviewNotificationBean.addException(review.getServerData(),exception);
+					reviewNotificationBean.addException(review.getServerData(), exception);
 				} catch (RemoteApiException e) {
 					PluginUtil.getLogger().info("Error getting Crucible reviews for " + review.getServerData().getName()
 							+ " server", e);
