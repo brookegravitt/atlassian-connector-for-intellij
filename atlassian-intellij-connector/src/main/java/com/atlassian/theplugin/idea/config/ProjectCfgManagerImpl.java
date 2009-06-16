@@ -44,11 +44,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	@NotNull
-	public CfgManager getCfgManager() {
-		return cfgManager;
-	}
-
 	public boolean isDefaultCredentialsAsked() {
 		return projectConfigurationBean.isDefaultCredentialsAsked();
 	}
@@ -202,5 +197,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	public void removeProjectConfigurationListener(final ConfigurationListener configurationListener) {
 		cfgManager.removeProjectConfigurationListener(projectId, configurationListener);
+	}
+
+	// todo remove that method
+	public void removeProject() {
+		cfgManager.removeProject(projectId);
 	}
 }
