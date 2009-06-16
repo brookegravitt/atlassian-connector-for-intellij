@@ -159,9 +159,12 @@ public final class CrucibleHelper {
 		});
 	}
 
-	public static Editor getEditorForCrucibleFile(ReviewAdapter review, CrucibleFileInfo file) {
+	public static Editor getEditorForCrucibleFile(Project project, ReviewAdapter review, CrucibleFileInfo file) {
 		Editor[] editors = EditorFactory.getInstance().getAllEditors();
 		for (Editor editor : editors) {
+            if (!project.equals(editor.getProject())) {
+                continue;
+            }
 			final Document document = editor.getDocument();
 			final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
@@ -385,7 +388,7 @@ public final class CrucibleHelper {
 
 			// check if requested file is already opened
 			// doesn't haeve to be in cache :)
-			VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
+			VirtualFile virtualFile = getEditorForRevisionFile(project, fileInfo);
 			if (virtualFile != null) {
 				return virtualFile;
 			}
@@ -413,10 +416,14 @@ public final class CrucibleHelper {
 		}
 
 		//get non dirty file and priority has local file than remote
-		private VirtualFile getEditorForRevisionFile(VersionedVirtualFile fileInfo) {
+		private VirtualFile getEditorForRevisionFile(Project project, VersionedVirtualFile fileInfo) {
 			VirtualFile foundFile = null;
 			Editor[] editors = EditorFactory.getInstance().getAllEditors();
 			for (Editor editor : editors) {
+                if (!project.equals(editor.getProject())) {
+                    continue;
+                }
+                
 				final Document document = editor.getDocument();
 				final VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 				if (virtualFile != null) {
@@ -426,7 +433,7 @@ public final class CrucibleHelper {
 						if (fileInfo.getAbsoluteUrl().equals(fileUrl) && fileInfo.getRevision().equals(fileRevision)
 								&& !FileDocumentManager.getInstance().isFileModified(virtualFile)) {
 
-							if (VcsUtil.getVcsFor(project, virtualFile) == null || foundFile == null) {
+							if (VcsUtil.getVcsFor(this.project, virtualFile) == null || foundFile == null) {
 								foundFile = virtualFile;
 							}
 						}

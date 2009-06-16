@@ -33,7 +33,7 @@ public class CrucibleEditorFactoryListener implements EditorFactoryListener {
 		try {
 			Document doc = editorFactoryEvent.getEditor().getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
-			if (virtualFile != null) {
+			if (virtualFile != null && project.equals(editorFactoryEvent.getEditor().getProject())) {
 				CrucibleFileInfo crucibleFile = virtualFile.getUserData(CommentHighlighter.REVIEWITEM_DATA_KEY);
 				if (crucibleFile == null) {
 					Collection<ReviewAdapter> reviews = crucibleReviewListModel.getOpenInIdeReviews();
