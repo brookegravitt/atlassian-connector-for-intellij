@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -96,30 +95,29 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			}
 		});
 
-		projectCfgManager.getCfgManager()
-				.addProjectConfigurationListener(CfgUtil.getProjectId(project), new ConfigurationListenerAdapter() {
+		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
 
-					@Override
-					public void serverRemoved(ServerCfg oldServer) {
-						updateFilterServer(oldServer);
-					}
+			@Override
+			public void serverRemoved(ServerCfg oldServer) {
+				updateFilterServer(oldServer);
+			}
 
-					// we need to also handle adding server. Consider scenario:
-					// 1. remove the last CRU server, that is also a filter's server
-					// 2. custom filter details panel disappears
-					// 3. add some other CRU server
-					// 4. custom filter details panel reappears and it has to have correct data (info about invalid server)
-					@Override
-					public void serverAdded(ServerCfg newServer) {
-						updateFilterServer(newServer);
-					}
+			// we need to also handle adding server. Consider scenario:
+			// 1. remove the last CRU server, that is also a filter's server
+			// 2. custom filter details panel disappears
+			// 3. add some other CRU server
+			// 4. custom filter details panel reappears and it has to have correct data (info about invalid server)
+			@Override
+			public void serverAdded(ServerCfg newServer) {
+				updateFilterServer(newServer);
+			}
 
-					private void updateFilterServer(ServerCfg oldServer) {
-						if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
-							updateDetails(filter);
-						}
-					}
-				});
+			private void updateFilterServer(ServerCfg oldServer) {
+				if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
+					updateDetails(filter);
+				}
+			}
+		});
 	}
 
 	private synchronized void updateDetails(final CustomFilterBean manualFilter) {

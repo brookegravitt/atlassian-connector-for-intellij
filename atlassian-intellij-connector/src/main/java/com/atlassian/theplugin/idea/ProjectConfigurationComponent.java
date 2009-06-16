@@ -111,12 +111,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			});
 		}
 
-		projectCfgManager.getCfgManager().addProjectConfigurationListener(getProjectId(), configurationListener);
+		projectCfgManager.addProjectConfigurationListener(configurationListener);
 	}
 
 
 	public void projectClosed() {
-		projectCfgManager.getCfgManager().removeProjectConfigurationListener(getProjectId(), configurationListener);
+		projectCfgManager.removeProjectConfigurationListener(configurationListener);
 		projectCfgManager.getCfgManager().removeProject(getProjectId());
 //		projectCfgManager.removeAllConfigurationCredentialListeners(getProjectId());
 	}
@@ -165,7 +165,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 				//now resolves migration problem from Crucible as FishEye to pure FishEye
 				projectConfiguration.setDefaultFishEyeServerId(null);
 			}
-			projectCfgManager.getCfgManager().updateProjectConfiguration(projectId, projectConfiguration);
+			projectCfgManager.updateProjectConfiguration(projectConfiguration);
 		} catch (ServerCfgFactoryException e) {
 			handleServerCfgFactoryException(project, e);
 			setDefaultProjectConfiguration();
@@ -259,8 +259,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	private ProjectConfiguration setDefaultProjectConfiguration() {
 		final ProjectConfiguration configuration = ProjectConfiguration.emptyConfiguration();
-		projectCfgManager.getCfgManager().updateProjectConfiguration(CfgUtil.getProjectId(project),
-				configuration);
+		projectCfgManager.updateProjectConfiguration(configuration);
 		return configuration;
 	}
 
