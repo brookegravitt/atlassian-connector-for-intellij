@@ -27,11 +27,12 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredExceptio
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import com.atlassian.theplugin.commons.util.StringUtil;
 import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethod;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -49,16 +50,16 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
-        method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
 	@Override
 	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
-    private String getAuthHeaderValue() {
-        return "Basic " + encode(getUsername() + ":" + getPassword());
-    }
+	private String getAuthHeaderValue() {
+		return "Basic " + StringUtil.encode(getUsername() + ":" + getPassword());
+	}
 
 	public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
 			String sortBy,
@@ -211,7 +212,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private String appendAuthentication(boolean firstItem) {
 		final String username = getUsername();
 		if (username != null) {
-            return (firstItem ? "?" : "&") + "os_authType=basic";
+			return (firstItem ? "?" : "&") + "os_authType=basic";
 		}
 		return "";
 	}

@@ -366,10 +366,10 @@ public class JIRAIssueTreeBuilder {
 	private String getProjectName(JIRAIssue issue) {
 		if (projectKeysToNames == null
 				|| !projectKeysToNames.containsKey(new Pair<String, ServerId>(issue.getProjectKey(),
-				CfgUtil.getJiraServerCfgByUrl(project, projectCfgManager, issue.getServerUrl()).getServerId()))) {
+				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()))) {
 			return issue.getProjectKey();
 		}
 		return projectKeysToNames.get(new Pair<String, ServerId>(issue.getProjectKey(),
-				CfgUtil.getJiraServerCfgByUrl(project, projectCfgManager, issue.getServerUrl()).getServerId()));
+				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()));
 	}
 }

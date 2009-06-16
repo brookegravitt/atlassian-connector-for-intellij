@@ -44,8 +44,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,14 +62,14 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JTextField assignee;
 	private JList componentsList;
 	private JList versionsList;
-    private JList fixVersionsList;
-    private final ServerData jiraServer;
+	private JList fixVersionsList;
+	private final ServerData jiraServer;
 	private IssueListToolWindowPanel issueListToolWindowPanel;
 	private Project project;
 	private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 
-    public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
+	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
 			@NotNull Project project, JIRAServerModel model, ServerData server,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
@@ -117,52 +117,53 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 		});
 
-        projectComboBox.addPopupMenuListener(new PopupMenuListener() {
+		projectComboBox.addPopupMenuListener(new PopupMenuListener() {
 
-            private Object item = null;
-            public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
-                item = projectComboBox.getSelectedItem();
-            }
+			private Object item = null;
 
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
-                if (item != null && item != projectComboBox.getSelectedItem()) {
-                    updateProjectRelatedItems();
-                }
-            }
+			public void popupMenuWillBecomeVisible(PopupMenuEvent popupMenuEvent) {
+				item = projectComboBox.getSelectedItem();
+			}
 
-            public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
-                item = null;
-            }
-        });
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent popupMenuEvent) {
+				if (item != null && item != projectComboBox.getSelectedItem()) {
+					updateProjectRelatedItems();
+				}
+			}
+
+			public void popupMenuCanceled(PopupMenuEvent popupMenuEvent) {
+				item = null;
+			}
+		});
 		getOKAction().setEnabled(false);
 		getOKAction().putValue(Action.NAME, "Create");
 	}
 
-    private boolean issueTypesUpdated = false;
-    private boolean componentsUpdated = false;
-    private boolean versionsUpdated = false;
-    private boolean fixVersionsUpdated = false;
+	private boolean issueTypesUpdated = false;
+	private boolean componentsUpdated = false;
+	private boolean versionsUpdated = false;
+	private boolean fixVersionsUpdated = false;
 
-    private void updateProjectRelatedItems() {
-        JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
-        List<UiTask> tasks = new ArrayList<UiTask>();
-        issueTypesUpdated = false;
-        componentsUpdated = false;
-        versionsUpdated = false;
-        fixVersionsUpdated = false;
-        setProjectComboBoxEnableState();
-        tasks.add(updateIssueTypes(p));
-        tasks.add(updateComponents(p));
-        tasks.add(updateVersions(p));
-        tasks.add(updateFixVersions(p));
-        IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
-    }
+	private void updateProjectRelatedItems() {
+		JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
+		List<UiTask> tasks = new ArrayList<UiTask>();
+		issueTypesUpdated = false;
+		componentsUpdated = false;
+		versionsUpdated = false;
+		fixVersionsUpdated = false;
+		setProjectComboBoxEnableState();
+		tasks.add(updateIssueTypes(p));
+		tasks.add(updateComponents(p));
+		tasks.add(updateVersions(p));
+		tasks.add(updateFixVersions(p));
+		IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
+	}
 
-    private void setProjectComboBoxEnableState() {
-        projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated && fixVersionsUpdated);
-    }
+	private void setProjectComboBoxEnableState() {
+		projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated && fixVersionsUpdated);
+	}
 
-    public void initData() {
+	public void initData() {
 		List<UiTask> tasks = new ArrayList<UiTask>();
 		tasks.add(updatePriorities());
 		tasks.add(updateProject());
@@ -225,7 +226,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				projectComboBox.setSelectedIndex(0);
 			}
 		}
-        updateProjectRelatedItems();
+		updateProjectRelatedItems();
 	}
 
 	private UiTask updatePriorities() {
@@ -274,14 +275,14 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			public void onSuccess() {
 				addIssueTypes(issueTypes);
-                issueTypesUpdated = true;
-                setProjectComboBoxEnableState();
+				issueTypesUpdated = true;
+				setProjectComboBoxEnableState();
 			}
 
 			public void onError() {
 				addIssueTypes(issueTypes);
-                issueTypesUpdated = true;
-                setProjectComboBoxEnableState();
+				issueTypesUpdated = true;
+				setProjectComboBoxEnableState();
 			}
 		};
 	}
@@ -298,17 +299,17 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
-                componentsUpdated = true;
-                setProjectComboBoxEnableState();
+				componentsUpdated = true;
+				setProjectComboBoxEnableState();
 				addComponents(components);
 			}
 
-            @Override
-            public void onError() {
-                componentsUpdated = true;
-                setProjectComboBoxEnableState();
-            }
-        };
+			@Override
+			public void onError() {
+				componentsUpdated = true;
+				setProjectComboBoxEnableState();
+			}
+		};
 	}
 
 	private UiTask updateVersions(final JIRAProject project) {
@@ -323,43 +324,43 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			@Override
 			public void onSuccess() {
-                versionsUpdated = true;
-                setProjectComboBoxEnableState();
+				versionsUpdated = true;
+				setProjectComboBoxEnableState();
 				addVersions(versions);
 			}
 
-            @Override
-            public void onError() {
-                versionsUpdated = true;
-                setProjectComboBoxEnableState();
-            }
-        };
+			@Override
+			public void onError() {
+				versionsUpdated = true;
+				setProjectComboBoxEnableState();
+			}
+		};
 	}
 
-    private UiTask updateFixVersions(final JIRAProject project) {
-        fixVersionsList.setEnabled(false);
-        getOKAction().setEnabled(false);
-        return new UiTaskAdapter("fetching versions", getContentPane()) {
-            private List<JIRAFixForVersionBean> versions;
+	private UiTask updateFixVersions(final JIRAProject project) {
+		fixVersionsList.setEnabled(false);
+		getOKAction().setEnabled(false);
+		return new UiTaskAdapter("fetching versions", getContentPane()) {
+			private List<JIRAFixForVersionBean> versions;
 
-            public void run() throws Exception {
-                versions = model.getFixForVersions(jiraServer, project, false);
-            }
+			public void run() throws Exception {
+				versions = model.getFixForVersions(jiraServer, project, false);
+			}
 
-            @Override
-            public void onSuccess() {
-                fixVersionsUpdated = true;
-                setProjectComboBoxEnableState();
-                addFixForVersions(versions);
-            }
+			@Override
+			public void onSuccess() {
+				fixVersionsUpdated = true;
+				setProjectComboBoxEnableState();
+				addFixForVersions(versions);
+			}
 
-            @Override
-            public void onError() {
-                fixVersionsUpdated = true;
-                setProjectComboBoxEnableState();
-            }
-        };
-    }
+			@Override
+			public void onError() {
+				fixVersionsUpdated = true;
+				setProjectComboBoxEnableState();
+			}
+		};
+	}
 
 	private void addVersions(List<JIRAVersionBean> versions) {
 		versionsList.removeAll();
@@ -374,18 +375,18 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
-    private void addFixForVersions(List<JIRAFixForVersionBean> versions) {
-        fixVersionsList.removeAll();
-        final DefaultListModel listModel = new DefaultListModel();
-        for (JIRAFixForVersionBean version : versions) {
-            if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
-                listModel.addElement(new VersionWrapper(version));
-            }
-        }
-        fixVersionsList.setModel(listModel);
-        fixVersionsList.setEnabled(true);
-        getOKAction().setEnabled(true);
-    }
+	private void addFixForVersions(List<JIRAFixForVersionBean> versions) {
+		fixVersionsList.removeAll();
+		final DefaultListModel listModel = new DefaultListModel();
+		for (JIRAFixForVersionBean version : versions) {
+			if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
+				listModel.addElement(new VersionWrapper(version));
+			}
+		}
+		fixVersionsList.setModel(listModel);
+		fixVersionsList.setEnabled(true);
+		getOKAction().setEnabled(true);
+	}
 
 	private void addIssueTypes(List<JIRAConstant> issueTypes) {
 		typeComboBox.removeAllItems();
@@ -496,14 +497,14 @@ public class IssueCreateDialog extends DialogWrapper {
 			issueProxy.setAffectsVersions(versions);
 		}
 
-        if (fixVersionsList.getSelectedValues().length > 0) {
-            List<JIRAConstant> versions = new ArrayList<JIRAConstant>();
-            for (Object ver : fixVersionsList.getSelectedValues()) {
-                VersionWrapper vw = (VersionWrapper) ver;
-                versions.add(vw.getWrapped());
-            }
-            issueProxy.setFixVersions(versions);
-        }
+		if (fixVersionsList.getSelectedValues().length > 0) {
+			List<JIRAConstant> versions = new ArrayList<JIRAConstant>();
+			for (Object ver : fixVersionsList.getSelectedValues()) {
+				VersionWrapper vw = (VersionWrapper) ver;
+				versions.add(vw.getWrapped());
+			}
+			issueProxy.setFixVersions(versions);
+		}
 
 		if (components.size() > 0) {
 			issueProxy.setComponents(components);
@@ -585,10 +586,10 @@ public class IssueCreateDialog extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayoutManager(9, 3, new Insets(5, 5, 5, 5), -1, -1));
+		mainPanel.setLayout(new GridLayoutManager(10, 3, new Insets(5, 5, 5, 5), -1, -1));
 		mainPanel.setMinimumSize(new Dimension(480, 500));
 		final JScrollPane scrollPane1 = new JScrollPane();
-		mainPanel.add(scrollPane1, new GridConstraints(6, 1, 2, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+		mainPanel.add(scrollPane1, new GridConstraints(7, 1, 2, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
 		description = new JTextArea();
@@ -597,7 +598,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		scrollPane1.setViewportView(description);
 		final JLabel label1 = new JLabel();
 		label1.setText("Summary:");
-		mainPanel.add(label1, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+		mainPanel.add(label1, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label2 = new JLabel();
 		label2.setText("Project:");
@@ -608,26 +609,26 @@ public class IssueCreateDialog extends DialogWrapper {
 				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
 				GridConstraints.SIZEPOLICY_FIXED, new Dimension(100, -1), null, null, 0, false));
 		summary = new JTextField();
-		mainPanel.add(summary, new GridConstraints(5, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+		mainPanel.add(summary, new GridConstraints(6, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, new Dimension(100, -1), null, 0, false));
 		final JLabel label3 = new JLabel();
 		label3.setText("Description:");
-		mainPanel.add(label3, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
+		mainPanel.add(label3, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label4 = new JLabel();
 		label4.setText("Assignee:");
-		mainPanel.add(label4, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+		mainPanel.add(label4, new GridConstraints(9, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		assignee = new JTextField();
-		mainPanel.add(assignee, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+		mainPanel.add(assignee, new GridConstraints(9, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				new Dimension(50, -1), new Dimension(150, -1), null, 0, false));
 		final JLabel label5 = new JLabel();
 		label5.setFont(new Font(label5.getFont().getName(), label5.getFont().getStyle(), 10));
 		label5.setHorizontalTextPosition(10);
 		label5.setText("Warning! This field is not validated prior to sending to JIRA");
-		mainPanel.add(label5, new GridConstraints(8, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+		mainPanel.add(label5, new GridConstraints(9, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED,
 				null, null, null, 0, false));
 		final JLabel label6 = new JLabel();
@@ -640,10 +641,10 @@ public class IssueCreateDialog extends DialogWrapper {
 				GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		final JLabel label7 = new JLabel();
 		label7.setText("Priority:");
-		mainPanel.add(label7, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+		mainPanel.add(label7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
 				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		priorityComboBox = new JComboBox();
-		mainPanel.add(priorityComboBox, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_WEST,
+		mainPanel.add(priorityComboBox, new GridConstraints(5, 1, 1, 2, GridConstraints.ANCHOR_WEST,
 				GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
 				GridConstraints.SIZEPOLICY_FIXED, new Dimension(100, -1), null, null, 0, false));
 		final JLabel label8 = new JLabel();
@@ -669,6 +670,18 @@ public class IssueCreateDialog extends DialogWrapper {
 		versionsList = new JList();
 		versionsList.setVisibleRowCount(5);
 		scrollPane3.setViewportView(versionsList);
+		final JScrollPane scrollPane4 = new JScrollPane();
+		mainPanel.add(scrollPane4, new GridConstraints(4, 1, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+		fixVersionsList = new JList();
+		fixVersionsList.setVisible(true);
+		fixVersionsList.setVisibleRowCount(5);
+		scrollPane4.setViewportView(fixVersionsList);
+		final JLabel label10 = new JLabel();
+		label10.setText("Fix Version/s:");
+		mainPanel.add(label10, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_NORTHEAST, GridConstraints.FILL_NONE,
+				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		label1.setLabelFor(summary);
 		label2.setLabelFor(projectComboBox);
 		label3.setLabelFor(description);
@@ -682,7 +695,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		return mainPanel;
 	}
 
-    private static class ComponentWrapper extends GenericComboBoxItemWrapper<JIRAComponentBean> {
+	private static class ComponentWrapper extends GenericComboBoxItemWrapper<JIRAComponentBean> {
 
 		public ComponentWrapper(@NotNull final JIRAComponentBean wrapped) {
 			super(wrapped);
