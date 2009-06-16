@@ -62,13 +62,14 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JTextField assignee;
 	private JList componentsList;
 	private JList versionsList;
-	private final ServerData jiraServer;
+    private JList fixVersionsList;
+    private final ServerData jiraServer;
 	private IssueListToolWindowPanel issueListToolWindowPanel;
 	private Project project;
 	private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 
-	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
+    public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
 			@NotNull Project project, JIRAServerModel model, ServerData server,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
@@ -140,6 +141,7 @@ public class IssueCreateDialog extends DialogWrapper {
     private boolean issueTypesUpdated = false;
     private boolean componentsUpdated = false;
     private boolean versionsUpdated = false;
+    private boolean fixVersionsUpdated = false;
 
     private void updateProjectRelatedItems() {
         JIRAProject p = (JIRAProject) projectComboBox.getSelectedItem();
@@ -147,15 +149,17 @@ public class IssueCreateDialog extends DialogWrapper {
         issueTypesUpdated = false;
         componentsUpdated = false;
         versionsUpdated = false;
+        fixVersionsUpdated = false;
         setProjectComboBoxEnableState();
         tasks.add(updateIssueTypes(p));
         tasks.add(updateComponents(p));
         tasks.add(updateVersions(p));
+        tasks.add(updateFixVersions(p));
         IdeaUiMultiTaskExecutor.execute(tasks, getContentPane());
     }
 
     private void setProjectComboBoxEnableState() {
-        projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated);
+        projectComboBox.setEnabled(issueTypesUpdated && componentsUpdated && versionsUpdated && fixVersionsUpdated);
     }
 
     public void initData() {
@@ -332,6 +336,31 @@ public class IssueCreateDialog extends DialogWrapper {
         };
 	}
 
+    private UiTask updateFixVersions(final JIRAProject project) {
+        fixVersionsList.setEnabled(false);
+        getOKAction().setEnabled(false);
+        return new UiTaskAdapter("fetching versions", getContentPane()) {
+            private List<JIRAFixForVersionBean> versions;
+
+            public void run() throws Exception {
+                versions = model.getFixForVersions(jiraServer, project, false);
+            }
+
+            @Override
+            public void onSuccess() {
+                fixVersionsUpdated = true;
+                setProjectComboBoxEnableState();
+                addFixForVersions(versions);
+            }
+
+            @Override
+            public void onError() {
+                fixVersionsUpdated = true;
+                setProjectComboBoxEnableState();
+            }
+        };
+    }
+
 	private void addVersions(List<JIRAVersionBean> versions) {
 		versionsList.removeAll();
 		final DefaultListModel listModel = new DefaultListModel();
@@ -345,6 +374,18 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
+    private void addFixForVersions(List<JIRAFixForVersionBean> versions) {
+        fixVersionsList.removeAll();
+        final DefaultListModel listModel = new DefaultListModel();
+        for (JIRAFixForVersionBean version : versions) {
+            if (version != null && version.getId() != JIRAServerCache.ANY_ID) {
+                listModel.addElement(new VersionWrapper(version));
+            }
+        }
+        fixVersionsList.setModel(listModel);
+        fixVersionsList.setEnabled(true);
+        getOKAction().setEnabled(true);
+    }
 
 	private void addIssueTypes(List<JIRAConstant> issueTypes) {
 		typeComboBox.removeAllItems();
@@ -454,6 +495,15 @@ public class IssueCreateDialog extends DialogWrapper {
 			}
 			issueProxy.setAffectsVersions(versions);
 		}
+
+        if (fixVersionsList.getSelectedValues().length > 0) {
+            List<JIRAConstant> versions = new ArrayList<JIRAConstant>();
+            for (Object ver : fixVersionsList.getSelectedValues()) {
+                VersionWrapper vw = (VersionWrapper) ver;
+                versions.add(vw.getWrapped());
+            }
+            issueProxy.setFixVersions(versions);
+        }
 
 		if (components.size() > 0) {
 			issueProxy.setComponents(components);
