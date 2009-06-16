@@ -216,6 +216,18 @@ public class JIRASessionImpl implements JIRASession {
             remoteIssue.setAffectsVersions(remoteVersions);
         }
 
+        final List<JIRAConstant> fixVersions = issue.getFixVersions();
+        if (fixVersions != null && fixVersions.size() > 0) {
+            RemoteVersion[] remoteFixVersions = new RemoteVersion[fixVersions.size()];
+            int i = 0;
+            for (JIRAConstant version : fixVersions) {
+                remoteFixVersions[i] = new RemoteVersion();
+                remoteFixVersions[i].setId(String.valueOf(version.getId()));
+                ++i;
+            }
+            remoteIssue.setFixVersions(remoteFixVersions);
+        }
+
 		try {
 			remoteIssue = service.createIssue(token, remoteIssue);
 		} catch (RemoteException e) {
