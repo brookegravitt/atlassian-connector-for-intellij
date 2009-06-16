@@ -31,6 +31,7 @@ import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.model.JIRAServerCache;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Header;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -48,12 +49,16 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
+        method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
 	}
 
 	@Override
 	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
+    private String getAuthHeaderValue() {
+        return "Basic " + encode(getUsername() + ":" + getPassword());
+    }
 
 	public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
 			String sortBy,
@@ -206,8 +211,7 @@ public class JIRARssClient extends AbstractHttpSession {
 	private String appendAuthentication(boolean firstItem) {
 		final String username = getUsername();
 		if (username != null) {
-			return (firstItem ? "?" : "&") + "os_username=" + encodeUrl(username)
-					+ "&os_password=" + encodeUrl(getPassword());
+            return (firstItem ? "?" : "&") + "os_authType=basic";
 		}
 		return "";
 	}
