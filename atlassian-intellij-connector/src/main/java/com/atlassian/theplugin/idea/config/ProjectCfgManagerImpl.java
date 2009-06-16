@@ -67,6 +67,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return cfgManager.getServer(projectId, serverData);
 	}
 
+	public ServerCfg getServer(final ServerId serverId) {
+		return cfgManager.getServer(projectId, serverId);
+	}
+
 	public ProjectConfiguration getProjectConfiguration() {
 		return cfgManager.getProjectConfiguration(projectId);
 	}
@@ -111,12 +115,28 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return cfgManager.getAllEnabledBambooServers(projectId);
 	}
 
+	public Collection<JiraServerCfg> getAllEnabledJiraServers() {
+		return cfgManager.getAllEnabledJiraServers(projectId);
+	}
+
+	public Collection<CrucibleServerCfg> getAllEnabledCrucibleServers() {
+		return cfgManager.getAllEnabledCrucibleServers(projectId);
+	}
+
+	public Collection<CrucibleServerCfg> getAllCrucibleServers() {
+		return cfgManager.getAllCrucibleServers(projectId);
+	}
+
 	public Collection<ServerCfg> getAllEnabledServers() {
 		return cfgManager.getAllEnabledServers(projectId);
 	}
 
 	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
 		return cfgManager.getAllEnabledServers(projectId, serverType);
+	}
+
+	public Collection<ServerCfg> getAllServers(ServerType serverType) {
+		return cfgManager.getAllServers(projectId, serverType);
 	}
 
 	public void updateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
@@ -165,7 +185,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
-    	@Nullable
+	@Nullable
 	public ServerData getDefaultFishEyeServer() {
 		ProjectConfiguration prjCfg = getProjectConfiguration();
 		if (prjCfg != null) {

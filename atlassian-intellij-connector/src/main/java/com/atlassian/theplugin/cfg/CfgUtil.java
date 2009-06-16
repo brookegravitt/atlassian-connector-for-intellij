@@ -51,9 +51,9 @@ public final class CfgUtil {
 		return DEFAULT_PROJECT;
 	}
 
-	public static JiraServerCfg getJiraServerCfgbyServerId(final Project project,
-			final ProjectCfgManagerImpl projectCfgManager, final String serverId) {
-		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+	public static JiraServerCfg getJiraServerCfgbyServerId(final ProjectCfgManagerImpl projectCfgManager,
+			final String serverId) {
+		for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
 			if (server.getServerId().toString().equals(serverId)) {
 				return server;
 
@@ -62,9 +62,9 @@ public final class CfgUtil {
 		return null;
 	}
 
-	public static ServerCfg getEnabledServerCfgbyServerId(final Project project,
+	public static ServerCfg getEnabledServerCfgbyServerId(
 			final ProjectCfgManagerImpl projectCfgManager, final String serverId) {
-		for (ServerCfg server : projectCfgManager.getCfgManager().getAllEnabledServers(CfgUtil.getProjectId(project))) {
+		for (ServerCfg server : projectCfgManager.getAllEnabledServers()) {
 			if (server.getServerId().toString().equals(serverId)) {
 				return server;
 
@@ -73,9 +73,9 @@ public final class CfgUtil {
 		return null;
 	}
 
-	public static JiraServerCfg getJiraServerCfgByUrl(final Project project, final ProjectCfgManagerImpl projectCfgManager,
+	public static JiraServerCfg getJiraServerCfgByUrl(final ProjectCfgManagerImpl projectCfgManager,
 			final String serverUrl) {
-		for (JiraServerCfg server : projectCfgManager.getCfgManager().getAllEnabledJiraServers(CfgUtil.getProjectId(project))) {
+		for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
 			if (server.getUrl().equals(serverUrl)) {
 				return server;
 

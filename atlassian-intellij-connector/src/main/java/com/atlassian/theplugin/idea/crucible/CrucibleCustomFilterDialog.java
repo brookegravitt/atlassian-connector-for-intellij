@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
@@ -254,8 +253,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getCfgManager()
-				.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getAllEnabledCrucibleServers();
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {

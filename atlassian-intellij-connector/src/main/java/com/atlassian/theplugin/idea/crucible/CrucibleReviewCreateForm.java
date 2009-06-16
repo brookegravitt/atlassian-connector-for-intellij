@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
@@ -474,8 +473,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getCfgManager().
-				getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getAllEnabledCrucibleServers();
 		if (enabledServers.isEmpty()) {
 			crucibleServersComboBox.setEnabled(false);
 			crucibleServersComboBox.addItem("Enable a Crucible server first!");
@@ -589,7 +587,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		moderatorComboBox.removeAllItems();
 		model.removeAllElements();
 
-		ProjectConfiguration prjCfg = projectCfgManager.getCfgManager().getProjectConfiguration(CfgUtil.getProjectId(project));
+		ProjectConfiguration prjCfg = projectCfgManager.getProjectConfiguration();
 		if (crucibleServerData.getProjects().isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");

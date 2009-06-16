@@ -3,6 +3,33 @@
 <html>
 <head>
 	<title>PL-31 test</title>
+	<script type="text/javascript">
+
+		function getElementsByClass(searchClass, node, tag) {
+			var classElements = new Array();
+
+			if (node == null)
+				node = document;
+
+			if (tag == null)
+				tag = '*';
+
+			var els = node.getElementsByTagName(tag);
+			var elsLen = els.length;
+			var pattern = new RegExp("(^|\\s)" + searchClass + "(\\s|$)");
+
+			for (var i = 0,j = 0; i < elsLen; i++) {
+				if (pattern.test(els[i].className)) {
+					classElements[j] = els[i];
+					classElements[j].src = classElements[j].src + '&opera=' + uniquePageId;
+					alert(classElements[j].src);
+					j++;
+				}
+			}
+			return classElements;
+		}
+
+	</script>
 </head>
 <body>
 <p>

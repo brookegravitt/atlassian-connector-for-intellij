@@ -105,8 +105,7 @@ public final class ActiveIssueUtils {
 		if (panel != null) {
 //			//return panel.getSelectedServer();
 
-			final Project project = IdeaHelper.getCurrentProject(event);
-			return CfgUtil.getJiraServerCfgByUrl(project, panel.getProjectCfgManager(), serverUrl);
+			return CfgUtil.getJiraServerCfgByUrl(panel.getProjectCfgManager(), serverUrl);
 		}
 		return null;
 	}
@@ -115,8 +114,7 @@ public final class ActiveIssueUtils {
 	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 		if (panel != null) {
-			final Project project = IdeaHelper.getCurrentProject(event);
-			return CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), serverId);
+			return CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), serverId);
 		}
 		return null;
 	}
@@ -167,7 +165,7 @@ public final class ActiveIssueUtils {
 		JiraServerCfg jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
-			jiraServer = CfgUtil.getJiraServerCfgbyServerId(project, panel.getProjectCfgManager(), activeIssue.getServerId());
+			jiraServer = CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), activeIssue.getServerId());
 		}
 		return jiraServer;
 	}
@@ -187,14 +185,14 @@ public final class ActiveIssueUtils {
 					Messages.getQuestionIcon()) == DialogWrapper.OK_EXIT_CODE;
 		}
 		if (isDeactivated) {
-            ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
-                public void success() {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
-                        }
-                    });
-                }
+			ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+				public void success() {
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							ActiveIssueUtils.activate(event, newActiveIssue, jiraServerCfg);
+						}
+					});
+				}
 
 				public void failure(Throwable problem) {
 				}
@@ -204,6 +202,7 @@ public final class ActiveIssueUtils {
 
 	/**
 	 * Bloking method. Refills cache if necessary.
+	 *
 	 * @param issue issue
 	 * @return boolean
 	 */
@@ -240,8 +239,9 @@ public final class ActiveIssueUtils {
 
 	/**
 	 * Should be called from the UI thread
+	 *
 	 * @param project project
-	 * @param issue issue
+	 * @param issue   issue
 	 */
 	public static void checkIssueState(final Project project, final JIRAIssue issue) {
 		ActiveJiraIssue activeIssue = getActiveJiraIssue(project);
@@ -288,9 +288,10 @@ public final class ActiveIssueUtils {
 
 	/**
 	 * this has to be run from the dispatch thread - see PL-1544
-	 * @param event event
+	 *
+	 * @param event		  event
 	 * @param newActiveIssue issue
-	 * @param jiraServerCfg server
+	 * @param jiraServerCfg  server
 	 */
 	private static void activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
 			final JiraServerCfg jiraServerCfg) {

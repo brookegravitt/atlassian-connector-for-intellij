@@ -370,7 +370,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	}
 
 	public Collection<CrucibleServerCfg> getServers() {
-		return projectCfgManager.getCfgManager().getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		return projectCfgManager.getAllEnabledCrucibleServers();
 	}
 
 	public List<ReviewAdapter> getLocalReviews(final String searchKey) {
@@ -430,7 +430,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 */
 	private ReviewAdapter getReviewFromServer(final String reviewKey, final String serverId) {
 
-		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(project, projectCfgManager, serverId);
+		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
 		if (server != null) {
 			try {
 				final ServerData serverData = projectCfgManager.getServerData(server);
@@ -458,7 +458,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	// todo remove that method if review contains details (ValueNotYetInitialized problem)
 	private ReviewAdapter getReviewWithDetailsFromServer(final String reviewKey, final String serverId) {
 
-		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(project, projectCfgManager, serverId);
+		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
 		if (server != null) {
 			try {
 				final ServerData serverData = projectCfgManager.getServerData(server);
@@ -498,8 +498,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 * @return review
 	 */
 	public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
-		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getCfgManager().
-				getAllServers(CfgUtil.getProjectId(project), ServerType.CRUCIBLE_SERVER), projectCfgManager);
+		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllServers(ServerType.CRUCIBLE_SERVER),
+				projectCfgManager);
 
 		if (server == null) {
 			// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
@@ -512,8 +512,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 				return null;
 			}
 
-			server = CfgUtil.findServer(url, projectCfgManager.getCfgManager().
-					getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER), projectCfgManager);
+			server = CfgUtil.findServer(url, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
 		}
 
 		if (server != null) {
