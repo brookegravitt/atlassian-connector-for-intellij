@@ -6,6 +6,7 @@ import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
+import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
@@ -37,7 +38,12 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 
 	@NotNull
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
-		return new Handler(checkinProjectPanel);
+        // PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
+        // "Create Patch" dialog seems to be the fact that the VCS list has non-zero length
+        if (checkinProjectPanel.getAffectedVcses().size() > 0) {
+    		return new Handler(checkinProjectPanel);
+        }
+        return new NullCheckinHandler();
 	}
 
 	private class Handler extends CheckinHandler {
