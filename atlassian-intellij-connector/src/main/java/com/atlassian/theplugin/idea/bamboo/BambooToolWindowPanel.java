@@ -79,7 +79,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		filterList = new BambooFilterList(projectCfgManager, projectId, bambooModel);
-		projectCfgManager.getCfgManager().addProjectConfigurationListener(projectId, new ConfigurationListenerAdapter() {
+		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
 			@Override
 			public void bambooServersChanged(final ProjectConfiguration newConfiguration) {
 				filterList.update();
@@ -134,7 +134,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		if (bambooConfiguration != null && bambooConfiguration.getView() != null) {
 			if (bambooConfiguration.getView().getGroupBy() != null) {
 				groupBy = bambooConfiguration.getView().getGroupBy();
-                setGroupingType(groupBy);
+				setGroupingType(groupBy);
 			}
 			if (bambooConfiguration.getView().getFilterType() != null) {
 				setBambooFilterType(bambooConfiguration.getView().getFilterType());

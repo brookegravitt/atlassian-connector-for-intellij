@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -45,17 +44,17 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
-	private final ProjectCfgManagerImpl cfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private boolean isRegistered;
 	private LocalConfigurationListener localConfigurationListener;
 	private JiraServerCfg lastJiraServer;
 
 
-	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManagerImpl cfgManager) {
+	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManagerImpl projectCfgManager) {
 
 		this.project = project;
-		this.cfgManager = cfgManager;
-		jiraEditorLinkParser = new JiraEditorLinkParser(project, cfgManager);
+		this.projectCfgManager = projectCfgManager;
+		jiraEditorLinkParser = new JiraEditorLinkParser(project, projectCfgManager);
 		localConfigurationListener = new LocalConfigurationListener();
 
 	}
@@ -96,16 +95,15 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	}
 
 	public void projectClosed() {
-		cfgManager.getCfgManager().removeProjectConfigurationListener(CfgUtil.getProjectId(project),
-				localConfigurationListener);
+		projectCfgManager.removeProjectConfigurationListener(localConfigurationListener);
 		deactivate();
 	}
 
 	public void projectOpened() {
-		cfgManager.getCfgManager().addProjectConfigurationListener(CfgUtil.getProjectId(project), localConfigurationListener);
+		projectCfgManager.addProjectConfigurationListener(localConfigurationListener);
 		activate();
-		if (cfgManager.getProjectConfiguration() != null
-				&& cfgManager.getProjectConfiguration().getDefaultJiraServer() != null) {
+		if (projectCfgManager.getProjectConfiguration() != null
+				&& projectCfgManager.getProjectConfiguration().getDefaultJiraServer() != null) {
 			Task.Backgroundable task = new ScanningJiraLinksTask(project, this);
 			ProgressManager.getInstance().run(task);
 		}
@@ -148,9 +146,9 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 
 	public void scanOpenEditors() {
 		final FileEditorManager editorManager = FileEditorManager.getInstance(project);
-        if (editorManager == null) {
-            return;
-        }
+		if (editorManager == null) {
+			return;
+		}
 		for (VirtualFile openFile : editorManager.getSelectedFiles()) {
 			if (!linkHighlighters.containsKey(openFile)) {
 				PsiFile psiFile = PsiManager.getInstance(project).findFile(openFile);
@@ -188,11 +186,11 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 			} else if (!currentJiraServer.equals(lastJiraServer)) {
 				final Task.Backgroundable task = new ScanningJiraLinksTask(project, FileEditorListenerImpl.this);
 				FileEditorListenerImpl.this.activate();
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        ProgressManager.getInstance().run(task);
-                    }
-                });
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						ProgressManager.getInstance().run(task);
+					}
+				});
 			}
 
 			lastJiraServer = currentJiraServer;

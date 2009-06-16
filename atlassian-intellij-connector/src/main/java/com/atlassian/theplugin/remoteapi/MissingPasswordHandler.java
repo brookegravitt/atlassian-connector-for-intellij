@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.remoteapi;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -55,8 +54,7 @@ public class MissingPasswordHandler implements MissingPasswordHandlerQueue.Handl
 		this.projectCfgManager = projectCfgManager;
 		this.project = project;
 		// todo make sure the config listener is unregistered / not added every time missignpasswordhandler is created
-		projectCfgManager.getCfgManager().
-				addProjectConfigurationListener(CfgUtil.getProjectId(project), new LocalConfigurationListener());
+		projectCfgManager.addProjectConfigurationListener(new LocalConfigurationListener());
 	}
 
 	private synchronized boolean shouldStop() {

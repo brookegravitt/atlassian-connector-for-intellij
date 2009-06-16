@@ -49,7 +49,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return cfgManager;
 	}
 
-
 	public boolean isDefaultCredentialsAsked() {
 		return projectConfigurationBean.isDefaultCredentialsAsked();
 	}
@@ -140,7 +139,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	public void updateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
-		getCfgManager().updateProjectConfiguration(projectId, projectConfiguration);
+		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
 	}
 
 	public void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
@@ -195,5 +194,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 			}
 		}
 		return null;
+	}
+
+	public void addProjectConfigurationListener(final ConfigurationListener configurationListener) {
+		cfgManager.addProjectConfigurationListener(projectId, configurationListener);
+	}
+
+	public void removeProjectConfigurationListener(final ConfigurationListener configurationListener) {
+		cfgManager.removeProjectConfigurationListener(projectId, configurationListener);
 	}
 }
