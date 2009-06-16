@@ -100,8 +100,7 @@ public class BambooFilterList extends JList {
 				}
 				break;
 			case SERVER:
-				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getCfgManager()
-						.getAllEnabledBambooServers(projectId);
+				final Collection<BambooServerCfg> bambooServers = projectCfgManager.getAllEnabledBambooServers();
 
 				for (BambooServerCfg bambooServer : bambooServers) {
 					final BambooServerFilter serverFilter = new BambooServerFilter(

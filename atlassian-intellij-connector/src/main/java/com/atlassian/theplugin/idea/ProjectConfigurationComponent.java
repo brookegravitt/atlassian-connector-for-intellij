@@ -100,7 +100,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public void projectOpened() {
-		if (projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId()) == null) {
+		if (projectCfgManager.getProjectConfiguration() == null) {
 			ApplicationManager.getApplication().invokeLater(new Runnable() {
 				public void run() {
 					Messages.showErrorDialog(project, "If you see this message, something bad happend to the "
@@ -297,7 +297,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final Element element = new Element("atlassian-ide-plugin");
 
 		JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(element, privateCfgDao);
-		final ProjectConfiguration configuration = projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId());
+		final ProjectConfiguration configuration = projectCfgManager.getProjectConfiguration();
 		if (configuration != null) {
 			if (configuration.getServers().size() > 0 && shouldSaveConfiguration == false) {
 				// apparently somebody still prefers to populate invalid configuration, so we would save it now
@@ -346,7 +346,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	}
 
 	public JComponent createComponent() {
-		ProjectConfiguration configuration = projectCfgManager.getCfgManager().getProjectConfiguration(getProjectId());
+		ProjectConfiguration configuration = projectCfgManager.getProjectConfiguration();
 		if (configuration == null) {
 			// may happen for Default Template project
 			configuration = setDefaultProjectConfiguration();

@@ -195,8 +195,7 @@ class MyUiTask implements UiTask {
 		final Collection<ScrollableTwoColumnPanel.Entry> myEntries = MiscUtil.buildArrayList();
 
 		final String serverId = customFilter.getServerUid();
-		final ServerCfg server = projectCfgManager.getCfgManager().getServer(
-				CfgUtil.getProjectId(project), new ServerId(serverId));
+		final ServerCfg server = projectCfgManager.getServer(new ServerId(serverId));
 		final CrucibleServerCfg crucibleServerCfg =
 				(server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 

@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -44,8 +43,7 @@ public class CrucibleQueryExecutor {
 		final Map<CrucibleFilter, ReviewNotificationBean> reviews
 				= new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
-		for (final CrucibleServerCfg server : projectCfgManager.getCfgManager().
-				getAllCrucibleServers(CfgUtil.getProjectId(project))) {
+		for (final CrucibleServerCfg server : projectCfgManager.getAllCrucibleServers()) {
 			if (server.isEnabled()) {
 
 				// retrieve reviews for predefined filters
@@ -91,18 +89,18 @@ public class CrucibleQueryExecutor {
 							} catch (ServerPasswordNotProvidedException exception) {
 								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
 								predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
-                                        exception);
+										exception);
 								break;
 							} catch (RemoteApiLoginFailedException exception) {
 								MissingPasswordHandlerQueue.addHandler(missingPasswordHandler);
-                                predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
-                                        exception);
+								predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
+										exception);
 								break;
 							} catch (RemoteApiException e) {
 								PluginUtil.getLogger().info("Error getting Crucible reviews for " + server.getName()
 										+ " server", e);
-                                predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
-                                        e);
+								predefinedFiterNotificationBean.addException(projectCfgManager.getServerData(server),
+										e);
 								break;
 							}
 						}
@@ -154,7 +152,7 @@ public class CrucibleQueryExecutor {
 						MissingPasswordHandlerQueue.addHandler(
 								new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
 						recenltyOpenFilterNotificationBean.addException(projectCfgManager.getServerData(server),
-                                exception);
+								exception);
 					} catch (RemoteApiException e) {
 						PluginUtil.getLogger().info("Error getting Crucible review for " + server.getName()
 								+ " server", e);
@@ -199,7 +197,7 @@ public class CrucibleQueryExecutor {
 					customFilterNotificationBean.getReviews().addAll(reviewData);
 
 				} catch (ServerPasswordNotProvidedException exception) {
-                    MissingPasswordHandlerQueue.addHandler(
+					MissingPasswordHandlerQueue.addHandler(
 							new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project));
 					customFilterNotificationBean.addException(projectCfgManager.getServerData(server), exception);
 				} catch (RemoteApiException e) {
