@@ -388,7 +388,7 @@ public final class CrucibleHelper {
 
 			// check if requested file is already opened
 			// doesn't haeve to be in cache :)
-			VirtualFile virtualFile = getEditorForRevisionFile(project, fileInfo);
+			VirtualFile virtualFile = getEditorForRevisionFile(fileInfo);
 			if (virtualFile != null) {
 				return virtualFile;
 			}
@@ -416,11 +416,11 @@ public final class CrucibleHelper {
 		}
 
 		//get non dirty file and priority has local file than remote
-		private VirtualFile getEditorForRevisionFile(Project project, VersionedVirtualFile fileInfo) {
+		private VirtualFile getEditorForRevisionFile(VersionedVirtualFile fileInfo) {
 			VirtualFile foundFile = null;
 			Editor[] editors = EditorFactory.getInstance().getAllEditors();
 			for (Editor editor : editors) {
-                if (!project.equals(editor.getProject())) {
+                if (!this.project.equals(editor.getProject())) {
                     continue;
                 }
                 
