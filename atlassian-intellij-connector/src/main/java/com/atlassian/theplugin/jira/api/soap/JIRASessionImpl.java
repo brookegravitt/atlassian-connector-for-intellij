@@ -241,13 +241,12 @@ public class JIRASessionImpl implements JIRASession {
 			PluginUtil.getLogger().warn(
                     "Soap method 'getSecurityLevel' thrown ClassCastException. Probably some JIRA error.", e);
 		} catch (Exception e) {
-            // PL-1492
+            // PL-1492 and PL-1609
             if (e instanceof SAXException) {
                 PluginUtil.getLogger().warn(
                         "Soap method 'getSecurityLevel' thrown SAXException. Probably some JIRA error.", e);
-            } else {
-                throw new RemoteApiException(e);
             }
+            throw new RemoteApiException(e);
         }
 
 		try {
@@ -500,7 +499,14 @@ public class JIRASessionImpl implements JIRASession {
 			throw new RemoteApiException(e.toString(), e);
 		} catch (ClassCastException e) {
 			throw new RemoteApiException(e.toString(), e);
-		}
+		} catch (Exception e) {
+            // PL-1609
+            if (e instanceof SAXException) {
+                PluginUtil.getLogger().warn(
+                        "Soap method 'getSecurityLevel' thrown SAXException. Probably some JIRA error.", e);
+            }
+            throw new RemoteApiException(e);
+        }
 	}
 
 	public List<JIRAActionField> getFieldsForAction(JIRAIssue issue, JIRAAction action) throws RemoteApiException {
