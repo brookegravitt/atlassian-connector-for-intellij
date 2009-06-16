@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.crucible.editor;
 
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -82,6 +82,9 @@ public final class ChangeViewer {
 
 	public static void removeHighlightersInEditors(@NotNull final Project project) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
+            if (!project.equals(editor.getProject())) {
+                continue;
+            }
 			Document document = editor.getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {

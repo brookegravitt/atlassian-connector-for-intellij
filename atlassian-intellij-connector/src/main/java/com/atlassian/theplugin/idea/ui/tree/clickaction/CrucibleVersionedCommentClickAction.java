@@ -26,7 +26,7 @@ public class CrucibleVersionedCommentClickAction implements AtlassianClickAction
 
 		ReviewAdapter review = anode.getReview();
 		CrucibleFileInfo file = anode.getFile();
-		Editor editor = CrucibleHelper.getEditorForCrucibleFile(review, file);
+		Editor editor = CrucibleHelper.getEditorForCrucibleFile(project, review, file);
 		VersionedComment comment = anode.getComment();
 
 		switch (noOfClicks) {

@@ -32,11 +32,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.editor.event.DocumentEvent;
 import com.intellij.openapi.editor.event.DocumentListener;
-import com.intellij.openapi.editor.markup.HighlighterLayer;
-import com.intellij.openapi.editor.markup.HighlighterTargetArea;
-import com.intellij.openapi.editor.markup.MarkupModel;
-import com.intellij.openapi.editor.markup.RangeHighlighter;
-import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.openapi.editor.markup.*;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.project.Project;
@@ -145,7 +141,11 @@ public final class CommentHighlighter {
 
 	public static void updateCommentsInEditors(@NotNull final Project project,
 			@NotNull final ReviewAdapter review) {
+
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
+            if (!project.equals(editor.getProject())) {
+               continue;
+            }
 			Document document = editor.getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
@@ -213,6 +213,9 @@ public final class CommentHighlighter {
 
 	public static void removeCommentsInEditors(@NotNull final Project project) {
 		for (Editor editor : EditorFactory.getInstance().getAllEditors()) {
+            if (!project.equals(editor.getProject())) {
+                continue;
+            }
 			Document document = editor.getDocument();
 			VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
 			if (virtualFile != null) {
