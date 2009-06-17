@@ -82,6 +82,7 @@ public class NewVersionInfoForm extends DialogWrapper {
         releaseNotesLabel.addHyperlinkListener(new GenericHyperlinkListener());
 
         releaseNotesLabel.setText(sb.toString());
+        releaseNotesLabel.setCaretPosition(0);
 
         init();
 
