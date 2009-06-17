@@ -89,6 +89,11 @@ public final class VcsIdeaHelper {
 
 	@Nullable
 	public static String getRepositoryUrlForFile(Project project, VirtualFile vFile) {
+        // PL-1619
+        if (vFile == null) {
+            return null;
+        }
+
 		ProjectLevelVcsManager plm = ProjectLevelVcsManager.getInstance(project);
 		if (plm == null) {
 			return null;
