@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -233,8 +234,8 @@ public class PluginToolWindow {
 			try {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
-				final CfgManager myCfgManager = IdeaHelper.getCfgManager(project);
-				if (myCfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).size() > 0) {
+				final ProjectCfgManagerImpl myCfgManager = IdeaHelper.getProjectCfgManager(project);
+				if (myCfgManager.getAllEnabledServers(serverType).size() > 0) {
 					// tab is not visible
 					final ContentManager contentManager = ideaToolWindow.getContentManager();
 					Content content = contentManager.findContent(component.toString());

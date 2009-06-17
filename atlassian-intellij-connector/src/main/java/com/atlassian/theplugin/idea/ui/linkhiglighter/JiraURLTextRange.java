@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -59,8 +58,7 @@ public class JiraURLTextRange {
 	}
 
 	private String getDefaultJiraServerUrl() {
-		final ProjectConfiguration projectConfiguration = IdeaHelper.getCfgManager(project)
-				.getProjectConfiguration(CfgUtil.getProjectId(project));
+		final ProjectConfiguration projectConfiguration = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
 		if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {
 			return defaultServer.getUrl();
@@ -101,7 +99,7 @@ public class JiraURLTextRange {
 		rangeHighlighter = markupModel.addRangeHighlighter(this.getStartOffset(), this.getEndOffset(),
 				HighlighterLayer.WARNING - 1, ACTIVE_ISSUE_LINK_TEXT_ATTRIBUTES, HighlighterTargetArea.EXACT_RANGE);
 		rangeHighlighter.setErrorStripeMarkColor(LINK_COLOR);
-        rangeHighlighter.setErrorStripeTooltip("issue " + issueKey + " on " + getDefaultJiraServerUrl());
+		rangeHighlighter.setErrorStripeTooltip("issue " + issueKey + " on " + getDefaultJiraServerUrl());
 		rangeHighlighter.putUserData(JIRA_ISSUE_LINK_HIGHLIGHTER_KEY, this);
 //        rangeHighlighter.setGutterIconRenderer(new JiraLinkGutterRenderer());
 	}

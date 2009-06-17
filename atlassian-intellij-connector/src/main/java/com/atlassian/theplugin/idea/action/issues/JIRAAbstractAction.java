@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
@@ -45,7 +44,7 @@ public abstract class JIRAAbstractAction extends AnAction {
 			Project project = event.getData(DataKeys.PROJECT);
 			if (project != null) {
 
-				ServerCfg server2 = IdeaHelper.getCfgManager(event).getServer(CfgUtil.getProjectId(project), server);
+				ServerCfg server2 = IdeaHelper.getProjectCfgManager(event).getServer(server);
 				if (server2 != null && server2.isEnabled()) {
 					if (ModelFreezeUpdater.getState(event)) {
 						enabled = true;

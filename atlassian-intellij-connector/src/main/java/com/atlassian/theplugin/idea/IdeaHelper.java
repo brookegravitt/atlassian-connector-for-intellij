@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -275,11 +274,4 @@ public final class IdeaHelper {
 		return getProjectComponent(project, JIRAServerModel.class);
 	}
 
-	public static CfgManager getCfgManager(final Project project) {
-		return getProjectComponent(project, CfgManager.class);
-	}
-
-	public static CfgManager getCfgManager(final AnActionEvent event) {
-		return getProjectComponent(event, CfgManager.class);
-	}
 }
