@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
@@ -63,7 +62,6 @@ import java.util.Date;
 public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataProvider {
 	private static final String TOOL_WINDOW_TITLE = "Reviews - Crucible";
 	private ReviewAdapter reviewAdapter;
-	private final CfgManager cfgManager;
 	private final Project project;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private PluginConfiguration pluginConfiguration;
@@ -73,12 +71,11 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 	private ReviewContentParameters contentParams;
 
 
-	protected ReviewDetailsToolWindow(@NotNull CfgManager cfgManager, @NotNull final Project project,
+	protected ReviewDetailsToolWindow(@NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final WorkspaceConfigurationBean workspaceConfiguration) {
 		super(true);
-		this.cfgManager = cfgManager;
 		this.project = project;
 		this.pluginProjectComponent = pluginProjectComponent;
 		this.pluginConfiguration = pluginConfiguration;
@@ -315,7 +312,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 			private CommentsPanel(final boolean retrieveDetails) {
 				super(new BorderLayout());
 				setBackground(UIUtil.getTreeTextBackground());
-				reviewItemTreePanel = new ReviewItemTreePanel(cfgManager, project,
+				reviewItemTreePanel = new ReviewItemTreePanel(project,
 						CrucibleFilteredModelProvider.Filter.FILES_ALL,
 						pluginProjectComponent);
 				reviewItemTreePanel.getProgressAnimation().configure(reviewItemTreePanel,

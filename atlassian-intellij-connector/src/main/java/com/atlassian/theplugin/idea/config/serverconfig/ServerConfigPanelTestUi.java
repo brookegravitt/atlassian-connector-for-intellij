@@ -97,6 +97,7 @@ public final class ServerConfigPanelTestUi {
 
 }
 
+// todo wypierniczyc w kosmos
 class LocalProjectCfgManager implements ProjectCfgManager {
 
 	@NotNull
@@ -106,6 +107,10 @@ class LocalProjectCfgManager implements ProjectCfgManager {
 	}
 
 	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
+	public Collection<ServerCfg> getAllUniqueServers() {
 		throw new UnsupportedOperationException("not yet implemented");
 	}
 

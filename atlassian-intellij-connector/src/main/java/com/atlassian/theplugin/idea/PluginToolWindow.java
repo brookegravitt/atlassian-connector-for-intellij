@@ -16,9 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -59,7 +57,7 @@ public class PluginToolWindow {
 	private static final int INITIAL_NUMBER_OF_TABS = 4;
 	private static final String CONFIGURE_TAB_NAME = "Configure";
 	public static final Icon ICON_CRUCIBLE = IconLoader.getIcon("/icons/crucible-16.png");
-	private final CfgManager cfgManager;
+	private final ProjectCfgManagerImpl cfgManager;
 	private final BambooToolWindowPanel bambooToolWindowPanel;
 
 
@@ -83,7 +81,7 @@ public class PluginToolWindow {
 
 	}
 
-	public PluginToolWindow(@NotNull Project project, @NotNull CfgManager cfgManager,
+	public PluginToolWindow(@NotNull Project project, @NotNull ProjectCfgManagerImpl cfgManager,
 			@NotNull BambooToolWindowPanel bambooToolWindowPanel,
 			@NotNull ReviewListToolWindowPanel reviewsToolWindowPanel,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel) {
@@ -128,9 +126,9 @@ public class PluginToolWindow {
 		//stopTabChangeListener();
 
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		if (cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project)).size() == 0
-				&& cfgManager.getAllEnabledJiraServers(CfgUtil.getProjectId(project)).size() == 0
-				&& cfgManager.getAllEnabledBambooServers(CfgUtil.getProjectId(project)).size() == 0) {
+		if (cfgManager.getAllEnabledCrucibleServers().size() == 0
+				&& cfgManager.getAllEnabledJiraServers().size() == 0
+				&& cfgManager.getAllEnabledBambooServers().size() == 0) {
 			// no servers defined, show config panel
 			if (contentManager.findContent(CONFIGURE_TAB_NAME) == null) {
 				final Content content = contentManager.getFactory().createContent(
@@ -152,7 +150,7 @@ public class PluginToolWindow {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (!cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty()) {
+				if (!cfgManager.getAllEnabledServers(serverType).isEmpty()) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 						// show tab

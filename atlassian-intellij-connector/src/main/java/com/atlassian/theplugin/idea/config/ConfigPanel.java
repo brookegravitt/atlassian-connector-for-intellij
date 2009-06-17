@@ -16,11 +16,10 @@
 
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
-import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.AboutForm;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.serverconfig.BambooGeneralForm;
 import com.atlassian.theplugin.idea.config.serverconfig.CrucibleGeneralForm;
@@ -45,8 +44,7 @@ public final class ConfigPanel extends JPanel {
 	private final transient PluginConfiguration globalConfigurationBean;
 
 
-	public ConfigPanel(PluginConfiguration globalConfigurationBean, /*ProjectId projectId, */CfgManager cfgManager,
-			NewVersionChecker newVersionChecker) {
+	public ConfigPanel(PluginConfiguration globalConfigurationBean, NewVersionChecker newVersionChecker) {
 		this.bambooConfigPanel = BambooGeneralForm.getInstance(globalConfigurationBean);
 		this.crucibleConfigPanel = CrucibleGeneralForm.getInstance(globalConfigurationBean);
 		this.jiraConfigPanel = JiraGeneralForm.getInstance(globalConfigurationBean);
@@ -57,8 +55,6 @@ public final class ConfigPanel extends JPanel {
 
 		initLayout();
 	}
-
-
 
 
 	private void initLayout() {

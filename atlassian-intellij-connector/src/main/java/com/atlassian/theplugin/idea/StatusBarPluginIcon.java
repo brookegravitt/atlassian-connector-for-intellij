@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.StatusBar;
 import com.intellij.openapi.wm.WindowManager;
@@ -28,13 +27,13 @@ import javax.swing.*;
 public abstract class StatusBarPluginIcon extends JLabel {
 	private StatusBar statusBar;
 	private Project project;
-	private final CfgManager cfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 
 	private boolean isIconShown;
 
-	public StatusBarPluginIcon(Project aProject, CfgManager cfgManager) {
+	public StatusBarPluginIcon(Project aProject, ProjectCfgManagerImpl projectCfgManager) {
 		this.project = aProject;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 	}
 
 	public void hideIcon() {
@@ -63,10 +62,11 @@ public abstract class StatusBarPluginIcon extends JLabel {
 
 	/**
 	 * Shows or hides icon for specified product (Bamboo/Crucible) depending if there are defined servers or not
+	 *
 	 * @param serverType type of Icon to show/hide
 	 */
 	protected void showOrHideIcon(ServerType serverType) {
-		if (cfgManager.getAllEnabledServers(CfgUtil.getProjectId(project), serverType).isEmpty() == false) {
+		if (!projectCfgManager.getAllEnabledServers(serverType).isEmpty()) {
 			showIcon();
 		} else {
 			hideIcon();

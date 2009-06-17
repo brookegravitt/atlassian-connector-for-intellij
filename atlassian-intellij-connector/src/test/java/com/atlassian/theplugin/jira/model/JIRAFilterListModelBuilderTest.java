@@ -39,7 +39,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		JiraWorkspaceConfiguration jiraCfg = new JiraWorkspaceConfiguration();
 		fillJiraCfg(jiraCfg);
 
-		builder = new JIRAFilterListBuilder(cfgManager);
+		builder = new JIRAFilterListBuilder();
 		listModel = new JIRAFilterListModel();
 		builder.setListModel(listModel);
 		builder.setJiraWorkspaceCfg(jiraCfg);

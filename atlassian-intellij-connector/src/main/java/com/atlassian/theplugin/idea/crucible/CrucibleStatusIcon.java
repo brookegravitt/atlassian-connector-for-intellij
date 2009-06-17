@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,8 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 	private static final String NEW_REVIEWS = "New Crucible events are available. Click for details.";
 	private static final String ERROR_REVIEWS = "Some errors occured. Check connections to Crucible servers.";
 
-	public CrucibleStatusIcon(final Project project, CfgManager cfgManager, @NotNull final PluginToolWindow pluginToolWindow) {
+	public CrucibleStatusIcon(final Project project, ProjectCfgManagerImpl cfgManager,
+			@NotNull final PluginToolWindow pluginToolWindow) {
 		super(project, cfgManager);
 		resetIcon();
 
@@ -60,6 +61,7 @@ public class CrucibleStatusIcon extends StatusBarPluginIcon {
 
 	/**
 	 * Sets the icon to NEW REVEWS state (blue icon, number of revious in text label, tooltip text)
+	 *
 	 * @param numOfNewReviews number of new reviews
 	 */
 	public void triggerNewReviewAction(int numOfNewReviews, boolean exceptionRaised) {

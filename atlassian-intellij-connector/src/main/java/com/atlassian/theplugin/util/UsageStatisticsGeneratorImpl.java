@@ -16,25 +16,25 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 
+import java.util.Collection;
 import java.util.TreeSet;
 
 public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	private final boolean reportStatistics;
 	private final long uid;
 	private GeneralConfigurationBean generalConfig;
-	private final CfgManager cfgManager;
+	private final Collection<ServerCfg> servers;
 
 	public UsageStatisticsGeneratorImpl(boolean reportStatistics, final long uid,
-			GeneralConfigurationBean generalConfig, final CfgManager cfgManager) {
+			GeneralConfigurationBean generalConfig, final Collection<ServerCfg> servers) {
 		this.reportStatistics = reportStatistics;
 		this.uid = uid;
 		this.generalConfig = generalConfig;
-		this.cfgManager = cfgManager;
+		this.servers = servers;
 	}
 
 	public String getStatisticsUrlSuffix() {
@@ -42,7 +42,7 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 		if (reportStatistics) {
 			int[] counts = new int[ServerType.values().length];
 
-			for (ServerCfg serverCfg : cfgManager.getAllUniqueServers()) {
+			for (ServerCfg serverCfg : servers) {
 				counts[serverCfg.getServerType().ordinal()]++;
 			}
 

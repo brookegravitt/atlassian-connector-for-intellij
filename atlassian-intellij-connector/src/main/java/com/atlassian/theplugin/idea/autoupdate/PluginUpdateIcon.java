@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.autoupdate;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.InfoServer;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressManager;
@@ -44,7 +44,8 @@ public class PluginUpdateIcon extends StatusBarPluginIcon {
 	private static final int ICON_BLINK_TIME = 1000;
 
 
-	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration, final CfgManager cfgManager) {
+	public PluginUpdateIcon(final Project project, final PluginConfiguration pluginConfiguration,
+			final ProjectCfgManagerImpl cfgManager) {
 		super(project, cfgManager);
 		final GeneralConfigurationBean config = pluginConfiguration.getGeneralConfigurationData();
 

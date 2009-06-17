@@ -15,11 +15,10 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -41,10 +40,10 @@ public class BuildListModelImpl implements BuildListModel {
 
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 	private Project project;
-	private CfgManager cfgManager;
+	private ProjectCfgManagerImpl cfgManager;
 
 
-	public BuildListModelImpl(Project project, CfgManager cfgManager) {
+	public BuildListModelImpl(Project project, ProjectCfgManagerImpl cfgManager) {
 		this.project = project;
 		this.cfgManager = cfgManager;
 	}
@@ -74,7 +73,7 @@ public class BuildListModelImpl implements BuildListModel {
 			}
 			final BambooBuildAdapterIdea buildAdapterIdea = new BambooBuildAdapterIdea(build);
 			if (cfgManager != null && project != null) {
-				cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), buildAdapterIdea);
+				cfgManager.addProjectConfigurationListener(buildAdapterIdea);
 			}
 			buildAdapters.add(buildAdapterIdea);
 		}
@@ -95,7 +94,7 @@ public class BuildListModelImpl implements BuildListModel {
 		notifyListeners(new Notifier() {
 			public void notify(final BuildListModelListener listener) {
 				listener.buildsChanged(Collections.singleton(info.toString()), errors);
-                listener.generalProblemsHappened(generalExceptions);
+				listener.generalProblemsHappened(generalExceptions);
 			}
 		});
 	}
