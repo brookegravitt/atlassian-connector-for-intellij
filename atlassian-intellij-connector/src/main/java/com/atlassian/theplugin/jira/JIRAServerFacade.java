@@ -55,7 +55,7 @@ public interface JIRAServerFacade extends ProductServerFacade {
 
 	List<JIRAVersionBean> getVersions(ServerData server, String projectKey) throws JIRAException;
 
-	List<JIRAConstant> getPriorities(ServerData server) throws JIRAException;
+	List<JIRAPriorityBean> getPriorities(ServerData server) throws JIRAException;
 
 	List<JIRAResolutionBean> getResolutions(ServerData server) throws JIRAException;
 

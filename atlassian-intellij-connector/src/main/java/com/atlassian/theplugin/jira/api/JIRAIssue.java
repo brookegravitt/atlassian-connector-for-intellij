@@ -53,7 +53,7 @@ public interface JIRAIssue {
 
 	JIRAConstant getStatusConstant();
 
-	JIRAConstant getPriorityConstant();
+	JIRAPriorityBean getPriorityConstant();
 
 	String getAssignee();
 

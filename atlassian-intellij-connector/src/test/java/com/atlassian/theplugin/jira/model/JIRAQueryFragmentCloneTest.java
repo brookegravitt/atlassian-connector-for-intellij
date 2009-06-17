@@ -62,7 +62,7 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 		i++;
 		name = getFragmentName(i, JIRAPriorityBean.class.toString());
 		iconUrl = getFragmentIconUrl(i, JIRAPriorityBean.class.toString());
-		jiraPriorityBean = new JIRAPriorityBean(i, name, iconUrl);
+		jiraPriorityBean = new JIRAPriorityBean(i, 0, name, iconUrl);
 
 		i++;
 		name = getFragmentName(i, JIRAProjectBean.class.toString());

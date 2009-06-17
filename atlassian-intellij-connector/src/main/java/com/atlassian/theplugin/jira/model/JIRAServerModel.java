@@ -30,7 +30,7 @@ public interface JIRAServerModel extends FrozenModel {
 
 	List<JIRAQueryFragment> getSavedFilters(ServerData cfg) throws JIRAException;
 
-	List<JIRAConstant> getPriorities(ServerData cfg, boolean includeAny) throws JIRAException;
+	List<JIRAPriorityBean> getPriorities(ServerData cfg, boolean includeAny) throws JIRAException;
 
 	List<JIRAResolutionBean> getResolutions(ServerData cfg, boolean includeAnyAndUnknown) throws JIRAException;
 

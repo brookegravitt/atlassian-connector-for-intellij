@@ -52,7 +52,7 @@ public interface JIRASession {
 
 	List<JIRAVersionBean> getVersions(String projectKey) throws RemoteApiException;
 
-	List<JIRAConstant> getPriorities() throws RemoteApiException;
+	List<JIRAPriorityBean> getPriorities() throws RemoteApiException;
 
 	List<JIRAResolutionBean> getResolutions() throws RemoteApiException;
 

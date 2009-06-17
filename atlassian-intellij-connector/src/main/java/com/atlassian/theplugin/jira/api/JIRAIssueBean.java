@@ -38,7 +38,7 @@ public class JIRAIssueBean implements JIRAIssue {
 	private String projectKey;
 	private JIRAConstant statusConstant;
 	private JIRAConstant typeConstant;
-	private JIRAConstant priorityConstant;
+	private JIRAPriorityBean priorityConstant;
 	private String assignee;
 	private String assigneeId;
 	private String reporter;
@@ -189,11 +189,11 @@ public class JIRAIssueBean implements JIRAIssue {
 		}
 	}
 
-	public JIRAConstant getPriorityConstant() {
+	public JIRAPriorityBean getPriorityConstant() {
 		return priorityConstant;
 	}
 
-	public void setPriority(JIRAConstant priority) {
+	public void setPriority(JIRAPriorityBean priority) {
 		this.priority = priority.getName();
 		this.priorityConstant = priority;
 	}

@@ -440,13 +440,19 @@ public class JIRASessionImpl implements JIRASession {
 		}
 	}
 
-	public List<JIRAConstant> getPriorities() throws RemoteApiException {
+	public List<JIRAPriorityBean> getPriorities() throws RemoteApiException {
 		try {
 			RemotePriority[] priorities = service.getPriorities(token);
 
-			List<JIRAConstant> prioritiesList = new ArrayList<JIRAConstant>(priorities.length);
+			List<JIRAPriorityBean> prioritiesList = new ArrayList<JIRAPriorityBean>(priorities.length);
+            int i = 0;
 			for (RemotePriority p : priorities) {
-				prioritiesList.add(new JIRAPriorityBean(Long.valueOf(p.getId()), p.getName(), new URL(p.getIcon())));
+                // PL-1164 - The "i" parameter defines the order in which priorities
+                // are shown in the issue tree. I am assuming that JIRA returns the
+                // list of priorities in the order that the user defined, and not
+                // in some random order. This does seem to be the case with my test server
+				prioritiesList.add(new JIRAPriorityBean(Long.valueOf(p.getId()), i, p.getName(), new URL(p.getIcon())));
+                ++i;
 			}
 			return prioritiesList;
 		} catch (RemoteException e) {

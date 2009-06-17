@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
@@ -9,10 +10,12 @@ import com.atlassian.theplugin.idea.jira.JiraIssueListTree;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.model.FrozenModel;
 import com.atlassian.theplugin.jira.model.FrozenModelListener;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
-import com.intellij.openapi.project.Project;
+import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.intellij.openapi.util.Pair;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -27,7 +30,7 @@ public class JIRAIssueTreeBuilder {
 
 	private JiraIssueGroupBy groupBy;
 	private final JIRAIssueListModel issueModel;
-	private Project project;
+    private JIRAServerModel jiraServerModel;
 	private ProjectCfgManagerImpl projectCfgManager;
 	private SortableGroupsTreeModel treeModel;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
@@ -79,14 +82,49 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
+    private class GroupByPriorityTreeNode extends JIRAIssueGroupTreeNode {
+        private JIRAPriorityBean priority;
+
+        public GroupByPriorityTreeNode(JIRAIssue issue) throws JIRAException {
+            super(issueModel, issue.getPriority(), CachedIconLoader.getIcon(issue.getPriorityIconUrl()),
+				CachedIconLoader.getDisabledIcon(issue.getPriorityIconUrl()));
+
+            for (JIRAPriorityBean prio : jiraServerModel.getPriorities(issue.getServer(), false)) {
+                if (prio.getName().equals(issue.getPriority())) {
+                    priority = prio;
+                    break;
+                }
+            }
+        }
+
+        private final Comparator<JIRAIssueGroupTreeNode> comparator = new Comparator<JIRAIssueGroupTreeNode>() {
+            public int compare(JIRAIssueGroupTreeNode lhs, JIRAIssueGroupTreeNode rhs) {
+                if (lhs instanceof GroupByPriorityTreeNode && rhs instanceof GroupByPriorityTreeNode) {
+                    GroupByPriorityTreeNode l = (GroupByPriorityTreeNode) lhs;
+                    GroupByPriorityTreeNode r = (GroupByPriorityTreeNode) rhs;
+                    if (l.priority != null && r.priority != null) {
+                        return l.priority.getOrder() - r.priority.getOrder();
+                    }
+                }
+                return lhs.getComparator().compare(lhs, rhs);
+            }
+        };
+
+        @Override
+        public Comparator<JIRAIssueGroupTreeNode> getComparator() {
+            return comparator;
+        }
+    }
+
 	private Map<Pair<String, ServerId>, String> projectKeysToNames;
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
-			final Project project, final ProjectCfgManagerImpl projectCfgManager) {
+                                JIRAServerModel jiraServerModel,
+                                final ProjectCfgManagerImpl projectCfgManager) {
 		this.groupBy = groupBy;
 		isGroupSubtasksUnderParent = groupSubtasksUnderParent;
 		this.issueModel = model;
-		this.project = project;
+        this.jiraServerModel = jiraServerModel;
 		this.projectCfgManager = projectCfgManager;
 		lastTree = null;
 
@@ -234,7 +272,14 @@ public class JIRAIssueTreeBuilder {
 
 			if (groupBy == JiraIssueGroupBy.LAST_UPDATED) {
 				n = new GroupByDateTreeNode(updatedDate2Name(issue));
-			} else {
+            } else if (groupBy == JiraIssueGroupBy.PRIORITY) {
+                try {
+                    n = new GroupByPriorityTreeNode(issue);
+                } catch (JIRAException e) {
+                    LoggerImpl.getInstance().error(e);
+                    return (DefaultMutableTreeNode) getRoot();
+                }
+            } else {
 				n = new JIRAIssueGroupTreeNode(issueModel, name, icon, disabledIcon);
 			}
 
@@ -302,8 +347,7 @@ public class JIRAIssueTreeBuilder {
 		String iconUrl = null;
 		switch (groupBy) {
 			case PRIORITY:
-				name = issue.getPriority();
-				iconUrl = issue.getPriorityIconUrl();
+                name = issue.getPriority();
 				break;
 			case PROJECT:
 				name = getProjectName(issue);

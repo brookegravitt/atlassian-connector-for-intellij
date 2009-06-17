@@ -264,7 +264,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 		}
 	}
 
-	public List<JIRAConstant> getPriorities(ServerData server) throws JIRAException {
+	public List<JIRAPriorityBean> getPriorities(ServerData server) throws JIRAException {
 		try {
 			JIRASession soap = getSoapSession(server);
 			return soap.getPriorities();

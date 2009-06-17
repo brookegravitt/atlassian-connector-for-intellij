@@ -43,7 +43,7 @@ public class JIRAServerCache {
 	private List<JIRAConstant> statuses;
 
 	private List<JIRAQueryFragment> savedFilters;
-	private List<JIRAConstant> priorities;
+	private List<JIRAPriorityBean> priorities;
 	private List<JIRAResolutionBean> resolutions;
 	private List<JIRAConstant> globalIssueTypes;
 	private List<JIRAConstant> globalSubtaskIssueTypes;
@@ -220,11 +220,11 @@ public class JIRAServerCache {
 		return savedFilters;
 	}
 
-	public List<JIRAConstant> getPriorities(boolean includeAny) throws JIRAException {
+	public List<JIRAPriorityBean> getPriorities(boolean includeAny) throws JIRAException {
 		if (priorities == null) {
 			try {
-				List<JIRAConstant> retrieved = jiraServerFacade.getPriorities(server);
-				priorities = new ArrayList<JIRAConstant>(retrieved.size() + 1);
+				List<JIRAPriorityBean> retrieved = jiraServerFacade.getPriorities(server);
+				priorities = new ArrayList<JIRAPriorityBean>(retrieved.size() + 1);
 				priorities.addAll(retrieved);
 				for (JIRAConstant priority : priorities) {
 					CachedIconLoader.getIcon(priority.getIconUrl());
@@ -235,9 +235,9 @@ public class JIRAServerCache {
 			}
 		}
 
-		List<JIRAConstant> result = new ArrayList<JIRAConstant>();
+		List<JIRAPriorityBean> result = new ArrayList<JIRAPriorityBean>();
 		if (includeAny) {
-			result.add(new JIRAPriorityBean(ANY_ID, "Any", null));
+			result.add(new JIRAPriorityBean(ANY_ID, -1, "Any", null));
 		}
 		result.addAll(priorities);
 		return result;

@@ -244,7 +244,8 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAConstant> priorities = model.getPriorities(new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
+			List<JIRAPriorityBean> priorities =
+                    model.getPriorities(new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, priorities.size());
 		} catch (JIRAException e) {
@@ -254,7 +255,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 	public void testPrioritiesWithException() {
 		JIRAServerModelImpl model = new JIRAServerModelImpl();
-		List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
+		List<JIRAPriorityBean> priorities = new ArrayList<JIRAPriorityBean>();
 
 		facade.throwException = true;
 		model.setFacade(facade);
@@ -533,14 +534,14 @@ public class JIRAServerModelImplTest extends TestCase {
 			return list;
 		}
 
-		public List<JIRAConstant> getPriorities(ServerData server) throws JIRAException {
+		public List<JIRAPriorityBean> getPriorities(ServerData server) throws JIRAException {
 			if (throwException) {
 				throw new JIRAException("test");
 			}
-			List<JIRAConstant> list = new ArrayList<JIRAConstant>();
-			list.add(new JIRAPriorityBean(1, "test", null));
-			list.add(new JIRAPriorityBean(2, "test", null));
-			list.add(new JIRAPriorityBean(3, "test", null));
+			List<JIRAPriorityBean> list = new ArrayList<JIRAPriorityBean>();
+			list.add(new JIRAPriorityBean(1, 0, "test", null));
+			list.add(new JIRAPriorityBean(2, 1, "test", null));
+			list.add(new JIRAPriorityBean(3, 2, "test", null));
 			return list;
 		}
 

@@ -174,7 +174,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		return (srv == null) ? null : srv.getSavedFilters();
 	}
 
-	public List<JIRAConstant> getPriorities(ServerData cfg, boolean includeAny) throws JIRAException {
+	public List<JIRAPriorityBean> getPriorities(ServerData cfg, boolean includeAny) throws JIRAException {
 		if (cfg == null) {
 			return null;
 		}
