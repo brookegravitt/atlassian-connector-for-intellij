@@ -20,13 +20,16 @@ import java.net.URL;
 import java.util.Map;
 
 public class JIRAPriorityBean extends AbstractJIRAConstantBean {
+    private int order;
+
     public JIRAPriorityBean(Map<String, String> map) {
         super(map);
     }
 
-	public JIRAPriorityBean(long id, String name, URL iconUrl) {
+	public JIRAPriorityBean(long id, int order, String name, URL iconUrl) {
 		super(id, name, iconUrl);
-	}
+        this.order = order;
+    }
 
 	public JIRAPriorityBean(JIRAPriorityBean other) {
 		super(other.getMap());
@@ -40,5 +43,7 @@ public class JIRAPriorityBean extends AbstractJIRAConstantBean {
 		return new JIRAPriorityBean(this);
 	}
 
-
+    public int getOrder() {
+        return order;
+    }
 }

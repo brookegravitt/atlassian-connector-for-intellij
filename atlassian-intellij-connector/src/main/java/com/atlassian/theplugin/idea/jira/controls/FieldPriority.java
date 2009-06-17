@@ -15,10 +15,7 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 
@@ -39,7 +36,7 @@ public class FieldPriority extends AbstractFieldComboBox {
 		Thread t = new Thread(new Runnable() {
 			public void run() {
 				try {
-					final List<JIRAConstant> priorities = serverModel.getPriorities(issue.getServer(), false);
+					final List<JIRAPriorityBean> priorities = serverModel.getPriorities(issue.getServer(), false);
 
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {

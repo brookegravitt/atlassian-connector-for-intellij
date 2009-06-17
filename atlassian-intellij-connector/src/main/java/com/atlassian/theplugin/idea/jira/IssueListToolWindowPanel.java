@@ -134,8 +134,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
 
-		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel, project,
-				projectCfgManager);
+		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel, 
+                jiraServerModel, projectCfgManager);
 
 		this.jiraServerModel = jiraServerModel;
 

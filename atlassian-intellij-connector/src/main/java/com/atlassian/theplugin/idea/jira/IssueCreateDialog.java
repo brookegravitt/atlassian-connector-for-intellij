@@ -234,7 +234,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(false);
 
 		return new UiTaskAdapter("retrieving priorities", getContentPane()) {
-			private List<JIRAConstant> priorities = new ArrayList<JIRAConstant>();
+			private List<JIRAPriorityBean> priorities = new ArrayList<JIRAPriorityBean>();
 
 			public void run() throws Exception {
 				priorities = model.getPriorities(jiraServer, myPerformAction);
@@ -250,7 +250,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		};
 	}
 
-	private void addIssuePriorities(List<JIRAConstant> priorieties) {
+	private void addIssuePriorities(List<JIRAPriorityBean> priorieties) {
 		priorityComboBox.removeAllItems();
 		for (JIRAConstant constant : priorieties) {
 			if (constant.getId() != JIRAServerCache.ANY_ID) {
@@ -472,7 +472,7 @@ public class IssueCreateDialog extends DialogWrapper {
 		}
 		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
 		issueProxy.setDescription(description.getText());
-		issueProxy.setPriority(((JIRAConstant) priorityComboBox.getSelectedItem()));
+		issueProxy.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
 		List<JIRAConstant> components = MiscUtil.buildArrayList();
 		Collection<Long> selectedComponents = new LinkedHashSet<Long>();
 		for (Object selectedObject : componentsList.getSelectedValues()) {

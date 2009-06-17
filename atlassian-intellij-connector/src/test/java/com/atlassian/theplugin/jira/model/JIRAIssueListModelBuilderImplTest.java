@@ -216,7 +216,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return null;
 		}
 
-		public List<JIRAConstant> getPriorities(ServerData server) throws JIRAException {
+		public List<JIRAPriorityBean> getPriorities(ServerData server) throws JIRAException {
 			return null;
 		}
 
