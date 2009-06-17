@@ -191,6 +191,10 @@ public final class CrucibleHelper {
 					//for added but not committed files after revision is available only
 					contentRevision = change.getAfterRevision();
 				}
+                // PL-1619
+                if (contentRevision == null || contentRevision.getFile().getVirtualFile() == null) {
+                    continue;
+                }
 				String fileUrl = VcsIdeaHelper.getRepositoryUrlForFile(project, contentRevision.getFile().getVirtualFile());
 
 				try {
