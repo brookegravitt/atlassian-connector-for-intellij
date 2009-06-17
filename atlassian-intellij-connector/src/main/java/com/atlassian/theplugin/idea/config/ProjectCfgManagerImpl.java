@@ -36,13 +36,18 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	private final ProjectId projectId;
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 
-	public ProjectCfgManagerImpl(Project project,
-			CfgManager cfgManager, WorkspaceConfigurationBean projectConfigurationBean) {
+	/**
+	 * Do NOT use the constructor. It is called by PICO.
+	 *
+	 * @param project				  can be null for tests purposes
+	 * @param cfgManager
+	 * @param projectConfigurationBean used for default credentials purposes only (can be null for tests)
+	 */
+	public ProjectCfgManagerImpl(Project project, CfgManager cfgManager, WorkspaceConfigurationBean projectConfigurationBean) {
 		this.projectConfigurationBean = projectConfigurationBean;
 		this.projectId = CfgUtil.getProjectId(project);
 		this.cfgManager = cfgManager;
 	}
-
 
 	public boolean isDefaultCredentialsAsked() {
 		return projectConfigurationBean.isDefaultCredentialsAsked();
@@ -207,5 +212,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	public Collection<ServerCfg> getAllUniqueServers() {
 		return cfgManager.getAllUniqueServers();
 
+	}
+
+	public void addProjectSpecificServer(final ServerCfg serverCfg) {
+		cfgManager.addProjectSpecificServer(projectId, serverCfg);
 	}
 }

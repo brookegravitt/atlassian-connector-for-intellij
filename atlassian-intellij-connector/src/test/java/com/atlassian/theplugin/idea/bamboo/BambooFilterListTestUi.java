@@ -52,17 +52,16 @@ public final class BambooFilterListTestUi {
 //		EasyMock.expect(mock.getName()).andReturn("My-test-Project");
 		EasyMock.expect(mock.getPresentableUrl()).andReturn("projectId").anyTimes();
 		EasyMock.replay(mock);
-		final CfgManagerImpl cfgManager = new CfgManagerImpl();
-		cfgManager.addProjectSpecificServer(projectId1, B1);
-		cfgManager.addProjectSpecificServer(projectId1, B2);
-		cfgManager.addProjectSpecificServer(projectId1, B3);
+//		final CfgManagerImpl cfgManager = new CfgManagerImpl();
+//		final ProjectCfgManagerImpl cfgManager = new ProjectCfgManagerImpl(null, new CfgManagerImpl(), null);
+		projectCfgManager.addProjectSpecificServer(B1);
+		projectCfgManager.addProjectSpecificServer(B2);
+		projectCfgManager.addProjectSpecificServer(B3);
 		final BuildListModelImpl model = new BuildListModelImpl(null, null);
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
-				final BambooFilterList bambooFilterList = new BambooFilterList(
-						new ProjectCfgManagerImpl(null, cfgManager, null),
-						projectId1, model);
+				final BambooFilterList bambooFilterList = new BambooFilterList(projectCfgManager, projectId1, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
 				update.addActionListener(new ActionListener() {
@@ -137,7 +136,7 @@ public final class BambooFilterListTestUi {
 class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
-		super(null, null, null);
+		super(null, new CfgManagerImpl(), null);
 	}
 
 	@NotNull

@@ -207,6 +207,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 }
 
+
+// todo wypierniczyc w kosmos
 class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
