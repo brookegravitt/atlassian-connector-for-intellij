@@ -596,15 +596,18 @@
 
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
-			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
-			<add-to-group group-id="MainToolBar" anchor="last"/>
 		</group>
 
+        <!--Remember to have only one group added to MainToolBar-->
 		<group id="ThePlugin.ActiveToolbar">
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
+			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
