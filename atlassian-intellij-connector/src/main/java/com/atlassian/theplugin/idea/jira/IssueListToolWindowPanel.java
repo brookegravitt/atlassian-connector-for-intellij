@@ -1289,12 +1289,12 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                                 // PL-1612 - belt and suspenders probably, but just to be sure
                                 try {
 								    changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                                } catch (RuntimeException e) {
+                                } catch (Exception e) {
                                     // stupid IDEA 7 API. I hate you
                                     if (e instanceof IncorrectOperationException) {
                                         LoggerImpl.getInstance().warn(e);
                                     } else {
-                                        throw e;
+                                        throw new RuntimeException(e);
                                     }
                                 }
 							}
