@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -44,6 +45,7 @@ import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vcs.changes.LocalChangeList;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.TreeSpeedSearch;
+import com.intellij.util.IncorrectOperationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -1283,8 +1285,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 							break;
 						case REMOVE_CHANGESET:
 							activateDefaultChangeList(changeListManager);
-							if (!"Default".equals(dialog.getCurrentChangeList().getName())) {
-								changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                            if (!dialog.getCurrentChangeList().hasDefaultName()) {
+                                // PL-1612 - belt and suspenders probably, but just to be sure
+                                try {
+								    changeListManager.removeChangeList(dialog.getCurrentChangeList());
+                                } catch (IncorrectOperationException e) {
+                                    LoggerImpl.getInstance().warn(e);
+                                }
 							}
 							break;
 						default:
@@ -1341,7 +1348,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		private void activateDefaultChangeList(ChangeListManager changeListManager) {
 			List<LocalChangeList> chLists = changeListManager.getChangeLists();
 			for (LocalChangeList chl : chLists) {
-				if ("Default".equals(chl.getName())) {
+                if (chl.hasDefaultName()) {
 					changeListManager.setDefaultChangeList(chl);
 					break;
 				}
