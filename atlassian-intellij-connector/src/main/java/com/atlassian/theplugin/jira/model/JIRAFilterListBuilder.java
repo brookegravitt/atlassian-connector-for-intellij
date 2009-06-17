@@ -1,14 +1,10 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.CfgManager;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.api.JIRASavedFilter;
@@ -23,19 +19,13 @@ import java.util.*;
 public class JIRAFilterListBuilder {
 	private JIRAFilterListModel listModel;
 	private JiraWorkspaceConfiguration jiraWorkspaceCfg;
-	private ProjectId projectId;
-	private final JIRAServerFacade jiraServerFacade;
-	private final CfgManager cfgManager;
 
-
-	public JIRAFilterListBuilder(@NotNull final CfgManager cfgManager) {
-		this.jiraServerFacade = JIRAServerFacadeImpl.getInstance();
-		this.cfgManager = cfgManager;
+	public JIRAFilterListBuilder() {
 	}
 
-	public void setProjectId(final ProjectId projectId) {
-		this.projectId = projectId;
-	}
+//	public void setProjectId(final ProjectId projectId) {
+//		this.projectId = projectId;
+//	}
 
 	public void setListModel(@NotNull final JIRAFilterListModel listModel) {
 		this.listModel = listModel;

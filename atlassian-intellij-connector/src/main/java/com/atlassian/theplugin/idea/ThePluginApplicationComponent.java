@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
@@ -59,7 +58,6 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	private ConfigPanel configPanel;
 
 	private final IdeaPluginConfigurationBean configuration;
-	private final CfgManager cfgManager;
 	private final NewVersionChecker newVersionChecker;
 
 	private final Timer timer = new Timer("atlassian-idea-plugin background status checkers");
@@ -74,11 +72,9 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 	private final Collection<SchedulableChecker> schedulableCheckers = new HashSet<SchedulableChecker>();
 
 
-	public ThePluginApplicationComponent(IdeaPluginConfigurationBean configuration, final CfgManager cfgManager,
-			final NewVersionChecker newVersionChecker) {
+	public ThePluginApplicationComponent(IdeaPluginConfigurationBean configuration, final NewVersionChecker newVersionChecker) {
 		this.configuration = configuration;
 
-		this.cfgManager = cfgManager;
 		this.newVersionChecker = newVersionChecker;
 		this.configuration.transientSetHttpConfigurable(HttpConfigurableIdeaImpl.getInstance());
 
@@ -87,6 +83,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		ConfigurationFactory.setConfiguration(configuration);
 		PluginSSLProtocolSocketFactory.initializeSocketFactory();
 
+		// start Direct Click Through http server
 		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {
 			startHttpServer(configuration.getGeneralConfigurationData().getHttpServerPort());
 		}
@@ -137,7 +134,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 	public JComponent createComponent() {
 		if (configPanel == null) {
-			configPanel = new ConfigPanel(configuration, cfgManager, newVersionChecker);
+			configPanel = new ConfigPanel(configuration, newVersionChecker);
 		}
 		return configPanel;
 	}

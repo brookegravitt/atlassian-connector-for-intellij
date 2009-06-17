@@ -1,7 +1,5 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -14,6 +12,7 @@ import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -67,19 +66,19 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;
-	private final CfgManager cfgManager;
+	private ProjectCfgManagerImpl projectCfgManager;
 
 	private ContentPanel selectedContent = null;
 
 	public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final PluginConfiguration pluginConfiguration,
-			@NotNull CfgManager cfgManager) {
+			@NotNull ProjectCfgManagerImpl projectCfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.pluginConfiguration = pluginConfiguration;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 	}
 
 	private final class IssueContentParameters implements ContentParameters {
@@ -125,7 +124,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	public boolean isServerEnabled(String key) {
 		IssuePanel ip = getContentPanel(key);
-		ServerCfg serverCfg = cfgManager.getServer(CfgUtil.getProjectId(project),
+		ServerCfg serverCfg = projectCfgManager.getServer(
 				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
 
 		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
@@ -244,7 +243,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				params.model.addModelListener(modelListener);
 			}
 
-			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			projectCfgManager.addProjectConfigurationListener(configurationListener);
 
 			addComponentListener(new ComponentAdapter() {
 				@Override
@@ -285,7 +284,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			if (params.model != null) {
 				params.model.removeModelListener(modelListener);
 			}
-			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			projectCfgManager.removeProjectConfigurationListener(configurationListener);
 		}
 
 		private ServerData getJiraServerCfg() {
@@ -701,12 +700,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				} else {
 					issueAssignee = new JLabel("Unassigned");
 				}
-                if (params.issue.getReporterId().equals("-1")) {
-                    issueReporter = new JLabel("Anonymous");
-                } else {
-				    issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
-					    	params.issue.getReporterId(), true);
-                }
+				if (params.issue.getReporterId().equals("-1")) {
+					issueReporter = new JLabel("Anonymous");
+				} else {
+					issueReporter = new UserLabel(params.issue.getServerUrl(), params.issue.getReporter(),
+							params.issue.getReporterId(), true);
+				}
 				issueResolution = new JLabel(params.issue.getResolution());
 				issueCreationTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString(params.issue.getCreated()));
 				issueUpdateTime = new JLabel(JiraTimeFormatter.formatTimeFromJiraTimeString((params.issue.getUpdated())));

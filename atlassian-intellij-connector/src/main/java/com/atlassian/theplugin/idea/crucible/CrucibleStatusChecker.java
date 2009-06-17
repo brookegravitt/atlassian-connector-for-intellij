@@ -16,17 +16,15 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.project.Project;
 
 import java.util.Collection;
 import java.util.TimerTask;
@@ -43,17 +41,14 @@ import java.util.TimerTask;
  */
 public final class CrucibleStatusChecker implements SchedulableChecker {
 	private static final String NAME = "Atlassian Crucible checker";
-	private final CfgManager cfgManager;
-	private final Project project;
+	private final ProjectCfgManagerImpl cfgManager;
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final CrucibleConfigurationBean crucibleConfiguration;
 
-	public CrucibleStatusChecker(CfgManager cfgManager,
-								 Project project,
-								 PluginConfiguration pluginConfiguration,
-								 CrucibleReviewListModel crucibleReviewListModel) {
+	public CrucibleStatusChecker(ProjectCfgManagerImpl cfgManager,
+			PluginConfiguration pluginConfiguration,
+			CrucibleReviewListModel crucibleReviewListModel) {
 		this.cfgManager = cfgManager;
-		this.project = project;
 		this.crucibleReviewListModel = crucibleReviewListModel;
 		this.crucibleConfiguration = pluginConfiguration.getCrucibleConfigurationData();
 	}
@@ -70,7 +65,7 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 	}
 
 	private Collection<CrucibleServerCfg> retrieveEnabledCrucibleServers() {
-		return cfgManager.getAllEnabledCrucibleServers(CfgUtil.getProjectId(project));
+		return cfgManager.getAllEnabledCrucibleServers();
 	}
 
 	/**

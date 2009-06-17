@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,9 +20,9 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.IconLoader;
 
@@ -39,11 +39,11 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 //	private final PluginStatusBarToolTip tooltip;
 
 	/**
-	 * @param project reference to the project (frame) that owns this icon.
+	 * @param project		  reference to the project (frame) that owns this icon.
 	 * @param cfgManager
 	 * @param pluginToolWindow
 	 */
-    public BambooStatusIcon(final Project project, CfgManager cfgManager, final PluginToolWindow pluginToolWindow) {
+	public BambooStatusIcon(final Project project, ProjectCfgManagerImpl cfgManager, final PluginToolWindow pluginToolWindow) {
 
 		super(project, cfgManager);
 
@@ -51,8 +51,8 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 //		tooltip = new PluginStatusBarToolTip(WindowManager.getInstance().getFrame(aProjectComponent.getProject()));
 
 		addMouseListener(new MouseAdapter() {
-            /*
-            public void mouseEntered(MouseEvent e) {
+			/*
+			public void mouseEntered(MouseEvent e) {
 
 				tooltip.showToltip(
 						(int) MouseInfo.getPointerInfo().getLocation().getX(),
@@ -61,10 +61,11 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 			*/
 
 			// show/hide toolbar on click
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				pluginToolWindow.focusPanel(PluginToolWindow.ToolWindowPanels.BUILDS);
-            }
+			}
 		});
 
 	}
@@ -74,14 +75,14 @@ public class BambooStatusIcon extends StatusBarPluginIcon implements BambooStatu
 //		tooltip.setHtmlContent(fullInfo);
 		switch (status) {
 			case FAILURE:
-                setToolTipText("Some builds failed. Click to see details.");
+				setToolTipText("Some builds failed. Click to see details.");
 				setIcon(ICON_RED);
-                break;
+				break;
 			case UNKNOWN:
 				setIcon(ICON_GREY);
 				break;
 			case SUCCESS:
-                setToolTipText("All builds currently passing.");
+				setToolTipText("All builds currently passing.");
 				setIcon(ICON_GREEN);
 				break;
 			default:

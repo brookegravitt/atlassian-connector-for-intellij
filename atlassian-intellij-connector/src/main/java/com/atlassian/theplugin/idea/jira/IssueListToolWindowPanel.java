@@ -2,11 +2,11 @@ package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -67,7 +67,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
 	private ProjectCfgManagerImpl projectCfgManager;
-	private final CfgManager cfgManager;
 	private final PluginConfiguration pluginConfiguration;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
 
@@ -104,7 +103,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public IssueListToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
-			@NotNull final CfgManager cfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final IssueToolWindowFreezeSynchronizator freezeSynchronizator,
@@ -116,7 +114,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
-		this.cfgManager = cfgManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
@@ -146,7 +143,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		jiraFilterListModelBuilder = filterListBuilder;
 		if (jiraFilterListModelBuilder != null) {
 			jiraFilterListModelBuilder.setListModel(jiraFilterListModel);
-			jiraFilterListModelBuilder.setProjectId(CfgUtil.getProjectId(project));
+//			jiraFilterListModelBuilder.setProjectId(CfgUtil.getProjectId(project));
 			jiraFilterListModelBuilder.setJiraWorkspaceCfg(jiraWorkspaceConfiguration);
 		}
 		currentIssueListModel.addModelListener(new LocalJiraIssueListModelListener());
@@ -450,7 +447,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	public boolean openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
 		ServerData server = CfgUtil.findServer(
-				serverUrl, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER), projectCfgManager);
+				serverUrl, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -467,8 +464,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return false;
 		}
 
-		server = CfgUtil.findServer(url, cfgManager.getAllServers(CfgUtil.getProjectId(project), ServerType.JIRA_SERVER),
-				projectCfgManager);
+		server = CfgUtil.findServer(url, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -920,7 +916,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		private void fillServerData() {
 			servers = new ArrayList<ServerData>();
-			for (JiraServerCfg serverCfg : cfgManager.getAllEnabledJiraServers(CfgUtil.getProjectId(getProject()))) {
+			for (JiraServerCfg serverCfg : projectCfgManager.getAllEnabledJiraServers()) {
 				servers.add(projectCfgManager.getServerData(serverCfg));
 			}
 		}
@@ -950,7 +946,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						if (serverCheck == null || !serverCheck) {
 							setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
 							MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
-									(JiraServerCfg) cfgManager.getServer(CfgUtil.getProjectId(project), server), project));
+									(JiraServerCfg) projectCfgManager.getServer(server), project));
 							continue;
 						}//@todo remove  saved filters download or merge with existing in listModel
 
@@ -1008,7 +1004,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverConnectionDataChanged(final ServerId serverId) {
-			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
 				jiraServerModel.clear(server.getServerId());
 				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, true);
@@ -1018,7 +1014,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverNameChanged(final ServerId serverId) {
-			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg) {
 				jiraServerModel.replace(projectCfgManager.getServerData(server));
 				refreshFilterModel();
@@ -1028,7 +1024,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverDisabled(final ServerId serverId) {
-			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
 				removeServer(serverId, recenltyViewedAffected(server));
 			}
@@ -1043,7 +1039,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverEnabled(final ServerId serverId) {
-			ServerCfg server = cfgManager.getServer(CfgUtil.getProjectId(project), serverId);
+			ServerCfg server = projectCfgManager.getServer(serverId);
 			addServer(server, recenltyViewedAffected(server));
 		}
 
@@ -1285,18 +1281,18 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 							break;
 						case REMOVE_CHANGESET:
 							activateDefaultChangeList(changeListManager);
-                            if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())) {
-                                // PL-1612 - belt and suspenders probably, but just to be sure
-                                try {
-								    changeListManager.removeChangeList(dialog.getCurrentChangeList());
-                                } catch (Exception e) {
-                                    // stupid IDEA 7 API. I hate you
-                                    if (e instanceof IncorrectOperationException) {
-                                        LoggerImpl.getInstance().warn(e);
-                                    } else {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
+							if (!"default".equalsIgnoreCase(dialog.getCurrentChangeList().getName())) {
+								// PL-1612 - belt and suspenders probably, but just to be sure
+								try {
+									changeListManager.removeChangeList(dialog.getCurrentChangeList());
+								} catch (Exception e) {
+									// stupid IDEA 7 API. I hate you
+									if (e instanceof IncorrectOperationException) {
+										LoggerImpl.getInstance().warn(e);
+									} else {
+										throw new RuntimeException(e);
+									}
+								}
 							}
 							break;
 						default:
@@ -1353,7 +1349,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		private void activateDefaultChangeList(ChangeListManager changeListManager) {
 			List<LocalChangeList> chLists = changeListManager.getChangeLists();
 			for (LocalChangeList chl : chLists) {
-                if ("default".equalsIgnoreCase(chl.getName())) {
+				if ("default".equalsIgnoreCase(chl.getName())) {
 					changeListManager.setDefaultChangeList(chl);
 					break;
 				}

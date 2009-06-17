@@ -16,10 +16,8 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UIActionScheduler;
 import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
@@ -84,31 +82,29 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private final Project project;
 
-	public CfgManager getCfgManager() {
-		return cfgManager;
+	public ProjectCfgManagerImpl getCfgManager() {
+		return projectCfgManager;
 	}
 
-	private final CfgManager cfgManager;
-
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final UIActionScheduler actionScheduler;
 	private BambooStatusIcon statusBarBambooIcon;
 	private CrucibleStatusIcon statusBarCrucibleIcon;
-	private CrucibleNotificationTooltip crucibleTooltip;
 
+	private CrucibleNotificationTooltip crucibleTooltip;
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private final BuildListModelImpl bambooModel;
 	private CrucibleStatusChecker crucibleStatusChecker;
+
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
 	private final CrucibleServerFacade crucibleServerFacade;
 
 	private final ToolWindowManager toolWindowManager;
-
 	private boolean created;
 	private CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
-	private final ProjectCfgManagerImpl projectCfgManager;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
@@ -125,7 +121,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	public ThePluginProjectComponent(Project project, ToolWindowManager toolWindowManager,
 			PluginConfiguration pluginConfiguration, UIActionScheduler actionScheduler,
-			WorkspaceConfigurationBean projectConfigurationBean, CfgManager cfgManager,
+			WorkspaceConfigurationBean projectConfigurationBean,
 			@NotNull IssueListToolWindowPanel issuesToolWindowPanel,
 			@NotNull PluginToolWindow pluginToolWindow,
 			@NotNull BuildListModelImpl bambooModel,
@@ -135,7 +131,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder) {
 		this.project = project;
-		this.cfgManager = cfgManager;
+		this.projectCfgManager = projectCfgManager;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.actionScheduler = actionScheduler;
 		this.toolWindowManager = toolWindowManager;
@@ -145,7 +141,6 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
-		this.projectCfgManager = projectCfgManager;
 		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
@@ -207,21 +202,21 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			ChangeListManager.getInstance(project).registerCommitExecutor(
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
-            final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
-                    BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
-                    projectCfgManager,
-                    project);
+			final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
+					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
+					projectCfgManager,
+					project);
 
 			this.bambooStatusChecker = new BambooStatusChecker(
-                    actionScheduler,
+					actionScheduler,
 					projectCfgManager,
-                    pluginConfiguration,
+					pluginConfiguration,
 					new Runnable() {
-                        public void run() {
-                            MissingPasswordHandlerQueue.addHandler(pwdHandler);
-                        }
-                    },
-                    PluginUtil.getLogger());
+						public void run() {
+							MissingPasswordHandlerQueue.addHandler(pwdHandler);
+						}
+					},
+					PluginUtil.getLogger());
 
 			// DependencyValidationManager.getHolder(project, "", )
 
@@ -254,7 +249,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			});
 
 			// create Bamboo status bar icon
-			statusBarBambooIcon = new BambooStatusIcon(this.project, cfgManager, toolWindow);
+			statusBarBambooIcon = new BambooStatusIcon(this.project, projectCfgManager, toolWindow);
 			statusBarBambooIcon.updateBambooStatus(BuildStatus.UNKNOWN, new BambooPopupInfo());
 
 			// add icon listener to bamboo checker thread
@@ -274,7 +269,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			// setup Crucible status checker and listeners
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(crucibleStatusChecker);
 			// create crucible status bar icon
-			statusBarCrucibleIcon = new CrucibleStatusIcon(project, cfgManager, toolWindow);
+			statusBarCrucibleIcon = new CrucibleStatusIcon(project, projectCfgManager, toolWindow);
 
 			//registerCrucibleNotifier();
 
@@ -282,7 +277,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			//statusBar.addCustomIndicationComponent(statusBarCrucibleIcon);
 			statusBarCrucibleIcon.showOrHideIcon();
 
-			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration, cfgManager);
+			statusPluginUpdateIcon = new PluginUpdateIcon(project, pluginConfiguration, projectCfgManager);
 			ConfirmPluginUpdateHandler.getInstance().setDisplay(statusPluginUpdateIcon);
 			//statusPluginUpdateIcon.showOrHideIcon();
 
@@ -299,9 +294,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			IdeaHelper.getAppComponent().rescheduleStatusCheckers(false);
 
 			configurationListener = new ConfigurationListenerImpl();
-			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
-			cfgManager.addProjectConfigurationListener(CfgUtil.getProjectId(project),
-					issuesToolWindowPanel.getConfigListener());
+			projectCfgManager.addProjectConfigurationListener(configurationListener);
+			projectCfgManager.addProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
 
 			created = true;
 
@@ -321,7 +315,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 			registerCrucibleNotifier();
 			issuesToolWindowPanel.init();
-            checkDefaultServerValues();
+			checkDefaultServerValues();
 		}
 	}
 
@@ -341,34 +335,34 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	}
 
-    private void checkDefaultServerValues() {
-        final InformationDialogWithCheckBox jiraDialog = new InformationDialogWithCheckBox(project,
-                PluginUtil.PRODUCT_NAME,
-                "Please set up default JIRA server in order to get all cool features of Atlassian IntelliJ Connector.");
-        if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    jiraDialog.show();
-                    projectConfigurationBean.setDefaultJiraServerAsked(jiraDialog.isDoNotShowChecked());
-                }
-            });
-        }
-         final InformationDialogWithCheckBox fishEyeDialog = new InformationDialogWithCheckBox(project,
-                 PluginUtil.PRODUCT_NAME,
-                "Please set up default FishEye server in order to get all cool features of Atlassian IntelliJ Connector.");
+	private void checkDefaultServerValues() {
+		final InformationDialogWithCheckBox jiraDialog = new InformationDialogWithCheckBox(project,
+				PluginUtil.PRODUCT_NAME,
+				"Please set up default JIRA server in order to get all cool features of Atlassian IntelliJ Connector.");
+		if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					jiraDialog.show();
+					projectConfigurationBean.setDefaultJiraServerAsked(jiraDialog.isDoNotShowChecked());
+				}
+			});
+		}
+		final InformationDialogWithCheckBox fishEyeDialog = new InformationDialogWithCheckBox(project,
+				PluginUtil.PRODUCT_NAME,
+				"Please set up default FishEye server in order to get all cool features of Atlassian IntelliJ Connector.");
 
-        if (projectCfgManager.getDefaultFishEyeServer() == null
-                && !projectConfigurationBean.isDefaultFishEyeServerAsked()) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    fishEyeDialog.show();
-                    projectConfigurationBean.setDefaultFishEyeServerAsked(fishEyeDialog.isDoNotShowChecked());
-                }
-            });
-        }
-    }
+		if (projectCfgManager.getDefaultFishEyeServer() == null
+				&& !projectConfigurationBean.isDefaultFishEyeServerAsked()) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					fishEyeDialog.show();
+					projectConfigurationBean.setDefaultFishEyeServerAsked(fishEyeDialog.isDoNotShowChecked());
+				}
+			});
+		}
+	}
 
-    public FileEditorListenerImpl getFileEditorListener() {
+	public FileEditorListenerImpl getFileEditorListener() {
 		return fileEditorListener;
 	}
 
@@ -451,10 +445,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.unregisterListener(tooltipBambooStatusListener);
 			//unregister form model
 			//crucibleStatusChecker.unregisterListener(crucibleReviewNotifier);
-			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project), configurationListener);
+			projectCfgManager.removeProjectConfigurationListener(configurationListener);
 			configurationListener = null;
-			cfgManager.removeProjectConfigurationListener(CfgUtil.getProjectId(project),
-					issuesToolWindowPanel.getConfigListener());
+			projectCfgManager.removeProjectConfigurationListener(issuesToolWindowPanel.getConfigListener());
 
 			// remove tool window
 			toolWindowManager.unregisterToolWindow(PluginToolWindow.TOOL_WINDOW_NAME);

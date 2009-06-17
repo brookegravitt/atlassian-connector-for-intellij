@@ -15,8 +15,6 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.CfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
@@ -89,7 +87,6 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	private final CrucibleReviewListener reviewListener = new LocalReviewListener();
 	private final CrucibleReviewListModel crucibleReviewListModel;
-	private final CfgManager cfgManager;
 	private final ThePluginProjectComponent pluginProjectComponent;
 	private TreeUISetup treeUISetup;
 	private static final String THE_PLUGIN_CRUCIBLE_REVIEW_FILE_LIST_TOOL_BAR = "ThePlugin.Crucible.ReviewFileListToolBar";
@@ -106,10 +103,8 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		filterTreeNodes(filter.getNextState());
 	}
 
-	public ReviewItemTreePanel(@NotNull CfgManager cfgManager, final Project project,
-			final CrucibleFilteredModelProvider.Filter filter,
+	public ReviewItemTreePanel(final Project project, final CrucibleFilteredModelProvider.Filter filter,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent) {
-		this.cfgManager = cfgManager;
 		this.pluginProjectComponent = pluginProjectComponent;
 		initLayout();
 		this.filter = filter;
@@ -235,14 +230,12 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 	public void startListeningForCredentialChanges(final Project aProject, final ReviewAdapter aCrucibleReview) {
 		setCrucibleReview(aCrucibleReview);
 		this.project = aProject;
-		pluginProjectComponent.getCfgManager().addProjectConfigurationListener(
-				CfgUtil.getProjectId(project), configurationListener);
+		pluginProjectComponent.getCfgManager().addProjectConfigurationListener(configurationListener);
 //				addConfigurationCredentialsListener(CfgUtil.getProjectId(project), this);
 	}
 
 	public void stopListeningForCredentialChanges() {
-		pluginProjectComponent.getCfgManager().removeProjectConfigurationListener(
-				CfgUtil.getProjectId(project), configurationListener);
+		pluginProjectComponent.getCfgManager().removeProjectConfigurationListener(configurationListener);
 //				removeConfigurationCredentialsListener(CfgUtil.getProjectId(project), configurationListener);
 	}
 
