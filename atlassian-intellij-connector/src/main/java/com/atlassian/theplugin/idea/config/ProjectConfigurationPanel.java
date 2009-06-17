@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -152,11 +153,26 @@ public class ProjectConfigurationPanel extends JPanel {
 
 	public void askForDefaultCredentials() {
 		final ServerCfg serverCfg = serverConfigPanel.getSelectedServer();
-		final boolean alreadyExists =
-				null != IdeaHelper.getProjectCfgManager(project)
-                        .getProjectConfiguration().getServerCfg(serverCfg.getServerId());
 
-		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+        // PL-1617 - Ugly ugly. I am not sure why this is b0rked sometimes,
+        // but one of these seems to be null for apparent reason every once in a while
+        ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+        ProjectConfiguration projCfg = null;
+        if (cfgMgr == null) {
+            LoggerImpl.getInstance().warn("askDefaultCredentials() - cfgMgr is null");
+        } else {
+            projCfg = cfgMgr.getProjectConfiguration();
+        }
+        if (projCfg == null) {
+            LoggerImpl.getInstance().warn("askDefaultCredentials() - projCfg is null");
+        }
+
+		final boolean alreadyExists =
+                cfgMgr != null
+                && projCfg != null
+                && projCfg.getServerCfg(serverCfg.getServerId()) != null;
+
+        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
 
 				final ModalityState modalityState = ModalityState.stateForComponent(ProjectConfigurationPanel.this);
@@ -174,15 +190,20 @@ public class ProjectConfigurationPanel extends JPanel {
 											+ " as default credentials for the Atlassian IntelliJ Connector?</html>",
 									"Set as default",
 									Messages.getQuestionIcon());
+
+                            ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
 								UserCfg credentials = new UserCfg(serverCfg.getUsername(),
 										serverCfg.getPassword(), true);
-								IdeaHelper.getProjectCfgManager(project).setDefaultCredentials(credentials);
+                                if (cfgMgr != null) {
+								    cfgMgr.setDefaultCredentials(credentials);
+                                }
 								defaultsConfigurationPanel.setDefaultCredentials(credentials);
-
-
 							}
-							IdeaHelper.getProjectCfgManager(project).setDefaultCredentialsAsked(true);
+                            if (cfgMgr != null) {
+							    cfgMgr.setDefaultCredentialsAsked(true);
+                            }
 							ProjectConfigurationPanel.this.defaultCredentialsAsked = true;
 						}
 					}
