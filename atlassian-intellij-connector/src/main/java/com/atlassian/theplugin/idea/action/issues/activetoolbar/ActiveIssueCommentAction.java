@@ -25,7 +25,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 			panel.setStatusErrorMessage("Error commenting issue: " + e.getMessage(), e);
 			return;
 		}
-		if (IdeaHelper.getCfgManager(event) != null) {
+		if (IdeaHelper.getProjectCfgManager(event) != null) {
 			JiraServerCfg jira = ActiveIssueUtils.getJiraServer(event);
 			if (jira != null) {
 				ServerData serverData = IdeaHelper.getProjectCfgManager(event).getServerData(jira);

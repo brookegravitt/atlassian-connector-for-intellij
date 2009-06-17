@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -23,8 +21,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 		if (project == null) {
 			return null;
 		}
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(event).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(event).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -45,8 +42,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 		if (project == null) {
 			return null;
 		}
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -69,8 +65,7 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return false;
 		}
 
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return false;
 		}

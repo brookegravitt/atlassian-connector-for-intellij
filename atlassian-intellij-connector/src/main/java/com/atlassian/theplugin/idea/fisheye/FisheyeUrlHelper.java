@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea.fisheye;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.FishEyeServer;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.editor.Document;
@@ -11,10 +9,10 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,8 +30,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -71,8 +68,7 @@ public final class FisheyeUrlHelper {
 
 	@Nullable
 	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -108,8 +104,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final PsiElement psiElement, final Project project) {
 
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -124,12 +119,12 @@ public final class FisheyeUrlHelper {
 			fisheyeProjPath = "";
 		}
 
-        TextRange r = psiElement.getTextRange();
-        int offset = 0;
-        // null is returned for binary files
-        if (r != null) {
-            offset = r.getStartOffset();
-        }
+		TextRange r = psiElement.getTextRange();
+		int offset = 0;
+		// null is returned for binary files
+		if (r != null) {
+			offset = r.getStartOffset();
+		}
 		VirtualFile virtualFile = psiElement.getContainingFile().getVirtualFile();
 		if (virtualFile == null) {
 			return null;
@@ -139,9 +134,9 @@ public final class FisheyeUrlHelper {
 
 		int lineNumber = -1;
 
-        if (document != null) {
-            lineNumber = document.getLineNumber(offset) + 1;
-        }
+		if (document != null) {
+			lineNumber = document.getLineNumber(offset) + 1;
+		}
 		final String relativePath = VfsUtil.getPath(project.getBaseDir(), virtualFile, '/');
 		if (relativePath == null) {
 			return null;
@@ -156,8 +151,7 @@ public final class FisheyeUrlHelper {
 
 	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
 
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		final ProjectConfiguration projectCfg = IdeaHelper.getCfgManager(project).getProjectConfiguration(projectId);
+		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
 		if (projectCfg == null) {
 			return null;
 		}
@@ -197,33 +191,33 @@ public final class FisheyeUrlHelper {
 		StringBuffer sb = new StringBuffer();
 		sb.append(fishEyeServer.getUrl());
 		sb.append("/browse/");
-        if (lineNumber != -1) {
-            sb.append(repo);
-            sb.append('/');
-            sb.append(projectPath);
-            if (sb.charAt(sb.length() - 1) != '/') {
-                sb.append("/");
-            }
-            sb.append(fileRelativePath);
-            if (rev != null) {
-                sb.append("?r=");
-                sb.append(rev);
-                sb.append("#l");
-                sb.append(lineNumber);
-            }
-        } else {
-            // binary file
-            sb.append("~raw,r=");
-            sb.append(rev);
-            sb.append('/');
-            sb.append(repo);
-            sb.append('/');
-            sb.append(projectPath);
-            if (sb.charAt(sb.length() - 1) != '/') {
-                sb.append("/");
-            }
-            sb.append(fileRelativePath);
-        }
+		if (lineNumber != -1) {
+			sb.append(repo);
+			sb.append('/');
+			sb.append(projectPath);
+			if (sb.charAt(sb.length() - 1) != '/') {
+				sb.append("/");
+			}
+			sb.append(fileRelativePath);
+			if (rev != null) {
+				sb.append("?r=");
+				sb.append(rev);
+				sb.append("#l");
+				sb.append(lineNumber);
+			}
+		} else {
+			// binary file
+			sb.append("~raw,r=");
+			sb.append(rev);
+			sb.append('/');
+			sb.append(repo);
+			sb.append('/');
+			sb.append(projectPath);
+			if (sb.charAt(sb.length() - 1) != '/') {
+				sb.append("/");
+			}
+			sb.append(fileRelativePath);
+		}
 		return sb.toString();
 	}
 }

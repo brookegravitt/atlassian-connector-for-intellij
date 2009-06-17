@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues.oneissue;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -57,8 +56,7 @@ public class RunJiraActionGroup extends ActionGroup {
 			if (server != null) {
 				Project project = event.getData(DataKeys.PROJECT);
 				if (project != null) {
-					ServerCfg server2 = IdeaHelper.getCfgManager(event)
-							.getServer(CfgUtil.getProjectId(project), new ServerId(server.getServerId()));
+					ServerCfg server2 = IdeaHelper.getProjectCfgManager(event).getServer(new ServerId(server.getServerId()));
 					if (server2 != null && server2.isEnabled()) {
 						enabled = true;
 					}

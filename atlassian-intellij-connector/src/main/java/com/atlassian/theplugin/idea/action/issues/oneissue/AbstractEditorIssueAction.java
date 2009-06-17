@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues.oneissue;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -19,8 +18,7 @@ public abstract class AbstractEditorIssueAction extends AnAction {
 		if (server != null) {
 			Project project = e.getData(DataKeys.PROJECT);
 			if (project != null) {
-				ServerCfg server2 = IdeaHelper.getCfgManager(e).getServer(CfgUtil.getProjectId(project),
-						new ServerId(server.getServerId()));
+				ServerCfg server2 = IdeaHelper.getProjectCfgManager(e).getServer(new ServerId(server.getServerId()));
 				if (server2 != null && server2.isEnabled()) {
 					enabled = true;
 				}
