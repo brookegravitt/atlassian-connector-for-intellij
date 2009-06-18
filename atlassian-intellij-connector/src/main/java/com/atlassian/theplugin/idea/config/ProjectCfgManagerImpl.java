@@ -209,11 +209,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		cfgManager.removeProject(projectId);
 	}
 
-	public Collection<ServerCfg> getAllUniqueServers() {
-		return cfgManager.getAllUniqueServers();
-
-	}
-
 	public void addProjectSpecificServer(final ServerCfg serverCfg) {
 		cfgManager.addProjectSpecificServer(projectId, serverCfg);
 	}
