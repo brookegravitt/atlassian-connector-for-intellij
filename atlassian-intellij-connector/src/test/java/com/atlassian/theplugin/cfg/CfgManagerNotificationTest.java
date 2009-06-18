@@ -51,8 +51,8 @@ public class CfgManagerNotificationTest extends TestCase {
 //		cfgManager.addGlobalServer(bamboo);
 //		cfgManager.addGlobalServer(jira);
 
-		projectCfgManager.addProjectSpecificServer(bamboo1);
-		projectCfgManager.addProjectSpecificServer(jira1);
+		projectCfgManager.addServer(bamboo1);
+		projectCfgManager.addServer(jira1);
 	}
 
 

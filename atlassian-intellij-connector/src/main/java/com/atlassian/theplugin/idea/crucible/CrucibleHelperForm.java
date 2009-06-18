@@ -17,7 +17,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -209,10 +208,9 @@ public class CrucibleHelperForm extends DialogWrapper {
 			}
 
 			if (this.mode == AddMode.ADDREVISION) {
-				ProjectConfiguration prjCfg = projectCfgManager.getProjectConfiguration();
 				// setting default repo if such is defined
-				if (prjCfg != null) {
-					final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
+				if (projectCfgManager != null) {
+					final String defaultRepo = projectCfgManager.getDefaultCrucibleRepo();
 					if (defaultRepo != null) {
 						for (int i = 0; i < repositoryComboBox.getItemCount(); ++i) {
 							if (repositoryComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {

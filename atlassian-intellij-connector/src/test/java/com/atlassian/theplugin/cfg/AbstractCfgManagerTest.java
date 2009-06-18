@@ -69,9 +69,9 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 	private void populateServerCfgs() {
 //		cfgManager.addGlobalServer(bamboo3);
 //		cfgManager.addGlobalServer(jira2);
-		cfgManager.addProjectSpecificServer(bamboo1);
-		cfgManager.addProjectSpecificServer(crucible1);
-		cfgManager.addProjectSpecificServer(jira1);
+		cfgManager.addServer(bamboo1);
+		cfgManager.addServer(crucible1);
+		cfgManager.addServer(jira1);
 //		cfgManager.updateProjectConfiguration(PROJECT_ID_3, new ProjectConfiguration());
 	}
 
@@ -103,20 +103,20 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		final ProjectCfgManagerImpl myCfgManager = createCfgManager();
 		TestUtil.assertHasOnlyElements(myCfgManager.getAllServers());
 
-		myCfgManager.addProjectSpecificServer(crucible1);
+		myCfgManager.addServer(crucible1);
 		TestUtil.assertHasOnlyElements(myCfgManager.getAllServers(), crucible1);
 
-		myCfgManager.addProjectSpecificServer(jira1);
+		myCfgManager.addServer(jira1);
 		TestUtil.assertHasOnlyElements(myCfgManager.getAllServers(), jira1, crucible1);
 
 		// now try to add something which already is there
-		myCfgManager.addProjectSpecificServer(jira1);
+		myCfgManager.addServer(jira1);
 		TestUtil.assertHasOnlyElements(myCfgManager.getAllServers(), crucible1, jira1);
 
 
 		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
 			public void run() throws Exception {
-				myCfgManager.addProjectSpecificServer(null);
+				myCfgManager.addServer(null);
 
 			}
 		});
@@ -270,7 +270,7 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 
 	public void testGetAllUniqueServers() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), bamboo1, crucible1, jira1);
-		cfgManager.addProjectSpecificServer(crucible1);
+		cfgManager.addServer(crucible1);
 		// must be unique - so adding new server above should have no effect
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), bamboo1, crucible1, jira1);
 		cfgManager = createCfgManager();

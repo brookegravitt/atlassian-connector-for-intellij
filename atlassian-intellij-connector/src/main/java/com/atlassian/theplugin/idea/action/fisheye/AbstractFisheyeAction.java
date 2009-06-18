@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -16,17 +16,17 @@ public abstract class AbstractFisheyeAction extends AnAction {
 	}
 
 	@Nullable
-	protected FishEyeServer getFishEyeServerCfg(final AnActionEvent event) {
+	protected ServerData getFishEyeServerCfg(final AnActionEvent event) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 		if (project == null) {
 			return null;
 		}
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(event).getProjectConfiguration();
-		if (projectCfg == null) {
+		final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+		if (projectCfgManager == null) {
 			return null;
 		}
 
-		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final ServerData fishEyeServer = projectCfgManager.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",
@@ -42,12 +42,12 @@ public abstract class AbstractFisheyeAction extends AnAction {
 		if (project == null) {
 			return null;
 		}
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
-		if (projectCfg == null) {
+		final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(project);
+		if (projectCfgManager == null) {
 			return null;
 		}
 
-		final String repository = projectCfg.getDefaultFishEyeRepo();
+		final String repository = projectCfgManager.getDefaultFishEyeRepo();
 		if (repository == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine default FishEye repository. Make sure you have configured it correctly.",
@@ -65,12 +65,12 @@ public abstract class AbstractFisheyeAction extends AnAction {
 			return false;
 		}
 
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
-		if (projectCfg == null) {
+		final ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(project);
+		if (projectCfgManager == null) {
 			return false;
 		}
 
-		if (projectCfg.getDefaultFishEyeServer() == null || projectCfg.getDefaultFishEyeRepo() == null) {
+		if (projectCfgManager.getDefaultFishEyeServer() == null || projectCfgManager.getDefaultFishEyeRepo() == null) {
 			return false;
 		}
 

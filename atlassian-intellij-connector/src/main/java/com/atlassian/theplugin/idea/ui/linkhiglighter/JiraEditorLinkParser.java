@@ -15,8 +15,7 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -52,13 +51,11 @@ public final class JiraEditorLinkParser {
 
 	private String getDefaultJiraServerUrl() {
 		//projectCfgManager cannot be null but due to PL-1435 added some safety code
-		final ProjectConfiguration projectConfiguration =
-				projectCfgManager != null ? projectCfgManager.getProjectConfiguration() : null;
 		// kalamon: not sure why this could be null, but see PL-1348.
 		// I am too stupid to grok the project configuration code
-		if (projectConfiguration != null) {
-			final JiraServerCfg defaultServer = projectConfiguration.getDefaultJiraServer();
-			if (defaultServer != null && projectConfiguration.isDefaultJiraServerValid()) {
+		if (projectCfgManager != null) {
+			final ServerData defaultServer = projectCfgManager.getDefaultJiraServer();
+			if (defaultServer != null && projectCfgManager.isDefaultJiraServerValid()) {
 				return defaultServer.getUrl();
 			}
 		}

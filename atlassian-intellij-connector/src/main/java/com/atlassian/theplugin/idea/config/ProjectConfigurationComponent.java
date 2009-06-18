@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea;
+package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
@@ -23,8 +23,7 @@ import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.atlassian.theplugin.idea.config.ProjectConfigurationPanel;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -52,7 +51,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -141,15 +139,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
-            final File file = new File(path);
-            if (path == null || !file.exists()) {
+			if (path == null || !new File(path).exists()) {
 				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
 				return false;
 			}
-            FileInputStream iStream = new FileInputStream(file);
-
-			root = builder.build(iStream);
+			root = builder.build(path);
 			cleanupDom(root);
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
@@ -292,9 +287,9 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		return null;
 	}
 
-	private ProjectId getProjectId() {
-		return CfgUtil.getProjectId(project);
-	}
+//	private ProjectId getProjectId() {
+//		return CfgUtil.getProjectId(project);
+//	}
 
 	public void save() {
 		final Element element = new Element("atlassian-ide-plugin");

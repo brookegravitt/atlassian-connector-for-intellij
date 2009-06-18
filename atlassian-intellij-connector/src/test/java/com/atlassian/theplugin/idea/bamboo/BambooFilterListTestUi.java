@@ -54,9 +54,9 @@ public final class BambooFilterListTestUi {
 		EasyMock.replay(mock);
 //		final CfgManagerImpl cfgManager = new CfgManagerImpl();
 //		final ProjectCfgManagerImpl cfgManager = new ProjectCfgManagerImpl(null, new CfgManagerImpl(), null);
-		projectCfgManager.addProjectSpecificServer(B1);
-		projectCfgManager.addProjectSpecificServer(B2);
-		projectCfgManager.addProjectSpecificServer(B3);
+		projectCfgManager.addServer(B1);
+		projectCfgManager.addServer(B2);
+		projectCfgManager.addServer(B3);
 		final BuildListModelImpl model = new BuildListModelImpl(null, null);
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {

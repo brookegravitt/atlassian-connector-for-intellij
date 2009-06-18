@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.fisheye.FisheyeUrlHelper;
 import com.intellij.ide.BrowserUtil;
@@ -23,7 +23,7 @@ public class ViewFisheyeChangesetItemAction extends AbstractFisheyeAction {
 
 	@Override
 	public void actionPerformed(AnActionEvent event) {
-		FishEyeServer cfg = getFishEyeServerCfg(event);
+		ServerData cfg = getFishEyeServerCfg(event);
 		String repository = getFishEyeRepository(event);
 		if (cfg != null && repository != null) {
 			Project project = IdeaHelper.getCurrentProject(event);
