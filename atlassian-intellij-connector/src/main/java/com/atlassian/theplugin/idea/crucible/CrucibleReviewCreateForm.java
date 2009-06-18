@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -587,7 +586,6 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		moderatorComboBox.removeAllItems();
 		model.removeAllElements();
 
-		ProjectConfiguration prjCfg = projectCfgManager.getProjectConfiguration();
 		if (crucibleServerData.getProjects().isEmpty()) {
 			projectsComboBox.setEnabled(false);
 			projectsComboBox.addItem("No projects");
@@ -599,8 +597,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 			}
 
 			// setting default project if such is defined
-			if (prjCfg != null) {
-				final String defaultProjectKey = prjCfg.getDefaultCrucibleProject();
+			if (projectCfgManager != null) {
+				final String defaultProjectKey = projectCfgManager.getDefaultCrucibleProject();
 				if (defaultProjectKey != null) {
 					for (int i = 0; i < projectsComboBox.getItemCount(); ++i) {
 						if (projectsComboBox.getItemAt(i) instanceof ProjectComboBoxItem) {
@@ -624,8 +622,8 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 				// setting default repo if such is defined
 
-				if (prjCfg != null) {
-					final String defaultRepo = prjCfg.getDefaultCrucibleRepo();
+				if (projectCfgManager != null) {
+					final String defaultRepo = projectCfgManager.getDefaultCrucibleRepo();
 					if (defaultRepo != null) {
 						for (int i = 0; i < repoComboBox.getItemCount(); ++i) {
 							if (repoComboBox.getItemAt(i) instanceof RepositoryComboBoxItem) {

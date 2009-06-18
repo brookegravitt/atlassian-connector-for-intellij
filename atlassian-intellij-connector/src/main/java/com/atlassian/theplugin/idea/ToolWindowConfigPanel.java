@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ShowSettingsUtil;

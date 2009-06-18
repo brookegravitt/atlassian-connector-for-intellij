@@ -27,13 +27,14 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	//	private final ProjectConfigurationComponent projectConfigurationComponent;
 	private final CfgManager cfgManager;
+
 	private final ProjectId projectId;
+
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 
 	/**
@@ -49,6 +50,24 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		this.cfgManager = cfgManager;
 	}
 
+	/**
+	 * This method has a package scope and should be used only for 'saving and modifying' purposes.
+	 * This method can also be used in JUnit tests.
+	 *
+	 * @return project configuration inner object
+	 */
+	ProjectConfiguration getProjectConfiguration() {
+		return cfgManager.getProjectConfiguration(projectId);
+	}
+
+	public void updateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
+		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
+	}
+
+	///////////////////////////////////////////////////////////////////
+	///////////////////// DEFAULT CREDENTIALS /////////////////////////
+	///////////////////////////////////////////////////////////////////
+
 	public boolean isDefaultCredentialsAsked() {
 		return projectConfigurationBean.isDefaultCredentialsAsked();
 	}
@@ -58,31 +77,27 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	@NotNull
-	public ServerData getServerData(@NotNull Server serverCfg) {
-		return getServerDataImpl(serverCfg);
-	}
-
-	public ServerCfg getServer(final ServerData serverData) {
-		return cfgManager.getServer(projectId, serverData);
-	}
-
-	public ServerCfg getServer(final ServerId serverId) {
-		return cfgManager.getServer(projectId, serverId);
-	}
-
-	public ProjectConfiguration getProjectConfiguration() {
-		return cfgManager.getProjectConfiguration(projectId);
-	}
-
-	@NotNull
 	public UserCfg getDefaultCredentials() {
 		return new UserCfg(projectConfigurationBean.getDefaultCredentials().getUsername(),
 				StringUtil.decode(projectConfigurationBean.getDefaultCredentials().getEncodedPassword()));
 	}
 
+	public void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
+		projectConfigurationBean.setDefaultCredentials(
+				new UserCfgBean(defaultCredentials.getUserName(),
+						StringUtil.encode(defaultCredentials.getPassword())));
+	}
+
+	///////////////////////////////////////////////////////////////////
+	///////////////////// SERVER DATA STUFF ///////////////////////////
+	///////////////////////////////////////////////////////////////////
+	//todo remove all that functions when refactoring serverdata
+	// all methods should return server data instead of servercfg
+	// servercfg should not be used outside configuration
+
 	@NotNull
-	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
-		return ServerData.create(serverCfg, getDefaultCredentials());
+	public ServerData getServerData(@NotNull Server serverCfg) {
+		return getServerDataImpl(serverCfg);
 	}
 
 	public ServerData getServerData(final ServerId serverId) {
@@ -110,6 +125,55 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
+	@NotNull
+	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
+		return ServerData.create(serverCfg, getDefaultCredentials());
+	}
+
+	//////////////////////////////////////////////////////////////////
+	///////////////////// GET SERVER METHODS /////////////////////////
+	//////////////////////////////////////////////////////////////////
+
+	// SINGLE SERVER
+
+	public ServerCfg getServer(final ServerData serverData) {
+		return cfgManager.getServer(projectId, serverData);
+	}
+
+	public ServerCfg getServer(final ServerId serverId) {
+		return cfgManager.getServer(projectId, serverId);
+	}
+
+	// MULTIPLE SERVERS
+
+	public Collection<ServerCfg> getAllServers() {
+		return cfgManager.getAllServers(projectId);
+	}
+
+	public Collection<ServerCfg> getAllServers(ServerType serverType) {
+		return cfgManager.getAllServers(projectId, serverType);
+	}
+
+	public Collection<ServerCfg> getAllEnabledServers() {
+		return cfgManager.getAllEnabledServers(projectId);
+	}
+
+	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
+		return cfgManager.getAllEnabledServers(projectId, serverType);
+	}
+
+//	public Collection<BambooServerCfg> getAllBambooServers() {
+//		return cfgManager.getAllBambooServers(projectId);
+//	}
+
+	public Collection<JiraServerCfg> getAllJiraServers() {
+		return cfgManager.getAllJiraServers(projectId);
+	}
+
+	public Collection<CrucibleServerCfg> getAllCrucibleServers() {
+		return cfgManager.getAllCrucibleServers(projectId);
+	}
+
 	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
 		return cfgManager.getAllEnabledBambooServers(projectId);
 	}
@@ -122,41 +186,20 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return cfgManager.getAllEnabledCrucibleServers(projectId);
 	}
 
-	public Collection<CrucibleServerCfg> getAllCrucibleServers() {
-		return cfgManager.getAllCrucibleServers(projectId);
-	}
+	///////////////////////////////////////////////////////////////
+	///////////////////// DEFAULT SERVERS /////////////////////////
+	///////////////////////////////////////////////////////////////
 
-	public Collection<ServerCfg> getAllEnabledServers() {
-		return cfgManager.getAllEnabledServers(projectId);
-	}
-
-	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
-		return cfgManager.getAllEnabledServers(projectId, serverType);
-	}
-
-	public Collection<ServerCfg> getAllServers(ServerType serverType) {
-		return cfgManager.getAllServers(projectId, serverType);
-	}
-
-	public void updateProjectConfiguration(final ProjectConfiguration projectConfiguration) {
-		cfgManager.updateProjectConfiguration(projectId, projectConfiguration);
-	}
-
-	public void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
-		projectConfigurationBean.setDefaultCredentials(
-				new UserCfgBean(defaultCredentials.getUserName(),
-						StringUtil.encode(defaultCredentials.getPassword())));
-	}
-
-
-	public Collection<ServerData> getAllEnabledServersWithDefaultCredentials(final ServerType serverType) {
-		Collection<ServerData> servers = new ArrayList<ServerData>();
-		for (ServerCfg server : cfgManager.getAllEnabledServers(projectId, serverType)) {
-			if (server.isUseDefaultCredentials() && server.isEnabled()) {
-				servers.add(getServerData(server));
+	@Nullable
+	public ServerData getDefaultJiraServer() {
+		ProjectConfiguration prjCfg = getProjectConfiguration();
+		if (prjCfg != null) {
+			JiraServerCfg jiraServer = prjCfg.getDefaultJiraServer();
+			if (jiraServer != null) {
+				return getServerData(jiraServer);
 			}
 		}
-		return servers;
+		return null;
 	}
 
 	@Nullable
@@ -166,19 +209,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 			CrucibleServerCfg crucibleServer = prjCfg.getDefaultCrucibleServer();
 			if (crucibleServer != null) {
 				return getServerData(crucibleServer);
-			}
-		}
-		return null;
-	}
-
-
-	@Nullable
-	public ServerData getDefaultJiraServer() {
-		ProjectConfiguration prjCfg = getProjectConfiguration();
-		if (prjCfg != null) {
-			JiraServerCfg jiraServer = prjCfg.getDefaultJiraServer();
-			if (jiraServer != null) {
-				return getServerData(jiraServer);
 			}
 		}
 		return null;
@@ -196,6 +226,31 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
+
+	public boolean isDefaultJiraServerValid() {
+		return getProjectConfiguration().isDefaultJiraServerValid();
+	}
+
+	public String getDefaultCrucibleRepo() {
+		return getProjectConfiguration().getDefaultCrucibleRepo();
+	}
+
+	public String getDefaultCrucibleProject() {
+		return getProjectConfiguration().getDefaultCrucibleProject();
+	}
+
+	public String getDefaultFishEyeRepo() {
+		return getProjectConfiguration().getDefaultFishEyeRepo();
+	}
+
+	public String getFishEyeProjectPath() {
+		return getProjectConfiguration().getFishEyeProjectPath();
+	}
+
+	//////////////////////////////////////////////////////////////////
+	///////////////////// CONFIG LISTENERS ///////////////////////////
+	//////////////////////////////////////////////////////////////////
+
 	public void addProjectConfigurationListener(final ConfigurationListener configurationListener) {
 		cfgManager.addProjectConfigurationListener(projectId, configurationListener);
 	}
@@ -209,15 +264,16 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		cfgManager.removeProject(projectId);
 	}
 
-	public void addProjectSpecificServer(final ServerCfg serverCfg) {
-		cfgManager.addProjectSpecificServer(projectId, serverCfg);
-	}
+	//////////////////////////////////////////////////////////////////
+	///////////////////// ADD REMOVE SERVERS /////////////////////////
+	//////////////////////////////////////////////////////////////////
 
-	public Collection<ServerCfg> getAllServers() {
-		return cfgManager.getAllServers(projectId);
+	public void addServer(final ServerCfg serverCfg) {
+		cfgManager.addProjectSpecificServer(projectId, serverCfg);
 	}
 
 	public ServerCfg removeServer(final ServerId serverId) {
 		return cfgManager.removeProjectSpecificServer(projectId, serverId);
 	}
+
 }

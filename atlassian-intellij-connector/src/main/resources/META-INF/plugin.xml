@@ -198,7 +198,7 @@
 			<headless-implementation-class/>
 		</component>
 		<component>
-			<implementation-class>com.atlassian.theplugin.idea.ProjectConfigurationComponent</implementation-class>
+			<implementation-class>com.atlassian.theplugin.idea.config.ProjectConfigurationComponent</implementation-class>
 		</component>
 	</project-components>
 
@@ -596,16 +596,16 @@
 
 		<group id="ThePlugin.GoToMenu">
 			<separator/>
-            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 		</group>
 
-        <!--Remember to have only one group added to MainToolBar-->
+		<!--Remember to have only one group added to MainToolBar-->
 		<group id="ThePlugin.ActiveToolbar">
-            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
+			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
 			<separator/>

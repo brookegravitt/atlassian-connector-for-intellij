@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.fisheye;
 
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -26,7 +26,7 @@ public class ViewFisheyeChangesetAction extends AbstractFisheyeAction {
 	@Override
 	public void actionPerformed(AnActionEvent event) {
 		String rev = ChangeListUtil.getRevision(event);
-		FishEyeServer cfg = getFishEyeServerCfg(event);
+		ServerData cfg = getFishEyeServerCfg(event);
 		String repository = getFishEyeRepository(event);
 		if (cfg != null && repository != null) {
 			String url = cfg.getUrl() + "/changelog/" + repository + "/?cs=" + rev;

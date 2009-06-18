@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.fisheye;
 
-import com.atlassian.theplugin.commons.cfg.FishEyeServer;
-import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -30,12 +30,12 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
+		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
 
-		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final ServerData fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",
@@ -68,12 +68,12 @@ public final class FisheyeUrlHelper {
 
 	@Nullable
 	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
+		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
 
-		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final ServerData fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			Messages.showInfoMessage(project,
 					"Cannot determine enabled default FishEye server. Make sure you have configured it correctly.",
@@ -104,12 +104,12 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final PsiElement psiElement, final Project project) {
 
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
+		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
 
-		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final ServerData fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			return null;
 		}
@@ -151,12 +151,12 @@ public final class FisheyeUrlHelper {
 
 	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
 
-		final ProjectConfiguration projectCfg = IdeaHelper.getProjectCfgManager(project).getProjectConfiguration();
+		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
 
-		final FishEyeServer fishEyeServer = projectCfg.getDefaultFishEyeServer();
+		final ServerData fishEyeServer = projectCfg.getDefaultFishEyeServer();
 		if (fishEyeServer == null) {
 			return null;
 		}
@@ -184,7 +184,7 @@ public final class FisheyeUrlHelper {
 				relativePath, lineNumber);
 	}
 
-	private static String buildRemoteUrl(final String rev, @NotNull final FishEyeServer fishEyeServer,
+	private static String buildRemoteUrl(final String rev, @NotNull final ServerData fishEyeServer,
 			@NotNull final String repo, @NotNull final String projectPath, @NotNull final String fileRelativePath,
 			final int lineNumber) {
 

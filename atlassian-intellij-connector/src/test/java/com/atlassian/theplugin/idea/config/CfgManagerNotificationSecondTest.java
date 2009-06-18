@@ -60,10 +60,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 	private void populateServerCfgs() {
 
-		projectCfgManager.addProjectSpecificServer(bamboo1);
-		projectCfgManager.addProjectSpecificServer(jira1);
-		projectCfgManager.addProjectSpecificServer(crucible1);
-		projectCfgManager.addProjectSpecificServer(fisheye1);
+		projectCfgManager.addServer(bamboo1);
+		projectCfgManager.addServer(jira1);
+		projectCfgManager.addServer(crucible1);
+		projectCfgManager.addServer(fisheye1);
 
 		newConf = new ProjectConfiguration(projectCfgManager.getProjectConfiguration());
 	}

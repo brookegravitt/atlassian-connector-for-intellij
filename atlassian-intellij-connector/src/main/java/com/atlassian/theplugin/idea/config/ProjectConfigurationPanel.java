@@ -16,13 +16,13 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
 import com.atlassian.theplugin.idea.Constants;
@@ -52,9 +52,9 @@ public class ProjectConfigurationPanel extends JPanel {
 	private ProjectConfiguration projectConfiguration;
 	private UserCfg defaultCredentials;
 	private boolean defaultCredentialsAsked;
-    private WorkspaceConfigurationBean projectConfigurationBean;
+	private WorkspaceConfigurationBean projectConfigurationBean;
 
-    private static final int WIDTH = 800;
+	private static final int WIDTH = 800;
 
 	private static final int HEIGHT = 700;
 
@@ -68,22 +68,22 @@ public class ProjectConfigurationPanel extends JPanel {
 	}
 
 	public ProjectConfigurationPanel(@NotNull final Project project,
-                                     @NotNull final ProjectConfiguration projectConfiguration,
-                                     @NotNull final CrucibleServerFacade crucibleServerFacade,
-                                     @NotNull final FishEyeServerFacade fishEyeServerFacade,
-                                     final BambooServerFacade bambooServerFacade,
-                                     final JIRAServerFacade jiraServerFacade,
-                                     @NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
-                                     /*final IntelliJProjectCfgManager projectCfgManager, */
-                                     @NotNull final UserCfg defaultCredentials,
-                                     final boolean defaultCredentialsAsked,
-                                     WorkspaceConfigurationBean projectConfigurationBean) {
+			@NotNull final ProjectConfiguration projectConfiguration,
+			@NotNull final CrucibleServerFacade crucibleServerFacade,
+			@NotNull final FishEyeServerFacade fishEyeServerFacade,
+			final BambooServerFacade bambooServerFacade,
+			final JIRAServerFacade jiraServerFacade,
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
+			/*final IntelliJProjectCfgManager projectCfgManager, */
+			@NotNull final UserCfg defaultCredentials,
+			final boolean defaultCredentialsAsked,
+			WorkspaceConfigurationBean projectConfigurationBean) {
 		this.project = project;
 		this.projectConfiguration = projectConfiguration;
 		this.defaultCredentials = defaultCredentials;
 		this.defaultCredentialsAsked = defaultCredentialsAsked;
-        this.projectConfigurationBean = projectConfigurationBean;
-        serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
+		this.projectConfigurationBean = projectConfigurationBean;
+		serverConfigPanel = new ServerConfigPanel(project, defaultCredentials,
 				projectConfiguration, selectedServer, defaultCredentialsAsked);
 		defaultsConfigurationPanel = new ProjectDefaultsConfigurationPanel(project, projectConfiguration, crucibleServerFacade,
 				fishEyeServerFacade, bambooServerFacade, jiraServerFacade, uiTaskExecutor, defaultCredentials);
@@ -127,7 +127,7 @@ public class ProjectConfigurationPanel extends JPanel {
 		serverConfigPanel.saveData();
 		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
 			projectConfiguration.setDefaultFishEyeServerId(null);
-            projectConfigurationBean.setDefaultFishEyeServerAsked(false);
+			projectConfigurationBean.setDefaultFishEyeServerAsked(false);
 			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 		}
 		if (!projectConfiguration.isDefaultCrucibleServerValid()) {
@@ -137,7 +137,7 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		if (!projectConfiguration.isDefaultJiraServerValid()) {
 			projectConfiguration.setDefaultJiraServerId(null);
-            projectConfigurationBean.setDefaultJiraServerAsked(false);
+			projectConfigurationBean.setDefaultJiraServerAsked(false);
 			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
 		}
 
@@ -154,25 +154,18 @@ public class ProjectConfigurationPanel extends JPanel {
 	public void askForDefaultCredentials() {
 		final ServerCfg serverCfg = serverConfigPanel.getSelectedServer();
 
-        // PL-1617 - Ugly ugly. I am not sure why this is b0rked sometimes,
-        // but one of these seems to be null for apparent reason every once in a while
-        ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
-        ProjectConfiguration projCfg = null;
-        if (cfgMgr == null) {
-            LoggerImpl.getInstance().warn("askDefaultCredentials() - cfgMgr is null");
-        } else {
-            projCfg = cfgMgr.getProjectConfiguration();
-        }
-        if (projCfg == null) {
-            LoggerImpl.getInstance().warn("askDefaultCredentials() - projCfg is null");
-        }
+		// PL-1617 - Ugly ugly. I am not sure why this is b0rked sometimes,
+		// but one of these seems to be null for apparent reason every once in a while
+		ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+		if (cfgMgr == null) {
+			LoggerImpl.getInstance().warn("askDefaultCredentials() - cfgMgr is null");
+		}
 
 		final boolean alreadyExists =
-                cfgMgr != null
-                && projCfg != null
-                && projCfg.getServerCfg(serverCfg.getServerId()) != null;
+				cfgMgr != null
+						&& cfgMgr.getServer(serverCfg.getServerId()) != null;
 
-        ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
+		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
 
 				final ModalityState modalityState = ModalityState.stateForComponent(ProjectConfigurationPanel.this);
@@ -191,19 +184,19 @@ public class ProjectConfigurationPanel extends JPanel {
 									"Set as default",
 									Messages.getQuestionIcon());
 
-                            ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+							ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
 
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
 								UserCfg credentials = new UserCfg(serverCfg.getUsername(),
 										serverCfg.getPassword(), true);
-                                if (cfgMgr != null) {
-								    cfgMgr.setDefaultCredentials(credentials);
-                                }
+								if (cfgMgr != null) {
+									cfgMgr.setDefaultCredentials(credentials);
+								}
 								defaultsConfigurationPanel.setDefaultCredentials(credentials);
 							}
-                            if (cfgMgr != null) {
-							    cfgMgr.setDefaultCredentialsAsked(true);
-                            }
+							if (cfgMgr != null) {
+								cfgMgr.setDefaultCredentialsAsked(true);
+							}
 							ProjectConfigurationPanel.this.defaultCredentialsAsked = true;
 						}
 					}

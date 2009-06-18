@@ -102,8 +102,7 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	public void projectOpened() {
 		projectCfgManager.addProjectConfigurationListener(localConfigurationListener);
 		activate();
-		if (projectCfgManager.getProjectConfiguration() != null
-				&& projectCfgManager.getProjectConfiguration().getDefaultJiraServer() != null) {
+		if (projectCfgManager.getDefaultJiraServer() != null) {
 			Task.Backgroundable task = new ScanningJiraLinksTask(project, this);
 			ProgressManager.getInstance().run(task);
 		}
