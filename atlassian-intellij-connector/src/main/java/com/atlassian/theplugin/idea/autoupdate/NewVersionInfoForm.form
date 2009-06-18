@@ -32,7 +32,7 @@
               <background color="-1118482"/>
               <minimumSize width="-1" height="-1"/>
             </properties>
-            <border type="empty"/>
+            <border type="etched"/>
             <children>
               <component id="4c059" class="javax.swing.JEditorPane" binding="releaseNotesLabel">
                 <constraints/>
