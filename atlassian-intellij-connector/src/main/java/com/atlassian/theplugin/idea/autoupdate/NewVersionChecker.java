@@ -128,7 +128,7 @@ public final class NewVersionChecker implements SchedulableChecker {
 		for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 			ProjectCfgManagerImpl cfg = IdeaHelper.getProjectCfgManager(project);
 			if (cfg != null) {
-				servers.addAll(cfg.getAllUniqueServers());
+				servers.addAll(cfg.getAllServers());
 			}
 		}
 

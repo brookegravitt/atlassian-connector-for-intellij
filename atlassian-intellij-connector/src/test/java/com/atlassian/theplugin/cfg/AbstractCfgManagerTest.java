@@ -269,12 +269,12 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 	}
 
 	public void testGetAllUniqueServers() {
-		TestUtil.assertHasOnlyElements(cfgManager.getAllUniqueServers(), bamboo1, crucible1, jira1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), bamboo1, crucible1, jira1);
 		cfgManager.addProjectSpecificServer(crucible1);
 		// must be unique - so adding new server above should have no effect
-		TestUtil.assertHasOnlyElements(cfgManager.getAllUniqueServers(), bamboo1, crucible1, jira1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), bamboo1, crucible1, jira1);
 		cfgManager = createCfgManager();
-		TestUtil.assertHasOnlyElements(cfgManager.getAllUniqueServers());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllServers());
 
 	}
 }
