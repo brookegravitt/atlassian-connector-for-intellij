@@ -65,7 +65,7 @@ public class NewVersionInfoForm extends DialogWrapper {
         createUIComponents();
         Version aVersion = versionInfo.getVersion();
         String versionInfoUpgrade = "<html>Do you want to upgrade from <b>" + PluginUtil.getInstance().getVersion() + " to <i>"
-                + aVersion + "</i></b>?<br></html>";
+                + aVersion + "</i></b><&nbsp;?<br></html>";
 
         setTitle("New Atlassian Connector version " + aVersion + " is available.");
         setOKButtonText("Install");
@@ -173,7 +173,7 @@ public class NewVersionInfoForm extends DialogWrapper {
         scrollPane1.setMinimumSize(new Dimension(-1, -1));
         CellConstraints cc = new CellConstraints();
         panel1.add(scrollPane1, new CellConstraints(1, 3, 1, 1, CellConstraints.FILL, CellConstraints.FILL, new Insets(5, 5, 5, 5)));
-        scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), null));
+        scrollPane1.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null));
         releaseNotesLabel = new JEditorPane();
         releaseNotesLabel.setText("");
         scrollPane1.setViewportView(releaseNotesLabel);
