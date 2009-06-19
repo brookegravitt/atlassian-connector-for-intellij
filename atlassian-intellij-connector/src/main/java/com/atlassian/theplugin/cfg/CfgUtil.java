@@ -151,7 +151,7 @@ public final class CfgUtil {
 
 		// find matching server
 		for (ServerCfg server : servers) {
-			if (server.getUrl().equals(serverUrl)) {
+			if (server.getUrl().trim().equals(serverUrl)) {
 				if (server.isEnabled()) {
 					enabledServer = cfg.getServerData(server);
 					break;
