@@ -140,7 +140,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
-            final File file = new File(path);
+            final File file = path != null ? new File(path) : null;
             if (path == null || !file.exists()) {
 				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
