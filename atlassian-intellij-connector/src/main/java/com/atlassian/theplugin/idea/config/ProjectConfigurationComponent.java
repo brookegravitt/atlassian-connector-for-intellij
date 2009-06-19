@@ -51,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -139,12 +140,14 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
-			if (path == null || !new File(path).exists()) {
+            final File file = new File(path);
+            if (path == null || !file.exists()) {
 				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
 				return false;
 			}
-			root = builder.build(path);
+            FileInputStream inStream = new FileInputStream(file);
+			root = builder.build(inStream);
 			cleanupDom(root);
 		} catch (Exception e) {
 			handleServerCfgFactoryException(project, e);
