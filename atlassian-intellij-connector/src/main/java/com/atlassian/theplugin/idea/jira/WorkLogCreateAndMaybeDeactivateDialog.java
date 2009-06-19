@@ -312,7 +312,6 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		timePanel.add(btnUpdateManually, cc.xy(7, 6));
 
 		remainingEstimateField = createFixedTextField(120, 28);
-		remainingEstimateField.setEnabled(false);
 		timePanel.add(remainingEstimateField, cc.xy(9, 6));
 
 		ButtonGroup group = new ButtonGroup();
@@ -332,6 +331,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		}
 
         UIUtil.setEnabled(timePanel, chkLogWork.isSelected() || !deactivateActiveIssue, true);
+        remainingEstimateField.setEnabled(false);
 
 		return timePanel;
 	}
