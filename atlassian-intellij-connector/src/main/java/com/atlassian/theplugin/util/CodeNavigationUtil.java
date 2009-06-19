@@ -175,7 +175,7 @@ public final class CodeNavigationUtil {
 		if (psiFiles != null && vcsUrl != null && project != null) {
 			for (PsiFile psiFile : psiFiles) {
 				String repositoryUrl = VcsIdeaHelper.getRepositoryRootUrlForFile(project, psiFile.getVirtualFile());
-				if (repositoryUrl.equals(vcsUrl)) {
+				if (repositoryUrl != null && repositoryUrl.equals(vcsUrl) || repositoryUrl == null) {
 					retFiles.add(psiFile);
 				}
 			}
