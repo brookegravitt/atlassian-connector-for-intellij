@@ -114,7 +114,7 @@ public class CrucibleQueryExecutor {
 				retriveRecenltyOpenFilterReviews(recentlyOpenFilter, reviews, server);
 
 			}
-		}
+		}        
 		return reviews;
 	}
 
