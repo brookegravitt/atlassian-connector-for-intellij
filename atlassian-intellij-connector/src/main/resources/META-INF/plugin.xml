@@ -107,6 +107,8 @@
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.crucible.PostCommitReviewCheckinHandlerFactory"/>
 		<checkinHandlerFactory implementation="com.atlassian.theplugin.idea.jira.LogTimeCheckinHandlerFactory"/>
 
+		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"
+						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"/>
 		<!-- PLUGIN WORKSPACE CONFIGURATION -->
 		<projectService serviceInterface="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"
 						serviceImplementation="com.atlassian.theplugin.idea.jira.IssueToolWindowFreezeSynchronizator"/>
@@ -149,8 +151,6 @@
 		<projectService serviceInterface="com.atlassian.theplugin.crucible.model.CrucibleReviewListModel"
 						serviceImplementation="com.atlassian.theplugin.crucible.model.CrucibleReviewListModelImpl"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"
-						serviceImplementation="com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"
 						serviceImplementation="com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier"/>
@@ -175,8 +175,8 @@
 							serviceImplementation="com.atlassian.theplugin.commons.cfg.xstream.HomeDirPrivateConfigurationDao"/>
 
 
-		<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"
-							serviceImplementation="com.atlassian.theplugin.commons.cfg.CfgManagerImpl"/>
+		<!--<applicationService serviceInterface="com.atlassian.theplugin.commons.cfg.CfgManager"-->
+		<!--serviceImplementation="com.atlassian.theplugin.commons.cfg.CfgManagerImpl"/>-->
 
 		<selectInTarget implementation="com.atlassian.theplugin.idea.fisheye.SelectInFisheyeTarget"/>
 		<selectInTarget implementation="com.atlassian.theplugin.idea.crucible.SelectInCrucibleTarget"/>

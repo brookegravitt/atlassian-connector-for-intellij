@@ -15,10 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -77,8 +75,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		this.bambooModel = bambooModel;
 		this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
 
-		final ProjectId projectId = CfgUtil.getProjectId(project);
-		filterList = new BambooFilterList(projectCfgManager, projectId, bambooModel);
+		filterList = new BambooFilterList(projectCfgManager, bambooModel);
 		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
 			@Override
 			public void bambooServersChanged(final ProjectConfiguration newConfiguration) {

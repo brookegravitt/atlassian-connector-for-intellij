@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -40,7 +41,7 @@ public class BuildListModelImpl implements BuildListModel {
 
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 	private Project project;
-	private ProjectCfgManagerImpl cfgManager;
+	private ProjectCfgManager cfgManager;
 
 
 	public BuildListModelImpl(Project project, ProjectCfgManagerImpl cfgManager) {

@@ -212,7 +212,7 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
-		super(null, null, null);
+		super(null);
 	}
 
 	@NotNull

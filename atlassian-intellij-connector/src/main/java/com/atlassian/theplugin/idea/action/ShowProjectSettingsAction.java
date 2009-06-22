@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.action;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
@@ -23,7 +24,6 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindow;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.config.ProjectConfigurationComponent;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -67,7 +67,7 @@ public class ShowProjectSettingsAction extends AnAction {
 	}
 
 	private ServerCfg findBestServerToSelect(final PluginToolWindow.ToolWindowPanels selectedContent,
-			final ProjectCfgManagerImpl cfgManager) {
+			final ProjectCfgManager cfgManager) {
 
 		final ServerType serverType;
 		try {

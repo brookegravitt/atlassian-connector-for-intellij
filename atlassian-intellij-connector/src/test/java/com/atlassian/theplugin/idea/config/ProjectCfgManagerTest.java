@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.cfg;
+package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.spartez.util.junit3.IAction;
 import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
 
@@ -31,7 +29,7 @@ import java.util.Collection;
  *
  * @author wseliga
  */
-public abstract class AbstractCfgManagerTest extends TestCase {
+public class ProjectCfgManagerTest extends TestCase {
 
 	private ProjectCfgManagerImpl cfgManager;
 	private static final ProjectId PROJECT_ID_1 = new ProjectId();
@@ -97,7 +95,9 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledServers(), crucible1, bamboo1);
 	}
 
-	protected abstract ProjectCfgManagerImpl createCfgManager();
+	protected ProjectCfgManagerImpl createCfgManager() {
+		return new ProjectCfgManagerImpl(null);
+	}
 
 	public void testAddServer() throws Exception {
 		final ProjectCfgManagerImpl myCfgManager = createCfgManager();
@@ -112,14 +112,6 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		// now try to add something which already is there
 		myCfgManager.addServer(jira1);
 		TestUtil.assertHasOnlyElements(myCfgManager.getAllServers(), crucible1, jira1);
-
-
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() throws Exception {
-				myCfgManager.addServer(null);
-
-			}
-		});
 
 	}
 
@@ -196,17 +188,13 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), crucible1, jira1, bamboo1);
 
 		assertEquals(jira1, cfgManager.removeServer(jira1.getServerId()));
+		assertNull(cfgManager.removeServer(jira1.getServerId()));
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), crucible1, bamboo1);
 
 		final Collection<ServerCfg> servers = cfgManager.getAllServers();
 		TestUtil.assertHasOnlyElements(servers, crucible1, bamboo1);
-		assertTrue(servers.contains(bamboo1));
 
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() {
-				cfgManager.removeServer(null);
-			}
-		});
+		assertNull(cfgManager.removeServer(null));
 	}
 
 //	public void testUpdateGlobalServers() {
@@ -233,6 +221,13 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), servers);
 	}
 
+	public void testGetAllBmbooServers() {
+		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers(), bamboo1);
+		bamboo1.setEnabled(false);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(), bamboo1);
+		cfgManager.removeServer(bamboo1.getServerId());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers());
+	}
 
 	public void testGetAllEnabledBambooServers() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(), bamboo1);
@@ -240,10 +235,26 @@ public abstract class AbstractCfgManagerTest extends TestCase {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers());
 	}
 
+	public void testGetAllCrucibleServers() {
+		TestUtil.assertHasOnlyElements(cfgManager.getAllCrucibleServers(), crucible1);
+		crucible1.setEnabled(false);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllCrucibleServers(), crucible1);
+		cfgManager.removeServer(crucible1.getServerId());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllCrucibleServers());
+	}
+
 	public void testGetAllEnabledCrucibleServers() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers(), crucible1);
 		crucible1.setEnabled(false);
 		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledCrucibleServers());
+	}
+
+	public void testGetAllJiraServers() {
+		TestUtil.assertHasOnlyElements(cfgManager.getAllJiraServers(), jira1);
+		jira1.setEnabled(false);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllJiraServers(), jira1);
+		cfgManager.removeServer(jira1.getServerId());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllJiraServers());
 	}
 
 	public void testGetAllEnabledJiraServers() {

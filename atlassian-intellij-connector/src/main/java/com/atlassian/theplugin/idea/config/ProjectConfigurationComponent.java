@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.cfg.*;
@@ -117,7 +116,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 
 	public void projectClosed() {
 		projectCfgManager.removeProjectConfigurationListener(configurationListener);
-		projectCfgManager.removeProject();
+//		projectCfgManager.removeProject();
 //		projectCfgManager.removeAllConfigurationCredentialListeners(getProjectId());
 	}
 
@@ -137,16 +136,16 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private boolean load() {
 		final Document root;
 		final SAXBuilder builder = new SAXBuilder(false);
-		final ProjectId projectId = CfgUtil.getProjectId(project);
+//		final ProjectId projectId = CfgUtil.getProjectId(project);
 		try {
 			final String path = getCfgFilePath();
-            final File file = path != null ? new File(path) : null;
-            if (path == null || !file.exists()) {
+			final File file = path != null ? new File(path) : null;
+			if (path == null || !file.exists()) {
 				// this is an empty project (default template used by IDEA)
 				setDefaultProjectConfiguration();
 				return false;
 			}
-            FileInputStream inStream = new FileInputStream(file);
+			FileInputStream inStream = new FileInputStream(file);
 			root = builder.build(inStream);
 			cleanupDom(root);
 		} catch (Exception e) {
@@ -300,7 +299,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		JDomProjectConfigurationDao cfgFactory = new JDomProjectConfigurationDao(element, privateCfgDao);
 		final ProjectConfiguration configuration = projectCfgManager.getProjectConfiguration();
 		if (configuration != null) {
-			if (configuration.getServers().size() > 0 && shouldSaveConfiguration == false) {
+			if (configuration.getServers().size() > 0 && !shouldSaveConfiguration) {
 				// apparently somebody still prefers to populate invalid configuration, so we would save it now
 				shouldSaveConfiguration = true;
 			}

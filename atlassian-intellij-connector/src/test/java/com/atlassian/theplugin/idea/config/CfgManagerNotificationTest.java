@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.cfg;
+package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.spartez.util.junit3.IAction;
-import com.spartez.util.junit3.TestUtil;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -35,7 +32,7 @@ public class CfgManagerNotificationTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(null, new CfgManagerImpl(), null);
+		projectCfgManager = new ProjectCfgManagerImpl(null);
 		populateServerCfgs();
 	}
 
@@ -93,12 +90,18 @@ public class CfgManagerNotificationTest extends TestCase {
 	}
 
 
-	public void testAddListener() {
-		TestUtil.assertThrows(IllegalArgumentException.class, new IAction() {
-			public void run() throws Throwable {
-				projectCfgManager.addProjectConfigurationListener(null);
-			}
-		});
+	public void testAddRemoveListener() {
+		projectCfgManager.addProjectConfigurationListener(null);
+		assertFalse(projectCfgManager.removeProjectConfigurationListener(null));
+
+		ConfigurationListener listener = new ConfigurationListenerAdapter() {
+		};
+
+		assertFalse(projectCfgManager.removeProjectConfigurationListener(listener));
+		projectCfgManager.addProjectConfigurationListener(listener);
+		assertTrue(projectCfgManager.removeProjectConfigurationListener(listener));
+		assertFalse(projectCfgManager.removeProjectConfigurationListener(listener));
+
 	}
 
 }

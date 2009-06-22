@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -44,13 +44,13 @@ public class FileEditorListenerImpl implements FileEditorManagerListener {
 	private final Map<VirtualFile, JiraLinkHighlighter> linkHighlighters = new HashMap<VirtualFile, JiraLinkHighlighter>();
 	private JiraEditorLinkParser jiraEditorLinkParser;
 	private Project project;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private boolean isRegistered;
 	private LocalConfigurationListener localConfigurationListener;
 	private JiraServerCfg lastJiraServer;
 
 
-	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManagerImpl projectCfgManager) {
+	public FileEditorListenerImpl(@NotNull Project project, @NotNull final ProjectCfgManager projectCfgManager) {
 
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
