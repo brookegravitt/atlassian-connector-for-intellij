@@ -222,11 +222,9 @@ public class ProjectCfgManagerTest extends TestCase {
 	}
 
 	public void testGetAllBmbooServers() {
-		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers(), bamboo1);
-		bamboo1.setEnabled(false);
-		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers(), bamboo1);
+		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers(), bamboo1);		
 		cfgManager.removeServer(bamboo1.getServerId());
-		TestUtil.assertHasOnlyElements(cfgManager.getAllEnabledBambooServers());
+		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers());
 	}
 
 	public void testGetAllEnabledBambooServers() {
