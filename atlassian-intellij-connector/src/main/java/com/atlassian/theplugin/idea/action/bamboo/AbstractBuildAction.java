@@ -56,6 +56,14 @@ public abstract class AbstractBuildAction extends AnAction {
 		});
 	}
 
+    private void showExceptionDialogUIThread(final Exception e, final Project project) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+            }
+        });
+    }
+
 	protected abstract void setStatusMessage(final Project project, final String message);
 
 	protected abstract void setStatusErrorMessage(final Project project, final String message);
@@ -80,10 +88,10 @@ public abstract class AbstractBuildAction extends AnAction {
 						setStatusMessageUIThread(project, "Build executed on plan: " + build.getPlanKey());
 					} catch (ServerPasswordNotProvidedException e) {
 						setStatusErrorMessageUIThread(project, "Build not executed: Password not provided for server");
-					} catch (RemoteApiException e) {
+					} catch (final RemoteApiException e) {
 						setStatusErrorMessageUIThread(project, "Build not executed: " + e.getMessage());
-						DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
-					}
+                        showExceptionDialogUIThread(e, project);
+                    }
 				}
 			};
 
@@ -91,7 +99,7 @@ public abstract class AbstractBuildAction extends AnAction {
 		}
 	}
 
-	protected void openBuildInBrowser(final AnActionEvent e) {
+    protected void openBuildInBrowser(final AnActionEvent e) {
 		final BambooBuildAdapterIdea build = getBuild(e);
 
 		if (build != null) {
@@ -127,7 +135,7 @@ public abstract class AbstractBuildAction extends AnAction {
 					setStatusErrorMessageUIThread(project, "Label not applied: Password on provided for server");
 				} catch (RemoteApiException e) {
 					setStatusErrorMessageUIThread(project, "Label not applied: " + e.getMessage());
-					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+					showExceptionDialogUIThread(e, project);
 				}
 			}
 		};
@@ -164,7 +172,7 @@ public abstract class AbstractBuildAction extends AnAction {
 					setStatusErrorMessageUIThread(project, "Comment not added: Password not provided for server");
 				} catch (RemoteApiException e) {
 					setStatusErrorMessageUIThread(project, "Comment not added: " + e.getMessage());
-					DialogWithDetails.showExceptionDialog(project, e.getMessage(), e);
+                    showExceptionDialogUIThread(e, project);
 				}
 			}
 		};
