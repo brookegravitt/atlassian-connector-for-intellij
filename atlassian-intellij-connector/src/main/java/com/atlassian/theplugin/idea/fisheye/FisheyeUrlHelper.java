@@ -62,8 +62,12 @@ public final class FisheyeUrlHelper {
 					"Error");
 			return null;
 		}
-		return buildRemoteUrl(rev.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
-				relativePath, lineNumber);
+        String repo = projectCfg.getDefaultFishEyeRepo();
+        if (repo == null) {
+            return null;
+        }
+
+		return buildRemoteUrl(rev.asString(), fishEyeServer, repo, fisheyeProjPath, relativePath, lineNumber);
 	}
 
 	@Nullable
@@ -97,8 +101,12 @@ public final class FisheyeUrlHelper {
 					"Error");
 			return null;
 		}
-		return buildRemoteUrl(revision.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
-				relativePath, 1);
+        String repo = projectCfg.getDefaultFishEyeRepo();
+        if (repo == null) {
+            return null;
+        }
+
+		return buildRemoteUrl(revision.asString(), fishEyeServer, repo, fisheyeProjPath, relativePath, 1);
 	}
 
 	@Nullable
@@ -145,8 +153,13 @@ public final class FisheyeUrlHelper {
 		if (rev == null) {
 			return null;
 		}
-		return buildRemoteUrl(rev.asString(), fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
-				relativePath, lineNumber);
+
+        String repo = projectCfg.getDefaultFishEyeRepo();
+        if (repo == null) {
+            return null;
+        }
+
+		return buildRemoteUrl(rev.asString(), fishEyeServer, repo, fisheyeProjPath, relativePath, lineNumber);
 	}
 
 	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
@@ -180,8 +193,11 @@ public final class FisheyeUrlHelper {
 		if (relativePath == null) {
 			return null;
 		}
-		return buildRemoteUrl(revision, fishEyeServer, projectCfg.getDefaultFishEyeRepo(), fisheyeProjPath,
-				relativePath, lineNumber);
+        String repo = projectCfg.getDefaultFishEyeRepo();
+        if (repo == null) {
+            return null;
+        }
+		return buildRemoteUrl(revision, fishEyeServer, repo, fisheyeProjPath, relativePath, lineNumber);
 	}
 
 	private static String buildRemoteUrl(final String rev, @NotNull final ServerData fishEyeServer,
