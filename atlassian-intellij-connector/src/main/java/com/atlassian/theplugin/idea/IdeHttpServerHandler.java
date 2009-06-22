@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.idea.util.FocusRequester;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -94,7 +95,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					// try to open received reviewKey in all open projects
 					for (final Project project : ProjectManager.getInstance().getOpenProjects()) {
 
-						bringIdeaToFront(project);
+						bringIdeaToFront(project, null);
 
 						ProgressManager.getInstance().run(new FindAndOpenReviewTask(
 								project, "Looking for Review " + reviewKey, false, reviewKey, serverUrl, filePath, commentId));
@@ -132,18 +133,21 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							}
 						}
 
+                        ListPopup popup = null;
 						// open file or show popup if more than one file found
 						if (psiFiles != null && psiFiles.size() > 0) {
 							found = true;
 							if (psiFiles.size() == 1) {
 								openFile(project, psiFiles.iterator().next(), line);
 							} else if (psiFiles.size() > 1) {
-								ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
+								popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
 										"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
 								popup.showCenteredInCurrentWindow(project);
+
 							}
 						}
-						bringIdeaToFront(project);
+						bringIdeaToFront(project, popup != null ? popup.getContent() : null);
+
 					}
 
 					// message box showed only if the file was not found at all (in all project)
@@ -197,7 +201,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							found = true;
 						}
 
-						bringIdeaToFront(project);
+						bringIdeaToFront(project, null);
 					}
 
 					if (!found) {
@@ -210,8 +214,14 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static void bringIdeaToFront(final Project project) {
+	private static void bringIdeaToFront(final Project project, JComponent content) {
+        // how to set focus???
+		WindowManager.getInstance().getFrame(project).setFocusable(true);
+		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
+		WindowManager.getInstance().getFrame(project).requestFocus();
+		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
 		WindowManager.getInstance().getFrame(project).setVisible(true);
+        
 
 		String osName = System.getProperty("os.name");
 		osName = osName.toLowerCase();
@@ -220,15 +230,15 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
 			WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
 
+
 		} else { //for linux
 			WindowManager.getInstance().getFrame(project).toFront();
 		}
 
-		// how to set focus???
-		WindowManager.getInstance().getFrame(project).setFocusable(true);
-		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
-		WindowManager.getInstance().getFrame(project).requestFocus();
-		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
+//        if (content != null) {
+//            FocusRequester.requestFocus(WindowManager.getInstance().suggestParentWindow(project), content);
+//        }
+
 	}
 
 	private void writeIcon(final Response response) {
@@ -428,8 +438,11 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			if (review == null) {
 				Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
 			} else {
-				bringIdeaToFront(project);
+				bringIdeaToFront(project, null);
 			}
 		}
 	}
+    
 }
+
+
