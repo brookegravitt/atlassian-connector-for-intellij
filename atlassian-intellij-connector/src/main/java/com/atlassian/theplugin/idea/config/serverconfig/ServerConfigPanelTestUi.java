@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -97,8 +96,7 @@ public final class ServerConfigPanelTestUi {
 
 }
 
-// todo wypierniczyc w kosmos
-class LocalProjectCfgManager implements ProjectCfgManager {
+class LocalProjectCfgManager extends ProjectCfgManagerAdapter {
 
 	@NotNull
 	public ServerData getServerData(@NotNull final Server serverCfg) {

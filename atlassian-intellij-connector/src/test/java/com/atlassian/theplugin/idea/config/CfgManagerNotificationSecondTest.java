@@ -34,7 +34,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(null, new CfgManagerImpl(), null);
+		projectCfgManager = new ProjectCfgManagerImpl(null);
 
 		listener = EasyMock.createMock(ConfigurationListener.class);
 		projectCfgManager.addProjectConfigurationListener(listener);

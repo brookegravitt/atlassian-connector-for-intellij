@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.fisheye;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -30,7 +30,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final VirtualFile virtualFile, final Editor editor,
 			final Project project) {
-		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
+		final ProjectCfgManager projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -68,7 +68,7 @@ public final class FisheyeUrlHelper {
 
 	@Nullable
 	public static String getFisheyeUrl(final Project project, final VirtualFile virtualFile, VcsRevisionNumber revision) {
-		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
+		final ProjectCfgManager projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -104,7 +104,7 @@ public final class FisheyeUrlHelper {
 	@Nullable
 	public static String getFisheyeUrl(final PsiElement psiElement, final Project project) {
 
-		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
+		final ProjectCfgManager projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}
@@ -151,7 +151,7 @@ public final class FisheyeUrlHelper {
 
 	public static String getFisheyeUrlForRevision(PsiElement psiElement, String revision, Project project) {
 
-		final ProjectCfgManagerImpl projectCfg = IdeaHelper.getProjectCfgManager(project);
+		final ProjectCfgManager projectCfg = IdeaHelper.getProjectCfgManager(project);
 		if (projectCfg == null) {
 			return null;
 		}

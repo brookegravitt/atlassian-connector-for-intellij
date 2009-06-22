@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
@@ -45,8 +44,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 	private NodeManipulator authorNodeManipulator;
 	private NodeManipulator projectNodeManipulator;
 
-	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull ProjectCfgManagerImpl projectCfgManager,
-			ProjectId projectId) {
+	public ReviewTreeModel(CrucibleReviewListModel reviewListModel, @NotNull ProjectCfgManagerImpl projectCfgManager) {
 		super(new DefaultMutableTreeNode());
 
 		this.reviewListModel = reviewListModel;

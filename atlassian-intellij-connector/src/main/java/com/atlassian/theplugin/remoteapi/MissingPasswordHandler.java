@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.remoteapi;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -24,7 +25,6 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -42,13 +42,13 @@ public class MissingPasswordHandler implements MissingPasswordHandlerQueue.Handl
 	private static boolean isDialogShown = false;
 
 	private final ProductServerFacade serverFacade;
-	private final ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
 	private final Set<ServerId> serversWithoutPassword = MiscUtil.buildHashSet();
 	private boolean shouldStop;
 
 
-	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManagerImpl projectCfgManager,
+	public MissingPasswordHandler(ProductServerFacade serverFacade, final ProjectCfgManager projectCfgManager,
 			final Project project) {
 		this.serverFacade = serverFacade;
 		this.projectCfgManager = projectCfgManager;

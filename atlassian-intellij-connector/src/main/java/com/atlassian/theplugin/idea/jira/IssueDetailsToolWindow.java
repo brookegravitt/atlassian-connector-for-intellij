@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -12,7 +13,6 @@ import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -66,14 +66,14 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;
-	private ProjectCfgManagerImpl projectCfgManager;
+	private ProjectCfgManager projectCfgManager;
 
 	private ContentPanel selectedContent = null;
 
 	public IssueDetailsToolWindow(@NotNull final Project project,
 			@NotNull JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final PluginConfiguration pluginConfiguration,
-			@NotNull ProjectCfgManagerImpl projectCfgManager) {
+			@NotNull ProjectCfgManager projectCfgManager) {
 		super(false);
 		this.project = project;
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;

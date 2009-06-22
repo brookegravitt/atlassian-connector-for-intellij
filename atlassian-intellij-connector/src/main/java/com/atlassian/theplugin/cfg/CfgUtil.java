@@ -17,11 +17,9 @@ package com.atlassian.theplugin.cfg;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.intellij.openapi.project.Project;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,27 +27,27 @@ import java.util.Collection;
 
 public final class CfgUtil {
 
-	private static final ProjectId DEFAULT_PROJECT = new ProjectId();
+//	private static final ProjectId DEFAULT_PROJECT = new ProjectId();
 
 	private CfgUtil() {
 		// this is utility class
 	}
 
-	public static ProjectId getProjectId(Project project) {
-		if (project != null) {
-			final String res1 = project.getPresentableUrl();
-			if (res1 != null) {
-				return new ProjectId(res1);
-			}
-
-			final String res2 = project.getName();
-			if (res2 != null) {
-				return new ProjectId(res2);
-			}
-		}
-
-		return DEFAULT_PROJECT;
-	}
+//	public static ProjectId getProjectId(Project project) {
+//		if (project != null) {
+//			final String res1 = project.getPresentableUrl();
+//			if (res1 != null) {
+//				return new ProjectId(res1);
+//			}
+//
+//			final String res2 = project.getName();
+//			if (res2 != null) {
+//				return new ProjectId(res2);
+//			}
+//		}
+//
+//		return DEFAULT_PROJECT;
+//	}
 
 	public static JiraServerCfg getJiraServerCfgbyServerId(final ProjectCfgManagerImpl projectCfgManager,
 			final String serverId) {

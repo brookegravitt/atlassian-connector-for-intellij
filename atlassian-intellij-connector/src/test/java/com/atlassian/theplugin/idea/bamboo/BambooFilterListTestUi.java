@@ -18,8 +18,6 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.CfgManagerImpl;
-import com.atlassian.theplugin.commons.cfg.ProjectId;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
@@ -47,7 +45,7 @@ public final class BambooFilterListTestUi {
 	}
 
 	public static void main(String[] args) {
-		final ProjectId projectId1 = new ProjectId("projectId");
+//		final ProjectId projectId1 = new ProjectId("projectId");
 		final Project mock = EasyMock.createNiceMock(Project.class);
 //		EasyMock.expect(mock.getName()).andReturn("My-test-Project");
 		EasyMock.expect(mock.getPresentableUrl()).andReturn("projectId").anyTimes();
@@ -61,7 +59,7 @@ public final class BambooFilterListTestUi {
 		model.setBuilds(getBuilds());
 		SwingAppRunner.run(new JPanel(new BorderLayout()) {
 			{
-				final BambooFilterList bambooFilterList = new BambooFilterList(projectCfgManager, projectId1, model);
+				final BambooFilterList bambooFilterList = new BambooFilterList(projectCfgManager, model);
 				add(bambooFilterList, BorderLayout.CENTER);
 				final JButton update = new JButton("Update");
 				update.addActionListener(new ActionListener() {
@@ -136,7 +134,7 @@ public final class BambooFilterListTestUi {
 class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 
 	public LocalProjectCfgManager() {
-		super(null, new CfgManagerImpl(), null);
+		super(null);
 	}
 
 	@NotNull
