@@ -210,16 +210,12 @@ public final class IdeaHelper {
 	}
 
 	public static <T> T getProjectComponent(final AnActionEvent event, final Class<T> clazz) {
-		final Project project = getCurrentProject(event);
-		if (project == null) {
-			return null;
-		}
-		return getProjectComponent(project, clazz);
+		return getProjectComponent(getCurrentProject(event), clazz);
 	}
 
 	@Nullable
 	public static <T> T getProjectComponent(final Project project, final Class<T> clazz) {
-		if (project == null) {
+		if (project == null || project.isDisposed()) {
 			return null;
 		}
 		return clazz.cast(project.getPicoContainer().getComponentInstanceOfType(clazz));
