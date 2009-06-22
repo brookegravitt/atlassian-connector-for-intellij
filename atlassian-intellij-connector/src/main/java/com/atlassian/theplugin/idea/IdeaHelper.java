@@ -140,11 +140,7 @@ public final class IdeaHelper {
 
 	@Nullable
 	public static ReviewDetailsToolWindow getReviewDetailsToolWindow(@NotNull final AnActionEvent event) {
-		Project project = getCurrentProject(event);
-		if (project == null) {
-			return null;
-		}
-		return getProjectComponent(project, ReviewDetailsToolWindow.class);
+		return getProjectComponent(getCurrentProject(event), ReviewDetailsToolWindow.class);
 	}
 
 	@Nullable
@@ -171,7 +167,7 @@ public final class IdeaHelper {
 	}
 
 	public static ThePluginProjectComponent getCurrentProjectComponent(Project project) {
-		if (project == null) {
+		if (project == null || project.isDisposed()) {
 			return null;
 		} else {
 			return project.getComponent(ThePluginProjectComponent.class);
