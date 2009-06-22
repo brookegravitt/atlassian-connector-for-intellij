@@ -1,7 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.Server;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
@@ -16,10 +18,8 @@ import java.util.*;
  * User: pmaruszak
  */
 public class JIRAFilterListModelBuilderTest extends TestCase {
-	private JIRATestServerFacade facade;
 	private JIRAFilterListBuilder builder;
 	private JIRAFilterListModel listModel;
-	private CfgManagerTest cfgManager;
 	private Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
 	private JIRAServerModelImpl serverModel;
 
@@ -28,12 +28,11 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.setUp();
 		savedFilters = new HashMap<JiraServerCfg, List<JIRAQueryFragment>>();
 
-		facade = new JIRATestServerFacade();
+		final JIRATestServerFacade facade = new JIRATestServerFacade();
 
 
 		serverModel = new JIRAServerModelImpl();
 		serverModel.setFacade(facade);
-		cfgManager = new CfgManagerTest(savedFilters);
 		fillServersAndFilters(savedFilters);
 
 		JiraWorkspaceConfiguration jiraCfg = new JiraWorkspaceConfiguration();
@@ -64,7 +63,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
 			try {
-				serverModel.getResolutions(cfgManager.getServerData(server), true);
+				serverModel.getResolutions(ServerDataProvider.getServerData(server), true);
 			} catch (JIRAException e) {
 			}
 		}
@@ -78,7 +77,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		}
 		assertEquals(3, listModel.getJIRAServers().size());
 		JiraServerCfg jiraServer = savedFilters.keySet().iterator().next();
-		assertEquals(listModel.getSavedFilters(cfgManager.getServerData(jiraServer)).size(),
+		assertEquals(listModel.getSavedFilters(ServerDataProvider.getServerData(jiraServer)).size(),
 				savedFilters.get(jiraServer).size());
 
 	}
@@ -223,156 +222,13 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 
 }
 
-class CfgManagerTest implements CfgManager {
-	Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters;
-
-	CfgManagerTest(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
-		this.savedFilters = savedFilters;
+final class ServerDataProvider {
+	private ServerDataProvider() {
 	}
 
-	public ProjectConfiguration getProjectConfiguration(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getProjectSpecificServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getGlobalServers() {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllEnabledServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllEnabledServers(final ProjectId projectId, final ServerType serverType) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllServersWithDefaultCredentials(final ProjectId projectId, final ServerType serverType) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllServersWithDefaultCredentials(final ProjectId projectId) {
-		return null;
-	}
-
-	public void updateProjectConfiguration(final ProjectId projectId, final ProjectConfiguration projectConfiguration) {
-	}
-
-	public void updateGlobalConfiguration(final GlobalConfiguration globalConfiguration) {
-	}
-
-	public void addProjectSpecificServer(final ProjectId projectId, final ServerCfg serverCfg) {
-	}
-
-	public void addGlobalServer(final ServerCfg serverCfg) {
-	}
-
-	public ProjectConfiguration removeProject(final ProjectId projectId) {
-		return null;
-	}
-
-	public ServerCfg removeGlobalServer(final ServerId serverId) {
-		return null;
-	}
-
-	public ServerCfg removeProjectSpecificServer(final ProjectId projectId, final ServerId serverId) {
-		return null;
-	}
-
-	public ServerCfg getServer(final ProjectId projectId, final ServerId serverId) {
-		return null;
-	}
-
-	public void addProjectConfigurationListener(final ProjectId projectId, final ConfigurationListener configurationListener) {
-
-	}
-
-	public boolean removeProjectConfigurationListener(final ProjectId projectId,
-			final ConfigurationListener configurationListener) {
-		return false;
-	}
-
-	public Collection<CrucibleServerCfg> getAllEnabledCrucibleServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<JiraServerCfg> getAllEnabledJiraServers(final ProjectId projectId) {
-		List<JiraServerCfg> list = new ArrayList<JiraServerCfg>();
-
-		for (JiraServerCfg server : savedFilters.keySet()) {
-			list.add(server);
-		}
-
-		return list;
-	}
-
-	public Collection<ServerCfg> getAllUniqueServers() {
-		return null;
-	}
-
-	public void addConfigurationCredentialsListener(final ProjectId projectId,
-			final ConfigurationCredentialsListener listener) {
-	}
-
-	public void removeAllConfigurationCredentialListeners(final ProjectId projectId) {
-	}
-
-	public boolean removeConfigurationCredentialsListener(final ProjectId projectId,
-			final ConfigurationCredentialsListener listener) {
-		return false;
-	}
-
-	public boolean hasProject(final ProjectId projectId) {
-		return false;
-	}
-
-	public Collection<CrucibleServerCfg> getAllCrucibleServers(ProjectId projectId) {
-		return null;
-	}
-
-	public ServerCfg getServer(final ProjectId projectId, final ServerData serverData) {
-		return null;
-	}
-
-	public Collection<JiraServerCfg> getAllJiraServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public Collection<ServerCfg> getAllServers(final ProjectId projectId, final ServerType serverType) {
-		return null;
-	}
-
-	public ServerCfg getEnabledServer(final ProjectId projectId, final ServerId serverId) {
-		return null;
-	}
-
-	public ServerData getServerData(final Server serverCfg) {
+	public static ServerData getServerData(final Server serverCfg) {
 		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
-	}
-
-	public ServerData getServerData(final ProjectId projectId, final ServerId serverId) {
-		return null;
-	}
-
-	public ServerData getServerData(final ProjectId projectId, final Server server) {
-		return new ServerData(server.getName(), server.getServerId().toString(), server.getUserName(),
-				server.getPassword(), server.getUrl());
-	}
-
-	public Collection<BambooServerCfg> getAllEnabledBambooServers(final ProjectId projectId) {
-		return null;
-	}
-
-	public void setSavedFilters(final Map<JiraServerCfg, List<JIRAQueryFragment>> savedFilters) {
-		this.savedFilters = savedFilters;
 	}
 }
 
