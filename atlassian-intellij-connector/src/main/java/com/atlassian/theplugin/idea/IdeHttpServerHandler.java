@@ -146,10 +146,17 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 						bringIdeaToFront(project);
 					}
 
-					// message box showed only if the file was not found at all (in all project)
-					if (!found) {
-						Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
-					}
+                    // message box showed only if the file was not found at all (in all project)
+                    if (!found) {
+                        String msg = "";
+                        if (ProjectManager.getInstance().getOpenProjects().length > 0) {
+                            msg = "Project does not contain requested file" + file;
+                        } else {
+                            msg = "Please open a project in order to indicate search path for file " + file;
+                        }
+
+                        Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
+                    }
 				}
 			});
 		}
