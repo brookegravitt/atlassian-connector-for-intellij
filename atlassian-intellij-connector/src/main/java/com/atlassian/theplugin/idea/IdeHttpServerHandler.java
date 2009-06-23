@@ -94,7 +94,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					// try to open received reviewKey in all open projects
 					for (final Project project : ProjectManager.getInstance().getOpenProjects()) {
 
-						bringIdeaToFront(project, null);
+						bringIdeaToFront(project);
 
 						ProgressManager.getInstance().run(new FindAndOpenReviewTask(
 								project, "Looking for Review " + reviewKey, false, reviewKey, serverUrl, filePath, commentId));
@@ -132,20 +132,20 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							}
 						}
 
-						ListPopup popup = null;
 						// open file or show popup if more than one file found
 						if (psiFiles != null && psiFiles.size() > 0) {
 							found = true;
 							if (psiFiles.size() == 1) {
 								openFile(project, psiFiles.iterator().next(), line);
 							} else if (psiFiles.size() > 1) {
-								popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
+								ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
 										"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
 								popup.showCenteredInCurrentWindow(project);
 							}
 						}
-						bringIdeaToFront(project, popup != null ? popup.getContent() : null);
+						bringIdeaToFront(project);
 					}
+
 					// message box showed only if the file was not found at all (in all project)
 					if (!found) {
 						Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
@@ -172,7 +172,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					}
 				} catch (NumberFormatException e) {
 					PluginUtil.getLogger().warn(
-							"Wrong line number format when requesting to open file in the IDE [" + line + "]", e);
+							"Wrong line number format when requesting to open file in the IDE ["
+									+ line + "]", e);
 				}
 			}
 		}
@@ -195,7 +196,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 						if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
 							found = true;
 						}
-						bringIdeaToFront(project, null);
+
+						bringIdeaToFront(project);
 					}
 
 					if (!found) {
@@ -208,14 +210,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static void bringIdeaToFront(final Project project, Component content) {
-		// how to set focus???
-		WindowManager.getInstance().getFrame(project).setFocusable(true);
-		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
-		WindowManager.getInstance().getFrame(project).requestFocus();
-		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
+	private static void bringIdeaToFront(final Project project) {
 		WindowManager.getInstance().getFrame(project).setVisible(true);
-
 
 		String osName = System.getProperty("os.name");
 		osName = osName.toLowerCase();
@@ -224,15 +220,15 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			WindowManager.getInstance().getFrame(project).setAlwaysOnTop(true);
 			WindowManager.getInstance().getFrame(project).setAlwaysOnTop(false);
 
-
 		} else { //for linux
 			WindowManager.getInstance().getFrame(project).toFront();
 		}
 
-//        if (content != null) {
-//            FocusRequester.requestFocus(WindowManager.getInstance().suggestParentWindow(project), content);
-//        }
-
+		// how to set focus???
+		WindowManager.getInstance().getFrame(project).setFocusable(true);
+		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
+		WindowManager.getInstance().getFrame(project).requestFocus();
+		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
 	}
 
 	private void writeIcon(final Response response) {
@@ -432,11 +428,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			if (review == null) {
 				Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
 			} else {
-				bringIdeaToFront(project, null);
+				bringIdeaToFront(project);
 			}
 		}
 	}
-
 }
-
-
