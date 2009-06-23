@@ -8,6 +8,6 @@ import java.awt.datatransfer.StringSelection;
 public class CopyFisheyeLinkToClipboardAction extends FisheyeLinkAction {
 	@Override
 	protected void performUrlAction(final String url, final Editor editor) {
-		CopyPasteManager.getInstance().setContents(new StringSelection(url));
+		CopyPasteManager.getInstance().setContents(new StringSelection(url != null ? url : ""));
 	}
 }
