@@ -118,7 +118,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					// try to open requested file in all open projects
 					for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 						String filePath = (path == null ? file : path + "/" + file);
-
 						// find file by name (and path if provided)
 						Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
 
@@ -131,7 +130,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 								psiFiles = pf;
 							}
 						}
-
 						// open file or show popup if more than one file found
 						if (psiFiles != null && psiFiles.size() > 0) {
 							found = true;
@@ -145,7 +143,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 						}
 						bringIdeaToFront(project);
 					}
-
                     // message box showed only if the file was not found at all (in all project)
                     if (!found) {
                         String msg = "";
@@ -154,7 +151,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
                         } else {
                             msg = "Please open a project in order to indicate search path for file " + file;
                         }
-
                         Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
                     }
 				}
