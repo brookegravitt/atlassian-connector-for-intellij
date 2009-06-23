@@ -22,7 +22,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
-import com.atlassian.theplugin.idea.util.FocusRequester;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -133,7 +132,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							}
 						}
 
-                        ListPopup popup = null;
+						ListPopup popup = null;
 						// open file or show popup if more than one file found
 						if (psiFiles != null && psiFiles.size() > 0) {
 							found = true;
@@ -143,13 +142,10 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 								popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
 										"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
 								popup.showCenteredInCurrentWindow(project);
-
 							}
 						}
 						bringIdeaToFront(project, popup != null ? popup.getContent() : null);
-
 					}
-
 					// message box showed only if the file was not found at all (in all project)
 					if (!found) {
 						Messages.showInfoMessage("Cannot find file " + file, PluginUtil.PRODUCT_NAME);
@@ -176,8 +172,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 					}
 				} catch (NumberFormatException e) {
 					PluginUtil.getLogger().warn(
-							"Wrong line number format when requesting to open file in the IDE ["
-									+ line + "]", e);
+							"Wrong line number format when requesting to open file in the IDE [" + line + "]", e);
 				}
 			}
 		}
@@ -200,7 +195,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 						if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
 							found = true;
 						}
-
 						bringIdeaToFront(project, null);
 					}
 
@@ -214,14 +208,14 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static void bringIdeaToFront(final Project project, JComponent content) {
-        // how to set focus???
+	private static void bringIdeaToFront(final Project project, Component content) {
+		// how to set focus???
 		WindowManager.getInstance().getFrame(project).setFocusable(true);
 		WindowManager.getInstance().getFrame(project).setFocusableWindowState(true);
 		WindowManager.getInstance().getFrame(project).requestFocus();
 		WindowManager.getInstance().getFrame(project).requestFocusInWindow();
 		WindowManager.getInstance().getFrame(project).setVisible(true);
-        
+
 
 		String osName = System.getProperty("os.name");
 		osName = osName.toLowerCase();
@@ -442,7 +436,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 		}
 	}
-    
+
 }
 
 

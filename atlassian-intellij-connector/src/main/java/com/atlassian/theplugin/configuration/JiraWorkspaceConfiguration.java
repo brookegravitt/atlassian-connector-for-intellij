@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
-import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
@@ -36,13 +36,13 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
 	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
 	private ActiveJiraIssueBean activeJiraIssue;
-    private long selectedWorkflowAction;
-    private boolean activeIssueProgressWorkflowAction;
-    private boolean activeIssueLogWork;
-    private boolean activeIssueCommitChanges;
-    private int activeIssueAfterCommit;
-    private boolean logWorkOnCommit;
-    private RemainingEstimateUpdateMode remainingEstimateUpdateMode;
+	private long selectedWorkflowAction;
+	private boolean activeIssueProgressWorkflowAction;
+	private boolean activeIssueLogWork;
+	private boolean activeIssueCommitChanges;
+	private int activeIssueAfterCommit;
+	private boolean logWorkOnCommit;
+	private RemainingEstimateUpdateMode remainingEstimateUpdateMode;
 
 	public JiraWorkspaceConfiguration() {
 	}
@@ -52,13 +52,13 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.view = jiraConfiguration.view;
 		this.recentlyOpenIssues = jiraConfiguration.recentlyOpenIssues;
 		this.activeJiraIssue = jiraConfiguration.activeJiraIssue;
-        this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
-        this.activeIssueProgressWorkflowAction = jiraConfiguration.activeIssueProgressWorkflowAction;
-        this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
-        this.activeIssueCommitChanges = jiraConfiguration.activeIssueCommitChanges;
-        this.activeIssueAfterCommit = jiraConfiguration.activeIssueAfterCommit;
-        this.logWorkOnCommit = jiraConfiguration.logWorkOnCommit;
-        this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
+		this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
+		this.activeIssueProgressWorkflowAction = jiraConfiguration.activeIssueProgressWorkflowAction;
+		this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
+		this.activeIssueCommitChanges = jiraConfiguration.activeIssueCommitChanges;
+		this.activeIssueAfterCommit = jiraConfiguration.activeIssueAfterCommit;
+		this.logWorkOnCommit = jiraConfiguration.logWorkOnCommit;
+		this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
 	}
 
 	public Map<String, JiraFilterConfigurationBean> getFilters() {
@@ -108,63 +108,63 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		}
 	}
 
-    public long getSelectedWorkflowAction() {
-        return selectedWorkflowAction;
-    }
+	public long getSelectedWorkflowAction() {
+		return selectedWorkflowAction;
+	}
 
-    public void setSelectedWorkflowAction(long selectedWorkflowAction) {
-        this.selectedWorkflowAction = selectedWorkflowAction;
-    }
+	public void setSelectedWorkflowAction(long selectedWorkflowAction) {
+		this.selectedWorkflowAction = selectedWorkflowAction;
+	}
 
-    public boolean isActiveIssueProgressWorkflowAction() {
-        return activeIssueProgressWorkflowAction;
-    }
+	public boolean isActiveIssueProgressWorkflowAction() {
+		return activeIssueProgressWorkflowAction;
+	}
 
-    public void setActiveIssueProgressWorkflowAction(boolean activeIssueProgressWorkflowAction) {
-        this.activeIssueProgressWorkflowAction = activeIssueProgressWorkflowAction;
-    }
+	public void setActiveIssueProgressWorkflowAction(boolean activeIssueProgressWorkflowAction) {
+		this.activeIssueProgressWorkflowAction = activeIssueProgressWorkflowAction;
+	}
 
-    public boolean isActiveIssueLogWork() {
-        return activeIssueLogWork;
-    }
+	public boolean isActiveIssueLogWork() {
+		return activeIssueLogWork;
+	}
 
-    public void setActiveIssueLogWork(boolean activeIssueLogWork) {
-        this.activeIssueLogWork = activeIssueLogWork;
-    }
+	public void setActiveIssueLogWork(boolean activeIssueLogWork) {
+		this.activeIssueLogWork = activeIssueLogWork;
+	}
 
-    public boolean isActiveIssueCommitChanges() {
-        return activeIssueCommitChanges;
-    }
+	public boolean isActiveIssueCommitChanges() {
+		return activeIssueCommitChanges;
+	}
 
-    public void setActiveIssueCommitChanges(boolean activeIssueCommitChanges) {
-        this.activeIssueCommitChanges = activeIssueCommitChanges;
-    }
+	public void setActiveIssueCommitChanges(boolean activeIssueCommitChanges) {
+		this.activeIssueCommitChanges = activeIssueCommitChanges;
+	}
 
-    public int getActiveIssueAfterCommit() {
-        return activeIssueAfterCommit;
-    }
+	public int getActiveIssueAfterCommit() {
+		return activeIssueAfterCommit;
+	}
 
-    public void setActiveIssueAfterCommit(int activeIssueAfterCommit) {
-        this.activeIssueAfterCommit = activeIssueAfterCommit;
-    }
+	public void setActiveIssueAfterCommit(int activeIssueAfterCommit) {
+		this.activeIssueAfterCommit = activeIssueAfterCommit;
+	}
 
-    public boolean isLogWorkOnCommit() {
-        return logWorkOnCommit;
-    }
+	public boolean isLogWorkOnCommit() {
+		return logWorkOnCommit;
+	}
 
-    public void setLogWorkOnCommit(boolean logWorkOnCommit) {
-        this.logWorkOnCommit = logWorkOnCommit;
-    }
+	public void setLogWorkOnCommit(boolean logWorkOnCommit) {
+		this.logWorkOnCommit = logWorkOnCommit;
+	}
 
-    public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
-        return remainingEstimateUpdateMode != null ? remainingEstimateUpdateMode : RemainingEstimateUpdateMode.AUTO;
-    }
+	public RemainingEstimateUpdateMode getRemainingEstimateUpdateMode() {
+		return remainingEstimateUpdateMode != null ? remainingEstimateUpdateMode : RemainingEstimateUpdateMode.AUTO;
+	}
 
-    public void setRemainingEstimateUpdateMode(RemainingEstimateUpdateMode remainingEstimateUpdateMode) {
-        this.remainingEstimateUpdateMode = remainingEstimateUpdateMode;
-    }
+	public void setRemainingEstimateUpdateMode(RemainingEstimateUpdateMode remainingEstimateUpdateMode) {
+		this.remainingEstimateUpdateMode = remainingEstimateUpdateMode;
+	}
 
-    @Transient
+	@Transient
 	public JiraFilterConfigurationBean getJiraFilterConfiguaration(String id) {
 		JiraFilterConfigurationBean filter = filters.get(id);
 		if (filter == null) {
