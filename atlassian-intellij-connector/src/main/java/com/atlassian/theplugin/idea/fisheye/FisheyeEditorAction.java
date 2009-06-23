@@ -13,7 +13,7 @@ public class FisheyeEditorAction implements EditorGutterAction {
 	}
 
 	public void doAction(final int lineNum) {
-		if (url.indexOf("#l") > 0) {
+		if (url != null && url.indexOf("#l") > 0) {
 			String newUrl = url.substring(0, url.indexOf("#"));
 			newUrl += "#l" + (lineNum + 1);
 			BrowserUtil.launchBrowser(newUrl);
