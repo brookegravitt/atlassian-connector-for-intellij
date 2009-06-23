@@ -114,51 +114,55 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		if (file != null) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					boolean found = false;
-					// try to open requested file in all open projects
-					for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-						String filePath = (path == null ? file : path + "/" + file);
-						// find file by name (and path if provided)
-						Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
-
-						// narrow found list of files by VCS
-						if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
-							Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
-							// if VCS narrowed to empty list then return without narrowing 
-							// VCS could not match because of different configuration in IDE and web client (JIRA, FishEye, etc)
-							if (pf != null && pf.size() > 0) {
-								psiFiles = pf;
-							}
-						}
-						// open file or show popup if more than one file found
-						if (psiFiles != null && psiFiles.size() > 0) {
-							found = true;
-							if (psiFiles.size() == 1) {
-								openFile(project, psiFiles.iterator().next(), line);
-							} else if (psiFiles.size() > 1) {
-								ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
-										"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
-								popup.showCenteredInCurrentWindow(project);
-							}
-						}
-						bringIdeaToFront(project);
-					}
-                    // message box showed only if the file was not found at all (in all project)
-                    if (!found) {
-                        String msg = "";
-                        if (ProjectManager.getInstance().getOpenProjects().length > 0) {
-                            msg = "Project does not contain requested file" + file;
-                        } else {
-                            msg = "Please open a project in order to indicate search path for file " + file;
-                        }
-                        Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
-                    }
+                    openRequestedFile(path, file, vcsRoot, line);
 				}
 			});
 		}
 	}
 
-	private static void openFile(final Project project, final PsiFile psiFile, final String line) {
+    private void openRequestedFile(String path, String file, String vcsRoot, String line) {
+        boolean found = false;
+        // try to open requested file in all open projects
+        for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+            String filePath = (path == null ? file : path + "/" + file);
+            // find file by name (and path if provided)
+            Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
+
+            // narrow found list of files by VCS
+            if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
+                Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
+                // if VCS narrowed to empty list then return without narrowing
+                // VCS could not match because of different configuration in IDE and web client (JIRA, FishEye, etc)
+                if (pf != null && pf.size() > 0) {
+                    psiFiles = pf;
+                }
+            }
+            // open file or show popup if more than one file found
+            if (psiFiles != null && psiFiles.size() > 0) {
+                found = true;
+                if (psiFiles.size() == 1) {
+                    openFile(project, psiFiles.iterator().next(), line);
+                } else if (psiFiles.size() > 1) {
+                    ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
+                            "Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
+                    popup.showCenteredInCurrentWindow(project);
+                }
+            }
+            bringIdeaToFront(project);
+        }
+        // message box showed only if the file was not found at all (in all project)
+        if (!found) {
+            String msg = "";
+            if (ProjectManager.getInstance().getOpenProjects().length > 0) {
+                msg = "Project does not contain requested file" + file;
+            } else {
+                msg = "Please open a project in order to indicate search path for file " + file;
+            }
+            Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
+        }
+    }
+
+    private static void openFile(final Project project, final PsiFile psiFile, final String line) {
 		if (psiFile != null) {
 			psiFile.navigate(true);	// open file
 
