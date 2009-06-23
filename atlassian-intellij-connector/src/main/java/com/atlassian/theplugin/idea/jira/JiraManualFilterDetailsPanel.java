@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -113,7 +113,7 @@ public class JiraManualFilterDetailsPanel extends JPanel {
 					listModel.setManualFilter(jiraServer, manualFilter);
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
-					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId().toString())
+					jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId())
 							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER,
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
 					listModel.fireManualFilterChanged(manualFilter, jiraServer);

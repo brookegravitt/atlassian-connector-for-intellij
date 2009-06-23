@@ -17,9 +17,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -96,20 +94,3 @@ public final class ServerConfigPanelTestUi {
 
 }
 
-class LocalProjectCfgManager extends ProjectCfgManagerAdapter {
-
-	@NotNull
-	public ServerData getServerData(@NotNull final Server serverCfg) {
-		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
-				serverCfg.getPassword(), serverCfg.getUrl());
-	}
-
-	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
-		throw new UnsupportedOperationException("not yet implemented");
-	}
-
-	public Collection<ServerCfg> getAllUniqueServers() {
-		throw new UnsupportedOperationException("not yet implemented");
-	}
-
-}

@@ -57,6 +57,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		super.tearDown();
 	}
 
+	// todo change JiraServerCfg to ServerData if possible
 	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters)
 			throws RemoteApiException {
 		for (int i = 0; i < 3; i++) {
