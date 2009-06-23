@@ -134,8 +134,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		searchingIssueListModel = new SearchingJIRAIssueListModel(sortingIssueListModel);
 		currentIssueListModel = searchingIssueListModel;
 
-		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel, 
-                jiraServerModel, projectCfgManager);
+		issueTreeBuilder = new JIRAIssueTreeBuilder(getGroupBy(), groupSubtasksUnderParent, currentIssueListModel,
+				jiraServerModel, projectCfgManager);
 
 		this.jiraServerModel = jiraServerModel;
 
@@ -1233,7 +1233,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 								// 4.
 								setStatusInfoMessage("Deactivated issue " + issue.getKey());
-								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
+//								jiraIssueListModelBuilder.reloadIssue(issue.getKey(), jiraServer);
 							} catch (JIRAException e) {
 								if (resultHandler != null) {
 									resultHandler.failure(e);
@@ -1368,7 +1368,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					ActiveIssueUtils.checkIssueState(project, issue);
 				}
 			});
-
 		}
 
 		public void modelChanged(JIRAIssueListModel model) {

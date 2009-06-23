@@ -258,9 +258,9 @@ public final class ActiveIssueUtils {
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
 									int isOk = Messages.showYesNoDialog(project,
-											"Issue " + issue.getKey() + " has changed status (assigned to:"
+											"Issue " + issue.getKey() + " has changed assignee (assigned to:"
 													+ issue.getAssignee()
-													+ " status: " + issue.getStatus() + ").\nDo you want to deactivate?",
+													+ ", status: " + issue.getStatus() + ").\nDo you want to deactivate?",
 											"Issue " + issue.getKey(), Messages.getQuestionIcon());
 
 									if (isOk == DialogWrapper.OK_EXIT_CODE) {
