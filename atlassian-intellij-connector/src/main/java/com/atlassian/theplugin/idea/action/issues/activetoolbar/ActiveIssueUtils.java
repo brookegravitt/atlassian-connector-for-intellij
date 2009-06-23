@@ -253,7 +253,7 @@ public final class ActiveIssueUtils {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
 					public void run(final ProgressIndicator indicator) {
 
-						if (!issue.getServer().getUserName().equals(issue.getAssigneeId()) || !isInProgress(issue)) {
+						if (!issue.getServer().getUserName().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
 
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
