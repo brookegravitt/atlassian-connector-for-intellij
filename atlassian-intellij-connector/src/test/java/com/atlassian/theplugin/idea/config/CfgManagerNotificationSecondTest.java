@@ -16,7 +16,11 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
+import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import junit.framework.TestCase;
+import junit.framework.Assert;
 import org.easymock.EasyMock;
 
 /**
@@ -34,7 +38,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(null);
+		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
 
 		listener = EasyMock.createMock(ConfigurationListener.class);
 		projectCfgManager.addProjectConfigurationListener(listener);
@@ -284,4 +288,27 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		EasyMock.verify(listener);
 
 	}
+
+    public void testDefaultCredentials() {        
+        UserCfg userCfg = new UserCfg("userName", "secretPAssword");
+        ServerData srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+        assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+        assertEquals(srvData1.getPassword(), bamboo1.getPassword());
+
+        assertFalse(projectCfgManager.isDefaultCredentialsAsked());
+        projectCfgManager.setDefaultCredentials(userCfg);
+        assertFalse(bamboo1.isUseDefaultCredentials());
+        srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+        assertTrue(projectCfgManager.isDefaultCredentialsAsked());
+        assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+        assertEquals(srvData1.getPassword(), bamboo1.getPassword());
+
+        bamboo1.setUseDefaultCredentials(true);
+        assertTrue(bamboo1.isUseDefaultCredentials());
+        srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+        assertEquals(srvData1.getUserName(), userCfg.getUserName());
+        assertEquals(srvData1.getPassword(), userCfg.getPassword());
+
+
+    }
 }
