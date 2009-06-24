@@ -5,6 +5,7 @@ import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
@@ -44,7 +45,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 	private ProjectCfgManager projectCfgManager;
 
 	public LogTimeCheckinHandlerFactory(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
-			@NotNull final ProjectCfgManager projectCfgManager) {
+			@NotNull final ProjectCfgManagerImpl projectCfgManager) {
 		this.config = jiraWorkspaceConfiguration;
 		this.projectCfgManager = projectCfgManager;
 	}
