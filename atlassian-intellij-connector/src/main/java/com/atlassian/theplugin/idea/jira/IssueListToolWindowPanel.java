@@ -437,6 +437,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					}
 					if (issue != null) {
 						openIssue(issue);
+                        if (jiraFilterTree.isRecentlyOpenSelected()) {
+                            refreshRecenltyOpenIssues(false);
+                        }
 					}
 				}
 			};
