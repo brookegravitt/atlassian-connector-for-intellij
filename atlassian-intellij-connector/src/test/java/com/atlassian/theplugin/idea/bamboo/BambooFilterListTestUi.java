@@ -140,7 +140,7 @@ class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 	@NotNull
 	@Override
 	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}
 }

@@ -613,7 +613,7 @@ class DetailsPanel extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		ServerData cruc = new ServerData("my crucible server", (new ServerId()).toString(), "", "", "");
+		ServerData cruc = new ServerData("my crucible server", new ServerId(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"

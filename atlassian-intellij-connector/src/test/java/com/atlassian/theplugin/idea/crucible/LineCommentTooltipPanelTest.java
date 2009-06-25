@@ -24,7 +24,7 @@ public class LineCommentTooltipPanelTest {
 	public static void main(String[] args) {
 		ReviewBean rev = new ReviewBean("test");
 		rev.setPermId(new PermIdBean("MyReview"));
-		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerId().toString(), "zenon", "", ""));
+		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerId(), "zenon", "", ""));
 		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
 		ra.setFacade(new MyNullFacade());
 		final CommentBean comment = new VersionedCommentBean();
@@ -58,19 +58,19 @@ public class LineCommentTooltipPanelTest {
 
 		SwingAppRunner.run(new CommentTooltipPanel(ra, file, comment, null, CommentTooltipPanel.Mode.SHOW, true) {
 
-            protected void addNewComment(Comment comment, boolean draft) {
-            }
+			protected void addNewComment(Comment comment, boolean draft) {
+			}
 
-            @Override
+			@Override
 			protected void addNewReply(Comment parentComment, String text, boolean draft) {
 				try {
 					CommentBean reply = createReply(comment, text);
 					reply.setDraft(draft);
-                    if (comment instanceof VersionedComment) {
-                        ra.addVersionedCommentReply(file, (VersionedComment) parentComment, (VersionedCommentBean) reply);
-                    } else {
-                        ra.addGeneralCommentReply((GeneralComment) parentComment, (GeneralCommentBean) reply);
-                    }
+					if (comment instanceof VersionedComment) {
+						ra.addVersionedCommentReply(file, (VersionedComment) parentComment, (VersionedCommentBean) reply);
+					} else {
+						ra.addGeneralCommentReply((GeneralComment) parentComment, (GeneralCommentBean) reply);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					setStatusText(e.getMessage(), true);
@@ -83,11 +83,11 @@ public class LineCommentTooltipPanelTest {
 					CommentBean vcb = (CommentBean) comment;
 					vcb.setMessage(text);
 
-                    if (comment instanceof VersionedComment) {
-    					ra.editVersionedComment(file, (VersionedComment) comment);
-                    } else {
-                        ra.editGeneralComment((GeneralComment) comment);
-                    }
+					if (comment instanceof VersionedComment) {
+						ra.editVersionedComment(file, (VersionedComment) comment);
+					} else {
+						ra.editGeneralComment((GeneralComment) comment);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -96,11 +96,11 @@ public class LineCommentTooltipPanelTest {
 			@Override
 			protected void removeComment(Comment comment) {
 				try {
-                    if (comment instanceof VersionedComment) {
-    					ra.removeVersionedComment((VersionedComment) comment, file);
-                    } else {
-                        ra.removeGeneralComment((GeneralComment) comment);
-                    }
+					if (comment instanceof VersionedComment) {
+						ra.removeVersionedComment((VersionedComment) comment, file);
+					} else {
+						ra.removeGeneralComment((GeneralComment) comment);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -109,11 +109,11 @@ public class LineCommentTooltipPanelTest {
 			@Override
 			protected void publishComment(Comment comment) {
 				try {
-                    if (comment instanceof VersionedComment) {
-					    ra.publishVersionedComment(file, (VersionedComment) comment);
-                    } else {
-                        ra.publishGeneralComment((GeneralComment) comment);
-                    }
+					if (comment instanceof VersionedComment) {
+						ra.publishVersionedComment(file, (VersionedComment) comment);
+					} else {
+						ra.publishGeneralComment((GeneralComment) comment);
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

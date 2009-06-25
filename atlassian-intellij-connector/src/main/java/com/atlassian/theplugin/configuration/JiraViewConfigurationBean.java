@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.intellij.util.xmlb.annotations.Transient;
 
@@ -77,11 +78,11 @@ public class JiraViewConfigurationBean {
 	}
 
 	@Transient
-	public void addServerDefault(final String jiraServer, final String projectKey, final Collection<Long> components) {
+	public void addServerDefault(final IServerId jiraServer, final String projectKey, final Collection<Long> components) {
 		LinkedHashSet<Long> comp = new LinkedHashSet<Long>(components);
 
 		JiraProjectDefaultComponentsBean tmp = new JiraProjectDefaultComponentsBean(projectKey, comp);
 
-		serverDefaults.put(jiraServer, tmp);
+		serverDefaults.put(jiraServer.getStringId(), tmp);
 	}
 }

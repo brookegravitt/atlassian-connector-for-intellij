@@ -18,8 +18,8 @@ package com.atlassian.theplugin.remoteapi;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -44,7 +44,7 @@ public class MissingPasswordHandler implements MissingPasswordHandlerQueue.Handl
 	private final ProductServerFacade serverFacade;
 	private final ProjectCfgManager projectCfgManager;
 	private final Project project;
-	private final Set<ServerId> serversWithoutPassword = MiscUtil.buildHashSet();
+	private final Set<IServerId> serversWithoutPassword = MiscUtil.buildHashSet();
 	private boolean shouldStop;
 
 

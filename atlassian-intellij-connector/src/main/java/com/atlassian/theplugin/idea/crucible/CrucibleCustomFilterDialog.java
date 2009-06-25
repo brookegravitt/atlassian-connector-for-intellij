@@ -151,7 +151,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	public CustomFilterBean getFilter() {
 		ServerData s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem()).getWrapped();
-		filter.setServerUid(s.getServerId());
+		filter.setServerUid(s.getServerId().getStringId());
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();

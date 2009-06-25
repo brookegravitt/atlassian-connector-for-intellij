@@ -46,7 +46,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -69,7 +69,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -85,7 +85,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -110,7 +110,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewBean r2 = new ReviewBean("test", "TEST", author, moderator);
@@ -127,7 +127,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test1"));
 		r.setState(State.REVIEW);
@@ -144,7 +144,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -167,7 +167,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		PermIdBean permId1 = new PermIdBean("test1");
 		r1.setPermId(permId1);
@@ -189,7 +189,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerId id = new ServerId();
-		ServerData cfg = new ServerData("test", id.toString(), "", "", "");
+		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -202,7 +202,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		listModel.addReview(ra2);
 		assertEquals(2, listModel.getReviews().size());
 		Map<CrucibleFilter, ReviewNotificationBean> emptyResult = new HashMap<CrucibleFilter, ReviewNotificationBean>();
-		listModel.updateReviews((long) 0, emptyResult, UpdateReason.REFRESH);//.removeAll();
+		listModel.updateReviews((long) 0, emptyResult, UpdateReason.REFRESH); //.removeAll();
 		assertEquals(0, listModel.getReviews().size());
 	}
 
@@ -475,7 +475,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 	private ServerData createServer(int id) {
-		return new ServerData("server" + id, new ServerId().toString(), "", "", "");
+		return new ServerData("server" + id, new ServerId(), "", "", "");
 	}
 
 	private ReviewAdapter createReviewAdapter(int id, ServerData server) {

@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.cfg;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -61,9 +62,9 @@ public final class CfgUtil {
 	}
 
 	public static ServerCfg getEnabledServerCfgbyServerId(
-			final ProjectCfgManagerImpl projectCfgManager, final String serverId) {
+			final ProjectCfgManagerImpl projectCfgManager, final IServerId serverId) {
 		for (ServerCfg server : projectCfgManager.getAllEnabledServers()) {
-			if (server.getServerId().toString().equals(serverId)) {
+			if (server.getServerId().equals(serverId)) {
 				return server;
 
 			}

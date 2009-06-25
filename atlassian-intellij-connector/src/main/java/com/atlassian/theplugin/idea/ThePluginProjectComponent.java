@@ -146,7 +146,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.toolWindow = pluginToolWindow;
 
 		jiraIssueListModelBuilder.setProject(project);
-		jiraIssueListModelBuilder.setProjectCfgManager(projectCfgManager);
+//		jiraIssueListModelBuilder.setProjectCfgManager(projectCfgManager);
 		/*
 
 										WARNING!!!

@@ -3,10 +3,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
@@ -192,8 +189,8 @@ class MyUiTask implements UiTask {
 			boolean fetchRemoteData) {
 		final Collection<ScrollableTwoColumnPanel.Entry> myEntries = MiscUtil.buildArrayList();
 
-		final String serverId = customFilter.getServerUid();
-		final ServerCfg server = projectCfgManager.getServer(new ServerId(serverId));
+		final IServerId serverId = new ServerId(customFilter.getServerUid());
+		final ServerCfg server = projectCfgManager.getServer(serverId);
 		final CrucibleServerCfg crucibleServerCfg =
 				(server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
 
