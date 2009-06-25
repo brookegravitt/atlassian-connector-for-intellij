@@ -33,7 +33,7 @@ public class GoToLocalSourceAction extends ReviewTreeItemActionWithPatchChecking
                         }
                     }
                 }
-            } else if (node instanceof CrucibleFileNode){
+            } else if (node instanceof CrucibleFileNode) {
                 if (((CrucibleFileNode) node).getFile().getRepositoryType() != RepositoryType.PATCH) {
 			        psiFile.navigate(true);
                 }
