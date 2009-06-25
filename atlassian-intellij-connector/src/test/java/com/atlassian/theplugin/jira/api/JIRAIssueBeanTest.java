@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
@@ -29,7 +28,7 @@ public class JIRAIssueBeanTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/api/single-issue.xml"));
-		ServerData server = new ServerData("name", (new ServerId()).toString(), "", "", "http://jira.com");		
+		ServerData server = new ServerData("name", new ServerId(), "", "", "http://jira.com");
 		issue = new JIRAIssueBean(server, doc.getRootElement());
 	}
 
@@ -68,8 +67,7 @@ public class JIRAIssueBeanTest extends TestCase {
 
 		modyfiedIssue = new JIRAIssueBean(issue.getServer(), doc.getRootElement());
 		assertEquals(issue, modyfiedIssue);
-		modyfiedIssue = new JIRAIssueBean(new ServerData(issue.getServer().getName() + "modyfied",
-				(new ServerId()).toString(), "", "", ""),
+		modyfiedIssue = new JIRAIssueBean(new ServerData(issue.getServer().getName() + "modyfied", new ServerId(), "", "", ""),
 				doc.getRootElement());
 		assertFalse(issue.equals(modyfiedIssue));
 

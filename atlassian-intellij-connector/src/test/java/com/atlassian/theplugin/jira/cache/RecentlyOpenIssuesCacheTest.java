@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.jira.cache;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
@@ -15,7 +16,7 @@ public class RecentlyOpenIssuesCacheTest extends TestCase {
 
 	public void setUp() throws Exception {
 		cache = new RecentlyOpenIssuesCache(null, new JiraWorkspaceConfiguration());
-		server = new ServerData("server", "1", "", "", "");
+		server = new ServerData("server", new ServerId(), "", "", "");
 
 		issue1 = new JIRAIssueBean(server);
 		issue1.setKey("1");

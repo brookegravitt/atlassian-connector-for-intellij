@@ -19,7 +19,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -68,7 +68,7 @@ public class BambooPlansForm extends JPanel {
 	private Boolean isUseFavourite;
 	private transient BambooServerCfg bambooServerCfg;
 	private static final int NUM_SERVERS = 10;
-	private Map<ServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
+	private Map<IServerId, List<BambooPlanItem>> serverPlans = MiscUtil.buildConcurrentHashMap(NUM_SERVERS);
 	private final transient BambooServerFacade bambooServerFacade;
 	private final BambooServerConfigForm serverPanel;
 	private UserCfg defaultCredentials;
@@ -227,7 +227,7 @@ public class BambooPlansForm extends JPanel {
 				progressAnimation.startProgressAnimation();
 				StringBuilder msg = new StringBuilder();
 				try {
-					ServerId key = queryServer.getServerId();
+					IServerId key = queryServer.getServerId();
 					if (!serverPlans.containsKey(key)) {
 						Collection<BambooPlan> plans;
 						try {

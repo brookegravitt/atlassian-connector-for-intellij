@@ -108,7 +108,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return getServerDataImpl(serverCfg);
 	}
 
-	public ServerData getServerData(final ServerId serverId) {
+	public ServerData getServerData(final IServerId serverId) {
 
 		ServerCfg server = getServer(serverId);
 
@@ -126,7 +126,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	 * @return ServerData for enabled server with serverId specified by parameter
 	 */
 	@Nullable
-	public ServerData getEnabledServerData(final ServerId serverId) {
+	public ServerData getEnabledServerData(final IServerId serverId) {
 		final ServerCfg serverCfg = getServer(serverId);
 
 		if (serverCfg != null && serverCfg.isEnabled()) {
@@ -148,14 +148,14 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	public ServerCfg getServer(final ServerData serverData) {
 		for (ServerCfg server : getAllServers()) {
-			if (serverData != null && server.getServerId().toString().equals(serverData.getServerId())) {
+			if (serverData != null && server.getServerId().equals(serverData.getServerId())) {
 				return server;
 			}
 		}
 		return null;
 	}
 
-	public ServerCfg getServer(final ServerId serverId) {
+	public ServerCfg getServer(final IServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return server;
@@ -431,7 +431,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	 * @param serverId id of the server to remove
 	 * @return removed server or null if nothing removed
 	 */
-	ServerCfg removeServer(final ServerId serverId) {
+	ServerCfg removeServer(final IServerId serverId) {
 
 		if (serverId == null) {
 			return null;

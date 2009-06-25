@@ -173,7 +173,7 @@ public class JIRAFilterTree extends AbstractTree {
 		for (int i = 0; i < rootNode.getChildCount(); i++) {
 			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
-				if (node.getJiraServer().getServerId().equals(serverId)) {
+				if (node.getJiraServer().getServerId().getStringId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
 						if (node.getChildAt(j) instanceof JIRAManualFilterTreeNode) {
 							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);

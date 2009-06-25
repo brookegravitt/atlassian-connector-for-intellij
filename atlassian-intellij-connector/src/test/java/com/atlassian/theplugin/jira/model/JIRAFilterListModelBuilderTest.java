@@ -47,7 +47,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	public void fillJiraCfg(JiraWorkspaceConfiguration jiraCfg) {
 		JiraViewConfigurationBean viewBean = new JiraViewConfigurationBean();
 		viewBean.setViewFilterId("none");
-		viewBean.setViewServerId("none");
+		viewBean.setViewServerId(new ServerId().getStringId());
 		jiraCfg.setView(viewBean);
 
 	}
@@ -228,7 +228,7 @@ final class ServerDataProvider {
 	}
 
 	public static ServerData getServerData(final Server serverCfg) {
-		return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), serverCfg.getUserName(),
+		return new ServerData(serverCfg.getName(), serverCfg.getServerId(), serverCfg.getUserName(),
 				serverCfg.getPassword(), serverCfg.getUrl());
 	}
 }

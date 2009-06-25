@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -190,7 +189,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 					if (node instanceof CrucibleReviewServerTreeNode) {
 						CrucibleReviewServerTreeNode parent = (CrucibleReviewServerTreeNode) node;
 						if (parent.getCrucibleServer().getServerId()
-								.equals(new ServerId(review.getServerData().getServerId()))) {
+								.equals(review.getServerData().getServerId())) {
 							return parent;
 						}
 					}

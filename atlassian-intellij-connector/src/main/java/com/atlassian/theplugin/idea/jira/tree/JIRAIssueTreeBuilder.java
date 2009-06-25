@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
@@ -116,7 +116,7 @@ public class JIRAIssueTreeBuilder {
 		}
 	}
 
-	private Map<Pair<String, ServerId>, String> projectKeysToNames;
+	private Map<Pair<String, IServerId>, String> projectKeysToNames;
 
 	public JIRAIssueTreeBuilder(JiraIssueGroupBy groupBy, boolean groupSubtasksUnderParent, JIRAIssueListModel model,
 			JIRAServerModel jiraServerModel,
@@ -151,7 +151,7 @@ public class JIRAIssueTreeBuilder {
 		this.groupBy = groupBy;
 	}
 
-	public void setProjectKeysToNames(Map<Pair<String, ServerId>, String> projectKeysToNames) {
+	public void setProjectKeysToNames(Map<Pair<String, IServerId>, String> projectKeysToNames) {
 		this.projectKeysToNames = projectKeysToNames;
 	}
 
@@ -410,11 +410,11 @@ public class JIRAIssueTreeBuilder {
 
 	private String getProjectName(JIRAIssue issue) {
 		if (projectKeysToNames == null
-				|| !projectKeysToNames.containsKey(new Pair<String, ServerId>(issue.getProjectKey(),
+				|| !projectKeysToNames.containsKey(new Pair<String, IServerId>(issue.getProjectKey(),
 				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()))) {
 			return issue.getProjectKey();
 		}
-		return projectKeysToNames.get(new Pair<String, ServerId>(issue.getProjectKey(),
+		return projectKeysToNames.get(new Pair<String, IServerId>(issue.getProjectKey(),
 				CfgUtil.getJiraServerCfgByUrl(projectCfgManager, issue.getServerUrl()).getServerId()));
 	}
 }

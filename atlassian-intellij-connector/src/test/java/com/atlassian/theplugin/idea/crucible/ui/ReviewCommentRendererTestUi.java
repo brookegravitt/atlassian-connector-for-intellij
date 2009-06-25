@@ -36,7 +36,7 @@ public final class ReviewCommentRendererTestUi {
 
 	public static void main(String[] args) throws ValueNotYetInitialized {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
-		ServerData cruc = new ServerData("my crucible server", new ServerId().toString(), "", "", "");
+		ServerData cruc = new ServerData("my crucible server", new ServerId(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");

@@ -78,7 +78,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 									: serverCfg.getUserName();
 							final String password = serverCfg.isUseDefaultCredentials() ? defaultUser.getPassword()
 									: serverCfg.getPassword();
-							return new ServerData(serverCfg.getName(), serverCfg.getServerId().toString(), username, password,
+							return new ServerData(serverCfg.getName(), serverCfg.getServerId(), username, password,
 									serverCfg.getUrl());
 						}
 					}

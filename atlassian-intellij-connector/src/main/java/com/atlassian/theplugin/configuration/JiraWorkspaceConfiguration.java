@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -92,10 +93,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 
 		if (issue != null) {
 			String issueKey = issue.getKey();
-			String serverId = issue.getServer().getServerId();
+			IServerId serverId = issue.getServer().getServerId();
 
 			// add element and make sure it is not duplicated and it is insterted at the top
-			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);
+			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId.getStringId(), issueKey);
 
 			if (recentlyOpenIssues != null) {
 				recentlyOpenIssues.remove(r);
@@ -165,11 +166,11 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 	@Transient
-	public JiraFilterConfigurationBean getJiraFilterConfiguaration(String id) {
-		JiraFilterConfigurationBean filter = filters.get(id);
+	public JiraFilterConfigurationBean getJiraFilterConfiguaration(IServerId id) {
+		JiraFilterConfigurationBean filter = filters.get(id.getStringId());
 		if (filter == null) {
 			filter = new JiraFilterConfigurationBean();
-			filters.put(id, filter);
+			filters.put(id.getStringId(), filter);
 		}
 		return filter;
 	}

@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.ModelFreezeUpdater;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
@@ -53,7 +54,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 			text = activeIssue.getIssueKey();
 
 			if (cache != null) {
-				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
+				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), new ServerId(activeIssue.getServerId()));
 
 				if (issue != null) {
 					tooltip = issue.getSummary();
@@ -74,9 +75,9 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 		}
 
 		event.getPresentation().setEnabled(ModelFreezeUpdater.getState(event));
-		
+
 		final int cacheSize = cache != null ? cache.getLoadedRecenltyOpenIssues().size() : 0;
-		
+
 	}
 
 	@NotNull
@@ -85,35 +86,35 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 				.getCurrentProject(DataManager.getInstance().getDataContext(jComponent));
 
 
-        DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
-        final RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
-        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
-        if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
-                || cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
+		DefaultActionGroup group = new DefaultActionGroup("Issues to activate", true);
+		final RecentlyOpenIssuesCache cache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
+		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(project);
+		if (cache != null && (cache.getLoadedRecenltyOpenIssues().size() > 1
+				|| cache.getLoadedRecenltyOpenIssues().size() == 1 && activeIssue == null)) {
 
-                for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
-                    if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
-                        ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId(),
-                                issue.getKey(), new DateTime());
-                        group.add(new ActivateIssueItemAction(newActiveIsse, project));
-                    }
-                }
-        } else {
-            createEmptyList(group);
-        }
+			for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
+				if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
+					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId().getStringId(),
+							issue.getKey(), new DateTime());
+					group.add(new ActivateIssueItemAction(newActiveIsse, project));
+				}
+			}
+		} else {
+			createEmptyList(group);
+		}
 
 		return group;
 	}
 
-    private void createEmptyList(DefaultActionGroup group) {
-        AnAction action = new AnAction("No  recently viewed issues found") {
+	private void createEmptyList(DefaultActionGroup group) {
+		AnAction action = new AnAction("No  recently viewed issues found") {
 
-            public void actionPerformed(AnActionEvent anActionEvent) {
+			public void actionPerformed(AnActionEvent anActionEvent) {
 
-            }
-        };
-        action.setDefaultIcon(true);        
-        group.add(action);
-    }
+			}
+		};
+		action.setDefaultIcon(true);
+		group.add(action);
+	}
 
 }

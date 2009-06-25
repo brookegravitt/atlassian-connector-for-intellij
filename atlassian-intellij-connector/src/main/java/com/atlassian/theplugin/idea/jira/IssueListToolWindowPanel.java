@@ -1003,7 +1003,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 
 		@Override
-		public void serverConnectionDataChanged(final ServerId serverId) {
+		public void serverConnectionDataChanged(final IServerId serverId) {
 			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
 				jiraServerModel.clear(server.getServerId());
@@ -1013,7 +1013,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		@Override
-		public void serverNameChanged(final ServerId serverId) {
+		public void serverNameChanged(final IServerId serverId) {
 			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg) {
 				jiraServerModel.replace(projectCfgManager.getServerData(server));
@@ -1023,7 +1023,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		@Override
-		public void serverDisabled(final ServerId serverId) {
+		public void serverDisabled(final IServerId serverId) {
 			ServerCfg server = projectCfgManager.getServer(serverId);
 			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
 				removeServer(serverId, recenltyViewedAffected(server));
@@ -1038,7 +1038,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		@Override
-		public void serverEnabled(final ServerId serverId) {
+		public void serverEnabled(final IServerId serverId) {
 			ServerCfg server = projectCfgManager.getServer(serverId);
 			addServer(server, recenltyViewedAffected(server));
 		}
@@ -1056,7 +1056,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			}
 		}
 
-		private void removeServer(final ServerId serverId, final boolean reloadIssueList) {
+		private void removeServer(final IServerId serverId, final boolean reloadIssueList) {
 			jiraServerModel.clear(serverId);
 			refreshFilterModel();
 			jiraFilterListModel.fireServerRemoved();
@@ -1135,13 +1135,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg) {
 			hideManualFilterPanel();
 			refreshIssues(savedFilter, jiraServerCfg, true);
-			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId());
+			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().getStringId());
 			jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
 		}
 
 		public void selectedManualFilterNode(final JIRAManualFilter manualFilter, final ServerData jiraServerCfg) {
 			showManualFilterPanel(manualFilter, jiraServerCfg);
-			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId());
+			jiraWorkspaceConfiguration.getView().setViewServerId(jiraServerCfg.getServerId().getStringId());
 			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.MANUAL_FILTER);
 
 			refreshIssues(manualFilter, jiraServerCfg, true);
@@ -1152,7 +1152,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 			enableGetMoreIssues(false);
 
-			jiraWorkspaceConfiguration.getView().setViewServerId("");
+			jiraWorkspaceConfiguration.getView().setViewServerId(null);
 			jiraWorkspaceConfiguration.getView().setViewFilterId("");
 
 			jiraIssueListModelBuilder.reset();
@@ -1164,7 +1164,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			// refresh issues view
 			refreshRecenltyOpenIssues(true);
 
-			jiraWorkspaceConfiguration.getView().setViewServerId("");
+			jiraWorkspaceConfiguration.getView().setViewServerId(null);
 			jiraWorkspaceConfiguration.getView().setViewFilterId(JiraFilterConfigurationBean.RECENTLY_OPEN_FILTER);
 		}
 	}
@@ -1407,11 +1407,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					setStatusInfoMessage("Nothing selected");
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 				} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
-					Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
+					Map<Pair<String, IServerId>, String> projects = new HashMap<Pair<String, IServerId>, String>();
 					for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
 						try {
 							for (JIRAProject p : jiraServerModel.getProjects(projectCfgManager.getServerData(server))) {
-								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
+								projects.put(new Pair<String, IServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {
 							setStatusErrorMessage("Cannot retrieve projects from server [" + server.getName() + "]. "
@@ -1421,10 +1421,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					issueTreeBuilder.setProjectKeysToNames(projects);
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 				} else if (srvcfg != null) {
-					Map<Pair<String, ServerId>, String> projectMap = new HashMap<Pair<String, ServerId>, String>();
+					Map<Pair<String, IServerId>, String> projectMap = new HashMap<Pair<String, IServerId>, String>();
 					try {
 						for (JIRAProject p : jiraServerModel.getProjects(srvcfg)) {
-							projectMap.put(new Pair<String, ServerId>(p.getKey(), new ServerId(srvcfg.getServerId())),
+							projectMap.put(new Pair<String, IServerId>(p.getKey(), srvcfg.getServerId()),
 									p.getName());
 						}
 					} catch (JIRAException e) {

@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
@@ -14,7 +15,7 @@ public class RecenltyOpenIssuesTest extends TestCase {
 
 	public void setUp() throws Exception {
 		conf = new JiraWorkspaceConfiguration();
-		server = new ServerData("server", "1", "", "", "");
+		server = new ServerData("server", new ServerId(), "", "", "");
 
 		issue1 = new JIRAIssueBean(server);
 		issue1.setKey("1");
@@ -73,6 +74,6 @@ public class RecenltyOpenIssuesTest extends TestCase {
 	}
 
 	private IssueRecentlyOpenBean getRecenltyOpenIssueBean(final JIRAIssueBean issue) {
-		return new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+		return new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
 	}
 }

@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -45,7 +46,7 @@ public class ActivateIssueItemAction extends AnAction {
 		JIRAIssue issue = null;
 
 		if (cache != null) {
-			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
+			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), new ServerId(activeIssue.getServerId()));
 
 			if (issue != null) {
 				summary = issue.getSummary();

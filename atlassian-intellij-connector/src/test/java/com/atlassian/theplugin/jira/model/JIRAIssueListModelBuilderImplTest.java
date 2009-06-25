@@ -42,7 +42,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData server = new ServerData("test", new ServerId(), "", "", "");
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		try {
 			builder.addIssuesToModel(new JIRAManualFilter("manual filter", query), server, 2, true);
@@ -59,7 +59,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData server = new ServerData("test", new ServerId(), "", "", "");
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);
@@ -77,7 +77,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData server = new ServerData("test", new ServerId(), "", "", "");
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
 		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
@@ -98,7 +98,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData server = new ServerData("test", new ServerId(), "", "", "");
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
 		model.addModelListener(new JIRAIssueListModelListener() {
@@ -128,7 +128,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData server = new ServerData("test", new ServerId(), "", "", "");
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);

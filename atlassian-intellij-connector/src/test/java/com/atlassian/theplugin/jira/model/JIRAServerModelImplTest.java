@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -48,7 +47,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAProject> projects = null;
 		try {
-			projects = model.getProjects(new ServerData("test", (new ServerId()).toString(), "", "", ""));
+			projects = model.getProjects(new ServerData("test", new ServerId(), "", "", ""));
 		} catch (JIRAException e) {
 			fail();
 		}
@@ -71,7 +70,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		facade.counter = 0;
-		ServerData cfg = new ServerData("test", (new ServerId()).toString(), "", "", "");
+		ServerData cfg = new ServerData("test", new ServerId(), "", "", "");
 		try {
 			model.getProjects(cfg);
 			model.getProjects(cfg);
@@ -85,8 +84,8 @@ public class JIRAServerModelImplTest extends TestCase {
 	public void testClear() {
 		JIRAServerModelImpl model = new JIRAServerModelImpl();
 
-		ServerData cfg1 = new ServerData("test1", (new ServerId()).toString(), "", "", "");
-		ServerData cfg2 = new ServerData("test2", (new ServerId()).toString(), "", "", "");
+		ServerData cfg1 = new ServerData("test1", new ServerId(), "", "", "");
+		ServerData cfg2 = new ServerData("test2", new ServerId(), "", "", "");
 
 		try {
 			model.setFacade(facade);
@@ -104,8 +103,8 @@ public class JIRAServerModelImplTest extends TestCase {
 	public void testClearAll() {
 		JIRAServerModelImpl model = new JIRAServerModelImpl();
 
-		ServerData cfg1 = new ServerData("test1", (new ServerId()).toString(), "", "", "");
-		ServerData cfg2 = new ServerData("test2", (new ServerId()).toString(), "", "", "");
+		ServerData cfg1 = new ServerData("test1", new ServerId(), "", "", "");
+		ServerData cfg2 = new ServerData("test2", new ServerId(), "", "", "");
 		try {
 			model.setFacade(facade);
 			model.getProjects(cfg1);
@@ -126,7 +125,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAConstant> statuses = model.getStatuses(new ServerData("test", (new ServerId()).toString(), "", "", ""));
+			List<JIRAConstant> statuses = model.getStatuses(new ServerData("test", new ServerId(), "", "", ""));
 			// should be 3 from the facade + "Any"
 			assertEquals(4, statuses.size());
 		} catch (JIRAException e) {
@@ -142,7 +141,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			statuses = model.getStatuses(new ServerData("test", (new ServerId()).toString(), "", "", ""));
+			statuses = model.getStatuses(new ServerData("test", new ServerId(), "", "", ""));
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;
@@ -156,7 +155,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAConstant> issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()).toString(), "", "", ""), null, true);
+			List<JIRAConstant> issueTypes = model.getIssueTypes(new ServerData("test", new ServerId(), "", "", ""), null, true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, issueTypes.size());
 		} catch (JIRAException e) {
@@ -172,7 +171,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		try {
 			model.setFacade(facade);
-			List<JIRAConstant> issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+			List<JIRAConstant> issueTypes = model.getIssueTypes(new ServerData("test", new ServerId(), "", "", ""), p, true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, issueTypes.size());
 		} catch (JIRAException e) {
@@ -187,7 +186,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()).toString(), "", "", ""), null, true);
+			issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()), "", "", ""), null, true);
 			fail();
 		} catch (JIRAException e) {
 			assertEquals(0, issueTypes.size());
@@ -205,7 +204,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+			issueTypes = model.getIssueTypes(new ServerData("test", (new ServerId()), "", "", ""), p, true);
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;
@@ -218,7 +217,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAQueryFragment> filters = model.getSavedFilters(new ServerData("test", (new ServerId()).toString(), "", "", ""));
+			List<JIRAQueryFragment> filters = model.getSavedFilters(new ServerData("test", (new ServerId()), "", "", ""));
 			assertEquals(3, filters.size());
 		} catch (JIRAException e) {
 			fail();
@@ -231,7 +230,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			filters = model.getSavedFilters(new ServerData("test", (new ServerId()).toString(), "", "", ""));
+			filters = model.getSavedFilters(new ServerData("test", (new ServerId()), "", "", ""));
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;
@@ -245,7 +244,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		try {
 			List<JIRAPriorityBean> priorities =
-                    model.getPriorities(new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
+					model.getPriorities(new ServerData("test", (new ServerId()), "", "", ""), true);
 			// should be 3 from the facade + "Any"
 			assertEquals(4, priorities.size());
 		} catch (JIRAException e) {
@@ -260,7 +259,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			priorities = model.getPriorities(new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
+			priorities = model.getPriorities(new ServerData("test", (new ServerId()), "", "", ""), true);
 			fail();
 		} catch (JIRAException e) {
 
@@ -277,7 +276,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+			components = model.getComponents(new ServerData("test", (new ServerId()), "", "", ""), p, true);
 		} catch (JIRAException e) {
 		}
 		// should be 3 from the facade + "Any" + "no component"
@@ -290,7 +289,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new ServerData("test", (new ServerId()).toString(), "", "", ""), null, true);
+			components = model.getComponents(new ServerData("test", (new ServerId()), "", "", ""), null, true);
 		} catch (JIRAException e) {
 		}
 		assertEquals(0, components.size());
@@ -305,7 +304,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
 		try {
-			components = model.getComponents(new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+			components = model.getComponents(new ServerData("test", (new ServerId()), "", "", ""), p, true);
 		} catch (JIRAException e) {
 
 		}
@@ -320,7 +319,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		p.setKey("TEST");
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+			List<JIRAVersionBean> versions = model.getVersions(new ServerData("test", (new ServerId()), "", "", ""), p, true);
 			// should be 3 from the facade + "Any" + "No" + "Unreleased" + "Released"
 			assertEquals(7, versions.size());
 		} catch (JIRAException e) {
@@ -333,7 +332,8 @@ public class JIRAServerModelImplTest extends TestCase {
 
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new ServerData("test", (new ServerId()).toString(), "", "", ""), null, true);
+			List<JIRAVersionBean> versions = model
+					.getVersions(new ServerData("test", (new ServerId()), "", "", ""), null, true);
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
 			fail();
@@ -348,8 +348,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			List<JIRAVersionBean> versions = model.getVersions(new ServerData("test", (
-					new ServerId()).toString(), "", "", ""), p, true);
+			List<JIRAVersionBean> versions = model.getVersions(new ServerData("test", (new ServerId()), "", "", ""), p, true);
 			facade.throwException = false;
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
@@ -365,7 +364,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		try {
 			List<JIRAFixForVersionBean> versions = model.getFixForVersions(
-					new ServerData("test", (new ServerId()).toString(), "", "", ""), p, true);
+					new ServerData("test", (new ServerId()), "", "", ""), p, true);
 			// should be 3 from the facade + "Any" + "No" + "Unreleased" + "Released"
 			assertEquals(7, versions.size());
 		} catch (JIRAException e) {
@@ -379,7 +378,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		try {
 			List<JIRAFixForVersionBean> versions = model
-					.getFixForVersions(new ServerData("test", (new ServerId()).toString(), "", "", ""), null, true);
+					.getFixForVersions(new ServerData("test", (new ServerId()), "", "", ""), null, true);
 			assertEquals(0, versions.size());
 		} catch (JIRAException e) {
 			fail();
@@ -392,7 +391,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		model.setFacade(facade);
 		try {
 			List<JIRAResolutionBean> resolutions = model.getResolutions(
-					new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
+					new ServerData("test", (new ServerId()), "", "", ""), true);
 			// should be 3 from the facade + "Any" + "Unresolved"
 			assertEquals(5, resolutions.size());
 		} catch (JIRAException e) {
@@ -407,7 +406,7 @@ public class JIRAServerModelImplTest extends TestCase {
 		facade.throwException = true;
 		model.setFacade(facade);
 		try {
-			resolutions = model.getResolutions(new ServerData("test", (new ServerId()).toString(), "", "", ""), true);
+			resolutions = model.getResolutions(new ServerData("test", (new ServerId()), "", "", ""), true);
 			fail();
 		} catch (JIRAException e) {
 			facade.throwException = false;

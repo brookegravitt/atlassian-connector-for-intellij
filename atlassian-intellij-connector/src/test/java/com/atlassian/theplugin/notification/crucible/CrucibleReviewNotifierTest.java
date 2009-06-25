@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.notification.crucible;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.intellij.openapi.components.BaseComponent;
 import com.intellij.openapi.components.ComponentConfig;
 import com.intellij.openapi.extensions.ExtensionPointName;
@@ -39,13 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.picocontainer.PicoContainer;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CrucibleReviewNotifierTest extends TestCase {
 	CrucibleReviewNotifier notifier;
@@ -123,7 +117,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 			}
 
 			public List<GeneralComment> getReplies2() {
-				return reply != null ? MiscUtil.buildArrayList(reply): MiscUtil.<GeneralComment>buildArrayList();
+				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<GeneralComment>buildArrayList();
 			}
 		};
 	}

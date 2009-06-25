@@ -2,7 +2,6 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.api.JIRAException;
@@ -25,14 +24,12 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	private int startFrom;
 	private JIRAIssueListModel model;
 	private Project project;
-	private ProjectCfgManagerImpl projectCfgManager;
 	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 
 
 	public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 		this.project = null;
-		this.projectCfgManager = null;
 		facade = JIRAServerFacadeImpl.getInstance();
 		startFrom = 0;
 	}
@@ -222,7 +219,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		if (activeIssue != null) {
 			for (JIRAIssue issue : newIssues) {
 				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getServer() != null
-						&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
+						&& issue.getServer().getServerId().getStringId().equals(activeIssue.getServerId())) {
 					ActiveIssueUtils.checkIssueState(project, issue);
 				}
 			}
@@ -247,9 +244,5 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 
 	public void setProject(final Project project) {
 		this.project = project;
-	}
-
-	public void setProjectCfgManager(final ProjectCfgManagerImpl projectCfgManager) {
-		this.projectCfgManager = projectCfgManager;
 	}
 }

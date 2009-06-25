@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
@@ -32,12 +31,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JIRARssClientTest extends TestCase
-{
-    private String mostRecentUrl;
+public class JIRARssClientTest extends TestCase {
+	private String mostRecentUrl;
 
-    public void testAssignedIssues() throws Exception {
-        JIRARssClient rss = getClasspathJIRARssClient("http://www.server.com", null, null, "/jira/api/assignedIssues.xml");
+	public void testAssignedIssues() throws Exception {
+		JIRARssClient rss = getClasspathJIRARssClient("http://www.server.com", null, null, "/jira/api/assignedIssues.xml");
 /*
         // first try unauthenticated and test the URL is correct
         rss.getAssignedIssues("anyone");
@@ -54,12 +52,12 @@ public class JIRARssClientTest extends TestCase
         firstIssue.setKey("PL-94");
         firstIssue.setSummary("NullPointerException on wrong URL to Bamboo server");
         assertEquals(firstIssue, list.get(0));
-*/        
-    }
+*/
+	}
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final ServerData server = new ServerData("jira", (new ServerId()).toString(), "", "", "file://test");
+		final ServerData server = new ServerData("jira", new ServerId(), "", "", "file://test");
 
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
@@ -73,7 +71,7 @@ public class JIRARssClientTest extends TestCase
 			}
 		};
 		List<JIRAQueryFragment> l = new ArrayList<JIRAQueryFragment>();
-		l. add(new JIRAProjectBean());
+		l.add(new JIRAProjectBean());
 
 		try {
 			c.getIssues(l, "ASC", "prio", 0, 1);
@@ -84,7 +82,7 @@ public class JIRARssClientTest extends TestCase
 	}
 
 	public void testBugPl941() throws Exception {
-		final ServerData server = new ServerData("jira", (new ServerId()).toString(), "", "", "file://test");
+		final ServerData server = new ServerData("jira", new ServerId(), "", "", "file://test");
 
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
@@ -101,7 +99,7 @@ public class JIRARssClientTest extends TestCase
 		try {
 
 			//if something wron with xml structure getIssue throws an exception so code has to be aware of that
-			JIRAIssue issue = c.getIssue("PL-941");
+			c.getIssue("PL-941");
 			fail("PL-941 not fixed");
 
 		} catch (JIRAException e) {
@@ -111,14 +109,15 @@ public class JIRARssClientTest extends TestCase
 	}
 
 	// make a simple mock rss client that overrides URL loading with loading from a file
-    private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file) throws RemoteApiMalformedUrlException {
-		final ServerData server = new ServerData("jira", (new ServerId()).toString(), userName, password, url);
+	private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file)
+			throws RemoteApiMalformedUrlException {
+		final ServerData server = new ServerData("jira", new ServerId(), userName, password, url);
 		return new JIRARssClient(server, new HttpSessionCallbackImpl()) {
-            // protected so that we can easily write tests by simply returning XML from a file instead of a URL!
-            protected InputStream getUrlAsStream(String url) throws IOException {
-                mostRecentUrl = url;
-                return JIRARssClientTest.class.getResourceAsStream(file);
-            }
-        };
-    }
+			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
+			protected InputStream getUrlAsStream(String url) throws IOException {
+				mostRecentUrl = url;
+				return JIRARssClientTest.class.getResourceAsStream(file);
+			}
+		};
+	}
 }

@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.cache;
 
+import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
@@ -88,8 +89,8 @@ public class RecentlyOpenIssuesCache {
 	 * @param serverId server to search
 	 * @return recently viewed issue from the local cache or null in case issue was not found in the cache
 	 */
-	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final String serverId) {
-		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
+	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final IServerId serverId) {
+		return items.get(new IssueRecentlyOpenBean(serverId.getStringId(), issueKey));
 	}
 
 	/**
@@ -100,7 +101,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void addIssue(final JIRAIssue issue) {
 		final IssueRecentlyOpenBean recenltyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
 
 		items.remove(recenltyOpenIssueBean);
 		items.put(recenltyOpenIssueBean, issue);
@@ -129,7 +130,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void updateIssue(final JIRAIssue issue) {
 		final IssueRecentlyOpenBean recentlyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
 		if (items.containsKey(recentlyOpenIssueBean)) {
 			// old value is replaced
 			items.put(recentlyOpenIssueBean, issue);
