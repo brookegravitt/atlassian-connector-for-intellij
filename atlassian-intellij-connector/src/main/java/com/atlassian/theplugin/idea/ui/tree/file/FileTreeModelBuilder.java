@@ -88,8 +88,8 @@ public final class FileTreeModelBuilder {
                 } else {
                     //according to filter show only "proper files"
                     childNode = new CrucibleFileNode(review, file, new CrucibleFileClickAction(project, review, file));
-                    fillFileComments(childNode, model, review, file, project);
                 }
+                fillFileComments(childNode, model, review, file, project);
 				model.insertNode(childNode, filesNode);
 			}
 		} catch (ValueNotYetInitialized e) {
@@ -137,9 +137,7 @@ public final class FileTreeModelBuilder {
 					}
 				}
 
-                if (file.getRepositoryType() != RepositoryType.PATCH) {
-				    fillFileComments(childNode, model, review, file, project);
-                }
+                fillFileComments(childNode, model, review, file, project);
 				node.addChild(childNode);
 			}
 		} catch (ValueNotYetInitialized e) {
@@ -152,7 +150,8 @@ public final class FileTreeModelBuilder {
 	private static void fillFileComments(CrucibleFileNode node, AtlassianTreeModel model,
 			ReviewAdapter review, CrucibleFileInfo file, Project project) {
 		List<VersionedComment> fileComments = getFileVersionedComments(file);
-		CrucibleVersionedCommentClickAction action = new CrucibleVersionedCommentClickAction(project);
+		AtlassianClickAction action = file.getRepositoryType() != RepositoryType.PATCH 
+                ? new CrucibleVersionedCommentClickAction(project) : AtlassianClickAction.EMPTY_ACTION;
 		for (VersionedComment c : fileComments) {
 			if (!c.isDeleted()) {
 				VersionedCommentTreeNode commentNode = new VersionedCommentTreeNode(review, file, c, action);

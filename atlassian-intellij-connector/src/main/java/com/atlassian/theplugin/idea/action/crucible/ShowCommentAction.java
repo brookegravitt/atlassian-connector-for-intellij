@@ -15,7 +15,7 @@ import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
  * Date: May 29, 2009
  * Time: 12:12:15 PM
  */
-public class ShowCommentAction extends ReviewTreeAction {
+public class ShowCommentAction extends ReviewTreeItemActionWithPatchChecking {
     protected void executeTreeAction(Project project, AtlassianTreeWithToolbar tree) {
         AtlassianTreeNode node = tree.getSelectedTreeNode();
         if (node instanceof VersionedCommentTreeNode) {
@@ -24,13 +24,15 @@ public class ShowCommentAction extends ReviewTreeAction {
     }
 
     @Override
-    public void update(final AnActionEvent e) {
-        boolean enabled = e.getData(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE_KEY) != null;
-        e.getPresentation().setEnabled(enabled);
+    protected void updateTreeAction(AnActionEvent e, AtlassianTreeWithToolbar tree) {
+        super.updateTreeAction(e, tree);
+        if (e.getPresentation().isEnabled()) {
+            boolean enabled = e.getData(Constants.CRUCIBLE_VERSIONED_COMMENT_NODE_KEY) != null;
+            e.getPresentation().setEnabled(enabled);
 
-        if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
-            e.getPresentation().setVisible(enabled);
+            if (e.getPlace().equals(CrucibleConstants.MENU_PLACE) || (e.getPlace().equals(ReviewItemTreePanel.MENU_PLACE))) {
+                e.getPresentation().setVisible(enabled);
+            }
         }
     }
-
 }
