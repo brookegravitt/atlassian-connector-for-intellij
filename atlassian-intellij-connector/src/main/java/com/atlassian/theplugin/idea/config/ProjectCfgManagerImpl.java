@@ -270,6 +270,20 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+    public Collection<FishEyeServerCfg> getAllFishEyeServers() {
+
+		Collection<ServerCfg> tmp = getAllServers();
+
+		ArrayList<FishEyeServerCfg> ret = new ArrayList<FishEyeServerCfg>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.FISHEYE_SERVER && serverCfg instanceof FishEyeServerCfg) {
+				ret.add((FishEyeServerCfg) serverCfg);
+			}
+		}
+		return ret;
+	}
+
 	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
