@@ -47,7 +47,11 @@ public class AddAction extends AbstractCommentAction {
 
 		if (enabled) {
 			if (node instanceof CrucibleFileNode) {
-				text = FILE_COMMENT_TEXT;
+                if (((CrucibleFileNode) node).getFile().getRepositoryType() == RepositoryType.PATCH) {
+                    enabled = false;
+                } else {
+				    text = FILE_COMMENT_TEXT;
+                }
 			} else if (node instanceof VersionedCommentTreeNode) {
 				final VersionedCommentTreeNode vcNode = (VersionedCommentTreeNode) node;
 				if (vcNode.getComment().isReply()) {
@@ -121,7 +125,9 @@ public class AddAction extends AbstractCommentAction {
 			addReplyToGeneralComment(event, node.getReview(), node.getComment());
 		} else if (treeNode instanceof FileNameNode) {
 			FileNameNode node = (FileNameNode) treeNode;
-			addCommentToFile(event, node.getReview(), node.getFile());
+            if (node.getFile().getRepositoryType() != RepositoryType.PATCH) {
+			    addCommentToFile(event, node.getReview(), node.getFile());
+            }
 		} else if (treeNode instanceof VersionedCommentTreeNode) {
 			VersionedCommentTreeNode node = (VersionedCommentTreeNode) treeNode;
             if (!node.getComment().isReply()) {
@@ -129,7 +135,9 @@ public class AddAction extends AbstractCommentAction {
             }
 		} else if (treeNode instanceof CrucibleFileNode) {
 			CrucibleFileNode node = (CrucibleFileNode) treeNode;
-			addCommentToFile(event, node.getReview(), node.getFile());
+			if (node.getFile().getRepositoryType() != RepositoryType.PATCH) {
+                addCommentToFile(event, node.getReview(), node.getFile());
+            }
 		}
 	}
 
