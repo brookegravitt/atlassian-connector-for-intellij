@@ -99,7 +99,7 @@ public class CrucibleFileNode extends FileNode {
 
 			StringBuilder txt = new StringBuilder();
             if (node.getFile().getRepositoryType() == RepositoryType.PATCH) {
-                txt.append(" (Part of a patch - not supported)");
+                txt.append(" (Part of a patch)");
             } else {
                 final CommitType commitType = node.getFile().getCommitType();
                 switch (commitType) {
