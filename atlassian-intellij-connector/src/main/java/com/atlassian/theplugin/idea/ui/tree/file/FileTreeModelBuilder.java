@@ -20,10 +20,7 @@ import com.atlassian.theplugin.commons.BambooFileInfo;
 import com.atlassian.theplugin.commons.VersionedFileInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
@@ -84,12 +81,15 @@ public final class FileTreeModelBuilder {
 		AtlassianTreeNode filesNode = new CrucibleFilesNode(review);
 		model.insertNode(filesNode, model.getRoot());
 		try {
+            CrucibleFileNode childNode;
 			for (final CrucibleFileInfo file : review.getFiles()) {
-				//according to filter show only "proper files"
-				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-						new CrucibleFileClickAction(project, review, file));
-
-				fillFileComments(childNode, model, review, file, project);
+                if (file.getRepositoryType() == RepositoryType.PATCH) {
+                    childNode = new CrucibleFileNode(review, file);
+                } else {
+                    //according to filter show only "proper files"
+                    childNode = new CrucibleFileNode(review, file, new CrucibleFileClickAction(project, review, file));
+                    fillFileComments(childNode, model, review, file, project);
+                }
 				model.insertNode(childNode, filesNode);
 			}
 		} catch (ValueNotYetInitialized e) {
@@ -114,9 +114,12 @@ public final class FileTreeModelBuilder {
 
 		try {
 			for (final CrucibleFileInfo file : review.getFiles()) {
-				CrucibleFileNode childNode = new CrucibleFileNode(review, file,
-						new CrucibleFileClickAction(project, review, file));
-
+                CrucibleFileNode childNode;
+                if (file.getRepositoryType() == RepositoryType.PATCH) {
+                    childNode = new CrucibleFileNode(review, file);
+                } else {
+                    childNode = new CrucibleFileNode(review, file, new CrucibleFileClickAction(project, review, file));
+                }
 				FileNode node = model.createPlace(filesNode, file);
 
 				// find duplicates
@@ -134,7 +137,9 @@ public final class FileTreeModelBuilder {
 					}
 				}
 
-				fillFileComments(childNode, model, review, file, project);
+                if (file.getRepositoryType() != RepositoryType.PATCH) {
+				    fillFileComments(childNode, model, review, file, project);
+                }
 				node.addChild(childNode);
 			}
 		} catch (ValueNotYetInitialized e) {

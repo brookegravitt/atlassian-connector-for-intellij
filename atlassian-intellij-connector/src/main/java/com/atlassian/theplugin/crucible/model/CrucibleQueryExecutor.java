@@ -39,17 +39,16 @@ public class CrucibleQueryExecutor {
 			final CustomFilter manualFilter,
 			final RecentlyOpenReviewsFilter recentlyOpenFilter,
 			final long epoch) throws InterruptedException {
+
 		// collect review info from each server and each required filter
-		final Map<CrucibleFilter, ReviewNotificationBean> reviews
-				= new HashMap<CrucibleFilter, ReviewNotificationBean>();
+		final Map<CrucibleFilter, ReviewNotificationBean> reviews = new HashMap<CrucibleFilter, ReviewNotificationBean>();
 
 		for (final CrucibleServerCfg server : projectCfgManager.getAllCrucibleServers()) {
 			if (server.isEnabled()) {
 
 				// retrieve reviews for predefined filters
 				for (int i = 0;
-					 i < predefinedFilters.length
-							 && i < PredefinedFilter.values().length; i++) {
+					 i < predefinedFilters.length && i < PredefinedFilter.values().length; i++) {
 
 					// if predefined filter is enabled
 					if (predefinedFilters[i]) {

@@ -19,6 +19,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -97,44 +98,47 @@ public class CrucibleFileNode extends FileNode {
 			append(node.getName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
 
 			StringBuilder txt = new StringBuilder();
-			final CommitType commitType = node.getFile().getCommitType();
-			switch (commitType) {
-				case Moved:
-					txt.append(" moved, ");
-					break;
-				default:
-					break;
-			}
-			txt.append(" (rev: ");
-			switch (commitType) {
-				case Added:
-					txt.append(node.getFile().getFileDescriptor().getRevision());
-					break;
-				case Deleted:
-					txt.append(node.getFile().getOldFileDescriptor().getRevision());
-					break;
-				case Modified:
-				case Copied:
-				case Moved:
-				case Unknown:
-				default:
-					String oldRev = node.getFile().getOldFileDescriptor().getRevision();
-					if (!StringUtils.isEmpty(oldRev)) {
-						txt.append(oldRev);
-					} else {
-						txt.append("Unknown");
-					}
-					txt.append("-");
-					String newRev = node.getFile().getFileDescriptor().getRevision();
-					if (!StringUtils.isEmpty(newRev)) {
-						txt.append(newRev);
-					} else {
-						txt.append("Unknown");
-					}
-					break;
-			}
-			txt.append(")");
-
+            if (node.getFile().getRepositoryType() == RepositoryType.PATCH) {
+                txt.append(" (Part of a patch - not supported)");
+            } else {
+                final CommitType commitType = node.getFile().getCommitType();
+                switch (commitType) {
+                    case Moved:
+                        txt.append(" moved, ");
+                        break;
+                    default:
+                        break;
+                }
+                txt.append(" (rev: ");
+                switch (commitType) {
+                    case Added:
+                        txt.append(node.getFile().getFileDescriptor().getRevision());
+                        break;
+                    case Deleted:
+                        txt.append(node.getFile().getOldFileDescriptor().getRevision());
+                        break;
+                    case Modified:
+                    case Copied:
+                    case Moved:
+                    case Unknown:
+                    default:
+                        String oldRev = node.getFile().getOldFileDescriptor().getRevision();
+                        if (!StringUtils.isEmpty(oldRev)) {
+                            txt.append(oldRev);
+                        } else {
+                            txt.append("Unknown");
+                        }
+                        txt.append("-");
+                        String newRev = node.getFile().getFileDescriptor().getRevision();
+                        if (!StringUtils.isEmpty(newRev)) {
+                            txt.append(newRev);
+                        } else {
+                            txt.append("Unknown");
+                        }
+                        break;
+                }
+                txt.append(")");
+            }
 			if (selected) {
 				append(txt.toString(), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC, null));
 			} else {
