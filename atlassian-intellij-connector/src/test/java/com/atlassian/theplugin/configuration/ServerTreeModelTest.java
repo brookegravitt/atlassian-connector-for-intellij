@@ -36,20 +36,20 @@ public class ServerTreeModelTest extends TestCase {
 
 		root = new RootNode();
 		stm = new ServerTreeModel(root);
-		jiraServerCfg = new JiraServerCfg("jiraServer", new ServerId());
-		fiahEyeServerCfg = new FishEyeServerCfg("fishEyeServer", new ServerId());
- 		crucibleServerCfg= new CrucibleServerCfg("crucibleServer", new ServerId());
-		bambooServerCfg = new BambooServerCfg("bambooServer", new ServerId());
+		jiraServerCfg = new JiraServerCfg("jiraServer", new ServerIdImpl());
+		fiahEyeServerCfg = new FishEyeServerCfg("fishEyeServer", new ServerIdImpl());
+		crucibleServerCfg = new CrucibleServerCfg("crucibleServer", new ServerIdImpl());
+		bambooServerCfg = new BambooServerCfg("bambooServer", new ServerIdImpl());
 	}
 
 	public void testDefaultValue() {
 		assertEquals(stm.getChildCount(root), ServerType.values().length);
-		for (int i=0; i < ServerType.values().length; i++) {
+		for (int i = 0; i < ServerType.values().length; i++) {
 
 			assertTrue(stm.getChild(root, i) instanceof ServerTypeNode);
-			ServerTypeNode type = (ServerTypeNode)stm.getChild(root, i);
+			ServerTypeNode type = (ServerTypeNode) stm.getChild(root, i);
 			assertEquals(type.getChildCount(), 1);
-			ServerInfoNode info = (ServerInfoNode)stm.getChild(type, 0);
+			ServerInfoNode info = (ServerInfoNode) stm.getChild(type, 0);
 
 			assertEquals(info.getServerType(), ServerType.values()[i]);
 		}
@@ -86,12 +86,12 @@ public class ServerTreeModelTest extends TestCase {
 	}
 
 	public void testRemoveJiraServer() {
-		tryTestServer( jiraServerCfg, ServerType.JIRA_SERVER);
+		tryTestServer(jiraServerCfg, ServerType.JIRA_SERVER);
 		tryTestRemoveServer(ServerType.JIRA_SERVER);
 	}
 
 	public void testRemoveCrucibleServer() {
-		tryTestServer( crucibleServerCfg, ServerType.CRUCIBLE_SERVER);
+		tryTestServer(crucibleServerCfg, ServerType.CRUCIBLE_SERVER);
 		tryTestRemoveServer(ServerType.CRUCIBLE_SERVER);
 
 	}
@@ -103,7 +103,7 @@ public class ServerTreeModelTest extends TestCase {
 	}
 
 	public void testRemoveBambooServer() {
-		tryTestServer( bambooServerCfg, ServerType.BAMBOO_SERVER);
+		tryTestServer(bambooServerCfg, ServerType.BAMBOO_SERVER);
 		tryTestRemoveServer(ServerType.BAMBOO_SERVER);
 
 	}
@@ -114,9 +114,8 @@ public class ServerTreeModelTest extends TestCase {
 		stm.nodeStructureChanged(typeNode);
 		assertEquals(typeNode.getChildCount(), 1);
 		assertTrue(typeNode.getChildAt(0) instanceof ServerInfoNode);
-		assertEquals(((ServerInfoNode)typeNode.getChildAt(0)).getServerType(), serverType);
+		assertEquals(((ServerInfoNode) typeNode.getChildAt(0)).getServerType(), serverType);
 	}
 
 
-	
 }

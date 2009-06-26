@@ -108,7 +108,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return getServerDataImpl(serverCfg);
 	}
 
-	public ServerData getServerData(final IServerId serverId) {
+	public ServerData getServerData(final ServerId serverId) {
 
 		ServerCfg server = getServer(serverId);
 
@@ -126,7 +126,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	 * @return ServerData for enabled server with serverId specified by parameter
 	 */
 	@Nullable
-	public ServerData getEnabledServerData(final IServerId serverId) {
+	public ServerData getEnabledServerData(final ServerId serverId) {
 		final ServerCfg serverCfg = getServer(serverId);
 
 		if (serverCfg != null && serverCfg.isEnabled()) {
@@ -155,8 +155,18 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
-	public ServerCfg getServer(final IServerId serverId) {
+	public ServerCfg getServer(final ServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
+				return server;
+			}
+		}
+		return null;
+	}
+
+
+	public JiraServerCfg getJiraServer(final ServerId serverId) {
+		for (JiraServerCfg server : getAllJiraServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return server;
 			}
@@ -270,7 +280,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-    public Collection<FishEyeServerCfg> getAllFishEyeServers() {
+	public Collection<FishEyeServerCfg> getAllFishEyeServers() {
 
 		Collection<ServerCfg> tmp = getAllServers();
 
@@ -445,7 +455,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	 * @param serverId id of the server to remove
 	 * @return removed server or null if nothing removed
 	 */
-	ServerCfg removeServer(final IServerId serverId) {
+	ServerCfg removeServer(final ServerId serverId) {
 
 		if (serverId == null) {
 			return null;

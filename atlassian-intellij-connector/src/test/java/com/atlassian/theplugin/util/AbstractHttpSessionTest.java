@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
@@ -64,9 +64,9 @@ public class AbstractHttpSessionTest extends TestCase {
 		mockServer.expect(SOME_URL, new TimeoutingOnDataTransferCallback());
 		TestHttpSession session = new TestHttpSession(new com.atlassian.theplugin.commons.cfg.Server() {
 
-			private ServerId serverId = new ServerId();
+			private ServerIdImpl serverId = new ServerIdImpl();
 
-			public ServerId getServerId() {
+			public ServerIdImpl getServerId() {
 				return serverId;
 			}
 

@@ -113,7 +113,7 @@ public class CrucibleQueryExecutor {
 				retriveRecenltyOpenFilterReviews(recentlyOpenFilter, reviews, server);
 
 			}
-		}        
+		}
 		return reviews;
 	}
 
@@ -132,9 +132,9 @@ public class CrucibleQueryExecutor {
 
 			ReviewNotificationBean recenltyOpenFilterNotificationBean = reviews.get(recentlyOpenFilter);
 
-			for (ReviewRecentlyOpenBean recentReview : recentlyOpenFilter.getRecentlyOpenReviews()) {
+			for (ReviewRecentlyOpenBean recentReview : recentlyOpenFilter.getRecentlyOpenReviewss()) {
 
-				if (server.getServerId().toString().equals(recentReview.getServerId())) {
+				if (server.getServerId().equals(recentReview.getServerId())) {
 
 					// get review from the server
 					try {
@@ -177,7 +177,7 @@ public class CrucibleQueryExecutor {
 
 			ReviewNotificationBean customFilterNotificationBean = reviews.get(manualFilter);
 
-			if (server.getServerId().toString().equals(manualFilter.getServerUid())) {
+			if (server.getServerId().equals(manualFilter.getServerId())) {
 
 				// get reviews for filter from the server
 				try {

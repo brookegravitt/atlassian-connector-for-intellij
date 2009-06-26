@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -32,11 +33,11 @@ import java.util.Map;
 @State(name = "atlassian-ide-plugin-workspace-issues",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-issues-id", file = "$WORKSPACE_FILE$")})
 public class JiraWorkspaceConfiguration implements PersistentStateComponent<JiraWorkspaceConfiguration> {
-	private Map<String, JiraFilterConfigurationBean> filters = new HashMap<String, JiraFilterConfigurationBean>();
+	private Map<ServerIdImpl, JiraFilterConfigurationBean> filterss = new HashMap<ServerIdImpl, JiraFilterConfigurationBean>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
-	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
+	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssuess = new LinkedList<IssueRecentlyOpenBean>();
 	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
-	private ActiveJiraIssueBean activeJiraIssue;
+	private ActiveJiraIssueBean activeJiraIssuee;
 	private long selectedWorkflowAction;
 	private boolean activeIssueProgressWorkflowAction;
 	private boolean activeIssueLogWork;
@@ -49,10 +50,10 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
-		this.filters = jiraConfiguration.filters;
+		this.filterss = jiraConfiguration.filterss;
 		this.view = jiraConfiguration.view;
-		this.recentlyOpenIssues = jiraConfiguration.recentlyOpenIssues;
-		this.activeJiraIssue = jiraConfiguration.activeJiraIssue;
+		this.recentlyOpenIssuess = jiraConfiguration.recentlyOpenIssuess;
+		this.activeJiraIssuee = jiraConfiguration.activeJiraIssuee;
 		this.selectedWorkflowAction = jiraConfiguration.selectedWorkflowAction;
 		this.activeIssueProgressWorkflowAction = jiraConfiguration.activeIssueProgressWorkflowAction;
 		this.activeIssueLogWork = jiraConfiguration.activeIssueLogWork;
@@ -62,12 +63,12 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
 	}
 
-	public Map<String, JiraFilterConfigurationBean> getFilters() {
-		return filters;
+	public Map<ServerIdImpl, JiraFilterConfigurationBean> getFilterss() {
+		return filterss;
 	}
 
-	public void setFilters(final Map<String, JiraFilterConfigurationBean> filters) {
-		this.filters = filters;
+	public void setFilterss(final Map<ServerIdImpl, JiraFilterConfigurationBean> filterss) {
+		this.filterss = filterss;
 	}
 
 	public JiraViewConfigurationBean getView() {
@@ -78,32 +79,32 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.view = view;
 	}
 
-	public LinkedList<IssueRecentlyOpenBean> getRecentlyOpenIssues() {
-		return recentlyOpenIssues;
+	public LinkedList<IssueRecentlyOpenBean> getRecentlyOpenIssuess() {
+		return recentlyOpenIssuess;
 	}
 
-	public void setRecentlyOpenIssues(final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssues) {
-		this.recentlyOpenIssues = recentlyOpenIssues;
+	public void setRecentlyOpenIssuess(final LinkedList<IssueRecentlyOpenBean> recentlyOpenIssuess) {
+		this.recentlyOpenIssuess = recentlyOpenIssuess;
 	}
 
 	public void addRecentlyOpenIssue(final JIRAIssue issue) {
-		if (recentlyOpenIssues == null) {
-			recentlyOpenIssues = new LinkedList<IssueRecentlyOpenBean>();
+		if (recentlyOpenIssuess == null) {
+			recentlyOpenIssuess = new LinkedList<IssueRecentlyOpenBean>();
 		}
 
 		if (issue != null) {
 			String issueKey = issue.getKey();
-			IServerId serverId = issue.getServer().getServerId();
+			ServerId serverId = issue.getServer().getServerId();
 
 			// add element and make sure it is not duplicated and it is insterted at the top
-			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId.getStringId(), issueKey);
+			IssueRecentlyOpenBean r = new IssueRecentlyOpenBean(serverId, issueKey);
 
-			if (recentlyOpenIssues != null) {
-				recentlyOpenIssues.remove(r);
-				recentlyOpenIssues.addFirst(r);
+			if (recentlyOpenIssuess != null) {
+				recentlyOpenIssuess.remove(r);
+				recentlyOpenIssuess.addFirst(r);
 
-				while (recentlyOpenIssues.size() > RECENLTY_OPEN_ISSUES_LIMIT) {
-					recentlyOpenIssues.removeLast();
+				while (recentlyOpenIssuess.size() > RECENLTY_OPEN_ISSUES_LIMIT) {
+					recentlyOpenIssuess.removeLast();
 				}
 			}
 		}
@@ -166,19 +167,19 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 	@Transient
-	public JiraFilterConfigurationBean getJiraFilterConfiguaration(IServerId id) {
-		JiraFilterConfigurationBean filter = filters.get(id.getStringId());
+	public JiraFilterConfigurationBean getJiraFilterConfiguaration(ServerId id) {
+		JiraFilterConfigurationBean filter = filterss.get((ServerIdImpl) id);
 		if (filter == null) {
 			filter = new JiraFilterConfigurationBean();
-			filters.put(id.getStringId(), filter);
+			filterss.put((ServerIdImpl) id, filter);
 		}
 		return filter;
 	}
 
-	@Transient
-	public void setFilterConfigurationBean(String serverId, JiraFilterConfigurationBean filterConfiguration) {
-		filters.put(serverId, filterConfiguration);
-	}
+//	@Transient
+//	public void setFilterConfigurationBean(String serverId, JiraFilterConfigurationBean filterConfiguration) {
+//		filterss.put(serverId, filterConfiguration);
+//	}
 
 	public JiraWorkspaceConfiguration getState() {
 		return this;
@@ -189,11 +190,11 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 
-	public ActiveJiraIssueBean getActiveJiraIssue() {
-		return activeJiraIssue;
+	public ActiveJiraIssueBean getActiveJiraIssuee() {
+		return activeJiraIssuee;
 	}
 
-	public void setActiveJiraIssue(final ActiveJiraIssueBean activeJiraIssue) {
-		this.activeJiraIssue = activeJiraIssue;
+	public void setActiveJiraIssuee(final ActiveJiraIssueBean activeJiraIssuee) {
+		this.activeJiraIssuee = activeJiraIssuee;
 	}
 }

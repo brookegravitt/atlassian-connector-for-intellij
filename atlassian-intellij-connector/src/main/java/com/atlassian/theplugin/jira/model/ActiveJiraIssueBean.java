@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -31,14 +32,13 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 	public ActiveJiraIssueBean() {
 	}
 
-	public ActiveJiraIssueBean(final String serverId, final String issueKey, DateTime lastStartTime, long secondsSpent) {
-		super.serverId = serverId;
-		this.issueKey = issueKey;
+	public ActiveJiraIssueBean(final ServerId serverId, final String issueKey, DateTime lastStartTime, long secondsSpent) {
+		super(serverId, issueKey);
 		this.lastStartTime = lastStartTime;
 		this.secondsSpent = secondsSpent;
 	}
 
-	public ActiveJiraIssueBean(final String serverId, final String issueKey, DateTime lastStartTime) {
+	public ActiveJiraIssueBean(final ServerId serverId, final String issueKey, DateTime lastStartTime) {
 		this(serverId, issueKey, lastStartTime, 0);
 
 	}

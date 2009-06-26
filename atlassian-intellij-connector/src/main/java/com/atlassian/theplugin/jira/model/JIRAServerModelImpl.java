@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -57,7 +57,7 @@ public class JIRAServerModelImpl implements JIRAServerModel {
 		}
 	}
 
-	public synchronized void clear(IServerId serverId) {
+	public synchronized void clear(ServerId serverId) {
 		if (serverId == null) {
 			return;
 		}

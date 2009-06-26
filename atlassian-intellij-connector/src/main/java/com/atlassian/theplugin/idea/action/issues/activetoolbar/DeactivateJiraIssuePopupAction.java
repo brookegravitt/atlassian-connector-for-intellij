@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -29,12 +31,13 @@ public class DeactivateJiraIssuePopupAction extends DeactivateJiraIssueAction {
 		final JIRAIssue selectedJiraIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		JiraServerCfg selectedServer;
+		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
 
-		if (activeIssue != null && activeIssue.getIssueKey() != null) {
-			selectedServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
+		if (activeIssue != null && activeIssue.getIssueKey() != null && projectCfgManager != null) {
+			selectedServer = projectCfgManager.getJiraServer(activeIssue.getServerId());
 			event.getPresentation().setEnabled(enabled && selectedJiraIssue != null
 					&& selectedJiraIssue.getKey().equals(activeIssue.getIssueKey())
-					&& selectedServer != null && selectedServer.getServerId().toString().equals(activeIssue.getServerId()));
+					&& selectedServer != null && selectedServer.getServerId().equals(activeIssue.getServerId()));
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

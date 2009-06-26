@@ -206,9 +206,9 @@ public class IssueCreateDialog extends DialogWrapper {
 
 			// select default project
 			if (jiraConfiguration != null &&
-					jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId())) {
+					jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServer.getServerId())) {
 
-				String project = jiraConfiguration.getView().getServerDefaults().
+				String project = jiraConfiguration.getView().getServerDefaultss().
 						get(jiraServer.getServerId()).getProject();
 
 				for (int i = 0; i < projectComboBox.getItemCount(); ++i) {
@@ -410,15 +410,15 @@ public class IssueCreateDialog extends DialogWrapper {
 		componentsList.setModel(listModel);
 
 		if (projectComboBox.getSelectedItem() != null && jiraConfiguration != null && jiraConfiguration.getView() != null
-				&& jiraConfiguration.getView().getServerDefaults() != null
-				&& jiraConfiguration.getView().getServerDefaults().containsKey(jiraServer.getServerId())) {
+				&& jiraConfiguration.getView().getServerDefaultss() != null
+				&& jiraConfiguration.getView().getServerDefaultss().containsKey(jiraServer.getServerId())) {
 
 			String selectedProject = ((JIRAProject) projectComboBox.getSelectedItem()).getKey();
 
-			String configProject = jiraConfiguration.getView().getServerDefaults().
+			String configProject = jiraConfiguration.getView().getServerDefaultss().
 					get(jiraServer.getServerId()).getProject();
 
-			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaults().
+			Collection<Long> configComponents = jiraConfiguration.getView().getServerDefaultss().
 					get(jiraServer.getServerId()).getComponents();
 
 			// select default components for specified project

@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+
 /**
  * User: pmaruszak
  */
@@ -23,7 +25,8 @@ public interface ActiveJiraIssue {
 
 	long getSecondsSpent();
 
-	String getServerId();
+	// Do not change return type to ServerId. It will cause problems in ActiveIssue Serializtion.
+	ServerIdImpl getServerId();
 
 	void resetTimeSpent();
 

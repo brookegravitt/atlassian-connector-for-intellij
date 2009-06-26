@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -613,7 +613,7 @@ class DetailsPanel extends JPanel {
 	}
 
 	public static void main(String[] args) {
-		ServerData cruc = new ServerData("my crucible server", new ServerId(), "", "", "");
+		ServerData cruc = new ServerData("my crucible server", new ServerIdImpl(), "", "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"

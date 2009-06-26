@@ -50,17 +50,17 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	}
 
 	public static void main(String[] args) throws RemoteApiException, ServerPasswordNotProvidedException, JIRAException {
-		final CrucibleServerCfg crucibleServerCfg = new CrucibleServerCfg("Cruc Server 1", new ServerId());
+		final CrucibleServerCfg crucibleServerCfg = new CrucibleServerCfg("Cruc Server 1", new ServerIdImpl());
 		crucibleServerCfg.setFisheyeInstance(true);
-		final CrucibleServerCfg crucibleServerCfg2 = new CrucibleServerCfg("Cruc Server 2", new ServerId());
-		final CrucibleServerCfg crucibleServerCfg3 = new CrucibleServerCfg("Cruc Server 3", new ServerId());
-		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerId());
-		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerId());
-		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerId());
-		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerId());
+		final CrucibleServerCfg crucibleServerCfg2 = new CrucibleServerCfg("Cruc Server 2", new ServerIdImpl());
+		final CrucibleServerCfg crucibleServerCfg3 = new CrucibleServerCfg("Cruc Server 3", new ServerIdImpl());
+		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerIdImpl());
+		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerIdImpl());
+		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerIdImpl());
+		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerIdImpl());
 		final ProjectConfiguration projectConfiguration = new ProjectConfiguration(MiscUtil.buildArrayList(
 				crucibleServerCfg2,
-				new BambooServerCfg("Bamboo Server 1", new ServerId()),
+				new BambooServerCfg("Bamboo Server 1", new ServerIdImpl()),
 				crucibleServerCfg,
 				crucibleServerCfg3, fishEyeServerCfg0, fishEyeServerCfg1,
 				jiraServerCfg1, jiraServerCfg2));

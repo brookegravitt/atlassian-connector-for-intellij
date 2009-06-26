@@ -29,7 +29,7 @@ import java.util.Collection;
  *
  * @author wseliga
  */
-public class ProjectCfgManagerTest extends TestCase {
+public class ProjectCfgManagerImplTest extends TestCase {
 
 	private ProjectCfgManagerImpl cfgManager;
 	private static final ProjectId PROJECT_ID_1 = new ProjectId();
@@ -48,12 +48,12 @@ public class ProjectCfgManagerTest extends TestCase {
 
 	// these fields are not static as they must be reinitialized (refreshed) in every instance (to keep them clean)
 
-	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerId());
-	private final BambooServerCfg bamboo3 = new BambooServerCfg("bamboo3", new ServerId());
-	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerId());
-	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerId());
-	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerId());
-	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerId());
+	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerIdImpl());
+	private final BambooServerCfg bamboo3 = new BambooServerCfg("bamboo3", new ServerIdImpl());
+	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerIdImpl());
+	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerIdImpl());
+	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl());
+	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerIdImpl());
 
 	public void testGetAllServers() {
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers(), crucible1, jira1, bamboo1);
@@ -222,7 +222,7 @@ public class ProjectCfgManagerTest extends TestCase {
 	}
 
 	public void testGetAllBmbooServers() {
-		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers(), bamboo1);		
+		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers(), bamboo1);
 		cfgManager.removeServer(bamboo1.getServerId());
 		TestUtil.assertHasOnlyElements(cfgManager.getAllBambooServers());
 	}
@@ -274,7 +274,7 @@ public class ProjectCfgManagerTest extends TestCase {
 
 	public void testGerServer() {
 		assertEquals(crucible1, cfgManager.getServer(crucible1.getServerId()));
-		assertNull(cfgManager.getServer(new ServerId()));
+		assertNull(cfgManager.getServer(new ServerIdImpl()));
 	}
 
 	public void testGetAllUniqueServers() {
@@ -285,6 +285,10 @@ public class ProjectCfgManagerTest extends TestCase {
 		cfgManager = createCfgManager();
 		TestUtil.assertHasOnlyElements(cfgManager.getAllServers());
 
+	}
+
+	public void testGetJiraServer() {
+		assertEquals(cfgManager.getJiraServer(jira1.getServerId()), jira1);
 	}
 }
 

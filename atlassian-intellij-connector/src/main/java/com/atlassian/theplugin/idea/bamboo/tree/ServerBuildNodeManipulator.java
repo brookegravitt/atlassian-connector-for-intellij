@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
@@ -96,7 +96,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		}
 	};
 
-	private int gentNumOfBuildsForServer(IServerId serverId) {
+	private int gentNumOfBuildsForServer(ServerId serverId) {
 		int ret = 0;
 		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
 			if (build.getServer().getServerId().equals(serverId)) {
@@ -107,7 +107,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForServer(IServerId serverId, int index) {
+	private BambooBuildAdapterIdea getBuildForServer(ServerId serverId, int index) {
 		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
 
 		// get all builds for server

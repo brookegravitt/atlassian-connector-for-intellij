@@ -58,7 +58,7 @@ public class RecentlyOpenIssuesAction extends AnAction {
 			return;
 		}
 
-		final List<IssueRecentlyOpenBean> recentlyOpenIssues = conf.getRecentlyOpenIssues();
+		final List<IssueRecentlyOpenBean> recentlyOpenIssues = conf.getRecentlyOpenIssuess();
 
 		if (recentlyOpenIssues.size() > 0) {
 			// prepare list of recentlyOpenIssues from the config list

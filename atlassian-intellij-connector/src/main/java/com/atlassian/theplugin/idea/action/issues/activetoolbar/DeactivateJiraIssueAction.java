@@ -17,8 +17,8 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.*;
@@ -28,34 +28,34 @@ import javax.swing.*;
  */
 public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void actionPerformed(final AnActionEvent event) {
-        runDeactivateTask(event);
-    }
+		runDeactivateTask(event);
+	}
 
-    public static void runDeactivateTask(final AnActionEvent event) {
-        SwingUtilities.invokeLater(new Runnable() {
+	public static void runDeactivateTask(final AnActionEvent event) {
+		SwingUtilities.invokeLater(new Runnable() {
 
-            public void run() {
-                ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
-                    public void success() {
-                        final JiraWorkspaceConfiguration conf =
-                                IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-                        conf.setActiveJiraIssue(null);
-                    }
+			public void run() {
+				ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
+					public void success() {
+						final JiraWorkspaceConfiguration conf =
+								IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+						conf.setActiveJiraIssuee(null);
+					}
 
-                    public void failure(final Throwable problem) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run() {
-                                DialogWithDetails.showExceptionDialog(
-                                        IdeaHelper.getCurrentProject(event), "Failed to Deactivate Issue", problem);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
+					public void failure(final Throwable problem) {
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								DialogWithDetails.showExceptionDialog(
+										IdeaHelper.getCurrentProject(event), "Failed to Deactivate Issue", problem);
+							}
+						});
+					}
+				});
+			}
+		});
+	}
 
-    public void onUpdate(final AnActionEvent event) {
+	public void onUpdate(final AnActionEvent event) {
 	}
 
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {

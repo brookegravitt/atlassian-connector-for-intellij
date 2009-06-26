@@ -16,6 +16,8 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -35,16 +37,15 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		if (selectedIssue != null) {
 			jiraServerCfg = ActiveIssueUtils.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
 			if (!isSelectedIssueActive(event, selectedIssue)) {
-                if (jiraServerCfg != null) {
-                    ActiveJiraIssue newActiveIssue =
-                            new ActiveJiraIssueBean(jiraServerCfg.getServerId().toString(), selectedIssue.getKey(),
-                                    new DateTime());
+				if (jiraServerCfg != null) {
+					ActiveJiraIssue newActiveIssue =
+							new ActiveJiraIssueBean(jiraServerCfg.getServerId(), selectedIssue.getKey(), new DateTime());
 
-                    ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
-                }
+					ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
+				}
 			} else {
-                DeactivateJiraIssuePopupAction.runDeactivateTask(event);
-            }
+				DeactivateJiraIssuePopupAction.runDeactivateTask(event);
+			}
 		}
 	}
 
@@ -54,28 +55,30 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	public void onUpdate(final AnActionEvent event, final boolean enabled) {
 		final JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
-        if (isSelectedIssueActive(event, selectedIssue)) {
-            event.getPresentation().setEnabled(true);
-            event.getPresentation().setText("Stop Work");
+		if (isSelectedIssueActive(event, selectedIssue)) {
+			event.getPresentation().setEnabled(true);
+			event.getPresentation().setText("Stop Work");
 		} else if (selectedIssue != null) {
 			event.getPresentation().setEnabled(true);
-            event.getPresentation().setText("Start Work");
+			event.getPresentation().setText("Start Work");
 		} else {
 			event.getPresentation().setEnabled(false);
 		}
 	}
 
-    private static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
-        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
-        if (selectedIssue != null && activeIssue != null
-                && ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId()) != null) {
+	private static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
+		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 
-            final JiraServerCfg selectedServer =
-                    ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
-            final boolean equals = selectedIssue.getKey().equals(activeIssue.getIssueKey())
-                    && selectedServer.getServerId().toString().equals(activeIssue.getServerId());
-            return equals;
-        }
-        return false;
-    }
+		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+
+		if (selectedIssue != null && activeIssue != null && projectCfgManager != null
+				&& projectCfgManager.getJiraServer(activeIssue.getServerId()) != null) {
+
+			final JiraServerCfg selectedServer = projectCfgManager.getJiraServer(activeIssue.getServerId());
+
+			return selectedIssue.getKey().equals(activeIssue.getIssueKey())
+					&& selectedServer.getServerId().equals(activeIssue.getServerId());
+		}
+		return false;
+	}
 }

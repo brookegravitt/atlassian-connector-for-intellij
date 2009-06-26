@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.crucible.model;
 
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -45,7 +45,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
@@ -68,7 +68,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingSingleReviewTwice() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
@@ -84,7 +84,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingTwoSingleReviews() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
@@ -109,7 +109,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingReviewWithDifferentPermId() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
@@ -126,7 +126,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	public void testAddingTwoReviewsWithTheSamePermId() throws Exception {
 		model = new CrucibleReviewListModelImplAdapter();
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test1"));
@@ -143,7 +143,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
@@ -166,7 +166,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		PermIdBean permId1 = new PermIdBean("test1");
@@ -188,7 +188,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		CrucibleReviewListModelImplAdapter listModel = new CrucibleReviewListModelImplAdapter();
 
 
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		ServerData cfg = new ServerData("test", id, "", "", "");
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
@@ -475,7 +475,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 	private ServerData createServer(int id) {
-		return new ServerData("server" + id, new ServerId(), "", "", "");
+		return new ServerData("server" + id, new ServerIdImpl(), "", "", "");
 	}
 
 	private ReviewAdapter createReviewAdapter(int id, ServerData server) {

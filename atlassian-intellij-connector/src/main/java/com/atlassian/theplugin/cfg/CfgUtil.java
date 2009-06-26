@@ -16,9 +16,9 @@
 package com.atlassian.theplugin.cfg;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 
@@ -50,19 +50,19 @@ public final class CfgUtil {
 //		return DEFAULT_PROJECT;
 //	}
 
-	public static JiraServerCfg getJiraServerCfgbyServerId(final ProjectCfgManagerImpl projectCfgManager,
-			final String serverId) {
-		for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
-			if (server.getServerId().toString().equals(serverId)) {
-				return server;
-
-			}
-		}
-		return null;
-	}
+//	public static JiraServerCfg getJiraServerCfgbyServerId(final ProjectCfgManagerImpl projectCfgManager,
+//			final String serverId) {
+//		for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
+//			if (server.getServerId().toString().equals(serverId)) {
+//				return server;
+//
+//			}
+//		}
+//		return null;
+//	}
 
 	public static ServerCfg getEnabledServerCfgbyServerId(
-			final ProjectCfgManagerImpl projectCfgManager, final IServerId serverId) {
+			final ProjectCfgManagerImpl projectCfgManager, final ServerId serverId) {
 		for (ServerCfg server : projectCfgManager.getAllEnabledServers()) {
 			if (server.getServerId().equals(serverId)) {
 				return server;

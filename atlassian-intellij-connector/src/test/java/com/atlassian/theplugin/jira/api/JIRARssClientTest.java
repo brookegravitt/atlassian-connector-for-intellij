@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.jira.api;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -57,7 +57,7 @@ public class JIRARssClientTest extends TestCase {
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final ServerData server = new ServerData("jira", new ServerId(), "", "", "file://test");
+		final ServerData server = new ServerData("jira", new ServerIdImpl(), "", "", "file://test");
 
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
@@ -82,7 +82,7 @@ public class JIRARssClientTest extends TestCase {
 	}
 
 	public void testBugPl941() throws Exception {
-		final ServerData server = new ServerData("jira", new ServerId(), "", "", "file://test");
+		final ServerData server = new ServerData("jira", new ServerIdImpl(), "", "", "file://test");
 
 		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			@Override
@@ -111,7 +111,7 @@ public class JIRARssClientTest extends TestCase {
 	// make a simple mock rss client that overrides URL loading with loading from a file
 	private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file)
 			throws RemoteApiMalformedUrlException {
-		final ServerData server = new ServerData("jira", new ServerId(), userName, password, url);
+		final ServerData server = new ServerData("jira", new ServerIdImpl(), userName, password, url);
 		return new JIRARssClient(server, new HttpSessionCallbackImpl()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {

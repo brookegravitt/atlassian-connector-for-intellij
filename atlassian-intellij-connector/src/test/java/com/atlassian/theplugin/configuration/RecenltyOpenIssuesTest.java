@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
@@ -15,7 +15,7 @@ public class RecenltyOpenIssuesTest extends TestCase {
 
 	public void setUp() throws Exception {
 		conf = new JiraWorkspaceConfiguration();
-		server = new ServerData("server", new ServerId(), "", "", "");
+		server = new ServerData("server", new ServerIdImpl(), "", "", "");
 
 		issue1 = new JIRAIssueBean(server);
 		issue1.setKey("1");
@@ -28,27 +28,27 @@ public class RecenltyOpenIssuesTest extends TestCase {
 	}
 
 	public void testEmptyConfiguration() {
-		assertNotNull(conf.getRecentlyOpenIssues());
-		assertEquals(0, conf.getRecentlyOpenIssues().size());
+		assertNotNull(conf.getRecentlyOpenIssuess());
+		assertEquals(0, conf.getRecentlyOpenIssuess().size());
 	}
 
 	public void testAddRecentlyOpenIssue() {
 		conf.addRecentlyOpenIssue(issue1);
-		assertEquals(1, conf.getRecentlyOpenIssues().size());
-		assertTrue(conf.getRecentlyOpenIssues().contains(getRecenltyOpenIssueBean(issue1)));
+		assertEquals(1, conf.getRecentlyOpenIssuess().size());
+		assertTrue(conf.getRecentlyOpenIssuess().contains(getRecenltyOpenIssueBean(issue1)));
 	}
 
 	public void testAddRecentlyOpenIssueOrder() {
 		conf.addRecentlyOpenIssue(issue1);
 		conf.addRecentlyOpenIssue(issue2);
 
-		assertEquals(2, conf.getRecentlyOpenIssues().size());
-		assertTrue(conf.getRecentlyOpenIssues().contains(getRecenltyOpenIssueBean(issue1)));
-		assertTrue(conf.getRecentlyOpenIssues().contains(getRecenltyOpenIssueBean(issue2)));
+		assertEquals(2, conf.getRecentlyOpenIssuess().size());
+		assertTrue(conf.getRecentlyOpenIssuess().contains(getRecenltyOpenIssueBean(issue1)));
+		assertTrue(conf.getRecentlyOpenIssuess().contains(getRecenltyOpenIssueBean(issue2)));
 
 		// test order
-		assertEquals(getRecenltyOpenIssueBean(issue2), conf.getRecentlyOpenIssues().get(0));
-		assertEquals(getRecenltyOpenIssueBean(issue1), conf.getRecentlyOpenIssues().get(1));
+		assertEquals(getRecenltyOpenIssueBean(issue2), conf.getRecentlyOpenIssuess().get(0));
+		assertEquals(getRecenltyOpenIssueBean(issue1), conf.getRecentlyOpenIssuess().get(1));
 	}
 
 	public void testAddRecenltyOpenIssueLimit() {
@@ -64,16 +64,16 @@ public class RecenltyOpenIssuesTest extends TestCase {
 		conf.addRecentlyOpenIssue(issue3);
 
 		// check limit
-		assertEquals(JiraWorkspaceConfiguration.RECENLTY_OPEN_ISSUES_LIMIT, conf.getRecentlyOpenIssues().size());
+		assertEquals(JiraWorkspaceConfiguration.RECENLTY_OPEN_ISSUES_LIMIT, conf.getRecentlyOpenIssuess().size());
 		// last added issue should be on top
-		assertEquals(getRecenltyOpenIssueBean(issue3), conf.getRecentlyOpenIssues().getFirst());
+		assertEquals(getRecenltyOpenIssueBean(issue3), conf.getRecentlyOpenIssuess().getFirst());
 		// first added issue should disappear (out of the limit)
-		assertFalse(conf.getRecentlyOpenIssues().contains(getRecenltyOpenIssueBean(issue1)));
+		assertFalse(conf.getRecentlyOpenIssuess().contains(getRecenltyOpenIssueBean(issue1)));
 		// issue2 should be at the end
-		assertEquals(getRecenltyOpenIssueBean(issue2), conf.getRecentlyOpenIssues().getLast());
+		assertEquals(getRecenltyOpenIssueBean(issue2), conf.getRecentlyOpenIssuess().getLast());
 	}
 
 	private IssueRecentlyOpenBean getRecenltyOpenIssueBean(final JIRAIssueBean issue) {
-		return new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
+		return new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
 	}
 }

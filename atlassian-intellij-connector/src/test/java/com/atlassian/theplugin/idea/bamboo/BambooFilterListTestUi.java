@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -36,9 +36,9 @@ import java.util.Date;
 import java.util.Random;
 
 public final class BambooFilterListTestUi {
-	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerId());
-	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerId());
-	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerId());
+	private static final BambooServerCfg B1 = new BambooServerCfg("Bamboo Server1", new ServerIdImpl());
+	private static final BambooServerCfg B2 = new BambooServerCfg("Bamboo Server Two", new ServerIdImpl());
+	private static final BambooServerCfg B3 = new BambooServerCfg("Bamboo Server Three", new ServerIdImpl());
 	private static ProjectCfgManagerImpl projectCfgManager = new LocalProjectCfgManager();
 
 	private BambooFilterListTestUi() {

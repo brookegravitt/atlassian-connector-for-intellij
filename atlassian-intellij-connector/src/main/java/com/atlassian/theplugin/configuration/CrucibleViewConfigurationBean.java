@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleReviewGroupBy;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.Collection;
  */
 public class CrucibleViewConfigurationBean {
 	private CrucibleReviewGroupBy groupBy;
-	private Collection<String> searchServers = new ArrayList<String>();
+	private Collection<ServerIdImpl> searchServerss = new ArrayList<ServerIdImpl>();
 
 	public CrucibleReviewGroupBy getGroupBy() {
 		return groupBy;
@@ -35,16 +36,16 @@ public class CrucibleViewConfigurationBean {
 		this.groupBy = groupBy;
 	}
 
-	public Collection<String> getSearchServers() {
-		return searchServers;
+	public Collection<ServerIdImpl> getSearchServerss() {
+		return searchServerss;
 	}
 
-	public void setSearchServers(Collection<String> servers) {
-		searchServers = servers;
+	public void setSearchServerss(Collection<ServerIdImpl> servers) {
+		searchServerss = servers;
 	}
 
 	public void copyConfiguration(CrucibleViewConfigurationBean conf) {
 		this.groupBy = conf.getGroupBy();
-		this.searchServers = conf.searchServers;
+		this.searchServerss = conf.searchServerss;
 	}
 }

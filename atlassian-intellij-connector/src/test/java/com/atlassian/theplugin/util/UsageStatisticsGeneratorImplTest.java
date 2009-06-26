@@ -18,7 +18,7 @@ package com.atlassian.theplugin.util;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.util.UrlUtil;
@@ -36,9 +36,9 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 
 	public void testGetStatisticsUrlSuffix() {
 		final ArrayList<ServerCfg> servers = MiscUtil.buildArrayList(
-				new BambooServerCfg("bamboo1", new ServerId()),
-				new CrucibleServerCfg("crucible1", new ServerId()),
-				new BambooServerCfg("bamboo2", new ServerId()));
+				new BambooServerCfg("bamboo1", new ServerIdImpl()),
+				new CrucibleServerCfg("crucible1", new ServerIdImpl()),
+				new BambooServerCfg("bamboo2", new ServerIdImpl()));
 
 		final UsageStatisticsGeneratorImpl generator = new UsageStatisticsGeneratorImpl(true, 123, null, servers);
 		assertEquals("uid=123&version=" + UrlUtil.encodeUrl(PluginUtil.getInstance().getVersion())
@@ -50,9 +50,9 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 
 	public void testGetStatisticsUrlSuffixExtended() {
 		final ArrayList<ServerCfg> servers = MiscUtil.buildArrayList(
-				new BambooServerCfg("bamboo1", new ServerId()),
-				new CrucibleServerCfg("crucible1", new ServerId()),
-				new BambooServerCfg("bamboo2", new ServerId()));
+				new BambooServerCfg("bamboo1", new ServerIdImpl()),
+				new CrucibleServerCfg("crucible1", new ServerIdImpl()),
+				new BambooServerCfg("bamboo2", new ServerIdImpl()));
 
 		GeneralConfigurationBean gcb = new GeneralConfigurationBean();
 		gcb.setAnonymousEnhancedFeedbackEnabled(false);
@@ -87,9 +87,9 @@ public class UsageStatisticsGeneratorImplTest extends TestCase {
 
 	public void testGetStatisticsUrlSuffixExtendedWithZeroCounters() {
 		final ArrayList<ServerCfg> servers = MiscUtil.buildArrayList(
-				new BambooServerCfg("bamboo1", new ServerId()),
-				new CrucibleServerCfg("crucible1", new ServerId()),
-				new BambooServerCfg("bamboo2", new ServerId()));
+				new BambooServerCfg("bamboo1", new ServerIdImpl()),
+				new CrucibleServerCfg("crucible1", new ServerIdImpl()),
+				new BambooServerCfg("bamboo2", new ServerIdImpl()));
 
 		GeneralConfigurationBean gcb = new GeneralConfigurationBean();
 

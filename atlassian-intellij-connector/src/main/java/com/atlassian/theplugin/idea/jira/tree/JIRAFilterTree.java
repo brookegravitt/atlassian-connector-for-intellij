@@ -1,5 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -113,16 +114,16 @@ public class JIRAFilterTree extends AbstractTree {
 			// on selection listener
 			getSelectionModel().addTreeSelectionListener(localSelectionListener);
 			setSelectionFilter(jiraWorkspaceConfiguration.getView().getViewFilterId(),
-					jiraWorkspaceConfiguration.getView().getViewServerId());
+					jiraWorkspaceConfiguration.getView().getViewServerIdd());
 		} else {
 			setSelectionFilter(jiraWorkspaceConfiguration.getView().getViewFilterId(),
-					jiraWorkspaceConfiguration.getView().getViewServerId());
+					jiraWorkspaceConfiguration.getView().getViewServerIdd());
 			getSelectionModel().addTreeSelectionListener(localSelectionListener);
 		}
 
 	}
 
-	private void setSelectionFilter(final String viewFilterId, final String viewServerId) {
+	private void setSelectionFilter(final String viewFilterId, final ServerId viewServerId) {
 		boolean filterFound = false;
 		if (JiraFilterConfigurationBean.MANUAL_FILTER.equals(viewFilterId)) {
 			filterFound = setSelectionManualFilter(viewServerId);
@@ -140,7 +141,7 @@ public class JIRAFilterTree extends AbstractTree {
 		}
 	}
 
-	public boolean setSelectionSavedFilter(final long savedFilterId, final String serverId) {
+	public boolean setSelectionSavedFilter(final long savedFilterId, final ServerId serverId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
 		if (rootNode == null) {
 			return false;
@@ -165,7 +166,7 @@ public class JIRAFilterTree extends AbstractTree {
 		return false;
 	}
 
-	public boolean setSelectionManualFilter(final String serverId) {
+	public boolean setSelectionManualFilter(final ServerId serverId) {
 		DefaultMutableTreeNode rootNode = ((DefaultMutableTreeNode) (this.getModel().getRoot()));
 		if (rootNode == null) {
 			return false;
@@ -173,7 +174,7 @@ public class JIRAFilterTree extends AbstractTree {
 		for (int i = 0; i < rootNode.getChildCount(); i++) {
 			if (rootNode.getChildAt(i) instanceof JIRAServerTreeNode) {
 				JIRAServerTreeNode node = (JIRAServerTreeNode) rootNode.getChildAt(i);
-				if (node.getJiraServer().getServerId().getStringId().equals(serverId)) {
+				if (node.getJiraServer().getServerId().equals(serverId)) {
 					for (int j = 0; j < node.getChildCount(); j++) {
 						if (node.getChildAt(j) instanceof JIRAManualFilterTreeNode) {
 							JIRAManualFilterTreeNode manualFilterNode = (JIRAManualFilterTreeNode) node.getChildAt(j);
@@ -281,9 +282,9 @@ public class JIRAFilterTree extends AbstractTree {
 
 				// restore previous selection
 				if (prevManualFilter != null) {
-					setSelectionManualFilter(prevServer.getServerId().toString());
+					setSelectionManualFilter(prevServer.getServerId());
 				} else if (prevSavedFilter != null) {
-					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId().toString());
+					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId());
 				} else if (prevRecentlyOpen) {
 					setSelectionRecentlyOpen();
 				}
