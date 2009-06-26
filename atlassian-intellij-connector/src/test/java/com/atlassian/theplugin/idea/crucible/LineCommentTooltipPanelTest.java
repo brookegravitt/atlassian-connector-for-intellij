@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -24,7 +24,7 @@ public class LineCommentTooltipPanelTest {
 	public static void main(String[] args) {
 		ReviewBean rev = new ReviewBean("test");
 		rev.setPermId(new PermIdBean("MyReview"));
-		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerId(), "zenon", "", ""));
+		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData("test", new ServerIdImpl(), "zenon", "", ""));
 		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
 		ra.setFacade(new MyNullFacade());
 		final CommentBean comment = new VersionedCommentBean();

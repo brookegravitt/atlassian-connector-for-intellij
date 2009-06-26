@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.jira.cache;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.IssueRecentlyOpenBean;
@@ -53,7 +52,7 @@ public class RecentlyOpenIssuesCache {
 		if (jiraWorkspaceConf != null) {
 			items.clear();
 			final List<IssueRecentlyOpenBean> recentlyOpen =
-					new LinkedList<IssueRecentlyOpenBean>(jiraWorkspaceConf.getRecentlyOpenIssues());
+					new LinkedList<IssueRecentlyOpenBean>(jiraWorkspaceConf.getRecentlyOpenIssuess());
 			// we put elements in the map in reverse order (most fresh element is at the end)
 			// this is because map.put (used when adding new element) place alement at the end
 			// I don't know the way to put element at the top of the ordered map.
@@ -89,8 +88,8 @@ public class RecentlyOpenIssuesCache {
 	 * @param serverId server to search
 	 * @return recently viewed issue from the local cache or null in case issue was not found in the cache
 	 */
-	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final IServerId serverId) {
-		return items.get(new IssueRecentlyOpenBean(serverId.getStringId(), issueKey));
+	public JIRAIssue getLoadedRecenltyOpenIssue(final String issueKey, final ServerId serverId) {
+		return items.get(new IssueRecentlyOpenBean(serverId, issueKey));
 	}
 
 	/**
@@ -101,7 +100,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void addIssue(final JIRAIssue issue) {
 		final IssueRecentlyOpenBean recenltyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
 
 		items.remove(recenltyOpenIssueBean);
 		items.put(recenltyOpenIssueBean, issue);
@@ -130,7 +129,7 @@ public class RecentlyOpenIssuesCache {
 	 */
 	public void updateIssue(final JIRAIssue issue) {
 		final IssueRecentlyOpenBean recentlyOpenIssueBean =
-				new IssueRecentlyOpenBean(issue.getServer().getServerId().getStringId(), issue.getKey());
+				new IssueRecentlyOpenBean(issue.getServer().getServerId(), issue.getKey());
 		if (items.containsKey(recentlyOpenIssueBean)) {
 			// old value is replaced
 			items.put(recentlyOpenIssueBean, issue);
@@ -143,11 +142,11 @@ public class RecentlyOpenIssuesCache {
 	}
 
 	private JIRAIssue loadJiraIssue(final IssueRecentlyOpenBean recentlyOpen) throws JIRAException {
-		final String recentServer = recentlyOpen.getServerId();
+		final ServerId recentServer = recentlyOpen.getServerId();
 		if (recentServer == null) {
 			return null;
 		}
-		final ServerData jiraServer = projectCfgManager.getEnabledServerData(new ServerId(recentServer));
+		final ServerData jiraServer = projectCfgManager.getEnabledServerData(recentServer);
 		if (jiraServer != null) {
 			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 		}

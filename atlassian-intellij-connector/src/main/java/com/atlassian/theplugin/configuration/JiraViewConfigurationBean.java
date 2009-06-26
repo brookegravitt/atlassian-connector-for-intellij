@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.idea.jira.JiraIssueGroupBy;
 import com.intellij.util.xmlb.annotations.Transient;
 
@@ -26,23 +27,24 @@ import java.util.LinkedHashSet;
 
 
 public class JiraViewConfigurationBean {
-	private String viewServerId;
+	private ServerIdImpl viewServerIdd;
 	private String viewFilterId;
 	private JiraIssueGroupBy groupBy;
 	private boolean collapseSubtasksUnderParent;
 
-	private HashMap<String, JiraProjectDefaultComponentsBean> serverDefaults =
-			new HashMap<String, JiraProjectDefaultComponentsBean>();
+	// selected projects per server in the Issue Crea+te Dialog
+	private HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> serverDefaultss =
+			new HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean>();
 
 	public JiraViewConfigurationBean() {
 	}
 
-	public String getViewServerId() {
-		return viewServerId;
+	public ServerIdImpl getViewServerIdd() {
+		return viewServerIdd;
 	}
 
-	public void setViewServerId(final String viewServerId) {
-		this.viewServerId = viewServerId;
+	public void setViewServerIdd(final ServerIdImpl viewServerIdd) {
+		this.viewServerIdd = viewServerIdd;
 	}
 
 	public String getViewFilterId() {
@@ -69,20 +71,20 @@ public class JiraViewConfigurationBean {
 		this.collapseSubtasksUnderParent = collapseSubtasksUnderParent;
 	}
 
-	public HashMap<String, JiraProjectDefaultComponentsBean> getServerDefaults() {
-		return serverDefaults;
+	public HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> getServerDefaultss() {
+		return serverDefaultss;
 	}
 
-	public void setServerDefaults(final HashMap<String, JiraProjectDefaultComponentsBean> serverDefaults) {
-		this.serverDefaults = serverDefaults;
+	public void setServerDefaultss(final HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> serverDefaultss) {
+		this.serverDefaultss = serverDefaultss;
 	}
 
 	@Transient
-	public void addServerDefault(final IServerId jiraServer, final String projectKey, final Collection<Long> components) {
+	public void addServerDefault(final ServerId jiraServer, final String projectKey, final Collection<Long> components) {
 		LinkedHashSet<Long> comp = new LinkedHashSet<Long>(components);
 
 		JiraProjectDefaultComponentsBean tmp = new JiraProjectDefaultComponentsBean(projectKey, comp);
 
-		serverDefaults.put(jiraServer.getStringId(), tmp);
+		serverDefaultss.put((ServerIdImpl) jiraServer, tmp);
 	}
 }

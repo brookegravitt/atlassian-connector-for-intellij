@@ -18,9 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import junit.framework.TestCase;
-import junit.framework.Assert;
 import org.easymock.EasyMock;
 
 /**
@@ -53,14 +51,14 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 	private static final ProjectId PROJECT_ID = new ProjectId();
 
-	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerId());
-	private final BambooServerCfg bamboo2 = new BambooServerCfg("bamboo2", new ServerId());
-	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerId());
-	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerId());
-	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerId());
-	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerId());
-	private final FishEyeServerCfg fisheye1 = new FishEyeServerCfg("fisheye1", new ServerId());
-	private final FishEyeServerCfg fisheye2 = new FishEyeServerCfg("fisheye2", new ServerId());
+	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerIdImpl());
+	private final BambooServerCfg bamboo2 = new BambooServerCfg("bamboo2", new ServerIdImpl());
+	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerIdImpl());
+	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerIdImpl());
+	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl());
+	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerIdImpl());
+	private final FishEyeServerCfg fisheye1 = new FishEyeServerCfg("fisheye1", new ServerIdImpl());
+	private final FishEyeServerCfg fisheye2 = new FishEyeServerCfg("fisheye2", new ServerIdImpl());
 
 	private void populateServerCfgs() {
 
@@ -289,26 +287,26 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 	}
 
-    public void testDefaultCredentials() {        
-        UserCfg userCfg = new UserCfg("userName", "secretPAssword");
-        ServerData srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
-        assertEquals(srvData1.getUserName(), bamboo1.getUserName());
-        assertEquals(srvData1.getPassword(), bamboo1.getPassword());
+	public void testDefaultCredentials() {
+		UserCfg userCfg = new UserCfg("userName", "secretPAssword");
+		ServerData srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
-        assertFalse(projectCfgManager.isDefaultCredentialsAsked());
-        projectCfgManager.setDefaultCredentials(userCfg);
-        assertFalse(bamboo1.isUseDefaultCredentials());
-        srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
-        assertTrue(projectCfgManager.isDefaultCredentialsAsked());
-        assertEquals(srvData1.getUserName(), bamboo1.getUserName());
-        assertEquals(srvData1.getPassword(), bamboo1.getPassword());
+		assertFalse(projectCfgManager.isDefaultCredentialsAsked());
+		projectCfgManager.setDefaultCredentials(userCfg);
+		assertFalse(bamboo1.isUseDefaultCredentials());
+		srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		assertTrue(projectCfgManager.isDefaultCredentialsAsked());
+		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
-        bamboo1.setUseDefaultCredentials(true);
-        assertTrue(bamboo1.isUseDefaultCredentials());
-        srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
-        assertEquals(srvData1.getUserName(), userCfg.getUserName());
-        assertEquals(srvData1.getPassword(), userCfg.getPassword());
+		bamboo1.setUseDefaultCredentials(true);
+		assertTrue(bamboo1.isUseDefaultCredentials());
+		srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		assertEquals(srvData1.getUserName(), userCfg.getUserName());
+		assertEquals(srvData1.getPassword(), userCfg.getPassword());
 
 
-    }
+	}
 }

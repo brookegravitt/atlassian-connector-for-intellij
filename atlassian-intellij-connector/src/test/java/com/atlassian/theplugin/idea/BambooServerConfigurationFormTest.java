@@ -109,7 +109,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 	private static BambooServerCfg createServerBean() {
 
-		BambooServerCfg outServer = new BambooServerCfg(true, "name", new ServerId());
+		BambooServerCfg outServer = new BambooServerCfg(true, "name", new ServerIdImpl());
 		outServer.setPassword("password");
 		outServer.setPasswordStored(true);
 		outServer.setUrl("url");
@@ -136,7 +136,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		// TODO this call should be removed when HttpClientFactory is not singleton anymore
 		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
 
-		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerId()));
+		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerIdImpl()));
 
 		BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
 		assertEquals("", outServer.getName());

@@ -506,7 +506,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		public Object getSelectedItem() {
 			for (CrucibleServerCfgWrapper server : getServers()) {
-				final IServerId defaultCrucibleServerId = projectConfiguration.getDefaultCrucibleServerId();
+				final ServerId defaultCrucibleServerId = projectConfiguration.getDefaultCrucibleServerId();
 				if (server.getWrapped().getServerId().equals(
 						defaultCrucibleServerId != null ? defaultCrucibleServerId : null)) {
 					return server;
@@ -522,7 +522,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 					CrucibleServerCfgWrapper item = (CrucibleServerCfgWrapper) anItem;
 					final ServerData wrapped = item.getWrapped();
 					if (wrapped != null) {
-						projectConfiguration.setDefaultCrucibleServerId((ServerId) wrapped.getServerId());
+						projectConfiguration.setDefaultCrucibleServerId((ServerIdImpl) wrapped.getServerId());
 						projectConfiguration.setDefaultCrucibleRepo(null);
 						projectConfiguration.setDefaultCrucibleProject(null);
 					} else {
@@ -686,7 +686,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 	abstract class MyModel<T extends GenericComboBoxItemWrapper<?>, R, S extends Server>
 			extends AbstractListModel implements ComboBoxModel {
-		private Map<IServerId, Collection<T>> data;
+		private Map<ServerId, Collection<T>> data;
 		private static final int INITIAL_CAPACITY = 10;
 		private final T fetching;
 		private final T none;

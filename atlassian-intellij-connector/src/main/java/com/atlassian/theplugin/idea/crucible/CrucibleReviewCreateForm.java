@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -567,7 +567,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		}
 	}
 
-	private Map<IServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
+	private Map<ServerId, CrucibleServerData> crucibleData = MiscUtil.buildConcurrentHashMap(5);
 
 
 	private void updateServerRelatedCombos(final ServerData server, final CrucibleServerData crucibleServerData) {

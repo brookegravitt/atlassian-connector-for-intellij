@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -52,7 +52,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 	}
 
 	private static ServerCfg createServerBean() {
-		ServerCfg tmp = new ServerCfg(true, "name", new ServerId()) {
+		ServerCfg tmp = new ServerCfg(true, "name", new ServerIdImpl()) {
 			@Override
 			public ServerType getServerType() {
 				return null;

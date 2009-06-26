@@ -18,7 +18,7 @@ package com.atlassian.theplugin.idea.crucible;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -81,7 +81,6 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	};
 
 	private final ProjectCfgManagerImpl projectCfgManager;
-	private final Project project;
 	private final CustomFilterBean filter;
 	private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleServerFacade crucibleServerFacade;
@@ -104,14 +103,13 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
-		this.project = project;
 		this.projectCfgManager = cfgManager;
 		this.filter = filter;
 		this.uiTaskExecutor = uiTaskExecutor;
 		setupUi();
 		setModal(true);
 
-		final ServerData serverCfg = projectCfgManager.getServerData(new ServerId(filter.getServerUid()));
+		final ServerData serverCfg = projectCfgManager.getServerData(filter.getServerId());
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
@@ -151,7 +149,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	public CustomFilterBean getFilter() {
 		ServerData s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem()).getWrapped();
-		filter.setServerUid(s.getServerId().getStringId());
+		filter.setServerId((ServerIdImpl) s.getServerId());
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();

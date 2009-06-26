@@ -62,7 +62,7 @@ public class RecentlyOpenReviewsAction extends AnAction {
 		}
 
 		final List<ReviewRecentlyOpenBean> recentlyOpenReviews =
-				crucibleConf.getCrucibleFilters().getRecenltyOpenFilter().getRecentlyOpenReviews();
+				crucibleConf.getCrucibleFilters().getRecenltyOpenFilter().getRecentlyOpenReviewss();
 		if (recentlyOpenReviews.size() > 0) {
 			// prepare list of recentlyOpenReviews from the config list
 

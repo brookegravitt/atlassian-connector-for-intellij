@@ -128,7 +128,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	}
 
 	private ServerCfg createNewServer(final ServerType serverType, final String name) {
-		ServerId id = new ServerId();
+		ServerIdImpl id = new ServerIdImpl();
 		// CHECKSTYLE:OFF
 		switch (serverType) {
 			// CHECKSTYLE:ON

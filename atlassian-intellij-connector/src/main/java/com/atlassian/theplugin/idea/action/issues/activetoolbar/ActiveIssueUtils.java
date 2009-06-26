@@ -67,7 +67,7 @@ public final class ActiveIssueUtils {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
-			return conf.getActiveJiraIssue();
+			return conf.getActiveJiraIssuee();
 		}
 		return null;
 	}
@@ -76,7 +76,7 @@ public final class ActiveIssueUtils {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 
 		if (conf != null) {
-			return conf.getActiveJiraIssue();
+			return conf.getActiveJiraIssuee();
 		}
 		return null;
 	}
@@ -87,7 +87,7 @@ public final class ActiveIssueUtils {
 		final RecentlyOpenIssuesCache issueCache = IdeaHelper.getProjectComponent(project, RecentlyOpenIssuesCache.class);
 
 		if (conf != null) {
-			conf.setActiveJiraIssue((ActiveJiraIssueBean) issue);
+			conf.setActiveJiraIssuee((ActiveJiraIssueBean) issue);
 
 			if (jiraIssue != null && issueCache != null) {
 				issueCache.addIssue(jiraIssue);
@@ -110,16 +110,16 @@ public final class ActiveIssueUtils {
 		return null;
 	}
 
-
-	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-		if (panel != null) {
-			return CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), serverId);
-		}
-		return null;
-	}
+//	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
+//		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
+//		if (panel != null) {
+//			return CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), serverId);
+//		}
+//		return null;
+//	}
 
 	//invokeLater necessary
+
 	public static JIRAIssue getJIRAIssue(final AnActionEvent event) throws JIRAException {
 		return getJIRAIssue(IdeaHelper.getCurrentProject(event));
 	}
@@ -165,7 +165,7 @@ public final class ActiveIssueUtils {
 		JiraServerCfg jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
-			jiraServer = CfgUtil.getJiraServerCfgbyServerId(panel.getProjectCfgManager(), activeIssue.getServerId());
+			jiraServer = panel.getProjectCfgManager().getJiraServer(activeIssue.getServerId());
 		}
 		return jiraServer;
 	}
@@ -269,7 +269,7 @@ public final class ActiveIssueUtils {
 												final JiraWorkspaceConfiguration conf = IdeaHelper
 														.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 												if (conf != null) {
-													conf.setActiveJiraIssue(null);
+													conf.setActiveJiraIssuee(null);
 												}
 											}
 
@@ -352,7 +352,7 @@ public final class ActiveIssueUtils {
 	public static boolean deactivate(final Project project, final DeactivateIssueResultHandler resultHandler) {
 		final JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 		if (conf != null) {
-			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssue();
+			ActiveJiraIssueBean activeIssue = conf.getActiveJiraIssuee();
 			if (activeIssue != null) {
 				final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 				try {

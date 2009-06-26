@@ -19,7 +19,6 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.IServerId;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -405,15 +404,13 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		for (ReviewRecentlyOpenBean recentlyOpenReview : recentlyOpenReviews) {
 			// search local list for recently open reviews
-			ReviewAdapter ra = getReviewFromLocalModel(recentlyOpenReview.getReviewId(),
-					new ServerId(recentlyOpenReview.getServerId()));
+			ReviewAdapter ra = getReviewFromLocalModel(recentlyOpenReview.getReviewId(), recentlyOpenReview.getServerId());
 
 			if (ra != null) {
 				reviews.add(ra);
 			} else {
 				// search review on the servers
-				ReviewAdapter rra = getReviewFromServer(recentlyOpenReview.getReviewId(),
-						new ServerId(recentlyOpenReview.getServerId()));
+				ReviewAdapter rra = getReviewFromServer(recentlyOpenReview.getReviewId(), recentlyOpenReview.getServerId());
 
 				if (rra != null) {
 					reviews.add(rra);
@@ -431,7 +428,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 * @param serverId  server id
 	 * @return review if found or null otherwise
 	 */
-	private ReviewAdapter getReviewFromServer(final String reviewKey, final IServerId serverId) {
+	private ReviewAdapter getReviewFromServer(final String reviewKey, final ServerId serverId) {
 
 		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
 		if (server != null) {
@@ -459,7 +456,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 * @return review if found or null otherwise
 	 */
 	// todo remove that method if review contains details (ValueNotYetInitialized problem)
-	private ReviewAdapter getReviewWithDetailsFromServer(final String reviewKey, final IServerId serverId) {
+	private ReviewAdapter getReviewWithDetailsFromServer(final String reviewKey, final ServerId serverId) {
 
 		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
 		if (server != null) {
@@ -481,7 +478,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		return null;
 	}
 
-	private ReviewAdapter getReviewFromLocalModel(final String reviewKey, final IServerId serverId) {
+	private ReviewAdapter getReviewFromLocalModel(final String reviewKey, final ServerId serverId) {
 		if (currentReviewListModel.getReviews() != null && !currentReviewListModel.getReviews().isEmpty()) {
 			for (ReviewAdapter localReview : currentReviewListModel.getReviews()) {
 				if (localReview.getPermId().getId().equals(reviewKey)

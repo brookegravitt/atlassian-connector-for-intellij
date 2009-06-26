@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.*;
@@ -46,7 +46,7 @@ public interface JIRAServerModel extends FrozenModel {
 
 	Collection<ServerData> getServers();
 
-	void clear(final IServerId serverId);
+	void clear(final ServerId serverId);
 
 	void replace(final ServerData server);
 }

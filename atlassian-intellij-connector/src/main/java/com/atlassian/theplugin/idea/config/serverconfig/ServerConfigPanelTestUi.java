@@ -33,22 +33,22 @@ public final class ServerConfigPanelTestUi {
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("ServerConfigPanel test");
-		final BambooServerCfg bambooServerCfg = new BambooServerCfg(false, "mybamboo2", new ServerId());
+		final BambooServerCfg bambooServerCfg = new BambooServerCfg(false, "mybamboo2", new ServerIdImpl());
 		final Collection<ServerCfg> serverCfgs = MiscUtil.buildArrayList(
-				new BambooServerCfg(true, "mybamboo", new ServerId()),
+				new BambooServerCfg(true, "mybamboo", new ServerIdImpl()),
 				bambooServerCfg,
-				new CrucibleServerCfg("Crucible EAC", new ServerId()),
-				new JiraServerCfg("My Jira Server", new ServerId()),
-				new JiraServerCfg("Second Jira", new ServerId()),
-				new FishEyeServerCfg("FishEye1 Server", new ServerId())
+				new CrucibleServerCfg("Crucible EAC", new ServerIdImpl()),
+				new JiraServerCfg("My Jira Server", new ServerIdImpl()),
+				new JiraServerCfg("Second Jira", new ServerIdImpl()),
+				new FishEyeServerCfg("FishEye1 Server", new ServerIdImpl())
 		);
 
 		final Collection<ServerCfg> serverCfgs2 = MiscUtil.buildArrayList(
-				new BambooServerCfg(true, "2-mybamboo", new ServerId()),
+				new BambooServerCfg(true, "2-mybamboo", new ServerIdImpl()),
 				bambooServerCfg,
-				new CrucibleServerCfg("2-Crucible EAC Very Very long name", new ServerId()),
-				new JiraServerCfg("2-My Jira Server", new ServerId()),
-				new JiraServerCfg("2-Second Jira", new ServerId())
+				new CrucibleServerCfg("2-Crucible EAC Very Very long name", new ServerIdImpl()),
+				new JiraServerCfg("2-My Jira Server", new ServerIdImpl()),
+				new JiraServerCfg("2-Second Jira", new ServerIdImpl())
 		);
 
 		ServerConfigPanel configPanel = new ServerConfigPanel(

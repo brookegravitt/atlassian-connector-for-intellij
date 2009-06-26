@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.issues.ModelFreezeUpdater;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
@@ -54,7 +53,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 			text = activeIssue.getIssueKey();
 
 			if (cache != null) {
-				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), new ServerId(activeIssue.getServerId()));
+				issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
 				if (issue != null) {
 					tooltip = issue.getSummary();
@@ -76,7 +75,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 
 		event.getPresentation().setEnabled(ModelFreezeUpdater.getState(event));
 
-		final int cacheSize = cache != null ? cache.getLoadedRecenltyOpenIssues().size() : 0;
+//		final int cacheSize = cache != null ? cache.getLoadedRecenltyOpenIssues().size() : 0;
 
 	}
 
@@ -94,7 +93,7 @@ public class ActiveJiraIssueComboBox extends ComboBoxAction {
 
 			for (JIRAIssue issue : cache.getLoadedRecenltyOpenIssues()) {
 				if (activeIssue == null || !issue.getKey().equals(activeIssue.getIssueKey())) {
-					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId().getStringId(),
+					ActiveJiraIssue newActiveIsse = new ActiveJiraIssueBean(issue.getServer().getServerId(),
 							issue.getKey(), new DateTime());
 					group.add(new ActivateIssueItemAction(newActiveIsse, project));
 				}

@@ -3,7 +3,7 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.Server;
-import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
@@ -47,7 +47,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	public void fillJiraCfg(JiraWorkspaceConfiguration jiraCfg) {
 		JiraViewConfigurationBean viewBean = new JiraViewConfigurationBean();
 		viewBean.setViewFilterId("none");
-		viewBean.setViewServerId(new ServerId().getStringId());
+		viewBean.setViewServerIdd(new ServerIdImpl());
 		jiraCfg.setView(viewBean);
 
 	}
@@ -61,7 +61,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 	void fillServersAndFilters(Map<JiraServerCfg, List<JIRAQueryFragment>> aSavedFilters)
 			throws RemoteApiException {
 		for (int i = 0; i < 3; i++) {
-			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerId());
+			JiraServerCfg server = new JiraServerCfg("jiraserver" + 1, new ServerIdImpl());
 			aSavedFilters.put(server, new ArrayList<JIRAQueryFragment>());
 			try {
 				serverModel.getResolutions(ServerDataProvider.getServerData(server), true);
@@ -143,7 +143,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		public List<JIRAQueryFragment> getSavedFilters(ServerData server) throws JIRAException {
 			List<JIRAQueryFragment> list = new ArrayList<JIRAQueryFragment>();
 			for (JiraServerCfg serverCfg : savedFilters.keySet()) {
-				if (server.getServerId().equals(serverCfg.getServerId().toString())) {
+				if (server.getServerId().equals(serverCfg.getServerId())) {
 					for (JIRAQueryFragment query : savedFilters.get(serverCfg)) {
 						list.add(query);
 					}

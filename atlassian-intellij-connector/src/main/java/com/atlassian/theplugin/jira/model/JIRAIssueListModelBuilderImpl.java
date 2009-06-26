@@ -219,7 +219,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		if (activeIssue != null) {
 			for (JIRAIssue issue : newIssues) {
 				if (issue.getKey().equals(activeIssue.getIssueKey()) && issue.getServer() != null
-						&& issue.getServer().getServerId().getStringId().equals(activeIssue.getServerId())) {
+						&& issue.getServer().getServerId().equals(activeIssue.getServerId())) {
 					ActiveIssueUtils.checkIssueState(project, issue);
 				}
 			}

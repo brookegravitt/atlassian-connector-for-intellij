@@ -15,27 +15,32 @@
  */
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+
 /**
  * @author Jacek Jaroczynski
  */
 public class IssueRecentlyOpenBean {
 
-	protected String serverId;
+	protected ServerIdImpl serverId;
 	protected String issueKey;
 
 	public IssueRecentlyOpenBean() {
 	}
 
-	public IssueRecentlyOpenBean(final String serverId, final String issueKey) {
-		this.serverId = serverId;
+	public IssueRecentlyOpenBean(final ServerId serverId, final String issueKey) {
+		if (serverId instanceof ServerIdImpl) {
+			this.serverId = (ServerIdImpl) serverId;
+		}
 		this.issueKey = issueKey;
 	}
 
-	public String getServerId() {
+	public ServerIdImpl getServerId() {
 		return serverId;
 	}
 
-	public void setServerId(final String serverId) {
+	public void setServerId(final ServerIdImpl serverId) {
 		this.serverId = serverId;
 	}
 

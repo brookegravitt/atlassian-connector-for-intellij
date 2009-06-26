@@ -16,7 +16,7 @@ package com.atlassian.theplugin.idea.crucible.tree;
  */
 
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.IServerId;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListener;
 import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -425,7 +425,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 	private class LocalConfigurationListener extends ConfigurationListenerAdapter {
 		@Override
-		public void serverConnectionDataChanged(IServerId serverId) {
+		public void serverConnectionDataChanged(ServerId serverId) {
 			if (getCrucibleReview().getServerData().getServerId().equals(serverId)) {
 				reviewFilesAndCommentsTree.clear();
 				stopListeningForCredentialChanges();

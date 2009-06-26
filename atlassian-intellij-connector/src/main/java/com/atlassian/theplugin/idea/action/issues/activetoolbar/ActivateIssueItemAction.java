@@ -16,8 +16,8 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
@@ -46,7 +46,7 @@ public class ActivateIssueItemAction extends AnAction {
 		JIRAIssue issue = null;
 
 		if (cache != null) {
-			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), new ServerId(activeIssue.getServerId()));
+			issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
 			if (issue != null) {
 				summary = issue.getSummary();
@@ -72,10 +72,13 @@ public class ActivateIssueItemAction extends AnAction {
 	}
 
 	public void actionPerformed(final AnActionEvent event) {
-		JiraServerCfg jiraServer = ActiveIssueUtils.getSelectedJiraServerById(event, activeIssue.getServerId());
-		if (jiraServer != null) {
-			activeIssue.resetTimeSpent();
-			ActiveIssueUtils.activateIssue(event, activeIssue, jiraServer);
+		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+		if (projectCfgManager != null) {
+			JiraServerCfg jiraServer = projectCfgManager.getJiraServer(activeIssue.getServerId());
+			if (jiraServer != null) {
+				activeIssue.resetTimeSpent();
+				ActiveIssueUtils.activateIssue(event, activeIssue, jiraServer);
+			}
 		}
 	}
 
