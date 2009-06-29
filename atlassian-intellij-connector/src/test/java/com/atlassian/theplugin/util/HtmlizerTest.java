@@ -103,4 +103,12 @@ public class HtmlizerTest extends TestCase {
         String result = new Htmlizer().htmlizeHyperlinks(txt);
         assertEquals(expected, result);
     }
+
+    // PL-1664
+    public void testHtmlizeLinksWithPlusesInIt() {
+        String txt = "https://extranet.atlassian.com/display/BAMBOO/How+to+make+custom+EC2+Image+ready+for+Bamboo";
+        String expected = "<a href=\"https://extranet.atlassian.com/display/BAMBOO/How+to+make+custom+EC2+Image+ready+for+Bamboo\">https://extranet.atlassian.com/display/BAMBOO/How+to+make+custom+EC2+Image+ready+for+Bamboo</a>";
+        String result = new Htmlizer().htmlizeHyperlinks(txt);
+        assertEquals(expected, result);
+    }
 }
