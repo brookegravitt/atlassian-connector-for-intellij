@@ -55,6 +55,7 @@
 	<change-notes>
 		<![CDATA[
 		<ul>
+			<li>2.1.1: Bugfix release</li>
 		    <li>2.1.0: Many significant improvements. Issue workflow actions, activation; improved handling of reviews</li>
 			<li>2.0.1: Bugfix release</li>
 			<li>2.0.0: Brand spanking new! Awesome new Features! New exciting bugs! Drama! Excitement! Fresh fruit!</li>
