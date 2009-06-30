@@ -543,8 +543,11 @@ public class IssueCreateDialog extends DialogWrapper {
 
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
-							issueListToolWindowPanel.openIssue(createdIssue);
-							issueListToolWindowPanel.refreshIssues(true);
+
+                            //HERE
+                            issueListToolWindowPanel.refreshIssues(false);
+							issueListToolWindowPanel.openIssue(createdIssue, false);
+
 							close(0);
 						}
 					});
