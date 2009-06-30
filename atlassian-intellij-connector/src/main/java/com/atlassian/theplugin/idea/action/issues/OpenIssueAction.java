@@ -13,7 +13,7 @@ public class OpenIssueAction extends JIRAAbstractAction {
 		if (issue != null) {
 			IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(e);
 			if (panel != null) {
-				panel.openIssue(issue);
+				panel.openIssue(issue, true);
 			}
 		}
 	}
