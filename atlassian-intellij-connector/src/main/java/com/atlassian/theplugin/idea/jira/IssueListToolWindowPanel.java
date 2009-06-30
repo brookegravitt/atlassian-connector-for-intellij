@@ -39,6 +39,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -101,7 +102,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	private static final int ONE_SECOND = 1000;
 
-	public IssueListToolWindowPanel(@NotNull final Project project,
+    public IssueListToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
@@ -279,7 +280,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			public void keyPressed(KeyEvent e) {
 				JIRAIssue issue = getSelectedIssue();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && issue != null) {
-					openIssue(issue);
+					openIssue(issue, true);
 				}
 			}
 		});
@@ -290,7 +291,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			public void mouseClicked(final MouseEvent e) {
 				final JIRAIssue issue = getSelectedIssue();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && issue != null) {
-					openIssue(issue);
+					openIssue(issue, true);
 				}
 			}
 
@@ -383,11 +384,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return getRightTree().getSelectedIssue();
 	}
 
-	public void openIssue(@NotNull JIRAIssue issue) {
+	public void openIssue(@NotNull JIRAIssue issue, boolean reload) {
 		if (issue.getServer() != null) {
 			recentlyOpenIssuesCache.addIssue(issue);
 			// todo check active issue
 			IdeaHelper.getIssueDetailsToolWindow(getProject()).showIssue(issue, baseIssueListModel);
+            if (reload) {
+                IdeaHelper.getIssueDetailsToolWindow(getProject()).refresh(issue.getKey());
+            }
 
 		}
 	}
@@ -402,7 +406,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		if (issue != null) {
-			openIssue(issue);
+			openIssue(issue, true);
 		} else {
 			Task.Backgroundable task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
 				private JIRAIssue issue;
@@ -436,7 +440,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						return;
 					}
 					if (issue != null) {
-						openIssue(issue);
+						openIssue(issue, true);
 						if (jiraFilterTree.isRecentlyOpenSelected()) {
 							refreshRecenltyOpenIssues(false);
 						}
@@ -652,22 +656,33 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return updatedIssue;
 		}
 
-		for (JIRAAction a : actions) {
-			if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-				setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
-				try {
-					jiraServerFacade.progressWorkflowAction(server, issue, a);
-				} catch (JIRAException e) {
-					final String msg = "Error starting progress on issue. Perform workflow action failed: ";
-					setStatusErrorMessage(msg + e.getMessage(), e);
-					PluginUtil.getLogger().warn(msg + e.getMessage(), e);
-					return updatedIssue;
-				}
-				JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-				break;
-			}
-		}
+        boolean statusChanged = false;
+        for (JIRAAction a : actions) {
+            if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+                setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
+                try {
+                    jiraServerFacade.progressWorkflowAction(server, issue, a);
+                    statusChanged = true;
+                } catch (JIRAException e) {
+                    final String msg = "Error starting progress on issue. Perform workflow action failed: ";
+                    setStatusErrorMessage(msg + e.getMessage(), e);
+                    PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+                    return updatedIssue;
+                }
+                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+                break;
+            }
+        }
 
+        if (!statusChanged) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    Messages.showInfoMessage(project, "Available actions do not allow to change state to In Progress"
+                            , "Cannot start progress on " + issue.getKey());
+                }
+            });
+        }
+        
 		setStatusInfoMessage("Refreshing issue");
 		try {
 			updatedIssue = jiraServerFacade.getIssue(server, issue.getKey());

@@ -256,8 +256,6 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			});
 
 			getAvailableActionsGroup().clearActions(project);
-
-			refresh();
 		}
 
 		public String getTitle() {
@@ -321,14 +319,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						}
 					}
 
-					public void onSuccess() {
-						if (retrieved) {
-//							ActiveIssueUtils.checkIssueState(project, params.issue);
-							issueReloaded();
-							jiraIssueListModelBuilder.updateIssue(params.issue);
-						}
-					}
-				});
+                    public void onSuccess() {
+                        if (retrieved) {
+                            EventQueue.invokeLater(new Runnable() {
+                                public void run() {
+                                    //issueReloaded();
+                                    jiraIssueListModelBuilder.updateIssue(params.issue);
+                                }
+                            });
+                        }
+                    }
+                });
 			}
 		}
 
