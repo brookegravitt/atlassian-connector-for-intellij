@@ -8,4 +8,6 @@ package com.atlassian;
  * To change this template use File | Settings | File Templates.
  */
 public class TestForPl1678 {
+    public TestForPl1678() {
+    }
 }
