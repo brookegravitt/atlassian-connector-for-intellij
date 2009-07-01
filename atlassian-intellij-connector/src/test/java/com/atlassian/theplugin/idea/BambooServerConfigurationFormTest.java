@@ -170,7 +170,6 @@ class LocalProjectCfgManager extends ProjectCfgManagerImpl {
 	@NotNull
 	@Override
 	public ServerData getServerData(@NotNull final Server serverCfg) {
-		return new ServerData(serverCfg.getName(), serverCfg.getServerId(), serverCfg.getUserName(),
-				serverCfg.getPassword(), serverCfg.getUrl());
+		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
 	}
 }

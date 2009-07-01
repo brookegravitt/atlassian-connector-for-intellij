@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.AboutForm;
@@ -73,7 +74,7 @@ public class ProjectConfigurationPanel extends JPanel {
 			@NotNull final FishEyeServerFacade fishEyeServerFacade,
 			final BambooServerFacade bambooServerFacade,
 			final JIRAServerFacade jiraServerFacade,
-			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerCfg selectedServer,
+			@NotNull final UiTaskExecutor uiTaskExecutor, final ServerData selectedServer,
 			/*final IntelliJProjectCfgManager projectCfgManager, */
 			@NotNull final UserCfg defaultCredentials,
 			final boolean defaultCredentialsAsked,

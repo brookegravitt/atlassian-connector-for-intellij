@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
@@ -473,14 +472,14 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getAllEnabledCrucibleServers();
+		final Collection<ServerData> enabledServers = projectCfgManager.getAllEnabledCrucibleServerss();
 		if (enabledServers.isEmpty()) {
 			crucibleServersComboBox.setEnabled(false);
 			crucibleServersComboBox.addItem("Enable a Crucible server first!");
 			getOKAction().setEnabled(false);
 		} else {
-			for (CrucibleServerCfg server : enabledServers) {
-				crucibleServersComboBox.addItem(new ServerComboBoxItem(projectCfgManager.getServerData(server)));
+			for (ServerData server : enabledServers) {
+				crucibleServersComboBox.addItem(new ServerComboBoxItem(server));
 			}
 			final ServerData defCrucServer = projectCfgManager.getDefaultCrucibleServer();
 			if (defCrucServer != null) {

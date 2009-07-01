@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
@@ -119,13 +119,12 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			btnChange.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
 					ActiveJiraIssue ai = ActiveIssueUtils.getActiveJiraIssue(checkinProjectPanel.getProject());
-					JiraServerCfg server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
+					ServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
 					if (ai != null && server != null) {
 						try {
-							JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(projectCfgManager.getServerData(server), ai);
+							JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(server, ai);
 							WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
-									projectCfgManager.getServerData(server), issue, checkinProjectPanel.getProject(),
-									txtTimeSpent.getText(), false, config);
+									server, issue, checkinProjectPanel.getProject(), txtTimeSpent.getText(), false, config);
 							dlg.setRemainingEstimateUpdateMode(config.getRemainingEstimateUpdateMode());
 							dlg.setRemainingEstimateString(txtReminingEstimateHidden.getText());
 							dlg.show();
@@ -200,15 +199,15 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			final Calendar cal = Calendar.getInstance();
 
 			final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(checkinProjectPanel.getProject());
-			final JiraServerCfg server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
+			final ServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
 			if (activeIssue != null && server != null) {
 				try {
 					// ok, this sucks a bit. I am creating a phony dialog just to
 					// make it return the start time, based on time spent and now()
 					// can't be bother to do something more intelligent though :P
-					final JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(projectCfgManager.getServerData(server), activeIssue);
+					final JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(server, activeIssue);
 					WorkLogCreateAndMaybeDeactivateDialog dlg = new WorkLogCreateAndMaybeDeactivateDialog(
-							projectCfgManager.getServerData(server), issue, checkinProjectPanel.getProject(),
+							server, issue, checkinProjectPanel.getProject(),
 							txtTimeSpent.getText(), false, config);
 					cal.setTime(dlg.getStartDate());
 
@@ -220,13 +219,11 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 						public void run(@NotNull ProgressIndicator progressIndicator) {
 							try {
-								JIRAServerFacadeImpl.getInstance().logWork(projectCfgManager.getServerData(server),
-										issue, txtTimeSpent.getText(), cal, null,
+								JIRAServerFacadeImpl.getInstance().logWork(server, issue, txtTimeSpent.getText(), cal, null,
 										!config.getRemainingEstimateUpdateMode()
 												.equals(RemainingEstimateUpdateMode.UNCHANGED),
 										newRemainingEstimate);
-								JIRAIssueProgressTimestampCache.getInstance().setTimestamp(
-										projectCfgManager.getServerData(server), issue);
+								JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 								activeIssue.resetTimeSpent();
 							} catch (final JIRAException e) {
 								SwingUtilities.invokeLater(new Runnable() {

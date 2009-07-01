@@ -17,7 +17,6 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
@@ -109,7 +108,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		setupUi();
 		setModal(true);
 
-		final ServerData serverCfg = projectCfgManager.getServerData(filter.getServerId());
+		final ServerData serverCfg = projectCfgManager.getCrucibleServerr(filter.getServerId());
 
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_ANY);
 		reviewerStatusComboBox.addItem(REVIEWER_STATUS_INCOMPLETE);
@@ -251,7 +250,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	}
 
 	private void fillInCrucibleServers() {
-		final Collection<CrucibleServerCfg> enabledServers = projectCfgManager.getAllEnabledCrucibleServers();
+		final Collection<ServerData> enabledServers = projectCfgManager.getAllEnabledCrucibleServerss();
 
 		serverComboBox.removeAllItems();
 		if (enabledServers.isEmpty()) {
@@ -259,8 +258,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			serverComboBox.addItem(new CrucibleServerCfgWrapper(null));
 			//@todo disable apply filter button in toolbar
 		} else {
-			for (CrucibleServerCfg server : enabledServers) {
-				serverComboBox.addItem(new CrucibleServerCfgWrapper(projectCfgManager.getServerData(server)));
+			for (ServerData server : enabledServers) {
+				serverComboBox.addItem(new CrucibleServerCfgWrapper(server));
 			}
 		}
 

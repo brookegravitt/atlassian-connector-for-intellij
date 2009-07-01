@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -358,19 +357,16 @@ public class CrucibleHelperForm extends DialogWrapper {
 				List<ReviewAdapter> outForReview = MiscUtil.buildArrayList();
 				List<ReviewAdapter> toSummarize = MiscUtil.buildArrayList();
 
-				Collection<CrucibleServerCfg> servers = projectCfgManager.getAllEnabledCrucibleServers();
-				for (CrucibleServerCfg server : servers) {
+				Collection<ServerData> servers = projectCfgManager.getAllEnabledCrucibleServerss();
+				for (ServerData serverData : servers) {
 					try {
-						final ServerData serverData = projectCfgManager.getServerData(server);
 						addToReviewAdapterList(drafts,
-								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts),
-								serverData);
+								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.Drafts), serverData);
 						addToReviewAdapterList(outForReview,
-								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.OutForReview),
-								serverData);
-						addToReviewAdapterList(toSummarize,
-								crucibleServerFacade.getReviewsForFilter(serverData, PredefinedFilter.ToSummarize),
-								serverData);
+								crucibleServerFacade.
+										getReviewsForFilter(serverData, PredefinedFilter.OutForReview), serverData);
+						addToReviewAdapterList(toSummarize, crucibleServerFacade.
+								getReviewsForFilter(serverData, PredefinedFilter.ToSummarize), serverData);
 					} catch (RemoteApiException e) {
 						// nothing can be done here
 					} catch (ServerPasswordNotProvidedException e) {

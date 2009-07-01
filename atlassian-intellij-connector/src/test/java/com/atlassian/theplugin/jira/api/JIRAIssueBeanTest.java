@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
@@ -28,7 +30,15 @@ public class JIRAIssueBeanTest extends TestCase {
 
 	protected void setUp() throws Exception {
 		doc = new SAXBuilder().build(this.getClass().getResourceAsStream("/jira/api/single-issue.xml"));
-		ServerData server = new ServerData("name", new ServerIdImpl(), "", "", "http://jira.com");
+		ServerData server = new ServerData(new ServerCfg(true, "name", "http://jira.com", new ServerIdImpl()) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
 		issue = new JIRAIssueBean(server, doc.getRootElement());
 	}
 
@@ -68,7 +78,15 @@ public class JIRAIssueBeanTest extends TestCase {
 		modyfiedIssue = new JIRAIssueBean(issue.getServer(), doc.getRootElement());
 		assertEquals(issue, modyfiedIssue);
 		modyfiedIssue = new JIRAIssueBean(
-				new ServerData(issue.getServer().getName() + "modyfied", new ServerIdImpl(), "", "", ""),
+				new ServerData(new ServerCfg(true, issue.getServer().getName() + "modyfied", "", new ServerIdImpl()) {
+					public ServerType getServerType() {
+						return null;
+					}
+
+					public ServerCfg getClone() {
+						return null;
+					}
+				}, "", ""),
 				doc.getRootElement());
 		assertFalse(issue.equals(modyfiedIssue));
 

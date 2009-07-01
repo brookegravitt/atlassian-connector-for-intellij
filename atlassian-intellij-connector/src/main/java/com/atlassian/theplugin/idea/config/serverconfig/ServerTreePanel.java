@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
@@ -299,7 +300,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		return null;
 	}
 
-	public void setSelectedServer(final ServerCfg selectedServer) {
+	public void setSelectedServer(final ServerData selectedServer) {
 		if (selectedServer != null) {
 			for (int i = 0; i < serverTree.getRowCount(); i++) {
 				TreePath path = serverTree.getPathForRow(i);

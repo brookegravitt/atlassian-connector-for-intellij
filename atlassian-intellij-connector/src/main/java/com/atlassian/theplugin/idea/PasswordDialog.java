@@ -79,8 +79,7 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 	}
 
 	public ServerData getServer() {
-		return new ServerData(server.getName(), server.getServerId(), getUserName(), getPasswordString(),
-				server.getUrl());
+		return new ServerData(server, getUserName(), getPasswordString());
 	}
 
 	public JPanel getPasswordPanel() {

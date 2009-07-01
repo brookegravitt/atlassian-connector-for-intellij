@@ -146,7 +146,7 @@ public class RecentlyOpenIssuesCache {
 		if (recentServer == null) {
 			return null;
 		}
-		final ServerData jiraServer = projectCfgManager.getEnabledServerData(recentServer);
+		final ServerData jiraServer = projectCfgManager.getEnabledServerr(recentServer);
 		if (jiraServer != null) {
 			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 		}

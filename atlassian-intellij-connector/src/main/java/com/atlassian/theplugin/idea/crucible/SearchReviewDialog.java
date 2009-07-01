@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleViewConfigurationBean;
 import com.atlassian.theplugin.idea.ui.KeyPressGobbler;
 import com.intellij.openapi.project.Project;
@@ -26,14 +26,14 @@ public class SearchReviewDialog extends DialogWrapper {
 	private JTextField ctrlReviewSearch;
 	private JPanel ctrlServersPanel;
 	private JLabel ctrlLocalInfoLabel;
-	private Collection<CrucibleServerCfg> selectedServers = new HashSet<CrucibleServerCfg>();
+	private Collection<ServerData> selectedServers = new HashSet<ServerData>();
 	private CrucibleViewConfigurationBean crucibleViewConfiguration;
 
-	public Collection<CrucibleServerCfg> getSelectedServers() {
+	public Collection<ServerData> getSelectedServers() {
 		return selectedServers;
 	}
 
-	public SearchReviewDialog(Project project, final Collection<CrucibleServerCfg> servers,
+	public SearchReviewDialog(Project project, final Collection<ServerData> servers,
 			final CrucibleViewConfigurationBean crucibleViewConfiguration) {
 		super(project, true);
 		this.crucibleViewConfiguration = crucibleViewConfiguration;
@@ -70,8 +70,8 @@ public class SearchReviewDialog extends DialogWrapper {
 
 			Collection<ServerIdImpl> searchServers = new ArrayList<ServerIdImpl>();
 
-			for (CrucibleServerCfg server : selectedServers) {
-				searchServers.add(server.getServerId());
+			for (ServerData server : selectedServers) {
+				searchServers.add((ServerIdImpl) server.getServerId());
 			}
 			crucibleViewConfiguration.setSearchServerss(searchServers);
 		}
@@ -84,17 +84,17 @@ public class SearchReviewDialog extends DialogWrapper {
 		return ctrlReviewSearch;
 	}
 
-	private void addServersCheckboxes(final Collection<CrucibleServerCfg> servers) {
+	private void addServersCheckboxes(final Collection<ServerData> servers) {
 
 		ctrlServersPanel.setLayout(new BoxLayout(ctrlServersPanel, BoxLayout.Y_AXIS));
 
 		if (servers != null) {
-			for (final CrucibleServerCfg server : servers) {
+			for (final ServerData server : servers) {
 				final CrucibleServerCheckbox checkbox = new CrucibleServerCheckbox(server);
 				ctrlServersPanel.add(checkbox);
 
 				if (crucibleViewConfiguration != null && crucibleViewConfiguration.getSearchServerss() != null
-						&& crucibleViewConfiguration.getSearchServerss().contains(server.getServerId())) {
+						&& crucibleViewConfiguration.getSearchServerss().contains((ServerIdImpl) server.getServerId())) {
 					checkbox.setSelected(true);
 					selectedServers.add(server);
 				}
@@ -186,14 +186,14 @@ public class SearchReviewDialog extends DialogWrapper {
 
 
 	private static class CrucibleServerCheckbox extends JCheckBox {
-		private CrucibleServerCfg server;
+		private ServerData server;
 
-		public CrucibleServerCheckbox(CrucibleServerCfg server) {
+		public CrucibleServerCheckbox(ServerData server) {
 			super(server.getName());
 			this.server = server;
 		}
 
-		public CrucibleServerCfg getServer() {
+		public ServerData getServer() {
 			return server;
 		}
 	}

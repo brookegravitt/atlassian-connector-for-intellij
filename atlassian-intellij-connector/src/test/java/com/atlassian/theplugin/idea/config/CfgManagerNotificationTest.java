@@ -16,7 +16,9 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 
@@ -32,7 +34,7 @@ public class CfgManagerNotificationTest extends TestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 //		cfgManager = new CfgManagerImpl();
-		projectCfgManager = new ProjectCfgManagerImpl(null);
+		projectCfgManager = new ProjectCfgManagerImpl(new WorkspaceConfigurationBean());
 		populateServerCfgs();
 	}
 
@@ -60,8 +62,8 @@ public class CfgManagerNotificationTest extends TestCase {
 
 		// record
 		project1Listener.configurationUpdated(emptyCfg);
-		project1Listener.serverRemoved(bamboo1);
-		project1Listener.serverRemoved(jira1);
+		project1Listener.serverRemoved(getServerData(bamboo1));
+		project1Listener.serverRemoved(getServerData(jira1));
 		project1Listener.bambooServersChanged(emptyCfg);
 		project1Listener.jiraServersChanged(emptyCfg);
 
@@ -87,6 +89,10 @@ public class CfgManagerNotificationTest extends TestCase {
 //		cfgManager.updateGlobalConfiguration(new GlobalConfiguration());
 		projectCfgManager.updateProjectConfiguration(nonEmptyCfg);
 		EasyMock.verify(project1Listener);
+	}
+
+	private ServerData getServerData(final ServerCfg serverCfg) {
+		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
 	}
 
 
