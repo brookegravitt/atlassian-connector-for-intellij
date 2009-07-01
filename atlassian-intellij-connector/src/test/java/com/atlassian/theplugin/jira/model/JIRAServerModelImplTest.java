@@ -539,9 +539,9 @@ public class JIRAServerModelImplTest extends TestCase {
 				throw new JIRAException("test");
 			}
 			List<JIRAVersionBean> list = new ArrayList<JIRAVersionBean>();
-			list.add(new JIRAVersionBean(1, "test"));
-			list.add(new JIRAVersionBean(2, "test"));
-			list.add(new JIRAVersionBean(3, "test"));
+			list.add(new JIRAVersionBean(1, "test", false));
+			list.add(new JIRAVersionBean(2, "test", false));
+			list.add(new JIRAVersionBean(3, "test", false));
 			list.get(0).setReleased(true);
 			list.get(1).setReleased(true);
 			list.get(2).setReleased(false);

@@ -24,15 +24,15 @@ public class JIRAFixForVersionBean extends JIRAVersionBean {
 		super(map);
 	}
 
-	public JIRAFixForVersionBean(long id, String name) {
-		super(id, name);
+	public JIRAFixForVersionBean(long id, String name, boolean released) {
+		super(id, name, released);
 	}
 
 	public JIRAFixForVersionBean(JIRAFixForVersionBean other) {
-		super(other.getId(), other.getName());
+		super(other.getId(), other.getName(), other.isReleased());
 	}
 	public JIRAFixForVersionBean(JIRAVersionBean other) {
-		super(other.getId(), other.getName());
+		super(other.getId(), other.getName(), other.isReleased());
 	}
 
 	@Override

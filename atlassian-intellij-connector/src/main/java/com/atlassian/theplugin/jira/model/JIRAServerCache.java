@@ -274,6 +274,7 @@ public class JIRAServerCache {
 			try {
 				if (project != null && project.getKey() != null) {
 					versions = jiraServerFacade.getVersions(server, project.getKey());
+                    Collections.reverse(versions);
 					serverVersionsCache.put(project.getKey(), versions);
 				} else {
 					versions = Collections.emptyList();
@@ -294,20 +295,21 @@ public class JIRAServerCache {
 			if (!retrieved.isEmpty()) {
 				versions = new ArrayList<JIRAVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
 				if (includeSpecialValues) {
-					versions.add(new JIRAVersionBean(ANY_ID, "Any"));
-					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version"));
-					versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions"));
+					versions.add(new JIRAVersionBean(ANY_ID, "Any", false));
+					versions.add(new JIRAVersionBean(NO_VERSION_ID, "No version", false));
+                    versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions", false));
 				}
+
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-					if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+					if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 						versions.add((JIRAVersionBean) jiraQueryFragment);
 					}
 				}
 				if (includeSpecialValues) {
-					versions.add(new JIRAVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+                    versions.add(new JIRAVersionBean(RELEASED_VERSION_ID, "Released versions", true));
 				}
 				for (JIRAQueryFragment jiraQueryFragment : retrieved) {
-					if (!((JIRAVersionBean) jiraQueryFragment).isReleased()) {
+					if (((JIRAVersionBean) jiraQueryFragment).isReleased()) {
 						versions.add((JIRAVersionBean) jiraQueryFragment);
 					}
 				}
@@ -329,25 +331,27 @@ public class JIRAServerCache {
 			if (!retrieved.isEmpty()) {
 				fixForVersions = new ArrayList<JIRAFixForVersionBean>(retrieved.size() + VERSION_SPECIAL_VALUES_COUNT);
 				if (includeSpecialValues) {
-					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any"));
-					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version"));
-					fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions"));
+					fixForVersions.add(new JIRAFixForVersionBean(ANY_ID, "Any", false));
+					fixForVersions.add(new JIRAFixForVersionBean(NO_VERSION_ID, "No version", false));
+                    fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions", true));
 				}
-				for (JIRAVersionBean jiraQueryFragment : retrieved) {
-					if (jiraQueryFragment.isReleased()) {
-						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
-					}
-				}
+
+                for (JIRAVersionBean jiraQueryFragment : retrieved) {
+                    if (!jiraQueryFragment.isReleased()) {
+                        fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
+                    }
+                }
 
 				if (includeSpecialValues) {
-					fixForVersions.add(new JIRAFixForVersionBean(UNRELEASED_VERSION_ID, "Unreleased versions"));
+                    fixForVersions.add(new JIRAFixForVersionBean(RELEASED_VERSION_ID, "Released versions", false));
 				}
 
-				for (JIRAVersionBean jiraQueryFragment : retrieved) {
-					if (!jiraQueryFragment.isReleased()) {
-						fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
-					}
-				}
+                for (JIRAVersionBean jiraQueryFragment : retrieved) {
+                    if (jiraQueryFragment.isReleased()) {
+                        fixForVersions.add(new JIRAFixForVersionBean(jiraQueryFragment));
+                    }
+                }
+
 			} else {
 				fixForVersions = Collections.emptyList();
 			}

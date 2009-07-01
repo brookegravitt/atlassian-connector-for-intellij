@@ -51,7 +51,7 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 
 		i++;
 		name = getFragmentName(i, JIRAFixForVersionBean.class.toString());
-		jiraFixForVersionBean = new JIRAFixForVersionBean(i, name);
+		jiraFixForVersionBean = new JIRAFixForVersionBean(i, name, false);
 
 
 		i++;
@@ -84,28 +84,28 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 
 		i++;
 		name = getFragmentName(i, JIRAVersionBean.class.toString());
-		jiraVersionBean = new JIRAVersionBean(i, name);
+		jiraVersionBean = new JIRAVersionBean(i, name, false);
 
 
 
 	}
 
 	public void testJIRAActionBeanClone(){
-		JIRAActionBean clone = (JIRAActionBean)jiraActionBean.getClone();
+		JIRAActionBean clone = jiraActionBean.getClone();
 		assertTrue(clone != jiraActionBean);
 		assertEquals(clone.getId(), jiraActionBean.getId());
 		assertEquals(clone.getName(), jiraActionBean.getName());
 	}
 
 	public void testJIRAActionFieldBean(){
-		JIRAActionFieldBean clone = (JIRAActionFieldBean)jiraActionFieldBean.getClone();
+		JIRAActionFieldBean clone = jiraActionFieldBean.getClone();
 		assertTrue(clone != jiraActionFieldBean);
 		assertEquals(clone.getId(), jiraActionFieldBean.getId());
 		assertEquals(clone.getName(), jiraActionFieldBean.getName());
 
 	}
 	public void testJIRAAssigneeBean(){
-		JIRAAssigneeBean clone = (JIRAAssigneeBean)jiraAssigneeBean.getClone();
+		JIRAAssigneeBean clone = jiraAssigneeBean.getClone();
 		assertTrue(clone != jiraAssigneeBean);
 		assertEquals(clone.getId(), jiraAssigneeBean.getId());
 		assertEquals(clone.getName(), jiraAssigneeBean.getName());
@@ -113,14 +113,14 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 	}
 
 	public void testJIRAComponentBean(){
-		JIRAComponentBean clone = (JIRAComponentBean)jiraComponentBean.getClone();
+		JIRAComponentBean clone = jiraComponentBean.getClone();
 		assertTrue(clone != jiraComponentBean);
 		assertEquals(clone.getId(), jiraComponentBean.getId());
 		assertEquals(clone.getName(), jiraComponentBean.getName());
 	}
 
 	public void testJIRAFixForVersionBean(){
-		JIRAFixForVersionBean clone =(JIRAFixForVersionBean)jiraFixForVersionBean.getClone();
+		JIRAFixForVersionBean clone = jiraFixForVersionBean.getClone();
 		assertTrue(clone != jiraFixForVersionBean);
 		assertEquals(clone.getId(), jiraFixForVersionBean.getId());
 		assertEquals(clone.getName(), jiraFixForVersionBean.getName());
@@ -128,59 +128,57 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 	}
 
 	public void testJIRAIssueTypeBean(){
-		JIRAIssueTypeBean clone = (JIRAIssueTypeBean)jiraIssueTypeBean.getClone();
+		JIRAIssueTypeBean clone = jiraIssueTypeBean.getClone();
 		assertTrue(clone != jiraIssueTypeBean);
 		assertEquals(clone.getId(), jiraIssueTypeBean.getId());
 		assertEquals(clone.getName(), jiraIssueTypeBean.getName());
 		assertEquals(clone.getIconUrl(), jiraIssueTypeBean.getIconUrl());
 
-	};
+	}
 
 
 	public void testJIRAPriorityBean(){
-		JIRAPriorityBean clone = (JIRAPriorityBean)jiraPriorityBean.getClone();
+		JIRAPriorityBean clone = jiraPriorityBean.getClone();
 		assertTrue(clone != jiraPriorityBean);
 		assertEquals(clone.getId(), jiraPriorityBean.getId());
 		assertEquals(clone.getName(), jiraPriorityBean.getName());
 		assertEquals(clone.getIconUrl(), jiraPriorityBean.getIconUrl());
-	};
+	}
 
 	public void testJIRAProjectBean(){
-		JIRAProjectBean clone = (JIRAProjectBean)jiraProjectBean.getClone();
+		JIRAProjectBean clone = jiraProjectBean.getClone();
 		assertTrue(clone != jiraProjectBean);
 		assertEquals(clone.getId(), jiraProjectBean.getId());
 		assertEquals(clone.getName(), jiraProjectBean.getName());
-	};
+	}
 
 	public void testJIRAReporterBean(){
-		JIRAReporterBean clone = (JIRAReporterBean)jiraReporterBean.getClone();
+		JIRAReporterBean clone = jiraReporterBean.getClone();
 		assertTrue(clone != jiraReporterBean);
 		assertEquals(clone.getId(), jiraReporterBean.getId());
 		assertEquals(clone.getName(), jiraReporterBean.getName());
-	};
+	}
 
 	public void testJIRAResolutionBean(){
-		JIRAResolutionBean clone = (JIRAResolutionBean)jiraResolutionBean.getClone();
+		JIRAResolutionBean clone = jiraResolutionBean.getClone();
 		assertTrue(clone != jiraResolutionBean);
 		assertEquals(clone.getId(), jiraResolutionBean.getId());
 		assertEquals(clone.getName(), jiraResolutionBean.getName());
-	};
+	}
 
 	public void testJIRAStatusBean(){
-		JIRAStatusBean clone = (JIRAStatusBean)jiraStatusBean.getClone();
+		JIRAStatusBean clone = jiraStatusBean.getClone();
 		assertTrue(clone != jiraStatusBean);
 		assertEquals(clone.getId(), jiraStatusBean.getId());
 		assertEquals(clone.getName(), jiraStatusBean.getName());
 		assertEquals(clone.getIconUrl(), jiraStatusBean.getIconUrl());
 	}
 
-
 	public void testJIRAVersionBean(){
-		JIRAVersionBean clone = (JIRAVersionBean)jiraVersionBean.getClone();
+		JIRAVersionBean clone = jiraVersionBean.getClone();
 		assertTrue(clone != jiraVersionBean);
 		assertEquals(clone.getId(), jiraVersionBean.getId());
 		assertEquals(clone.getName(), jiraVersionBean.getName());
-
 	}
 
 	private String getFragmentName(int i, String clazz){
@@ -196,7 +194,7 @@ public class JIRAQueryFragmentCloneTest extends TestCase {
 		try {
 			url = new URL("iconUrl" + clazz + i);
 		} catch (MalformedURLException e) {
-
+            // boo!
 		}
 		return url;
 	}
