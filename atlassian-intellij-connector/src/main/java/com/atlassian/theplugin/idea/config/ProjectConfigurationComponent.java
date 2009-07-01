@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -72,7 +73,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	 * start in the moment when shouldSaveConfiguration was false
 	 */
 	private boolean shouldSaveConfiguration;
-	private ServerCfg selectedServer;
+	private ServerData selectedServer;
 
 
 	public ProjectConfigurationComponent(final Project project, final ProjectCfgManagerImpl projectCfgManager,
@@ -385,7 +386,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		projectConfigurationPanel = null;
 	}
 
-	public void setSelectedServer(final ServerCfg server) {
+	public void setSelectedServer(final ServerData server) {
 		this.selectedServer = server;
 	}
 

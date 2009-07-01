@@ -15,10 +15,8 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
@@ -43,11 +41,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 
 	@Nullable
 	public ServerData getActiveJiraServerData(AnActionEvent event) {
-		JiraServerCfg jira = ActiveIssueUtils.getJiraServer(event);
-		if (jira != null) {
-			return IdeaHelper.getProjectCfgManager(event).getServerData(jira);
-		}
-		return null;		
+		return ActiveIssueUtils.getJiraServer(event);
 	}
 
 //	protected void refreshLabel(ActiveJiraIssue issue) {

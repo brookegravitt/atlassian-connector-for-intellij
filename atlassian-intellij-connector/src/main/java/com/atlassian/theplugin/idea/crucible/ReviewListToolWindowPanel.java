@@ -16,10 +16,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -369,8 +366,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ProgressManager.getInstance().run(refresh);
 	}
 
-	public Collection<CrucibleServerCfg> getServers() {
-		return projectCfgManager.getAllEnabledCrucibleServers();
+	public Collection<ServerData> getServers() {
+		return projectCfgManager.getAllEnabledCrucibleServerss();
 	}
 
 	public List<ReviewAdapter> getLocalReviews(final String searchKey) {
@@ -430,12 +427,11 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 */
 	private ReviewAdapter getReviewFromServer(final String reviewKey, final ServerId serverId) {
 
-		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
+		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				final ServerData serverData = projectCfgManager.getServerData(server);
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(serverData, new PermIdBean(reviewKey));
-				return new ReviewAdapter(r, serverData);
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermIdBean(reviewKey));
+				return new ReviewAdapter(r, server);
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
 				setStatusErrorMessage("Cannot get review from the server: " + e.getMessage(), e);
@@ -458,12 +454,11 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	// todo remove that method if review contains details (ValueNotYetInitialized problem)
 	private ReviewAdapter getReviewWithDetailsFromServer(final String reviewKey, final ServerId serverId) {
 
-		ServerCfg server = CfgUtil.getEnabledServerCfgbyServerId(projectCfgManager, serverId);
+		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				final ServerData serverData = projectCfgManager.getServerData(server);
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(serverData, new PermIdBean(reviewKey));
-				ReviewAdapter ra = new ReviewAdapter(r, serverData);
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermIdBean(reviewKey));
+				ReviewAdapter ra = new ReviewAdapter(r, server);
 				CrucibleServerFacadeImpl.getInstance().getDetailsForReview(ra);
 				return ra;
 			} catch (RemoteApiException e) {
@@ -498,8 +493,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 * @return review
 	 */
 	public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
-		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllServers(ServerType.CRUCIBLE_SERVER),
-				projectCfgManager);
+		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
 
 		if (server == null) {
 			// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
@@ -512,7 +506,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 				return null;
 			}
 
-			server = CfgUtil.findServer(url, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
+			server = CfgUtil.findServer(url, projectCfgManager.getAllCrucibleServerss());
 		}
 
 		if (server != null) {

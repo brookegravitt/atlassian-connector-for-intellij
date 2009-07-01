@@ -15,21 +15,21 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class CrucibleReviewServerTreeNode extends CrucibleReviewGroupTreeNode {
-	private ServerCfg crucibleServer;
+	private ServerData crucibleServer;
 
-	public CrucibleReviewServerTreeNode(ServerCfg server) {
+	public CrucibleReviewServerTreeNode(ServerData server) {
 		super(server.getName(), null, null);
 
 		this.crucibleServer = server;
 	}
 
-	public ServerCfg getCrucibleServer() {
+	public ServerData getCrucibleServer() {
 		return crucibleServer;
 	}
 }

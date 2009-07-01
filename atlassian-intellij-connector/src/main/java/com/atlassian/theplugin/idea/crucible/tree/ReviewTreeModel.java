@@ -50,7 +50,7 @@ public class ReviewTreeModel extends DefaultTreeModel {
 
 		generalNodeManipulator = new GeneralNodeManipulator(reviewListModel, getRoot());
 		stateNodeManipulator = new StateNodeManipulator(reviewListModel, getRoot());
-		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot(), projectCfgManager);
+		serverNodeManipulator = new ServerNodeManipulator(reviewListModel, getRoot());
 		authorNodeManipulator = new AuthorNodeManipulator(reviewListModel, getRoot());
 		projectNodeManipulator = new ProjectNodeManipulator(reviewListModel, getRoot());
 	}

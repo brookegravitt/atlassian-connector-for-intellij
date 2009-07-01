@@ -4,8 +4,6 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
@@ -14,6 +12,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
@@ -98,7 +97,7 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
 
 			@Override
-			public void serverRemoved(ServerCfg oldServer) {
+			public void serverRemoved(ServerData oldServer) {
 				updateFilterServer(oldServer);
 			}
 
@@ -108,11 +107,11 @@ public class CrucibleCustomFilterDetailsPanel extends JPanel {
 			// 3. add some other CRU server
 			// 4. custom filter details panel reappears and it has to have correct data (info about invalid server)
 			@Override
-			public void serverAdded(ServerCfg newServer) {
+			public void serverAdded(ServerData newServer) {
 				updateFilterServer(newServer);
 			}
 
-			private void updateFilterServer(ServerCfg oldServer) {
+			private void updateFilterServer(ServerData oldServer) {
 				if (oldServer.getServerType().equals(ServerType.CRUCIBLE_SERVER)) {
 					updateDetails(filter);
 				}
@@ -193,9 +192,7 @@ class MyUiTask implements UiTask {
 		final Collection<ScrollableTwoColumnPanel.Entry> myEntries = MiscUtil.buildArrayList();
 
 		final ServerId serverId = customFilter.getServerId();
-		final ServerCfg server = projectCfgManager.getServer(serverId);
-		final CrucibleServerCfg crucibleServerCfg =
-				(server instanceof CrucibleServerCfg) ? (CrucibleServerCfg) server : null;
+		final ServerData server = projectCfgManager.getCrucibleServerr(serverId);
 
 		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server",
 				(server != null ? server.getName() : "Server Unknown or Removed"), server == null));
@@ -203,9 +200,8 @@ class MyUiTask implements UiTask {
 			String projectName = customFilter.getProjectKey() + " <i>(fetching full name...)</i>";
 			if (fetchRemoteData) {
 				try {
-					CrucibleProject crucibleProject = crucibleServerCfg != null
-							? crucibleFacade.getProject(projectCfgManager.getServerData(crucibleServerCfg),
-							customFilter.getProjectKey())
+					CrucibleProject crucibleProject = server != null
+							? crucibleFacade.getProject(server, customFilter.getProjectKey())
 							: null;
 					if (crucibleProject != null) {
 						projectName = crucibleProject.getName();
@@ -230,10 +226,10 @@ class MyUiTask implements UiTask {
 			}
 			myEntries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
 		}
-		addIfNotEmpty(customFilter.getAuthor(), "Author", myEntries, crucibleServerCfg, fetchRemoteData);
-		addIfNotEmpty(customFilter.getModerator(), "Moderator", myEntries, crucibleServerCfg, fetchRemoteData);
-		addIfNotEmpty(customFilter.getCreator(), "Creator", myEntries, crucibleServerCfg, fetchRemoteData);
-		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", myEntries, crucibleServerCfg, fetchRemoteData);
+		addIfNotEmpty(customFilter.getAuthor(), "Author", myEntries, server, fetchRemoteData);
+		addIfNotEmpty(customFilter.getModerator(), "Moderator", myEntries, server, fetchRemoteData);
+		addIfNotEmpty(customFilter.getCreator(), "Creator", myEntries, server, fetchRemoteData);
+		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", myEntries, server, fetchRemoteData);
 
 		final Boolean reviewerStatus = (customFilter.getReviewer() != null && customFilter.getReviewer().length() > 0)
 				? customFilter.isComplete() : customFilter.isAllReviewersComplete();
@@ -248,12 +244,11 @@ class MyUiTask implements UiTask {
 	}
 
 	private void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entriesToFill,
-			CrucibleServerCfg serverCfg, boolean fetchRemoteData) {
+			ServerData serverCfg, boolean fetchRemoteData) {
 		if (username.length() > 0) {
 
 			final String displayName = fetchRemoteData
-					? serverCfg != null ? crucibleFacade.getDisplayName(projectCfgManager.getServerData(serverCfg),
-					username) : null
+					? serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null
 					: username;
 			entriesToFill.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
 		}

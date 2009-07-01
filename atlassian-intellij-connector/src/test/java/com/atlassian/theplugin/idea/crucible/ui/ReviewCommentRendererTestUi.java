@@ -15,7 +15,9 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -36,7 +38,15 @@ public final class ReviewCommentRendererTestUi {
 
 	public static void main(String[] args) throws ValueNotYetInitialized {
 		ReviewCommentRenderer renderer = new ReviewCommentRenderer(new SimpleIconProvider());
-		ServerData cruc = new ServerData("my crucible server", new ServerIdImpl(), "", "", "");
+		ServerData cruc = new ServerData(new ServerCfg(true, "my crucible server", "", new ServerIdImpl()) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
 		ReviewBean review = new ReviewBean("myreviewbean");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");

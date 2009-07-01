@@ -15,25 +15,23 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
-import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Jacek Jaroczynski
  */
 public class ServerNodeManipulator extends NodeManipulator {
-	private final ProjectCfgManagerImpl projectCfgManager;
 
-	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root,
-			@NotNull ProjectCfgManagerImpl projectCfgManager) {
+	public ServerNodeManipulator(CrucibleReviewListModel reviewListModel, DefaultMutableTreeNode root) {
 		super(reviewListModel, root);
-		this.projectCfgManager = projectCfgManager;
 	}
 
 	@Override
@@ -58,7 +56,7 @@ public class ServerNodeManipulator extends NodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			ServerCfg server = getDistinctServers().get(index);
+			ServerData server = getDistinctServers().get(index);
 
 			CrucibleReviewServerTreeNode serverNode = new CrucibleReviewServerTreeNode(server);
 			p.add(serverNode);
@@ -83,26 +81,26 @@ public class ServerNodeManipulator extends NodeManipulator {
 
 	}
 
-	private List<ServerCfg> getDistinctServers() {
-		Set<ServerCfg> servers = new TreeSet<ServerCfg>(COMPARATOR);
+	private List<ServerData> getDistinctServers() {
+		Set<ServerData> servers = new TreeSet<ServerData>();
 
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			servers.add(projectCfgManager.getServer(review.getServerData()));
+			servers.add(review.getServerData());
 		}
 
-		return new ArrayList<ServerCfg>(servers);
+		return new ArrayList<ServerData>(servers);
 	}
 
-	private static final Comparator<ServerCfg> COMPARATOR = new Comparator<ServerCfg>() {
-		public int compare(ServerCfg lhs, ServerCfg rhs) {
-			return lhs.getName().compareTo(rhs.getName());
-		}
-	};
+//	private static final Comparator<ServerCfg> COMPARATOR = new Comparator<ServerCfg>() {
+//		public int compare(ServerCfg lhs, ServerCfg rhs) {
+//			return lhs.getName().compareTo(rhs.getName());
+//		}
+//	};
 
-	private int gentNumOfReviewsForServer(ServerCfg server) {
+	private int gentNumOfReviewsForServer(ServerData server) {
 		int ret = 0;
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (server.equals(projectCfgManager.getServer(review.getServerData()))) {
+			if (server.equals(review.getServerData())) {
 				++ret;
 			}
 		}
@@ -110,12 +108,12 @@ public class ServerNodeManipulator extends NodeManipulator {
 		return ret;
 	}
 
-	private ReviewAdapter getReviewForServer(ServerCfg server, int index) {
+	private ReviewAdapter getReviewForServer(ServerData server, int index) {
 		List<ReviewAdapter> array = new ArrayList<ReviewAdapter>();
 
 		// get all reviews in state
 		for (ReviewAdapter review : reviewListModel.getReviews()) {
-			if (server.equals(projectCfgManager.getServer(review.getServerData()))) {
+			if (server.equals(review.getServerData())) {
 				array.add(review);
 			}
 		}

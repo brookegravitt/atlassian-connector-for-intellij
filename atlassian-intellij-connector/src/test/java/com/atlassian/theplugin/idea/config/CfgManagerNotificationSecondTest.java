@@ -79,10 +79,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 		// record
 		listener.configurationUpdated(newConf);
-		listener.serverAdded(bamboo2);
-		listener.serverAdded(crucible2);
-		listener.serverAdded(jira2);
-		listener.serverAdded(fisheye2);
+		listener.serverAdded(getServerData(bamboo2));
+		listener.serverAdded(getServerData(crucible2));
+		listener.serverAdded(getServerData(jira2));
+		listener.serverAdded(getServerData(fisheye2));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
@@ -95,6 +95,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		EasyMock.verify(listener);
 	}
 
+	private ServerData getServerData(final ServerCfg serverCfg) {
+		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+	}
+
 	public void testServerRemoved() {
 
 		newConf.getServers().remove(bamboo1);
@@ -104,10 +108,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 		// record
 		listener.configurationUpdated(newConf);
-		listener.serverRemoved(bamboo1);
-		listener.serverRemoved(crucible1);
-		listener.serverRemoved(jira1);
-		listener.serverRemoved(fisheye1);
+		listener.serverRemoved(getServerData(bamboo1));
+		listener.serverRemoved(getServerData(crucible1));
+		listener.serverRemoved(getServerData(jira1));
+		listener.serverRemoved(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
@@ -160,10 +164,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 		// record
 		listener.configurationUpdated(conf);
-		listener.serverEnabled(bamboo1.getServerId());
-		listener.serverEnabled(crucible1.getServerId());
-		listener.serverEnabled(jira1.getServerId());
-		listener.serverEnabled(fisheye1.getServerId());
+		listener.serverEnabled(getServerData(bamboo1));
+		listener.serverEnabled(getServerData(crucible1));
+		listener.serverEnabled(getServerData(jira1));
+		listener.serverEnabled(getServerData(fisheye1));
 		listener.serverDataChanged(bamboo1.getServerId());
 		listener.serverDataChanged(crucible1.getServerId());
 		listener.serverDataChanged(jira1.getServerId());
@@ -255,10 +259,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverNameChanged(bamboo1.getServerId());
 		listener.serverDisabled(bamboo1.getServerId());
 		listener.serverDataChanged(bamboo1.getServerId());
-		listener.serverRemoved(crucible1);
-		listener.serverRemoved(jira1);
-		listener.serverRemoved(fisheye1);
-		listener.serverAdded(bamboo2);
+		listener.serverRemoved(getServerData(crucible1));
+		listener.serverRemoved(getServerData(jira1));
+		listener.serverRemoved(getServerData(fisheye1));
+		listener.serverAdded(getServerData(bamboo2));
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
 		listener.jiraServersChanged(newConf);
@@ -289,21 +293,21 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 	public void testDefaultCredentials() {
 		UserCfg userCfg = new UserCfg("userName", "secretPAssword");
-		ServerData srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		ServerData srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
 		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
 		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
 		assertFalse(projectCfgManager.isDefaultCredentialsAsked());
 		projectCfgManager.setDefaultCredentials(userCfg);
 		assertFalse(bamboo1.isUseDefaultCredentials());
-		srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
 		assertTrue(projectCfgManager.isDefaultCredentialsAsked());
 		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
 		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
 		bamboo1.setUseDefaultCredentials(true);
 		assertTrue(bamboo1.isUseDefaultCredentials());
-		srvData1 = projectCfgManager.getServerData(bamboo1.getServerId());
+		srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
 		assertEquals(srvData1.getUserName(), userCfg.getUserName());
 		assertEquals(srvData1.getPassword(), userCfg.getPassword());
 

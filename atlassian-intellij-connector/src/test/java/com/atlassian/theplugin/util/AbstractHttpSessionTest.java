@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -86,6 +87,10 @@ public class AbstractHttpSessionTest extends TestCase {
 				return null;
 			}
 
+			public ServerType getServerType() {
+				return null;
+			}
+
 			public boolean isEnabled() {
 				return true;
 			}
@@ -152,8 +157,7 @@ public class AbstractHttpSessionTest extends TestCase {
 
 
 	private ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ServerData(serverCfg.getName(), serverCfg.getServerId(), serverCfg.getUserName(),
-				serverCfg.getPassword(), serverCfg.getUrl());
+		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
 	}
 }
 

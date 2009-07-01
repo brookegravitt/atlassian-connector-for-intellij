@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
@@ -64,7 +65,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	public ServerConfigPanel(final Project project, final UserCfg defaultUser,
 			ProjectConfiguration projectConfiguration,
-			final ServerCfg selectedServer, final boolean isDefaultCredentialsAsked) {
+			final ServerData selectedServer, final boolean isDefaultCredentialsAsked) {
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel();

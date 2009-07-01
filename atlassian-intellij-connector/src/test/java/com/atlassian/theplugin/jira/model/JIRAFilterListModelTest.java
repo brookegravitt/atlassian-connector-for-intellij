@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
@@ -16,7 +18,15 @@ public class JIRAFilterListModelTest extends TestCase {
 	JIRAFilterListModel listModel;
 	private int notifiedModelChanged = 0;
 	private int notifiedManualFilterChanged = 0;
-	private final ServerData jServer = new ServerData("DZira serwer", new ServerIdImpl(), "", "", "");
+	private final ServerData jServer = new ServerData(new ServerCfg(true, "DZira serwer", "", new ServerIdImpl()) {
+		public ServerType getServerType() {
+			return null;
+		}
+
+		public ServerCfg getClone() {
+			return null;
+		}
+	}, "", "");
 	private int notifiedServerRemoved;
 	private int notifiedServerAdded;
 	private int notifiedServerNameChanged;

@@ -31,17 +31,15 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 
 	public void actionPerformed(final AnActionEvent event) {
 		JIRAIssue selectedIssue;
-		JiraServerCfg jiraServerCfg;
 		selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
 
 		if (selectedIssue != null) {
-			jiraServerCfg = ActiveIssueUtils.getSelectedJiraServerByUrl(event, selectedIssue.getServerUrl());
 			if (!isSelectedIssueActive(event, selectedIssue)) {
-				if (jiraServerCfg != null) {
-					ActiveJiraIssue newActiveIssue =
-							new ActiveJiraIssueBean(jiraServerCfg.getServerId(), selectedIssue.getKey(), new DateTime());
+				if (selectedIssue.getServer() != null) {
+					ActiveJiraIssue newActiveIssue = new ActiveJiraIssueBean(
+							selectedIssue.getServer().getServerId(), selectedIssue.getKey(), new DateTime());
 
-					ActiveIssueUtils.activateIssue(event, newActiveIssue, jiraServerCfg);
+					ActiveIssueUtils.activateIssue(event, newActiveIssue, selectedIssue.getServer());
 				}
 			} else {
 				DeactivateJiraIssuePopupAction.runDeactivateTask(event);

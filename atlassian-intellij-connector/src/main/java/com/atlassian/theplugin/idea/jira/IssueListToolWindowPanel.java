@@ -102,7 +102,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	private static final int ONE_SECOND = 1000;
 
-    public IssueListToolWindowPanel(@NotNull final Project project,
+	public IssueListToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
@@ -389,9 +389,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			recentlyOpenIssuesCache.addIssue(issue);
 			// todo check active issue
 			IdeaHelper.getIssueDetailsToolWindow(getProject()).showIssue(issue, baseIssueListModel);
-            if (reload) {
-                IdeaHelper.getIssueDetailsToolWindow(getProject()).refresh(issue.getKey());
-            }
+			if (reload) {
+				IdeaHelper.getIssueDetailsToolWindow(getProject()).refresh(issue.getKey());
+			}
 
 		}
 	}
@@ -453,8 +453,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public boolean openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
-		ServerData server = CfgUtil.findServer(
-				serverUrl, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
+		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllJiraServerss());
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -471,7 +470,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return false;
 		}
 
-		server = CfgUtil.findServer(url, projectCfgManager.getAllServers(ServerType.JIRA_SERVER), projectCfgManager);
+		server = CfgUtil.findServer(url, projectCfgManager.getAllJiraServerss());
 
 		if (server != null) {
 			openIssue(issueKey, server);
@@ -656,33 +655,33 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return updatedIssue;
 		}
 
-        boolean statusChanged = false;
-        for (JIRAAction a : actions) {
-            if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
-                setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
-                try {
-                    jiraServerFacade.progressWorkflowAction(server, issue, a);
-                    statusChanged = true;
-                } catch (JIRAException e) {
-                    final String msg = "Error starting progress on issue. Perform workflow action failed: ";
-                    setStatusErrorMessage(msg + e.getMessage(), e);
-                    PluginUtil.getLogger().warn(msg + e.getMessage(), e);
-                    return updatedIssue;
-                }
-                JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
-                break;
-            }
-        }
+		boolean statusChanged = false;
+		for (JIRAAction a : actions) {
+			if (a.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
+				setStatusInfoMessage("Starting progress on " + issue.getKey() + "...");
+				try {
+					jiraServerFacade.progressWorkflowAction(server, issue, a);
+					statusChanged = true;
+				} catch (JIRAException e) {
+					final String msg = "Error starting progress on issue. Perform workflow action failed: ";
+					setStatusErrorMessage(msg + e.getMessage(), e);
+					PluginUtil.getLogger().warn(msg + e.getMessage(), e);
+					return updatedIssue;
+				}
+				JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
+				break;
+			}
+		}
 
-        if (!statusChanged) {
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    Messages.showInfoMessage(project, "Available actions do not allow to change state to In Progress"
-                            , "Cannot start progress on " + issue.getKey());
-                }
-            });
-        }
-        
+		if (!statusChanged) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					Messages.showInfoMessage(project, "Available actions do not allow to change state to In Progress"
+							, "Cannot start progress on " + issue.getKey());
+				}
+			});
+		}
+
 		setStatusInfoMessage("Refreshing issue");
 		try {
 			updatedIssue = jiraServerFacade.getIssue(server, issue.getKey());
@@ -935,8 +934,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		private void fillServerData() {
 			servers = new ArrayList<ServerData>();
-			for (JiraServerCfg serverCfg : projectCfgManager.getAllEnabledJiraServers()) {
-				servers.add(projectCfgManager.getServerData(serverCfg));
+			for (ServerData serverCfg : projectCfgManager.getAllEnabledJiraServerss()) {
+				servers.add(serverCfg);
 			}
 		}
 
@@ -946,9 +945,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		 * @param server		   server added to the model with all fetched data
 		 * @param refreshIssueList refresh issue list
 		 */
-		public MetadataFetcherBackgroundableTask(final JiraServerCfg server, boolean refreshIssueList) {
+		public MetadataFetcherBackgroundableTask(final ServerData server, boolean refreshIssueList) {
 			super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
-			this.servers = Arrays.asList(projectCfgManager.getServerData(server));
+			this.servers = Arrays.asList(server);
 			this.refreshIssueList = refreshIssueList;
 		}
 
@@ -965,7 +964,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 						if (serverCheck == null || !serverCheck) {
 							setStatusErrorMessage("Unable to connect to server. " + jiraServerModel.getErrorMessage(server));
 							MissingPasswordHandlerQueue.addHandler(new MissingPasswordHandlerJIRA(jiraServerFacade,
-									(JiraServerCfg) projectCfgManager.getServer(server), project));
+									(JiraServerCfg) projectCfgManager.getServer(server.getServerId()), project));
 							continue;
 						}//@todo remove  saved filters download or merge with existing in listModel
 
@@ -1023,10 +1022,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverConnectionDataChanged(final ServerId serverId) {
-			ServerCfg server = projectCfgManager.getServer(serverId);
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
+			ServerData server = projectCfgManager.getServerr(serverId);
+			if (server.getServerType() == ServerType.JIRA_SERVER) {
 				jiraServerModel.clear(server.getServerId());
-				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, true);
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, true);
 				ProgressManager.getInstance().run(task);
 			}
 		}
@@ -1043,33 +1042,32 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverDisabled(final ServerId serverId) {
-			ServerCfg server = projectCfgManager.getServer(serverId);
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
+			ServerData server = projectCfgManager.getServerr(serverId);
+			if (server.getServerType() == ServerType.JIRA_SERVER) {
 				removeServer(serverId, recenltyViewedAffected(server));
 			}
 		}
 
 		@Override
-		public void serverRemoved(final ServerCfg oldServer) {
-			if (oldServer instanceof JiraServerCfg && oldServer.getServerType() == ServerType.JIRA_SERVER) {
+		public void serverRemoved(final ServerData oldServer) {
+			if (oldServer.getServerType() == ServerType.JIRA_SERVER) {
 				removeServer(oldServer.getServerId(), recenltyViewedAffected(oldServer));
 			}
 		}
 
 		@Override
-		public void serverEnabled(final ServerId serverId) {
-			ServerCfg server = projectCfgManager.getServer(serverId);
-			addServer(server, recenltyViewedAffected(server));
+		public void serverEnabled(final ServerData serverData) {
+			addServer(serverData, recenltyViewedAffected(serverData));
 		}
 
 		@Override
-		public void serverAdded(final ServerCfg newServer) {
+		public void serverAdded(final ServerData newServer) {
 			addServer(newServer, false);
 		}
 
-		private void addServer(final ServerCfg server, boolean refreshIssueList) {
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER) {
-				Task.Backgroundable task = new MetadataFetcherBackgroundableTask((JiraServerCfg) server, refreshIssueList);
+		private void addServer(final ServerData server, boolean refreshIssueList) {
+			if (server.getServerType() == ServerType.JIRA_SERVER) {
+				Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, refreshIssueList);
 				ProgressManager.getInstance().run(task);
 
 			}
@@ -1085,9 +1083,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			}
 		}
 
-		private boolean recenltyViewedAffected(final ServerCfg server) {
-			if (server instanceof JiraServerCfg && server.getServerType() == ServerType.JIRA_SERVER
-					&& jiraFilterTree.isRecentlyOpenSelected()) {
+		private boolean recenltyViewedAffected(final ServerData server) {
+			if (server.getServerType() == ServerType.JIRA_SERVER && jiraFilterTree.isRecentlyOpenSelected()) {
 				// check if some recenlty open issue come from enabled server; if yes then return true
 				JiraWorkspaceConfiguration conf = IdeaHelper.getProjectComponent(project, JiraWorkspaceConfiguration.class);
 				if (conf != null) {

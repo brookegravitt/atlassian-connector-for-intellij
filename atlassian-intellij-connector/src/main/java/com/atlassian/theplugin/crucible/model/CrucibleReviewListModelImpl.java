@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
@@ -400,13 +399,8 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 		if (reviews != null && reviews.get(crucibleFilter) != null) {
 			for (ReviewAdapter reviewAdapter : reviews.get(crucibleFilter)) {
 				for (ServerData s : servers) {
-					ServerCfg serverCfg =
-							projectCfgManager != null
-									? projectCfgManager.getServer(s.getServerId()) : null;
-
 					//server disabled or communication problem
-					if ((serverCfg != null && !serverCfg.isEnabled())
-							|| s.getServerId().equals(reviewAdapter.getServerData().getServerId())) {
+					if ((!s.isEnabled()) || s.getServerId().equals(reviewAdapter.getServerData().getServerId())) {
 						reviewList.add(reviewAdapter);
 					}
 				}

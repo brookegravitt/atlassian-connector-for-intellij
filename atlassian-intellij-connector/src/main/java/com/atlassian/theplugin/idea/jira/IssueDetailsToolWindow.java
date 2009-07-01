@@ -3,7 +3,6 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -123,13 +122,13 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		closeToolWindow(TOOL_WINDOW_TITLE, e);
 	}
 
-	public boolean isServerEnabled(String key) {
-		IssuePanel ip = getContentPanel(key);
-		ServerCfg serverCfg = projectCfgManager.getServer(
-				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
-
-		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
-	}
+//	public boolean isServerEnabled(String key) {
+//		IssuePanel ip = getContentPanel(key);
+//		ServerCfg serverCfg = projectCfgManager.getServer(
+//				ip != null && ip.params != null && ip.params.issue != null ? ip.params.issue.getServer() : null);
+//
+//		return ip != null && ip.params != null && serverCfg != null && serverCfg.isEnabled();
+//	}
 
 	public void refreshComments(String key) {
 		IssuePanel ip = getContentPanel(key);
@@ -319,17 +318,17 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						}
 					}
 
-                    public void onSuccess() {
-                        if (retrieved) {
-                            EventQueue.invokeLater(new Runnable() {
-                                public void run() {
-                                    //issueReloaded();
-                                    jiraIssueListModelBuilder.updateIssue(params.issue);
-                                }
-                            });
-                        }
-                    }
-                });
+					public void onSuccess() {
+						if (retrieved) {
+							EventQueue.invokeLater(new Runnable() {
+								public void run() {
+									//issueReloaded();
+									jiraIssueListModelBuilder.updateIssue(params.issue);
+								}
+							});
+						}
+					}
+				});
 			}
 		}
 

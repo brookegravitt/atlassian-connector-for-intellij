@@ -74,12 +74,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 					public ServerData getServer() {
 						synchronized (GenericServerConfigForm.this) {
 							saveData();
-							final String username = serverCfg.isUseDefaultCredentials() ? defaultUser.getUserName()
-									: serverCfg.getUserName();
-							final String password = serverCfg.isUseDefaultCredentials() ? defaultUser.getPassword()
-									: serverCfg.getPassword();
-							return new ServerData(serverCfg.getName(), serverCfg.getServerId(), username, password,
-									serverCfg.getUrl());
+							return ServerData.create(serverCfg, defaultUser);
 						}
 					}
 				}, this));

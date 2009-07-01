@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -26,10 +25,9 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 			return;
 		}
 		if (IdeaHelper.getProjectCfgManager(event) != null) {
-			JiraServerCfg jira = ActiveIssueUtils.getJiraServer(event);
+			ServerData jira = ActiveIssueUtils.getJiraServer(event);
 			if (jira != null) {
-				ServerData serverData = IdeaHelper.getProjectCfgManager(event).getServerData(jira);
-				panel.addCommentToIssue(issue.getKey(), serverData);
+				panel.addCommentToIssue(issue.getKey(), jira);
 			}
 		}
 	}

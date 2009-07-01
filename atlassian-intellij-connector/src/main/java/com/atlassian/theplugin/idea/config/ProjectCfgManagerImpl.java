@@ -108,32 +108,6 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return getServerDataImpl(serverCfg);
 	}
 
-	public ServerData getServerData(final ServerId serverId) {
-
-		ServerCfg server = getServer(serverId);
-
-		if (server != null) {
-			return getServerDataImpl(server);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns ServerData for enabled server with serverId specified by parameter
-	 *
-	 * @param serverId
-	 * @return ServerData for enabled server with serverId specified by parameter
-	 */
-	@Nullable
-	public ServerData getEnabledServerData(final ServerId serverId) {
-		final ServerCfg serverCfg = getServer(serverId);
-
-		if (serverCfg != null && serverCfg.isEnabled()) {
-			return getServerDataImpl(serverCfg);
-		}
-		return null;
-	}
 
 	@NotNull
 	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
@@ -146,19 +120,35 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	// SINGLE SERVER
 
-	public ServerCfg getServer(final ServerData serverData) {
+	public ServerCfg getServer(final ServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
-			if (serverData != null && server.getServerId().equals(serverData.getServerId())) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
 				return server;
 			}
 		}
 		return null;
 	}
 
-	public ServerCfg getServer(final ServerId serverId) {
+	/**
+	 * Returns ServerData for enabled server with serverId specified by parameter
+	 *
+	 * @param serverId
+	 * @return ServerData for enabled server with serverId specified by parameter
+	 */
+	@Nullable
+	public ServerData getEnabledServerr(final ServerId serverId) {
+		final ServerCfg serverCfg = getServer(serverId);
+
+		if (serverCfg != null && serverCfg.isEnabled()) {
+			return getServerDataImpl(serverCfg);
+		}
+		return null;
+	}
+
+	public ServerData getServerr(final ServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
-				return server;
+				return getServerData(server);
 			}
 		}
 		return null;
@@ -169,6 +159,37 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		for (JiraServerCfg server : getAllJiraServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return server;
+			}
+		}
+		return null;
+	}
+
+
+	public ServerData getJiraServerr(final ServerIdImpl serverId) {
+		for (JiraServerCfg server : getAllJiraServers()) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
+				return getServerData(server);
+			}
+		}
+		return null;
+
+	}
+
+
+	public ServerData getCrucibleServerr(final ServerId serverId) {
+		for (CrucibleServerCfg server : getAllCrucibleServers()) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
+				return getServerData(server);
+			}
+		}
+		return null;
+	}
+
+
+	public ServerData getEnabledCrucibleServerr(final ServerId serverId) {
+		for (CrucibleServerCfg server : getAllEnabledCrucibleServers()) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
+				return getServerData(server);
 			}
 		}
 		return null;
@@ -194,6 +215,18 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+	public Collection<ServerData> getAllServerss(final ServerType serverType) {
+		Collection<ServerCfg> tmp = getAllServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == serverType) {
+				ret.add(getServerData(serverCfg));
+			}
+		}
+		return ret;
+	}
+
 	public Collection<ServerCfg> getAllEnabledServers() {
 
 		Collection<ServerCfg> ret = new ArrayList<ServerCfg>();
@@ -205,6 +238,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+
 	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
@@ -213,6 +247,18 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		for (ServerCfg serverCfg : tmp) {
 			if (serverCfg.getServerType() == serverType) {
 				ret.add(serverCfg);
+			}
+		}
+		return ret;
+	}
+
+	public Collection<ServerData> getAllEnabledServerss(final ServerType serverType) {
+		Collection<ServerCfg> tmp = getAllEnabledServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == serverType) {
+				ret.add(getServerData(serverCfg));
 			}
 		}
 		return ret;
@@ -266,6 +312,20 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+
+	public Collection<ServerData> getAllJiraServerss() {
+		Collection<ServerCfg> tmp = getAllServers();
+		ArrayList<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg instanceof JiraServerCfg) {
+				ret.add(getServerData(serverCfg));
+			}
+		}
+		return ret;
+	}
+
+
 	public Collection<CrucibleServerCfg> getAllCrucibleServers() {
 
 		Collection<ServerCfg> tmp = getAllServers();
@@ -279,6 +339,20 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		}
 		return ret;
 	}
+
+	public Collection<ServerData> getAllCrucibleServerss() {
+		Collection<ServerCfg> tmp = getAllServers();
+
+		ArrayList<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg instanceof CrucibleServerCfg) {
+				ret.add(getServerData(serverCfg));
+			}
+		}
+		return ret;
+	}
+
 
 	public Collection<FishEyeServerCfg> getAllFishEyeServers() {
 
@@ -308,6 +382,19 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+
+	public Collection<ServerData> getAllEnabledBambooServerss() {
+		Collection<ServerCfg> tmp = getAllEnabledServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.BAMBOO_SERVER && serverCfg instanceof BambooServerCfg) {
+				ret.add(getServerData(serverCfg));
+			}
+		}
+		return ret;
+	}
+
 	public Collection<JiraServerCfg> getAllEnabledJiraServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
@@ -322,6 +409,20 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+
+	public Collection<ServerData> getAllEnabledJiraServerss() {
+		Collection<ServerCfg> tmp = getAllEnabledServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg instanceof JiraServerCfg) {
+				JiraServerCfg jiraServerCfg = (JiraServerCfg) serverCfg;
+				ret.add(getServerData(jiraServerCfg));
+			}
+		}
+		return ret;
+	}
+
 	public Collection<CrucibleServerCfg> getAllEnabledCrucibleServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
@@ -331,6 +432,21 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 			if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg instanceof CrucibleServerCfg) {
 				CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
 				ret.add(crucibleServerCfg);
+			}
+		}
+		return ret;
+
+	}
+
+
+	public Collection<ServerData> getAllEnabledCrucibleServerss() {
+		Collection<ServerCfg> tmp = getAllEnabledServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg instanceof CrucibleServerCfg) {
+				CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
+				ret.add(getServerData(crucibleServerCfg));
 			}
 		}
 		return ret;
@@ -574,7 +690,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		}
 	}
 
-	private static class ServerAddedAction implements ProjectListenerAction {
+	private class ServerAddedAction implements ProjectListenerAction {
 		private final ProjectConfiguration newConfiguration;
 		private final ProjectConfiguration oldConfiguration;
 
@@ -590,13 +706,14 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 			for (ServerCfg newServer : newConfiguration.getServers()) {
 				if (oldConfiguration.getServerCfg(newServer.getServerId()) == null) {
-					projectListener.serverAdded(newServer);
+//					projectListener.serverAdded(newServer);
+					projectListener.serverAdded(getServerData(newServer));
 				}
 			}
 		}
 	}
 
-	private static class ServerRemovedAction implements ProjectListenerAction {
+	private class ServerRemovedAction implements ProjectListenerAction {
 		private final ProjectConfiguration newConfiguration;
 		private final ProjectConfiguration oldConfiguration;
 
@@ -612,13 +729,14 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 			for (ServerCfg oldServer : oldConfiguration.getServers()) {
 				if (newConfiguration.getServerCfg(oldServer.getServerId()) == null) {
-					projectListener.serverRemoved(oldServer);
+//					projectListener.serverRemoved(oldServer);
+					projectListener.serverRemoved(getServerData(oldServer));
 				}
 			}
 		}
 	}
 
-	private static class ServerEnabledDisabledAction implements ProjectListenerAction {
+	private class ServerEnabledDisabledAction implements ProjectListenerAction {
 
 		private final ProjectConfiguration newConfiguration;
 		private final ProjectConfiguration oldConfiguration;
@@ -637,7 +755,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 				ServerCfg newServer = newConfiguration.getServerCfg(oldServer.getServerId());
 				if (newServer != null) {
 					if (!oldServer.isEnabled() && newServer.isEnabled()) {
-						projectListener.serverEnabled(oldServer.getServerId());
+						projectListener.serverEnabled(getServerData(oldServer));
 					} else if (oldServer.isEnabled() && !newServer.isEnabled()) {
 						projectListener.serverDisabled(oldServer.getServerId());
 					}

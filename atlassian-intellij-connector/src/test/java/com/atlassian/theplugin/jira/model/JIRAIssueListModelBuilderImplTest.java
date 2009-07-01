@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -42,7 +43,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", new ServerIdImpl(), "", "", "");
+		ServerData server = createServerData();
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		try {
 			builder.addIssuesToModel(new JIRAManualFilter("manual filter", query), server, 2, true);
@@ -59,7 +60,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", new ServerIdImpl(), "", "", "");
+		ServerData server = createServerData();
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);
@@ -71,13 +72,25 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		assertEquals(75, model.getIssues().size());
 	}
 
+	private ServerData createServerData() {
+		return new ServerData(new ServerCfg(true, "test", "", new ServerIdImpl()) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
+	}
+
 	public void testAddCustomFilterIssues() {
 		JIRAIssueListModel model = new JIRAIssueListModelImpl();
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", new ServerIdImpl(), "", "", "");
+		ServerData server = createServerData();
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
 		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
@@ -98,7 +111,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		builder.setModel(model);
 
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", new ServerIdImpl(), "", "", "");
+		ServerData server = createServerData();
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
 		model.addModelListener(new JIRAIssueListModelListener() {
@@ -128,7 +141,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		JIRAIssueListModelBuilder builder = new JIRAIssueListModelBuilderImpl(null);
 		builder.setModel(model);
 		((JIRAIssueListModelBuilderImpl) builder).setFacade(facade);
-		ServerData server = new ServerData("test", new ServerIdImpl(), "", "", "");
+		ServerData server = createServerData();
 		JIRASavedFilterBean savedFilter = new JIRASavedFilterBean("test", 0);
 		try {
 			builder.addIssuesToModel(savedFilter, server, 25, true);

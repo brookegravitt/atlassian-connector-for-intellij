@@ -1,9 +1,7 @@
 package com.atlassian.theplugin.idea.action.issues.oneissue;
 
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -52,14 +50,8 @@ public class RunJiraActionGroup extends ActionGroup {
 		boolean enabled = false;
 		if (actions.size() > 0) {
 			ServerData server = event.getData(Constants.SERVER_KEY);
-			if (server != null) {
-				Project project = event.getData(DataKeys.PROJECT);
-				if (project != null) {
-					ServerCfg server2 = IdeaHelper.getProjectCfgManager(event).getServer(server.getServerId());
-					if (server2 != null && server2.isEnabled()) {
-						enabled = true;
-					}
-				}
+			if (server != null && server.isEnabled()) {
+				enabled = true;
 			}
 		}
 		event.getPresentation().setEnabled(enabled);

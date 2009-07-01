@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.idea.action.reviews;
 
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
@@ -88,7 +88,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			// find reviews in the local list
 			final List<ReviewAdapter> localReviews = reviewsWindow.getLocalReviews(dialog.getSearchKey());
 
-			final Collection<CrucibleServerCfg> servers = dialog.getSelectedServers();
+			final Collection<ServerData> servers = dialog.getSelectedServers();
 
 			if (servers.size() > 0) {
 				ProgressManager.getInstance().run(
@@ -107,11 +107,11 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		private Project project;
 		private SearchReviewDialog dialog;
 		private List<ReviewAdapter> localReviews;
-		private Collection<CrucibleServerCfg> servers;
+		private Collection<ServerData> servers;
 		private ReviewListToolWindowPanel reviewsWindow;
 
 		private QuickSearchTask(AnActionEvent event, @Nullable Project project, SearchReviewDialog dialog,
-				List<ReviewAdapter> localReviews, Collection<CrucibleServerCfg> servers,
+				List<ReviewAdapter> localReviews, Collection<ServerData> servers,
 				ReviewListToolWindowPanel reviewsWindow) {
 			super(project, "Searching review", true);
 			this.event = event;
@@ -130,14 +130,12 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 					new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
 			// find serverReviews on all selected servers
-			for (CrucibleServerCfg server : servers) {
+			for (ServerData server : servers) {
 				try {
-					Review review = CrucibleServerFacadeImpl.getInstance().getReview(
-							IdeaHelper.getProjectCfgManager(project).getServerData(server),
+					Review review = CrucibleServerFacadeImpl.getInstance().getReview(server,
 							new PermIdBean(dialog.getSearchKey()));
 					if (review != null) {
-						serverReviews.add(new ReviewAdapter(review,
-								IdeaHelper.getProjectCfgManager(project).getServerData(server)));
+						serverReviews.add(new ReviewAdapter(review, server));
 					}
 				} catch (final RemoteApiException e) {
 					Throwable cause = e.getCause();

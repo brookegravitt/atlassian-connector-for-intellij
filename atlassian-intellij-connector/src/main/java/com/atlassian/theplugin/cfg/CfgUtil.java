@@ -15,7 +15,6 @@
  */
 package com.atlassian.theplugin.cfg;
 
-import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
@@ -90,16 +89,15 @@ public final class CfgUtil {
 	 *
 	 * @param serverUrl url of server
 	 * @param servers   collection of servers
-	 * @param cfg	   project configuration
 	 * @return ServerData or null if not found
 	 */
-	public static ServerData findServer(final URL serverUrl, final Collection<ServerCfg> servers, final ProjectCfgManager cfg) {
+	public static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {
 
 		ServerData enabledServer = null;
 		ServerData disabledServer = null;
 
 		// find matching server
-		for (ServerCfg server : servers) {
+		for (ServerData server : servers) {
 
 			URL url;
 
@@ -118,10 +116,10 @@ public final class CfgUtil {
 					|| (url.getPath() != null && serverUrl.getPath() != null && url.getPath().equals(serverUrl.getPath())))) {
 
 				if (server.isEnabled()) {
-					enabledServer = cfg.getServerData(server);
+					enabledServer = server;
 					break;
 				} else if (disabledServer == null) {
-					disabledServer = cfg.getServerData(server);
+					disabledServer = server;
 				}
 			}
 		}
@@ -139,23 +137,21 @@ public final class CfgUtil {
 	 *
 	 * @param serverUrl url of server
 	 * @param servers   collection of servers
-	 * @param cfg	   project configuration
 	 * @return ServerData or null if not found
 	 */
-	public static ServerData findServer(final String serverUrl, final Collection<ServerCfg> servers,
-			final ProjectCfgManager cfg) {
+	public static ServerData findServer(final String serverUrl, final Collection<ServerData> servers) {
 
 		ServerData enabledServer = null;
 		ServerData disabledServer = null;
 
 		// find matching server
-		for (ServerCfg server : servers) {
+		for (ServerData server : servers) {
 			if (server.getUrl().trim().equals(serverUrl)) {
 				if (server.isEnabled()) {
-					enabledServer = cfg.getServerData(server);
+					enabledServer = server;
 					break;
 				} else if (disabledServer == null) {
-					disabledServer = cfg.getServerData(server);
+					disabledServer = server;
 				}
 			}
 		}

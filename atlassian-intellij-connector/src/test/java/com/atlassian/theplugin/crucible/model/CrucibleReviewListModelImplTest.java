@@ -1,6 +1,8 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
@@ -46,7 +48,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -55,6 +57,18 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model.addReview(ra);
 
 		assertEquals(1, model.getReviews().size());
+	}
+
+	private ServerData createServerData(final ServerIdImpl id) {
+		return new ServerData(new ServerCfg(true, "test", "", id) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
 	}
 
 	public void testAddingSingleReview() throws Exception {
@@ -69,7 +83,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -85,7 +99,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test"));
 		r.setState(State.REVIEW);
@@ -110,7 +124,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewBean r2 = new ReviewBean("test", "TEST", author, moderator);
@@ -127,7 +141,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 		model = new CrucibleReviewListModelImplAdapter();
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r = new ReviewBean("test", "TEST", author, moderator);
 		r.setPermId(new PermIdBean("test1"));
 		r.setState(State.REVIEW);
@@ -144,7 +158,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -167,7 +181,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		PermIdBean permId1 = new PermIdBean("test1");
 		r1.setPermId(permId1);
@@ -189,7 +203,7 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 		ServerIdImpl id = new ServerIdImpl();
-		ServerData cfg = new ServerData("test", id, "", "", "");
+		ServerData cfg = createServerData(id);
 		ReviewBean r1 = new ReviewBean("test", "TEST", author, moderator);
 		r1.setPermId(new PermIdBean("test1"));
 		ReviewAdapter ra1 = new ReviewAdapter(r1, cfg);
@@ -475,7 +489,15 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 
 
 	private ServerData createServer(int id) {
-		return new ServerData("server" + id, new ServerIdImpl(), "", "", "");
+		return new ServerData(new ServerCfg(true, "server" + id, "", new ServerIdImpl()) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
 	}
 
 	private ReviewAdapter createReviewAdapter(int id, ServerData server) {

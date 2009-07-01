@@ -18,7 +18,6 @@ package com.atlassian.theplugin.idea.action;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.exception.ThePluginException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
@@ -49,7 +48,7 @@ public class ShowProjectSettingsAction extends AnAction {
 			ProjectConfigurationComponent component = project.getComponent(ProjectConfigurationComponent.class);
 			ServerData server = event.getData(Constants.SERVER_KEY);
 			if (server != null) {
-				component.setSelectedServer(IdeaHelper.getProjectCfgManager(event).getServer(server));
+				component.setSelectedServer(server);
 			} else {
 				PluginToolWindow toolWindow = IdeaHelper.getProjectComponent(project, PluginToolWindow.class);
 				if (toolWindow != null) {
@@ -66,7 +65,7 @@ public class ShowProjectSettingsAction extends AnAction {
 		}
 	}
 
-	private ServerCfg findBestServerToSelect(final PluginToolWindow.ToolWindowPanels selectedContent,
+	private ServerData findBestServerToSelect(final PluginToolWindow.ToolWindowPanels selectedContent,
 			final ProjectCfgManager cfgManager) {
 
 		final ServerType serverType;
@@ -77,13 +76,13 @@ public class ShowProjectSettingsAction extends AnAction {
 			return null;
 		}
 
-		Collection<ServerCfg> servers = cfgManager.getAllEnabledServers(serverType);
+		Collection<ServerData> servers = cfgManager.getAllEnabledServerss(serverType);
 
 		if (!servers.isEmpty()) {
 			return servers.iterator().next();
 		}
 
-		servers = cfgManager.getAllServers(serverType);
+		servers = cfgManager.getAllServerss(serverType);
 
 		if (!servers.isEmpty()) {
 			return servers.iterator().next();

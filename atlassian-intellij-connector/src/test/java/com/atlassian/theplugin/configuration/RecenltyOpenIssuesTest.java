@@ -1,5 +1,7 @@
 package com.atlassian.theplugin.configuration;
 
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.api.JIRAIssueBean;
@@ -15,7 +17,15 @@ public class RecenltyOpenIssuesTest extends TestCase {
 
 	public void setUp() throws Exception {
 		conf = new JiraWorkspaceConfiguration();
-		server = new ServerData("server", new ServerIdImpl(), "", "", "");
+		server = new ServerData(new ServerCfg(true, "server", "", new ServerIdImpl()) {
+			public ServerType getServerType() {
+				return null;
+			}
+
+			public ServerCfg getClone() {
+				return null;
+			}
+		}, "", "");
 
 		issue1 = new JIRAIssueBean(server);
 		issue1.setKey("1");

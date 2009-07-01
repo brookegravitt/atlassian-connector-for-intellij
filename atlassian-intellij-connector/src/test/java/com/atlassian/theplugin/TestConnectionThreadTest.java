@@ -55,7 +55,7 @@ public class TestConnectionThreadTest extends TestCase {
 		super.tearDown();
 	}
 
-	private final ServerData serverData = new ServerData(null, null, null, null, null);
+	private final ServerData serverData = new ServerData(null, null, null);
 
 	public void testRunInterupted() {
 		ConnectionWrapper testConnectionThread = new ConnectionWrapper(emptyConnectionTester, serverData,
