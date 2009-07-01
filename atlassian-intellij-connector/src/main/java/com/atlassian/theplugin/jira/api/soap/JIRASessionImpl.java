@@ -278,14 +278,14 @@ public class JIRASessionImpl implements JIRASession {
 			RemoteVersion[] aVers = rIssue.getAffectsVersions();
 			List<JIRAConstant> av = new ArrayList<JIRAConstant>();
 			for (RemoteVersion v : aVers) {
-				av.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
+				av.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName(), v.isReleased()));
 			}
 			issueBean.setAffectsVersions(av);
 
 			RemoteVersion[] fVers = rIssue.getFixVersions();
 			List<JIRAConstant> fv = new ArrayList<JIRAConstant>();
 			for (RemoteVersion v : fVers) {
-				fv.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
+				fv.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName(), v.isReleased()));
 			}
 			issueBean.setFixVersions(fv);
 
@@ -432,7 +432,7 @@ public class JIRASessionImpl implements JIRASession {
 
 			List<JIRAVersionBean> versionsList = new ArrayList<JIRAVersionBean>(versions.length);
 			for (RemoteVersion v : versions) {
-				versionsList.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName()));
+				versionsList.add(new JIRAVersionBean(Long.valueOf(v.getId()), v.getName(), v.isReleased()));
 			}
 			return versionsList;
 		} catch (RemoteException e) {

@@ -19,15 +19,16 @@ package com.atlassian.theplugin.jira.api;
 import java.util.Map;
 
 public class JIRAVersionBean extends AbstractJIRAConstantBean {
-	protected boolean isReleased;
+	protected boolean released;
 
-	public JIRAVersionBean(Map<String, String> map) {
+    public JIRAVersionBean(Map<String, String> map) {
 		super(map);
-		isReleased = Boolean.valueOf(map.get("released"));
+		released = Boolean.valueOf(map.get("released"));
 	}
 
-	public JIRAVersionBean(long id, String name) {
-		this.id = id;
+	public JIRAVersionBean(long id, String name, boolean released) {
+        this.released = released;
+        this.id = id;
 		this.name = name;
 	}
 
@@ -36,11 +37,11 @@ public class JIRAVersionBean extends AbstractJIRAConstantBean {
 	}
 
 	public boolean isReleased() {
-		return isReleased;
+		return released;
 	}
 
 	public void setReleased(boolean released)  {
-		isReleased = released;
+		this.released = released;
 	}
 
 	public String getQueryStringFragment() {
