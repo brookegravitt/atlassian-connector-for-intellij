@@ -17,8 +17,8 @@
 package com.atlassian.theplugin.idea.autoupdate;
 
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.util.InfoServer;
 import com.intellij.openapi.util.io.FileUtil;
 import junit.framework.TestCase;

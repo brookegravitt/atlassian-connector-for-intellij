@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.util;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * User: kalamon

@@ -9,8 +9,8 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  * User: jgorycki

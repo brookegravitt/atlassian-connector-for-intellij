@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
 import com.atlassian.theplugin.commons.util.Version;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import junit.framework.TestCase;
 import org.ddsteps.mock.httpserver.JettyMockServer;

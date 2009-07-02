@@ -19,7 +19,6 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.configuration.CheckNowButtonOption;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.util.PluginUtil;
 import static com.spartez.util.junit3.TestUtil.assertNotEquals;

@@ -1,21 +1,21 @@
 package com.atlassian.theplugin.idea.jira.renderers;
 
-import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.jira.CachedIconLoader;
 import com.atlassian.theplugin.idea.jira.Html2text;
 import com.atlassian.theplugin.idea.jira.JiraTimeFormatter;
-import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.CellConstraints;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.util.ui.UIUtil;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * User: kalamon

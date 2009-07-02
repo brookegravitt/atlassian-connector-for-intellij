@@ -18,16 +18,16 @@ package com.atlassian.theplugin.idea.ui;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 
 import javax.swing.*;
-import java.awt.font.LineBreakMeasurer;
+import java.awt.*;
 import java.awt.font.FontRenderContext;
+import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
-import java.awt.*;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Collections;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 public final class MultiLineUtil {
 	private static final int MINIMUM_WIDTH = 10;

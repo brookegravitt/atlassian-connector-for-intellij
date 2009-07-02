@@ -1,14 +1,6 @@
 package thirdparty.publicobject;
 
 
-import com.intellij.util.Icons;
-
-import javax.swing.border.Border;
-
-/* Glazed Lists                                                 (c) 2003-2006 */
-/* http://publicobject.com/glazedlists/                      publicobject.com,*/
-/*                                                     O'Dell Engineering Ltd.*/
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;

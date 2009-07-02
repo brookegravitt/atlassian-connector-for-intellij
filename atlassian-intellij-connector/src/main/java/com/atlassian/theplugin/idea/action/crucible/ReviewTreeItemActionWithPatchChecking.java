@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
-import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
+import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
  * User: kalamon

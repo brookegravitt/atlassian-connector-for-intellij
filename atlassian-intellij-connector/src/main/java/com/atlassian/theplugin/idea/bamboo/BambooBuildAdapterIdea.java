@@ -16,16 +16,15 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.intellij.openapi.util.IconLoader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.NotNull;
 
 public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_RED = IconLoader.getIcon("/icons/icn_plan_failed.gif");

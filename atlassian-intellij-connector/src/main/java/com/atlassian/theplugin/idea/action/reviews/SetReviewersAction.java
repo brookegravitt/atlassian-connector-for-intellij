@@ -1,13 +1,13 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
+import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.crucible.CrucibleSetReviewersWorker;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataKeys;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.idea.crucible.CrucibleSetReviewersWorker;
-import com.atlassian.theplugin.idea.Constants;
+import com.intellij.openapi.project.Project;
 
 /**
  * User: jgorycki

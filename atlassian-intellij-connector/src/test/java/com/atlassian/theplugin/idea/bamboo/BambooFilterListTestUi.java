@@ -16,16 +16,15 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
-import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
+import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
-import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;

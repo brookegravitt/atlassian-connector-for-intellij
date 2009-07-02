@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.action.crucible.comment;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
-import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
+import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
 import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.*;
@@ -30,7 +30,6 @@ import com.intellij.openapi.actionSystem.DataKeys;
 import com.intellij.openapi.editor.Editor;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.Date;
 
 public class AddAction extends AbstractCommentAction {

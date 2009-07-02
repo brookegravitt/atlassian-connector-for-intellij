@@ -3,8 +3,8 @@ package com.atlassian.theplugin.remoteapi;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 
-import java.util.Queue;
 import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * User: kalamon

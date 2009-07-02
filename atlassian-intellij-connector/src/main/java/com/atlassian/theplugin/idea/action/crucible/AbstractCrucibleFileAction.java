@@ -2,8 +2,8 @@ package com.atlassian.theplugin.idea.action.crucible;
 
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.crucible.CrucibleConstants;
-import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewItemTreePanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public abstract class AbstractCrucibleFileAction extends ReviewTreeItemActionWithPatchChecking {
