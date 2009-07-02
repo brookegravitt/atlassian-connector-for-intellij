@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
@@ -95,9 +96,9 @@ public class BambooFilterList extends JList {
 				}
 				break;
 			case SERVER:
-				final Collection<ServerData> bambooServers = projectCfgManager.getAllEnabledBambooServerss();
+				final Collection<BambooServerData> bambooServers = projectCfgManager.getAllEnabledBambooServerss();
 
-				for (ServerData bambooServer : bambooServers) {
+				for (BambooServerData bambooServer : bambooServers) {
 					final BambooServerFilter serverFilter = new BambooServerFilter(bambooServer);
 					final BamboServerFilterWrapper obj = new BamboServerFilterWrapper(serverFilter,
 							bambooModel);

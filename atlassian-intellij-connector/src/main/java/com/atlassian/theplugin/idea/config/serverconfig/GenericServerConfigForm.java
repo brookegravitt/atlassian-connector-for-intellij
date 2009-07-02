@@ -74,7 +74,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 					public ServerData getServer() {
 						synchronized (GenericServerConfigForm.this) {
 							saveData();
-							return ServerData.create(serverCfg, defaultUser);
+							return new ServerData(serverCfg, defaultUser);
 						}
 					}
 				}, this));

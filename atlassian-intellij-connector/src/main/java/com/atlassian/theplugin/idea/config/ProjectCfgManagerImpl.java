@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -96,30 +97,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 						StringUtil.encode(defaultCredentials.getPassword())));
 	}
 
-	///////////////////////////////////////////////////////////////////
-	///////////////////// SERVER DATA STUFF ///////////////////////////
-	///////////////////////////////////////////////////////////////////
-	//todo remove all that functions when refactoring serverdata
-	// all methods should return server data instead of servercfg
-	// servercfg should not be used outside configuration
-
-	@NotNull
-	public ServerData getServerData(@NotNull Server serverCfg) {
-		return getServerDataImpl(serverCfg);
-	}
-
-
-	@NotNull
-	private ServerData getServerDataImpl(@NotNull Server serverCfg) {
-		return ServerData.create(serverCfg, getDefaultCredentials());
-	}
-
 	//////////////////////////////////////////////////////////////////
 	///////////////////// GET SERVER METHODS /////////////////////////
 	//////////////////////////////////////////////////////////////////
 
 	// SINGLE SERVER
 
+	@Deprecated
 	public ServerCfg getServer(final ServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
@@ -140,7 +124,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		final ServerCfg serverCfg = getServer(serverId);
 
 		if (serverCfg != null && serverCfg.isEnabled()) {
-			return getServerDataImpl(serverCfg);
+			return getServerData(serverCfg);
 		}
 		return null;
 	}
@@ -165,7 +149,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public ServerData getJiraServerr(final ServerIdImpl serverId) {
+	public ServerData getJiraServerr(final ServerId serverId) {
 		for (JiraServerCfg server : getAllJiraServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return getServerData(server);
@@ -383,13 +367,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public Collection<ServerData> getAllEnabledBambooServerss() {
+	public Collection<BambooServerData> getAllEnabledBambooServerss() {
 		Collection<ServerCfg> tmp = getAllEnabledServers();
-		Collection<ServerData> ret = new ArrayList<ServerData>();
+		Collection<BambooServerData> ret = new ArrayList<BambooServerData>();
 
 		for (ServerCfg serverCfg : tmp) {
 			if (serverCfg.getServerType() == ServerType.BAMBOO_SERVER && serverCfg instanceof BambooServerCfg) {
-				ret.add(getServerData(serverCfg));
+				ret.add(getServerData((BambooServerCfg) serverCfg));
 			}
 		}
 		return ret;
@@ -537,6 +521,19 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		}
 
 		return listeners.remove(configurationListener);
+	}
+
+	///////////////////////////////////////////////////////////////////
+	///////////////////// SERVER DATA STUFF ///////////////////////////
+	///////////////////////////////////////////////////////////////////
+
+	@NotNull
+	private ServerData getServerData(@NotNull Server serverCfg) {
+		return new ServerData(serverCfg, getDefaultCredentials());
+	}
+
+	private BambooServerData getServerData(@NotNull BambooServerCfg serverCfg) {
+		return new BambooServerData(serverCfg, getDefaultCredentials());
 	}
 
 	//////////////////////////////////////////////////////////////////
