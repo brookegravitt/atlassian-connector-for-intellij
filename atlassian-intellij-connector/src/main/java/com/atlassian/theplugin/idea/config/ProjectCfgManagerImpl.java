@@ -57,7 +57,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return projectConfiguration;
 	}
 
-	public void updateProjectConfiguration(final ProjectConfiguration configuration) {
+	/**
+	 * This method has a package scope and should be used only for 'saving and modifying' purposes.
+	 * This method can also be used in JUnit tests.
+	 *
+	 * @param configuration new configuration
+	 */
+	void updateProjectConfiguration(final ProjectConfiguration configuration) {
 
 		if (configuration == null) {
 			throw new NullPointerException("Project configuration cannot be null");
@@ -76,22 +82,24 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	///////////////////////////////////////////////////////////////////
 	///////////////////// DEFAULT CREDENTIALS /////////////////////////
 	///////////////////////////////////////////////////////////////////
+	/////////////////////// PACKAGE SCOPE /////////////////////////////
+	///////////////////////////////////////////////////////////////////
 
-	public boolean isDefaultCredentialsAsked() {
+	boolean isDefaultCredentialsAsked() {
 		return workspaceConfiguration.isDefaultCredentialsAsked();
 	}
 
-	public void setDefaultCredentialsAsked(final boolean defaultCredentialsAsked) {
+	void setDefaultCredentialsAsked(final boolean defaultCredentialsAsked) {
 		workspaceConfiguration.setDefaultCredentialsAsked(defaultCredentialsAsked);
 	}
 
 	@NotNull
-	public UserCfg getDefaultCredentials() {
+	UserCfg getDefaultCredentials() {
 		return new UserCfg(workspaceConfiguration.getDefaultCredentials().getUsername(),
 				StringUtil.decode(workspaceConfiguration.getDefaultCredentials().getEncodedPassword()));
 	}
 
-	public void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
+	void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
 		workspaceConfiguration.setDefaultCredentials(
 				new UserCfgBean(defaultCredentials.getUserName(),
 						StringUtil.encode(defaultCredentials.getPassword())));
@@ -114,21 +122,12 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	/**
-	 * Returns ServerData for enabled server with serverId specified by parameter
+	 * Returns ServerData for server with serverId specified by parameter
 	 *
 	 * @param serverId
 	 * @return ServerData for enabled server with serverId specified by parameter
 	 */
 	@Nullable
-	public ServerData getEnabledServerr(final ServerId serverId) {
-		final ServerCfg serverCfg = getServer(serverId);
-
-		if (serverCfg != null && serverCfg.isEnabled()) {
-			return getServerData(serverCfg);
-		}
-		return null;
-	}
-
 	public ServerData getServerr(final ServerId serverId) {
 		for (ServerCfg server : getAllServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
@@ -138,11 +137,17 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
-
-	public JiraServerCfg getJiraServer(final ServerId serverId) {
-		for (JiraServerCfg server : getAllJiraServers()) {
+	/**
+	 * Returns ServerData for enabled server with serverId specified by parameter
+	 *
+	 * @param serverId
+	 * @return ServerData for enabled server with serverId specified by parameter
+	 */
+	@Nullable
+	public ServerData getEnabledServerr(final ServerId serverId) {
+		for (ServerCfg server : getAllEnabledServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
-				return server;
+				return getServerData(server);
 			}
 		}
 		return null;
@@ -156,7 +161,15 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 			}
 		}
 		return null;
+	}
 
+	public ServerData getEnabledJiraServerr(final ServerId serverId) {
+		for (JiraServerCfg server : getAllEnabledJiraServers()) {
+			if (serverId != null && server.getServerId().equals(serverId)) {
+				return getServerData(server);
+			}
+		}
+		return null;
 	}
 
 
@@ -181,11 +194,15 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	// MULTIPLE SERVERS
 
-	public Collection<ServerCfg> getAllServers() {
+	@Deprecated
+		// that method should be private (not used by Unit Tests)
+	Collection<ServerCfg> getAllServers() {
 		return new ArrayList<ServerCfg>(projectConfiguration.getServers());
 	}
 
-	public Collection<ServerCfg> getAllServers(ServerType serverType) {
+	@Deprecated
+		// that method should be private (not used by Unit Tests)
+	Collection<ServerCfg> getAllServers(ServerType serverType) {
 
 		Collection<ServerCfg> tmp = getAllServers();
 
@@ -195,6 +212,16 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 			if (serverCfg.getServerType() == serverType) {
 				ret.add(serverCfg);
 			}
+		}
+		return ret;
+	}
+
+	public Collection<ServerData> getAllServerss() {
+		Collection<ServerCfg> tmp = getAllServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			ret.add(getServerData(serverCfg));
 		}
 		return ret;
 	}
@@ -211,7 +238,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-	public Collection<ServerCfg> getAllEnabledServers() {
+	@Deprecated
+		// that method should be private (not used by Unit Tests)
+	Collection<ServerCfg> getAllEnabledServers() {
 
 		Collection<ServerCfg> ret = new ArrayList<ServerCfg>();
 		for (ServerCfg serverCfg : getAllServers()) {
@@ -222,7 +251,19 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
+	public Collection<ServerData> getAllEnabledServerss() {
+		Collection<ServerCfg> tmp = getAllEnabledServers();
+		Collection<ServerData> ret = new ArrayList<ServerData>();
 
+		for (ServerCfg serverCfg : tmp) {
+			ret.add(getServerData(serverCfg));
+		}
+		return ret;
+	}
+
+
+	@Deprecated
+	// that method should be private (not used by Unit Tests)
 	public Collection<ServerCfg> getAllEnabledServers(ServerType serverType) {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
@@ -248,30 +289,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-	public Collection<ServerCfg> getAllEnabledServersWithDefaultCredentials() {
-		Collection<ServerCfg> tmp = getAllEnabledServers();
-		Collection<ServerCfg> ret = new ArrayList<ServerCfg>();
-		for (ServerCfg serverCfg : tmp) {
-			if (serverCfg.isUseDefaultCredentials() && serverCfg.isEnabled()) {
-				ret.add(serverCfg);
-			}
-		}
-		return ret;
-	}
-
-	public Collection<ServerCfg> getAllEnabledServersWithDefaultCredentials(final ServerType serverType) {
-		Collection<ServerCfg> tmp = getAllEnabledServers();
-		Collection<ServerCfg> ret = new ArrayList<ServerCfg>();
-
-		for (ServerCfg serverCfg : tmp) {
-			if (serverCfg.isUseDefaultCredentials() && serverCfg.isEnabled() && serverCfg.getServerType() == serverType) {
-				ret.add(serverCfg);
-			}
-		}
-		return ret;
-	}
-
-	public Collection<BambooServerCfg> getAllBambooServers() {
+	@Deprecated
+	Collection<BambooServerCfg> getAllBambooServers() {
 		Collection<ServerCfg> tmp = getAllServers();
 
 		ArrayList<BambooServerCfg> ret = new ArrayList<BambooServerCfg>();
@@ -284,7 +303,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-	public Collection<JiraServerCfg> getAllJiraServers() {
+	@Deprecated
+	Collection<JiraServerCfg> getAllJiraServers() {
 		Collection<ServerCfg> tmp = getAllServers();
 		ArrayList<JiraServerCfg> ret = new ArrayList<JiraServerCfg>();
 
@@ -310,7 +330,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public Collection<CrucibleServerCfg> getAllCrucibleServers() {
+	@Deprecated
+	Collection<CrucibleServerCfg> getAllCrucibleServers() {
 
 		Collection<ServerCfg> tmp = getAllServers();
 
@@ -338,21 +359,35 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public Collection<FishEyeServerCfg> getAllFishEyeServers() {
+	public Collection<ServerData> getAllFishEyeServerss() {
 
 		Collection<ServerCfg> tmp = getAllServers();
 
-		ArrayList<FishEyeServerCfg> ret = new ArrayList<FishEyeServerCfg>();
+		ArrayList<ServerData> ret = new ArrayList<ServerData>();
 
 		for (ServerCfg serverCfg : tmp) {
 			if (serverCfg.getServerType() == ServerType.FISHEYE_SERVER && serverCfg instanceof FishEyeServerCfg) {
-				ret.add((FishEyeServerCfg) serverCfg);
+				ret.add(getServerData(serverCfg));
 			}
 		}
 		return ret;
 	}
 
-	public Collection<BambooServerCfg> getAllEnabledBambooServers() {
+
+	public Collection<BambooServerData> getAllBambooServerss() {
+		Collection<ServerCfg> tmp = getAllServers();
+		Collection<BambooServerData> ret = new ArrayList<BambooServerData>();
+
+		for (ServerCfg serverCfg : tmp) {
+			if (serverCfg.getServerType() == ServerType.BAMBOO_SERVER && serverCfg instanceof BambooServerCfg) {
+				ret.add(getServerData((BambooServerCfg) serverCfg));
+			}
+		}
+		return ret;
+	}
+
+	@Deprecated
+	Collection<BambooServerCfg> getAllEnabledBambooServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
 		Collection<BambooServerCfg> ret = new ArrayList<BambooServerCfg>();
@@ -379,7 +414,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-	public Collection<JiraServerCfg> getAllEnabledJiraServers() {
+	@Deprecated
+	Collection<JiraServerCfg> getAllEnabledJiraServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
 		Collection<JiraServerCfg> ret = new ArrayList<JiraServerCfg>();
@@ -407,7 +443,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return ret;
 	}
 
-	public Collection<CrucibleServerCfg> getAllEnabledCrucibleServers() {
+	@Deprecated
+	Collection<CrucibleServerCfg> getAllEnabledCrucibleServers() {
 
 		Collection<ServerCfg> tmp = getAllEnabledServers();
 		Collection<CrucibleServerCfg> ret = new ArrayList<CrucibleServerCfg>();
@@ -524,7 +561,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 	///////////////////////////////////////////////////////////////////
-	///////////////////// SERVER DATA STUFF ///////////////////////////
+	/////////////////// PRIVATE SERVER DATA STUFF /////////////////////
 	///////////////////////////////////////////////////////////////////
 
 	@NotNull
@@ -540,10 +577,8 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	///////////////////// ADD REMOVE SERVERS /////////////////////////
 	//////////////////////////////////////////////////////////////////
 
-	// todo methods used only for tests. can we replace them with mocks?
-
 	/**
-	 * Package scope (only for JUnit tests)
+	 * todo Should be package scope (only for JUnit tests)
 	 *
 	 * @param serverCfg
 	 */

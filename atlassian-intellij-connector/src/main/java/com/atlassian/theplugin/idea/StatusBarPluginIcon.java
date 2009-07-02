@@ -66,7 +66,7 @@ public abstract class StatusBarPluginIcon extends JLabel {
 	 * @param serverType type of Icon to show/hide
 	 */
 	protected void showOrHideIcon(ServerType serverType) {
-		if (!projectCfgManager.getAllEnabledServers(serverType).isEmpty()) {
+		if (!projectCfgManager.getAllEnabledServerss(serverType).isEmpty()) {
 			showIcon();
 		} else {
 			hideIcon();

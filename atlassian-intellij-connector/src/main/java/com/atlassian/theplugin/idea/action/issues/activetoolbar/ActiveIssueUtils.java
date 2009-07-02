@@ -15,8 +15,6 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -96,17 +94,6 @@ public final class ActiveIssueUtils {
 
 	public static JIRAIssue getSelectedJiraIssue(final AnActionEvent event) {
 		return event.getData(Constants.ISSUE_KEY);
-	}
-
-
-	public static JiraServerCfg getSelectedJiraServerByUrl(final AnActionEvent event, String serverUrl) {
-		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-		if (panel != null) {
-//			//return panel.getSelectedServer();
-
-			return CfgUtil.getJiraServerCfgByUrl(panel.getProjectCfgManager(), serverUrl);
-		}
-		return null;
 	}
 
 //	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {

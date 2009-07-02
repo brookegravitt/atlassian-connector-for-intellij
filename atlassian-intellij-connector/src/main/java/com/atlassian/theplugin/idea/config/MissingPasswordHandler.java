@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.remoteapi;
+package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -25,6 +25,7 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PasswordDialog;
 import com.atlassian.theplugin.idea.ThePluginApplicationComponent;
+import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;

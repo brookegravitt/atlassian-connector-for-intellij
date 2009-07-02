@@ -17,9 +17,9 @@
 package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.crucible.model.UpdateReason;
@@ -64,8 +64,8 @@ public final class CrucibleStatusChecker implements SchedulableChecker {
 		}
 	}
 
-	private Collection<CrucibleServerCfg> retrieveEnabledCrucibleServers() {
-		return cfgManager.getAllEnabledCrucibleServers();
+	private Collection<ServerData> retrieveEnabledCrucibleServers() {
+		return cfgManager.getAllEnabledCrucibleServerss();
 	}
 
 	/**
