@@ -22,6 +22,9 @@ import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.fileTypes.FileTypeManager;
 import com.intellij.openapi.vcs.AbstractVcs;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
+import com.intellij.openapi.vcs.diff.DiffProvider;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
@@ -90,15 +93,26 @@ public class BambooFileNode extends FileNode {
             txt.append(",");
             append(txt.toString(), SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
             if (node.getPsiFile() != null) {
-                try {
-                    AbstractVcs vcs = VcsUtil.getVcsFor(node.getPsiFile().getProject(), node.getPsiFile().getVirtualFile());
-                    if (vcs == null) {
-                        throw new NullPointerException("no VCS info");
+                AbstractVcs vcs = null;
+                PsiFile psiFile = node.getPsiFile();
+                VirtualFile vFile = null;
+                if (psiFile != null) {
+                    vFile = psiFile.getVirtualFile();
+                    if (vFile != null) {
+                        vcs = VcsUtil.getVcsFor(node.getPsiFile().getProject(), vFile);
                     }
-                    String revision = vcs.getDiffProvider().getCurrentRevision(node.getPsiFile().getVirtualFile()).asString();
-                    append(" loc rev: " + revision, SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
-                } catch (NullPointerException e) {
-                    append(e.getMessage(), SimpleTextAttributes.ERROR_ATTRIBUTES);
+                }
+                if (vcs == null) {
+                    appendNoVcsInfoString();
+                } else {
+                    DiffProvider diffProvider = vcs.getDiffProvider();
+                    if (diffProvider != null) {
+                        VcsRevisionNumber currentRevision = diffProvider.getCurrentRevision(vFile);
+                        String revisionString = currentRevision != null ? currentRevision.asString() : "Unknown";
+                        append(" loc rev: " + revisionString, SimpleTextAttributes.GRAY_ITALIC_ATTRIBUTES);
+                    } else {
+                        appendNoVcsInfoString();
+                    }
                 }
             } else {
                 append(" no corresponding file in the project", SimpleTextAttributes.ERROR_ATTRIBUTES);
@@ -110,5 +124,8 @@ public class BambooFileNode extends FileNode {
             setIcon(type.getIcon());
         }
 
-	}
+        private void appendNoVcsInfoString() {
+            append("No VCS Info", SimpleTextAttributes.ERROR_ATTRIBUTES);
+        }
+    }
 }
