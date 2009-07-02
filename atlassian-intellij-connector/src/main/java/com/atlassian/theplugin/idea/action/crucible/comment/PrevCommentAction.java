@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
+import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 

@@ -17,10 +17,9 @@ package com.atlassian.theplugin.idea.util;
 
 import com.atlassian.theplugin.util.ui.IconProvider;
 import com.intellij.openapi.util.IconLoader;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-
-import org.jetbrains.annotations.NotNull;
 
 public class IdeaIconProvider implements IconProvider {
 

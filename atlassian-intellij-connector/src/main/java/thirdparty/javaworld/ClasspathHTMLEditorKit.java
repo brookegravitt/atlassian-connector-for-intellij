@@ -1,7 +1,11 @@
 package thirdparty.javaworld;
 
-import javax.swing.text.html.*;
-import javax.swing.text.*;
+import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLEditorKit;
 
 /**
  * A simple extension to HTMLEditorKit which allows for loading of images absolutely off the classpath.

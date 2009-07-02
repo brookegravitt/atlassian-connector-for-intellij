@@ -19,18 +19,18 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.intellij.openapi.util.Pair;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-import javax.swing.tree.TreeCellRenderer;
-import javax.swing.*;
 import java.util.Collection;
 import java.util.Set;
 

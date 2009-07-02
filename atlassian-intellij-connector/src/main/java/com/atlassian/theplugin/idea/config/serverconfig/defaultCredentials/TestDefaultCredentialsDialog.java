@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
 import com.atlassian.theplugin.ConnectionWrapper;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
@@ -24,6 +23,7 @@ import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;

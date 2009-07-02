@@ -15,11 +15,10 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-
-import com.intellij.openapi.util.Pair;
 
 public interface BuildListModelListener {
 	void modelChanged();

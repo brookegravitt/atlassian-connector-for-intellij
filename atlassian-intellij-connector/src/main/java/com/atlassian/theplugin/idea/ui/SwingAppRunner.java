@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.ui;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.*;
 
 public final class SwingAppRunner {
 	private static final int WIDTH = 500;

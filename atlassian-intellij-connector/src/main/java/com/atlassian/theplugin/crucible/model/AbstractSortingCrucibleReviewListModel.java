@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 
 import java.util.*;
 

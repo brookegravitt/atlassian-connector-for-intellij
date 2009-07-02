@@ -19,10 +19,10 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
+import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
-import com.intellij.openapi.components.ApplicationComponent;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 

@@ -2,14 +2,14 @@ package com.atlassian.theplugin.idea.crucible.editor;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.crucible.CommentDateUtil;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanel;
 import com.atlassian.theplugin.idea.crucible.CommentTooltipPanelWithRunners;
-import com.atlassian.theplugin.idea.Constants;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;

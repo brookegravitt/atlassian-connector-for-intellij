@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
-import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;

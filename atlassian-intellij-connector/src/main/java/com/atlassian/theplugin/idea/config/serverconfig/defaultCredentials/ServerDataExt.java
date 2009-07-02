@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
  * User: pmaruszak
