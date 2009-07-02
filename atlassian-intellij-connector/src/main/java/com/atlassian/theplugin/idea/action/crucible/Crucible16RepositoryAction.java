@@ -60,7 +60,7 @@ public abstract class Crucible16RepositoryAction extends AnAction {
 			return false;
 		}
 
-		return IdeaHelper.getProjectCfgManager(event).getAllEnabledCrucibleServers().size() != 0;
+		return IdeaHelper.getProjectCfgManager(event).getAllEnabledCrucibleServerss().size() != 0;
 	}
 
 }

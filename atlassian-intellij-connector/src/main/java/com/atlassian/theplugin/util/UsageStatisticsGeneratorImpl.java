@@ -16,8 +16,8 @@
 package com.atlassian.theplugin.util;
 
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.configuration.GeneralConfigurationBean;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 
 import java.util.Collection;
@@ -27,10 +27,10 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 	private final boolean reportStatistics;
 	private final long uid;
 	private GeneralConfigurationBean generalConfig;
-	private final Collection<ServerCfg> servers;
+	private final Collection<ServerData> servers;
 
 	public UsageStatisticsGeneratorImpl(boolean reportStatistics, final long uid,
-			GeneralConfigurationBean generalConfig, final Collection<ServerCfg> servers) {
+			GeneralConfigurationBean generalConfig, final Collection<ServerData> servers) {
 		this.reportStatistics = reportStatistics;
 		this.uid = uid;
 		this.generalConfig = generalConfig;
@@ -42,7 +42,7 @@ public class UsageStatisticsGeneratorImpl implements UsageStatisticsGenerator {
 		if (reportStatistics) {
 			int[] counts = new int[ServerType.values().length];
 
-			for (ServerCfg serverCfg : servers) {
+			for (ServerData serverCfg : servers) {
 				counts[serverCfg.getServerType().ordinal()]++;
 			}
 

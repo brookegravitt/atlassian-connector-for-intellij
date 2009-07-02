@@ -126,9 +126,9 @@ public class PluginToolWindow {
 		//stopTabChangeListener();
 
 		final ContentManager contentManager = ideaToolWindow.getContentManager();
-		if (cfgManager.getAllEnabledCrucibleServers().size() == 0
-				&& cfgManager.getAllEnabledJiraServers().size() == 0
-				&& cfgManager.getAllEnabledBambooServers().size() == 0) {
+		if (cfgManager.getAllEnabledCrucibleServerss().size() == 0
+				&& cfgManager.getAllEnabledJiraServerss().size() == 0
+				&& cfgManager.getAllEnabledBambooServerss().size() == 0) {
 			// no servers defined, show config panel
 			if (contentManager.findContent(CONFIGURE_TAB_NAME) == null) {
 				final Content content = contentManager.getFactory().createContent(
@@ -150,7 +150,7 @@ public class PluginToolWindow {
 				ServerType serverType = Util.toolWindowPanelsToServerType(entry);
 
 				// servers are defined
-				if (!cfgManager.getAllEnabledServers(serverType).isEmpty()) {
+				if (!cfgManager.getAllEnabledServerss(serverType).isEmpty()) {
 					// tab is not visible
 					if (ideaToolWindow.getContentManager().findContent(entry.toString()) == null) {
 						// show tab
@@ -233,7 +233,7 @@ public class PluginToolWindow {
 				ServerType serverType = Util.toolWindowPanelsToServerType(component);
 				// servers are defined
 				final ProjectCfgManagerImpl myCfgManager = IdeaHelper.getProjectCfgManager(project);
-				if (myCfgManager.getAllEnabledServers(serverType).size() > 0) {
+				if (myCfgManager.getAllEnabledServerss(serverType).size() > 0) {
 					// tab is not visible
 					final ContentManager contentManager = ideaToolWindow.getContentManager();
 					Content content = contentManager.findContent(component.toString());

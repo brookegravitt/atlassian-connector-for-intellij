@@ -31,6 +31,7 @@ import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
+import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CruciblePatchSubmitExecutor;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
@@ -42,7 +43,6 @@ import com.atlassian.theplugin.idea.ui.linkhiglighter.FileEditorListenerImpl;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.notification.crucible.CrucibleNotificationTooltip;
 import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
-import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
@@ -340,7 +340,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 				PluginUtil.PRODUCT_NAME,
 				"Please set up default JIRA server in order to get all cool features of Atlassian IntelliJ Connector.");
 		if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()
-                && projectCfgManager.getAllJiraServers().size() > 0) {
+				&& projectCfgManager.getAllJiraServerss().size() > 0) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					jiraDialog.show();
@@ -354,7 +354,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 		if (projectCfgManager.getDefaultFishEyeServer() == null
 				&& !projectConfigurationBean.isDefaultFishEyeServerAsked()
-                && projectCfgManager.getAllFishEyeServers().size() > 0) {
+				&& projectCfgManager.getAllFishEyeServerss().size() > 0) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
 					fishEyeDialog.show();

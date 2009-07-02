@@ -6,9 +6,9 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginFailedException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
-import com.atlassian.theplugin.remoteapi.MissingPasswordHandler;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;

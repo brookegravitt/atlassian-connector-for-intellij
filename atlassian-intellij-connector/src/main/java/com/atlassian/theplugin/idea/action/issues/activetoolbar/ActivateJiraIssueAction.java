@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.api.JIRAIssue;
@@ -70,9 +70,9 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
 
 		if (selectedIssue != null && activeIssue != null && projectCfgManager != null
-				&& projectCfgManager.getJiraServer(activeIssue.getServerId()) != null) {
+				&& projectCfgManager.getJiraServerr(activeIssue.getServerId()) != null) {
 
-			final JiraServerCfg selectedServer = projectCfgManager.getJiraServer(activeIssue.getServerId());
+			final ServerData selectedServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
 
 			return selectedIssue.getKey().equals(activeIssue.getIssueKey())
 					&& selectedServer.getServerId().equals(activeIssue.getServerId());
