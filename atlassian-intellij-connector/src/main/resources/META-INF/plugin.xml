@@ -21,7 +21,7 @@
 <!--<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">-->
 <idea-plugin url="http://www.atlassian.com/software/ideplugin/">
 
-	<name>Atlassian IntelliJ Connector</name>
+	<name>Atlassian Connector for IntelliJ IDEA</name>
 	<!-- taken from pom to identify plugin package in internal IDEA plugin manager's repository-->
 	<!--
 															  todo lguminski/jjaroczynski check if there is some decent way of getting artifactId from pom.xml
@@ -30,7 +30,7 @@
 	<plugin-id>atlassian-idea-plugin</plugin-id>
 	<description>
 		<![CDATA[
-		Atlassian IntelliJ Connector provides IDEA IDE integration for the following Atlassian products:
+		Atlassian Connector for IntelliJ IDEA provides IDEA IDE integration for the following Atlassian products:
 		<ul>
 			<li>Bamboo</li>
 			<li>Crucible 1.6 and above</li>
