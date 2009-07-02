@@ -33,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 public class BambooServerConfigurationFormTest extends TestCase {
 
 	private BambooServerConfigForm bambooPluginConfigurationForm;
-	private ProjectCfgManagerImpl projectCfgManager = new LocalProjectCfgManager();
 
 	@Override
 	protected void setUp() throws Exception {
@@ -159,17 +158,4 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	}
 
 
-}
-
-class LocalProjectCfgManager extends ProjectCfgManagerImpl {
-
-	public LocalProjectCfgManager() {
-		super(null);
-	}
-
-	@NotNull
-	@Override
-	public ServerData getServerData(@NotNull final Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
-	}
 }

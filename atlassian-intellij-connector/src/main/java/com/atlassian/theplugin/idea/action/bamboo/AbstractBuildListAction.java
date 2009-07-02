@@ -15,10 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
-import com.atlassian.theplugin.commons.cfg.ServerCfg;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
@@ -65,21 +62,8 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
 		}
 	}
 
-	protected boolean isBamboo2(final AnActionEvent event, final ServerData serverData) {
-		ServerCfg server = null;
-
-		if (serverData != null) {
-//			CfgManager cfgManager = IdeaHelper.getCfgManager(event);
-			ProjectCfgManager cfgManager = IdeaHelper.getProjectCfgManager(event);
-			if (cfgManager != null) {
-				server = cfgManager.getServer(serverData.getServerId());
-			}
-			if (server != null && server instanceof BambooServerCfg) {
-				return ((BambooServerCfg) server).isBamboo2();
-			}
-		}
-
-		return false;
+	protected boolean isBamboo2(final AnActionEvent event, final BambooServerData serverData) {
+		return serverData != null && serverData.isBamboo2();
 
 	}
 }

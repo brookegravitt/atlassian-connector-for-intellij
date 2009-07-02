@@ -1032,12 +1032,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		@Override
 		public void serverNameChanged(final ServerId serverId) {
-			ServerCfg server = projectCfgManager.getServer(serverId);
-			if (server instanceof JiraServerCfg) {
-				jiraServerModel.replace(projectCfgManager.getServerData(server));
+			ServerData server = projectCfgManager.getJiraServerr(serverId);
+				jiraServerModel.replace(server);
 				refreshFilterModel();
 				jiraFilterListModel.fireServerNameChanged();
-			}
 		}
 
 		@Override
@@ -1424,9 +1422,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 					issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
 				} else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
 					Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
-					for (JiraServerCfg server : projectCfgManager.getAllEnabledJiraServers()) {
+					for (ServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
 						try {
-							for (JIRAProject p : jiraServerModel.getProjects(projectCfgManager.getServerData(server))) {
+							for (JIRAProject p : jiraServerModel.getProjects(server)) {
 								projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());
 							}
 						} catch (JIRAException e) {

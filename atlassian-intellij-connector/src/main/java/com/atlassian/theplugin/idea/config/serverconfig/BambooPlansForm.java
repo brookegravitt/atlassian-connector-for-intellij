@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
@@ -127,7 +128,7 @@ public class BambooPlansForm extends JPanel {
 	private void refreshServerPlans() {
 		serverPlans.remove(bambooServerCfg.getServerId());
 		serverPanel.saveData();
-		bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(ServerData.create(bambooServerCfg, defaultCredentials)));
+		bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
 		retrievePlans(bambooServerCfg);
 	}
 
@@ -202,8 +203,8 @@ public class BambooPlansForm extends JPanel {
 			offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
 			timezoneOffsetSpinnerModel.setValue(offs);
 			if (bambooServerCfg.getUrl().length() > 0) {
-				bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(
-						ServerData.create(bambooServerCfg, defaultCredentials)));
+				bambooServerCfg
+						.setIsBamboo2(bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
 				retrievePlans(bambooServerCfg);
 
 			} else {
@@ -231,7 +232,7 @@ public class BambooPlansForm extends JPanel {
 					if (!serverPlans.containsKey(key)) {
 						Collection<BambooPlan> plans;
 						try {
-							plans = bambooServerFacade.getPlanList(ServerData.create(queryServer, defaultCredentials));
+							plans = bambooServerFacade.getPlanList(new BambooServerData(queryServer, defaultCredentials));
 						} catch (ServerPasswordNotProvidedException e) {
 							msg.append("Unable to connect: password for server not provided\n");
 							return;

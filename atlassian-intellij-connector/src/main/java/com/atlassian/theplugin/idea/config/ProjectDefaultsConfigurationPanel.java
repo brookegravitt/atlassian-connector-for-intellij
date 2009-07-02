@@ -110,7 +110,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		@Override
 		protected List<CrucibleProject> getR(final CrucibleServerCfg serverCfg)
 				throws RemoteApiException, ServerPasswordNotProvidedException {
-			return crucibleServerFacade.getProjects(ServerData.create(serverCfg, defaultCredentials));
+			return crucibleServerFacade.getProjects(new ServerData(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -158,7 +158,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected List<Repository> getR(final CrucibleServerCfg serverCfg) throws Exception {
-			return crucibleServerFacade.getRepositories(ServerData.create(serverCfg, defaultCredentials));
+			return crucibleServerFacade.getRepositories(new ServerData(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -200,7 +200,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected Collection<String> getR(final FishEyeServer serverCfg) throws Exception {
-			return fishEyeServerFacade.getRepositories(ServerData.create(serverCfg, defaultCredentials));
+			return fishEyeServerFacade.getRepositories(new ServerData(serverCfg, defaultCredentials));
 		}
 
 		@Override
@@ -497,7 +497,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 				data = MiscUtil.buildArrayList();
 				for (ServerCfg serverCfg : projectConfiguration.getServers()) {
 					if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER && serverCfg.isEnabled()) {
-						data.add(new CrucibleServerCfgWrapper(ServerData.create(serverCfg, defaultCredentials)));
+						data.add(new CrucibleServerCfgWrapper(new ServerData(serverCfg, defaultCredentials)));
 					}
 				}
 			}

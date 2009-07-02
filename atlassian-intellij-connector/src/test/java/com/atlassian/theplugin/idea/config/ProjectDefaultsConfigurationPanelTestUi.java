@@ -44,8 +44,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class ProjectDefaultsConfigurationPanelTestUi {
-	private static ProjectCfgManagerImpl projectCfgManager = new LocalProjectCfgManager();
-
 	private ProjectDefaultsConfigurationPanelTestUi() {
 	}
 
@@ -89,10 +87,10 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 				makeJiraProject(id, "EF", "Jira Project 4"));
 
 		final CrucibleServerFacade crucibleServerFacade = EasyMock.createNiceMock(CrucibleServerFacade.class);
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg)))
+		EasyMock.expect(crucibleServerFacade.getProjects(getServerData(crucibleServerCfg)))
 				.andReturn(projects1).anyTimes();
 
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg2)))
+		EasyMock.expect(crucibleServerFacade.getProjects(getServerData(crucibleServerCfg2)))
 				.andAnswer(new IAnswer<List<CrucibleProject>>() {
 
 					public List<CrucibleProject> answer() throws Throwable {
@@ -100,21 +98,21 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 						return projects2;
 					}
 				}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getProjects(projectCfgManager.getServerData(crucibleServerCfg3)))
+		EasyMock.expect(crucibleServerFacade.getProjects(getServerData(crucibleServerCfg3)))
 				.andAnswer(new IAnswer<List<CrucibleProject>>() {
 					public List<CrucibleProject> answer() throws Throwable {
 						Thread.sleep(2000);
 						throw new RuntimeException("fake RE");
 					}
 				}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg3)))
+		EasyMock.expect(crucibleServerFacade.getRepositories(getServerData(crucibleServerCfg3)))
 				.andAnswer(new IAnswer<List<Repository>>() {
 					public List<Repository> answer() throws Throwable {
 						Thread.sleep(1000);
 						return MiscUtil.buildArrayList(makeRepository("R1"), makeRepository("R2"));
 					}
 				}).anyTimes();
-		EasyMock.expect(crucibleServerFacade.getRepositories(projectCfgManager.getServerData(crucibleServerCfg2)))
+		EasyMock.expect(crucibleServerFacade.getRepositories(getServerData(crucibleServerCfg2)))
 				.andAnswer(new IAnswer<List<Repository>>() {
 					public List<Repository> answer() throws Throwable {
 						Thread.sleep(2000);
@@ -128,9 +126,9 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		EasyMock.replay(crucibleServerFacade);
 
 		final FishEyeServerFacade fishEyeServerFacade = EasyMock.createNiceMock(FishEyeServerFacade.class);
-		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg0)))
+		EasyMock.expect(fishEyeServerFacade.getRepositories(getServerData(fishEyeServerCfg0)))
 				.andReturn(repos0).anyTimes();
-		EasyMock.expect(fishEyeServerFacade.getRepositories(projectCfgManager.getServerData(fishEyeServerCfg1)))
+		EasyMock.expect(fishEyeServerFacade.getRepositories(getServerData(fishEyeServerCfg1)))
 				.andAnswer(new IAnswer<Collection<String>>() {
 
 					public Collection<String> answer() throws Throwable {
@@ -144,10 +142,10 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		final JIRAServerFacade jiraServerFacade = EasyMock.createNiceMock(JIRAServerFacade.class);
 		final BambooServerFacade bambooServerFacade = EasyMock.createNiceMock(BambooServerFacade.class);
 
-		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg1))).andReturn(jiraProjects1)
+		EasyMock.expect(jiraServerFacade.getProjects(getServerData(jiraServerCfg1))).andReturn(jiraProjects1)
 				.anyTimes();
 
-		EasyMock.expect(jiraServerFacade.getProjects(projectCfgManager.getServerData(jiraServerCfg2)))
+		EasyMock.expect(jiraServerFacade.getProjects(getServerData(jiraServerCfg2)))
 				.andAnswer(new IAnswer<List<JIRAProject>>() {
 
 					public List<JIRAProject> answer() throws Throwable {
@@ -205,19 +203,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		return res;
 	}
 
-}
 
-
-// todo wypierniczyc w kosmos
-class LocalProjectCfgManager extends ProjectCfgManagerImpl {
-
-	public LocalProjectCfgManager() {
-		super(null);
-	}
-
-	@NotNull
-	@Override
-	public ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+	private static ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
 	}
 }
