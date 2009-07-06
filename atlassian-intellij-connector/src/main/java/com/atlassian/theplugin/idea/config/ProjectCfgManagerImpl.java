@@ -686,7 +686,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 				// server general update
 				if (newServer != null && !oldServer.equals(newServer)) {
-					projectListener.serverDataChanged(oldServer.getServerId());
+					projectListener.serverDataChanged(getServerData(oldServer));
 
 					// server url or credentials updated
 					if (checkCredentialsChanged(oldServer, newServer)
