@@ -16,6 +16,7 @@ import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.bamboo.*;
 import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
@@ -103,16 +104,14 @@ public class QuickSearchBuildAction extends AnAction {
                     if (build != null) {
                         foundBuilds.add(build);
                     }
+                } catch (RemoteApiBadServerVersionException e) {
+                    addBuildNotFoundError(problems, server, e);
                 } catch (final RemoteApiException e) {
-                    if (e.getMessage().startsWith(BambooSession.BAMBOO_VERSION_2_3_REQUIRED)) {
+                    Throwable cause = e.getCause();
+                    if (cause != null && cause.getMessage().equals("HTTP 404 (Not Found)")) {
                         addBuildNotFoundError(problems, server, e);
                     } else {
-                        Throwable cause = e.getCause();
-                        if (cause != null && cause.getMessage().equals("HTTP 404 (Not Found)")) {
-                            addBuildNotFoundError(problems, server, e);
-                        } else {                        
-                            addError(problems, e);
-                        }
+                        addError(problems, e);
                     }
                 } catch (final ServerPasswordNotProvidedException e) {
                     addError(problems, e);
@@ -121,7 +120,7 @@ public class QuickSearchBuildAction extends AnAction {
             failed = problems.size() == servers.size();
 
             if (failed) {
-                reportProblem(problems, project);
+                reportProblem(problems);
             }
         }
 
@@ -141,12 +140,12 @@ public class QuickSearchBuildAction extends AnAction {
             }
         }
 
-        private void reportProblem(final List<IdeaUiMultiTaskExecutor.ErrorObject> problems,
-                final Project project) {
+        private void reportProblem(final List<IdeaUiMultiTaskExecutor.ErrorObject> problems) {
 
             EventQueue.invokeLater(new Runnable() {
                 public void run() {
-                    List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
+                    List<IdeaUiMultiTaskExecutor.ErrorObject> errorObjects =
+                            new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
                     for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
                         PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
