@@ -52,8 +52,8 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		notifier = new CrucibleReviewNotifier(project);
 	}
 
-	private ReviewBean prepareReview() {
-		return new ReviewBean("http://bogus");
+	private Review prepareReview() {
+		return new Review("http://bogus");
 	}
 
 	private GeneralComment prepareGeneralComment(final PermId permId, final GeneralComment reply) {
@@ -219,15 +219,15 @@ public class CrucibleReviewNotifierTest extends TestCase {
 	private List<ReviewAdapter> prepareReviewData(State state) throws ValueNotYetInitialized {
 //		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
 
-		PermIdBean reviewId1 = new PermIdBean("CR-1");
-		PermIdBean newItem = new PermIdBean("CRF:11");
-		PermIdBean newCommentId = new PermIdBean("CMT:11");
-		PermIdBean newVCommentId = new PermIdBean("CMT:12");
+		PermId reviewId1 = new PermId("CR-1");
+		PermId newItem = new PermId("CRF:11");
+		PermId newCommentId = new PermId("CMT:11");
+		PermId newVCommentId = new PermId("CMT:12");
 
-		PermIdBean reviewId2 = new PermIdBean("CR-2");
-		PermIdBean newItem1 = new PermIdBean("CRF:21");
-		PermIdBean newCommentId1 = new PermIdBean("CMT:21");
-		PermIdBean newVCommentId1 = new PermIdBean("CMT:22");
+		PermId reviewId2 = new PermId("CR-2");
+		PermId newItem1 = new PermId("CRF:21");
+		PermId newCommentId1 = new PermId("CMT:21");
+		PermId newVCommentId1 = new PermId("CMT:22");
 
 
 		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
@@ -238,11 +238,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		Reviewer reviewer4 = new Reviewer("alice", "Alice", false);
 
 		Review review1 = prepareReview();
-		((ReviewBean) review1).setGeneralComments(new ArrayList<GeneralComment>());
-//		((ReviewBean) review1).setVersionedComments(new ArrayList<VersionedComment>());
-		((ReviewBean) review1).setPermId(reviewId1);
-		((ReviewBean) review1).setState(state);
-		((ReviewBean) review1).setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
+		((Review) review1).setGeneralComments(new ArrayList<GeneralComment>());
+//		((Review) review1).setVersionedComments(new ArrayList<VersionedComment>());
+		((Review) review1).setPermId(reviewId1);
+		((Review) review1).setState(state);
+		((Review) review1).setReviewers(new HashSet(Arrays.asList(reviewer1, reviewer2)));
 
 
 		review1.getGeneralComments().add(prepareGeneralComment(newCommentId, null));
@@ -258,7 +258,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		Review review2 = prepareReview();
 		review2.setGeneralComments(new ArrayList<GeneralComment>());
-//		((ReviewBean) review2).setVersionedComments(new ArrayList<VersionedComment>());
+//		((Review) review2).setVersionedComments(new ArrayList<VersionedComment>());
 		review2.setPermId(reviewId2);
 		review2.setState(state);
 		review2.setReviewers(new HashSet(Arrays.asList(reviewer3, reviewer4)));
@@ -603,7 +603,7 @@ public class CrucibleReviewNotifierTest extends TestCase {
  //		};
  //
  //		CrucibleFileInfoManager mgr = CrucibleFileInfoManager.getInstance();
- //		PermIdBean newPermlId = new PermIdBean("CMT:100");
+ //		PermId newPermlId = new PermId("CMT:100");
  //		mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getVersionedComments()
  //				.add(prepareVersionedComment(newPermlId, mgr.getFiles(reviews.get(0).getInnerReviewObject()).get(0).getPermId(), null));
  //		bean.setReviews(reviews);

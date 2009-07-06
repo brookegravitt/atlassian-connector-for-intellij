@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.action.reviews;
 
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.PermIdBean;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -127,7 +127,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			for (ServerData server : servers) {
 				try {
 					Review review = CrucibleServerFacadeImpl.getInstance().getReview(server,
-							new PermIdBean(dialog.getSearchKey()));
+							new PermId(dialog.getSearchKey()));
 					if (review != null) {
 						serverReviews.add(new ReviewAdapter(review, server));
 					}

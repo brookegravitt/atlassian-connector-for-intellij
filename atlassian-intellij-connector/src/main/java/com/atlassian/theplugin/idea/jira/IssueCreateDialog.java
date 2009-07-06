@@ -441,7 +441,8 @@ public class IssueCreateDialog extends DialogWrapper {
 				}
 
 				if (indexesToSelect.size() > 0) {
-					componentsList.setSelectedIndices(ArrayUtils.toPrimitive(indexesToSelect.toArray(new Integer[0])));
+					componentsList.setSelectedIndices(ArrayUtils.toPrimitive(indexesToSelect.toArray(
+							new Integer[indexesToSelect.size()])));
 				}
 			}
 		}

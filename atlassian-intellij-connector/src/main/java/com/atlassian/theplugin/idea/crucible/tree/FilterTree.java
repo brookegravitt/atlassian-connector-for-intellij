@@ -253,7 +253,7 @@ public class FilterTree extends JTree {
 			}
 		}
 
-		setSelectionPaths(selectedPaths.toArray(new TreePath[0]));
+		setSelectionPaths(selectedPaths.toArray(new TreePath[selectedPaths.size()]));
 	}
 
 	/**

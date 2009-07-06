@@ -47,11 +47,11 @@ public final class ReviewCommentRendererTestUi {
 				return null;
 			}
 		}, "", "");
-		ReviewBean review = new ReviewBean("myreviewbean");
+		Review review = new Review("myReview");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		VersionedVirtualFile vvf1 = new VersionedVirtualFile("mypath", "1.342");
 		VersionedVirtualFile vvf2 = new VersionedVirtualFile("mypath", "1.567");
-		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfoImpl(vvf1, vvf2, new PermIdBean("mypermid"));
+		CrucibleFileInfo crucibleFileInfo = new CrucibleFileInfoImpl(vvf1, vvf2, new PermId("mypermid"));
 
 		final VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
 		versionedCommentBean.setMessage("my beautiful message");

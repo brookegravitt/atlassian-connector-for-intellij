@@ -124,13 +124,11 @@ public final class BugReporting {
 						+ ", Plugin version=" + VERSION_NAME;
         final String environment = UrlUtil.encodeUrl(rawEnvironment);
 
-        final String bugUrl = BASE
+        return BASE
                 + "?pid=" + PROJECT_ID
                 + "&versions=" + versionCodeForJira
                 + "&issuetype=" + TICKET_TYPE_BUG
                 + "&environment=" + environment;
-
-        return bugUrl;
 	}
 
 	public static String getStoryUrl() {
