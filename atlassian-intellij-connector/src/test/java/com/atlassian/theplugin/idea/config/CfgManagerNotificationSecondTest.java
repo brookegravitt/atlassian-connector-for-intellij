@@ -49,8 +49,6 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		super.tearDown();
 	}
 
-	private static final ProjectId PROJECT_ID = new ProjectId();
-
 	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerIdImpl());
 	private final BambooServerCfg bamboo2 = new BambooServerCfg("bamboo2", new ServerIdImpl());
 	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerIdImpl());
@@ -96,7 +94,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	}
 
 	private ServerData getServerData(final ServerCfg serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+		return new ServerData(serverCfg, new UserCfg(serverCfg.getUserName(), serverCfg.getPassword()));
 	}
 
 	public void testServerRemoved() {
@@ -137,10 +135,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverDisabled(crucible1.getServerId());
 		listener.serverDisabled(jira1.getServerId());
 		listener.serverDisabled(fisheye1.getServerId());
-		listener.serverDataChanged(bamboo1.getServerId());
-		listener.serverDataChanged(crucible1.getServerId());
-		listener.serverDataChanged(jira1.getServerId());
-		listener.serverDataChanged(fisheye1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
+		listener.serverDataChanged(getServerData(crucible1));
+		listener.serverDataChanged(getServerData(jira1));
+		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
@@ -168,10 +166,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverEnabled(getServerData(crucible1));
 		listener.serverEnabled(getServerData(jira1));
 		listener.serverEnabled(getServerData(fisheye1));
-		listener.serverDataChanged(bamboo1.getServerId());
-		listener.serverDataChanged(crucible1.getServerId());
-		listener.serverDataChanged(jira1.getServerId());
-		listener.serverDataChanged(fisheye1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
+		listener.serverDataChanged(getServerData(crucible1));
+		listener.serverDataChanged(getServerData(jira1));
+		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(conf);
 		listener.bambooServersChanged(conf);
 		listener.crucibleServersChanged(conf);
@@ -197,10 +195,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverNameChanged(crucible1.getServerId());
 		listener.serverNameChanged(jira1.getServerId());
 		listener.serverNameChanged(fisheye1.getServerId());
-		listener.serverDataChanged(bamboo1.getServerId());
-		listener.serverDataChanged(crucible1.getServerId());
-		listener.serverDataChanged(jira1.getServerId());
-		listener.serverDataChanged(fisheye1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
+		listener.serverDataChanged(getServerData(crucible1));
+		listener.serverDataChanged(getServerData(jira1));
+		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
@@ -226,10 +224,10 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverConnectionDataChanged(crucible1.getServerId());
 		listener.serverConnectionDataChanged(jira1.getServerId());
 		listener.serverConnectionDataChanged(fisheye1.getServerId());
-		listener.serverDataChanged(bamboo1.getServerId());
-		listener.serverDataChanged(crucible1.getServerId());
-		listener.serverDataChanged(jira1.getServerId());
-		listener.serverDataChanged(fisheye1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
+		listener.serverDataChanged(getServerData(crucible1));
+		listener.serverDataChanged(getServerData(jira1));
+		listener.serverDataChanged(getServerData(fisheye1));
 		listener.jiraServersChanged(newConf);
 		listener.bambooServersChanged(newConf);
 		listener.crucibleServersChanged(newConf);
@@ -258,7 +256,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		listener.serverConnectionDataChanged(bamboo1.getServerId());
 		listener.serverNameChanged(bamboo1.getServerId());
 		listener.serverDisabled(bamboo1.getServerId());
-		listener.serverDataChanged(bamboo1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
 		listener.serverRemoved(getServerData(crucible1));
 		listener.serverRemoved(getServerData(jira1));
 		listener.serverRemoved(getServerData(fisheye1));
@@ -280,7 +278,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 
 		// record
 		listener.configurationUpdated(newConf);
-		listener.serverDataChanged(bamboo1.getServerId());
+		listener.serverDataChanged(getServerData(bamboo1));
 		listener.bambooServersChanged(newConf);
 
 		// test
