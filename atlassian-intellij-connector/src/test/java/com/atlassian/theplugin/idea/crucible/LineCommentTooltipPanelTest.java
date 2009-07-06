@@ -24,8 +24,8 @@ public class LineCommentTooltipPanelTest {
 	private static final int FRAME_HEIGHT = 400;
 
 	public static void main(String[] args) {
-		ReviewBean rev = new ReviewBean("test");
-		rev.setPermId(new PermIdBean("MyReview"));
+		Review rev = new Review("test");
+		rev.setPermId(new PermId("MyReview"));
 		final ReviewAdapter ra = new ReviewAdapter(rev, new ServerData(new ServerCfg(true, "test", "", new ServerIdImpl()) {
 			public ServerType getServerType() {
 				return null;
@@ -35,7 +35,7 @@ public class LineCommentTooltipPanelTest {
 				return null;
 			}
 		}, "zenon", ""));
-		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
+		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermId("reviewFile"));
 		ra.setFacade(new MyNullFacade());
 		final CommentBean comment = new VersionedCommentBean();
 		User author = new User("zenon", "Zenon User");
@@ -51,7 +51,7 @@ public class LineCommentTooltipPanelTest {
 						+ "Nice sizeable test message for you to look at");
 		comment.setDefectRaised(true);
 		comment.setDefectApproved(true);
-		comment.setPermId(new PermIdBean("Parent Comment"));
+		comment.setPermId(new PermId("Parent Comment"));
 		CustomFieldBean cf = new CustomFieldBean();
 		cf.setValue("Total fubar");
 		comment.getCustomFields().put("Defect class", cf);
@@ -139,7 +139,7 @@ public class LineCommentTooltipPanelTest {
 		reply.setCreateDate(new Date());
 		reply.setReply(true);
 		parent.getReplies().add(reply);
-		reply.setPermId(new PermIdBean("Reply #" + (++replyCount)));
+		reply.setPermId(new PermId("Reply #" + (++replyCount)));
 		return reply;
 	}
 

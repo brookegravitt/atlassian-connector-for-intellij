@@ -687,7 +687,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 		return getRootComponent();
 	}
 
-	protected class ReviewProvider extends ReviewBean {
+	protected class ReviewProvider extends Review {
 		private final ServerData server;
 
 		public ReviewProvider(ServerData server) {

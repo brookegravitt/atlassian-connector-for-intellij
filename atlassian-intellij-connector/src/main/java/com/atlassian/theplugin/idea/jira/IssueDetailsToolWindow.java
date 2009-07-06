@@ -405,9 +405,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		private RunJiraActionGroup getAvailableActionsGroup() {
-			final RunJiraActionGroup actionGroup = (RunJiraActionGroup) ActionManager
+			return (RunJiraActionGroup) ActionManager
 					.getInstance().getAction("ThePlugin.JiraIssues.RunActionGroup");
-			return actionGroup;
 		}
 
 		public Object getData(@NonNls final String dataId) {

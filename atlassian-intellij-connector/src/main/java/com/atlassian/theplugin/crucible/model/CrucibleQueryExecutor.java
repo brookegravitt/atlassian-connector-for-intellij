@@ -135,7 +135,7 @@ public class CrucibleQueryExecutor {
 								"Crucible: updating status for server: " + server.getUrl()
 										+ ", recenlty viewed reviews filter");
 
-						Review r = crucibleServerFacade.getReview(server, new PermIdBean(recentReview.getReviewId()));
+						Review r = crucibleServerFacade.getReview(server, new PermId(recentReview.getReviewId()));
 						recenltyOpenFilterNotificationBean.getReviews().add(new ReviewAdapter(r, server));
 
 					} catch (ServerPasswordNotProvidedException exception) {

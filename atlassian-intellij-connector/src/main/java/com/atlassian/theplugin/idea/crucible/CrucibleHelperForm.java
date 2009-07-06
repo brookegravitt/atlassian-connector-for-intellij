@@ -113,9 +113,7 @@ public class CrucibleHelperForm extends DialogWrapper {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 
-		RepositoryBean repo = new RepositoryBean();
-		repo.setName("");
-		NON_REPO = new RepositoryComboBoxItem(repo);
+		NON_REPO = new RepositoryComboBoxItem(new Repository("", "unknown", false));
 
 		$$$setupUI$$$();
 		init();

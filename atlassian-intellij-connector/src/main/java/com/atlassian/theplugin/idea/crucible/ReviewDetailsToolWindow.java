@@ -624,7 +624,7 @@ class DetailsPanel extends JPanel {
 				return null;
 			}
 		}, "", "");
-		ReviewBean review = new ReviewBean("myreviewbean");
+		Review review = new Review("myReview");
 		ReviewAdapter reviewAdapter = new ReviewAdapter(review, cruc);
 		review.setDescription("My description dfjlslj ldfsjalkfsdjlkj sld"
 				+ "jldfjal jfdlkjafl jldfsjalfj ldsj fldjsf; ljWojciech Seliga fjdsalkfjs df\nA new line above\nand then some"

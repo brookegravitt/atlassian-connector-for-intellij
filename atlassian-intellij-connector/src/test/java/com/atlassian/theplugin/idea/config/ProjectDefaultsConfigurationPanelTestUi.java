@@ -20,9 +20,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProjectBean;
 import com.atlassian.theplugin.commons.crucible.api.model.Repository;
-import com.atlassian.theplugin.commons.crucible.api.model.RepositoryBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -182,17 +180,11 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	}
 
 	private static CrucibleProject makeCrucibleProject(String id, String key, String name) {
-		CrucibleProjectBean res = new CrucibleProjectBean();
-		res.setId(id);
-		res.setKey(key);
-		res.setName(name);
-		return res;
+		return new CrucibleProject(id, key, name);
 	}
 
 	private static Repository makeRepository(String name) {
-		RepositoryBean res = new RepositoryBean();
-		res.setName(name);
-		return res;
+		return new Repository(name, "unknown", false);
 	}
 
 	private static JIRAProject makeJiraProject(long id, String key, String name) {

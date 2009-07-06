@@ -430,7 +430,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermIdBean(reviewKey));
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermId(reviewKey));
 				return new ReviewAdapter(r, server);
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
@@ -457,7 +457,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermIdBean(reviewKey));
+				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermId(reviewKey));
 				ReviewAdapter ra = new ReviewAdapter(r, server);
 				CrucibleServerFacadeImpl.getInstance().getDetailsForReview(ra);
 				return ra;
