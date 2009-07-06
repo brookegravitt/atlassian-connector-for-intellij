@@ -21,8 +21,8 @@ public class CrucibleReviewListModelImplTest extends TestCase {
 	private ServerData server2;
 	private int addedReviews, changedReviews, removedReviews;
 	private Date date = new Date();
-	private User moderator = new UserBean("moderator");
-	private User author = new UserBean("author");
+	private User moderator = new User("moderator");
+	private User author = new User("author");
 
 	@Override
 	public void setUp() throws Exception {

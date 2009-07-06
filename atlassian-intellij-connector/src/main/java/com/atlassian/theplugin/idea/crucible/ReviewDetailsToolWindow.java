@@ -632,9 +632,7 @@ class DetailsPanel extends JPanel {
 		review.setName("My review name");
 		review.setState(State.REVIEW);
 		review.setCreateDate(new Date());
-		final ReviewerBean author = new ReviewerBean();
-		author.setUserName("wseliga");
-		author.setDisplayName("Wojciech Seliga");
+		final Reviewer author = new Reviewer("wseliga", "Wojciech Seliga");
 		review.setAuthor(author);
 		review.setCreator(author);
 		review.setModerator(author);

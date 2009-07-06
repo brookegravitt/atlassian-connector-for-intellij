@@ -37,6 +37,10 @@ public class BambooServerConfigurationFormTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+
+		// TODO this call should be removed when HttpClientFactory is not singleton anymore
+		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
+
 		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
 				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 	}
@@ -132,9 +136,6 @@ public class BambooServerConfigurationFormTest extends TestCase {
 
 
 	public void testBambooFormFieldSetting() throws Exception {
-		// TODO this call should be removed when HttpClientFactory is not singleton anymore
-		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
-
 		bambooPluginConfigurationForm.setData(new BambooServerCfg(false, "", new ServerIdImpl()));
 
 		BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
