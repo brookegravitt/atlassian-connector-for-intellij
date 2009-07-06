@@ -172,6 +172,6 @@ public final class PluginUtil {
     }
 
 	@NotNull
-	public static final String PRODUCT_NAME = "Atlassian IntelliJ Connector"; 
+	public static final String PRODUCT_NAME = "Atlassian Connector for IntelliJ IDEA"; 
 }
 

@@ -63,7 +63,8 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final UiTaskExecutor uiTaskExecutor;
 	private final PrivateConfigurationDao privateCfgDao;
 	private final WorkspaceConfigurationBean projectConfigurationBean;
-	private static final String CFG_LOAD_ERROR_MSG = "Error while loading Atlassian IntelliJ Connector configuration.";
+	private static final String CFG_LOAD_ERROR_MSG =
+            "Error while loading the configuration of Atlassian Connector for IntelliJ IDEA.";
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();

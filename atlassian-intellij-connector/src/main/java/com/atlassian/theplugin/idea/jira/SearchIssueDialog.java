@@ -34,7 +34,7 @@ public class SearchIssueDialog extends DialogWrapper {
 		JPanel p = new JPanel(new FormLayout("pref, 10dlu, fill:pref:grow", "d, 3dlu, d"));
 		CellConstraints cc = new CellConstraints();
 
-		p.add(new JLabel(IconLoader.getIcon("/actions/find.png")), cc.xy(1, 1));
+		p.add(new JLabel(IconLoader.getIcon("/icons/find-jira.png")), cc.xy(1, 1));
 		p.add(new JLabel(PROMPT_TEXT), cc.xy(2 + 1, 1));
 		queryField = new JTextField();
 		p.add(queryField, cc.xy(2 + 1, 2 + 1));

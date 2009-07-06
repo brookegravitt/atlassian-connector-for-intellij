@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
@@ -107,7 +108,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 			}
 		}
 		p.add(new BoldLabel("Build Reason"), gbc1);
-		p.add(new JLabel(reason.toString()), gbc2);
+		p.add(new JLabel(Html2text.translate(reason.toString()).trim()), gbc2);
 		gbc1.gridy++;
 		gbc2.gridy++;
 		p.add(new BoldLabel("Tests"), gbc1);

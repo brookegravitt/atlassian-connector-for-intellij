@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.jira;
+package com.atlassian.theplugin.idea.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
