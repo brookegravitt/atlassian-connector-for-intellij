@@ -38,7 +38,7 @@ public class LineCommentTooltipPanelTest {
 		final CrucibleFileInfo file = new CrucibleFileInfoImpl(null, null, new PermIdBean("reviewFile"));
 		ra.setFacade(new MyNullFacade());
 		final CommentBean comment = new VersionedCommentBean();
-		User author = new UserBean("zenon", "Zenon User");
+		User author = new User("zenon", "Zenon User");
 
 		comment.setAuthor(author);
 		comment.setCreateDate(new Date());
@@ -133,7 +133,7 @@ public class LineCommentTooltipPanelTest {
 
 	private static CommentBean createReply(Comment parent, String txt) {
 		CommentBean reply = new VersionedCommentBean();
-		User replyAuthor = new UserBean("juzef", "Juzef Morda");
+		User replyAuthor = new User("juzef", "Juzef Morda");
 		reply.setAuthor(replyAuthor);
 		reply.setMessage(txt);
 		reply.setCreateDate(new Date());
@@ -156,7 +156,7 @@ public class LineCommentTooltipPanelTest {
 								+ "Very Very Long Comment, Very Very Long Comment");
 			} else {
 				VersionedCommentBean bean = (VersionedCommentBean) comment;
-				bean.setAuthor(new UserBean("zenon", "Zenon User"));
+				bean.setAuthor(new User("zenon", "Zenon User"));
 				return bean;
 			}
 		}

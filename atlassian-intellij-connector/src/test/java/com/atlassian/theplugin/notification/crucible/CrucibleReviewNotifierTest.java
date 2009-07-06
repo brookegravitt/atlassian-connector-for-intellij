@@ -56,15 +56,6 @@ public class CrucibleReviewNotifierTest extends TestCase {
 		return new ReviewBean("http://bogus");
 	}
 
-	private ReviewerBean prepareReviewer(String userName, String displayName, boolean completed) {
-		ReviewerBean reviewer = new ReviewerBean();
-		reviewer.setUserName(userName);
-		reviewer.setDisplayName(displayName);
-		reviewer.setCompleted(completed);
-
-		return reviewer;
-	}
-
 	private GeneralComment prepareGeneralComment(final PermId permId, final GeneralComment reply) {
 		return new GeneralComment() {
 
@@ -241,10 +232,10 @@ public class CrucibleReviewNotifierTest extends TestCase {
 
 		List<ReviewAdapter> reviews = new ArrayList<ReviewAdapter>();
 
-		Reviewer reviewer1 = prepareReviewer("bob", "Bob", false);
-		Reviewer reviewer2 = prepareReviewer("alice", "Alice", false);
-		Reviewer reviewer3 = prepareReviewer("scott", "Scott", false);
-		Reviewer reviewer4 = prepareReviewer("alice", "Alice", false);
+		Reviewer reviewer1 = new Reviewer("bob", "Bob", false);
+		Reviewer reviewer2 = new Reviewer("alice", "Alice", false);
+		Reviewer reviewer3 = new Reviewer("scott", "Scott", false);
+		Reviewer reviewer4 = new Reviewer("alice", "Alice", false);
 
 		Review review1 = prepareReview();
 		((ReviewBean) review1).setGeneralComments(new ArrayList<GeneralComment>());

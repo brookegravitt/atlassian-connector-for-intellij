@@ -154,7 +154,7 @@ public class AddAction extends AbstractCommentAction {
         newComment.setToEndLine(comment.getToEndLine());
         newComment.setCreateDate(new Date());
         newComment.setReviewItemId(review.getPermId());
-        newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+        newComment.setAuthor(new User(review.getServerData().getUserName()));
 
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
@@ -169,7 +169,7 @@ public class AddAction extends AbstractCommentAction {
 		newComment.setReply(true);
 
        	newComment.setCreateDate(new Date());
-		newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+		newComment.setAuthor(new User(review.getServerData().getUserName()));
         
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,

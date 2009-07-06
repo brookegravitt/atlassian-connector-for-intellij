@@ -56,9 +56,7 @@ public final class ReviewCommentRendererTestUi {
 		final VersionedCommentBean versionedCommentBean = new VersionedCommentBean();
 		versionedCommentBean.setMessage("my beautiful message");
 		versionedCommentBean.setDefectRaised(true);
-		final ReviewerBean author = new ReviewerBean();
-		author.setUserName("wseliga");
-		author.setDisplayName("Wojciech Seliga");
+		final Reviewer author = new Reviewer("wseliga", "Wojciech Seliga");
 		versionedCommentBean.setAuthor(author);
 
 		final VersionedCommentBean versionedCommentBean2 = new VersionedCommentBean();
@@ -67,9 +65,7 @@ public final class ReviewCommentRendererTestUi {
 						+ "Let us check if it wraps correctly \nWe have also another line here"
 						+ "\n\nThere is also an empty line above");
 		versionedCommentBean2.setToEndLine(31);
-		final ReviewerBean author2 = new ReviewerBean();
-		author2.setUserName("mwent");
-		author2.setDisplayName("Marek Went Long Lastname");
+		final Reviewer author2 = new Reviewer("mwent", "Marek Went Long Lastname");
 		versionedCommentBean2.setAuthor(author2);
 		final CustomFieldBean customFieldBean = new CustomFieldBean();
 		customFieldBean.setValue("Major");
@@ -88,9 +84,7 @@ public final class ReviewCommentRendererTestUi {
 		versionedCommentBean3.setToStartLine(21);
 		versionedCommentBean3.setToEndLine(131);
 		versionedCommentBean3.setToLineInfo(true);
-		final ReviewerBean author3 = new ReviewerBean();
-		author3.setUserName("ewong");
-		author3.setDisplayName("Edwin Wong");
+		final Reviewer author3 = new Reviewer("ewong", "Edwin Wong");
 		versionedCommentBean3.setAuthor(author3);
 		versionedCommentBean3.setDefectRaised(true);
 

@@ -707,9 +707,7 @@ public abstract class CrucibleReviewCreateForm extends DialogWrapper {
 
 		@Override
 		public User getCreator() {
-			UserBean user = new UserBean();
-			user.setUserName(server.getUserName());
-			return user;
+			return new User(server.getUserName());
 		}
 
 		@Override

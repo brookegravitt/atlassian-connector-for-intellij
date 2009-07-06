@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.action.crucible.comment.gutter;
 
-import com.atlassian.theplugin.commons.crucible.api.model.UserBean;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
 import com.atlassian.theplugin.idea.crucible.CommentEditForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -37,7 +37,7 @@ public class ReplyAction extends AbstractGutterCommentAction {
 			newComment.setToEndLine(comment.getToEndLine());
 			newComment.setCreateDate(new Date());
 			newComment.setReviewItemId(review.getPermId());
-			newComment.setAuthor(new UserBean(review.getServerData().getUserName()));
+			newComment.setAuthor(new User(review.getServerData().getUserName()));
 		}
 
 		CommentEditForm dialog = new CommentEditForm(project, review, newComment, error);
