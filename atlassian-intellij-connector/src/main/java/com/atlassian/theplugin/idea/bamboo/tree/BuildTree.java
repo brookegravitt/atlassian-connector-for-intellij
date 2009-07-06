@@ -41,6 +41,7 @@ public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
 	private final TreeUISetup buildTreeUiSetup;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
+	private BuildTree tree = this;
 
 	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel,
 			@NotNull final JScrollPane parentScrollPane) {
@@ -127,10 +128,10 @@ public class BuildTree extends AbstractTree {
 			refreshTree();
 		}
 
-        public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
-        }
+		public void generalProblemsHappened(@Nullable Collection<Exception> generalExceptions) {
+		}
 
-        private void refreshTree() {
+		private void refreshTree() {
 			//		long begin = System.currentTimeMillis();
 			try {
 				buildTreeUiSetup.setTreeRebuilding(true);
