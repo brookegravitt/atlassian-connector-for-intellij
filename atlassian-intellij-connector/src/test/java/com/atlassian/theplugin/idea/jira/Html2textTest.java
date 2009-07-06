@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import junit.framework.TestCase;
+import com.atlassian.theplugin.idea.util.Html2text;
 
 
 public class Html2textTest extends TestCase {

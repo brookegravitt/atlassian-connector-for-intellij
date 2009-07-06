@@ -56,7 +56,7 @@ import java.util.Set;
  */
 public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	private static final String NOT_FOUND_TEXT =
-			"Unable to find review <b>%1$2s</b> not found on server <b>%2$2s</b>.<br>"
+			"Unable to find review <b>%1$2s</b> on server <b>%2$2s</b>.<br>"
 					+ "This most likely means that the review does not exist on this server,<br>"
 					+ "but it can also be cause by server misconfiguration.<br>"
 					+ "See the stack trace for detailed information.";
@@ -66,12 +66,6 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		if (project == null) {
 			return;
 		}
-
-//		if (!VcsIdeaHelper.isUnderVcsControl(e) &&) {
-//			Messages.showInfoMessage(project, CrucibleConstants.CRUCIBLE_MESSAGE_NOT_UNDER_VCS,
-//					CrucibleConstants.CRUCIBLE_TITLE_NOT_UNDER_VCS);
-//			return;
-//		}
 
 		final ReviewListToolWindowPanel reviewsWindow = IdeaHelper.getReviewListToolWindowPanel(e);
 
@@ -186,7 +180,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component component,
 			final String searchKey, final ReviewListToolWindowPanel reviewsWindow) {
 		if (reviews.size() == 0) {
-			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian IntelliJ Connector");
+			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian Connector for IntelliJ IDEA");
 //			reviewsWindow.setStatusInfoMessage("Review " + searchKey + " not found.");
 		} else if (reviews.size() == 1) {
 			reviewsWindow.openReview(reviews.iterator().next(), true);

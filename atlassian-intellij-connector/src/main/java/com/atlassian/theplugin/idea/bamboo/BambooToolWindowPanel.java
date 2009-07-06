@@ -17,6 +17,8 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -54,7 +56,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
-	private final BuildTree buildTree;
+    private ProjectCfgManagerImpl projectCfgManager;
+    private final BuildTree buildTree;
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
 	private JComponent toolBar;
@@ -73,7 +76,8 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		this.project = project;
 		this.bambooModel = bambooModel;
-		this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
+        this.projectCfgManager = projectCfgManager;
+        this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
 
 		filterList = new BambooFilterList(projectCfgManager, bambooModel);
 		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
@@ -193,7 +197,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		return PLACE_PREFIX + project.getName();
 	}
 
-	private void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
+	public void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
 				&& buildDetailsInfo.areActionsAllowed()) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
@@ -268,6 +272,10 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		return null;
 	}
+
+    public Collection<BambooServerData> getServers() {
+        return projectCfgManager.getAllEnabledBambooServerss();
+    }
 
 	public void setGroupingType(@NonNls final BuildGroupBy groupingType) {
 		if (groupingType != null) {

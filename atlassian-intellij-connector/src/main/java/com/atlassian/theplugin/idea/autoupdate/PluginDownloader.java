@@ -125,7 +125,7 @@ public class PluginDownloader {
 			public void run() {
 				String title = "IDEA shutdown";
 				String message =
-						"Atlassian IntelliJ Connector has been installed successfully.\n"
+						"Atlassian Connector for IntelliJ IDEA has been installed successfully.\n"
 						+ "IntelliJ IDEA needs to be restarted to activate the plugin.\n"
 						+ "Would you like to shutdown IntelliJ IDEA now?";
 				// todo again add project or parent to the below window

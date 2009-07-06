@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
@@ -151,6 +152,11 @@ public final class IdeaHelper {
 	public static ReviewListToolWindowPanel getReviewListToolWindowPanel(@NotNull final Project project) {
 		return getProjectComponent(project, ReviewListToolWindowPanel.class);
 	}
+
+    @Nullable
+    public static BambooToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+        return getProjectComponent(event, BambooToolWindowPanel.class);
+    }
 
 	public static BuildToolWindow getBuildToolWindow(AnActionEvent event) {
 		return getProjectComponent(event, BuildToolWindow.class);

@@ -181,7 +181,8 @@ public class ProjectConfigurationPanel extends JPanel {
 							int answer = Messages.showYesNoDialog(project,
 									"<html>Do you want to set server <b>" + serverCfg.getName()
 											+ "</b> <i>username</i> and <i>password</i>"
-											+ " as default credentials for the Atlassian IntelliJ Connector?</html>",
+											+ " as default credentials for the "
+                                            + "Atlassian Connector for IntelliJ IDEA?</html>",
 									"Set as default",
 									Messages.getQuestionIcon());
 

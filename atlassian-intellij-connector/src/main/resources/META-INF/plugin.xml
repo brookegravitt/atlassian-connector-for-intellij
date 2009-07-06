@@ -587,6 +587,13 @@
 			<keyboard-shortcut first-keystroke="control shift alt r" keymap="$default"/>
 		</action>
 
+        <action id="ThePlugin.Bamboo.QuickSearch"
+                class="com.atlassian.theplugin.idea.action.bamboo.QuickSearchBuildAction"
+                text="Search Build"
+                icon="/icons/find-bamboo.png">
+            <keyboard-shortcut first-keystroke="control shift alt b" keymap="$default"/>
+        </action>
+
 		<group id="ThePlugin.FisheyeEditorMenu" popup="true" text="Fisheye">
 			<reference id="OpenFisheyeLink"/>
 			<reference id="CopyFisheyeLink"/>
@@ -600,6 +607,7 @@
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
 			<!--<reference id="OpenFisheyeLinkInEditor"/>-->
 			<add-to-group group-id="GoToMenu" anchor="last"/>
 		</group>
@@ -609,6 +617,7 @@
 			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
@@ -916,12 +925,11 @@
 			<reference id="ThePlugin.JiraIssues.ExpandIssues"/>
 			<reference id="ThePlugin.JiraIssues.CollapseIssues"/>
 			<separator/>
-			<reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<separator/>
 			<reference id="ThePlugin.JiraIssues.CreateIssue"/>
-			<!--<reference id="ThePlugin.JiraIssues.QuickSearch"/>-->
+            <reference id="ThePlugin.JiraIssues.QuickSearch"/>
 			<reference id="ThePlugin.JiraIssues.Refresh"/>
 			<separator/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
@@ -1171,6 +1179,7 @@
 			<reference id="ThePlugin.Bamboo.RunBuild"/>
 			<reference id="ThePlugin.Bamboo.AddLabelToBuild"/>
 			<reference id="ThePlugin.Bamboo.AddCommentToBuild"/>
+            <reference id="ThePlugin.Bamboo.QuickSearch"/>
 			<separator/>
 			<reference id="ThePlugin.HelpBamboo"/>
 		</group>
