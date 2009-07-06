@@ -19,7 +19,6 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.bamboo.*;
-import com.atlassian.theplugin.commons.bamboo.api.BambooSession;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.List;
