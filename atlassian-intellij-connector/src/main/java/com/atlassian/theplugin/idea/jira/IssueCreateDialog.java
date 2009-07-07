@@ -451,29 +451,27 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
-	private JIRAIssueBean issueProxy;
-
-	JIRAIssue getJIRAIssue() {
-		return issueProxy;
-	}
 
 	@Override
 	protected void doOKAction() {
-		issueProxy = new JIRAIssueBean();
-		issueProxy.setSummary(summary.getText());
+
+		JIRAIssueBean newIssue;
+
+		newIssue = new JIRAIssueBean();
+		newIssue.setSummary(summary.getText());
 
 		if (projectComboBox.getSelectedItem() == null) {
 			Messages.showErrorDialog(this.getContentPane(), "Project has to be selected", "Project not defined");
 			return;
 		}
-		issueProxy.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
+		newIssue.setProjectKey(((JIRAProject) projectComboBox.getSelectedItem()).getKey());
 		if (typeComboBox.getSelectedItem() == null) {
 			Messages.showErrorDialog(this.getContentPane(), "Issue type has to be selected", "Issue type not defined");
 			return;
 		}
-		issueProxy.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
-		issueProxy.setDescription(description.getText());
-		issueProxy.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
+		newIssue.setType(((JIRAConstant) typeComboBox.getSelectedItem()));
+		newIssue.setDescription(description.getText());
+		newIssue.setPriority(((JIRAPriorityBean) priorityComboBox.getSelectedItem()));
 		List<JIRAConstant> components = MiscUtil.buildArrayList();
 		Collection<Long> selectedComponents = new LinkedHashSet<Long>();
 		for (Object selectedObject : componentsList.getSelectedValues()) {
@@ -495,7 +493,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				VersionWrapper vw = (VersionWrapper) ver;
 				versions.add(vw.getWrapped());
 			}
-			issueProxy.setAffectsVersions(versions);
+			newIssue.setAffectsVersions(versions);
 		}
 
 		if (fixVersionsList.getSelectedValues().length > 0) {
@@ -504,15 +502,15 @@ public class IssueCreateDialog extends DialogWrapper {
 				VersionWrapper vw = (VersionWrapper) ver;
 				versions.add(vw.getWrapped());
 			}
-			issueProxy.setFixVersions(versions);
+			newIssue.setFixVersions(versions);
 		}
 
 		if (components.size() > 0) {
-			issueProxy.setComponents(components);
+			newIssue.setComponents(components);
 		}
 		String assignTo = assignee.getText();
 		if (assignTo.length() > 0) {
-			issueProxy.setAssignee(assignTo);
+			newIssue.setAssignee(assignTo);
 		}
 
 		// save selected project and components to the config
@@ -521,18 +519,19 @@ public class IssueCreateDialog extends DialogWrapper {
 			jiraConfiguration.getView().addServerDefault(jiraServer.getServerId(), p.getKey(), selectedComponents);
 		}
 
-		createIssueAndCloseOnSuccess();
+		createIssueAndCloseOnSuccess(newIssue);
 	}
 
-	private void createIssueAndCloseOnSuccess() {
+	private void createIssueAndCloseOnSuccess(final JIRAIssueBean newIssue) {
 		Task createTask = new Task.Modal(project, "Creating Issue", false) {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				String message;
+
+				indicator.setIndeterminate(true);
+
 				try {
-					JIRAIssue issueToCreate = getJIRAIssue();
-					final JIRAIssue createdIssue =
-							JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, issueToCreate);
+					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, newIssue);
 
 					message = "New issue created: <a href="
 							+ createdIssue.getIssueUrl()
