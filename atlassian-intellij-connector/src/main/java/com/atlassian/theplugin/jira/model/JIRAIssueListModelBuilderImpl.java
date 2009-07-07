@@ -31,7 +31,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 		this.project = null;
-		facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		facade = JIRAServerFacadeImpl.getInstance();
 		startFrom = 0;
 	}
 

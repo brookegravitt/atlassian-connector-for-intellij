@@ -65,7 +65,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
 
-	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;

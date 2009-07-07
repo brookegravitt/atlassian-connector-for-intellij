@@ -124,7 +124,8 @@ public final class ActiveIssueUtils {
 			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
-			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+
 			try {
 				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
@@ -201,7 +202,7 @@ public final class ActiveIssueUtils {
 
 			if (jiraServer != null) {
 				try {
-					actions = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).getAvailableActions(jiraServer, issue);
+					actions = JIRAServerFacadeImpl.getInstance().getAvailableActions(jiraServer, issue);
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
 				}

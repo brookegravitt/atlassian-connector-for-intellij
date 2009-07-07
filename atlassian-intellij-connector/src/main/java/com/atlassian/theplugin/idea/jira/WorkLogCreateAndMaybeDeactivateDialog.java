@@ -503,7 +503,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		this.deactivateActiveIssue = deactivateActiveIssue;
         this.config = config;
 
-        facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+        facade = JIRAServerFacadeImpl.getInstance();
 
 		setupUI();
 
