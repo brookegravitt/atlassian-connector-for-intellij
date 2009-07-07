@@ -123,7 +123,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			}
 		};
 
-		private void initCertInfo() {
+		private void initCertInfo(X509Certificate[] chain) {
 			X509Certificate cert = chain[0];
 			certInfo.add(infoPanel);
 			infoPanel.setContent(generalInfo);
@@ -175,15 +175,14 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 
 		private void byte2hex(byte b, StringBuffer stringbuffer) {
 			int nb = b & 0xFF;
-			int i_1 = (nb >> 4) & 0xF;
-			int i_2 = nb & 0xF;
-			stringbuffer.append(HEX_DIGITS[i_1] + HEX_DIGITS[i_2]);
+			int i1 = (nb >> 4) & 0xF;
+			int i2 = nb & 0xF;
+			stringbuffer.append(HEX_DIGITS[i1] + HEX_DIGITS[i2]);
 		}
 
 
 		private void buildDNPanel(String strDN, InfoPanel panel) {
-			Map<String, String> fields;
-			fields = parse(strDN);
+			Map<String, String> fields = parse(strDN);
 			for (Map.Entry<String, String> field : this.fields.entrySet()) {
 				String key = field.getKey();
 				if (fields.containsKey(key)) {
@@ -252,7 +251,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			gbc.weighty = 0;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 
-			initCertInfo();
+			initCertInfo(chain);
 			return panel;
 		}
 
