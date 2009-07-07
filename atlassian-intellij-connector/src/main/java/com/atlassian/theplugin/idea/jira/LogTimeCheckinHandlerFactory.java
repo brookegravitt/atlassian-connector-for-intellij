@@ -8,11 +8,12 @@ import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -219,7 +220,8 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 						public void run(@NotNull ProgressIndicator progressIndicator) {
 							try {
-								JIRAServerFacadeImpl.getInstance().logWork(server, issue, txtTimeSpent.getText(), cal, null,
+								JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).logWork(server, issue,
+                                        txtTimeSpent.getText(), cal, null,
 										!config.getRemainingEstimateUpdateMode()
 												.equals(RemainingEstimateUpdateMode.UNCHANGED),
 										newRemainingEstimate);

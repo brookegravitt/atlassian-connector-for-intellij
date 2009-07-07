@@ -20,8 +20,9 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;

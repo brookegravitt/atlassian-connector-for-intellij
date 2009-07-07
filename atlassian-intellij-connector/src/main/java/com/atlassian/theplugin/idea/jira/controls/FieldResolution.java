@@ -1,10 +1,10 @@
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import javax.swing.*;

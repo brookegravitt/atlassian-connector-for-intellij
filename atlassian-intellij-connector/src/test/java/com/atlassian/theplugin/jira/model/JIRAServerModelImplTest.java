@@ -20,8 +20,10 @@ import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testGetProjects() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		List<JIRAProject> projects = null;
@@ -70,7 +72,7 @@ public class JIRAServerModelImplTest extends TestCase {
 
 	public void testGetProjectsNull() {
 		try {
-			JIRAServerModelImpl model = new JIRAServerModelImpl();
+			JIRAServerModelImpl model = new JIRAServerModelIdea();
 			List<JIRAProject> projects = model.getProjects(null);
 			assertNull(projects);
 		} catch (JIRAException e) {
@@ -79,7 +81,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testGetServerFromCache() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		facade.counter = 0;
@@ -95,7 +97,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testClear() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		ServerData cfg1 = createServerData("test1");
 		ServerData cfg2 = createServerData("test2");
@@ -114,7 +116,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testClearAll() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		ServerData cfg1 = createServerData("test1");
 		ServerData cfg2 = createServerData("test2");
@@ -134,7 +136,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testStatuses() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -149,7 +151,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testStatusesWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAConstant> statuses = new ArrayList<JIRAConstant>();
 		facade.throwException = true;
 		model.setFacade(facade);
@@ -164,7 +166,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testIssueTypesNoProject() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -178,7 +180,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testIssueTypesWithProject() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -195,7 +197,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testIssueTypesNoProjectWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 
 		facade.throwException = true;
@@ -210,7 +212,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testIssueTypesWithProjectWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAConstant> issueTypes = new ArrayList<JIRAConstant>();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
@@ -228,7 +230,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testSavedFilters() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -240,7 +242,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testSavedFiltersWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAQueryFragment> filters = new ArrayList<JIRAQueryFragment>();
 		facade.throwException = true;
 		model.setFacade(facade);
@@ -254,7 +256,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testPriorities() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -268,7 +270,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testPrioritiesWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAPriorityBean> priorities = new ArrayList<JIRAPriorityBean>();
 
 		facade.throwException = true;
@@ -284,7 +286,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testComponents() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -299,7 +301,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testComponentsWithNullProject() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		List<JIRAComponentBean> components = Collections.emptyList();
@@ -311,7 +313,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testComponentsWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -328,7 +330,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testVersions() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -344,7 +346,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testVersionsNoProject() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -357,7 +359,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testVersionsWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -374,7 +376,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testFixForVersions() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		JIRAProjectBean p = new JIRAProjectBean(1, "test");
 		p.setKey("TEST");
@@ -389,7 +391,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testFixForVersionsNoProject() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -402,7 +404,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testResolutions() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 
 		model.setFacade(facade);
 		try {
@@ -415,7 +417,7 @@ public class JIRAServerModelImplTest extends TestCase {
 	}
 
 	public void testResolutionsWithException() {
-		JIRAServerModelImpl model = new JIRAServerModelImpl();
+		JIRAServerModelImpl model = new JIRAServerModelIdea();
 		List<JIRAResolutionBean> resolutions = new ArrayList<JIRAResolutionBean>();
 
 		facade.throwException = true;

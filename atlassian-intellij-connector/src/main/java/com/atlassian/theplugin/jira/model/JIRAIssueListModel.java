@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.intellij.openapi.project.Project;
 
 import java.util.Collection;

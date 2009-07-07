@@ -25,10 +25,14 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
-import com.atlassian.theplugin.jira.model.JIRAServerCache;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -451,9 +455,16 @@ public class IssueCreateDialog extends DialogWrapper {
 		getOKAction().setEnabled(true);
 	}
 
+	private JIRAIssueBean issueProxy;
+
+	JIRAIssue getJIRAIssue() {
+		return issueProxy;
+	}
 
 	@Override
 	protected void doOKAction() {
+		issueProxy = new JIRAIssueBean();
+		issueProxy.setSummary(summary.getText());
 
 		JIRAIssueBean newIssue;
 
@@ -531,7 +542,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				indicator.setIndeterminate(true);
 
 				try {
-					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, newIssue);
+					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).createIssue(jiraServer, newIssue);
 
 					message = "New issue created: <a href="
 							+ createdIssue.getIssueUrl()
@@ -544,7 +555,6 @@ public class IssueCreateDialog extends DialogWrapper {
 					EventQueue.invokeLater(new Runnable() {
 						public void run() {
 
-                            //HERE
                             issueListToolWindowPanel.refreshIssues(false);
 							issueListToolWindowPanel.openIssue(createdIssue, false);
 

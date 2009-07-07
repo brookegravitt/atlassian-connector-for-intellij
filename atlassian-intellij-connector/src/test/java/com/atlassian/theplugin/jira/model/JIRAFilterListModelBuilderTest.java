@@ -8,8 +8,10 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraViewConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModelImpl;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import junit.framework.TestCase;
 
 import java.util.*;
@@ -31,7 +33,7 @@ public class JIRAFilterListModelBuilderTest extends TestCase {
 		final JIRATestServerFacade facade = new JIRATestServerFacade();
 
 
-		serverModel = new JIRAServerModelImpl();
+		serverModel = new JIRAServerModelIdea();
 		serverModel.setFacade(facade);
 		fillServersAndFilters(savedFilters);
 

@@ -3,8 +3,8 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**

@@ -22,11 +22,13 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
@@ -88,7 +90,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
-	private JIRAServerModel jiraServerModel;
+	private JIRAServerModelIdea jiraServerModel;
 
 	private ConfigurationListener configListener = new LocalConfigurationListener();
 
@@ -111,7 +113,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final RecentlyOpenIssuesCache recentlyOpenIssuesCache,
 			@NotNull final JIRAFilterListBuilder filterListBuilder,
-			@NotNull final JIRAServerModel jiraServerModel) {
+			@NotNull final JIRAServerModelIdea jiraServerModel) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
@@ -120,7 +122,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 
-		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		jiraServerFacade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 
 		if (jiraWorkspaceConfiguration.getView() != null && jiraWorkspaceConfiguration.getView().getGroupBy() != null) {
 			groupBy = jiraWorkspaceConfiguration.getView().getGroupBy();
