@@ -6,23 +6,25 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
+import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
-import com.atlassian.theplugin.idea.util.Html2text;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.JIRAUserNameCache;
-import com.atlassian.theplugin.jira.api.*;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
@@ -63,7 +65,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	private static final String TOOL_WINDOW_TITLE = "Issues - JIRA";
 	private static final String[] NONE = {"None"};
 
-	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+	private static JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 	private final Project project;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private PluginConfiguration pluginConfiguration;
@@ -126,7 +128,8 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	public void closeToolWindow(AnActionEvent e) {
 		closeToolWindow(TOOL_WINDOW_TITLE, e);
 	}
-
+    
+    
 //	public boolean isServerEnabled(String key) {
 //		IssuePanel ip = getContentPanel(key);
 //		ServerCfg serverCfg = projectCfgManager.getServer(
@@ -1123,7 +1126,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 							for (JIRAComment c : cmts) {
 								try {
-									JIRAUserBean u = JIRAUserNameCache.getInstance()
+									JIRAUserBean u = RecentlyOpenIssuesCache.JIRAUserNameCache.getInstance()
 											.getUser(getJiraServerCfg(), c.getAuthor());
 									c.setAuthorFullName(u.getName());
 								} catch (JiraUserNotFoundException e) {

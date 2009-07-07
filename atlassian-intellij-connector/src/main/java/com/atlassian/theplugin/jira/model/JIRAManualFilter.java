@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.*;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -20,12 +20,12 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -503,7 +503,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
 		this.deactivateActiveIssue = deactivateActiveIssue;
         this.config = config;
 
-        facade = JIRAServerFacadeImpl.getInstance();
+        facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 
 		setupUI();
 

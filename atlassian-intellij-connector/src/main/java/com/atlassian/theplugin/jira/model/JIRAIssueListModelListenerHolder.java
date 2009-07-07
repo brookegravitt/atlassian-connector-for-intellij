@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -2,13 +2,14 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueUtils;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	public JIRAIssueListModelBuilderImpl(RecentlyOpenIssuesCache recentlyOpenIssuesCache) {
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 		this.project = null;
-		facade = JIRAServerFacadeImpl.getInstance();
+		facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		startFrom = 0;
 	}
 

@@ -5,9 +5,10 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,10 +23,6 @@ public class JIRAFilterListBuilder {
 
 	public JIRAFilterListBuilder() {
 	}
-
-//	public void setProjectId(final ProjectId projectId) {
-//		this.projectId = projectId;
-//	}
 
 	public void setListModel(@NotNull final JIRAFilterListModel listModel) {
 		this.listModel = listModel;

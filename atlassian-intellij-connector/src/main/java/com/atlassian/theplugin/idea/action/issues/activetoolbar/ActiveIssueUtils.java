@@ -23,11 +23,11 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAException;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -124,7 +124,7 @@ public final class ActiveIssueUtils {
 			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
-			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance();
+			JIRAServerFacade facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 			try {
 				return facade.getIssue(jiraServer, activeIssue.getIssueKey());
 			} catch (JIRAException e) {
@@ -201,7 +201,7 @@ public final class ActiveIssueUtils {
 
 			if (jiraServer != null) {
 				try {
-					actions = JIRAServerFacadeImpl.getInstance().getAvailableActions(jiraServer, issue);
+					actions = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).getAvailableActions(jiraServer, issue);
 				} catch (JIRAException e) {
 					PluginUtil.getLogger().warn("Cannot fetch issue actions: " + e.getMessage(), e);
 				}
