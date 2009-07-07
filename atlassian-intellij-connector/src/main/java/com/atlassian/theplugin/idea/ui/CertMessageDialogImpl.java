@@ -119,8 +119,8 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			}
 		};
 
-		private void initCertInfo(X509Certificate[] chain) {
-			X509Certificate cert = chain[0];
+		private void initCertInfo(X509Certificate[] chains) {
+			X509Certificate cert = chains[0];
 			certInfo.add(infoPanel);
 			infoPanel.setContent(generalInfo);
 			infoPanel.collapse();  // workaround
@@ -178,19 +178,19 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 
 
 		private void buildDNPanel(String strDN, InfoPanel panel) {
-			Map<String, String> fields = parse(strDN);
+			Map<String, String> lfields = parse(strDN);
 			for (Map.Entry<String, String> field : this.fields.entrySet()) {
 				String key = field.getKey();
-				if (fields.containsKey(key)) {
-					panel.addRow(this.fields.get(key) + " (" + key + ")", fields.get(key));
+				if (lfields.containsKey(key)) {
+					panel.addRow(this.fields.get(key) + " (" + key + ")", lfields.get(key));
 				}
 			}
 		}
 
 		private Map<String, String> parse(String name) {
 			Map<String, String> result = new HashMap<String, String>();
-			String[] fields = name.split(",");
-			for (String field : fields) {
+			String[] lfields = name.split(",");
+			for (String field : lfields) {
 				String[] parts = field.trim().split("=");
 				result.put(parts[0], parts[1]);
 			}
