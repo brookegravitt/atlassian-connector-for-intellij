@@ -72,7 +72,7 @@ public class ProgressAnimationProvider extends JPanel {
 				progressIcon.resume();
 				parentComponent.repaint();
 				parentComponent.validate();
-				parentComponent.requestFocus();
+//				parentComponent.requestFocus();
 			} else {
 
 				progressIcon.suspend();
@@ -82,7 +82,7 @@ public class ProgressAnimationProvider extends JPanel {
 				}
 				parentComponent.repaint();
 				parentComponent.validate();
-				parentComponent.requestFocus();
+//				parentComponent.requestFocus();
 			}
 
 		}

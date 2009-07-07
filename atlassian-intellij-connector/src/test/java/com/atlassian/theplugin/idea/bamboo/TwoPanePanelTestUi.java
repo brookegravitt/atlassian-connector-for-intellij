@@ -28,7 +28,7 @@ public final class TwoPanePanelTestUi {
 	}
 
 	public static void main(String[] args) {
-		SwingAppRunner.run(new TwoPanePanel() {
+		SwingAppRunner.run(new ThreePanePanel() {
 			{
 				init();
 //				setStatusInfoMessage("Very long message<br/>THIS IS VERY LOOOOOOOOOOOOOOOOOONG line<br/>Another line<br/>", true);
@@ -40,7 +40,7 @@ public final class TwoPanePanelTestUi {
 			}
 
 			@Override
-			protected JComponent getToolBar() {
+			protected JComponent getLeftToolBar() {
 				final JButton button = new JButton("my toolbar");
 				button.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
@@ -65,7 +65,15 @@ public final class TwoPanePanelTestUi {
 				return new JLabel(
 						"<html>Very long message<br/>THIS IS VERY LOOOOOOOOOOOOOOOOOONG line<br/>Another line<br/>");
 			}
-		});
+
+            protected JComponent getRightMostPanel() {
+                return new JPanel();
+            }
+
+            protected JComponent getRightMostToolBar() {
+                return new JPanel();
+            }
+        });
 	}
 
 }
