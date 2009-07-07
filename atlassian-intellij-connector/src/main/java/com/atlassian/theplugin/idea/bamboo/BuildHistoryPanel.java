@@ -18,11 +18,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Collection;
-
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -202,7 +200,7 @@ public class BuildHistoryPanel extends JPanel {
         public void setBuild(BambooBuildAdapterIdea build) {
             buildIcon.setIcon(build.getIcon());
             buildKey.setText(build.getPlanKey() + "-" + build.getBuildNumberAsString());
-            buildDate.setText(DateUtil.getRelativeBuildTime(build.getCompletionDate()) + "  ");
+            buildDate.setText(DateUtil.getRelativePastDate(build.getCompletionDate()) + "  ");
         }
 
         public void setSelected(boolean selected) {
