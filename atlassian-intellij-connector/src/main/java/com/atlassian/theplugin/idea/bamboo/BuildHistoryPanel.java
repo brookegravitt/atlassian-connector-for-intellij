@@ -178,7 +178,7 @@ public class BuildHistoryPanel extends JPanel {
         return null;
     }
 
-    private static class RendererPanel extends JPanel {
+    private final static class RendererPanel extends JPanel {
         private JLabel buildIcon = new JLabel();
         private SelectableLabel buildKey =
                 new SelectableLabel(true, true, "NOTHING YET", null, SwingConstants.TRAILING, ROW_HEIGHT);

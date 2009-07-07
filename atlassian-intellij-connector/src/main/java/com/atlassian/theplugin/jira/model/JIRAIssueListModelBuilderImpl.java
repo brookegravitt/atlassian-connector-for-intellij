@@ -9,7 +9,6 @@ import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.project.Project;
 
 import java.util.ArrayList;
