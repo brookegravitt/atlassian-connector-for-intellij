@@ -390,7 +390,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			// todo check active issue
 			IdeaHelper.getIssueDetailsToolWindow(getProject()).showIssue(issue, baseIssueListModel);
 			if (reload) {
-				IdeaHelper.getIssueDetailsToolWindow(getProject()).refresh(issue.getKey());
+				IdeaHelper.getIssueDetailsToolWindow(getProject()).refresh(issue);
 			}
 
 		}
@@ -1033,9 +1033,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		@Override
 		public void serverNameChanged(final ServerId serverId) {
 			ServerData server = projectCfgManager.getJiraServerr(serverId);
-				jiraServerModel.replace(server);
-				refreshFilterModel();
-				jiraFilterListModel.fireServerNameChanged();
+			jiraServerModel.replace(server);
+			refreshFilterModel();
+			jiraFilterListModel.fireServerNameChanged();
 		}
 
 		@Override
