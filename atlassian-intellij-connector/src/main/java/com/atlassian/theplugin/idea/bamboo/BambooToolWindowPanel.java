@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -35,10 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import javax.swing.event.*;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -50,21 +48,25 @@ import java.util.Collection;
 /**
  * @author Wojciech Seliga
  */
-public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider {
+public class BambooToolWindowPanel extends ThreePanePanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
+    private static final String SELECT_BUILD_TO_SHOW_HISTORY = "Select a build to show plan history";
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
     private ProjectCfgManagerImpl projectCfgManager;
     private final BuildTree buildTree;
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
-	private JComponent toolBar;
+	private JComponent leftToolBar;
+    private JComponent rightToolBar;
 	private BambooWorkspaceConfiguration bambooConfiguration;
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 	private SearchBuildListModel searchBuildModel;
+    private BuildHistoryPanel buildHistoryPanel;
+    private JLabel planHistoryListLabel;
 
-	public BambooFilterType getBambooFilterType() {
+    public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
 	}
 
@@ -125,7 +127,10 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		searchBuildModel = new SearchBuildListModel(bambooModel);
 		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel), getRightScrollPane());
-		toolBar = createToolBar();
+		leftToolBar = createLeftToolBar();
+        rightToolBar = createRightToolBar();
+        buildHistoryPanel = new BuildHistoryPanel(project);
+
 		init();
 		addBuildTreeListeners();
 		addSearchBoxListener();
@@ -178,6 +183,19 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 				}
 			}
 		});
+
+        buildTree.addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent event) {
+                final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+                if (buildDetailsInfo != null) {
+                    buildHistoryPanel.showHistoryForBuild(buildDetailsInfo.getBuild());
+                        planHistoryListLabel.setText("Build history for plan " + buildDetailsInfo.getPlanKey());
+                } else {
+                    buildHistoryPanel.clearBuildHistory();
+                    planHistoryListLabel.setText(SELECT_BUILD_TO_SHOW_HISTORY);
+                }
+            }
+        });
 	}
 
 	private void launchContextMenu(MouseEvent e) {
@@ -203,6 +221,10 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		}
 	}
 
+    public BambooBuild getSelectedHistoryBuild() {
+        return buildHistoryPanel.getSelectedBuild();
+    }
+    
 	protected void addSearchBoxListener() {
 		searchField.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
@@ -242,7 +264,15 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		return buildTree;
 	}
 
-	public Object getData(@NonNls final String dataId) {
+    protected JComponent getRightMostPanel() {
+        return buildHistoryPanel;
+    }
+
+    protected JComponent getRightMostToolBar() {
+        return rightToolBar;
+    }
+
+    public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
 			// return server of selected build
 			if (buildTree.getSelectedBuild() != null) {
@@ -300,11 +330,11 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 	}
 
 	@Override
-	protected JComponent getToolBar() {
-		return toolBar;
+	protected JComponent getLeftToolBar() {
+		return leftToolBar;
 	}
 
-	private JComponent createToolBar() {
+	private JComponent createLeftToolBar() {
 		final JPanel toolBarPanel = new JPanel(new GridBagLayout());
 
 		GridBagConstraints gbc = new GridBagConstraints();
@@ -313,7 +343,7 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 		gbc.weighty = 0.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.weightx = 1.0;
-		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.ToolBar"), gbc);
+		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.LeftToolBar"), gbc);
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
@@ -323,6 +353,24 @@ public class BambooToolWindowPanel extends TwoPanePanel implements DataProvider 
 
 		return toolBarPanel;
 	}
+
+    private JComponent createRightToolBar() {
+        final JPanel toolBarPanel = new JPanel(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weighty = 0.0;
+        gbc.fill = GridBagConstraints.NONE;
+        planHistoryListLabel = new JLabel(SELECT_BUILD_TO_SHOW_HISTORY);
+        toolBarPanel.add(planHistoryListLabel);
+        gbc.gridx++;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), gbc);
+
+        return toolBarPanel;
+    }
 
 	@Nullable
 	private JComponent loadToolBar(final String toolbarName) {

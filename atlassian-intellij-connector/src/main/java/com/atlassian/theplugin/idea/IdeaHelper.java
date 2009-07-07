@@ -158,6 +158,11 @@ public final class IdeaHelper {
         return getProjectComponent(event, BambooToolWindowPanel.class);
     }
 
+    @Nullable
+    public static BambooToolWindowPanel getBambooToolWindowPanel(@NotNull final Project project) {
+        return getProjectComponent(project, BambooToolWindowPanel.class);
+    }
+    
 	public static BuildToolWindow getBuildToolWindow(AnActionEvent event) {
 		return getProjectComponent(event, BuildToolWindow.class);
 	}

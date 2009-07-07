@@ -317,6 +317,10 @@
 				text="Open Build" description="Open Build Details" icon="/actions/showChangesOnly.png">
 			<keyboard-shortcut first-keystroke="control B" keymap="$default"/>
 		</action>
+        <action id="ThePlugin.Bamboo.OpenBuildFromHistory"
+                class="com.atlassian.theplugin.idea.action.bamboo.OpenBuildFromHistoryAction"
+                text="Open Build" description="Open Build Details"
+                icon="/actions/showChangesOnly.png"/>
 		<action id="ThePlugin.Bamboo.ExpandTests" class="com.atlassian.theplugin.idea.action.bamboo.ExpandTestsAction"
 				text="Expand All" icon="/actions/expandall.png"/>
 		<action id="ThePlugin.Bamboo.CollapseTests"
@@ -1164,7 +1168,7 @@
 				text="Collapse All"
 				icon="/actions/collapseall.png"/>
 
-		<group id="ThePlugin.Bamboo.ToolBar" popup="false">
+		<group id="ThePlugin.Bamboo.LeftToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettingsGroup"/>
 			<reference id="ThePlugin.Bamboo.RefreshStatus"/>
 			<separator/>
@@ -1183,6 +1187,10 @@
 			<separator/>
 			<reference id="ThePlugin.HelpBamboo"/>
 		</group>
+
+        <group id="ThePlugin.Bamboo.RightToolBar" popup="false">
+            <reference id="ThePlugin.Bamboo.OpenBuildFromHistory"/>
+        </group>
 
 		<group id="ThePlugin.Bamboo.BuildPopupMenuNew" popup="true">
 			<reference id="ThePlugin.Bamboo.OpenBuild"/>
