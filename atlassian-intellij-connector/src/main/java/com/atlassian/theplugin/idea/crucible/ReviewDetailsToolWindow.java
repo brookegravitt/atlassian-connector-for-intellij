@@ -560,7 +560,7 @@ class DetailsPanel extends JPanel {
 		gbc2.gridy++;
 		body.add(new BoldLabel("Open"), gbc1);
 
-		body.add(new JLabel(DateUtil.getRelativeBuildTime(ra.getCreateDate())), gbc2);
+		body.add(new JLabel(DateUtil.getRelativePastDate(ra.getCreateDate())), gbc2);
 
 		gbc1.gridy++;
 		gbc2.gridy++;

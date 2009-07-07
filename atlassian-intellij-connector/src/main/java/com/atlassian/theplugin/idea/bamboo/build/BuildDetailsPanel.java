@@ -2,10 +2,10 @@ package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
+import com.atlassian.theplugin.idea.util.Html2text;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,8 +38,8 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 		gbc.weighty = 1.0;
 		gbc.fill = GridBagConstraints.BOTH;
 
-	   	refreshBuildRelativeTime();
-		
+		refreshBuildRelativeTime();
+
 		JScrollPane scroll = new JScrollPane(createBody());
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		add(scroll, gbc);
@@ -131,6 +131,6 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private void refreshBuildRelativeTime() {
-		relativeBuildTime.setText(DateUtil.getRelativeBuildTime(build.getCompletionDate()));
+		relativeBuildTime.setText(DateUtil.getRelativePastDate(build.getCompletionDate()));
 	}
 }
