@@ -60,11 +60,6 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
         super(false);
     }
 
-
-    void initialize() {
-
-    }
-
     public void show(String host, String msg, X509Certificate[] certificates) {
         this.server = host;
         this.message = msg;
@@ -91,6 +86,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
         });
 
         init();
+        show();
     }
 
     public boolean isTemporarily() {
