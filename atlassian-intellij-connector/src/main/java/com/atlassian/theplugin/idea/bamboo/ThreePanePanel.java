@@ -26,14 +26,15 @@ import java.awt.event.ComponentEvent;
 
 public abstract class ThreePanePanel extends JPanel {
 
-	public static final float PANEL_SPLIT_RATIO = 0.3f;
+	public static final float LEFT_PANEL_SPLIT_RATIO = 0.3f;
+    public static final float RIGHT_PANEL_SPLIT_RATIO = 0.23f;
 	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	//	private JPanel statusBarPane;
 	private StatusBarPane statusBarPane;
-	private final Splitter innerSplitPane = new Splitter(true, PANEL_SPLIT_RATIO);
-    private final Splitter outerSplitPane = new Splitter(true, 1 - PANEL_SPLIT_RATIO);
+	private final Splitter innerSplitPane = new Splitter(true, LEFT_PANEL_SPLIT_RATIO);
+    private final Splitter outerSplitPane = new Splitter(true, 1 - RIGHT_PANEL_SPLIT_RATIO);
 
     private JScrollPane leftUpperScrollPane;
 	private JScrollPane rightScrollPane;
@@ -76,8 +77,6 @@ public abstract class ThreePanePanel extends JPanel {
 		leftUpperScrollPane.setViewportBorder(BorderFactory.createEmptyBorder(0, Constants.DIALOG_MARGIN / 2, 0, 0));
 		leftUpperScrollPane.setViewportView(getLeftPanel());
 		rightScrollPane.setViewportView(getRightTree());
-//		add(getLeftToolBar(), BorderLayout.NORTH);
-//        outerSplitPane.add(getRightMostToolBar(), BorderLayout.NORTH);
 
         JPanel p = new JPanel(new BorderLayout());
         p.add(getLeftToolBar(), BorderLayout.NORTH);
