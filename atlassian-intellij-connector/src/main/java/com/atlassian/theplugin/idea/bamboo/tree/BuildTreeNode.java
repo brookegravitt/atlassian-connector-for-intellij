@@ -238,7 +238,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 
 	@NotNull
 	private static String getRelativeBuildTimeString(BambooBuildAdapterIdea build) {
-		return DateUtil.getRelativeBuildTime(build.getCompletionDate());
+		return DateUtil.getRelativePastDate(build.getCompletionDate());
 	}
 
 	@NotNull
