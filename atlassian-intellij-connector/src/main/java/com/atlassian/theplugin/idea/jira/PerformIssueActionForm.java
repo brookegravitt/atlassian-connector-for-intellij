@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.controls.*;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
-import com.atlassian.theplugin.jira.JiraActionFieldType;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridLayoutManager;

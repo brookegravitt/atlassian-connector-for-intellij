@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class CertMessageDialog extends DialogWrapper {
+public class CertMessageDialogImpl extends DialogWrapper implements com.atlassian.theplugin.commons.ssl.CertMessageDialog {
 		private String server;
 
 		private X509Certificate[] chain;
@@ -56,11 +56,12 @@ public class CertMessageDialog extends DialogWrapper {
         private static final int MARGIN = 5;
 
 
-        public CertMessageDialog(String serverName, String message, X509Certificate[] chain) {
-			super(false);
-			this.server = serverName;
-			this.message = message;
-			this.chain = chain;
+    public CertMessageDialogImpl() {
+        super(false);
+    }
+
+
+    void initialize() {
 			setTitle("Security Alert");
 			setModal(true);
 			accept.addActionListener(new ActionListener() {
@@ -82,9 +83,16 @@ public class CertMessageDialog extends DialogWrapper {
 			});
 
 			init();
-		}
+    }
 
-		public boolean isTemporarily() {
+    public void show(String host, String message, X509Certificate[] chain) {
+        this.server = host;
+        this.message = message;
+        this.chain = chain;
+        initialize();
+    }
+
+    public boolean isTemporarily() {
 			return temporarily;
 		}
 

@@ -18,9 +18,9 @@ package com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials;
 import com.atlassian.theplugin.ConnectionWrapper;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.idea.TestConnectionProcessor;
 import com.atlassian.theplugin.idea.config.serverconfig.ProductConnector;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 
 /**
@@ -44,7 +44,7 @@ public class TestConnectionThread extends Thread {
 			ConnectionWrapper testConnector;
 			switch (server.getServerType()) {
 				case JIRA_SERVER:
-					productConnector = new ProductConnector(JIRAServerFacadeImpl.getInstance());
+					productConnector = new ProductConnector(JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()));
 					break;
 
 				case BAMBOO_SERVER:

@@ -19,11 +19,11 @@ package com.atlassian.theplugin.idea;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.util.IconLoader;
 

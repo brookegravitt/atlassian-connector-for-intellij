@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.idea.action.issues;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class OpenIssueAction extends JIRAAbstractAction {

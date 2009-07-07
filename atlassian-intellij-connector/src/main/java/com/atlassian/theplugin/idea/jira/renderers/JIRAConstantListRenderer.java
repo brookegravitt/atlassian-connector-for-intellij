@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.jira.renderers;
 
-import com.atlassian.theplugin.idea.jira.CachedIconLoader;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 
 import javax.swing.*;
 import java.awt.*;

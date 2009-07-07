@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.*;
+import com.atlassian.theplugin.commons.jira.api.*;
 import junit.framework.TestCase;
 
 import java.net.MalformedURLException;

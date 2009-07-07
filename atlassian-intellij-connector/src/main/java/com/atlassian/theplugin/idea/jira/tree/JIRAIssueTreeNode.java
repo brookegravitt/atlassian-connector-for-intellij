@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.swing.*;
 

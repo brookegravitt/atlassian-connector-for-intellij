@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
 import org.easymock.EasyMock;
 import org.mockito.Mockito;

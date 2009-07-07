@@ -1,12 +1,13 @@
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.ScrollableTwoColumnPanel;
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.jira.model.*;
 import com.intellij.openapi.project.Project;
 import org.apache.commons.lang.StringUtils;

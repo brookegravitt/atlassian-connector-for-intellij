@@ -15,13 +15,13 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionFieldBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
-import com.atlassian.theplugin.jira.api.JIRAActionFieldBean;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
 
 import javax.swing.*;
 import java.awt.*;

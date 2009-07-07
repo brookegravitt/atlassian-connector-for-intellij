@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 
 import javax.swing.tree.TreePath;
 

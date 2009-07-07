@@ -1,11 +1,11 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
-import com.atlassian.theplugin.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;

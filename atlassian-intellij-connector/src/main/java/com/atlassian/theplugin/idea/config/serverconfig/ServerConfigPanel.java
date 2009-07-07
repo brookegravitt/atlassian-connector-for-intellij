@@ -23,11 +23,11 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
-import com.atlassian.theplugin.jira.JIRAServerFacade;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
@@ -71,7 +71,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
+		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		this.isDefaultCredentialsAsked = isDefaultCredentialsAsked;
 		final FishEyeServerFacadeImpl fishEyeServerFacade = FishEyeServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */
