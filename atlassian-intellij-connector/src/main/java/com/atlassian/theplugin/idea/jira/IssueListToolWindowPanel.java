@@ -28,7 +28,6 @@ import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
@@ -122,7 +121,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		this.jiraIssueListModelBuilder = jiraIssueListModelBuilder;
 		this.recentlyOpenIssuesCache = recentlyOpenIssuesCache;
 
-		jiraServerFacade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 
 		if (jiraWorkspaceConfiguration.getView() != null && jiraWorkspaceConfiguration.getView().getGroupBy() != null) {
 			groupBy = jiraWorkspaceConfiguration.getView().getGroupBy();

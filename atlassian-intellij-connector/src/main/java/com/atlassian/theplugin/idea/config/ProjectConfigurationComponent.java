@@ -353,9 +353,11 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			// may happen for Default Template project
 			configuration = setDefaultProjectConfiguration();
 		}
+
+        
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()), uiTaskExecutor,
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
 				selectedServer, projectCfgManager.getDefaultCredentials().getClone(),
 				projectCfgManager.isDefaultCredentialsAsked(), projectConfigurationBean);
 		return projectConfigurationPanel;

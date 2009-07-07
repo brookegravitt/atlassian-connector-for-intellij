@@ -162,8 +162,9 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			int i = bytes.length;
 			for (int j = 0; j < i; j++) {
 				byte2hex(bytes[j], stringBuffer);
-				if (j < i - 1)
+				if (j < i - 1) {
 					stringBuffer.append(":");
+                }
 			}
 			return stringBuffer.toString();
 		}
@@ -258,7 +259,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			return false;  //To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		private class InfoPanel extends JPanel {
+		final private class InfoPanel extends JPanel {
 
 			private JPanel panel = new JPanel();
 

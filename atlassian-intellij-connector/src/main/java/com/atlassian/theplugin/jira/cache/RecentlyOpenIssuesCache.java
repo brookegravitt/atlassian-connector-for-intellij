@@ -151,7 +151,7 @@ public class RecentlyOpenIssuesCache {
 		}
 		final ServerData jiraServer = projectCfgManager.getEnabledServerr(recentServer);
 		if (jiraServer != null) {
-			return JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).getIssue(jiraServer, recentlyOpen.getIssueKey());
+			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 		}
 		return null;
 	}
@@ -162,7 +162,7 @@ public class RecentlyOpenIssuesCache {
         private JIRAServerFacade facade;
 
         private JIRAUserNameCache() {
-            facade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+            facade = JIRAServerFacadeImpl.getInstance();
         }
 
         private static JIRAUserNameCache instance = new JIRAUserNameCache();

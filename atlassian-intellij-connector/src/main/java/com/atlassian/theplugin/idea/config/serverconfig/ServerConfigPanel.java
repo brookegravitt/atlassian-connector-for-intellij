@@ -71,7 +71,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		this.serverTreePanel = new ServerTreePanel();
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		this.isDefaultCredentialsAsked = isDefaultCredentialsAsked;
 		final FishEyeServerFacadeImpl fishEyeServerFacade = FishEyeServerFacadeImpl.getInstance();
 		/* required due to circular dependency unhandled by pico */

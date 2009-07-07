@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -80,8 +81,11 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 
 		this.schedulableCheckers.add(newVersionChecker);
 
+        JIRAServerFacadeImpl.setLogger(PluginUtil.getLogger());
+        
 		ConfigurationFactory.setConfiguration(configuration);
-		PluginSSLProtocolSocketFactory.initializeSocketFactory(configuration.getGeneralConfigurationData(), new MessagedDialogFactoryIdea());
+		PluginSSLProtocolSocketFactory.initializeSocketFactory(configuration.getGeneralConfigurationData(),
+                new MessagedDialogFactoryIdea());
 
 		// start Direct Click Through http server
 		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {

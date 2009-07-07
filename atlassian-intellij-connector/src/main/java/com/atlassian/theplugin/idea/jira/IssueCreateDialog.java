@@ -542,7 +542,7 @@ public class IssueCreateDialog extends DialogWrapper {
 				indicator.setIndeterminate(true);
 
 				try {
-					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).createIssue(jiraServer, newIssue);
+					final JIRAIssue createdIssue = JIRAServerFacadeImpl.getInstance().createIssue(jiraServer, newIssue);
 
 					message = "New issue created: <a href="
 							+ createdIssue.getIssueUrl()

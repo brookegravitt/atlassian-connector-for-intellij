@@ -220,7 +220,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 
 						public void run(@NotNull ProgressIndicator progressIndicator) {
 							try {
-								JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()).logWork(server, issue,
+								JIRAServerFacadeImpl.getInstance().logWork(server, issue,
                                         txtTimeSpent.getText(), cal, null,
 										!config.getRemainingEstimateUpdateMode()
 												.equals(RemainingEstimateUpdateMode.UNCHANGED),

@@ -44,7 +44,7 @@ public class TestConnectionThread extends Thread {
 			ConnectionWrapper testConnector;
 			switch (server.getServerType()) {
 				case JIRA_SERVER:
-					productConnector = new ProductConnector(JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+					productConnector = new ProductConnector(JIRAServerFacadeImpl.getInstance());
 					break;
 
 				case BAMBOO_SERVER:
