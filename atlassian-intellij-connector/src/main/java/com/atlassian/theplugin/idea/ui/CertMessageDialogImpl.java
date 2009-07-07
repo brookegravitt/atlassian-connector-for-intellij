@@ -65,10 +65,10 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 
     }
 
-    public void show(String host, String message, X509Certificate[] chain) {
+    public void show(String host, String msg, X509Certificate[] certificates) {
         this.server = host;
-        this.message = message;
-        this.chain = chain;
+        this.message = msg;
+        this.chain = certificates;
 
         setTitle("Security Alert");
         setModal(true);
