@@ -30,6 +30,7 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.project.Project;
@@ -182,7 +183,7 @@ public class ProjectConfigurationPanel extends JPanel {
 									"<html>Do you want to set server <b>" + serverCfg.getName()
 											+ "</b> <i>username</i> and <i>password</i>"
 											+ " as default credentials for the "
-                                            + "Atlassian Connector for IntelliJ IDEA?</html>",
+											+ PluginUtil.PRODUCT_NAME + "?</html>",
 									"Set as default",
 									Messages.getQuestionIcon());
 

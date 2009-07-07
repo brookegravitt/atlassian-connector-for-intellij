@@ -64,7 +64,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 	private final PrivateConfigurationDao privateCfgDao;
 	private final WorkspaceConfigurationBean projectConfigurationBean;
 	private static final String CFG_LOAD_ERROR_MSG =
-            "Error while loading the configuration of Atlassian Connector for IntelliJ IDEA.";
+			"Error while loading the configuration of " + PluginUtil.PRODUCT_NAME;
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
 	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
@@ -107,7 +107,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 					Messages.showErrorDialog(project, "If you see this message, something bad happend to the "
 							+ "initialization sequence of IDEA. You may encounter now various strange problems with Connector."
 							+ "\nPlease report occurence of this message to us.",
-							"Internal Error in Atlassian IntelliJ Connector");
+							"Internal Error in Atlassian Connector");
 				}
 			});
 		}
