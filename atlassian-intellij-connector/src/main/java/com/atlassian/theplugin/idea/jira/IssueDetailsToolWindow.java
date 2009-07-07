@@ -10,12 +10,12 @@ import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.jira.JIRAServerFacade;
 import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.jira.JIRAUserNameCache;
@@ -108,8 +108,12 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(ContentParameters params) {
 		IssueContentParameters icp = (IssueContentParameters) params;
-		ServerData server = icp.issue.getServer();
-		return server != null ? server.getUrl() + server.getUserName() + icp.issue.getKey() : "";
+		return getContentKey(icp.issue);
+	}
+
+	protected String getContentKey(JIRAIssue issue) {
+		ServerData server = issue.getServer();
+		return server != null ? server.getUrl() + server.getUserName() + issue.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {
@@ -160,16 +164,23 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	public JIRAIssue getIssue(String key) {
-		IssuePanel ip = getContentPanel(key);
+//	public JIRAIssue getIssue(String key) {
+//		IssuePanel ip = getContentPanel(key);
+//		if (ip != null) {
+//			return ip.params.issue;
+//		}
+//		return null;
+//	}
+
+	public void refresh(String panelKey) {
+		IssuePanel ip = getContentPanel(panelKey);
 		if (ip != null) {
-			return ip.params.issue;
+			ip.refresh();
 		}
-		return null;
 	}
 
-	public void refresh(String key) {
-		IssuePanel ip = getContentPanel(key);
+	public void refresh(JIRAIssue issue) {
+		IssuePanel ip = getContentPanel(getContentKey(issue));
 		if (ip != null) {
 			ip.refresh();
 		}
