@@ -202,10 +202,7 @@ public class BambooPlansForm extends JPanel {
 			offs = Math.min(MAX_TIMEZONE_DIFF, Math.max(MIN_TIMEZONE_DIFF, offs));
 			timezoneOffsetSpinnerModel.setValue(offs);
 			if (bambooServerCfg.getUrl().length() > 0) {
-				bambooServerCfg
-						.setIsBamboo2(bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
 				retrievePlans(bambooServerCfg);
-
 			} else {
 				model.removeAllElements();
 			}
@@ -225,6 +222,10 @@ public class BambooPlansForm extends JPanel {
 		new Thread(new Runnable() {
 			public void run() {
 				progressAnimation.startProgressAnimation();
+
+				bambooServerCfg.setIsBamboo2(
+						bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
+
 				StringBuilder msg = new StringBuilder();
 				try {
 					ServerId key = queryServer.getServerId();
