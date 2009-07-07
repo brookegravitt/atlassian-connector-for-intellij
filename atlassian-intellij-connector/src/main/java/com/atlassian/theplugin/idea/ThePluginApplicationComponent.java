@@ -24,6 +24,7 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
+import com.atlassian.theplugin.idea.ui.CertMessageDialogImpl;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
 import com.atlassian.theplugin.util.PicoUtil;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -85,7 +86,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
         
 		ConfigurationFactory.setConfiguration(configuration);
 		PluginSSLProtocolSocketFactory.initializeSocketFactory(configuration.getGeneralConfigurationData(),
-                new MessagedDialogFactoryIdea());
+                new CertMessageDialogImpl());
 
 		// start Direct Click Through http server
 		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {

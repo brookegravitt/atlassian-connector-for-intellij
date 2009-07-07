@@ -62,34 +62,35 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 
 
     void initialize() {
-			setTitle("Security Alert");
-			setModal(true);
-			accept.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					close(JOptionPane.OK_OPTION);
-				}
-			});
-			acceptTmp.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					temporarily = true;
-					close(JOptionPane.OK_OPTION);
-				}
-			});
-			cancel.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent event) {
-					temporarily = true;
-					close(JOptionPane.CANCEL_OPTION);
-				}
-			});
 
-			init();
     }
 
     public void show(String host, String message, X509Certificate[] chain) {
         this.server = host;
         this.message = message;
         this.chain = chain;
-        initialize();
+
+        setTitle("Security Alert");
+        setModal(true);
+        accept.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                close(JOptionPane.OK_OPTION);
+            }
+        });
+        acceptTmp.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                temporarily = true;
+                close(JOptionPane.OK_OPTION);
+            }
+        });
+        cancel.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                temporarily = true;
+                close(JOptionPane.CANCEL_OPTION);
+            }
+        });
+
+        init();
     }
 
     public boolean isTemporarily() {
@@ -152,12 +153,12 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 		private String getCertificateFingerprint(String s, X509Certificate certificate)
 				throws Exception {
 			MessageDigest digest = MessageDigest.getInstance(s);
-			byte fing[] = digest.digest(certificate.getEncoded());
+			byte[] fing = digest.digest(certificate.getEncoded());
 			return toHexString(fing);
 		}
 
 
-		private String toHexString(byte bytes[]) {
+		private String toHexString(byte[] bytes) {
 			StringBuffer stringBuffer = new StringBuffer();
 			int i = bytes.length;
 			for (int j = 0; j < i; j++) {
@@ -259,7 +260,7 @@ public class CertMessageDialogImpl extends DialogWrapper implements com.atlassia
 			return false;  //To change body of implemented methods use File | Settings | File Templates.
 		}
 
-		final private class InfoPanel extends JPanel {
+		private final class InfoPanel extends JPanel {
 
 			private JPanel panel = new JPanel();
 
