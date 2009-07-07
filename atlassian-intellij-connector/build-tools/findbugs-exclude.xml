@@ -48,7 +48,7 @@
 	<!--genereated from WSDL-->
 	<Match>
 		<Or>
-			<Package name="com.atlassian.theplugin.jira.api.soap.axis" />
+			<Package name="com.atlassian.theplugin.commons.jira.api.soap.axis" />
 		</Or>
 	</Match>
 

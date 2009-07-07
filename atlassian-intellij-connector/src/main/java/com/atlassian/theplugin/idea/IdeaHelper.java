@@ -18,9 +18,10 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
+import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleStatusChecker;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
@@ -30,7 +31,7 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAServerModel;
+import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
@@ -259,12 +260,12 @@ public final class IdeaHelper {
 		return getProjectComponent(event, JIRAFilterListBuilder.class);
 	}
 
-	public static JIRAServerModel getJIRAServerModel(final AnActionEvent event) {
+	public static JIRAServerModelIdea getJIRAServerModel(final AnActionEvent event) {
 //		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
 //		if (pluginProjectComponent != null) {
 //			return pluginProjectComponent.getJiraServerModel();
 //		}
-		return getProjectComponent(event, JIRAServerModel.class);
+		return getProjectComponent(event, JIRAServerModelIdea.class);
 	}
 
 	public static JIRAServerModel getJIRAServerModel(final Project project) {

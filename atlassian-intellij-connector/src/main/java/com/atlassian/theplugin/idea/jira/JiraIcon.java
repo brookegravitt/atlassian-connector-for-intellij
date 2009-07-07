@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea.jira;
 
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+
 import javax.swing.*;
 
 public class JiraIcon {

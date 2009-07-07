@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.jira;
 
-import com.atlassian.theplugin.jira.api.JIRAAction;
-import com.atlassian.theplugin.jira.api.JIRAConstant;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 
 import javax.management.timer.Timer;
 import java.util.Date;

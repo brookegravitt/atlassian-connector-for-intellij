@@ -3,8 +3,8 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.jira.api.JIRAIssueBean;
 import junit.framework.TestCase;
 
 

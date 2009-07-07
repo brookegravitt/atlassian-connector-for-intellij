@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.config;
 
-import com.atlassian.theplugin.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 
 /**
  * @author Jacek Jaroczynski

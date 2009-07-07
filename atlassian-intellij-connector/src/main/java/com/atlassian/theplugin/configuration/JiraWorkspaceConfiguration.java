@@ -18,8 +18,8 @@ package com.atlassian.theplugin.configuration;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.idea.jira.RemainingEstimateUpdateMode;
-import com.atlassian.theplugin.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;

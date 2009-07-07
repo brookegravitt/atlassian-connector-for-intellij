@@ -15,9 +15,9 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.idea.jira.ColoredTextFieldListener;
 import com.atlassian.theplugin.idea.jira.DatePicker;
-import com.atlassian.theplugin.jira.api.JIRAActionField;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.ui.DialogWrapper;
 

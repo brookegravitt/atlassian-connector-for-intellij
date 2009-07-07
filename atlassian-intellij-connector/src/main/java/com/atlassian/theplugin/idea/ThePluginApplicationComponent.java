@@ -18,13 +18,13 @@ package com.atlassian.theplugin.idea;
 
 import com.atlassian.theplugin.commons.SchedulableChecker;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.ssl.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 import com.atlassian.theplugin.idea.autoupdate.NewVersionChecker;
 import com.atlassian.theplugin.idea.config.ConfigPanel;
 import com.atlassian.theplugin.util.HttpConfigurableIdeaImpl;
 import com.atlassian.theplugin.util.PicoUtil;
-import com.atlassian.theplugin.util.PluginSSLProtocolSocketFactory;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -81,7 +81,7 @@ public class ThePluginApplicationComponent implements ApplicationComponent, Conf
 		this.schedulableCheckers.add(newVersionChecker);
 
 		ConfigurationFactory.setConfiguration(configuration);
-		PluginSSLProtocolSocketFactory.initializeSocketFactory();
+		PluginSSLProtocolSocketFactory.initializeSocketFactory(configuration.getGeneralConfigurationData(), new MessagedDialogFactoryIdea());
 
 		// start Direct Click Through http server
 		if (configuration.getGeneralConfigurationData().isHttpServerEnabled()) {

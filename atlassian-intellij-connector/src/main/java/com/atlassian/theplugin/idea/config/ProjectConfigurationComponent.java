@@ -21,11 +21,11 @@ import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ProjectComponent;
@@ -355,7 +355,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
 				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
+				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(PluginUtil.getLogger()), uiTaskExecutor,
 				selectedServer, projectCfgManager.getDefaultCredentials().getClone(),
 				projectCfgManager.isDefaultCredentialsAsked(), projectConfigurationBean);
 		return projectConfigurationPanel;

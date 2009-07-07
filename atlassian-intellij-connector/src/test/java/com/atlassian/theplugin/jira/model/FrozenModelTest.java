@@ -19,7 +19,7 @@ public class FrozenModelTest extends TestCase {
 		frozenModels = new ArrayList<FrozenModel>();
 		frozenModels.add(new JIRAFilterListModel());
 		frozenModels.add(new JIRAIssueListModelImpl());
-		frozenModels.add(new JIRAServerModelImpl());
+		frozenModels.add(new JIRAServerModelIdea());
 
 	}
 

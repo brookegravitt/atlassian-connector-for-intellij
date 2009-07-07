@@ -9,10 +9,10 @@ import com.atlassian.theplugin.jira.model.*;
 public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAFilterListModel filterModel;
 	private JIRAIssueListModel issueModel;
-	private JIRAServerModel serverModel;
+	private JIRAServerModelIdea serverModel;
 
 
-	public void setServerModel(JIRAServerModel serverModel) {
+	public void setServerModel(JIRAServerModelIdea serverModel) {
 		this.serverModel = serverModel;
 		addListeners();
 

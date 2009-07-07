@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.jira.renderers;
 
-import com.atlassian.theplugin.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 
 import javax.swing.*;
 import java.awt.*;

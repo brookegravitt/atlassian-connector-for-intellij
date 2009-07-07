@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.jira.controls;
 
-import com.atlassian.theplugin.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 
 import javax.swing.*;
 import java.awt.*;
