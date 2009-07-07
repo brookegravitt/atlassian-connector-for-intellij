@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -94,7 +94,7 @@ public class PluginDownloader {
 			if (pluginDescr == null) {
 				pluginDescr = PluginManager.getPlugin(PluginId.getId(PluginUtil.getInstance().getName()));
 			}
-			
+
 			if (pluginDescr == null) {
 				IdeaActionScheduler.getInstance().invokeLater(new Runnable() {
 					public void run() {
@@ -125,9 +125,9 @@ public class PluginDownloader {
 			public void run() {
 				String title = "IDEA shutdown";
 				String message =
-						"Atlassian Connector for IntelliJ IDEA has been installed successfully.\n"
-						+ "IntelliJ IDEA needs to be restarted to activate the plugin.\n"
-						+ "Would you like to shutdown IntelliJ IDEA now?";
+						PluginUtil.PRODUCT_NAME + " has been installed successfully.\n"
+								+ "IntelliJ IDEA needs to be restarted to activate the plugin.\n"
+								+ "Would you like to shutdown IntelliJ IDEA now?";
 				// todo again add project or parent to the below window
 				int answer = Messages.showYesNoDialog(
 						message, title, Messages.getQuestionIcon());
@@ -221,7 +221,7 @@ public class PluginDownloader {
 				}
 			}
 		}
-		
+
 		PluginUtil.getLogger().info("After renaming file has [" + newFile.length() + "] bytes");
 		return newFile;
 	}

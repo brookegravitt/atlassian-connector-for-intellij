@@ -180,7 +180,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	private void showPopup(final List<ReviewAdapter> reviews, final Project project, final Component component,
 			final String searchKey, final ReviewListToolWindowPanel reviewsWindow) {
 		if (reviews.size() == 0) {
-			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", "Atlassian Connector for IntelliJ IDEA");
+			Messages.showInfoMessage(project, "Review " + searchKey + " not found.", PluginUtil.PRODUCT_NAME);
 //			reviewsWindow.setStatusInfoMessage("Review " + searchKey + " not found.");
 		} else if (reviews.size() == 1) {
 			reviewsWindow.openReview(reviews.iterator().next(), true);
