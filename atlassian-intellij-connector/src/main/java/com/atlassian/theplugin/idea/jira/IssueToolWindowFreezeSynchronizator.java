@@ -42,7 +42,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 				}
 			});
 
-			((JIRAServerModelIdea)serverModel).addFrozenModelListener(new FrozenModelListener() {
+			((JIRAServerModelIdea) serverModel).addFrozenModelListener(new FrozenModelListener() {
 
 				public void modelFrozen(FrozenModel model, boolean frozen) {
 					if (issueModel != null) {

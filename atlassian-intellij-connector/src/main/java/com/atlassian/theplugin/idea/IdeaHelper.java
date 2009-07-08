@@ -31,7 +31,6 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.jira.model.JIRAFilterListBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
-import com.atlassian.theplugin.jira.model.JIRAServerModelIdea;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.DataContext;
