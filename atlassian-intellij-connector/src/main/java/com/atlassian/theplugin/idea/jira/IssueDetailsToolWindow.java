@@ -4,27 +4,27 @@ import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
-import com.atlassian.theplugin.idea.util.Html2text;
 import com.atlassian.theplugin.idea.action.issues.RunIssueActionAction;
 import com.atlassian.theplugin.idea.action.issues.oneissue.RunJiraActionGroup;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAIssueListOrTreeRendererPanel;
 import com.atlassian.theplugin.idea.ui.*;
+import com.atlassian.theplugin.idea.util.Html2text;
+import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModel;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder;
 import com.atlassian.theplugin.jira.model.JIRAIssueListModelListener;
-import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.filters.TextConsoleBuilder;
 import com.intellij.execution.filters.TextConsoleBuilderFactory;
@@ -228,30 +228,23 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private Task.Backgroundable getSubTasksTask;
 		private DefaultListModel subtaskListModel;
 		private IssueDetailsToolWindow.IssuePanel.LocalModelListener modelListener;
+        private StatusBarPane statusBarPane;
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
 
 			JTabbedPane tabs = new JTabbedPane();
 			detailsPanel = new DetailsPanel();
+            statusBarPane = new StatusBarPane(" ");
 			tabs.addTab("Details", detailsPanel);
 			descriptionAndCommentsPanel = new DescriptionAndCommentsPanel(tabs, 1);
 			tabs.addTab("Comments(0)", descriptionAndCommentsPanel);
 
-			setLayout(new GridBagLayout());
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.gridx = 0;
-			gbc.gridy = 0;
-			gbc.weightx = 1.0;
-			gbc.weighty = 0.0;
-			gbc.insets = new Insets(Constants.DIALOG_MARGIN / 2, Constants.DIALOG_MARGIN, 0, 0);
 			summaryPanel = new SummaryPanel();
-			add(summaryPanel, gbc);
-			gbc.gridy++;
-			gbc.weighty = 1.0;
-			gbc.insets = new Insets(0, 0, 0, 0);
-			add(tabs, gbc);
+            setLayout(new BorderLayout());
+            add(summaryPanel, BorderLayout.NORTH);
+            add(tabs, BorderLayout.CENTER);
+            add(statusBarPane, BorderLayout.SOUTH);
 
 			if (params.model != null) {
 				modelListener = new LocalModelListener();
@@ -281,11 +274,11 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		public void setStatusErrorMessage(final String message) {
-			// ignore for now - should we display it?
+			statusBarPane.setErrorMessage(message);
 		}
 
 		public void setStatusErrorMessage(final String error, final Throwable exception) {
-
+            statusBarPane.setErrorMessage(error, exception);
 		}
 
 		public ServerData getSelectedServer() {
@@ -430,6 +423,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			if (dataId.equals(Constants.SERVER)) {
 				return getJiraServerCfg();
 			}
+
+            if (dataId.equals(Constants.STATUS_BAR_PANE)) {
+                return statusBarPane;
+            }
 			return null;
 		}
 

@@ -22,6 +22,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.serverconfig.ServerConfigPanel;
+import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.idea.ui.tree.comment.VersionedCommentTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.CrucibleFileNode;
 import com.intellij.openapi.actionSystem.DataKey;
@@ -92,6 +93,8 @@ public final class Constants {
 
 	public static final DataKey<BambooBuild> BAMBOO_BUILD_KEY = DataKey.create("atlassian.connector.bamoo.build");
 
+    public static final String STATUS_BAR_PANE = "com.atlassian.connector.statusbarpane";
+    public static final DataKey<StatusBarPane> STATUS_BAR_PANE_KEY = DataKey.create(STATUS_BAR_PANE);    
 	public static final String ISSUE = "com.atlassian.connector.issue";
 	public static final DataKey<JIRAIssue> ISSUE_KEY = DataKey.create(ISSUE);
 	public static final String REVIEW = "com.atlassian.connector.review";

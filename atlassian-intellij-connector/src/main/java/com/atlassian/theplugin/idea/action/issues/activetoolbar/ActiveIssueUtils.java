@@ -15,6 +15,11 @@
  */
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -23,11 +28,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssueAdapter;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.idea.jira.StatusBarPane;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
@@ -95,6 +96,10 @@ public final class ActiveIssueUtils {
 	public static JIRAIssue getSelectedJiraIssue(final AnActionEvent event) {
 		return event.getData(Constants.ISSUE_KEY);
 	}
+
+    public static StatusBarPane getStatusBarPane(final AnActionEvent event) {
+        return event.getData(Constants.STATUS_BAR_PANE_KEY);
+    }
 
 //	public static JiraServerCfg getSelectedJiraServerById(final AnActionEvent event, String serverId) {
 //		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
@@ -319,7 +324,8 @@ public final class ActiveIssueUtils {
 					}
 					if (isOk) {
 						//assign to me and start working
-						panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue);
+						panel.startWorkingOnIssueAndActivate(jiraIssue, newActiveIssue,
+                                ActiveIssueUtils.getStatusBarPane(event));
 					}
 				}
 			}
