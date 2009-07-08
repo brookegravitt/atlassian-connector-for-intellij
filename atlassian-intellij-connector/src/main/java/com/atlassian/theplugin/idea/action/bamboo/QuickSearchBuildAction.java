@@ -21,7 +21,12 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.ui.popup.ListPopup;
+import com.intellij.openapi.ui.popup.PopupStep;
+import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.wm.WindowManager;
+import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -163,69 +168,45 @@ public class QuickSearchBuildAction extends AnAction {
 			} else if (foundBuilds.size() == 1) {
 				buildsWindow.openBuild(new BambooBuildAdapterIdea(foundBuilds.iterator().next()));
 			} else if (foundBuilds.size() > 1) {
-				// todo
-				Messages.showInfoMessage(project, "More than one build found", PluginUtil.PRODUCT_NAME);
-//                ListPopup popup = JBPopupFactory.getInstance().createListPopup(
-//                        new ReviewListPopupStep("Found " + builds.size() + " reviews", builds, bambooWindow));
-//                popup.show(event.getInputEvent().getComponent());
+                ListPopup popup = JBPopupFactory.getInstance().createListPopup(
+                        new BuildListPopupStep("Found " + foundBuilds.size() + " builds"));
+                popup.showInFocusCenter();
 			}
 		}
-//
-//    private List<ReviewAdapter> mergeReviewList(final List<ReviewAdapter> localReviews,
-//            final List<ReviewAdapter> serverReviews) {
-//
-//        Set<ReviewAdapter> reviews = new HashSet<ReviewAdapter>();
-//
-//        reviews.addAll(localReviews);
-//        reviews.addAll(serverReviews);
-//
-//        return new ArrayList<ReviewAdapter>(reviews);
-//    }
 
-//    public static final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
-//        private ReviewListToolWindowPanel reviewsWindow;
-//        private static final int LENGHT = 40;
-//
-//        public ReviewListPopupStep(final String title, final List<ReviewAdapter> reviews,
-//                final ReviewListToolWindowPanel reviewsWindow) {
-//            super(title, reviews, IconLoader.getIcon("/icons/crucible-16.png"));
-//            this.reviewsWindow = reviewsWindow;
-//        }
-//
-//        @NotNull
-//        @Override
-//        public String getTextFor(final ReviewAdapter value) {
-//            StringBuilder text = new StringBuilder();
-//
-//            text.append(value.getPermId().getId()).append(": ");
-//
-//            if (value.getName().length() > LENGHT) {
-//                text.append(value.getName().substring(0, LENGHT - (2 + 1))).append("...");
-//            } else {
-//                text.append(value.getName());
-//            }
-//
-//            text.append(" (");
-//
-//            if (value.getServerData().getName().length() > LENGHT) {
-//                text.append(value.getServerData().getName().substring(0, LENGHT - (2 + 1)));
-//            } else {
-//                text.append(value.getServerData().getName());
-//            }
-//
-//            text.append(')');
-//
-//            return text.toString();
-//        }
-//
-//        @Override
-//        public PopupStep onChosen(final ReviewAdapter selectedValue, final boolean finalChoice) {
-//            // add review to the model (to show it in the main list) and open the review
-//            reviewsWindow.openReview(selectedValue, true);
-//
-//            return null;
-//        }
-//    }
+        public final class BuildListPopupStep extends BaseListPopupStep<BambooBuild> {
+            private static final int LENGHT = 40;
+
+            public BuildListPopupStep(final String title) {
+                super(title, foundBuilds, IconLoader.getIcon("/icons/blue-16.png"));
+            }
+
+            @NotNull
+            @Override
+            public String getTextFor(final BambooBuild value) {
+                StringBuilder text = new StringBuilder();
+
+                text.append(value.getPlanKey()).append('-').append(value.getNumber());
+
+                text.append(" (");
+
+                if (value.getServer().getName().length() > LENGHT) {
+                    text.append(value.getServer().getName()).substring(0, LENGHT - (2 + 1));
+                } else {
+                    text.append(value.getServer().getName());
+                }
+
+                text.append(')');
+
+                return text.toString();
+            }
+
+            @Override
+            public PopupStep onChosen(final BambooBuild selectedValue, final boolean finalChoice) {
+                buildsWindow.openBuild(new BambooBuildAdapterIdea(selectedValue));
+                return null;
+            }
+        }
 
 	}
 
