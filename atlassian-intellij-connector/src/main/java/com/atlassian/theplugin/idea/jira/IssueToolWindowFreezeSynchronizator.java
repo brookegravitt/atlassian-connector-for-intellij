@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.theplugin.jira.model.*;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 
 
 /**
@@ -9,10 +10,10 @@ import com.atlassian.theplugin.jira.model.*;
 public final class IssueToolWindowFreezeSynchronizator {
 	private JIRAFilterListModel filterModel;
 	private JIRAIssueListModel issueModel;
-	private JIRAServerModelIdea serverModel;
+	private JIRAServerModel serverModel;
 
 
-	public void setServerModel(JIRAServerModelIdea serverModel) {
+	public void setServerModel(JIRAServerModel serverModel) {
 		this.serverModel = serverModel;
 		addListeners();
 
@@ -41,7 +42,7 @@ public final class IssueToolWindowFreezeSynchronizator {
 				}
 			});
 
-			serverModel.addFrozenModelListener(new FrozenModelListener() {
+			((JIRAServerModelIdea)serverModel).addFrozenModelListener(new FrozenModelListener() {
 
 				public void modelFrozen(FrozenModel model, boolean frozen) {
 					if (issueModel != null) {

@@ -260,12 +260,12 @@ public final class IdeaHelper {
 		return getProjectComponent(event, JIRAFilterListBuilder.class);
 	}
 
-	public static JIRAServerModelIdea getJIRAServerModel(final AnActionEvent event) {
+	public static JIRAServerModel getJIRAServerModel(final AnActionEvent event) {
 //		final ThePluginProjectComponent pluginProjectComponent = getCurrentProjectComponent(event);
 //		if (pluginProjectComponent != null) {
 //			return pluginProjectComponent.getJiraServerModel();
 //		}
-		return getProjectComponent(event, JIRAServerModelIdea.class);
+		return getProjectComponent(event, JIRAServerModel.class);
 	}
 
 	public static JIRAServerModel getJIRAServerModel(final Project project) {

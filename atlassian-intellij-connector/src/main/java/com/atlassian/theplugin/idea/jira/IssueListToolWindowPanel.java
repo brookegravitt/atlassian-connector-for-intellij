@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
@@ -89,7 +90,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	private SearchingJIRAIssueListModel searchingIssueListModel;
 
-	private JIRAServerModelIdea jiraServerModel;
+	private JIRAServerModel jiraServerModel;
 
 	private ConfigurationListener configListener = new LocalConfigurationListener();
 
@@ -112,7 +113,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			@NotNull final JIRAIssueListModelBuilder jiraIssueListModelBuilder,
 			@NotNull final RecentlyOpenIssuesCache recentlyOpenIssuesCache,
 			@NotNull final JIRAFilterListBuilder filterListBuilder,
-			@NotNull final JIRAServerModelIdea jiraServerModel) {
+			@NotNull final JIRAServerModel jiraServerModel) {
 		super(project, SERVERS_TOOL_BAR, THE_PLUGIN_JIRA_ISSUES_ISSUES_TOOL_BAR);
 
 		this.projectCfgManager = projectCfgManager;
@@ -956,7 +957,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		public void run(@NotNull final ProgressIndicator indicator) {
 
 			try {
-				jiraServerModel.setModelFrozen(true);
+				((JIRAServerModelIdea)jiraServerModel).setModelFrozen(true);
 
 				for (ServerData server : servers) {
 					try {
@@ -993,7 +994,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				}
 			} finally {
 				// todo it should be probably called in the UI thread as most frozen listeners do something with UI controls
-				jiraServerModel.setModelFrozen(false);
+				((JIRAServerModelIdea)jiraServerModel).setModelFrozen(false);
 			}
 		}
 
