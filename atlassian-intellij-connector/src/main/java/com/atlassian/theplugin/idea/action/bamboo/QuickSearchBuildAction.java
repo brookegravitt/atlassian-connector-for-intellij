@@ -76,14 +76,14 @@ public class QuickSearchBuildAction extends AnAction {
 		private List<BambooBuild> foundBuilds = new ArrayList<BambooBuild>();
 		private boolean failed = false;
 		private AnActionEvent event;
-		@Nullable
+		@NotNull
 		private Project project;
 		private Collection<BambooServerData> servers;
 		private String planKey;
 		private int buildNumber;
 		private BambooToolWindowPanel buildsWindow;
 
-		private QuickSearchTask(AnActionEvent event, @Nullable Project project, Collection<BambooServerData> servers,
+		private QuickSearchTask(AnActionEvent event, @NotNull Project project, Collection<BambooServerData> servers,
 				String planKey, int buildNumber, BambooToolWindowPanel buildsWindow) {
 			super(project, "Searching build", true);
 			this.event = event;
@@ -170,7 +170,7 @@ public class QuickSearchBuildAction extends AnAction {
 			} else if (foundBuilds.size() > 1) {
                 ListPopup popup = JBPopupFactory.getInstance().createListPopup(
                         new BuildListPopupStep("Found " + foundBuilds.size() + " builds"));
-                popup.showInFocusCenter();
+                popup.showCenteredInCurrentWindow(project);
 			}
 		}
 
