@@ -31,6 +31,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.DocumentAdapter;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -61,6 +62,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	private transient ServerCfg serverCfg;
 	private Project project;
 	private DocumentAdapter urlDocumentListener;
+	private String originalServerName = "";
 
 	synchronized ServerCfg getServerCfg() {
 		return serverCfg;
@@ -119,6 +121,14 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 				enableDisableSever(false);
 			}
 		};
+
+		serverName.addFocusListener(new FocusAdapter() {
+			public void focusLost(final FocusEvent e) {
+				if (StringUtils.stripToEmpty(serverName.getText()).length() == 0) {
+					serverName.setText(originalServerName);
+				}
+			}
+		});
 
 		enableDisableSever(true);
 		enableDisableUserPassword();
@@ -181,7 +191,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		password.getDocument().removeDocumentListener(listener);
 
 		serverCfg = server;
-
+		originalServerName = server.getName();
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
