@@ -106,10 +106,9 @@ public class JIRAIssueTreeBuilder {
 						return l.priority.getOrder() - r.priority.getOrder();
 					} else if (l.priority == null && r.priority == null) {
                         // ah, whatever, we need to have _some_ ordering
-                        return 1;
+                        return -1;
                     } else {
-                        // let's assume that issue with no priority has lower priority than issue _with_ priority
-                        return l.priority == null ? -1 : 1;
+                        return l.priority == null ? 1 : -1;
                     }
 				}
                 Comparator<JIRAIssueGroupTreeNode> c = lhs.getComparator();
