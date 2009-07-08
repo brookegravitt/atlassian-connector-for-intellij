@@ -232,6 +232,10 @@
 				class="com.atlassian.theplugin.idea.config.serverconfig.action.AddFishEyeServerAction"
 				text="Add FishEye Server" description="Add a new FishEye Server" icon="/icons/fisheye-16.png"/>
 
+        <action id="ThePlugin.AddStudioServerSetAction"
+                class="com.atlassian.theplugin.idea.config.serverconfig.action.AddStudioServerSetAction"
+                text="Add JIRA Studio Server" description="Add a new JIRA Studio Server Set" icon="/icons/jirastudio-blue-16.png"/>
+
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
 			<reference id="ThePlugin.AddServerAction"/>
 			<reference id="ThePlugin.RemoveServerAction"/>
@@ -249,6 +253,8 @@
 			<reference id="ThePlugin.AddCrucibleServerAction"/>
 			<reference id="ThePlugin.AddJIRAServerAction"/>
 			<reference id="ThePlugin.AddFishEyeServerAction"/>
+            <separator/>
+            <reference id="ThePlugin.AddStudioServerSetAction"/>
 		</group>
 
 		<action id="ThePlugin.ShowProjectSettings" class="com.atlassian.theplugin.idea.action.ShowProjectSettingsAction"

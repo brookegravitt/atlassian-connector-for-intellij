@@ -120,6 +120,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 		builder.addSeparator("Servers", cc.xyw(1, 2, ALL_COLUMNS));
 
 		for (ServerDataExt server : servers) {
+//            if (server.getServerType())
 			builder.add(
 					new JLabel(server.getServerData().getName() + " (" + server.getServerType().getShortName() + ")"),
 					cc.xy(1, row));

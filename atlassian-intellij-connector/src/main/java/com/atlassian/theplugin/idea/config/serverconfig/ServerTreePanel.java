@@ -24,6 +24,7 @@ import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,8 +50,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 	private Collection<ServerCfg> servers;
+    private Project project;
 
-	/**
+    /**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
 	 *
 	 * @param serverConfigPanel panel to invoke storeServer() and showEmptyPanel() on.
@@ -61,8 +63,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 	private ServerConfigPanel serverConfigPanel;
 
-	public ServerTreePanel() {
-		initLayout();
+	public ServerTreePanel(Project project) {
+        this.project = project;
+        initLayout();
 	}
 
 	private void initLayout() {
@@ -114,6 +117,10 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		String name = ServerNameUtil.suggestNewName(servers);
 		ServerCfg newServer = createNewServer(serverType, name);
 
+        if (newServer == null) {
+            return null;
+        }
+
 		servers.add(newServer);
 
 		ServerNode child = ServerNodeFactory.getServerNode(newServer);
@@ -141,6 +148,13 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 				return new JiraServerCfg(false, name, id);
 			case FISHEYE_SERVER:
 				return new FishEyeServerCfg(false, name, id);
+            case JIRA_STUDIO_SERVER:
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new JiraStudioConfigDialog(project).show();
+                    }
+                });
+                return null;
 		}
 		throw new RuntimeException("Unhandled server type [" + serverType + "]");
 	}
