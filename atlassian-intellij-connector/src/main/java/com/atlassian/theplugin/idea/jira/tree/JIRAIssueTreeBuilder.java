@@ -104,9 +104,20 @@ public class JIRAIssueTreeBuilder {
 					GroupByPriorityTreeNode r = (GroupByPriorityTreeNode) rhs;
 					if (l.priority != null && r.priority != null) {
 						return l.priority.getOrder() - r.priority.getOrder();
-					}
+					} else if (l.priority == null && r.priority == null) {
+                        // ah, whatever, we need to have _some_ ordering
+                        return 1;
+                    } else {
+                        // let's assume that issue with no priority has lower priority than issue _with_ priority
+                        return l.priority == null ? -1 : 1;
+                    }
 				}
-				return lhs.getComparator().compare(lhs, rhs);
+                Comparator<JIRAIssueGroupTreeNode> c = lhs.getComparator();
+                // belt and suspenders for PL-1692
+                if (c == this) {
+                    return 1;
+                }
+				return c.compare(lhs, rhs);
 			}
 		};
 
