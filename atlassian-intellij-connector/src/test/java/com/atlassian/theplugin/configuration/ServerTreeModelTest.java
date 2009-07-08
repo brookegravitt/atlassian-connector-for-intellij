@@ -43,9 +43,17 @@ public class ServerTreeModelTest extends TestCase {
 	}
 
 	public void testDefaultValue() {
-		assertEquals(stm.getChildCount(root), ServerType.values().length);
+        int types = 0;
+        for (ServerType st : ServerType.values()) {
+            if (!st.isPseudoServer()) {
+                ++types;
+            }
+        }
+		assertEquals(stm.getChildCount(root), types);
 		for (int i = 0; i < ServerType.values().length; i++) {
-
+            if (ServerType.values()[i].isPseudoServer()) {
+                continue;
+            }
 			assertTrue(stm.getChild(root, i) instanceof ServerTypeNode);
 			ServerTypeNode type = (ServerTypeNode) stm.getChild(root, i);
 			assertEquals(type.getChildCount(), 1);
