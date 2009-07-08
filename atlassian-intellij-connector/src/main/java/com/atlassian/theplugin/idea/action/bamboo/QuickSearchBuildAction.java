@@ -28,7 +28,6 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
