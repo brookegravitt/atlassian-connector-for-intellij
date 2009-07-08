@@ -4,6 +4,15 @@ import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
@@ -22,13 +31,7 @@ import com.atlassian.theplugin.idea.jira.tree.JIRAIssueTreeNode;
 import com.atlassian.theplugin.idea.jira.tree.JiraFilterTreeSelectionListener;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.api.*;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.jira.cache.RecentlyOpenIssuesCache;
-import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerJIRA;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
@@ -41,7 +44,6 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -630,7 +632,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	 * @param issue issue to work on
 	 * @return modified issue or the same issue if no modification performed
 	 */
-	private JIRAIssue assignIssueAndPutInProgress(@NotNull final JIRAIssue issue) {
+	private JIRAIssue assignIssueAndPutInProgress(@NotNull final JIRAIssue issue, StatusBarPane statusBarPane) {
 		JIRAIssue updatedIssue = issue;
 		final ServerData server = issue.getServer();
 
@@ -676,12 +678,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		if (!statusChanged) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					Messages.showInfoMessage(project, "Available actions do not allow to change state to In Progress"
-							, "Cannot start progress on " + issue.getKey());
-				}
-			});
+            if (statusBarPane != null) {
+                statusBarPane.setErrorMessage("Available actions do not allow to change state to In Progress");
+            }		
 		}
 
 		setStatusInfoMessage("Refreshing issue");
@@ -702,7 +701,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return updatedIssue;
 	}
 
-	public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue) {
+	public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue, 
+                                               final StatusBarPane statusBarPane) {
 
 		final boolean isOk = createChangeListAction(issue);
 
@@ -713,7 +713,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 				@Override
 				public void run(@NotNull final ProgressIndicator indicator) {
-					updatedIssue = assignIssueAndPutInProgress(issue);
+					updatedIssue = assignIssueAndPutInProgress(issue, statusBarPane);
 				}
 
 				public void onSuccess() {
