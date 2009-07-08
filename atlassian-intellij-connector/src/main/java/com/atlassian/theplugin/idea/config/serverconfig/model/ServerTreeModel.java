@@ -34,6 +34,9 @@ public class ServerTreeModel extends DefaultTreeModel {
 	public ServerTreeModel(RootNode root) {
 		super(root);
 		for (ServerType serverType : ServerType.values()) {
+            if (serverType.isPseudoServer()) {
+                continue;
+            }
 			ServerTypeNode serverTypeNode = new ServerTypeNode(serverType);
 			serverTypeNode.add(new ServerInfoNode(serverType));
 			root.add(serverTypeNode);

@@ -1,0 +1,139 @@
+package com.atlassian.theplugin.idea.config.serverconfig;
+
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.project.Project;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
+
+import javax.swing.*;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+
+/**
+ * User: kalamon
+ * Date: Jul 8, 2009
+ * Time: 3:03:34 PM
+ */
+public class JiraStudioConfigDialog extends DialogWrapper {
+    private ConfigPanel rootPanel;
+    private JTextField serverName;
+    private JTextField serverUrl;
+    private JTextField userName;
+    private JPasswordField password;
+    private JCheckBox rememberPassword;
+    private JButton testConnection;
+    private JCheckBox useDefaultCredentials;
+    private DocumentListener documentListener;
+
+    protected JiraStudioConfigDialog(Project project) {
+        super(project, false);
+        setTitle("Create JIRA Studio Server");
+
+        documentListener = new DocumentListener() {
+            public void insertUpdate(DocumentEvent documentEvent) {
+                updateButtons();
+            }
+
+            public void removeUpdate(DocumentEvent documentEvent) {
+                updateButtons();
+            }
+
+            public void changedUpdate(DocumentEvent documentEvent) {
+                updateButtons();
+            }
+        };
+
+        serverName = new JTextField();
+        serverName.getDocument().addDocumentListener(documentListener);
+        serverUrl = new JTextField();
+        serverUrl.getDocument().addDocumentListener(documentListener);
+        serverUrl.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                serverUrl.getDocument().removeDocumentListener(documentListener);
+                String url = GenericServerConfigForm.adjustUrl(serverUrl.getText());
+                serverUrl.setText(url);
+                serverUrl.getDocument().addDocumentListener(documentListener);
+            }
+        });
+        userName = new JTextField();
+        password = new JPasswordField();
+        rememberPassword = new JCheckBox("Remember Password");
+        testConnection = new JButton("Test Connection");
+        testConnection.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                testServerConnections();
+            }
+        });
+        useDefaultCredentials = new JCheckBox("Use Default Credentials");
+
+        rootPanel = new ConfigPanel();
+
+        updateButtons();
+
+        init();
+    }
+
+    private void testServerConnections() {
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
+    protected JComponent createCenterPanel() {
+        return rootPanel;
+    }
+
+    @Override
+    protected Action[] createActions() {
+        return new Action[] {
+                getOKAction(),
+                getCancelAction()
+        };
+    }
+
+    @Override
+    protected void doOKAction() {
+        serverUrl.getDocument().removeDocumentListener(documentListener);
+        GenericServerConfigForm.adjustUrl(serverUrl.getText());
+        generateAllStudioServers();
+        super.doOKAction();
+    }
+
+    private void generateAllStudioServers() {
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private class ConfigPanel extends JPanel {
+
+        private ConfigPanel() {
+            setLayout(new FormLayout("3dlu, right:pref, 3dlu, fill:pref:grow, right:pref, 3dlu",
+                    "3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu, p, 3dlu"));
+            CellConstraints cc = new CellConstraints();
+
+            //CHECKSTYLE:MAGIC:OFF
+            add(new JLabel("Server Name:"), cc.xy(2, 2));
+            add(serverName, cc.xyw(4, 2, 2));
+            add(new JLabel("Server URL:"), cc.xy(2, 4));
+            add(serverUrl, cc.xyw(4, 4, 2));
+            add(new JLabel("Username:"), cc.xy(2, 6));
+            add(userName, cc.xyw(4, 6, 2));
+            add(new JLabel("Password:"), cc.xy(2, 8));
+            add(password, cc.xyw(4, 8, 2));
+            add(rememberPassword, cc.xy(4, 10));
+            add(testConnection, cc.xy(5, 10));
+            add(useDefaultCredentials, cc.xy(4, 12));
+            //CHECKSTYLE:MAGIC:ON
+        }
+    }
+
+    private void updateButtons() {
+        boolean enabled =
+                serverName.getText().length() > 0
+                && serverUrl.getText().length() > 0;
+        setOKActionEnabled(enabled);
+        testConnection.setEnabled(enabled);
+    }
+}

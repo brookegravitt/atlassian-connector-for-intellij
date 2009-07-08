@@ -68,7 +68,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			final ServerData selectedServer, final boolean isDefaultCredentialsAsked) {
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
-		this.serverTreePanel = new ServerTreePanel();
+		this.serverTreePanel = new ServerTreePanel(project);
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
@@ -199,6 +199,8 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			case FISHEYE_SERVER:
 				fisheyeServerConfigFrom.saveData();
 				break;
+            case JIRA_STUDIO_SERVER:
+                break;
 			default:
 				throw new AssertionError("switch not implemented for [" + serverType + "]");
 		}
