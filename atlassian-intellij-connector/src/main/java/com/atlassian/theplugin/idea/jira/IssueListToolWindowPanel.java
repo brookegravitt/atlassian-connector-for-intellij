@@ -957,7 +957,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		public void run(@NotNull final ProgressIndicator indicator) {
 
 			try {
-				((JIRAServerModelIdea)jiraServerModel).setModelFrozen(true);
+				((JIRAServerModelIdea) jiraServerModel).setModelFrozen(true);
 
 				for (ServerData server : servers) {
 					try {
@@ -994,7 +994,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				}
 			} finally {
 				// todo it should be probably called in the UI thread as most frozen listeners do something with UI controls
-				((JIRAServerModelIdea)jiraServerModel).setModelFrozen(false);
+				((JIRAServerModelIdea) jiraServerModel).setModelFrozen(false);
 			}
 		}
 
