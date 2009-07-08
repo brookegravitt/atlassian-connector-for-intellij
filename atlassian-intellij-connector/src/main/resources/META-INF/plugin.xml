@@ -117,7 +117,7 @@
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAFilterListBuilder"/>
 
-		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAServerModelIdea"
+		<projectService serviceInterface="com.atlassian.theplugin.commons.jira.cache.JIRAServerModel"
 						serviceImplementation="com.atlassian.theplugin.jira.model.JIRAServerModelIdea"/>
 
 		<projectService serviceInterface="com.atlassian.theplugin.jira.model.JIRAIssueListModelBuilder"
