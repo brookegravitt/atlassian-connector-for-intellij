@@ -103,7 +103,6 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			serverTree.setCellRenderer(treeRenderer);
 //			final ServerTreeMouseListener serverTreeMouseListener =
 			new ServerTreeMouseListener(serverTree);
-
 		}
 		return serverTree;
 	}
@@ -380,6 +379,10 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 		public void mouseMoved(final MouseEvent e) {
 			jtree.setCursor(isHLinkHit(e) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+		}
+
+		public void mouseDragged(final MouseEvent e) {
+			super.mouseDragged(e);
 		}
 
 		private boolean isHLinkHit(MouseEvent mouseevent) {
