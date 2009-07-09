@@ -40,7 +40,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	private transient Project projectComponent;
 	private JEditorPane content;
 
-	public BuildStatusChangedToolTip(Project project, @NotNull final PluginToolWindow pluginToolWindow) {
+	public BuildStatusChangedToolTip(Project project, @NotNull final PluginToolWindow pluginToolWindow) {   //cccccccccccccccccccccc
 
 		projectComponent = project;
 
@@ -91,6 +91,6 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 		content.setCaretPosition(0);
 		IdeaVersionFacade.getInstance()
 				.fireNofification(projectComponent, new JScrollPane(content), content.getText(), "/icons/bamboo-blue-16.png",
-						status, null);
+						status, content.getBackground());
 	}
 }
