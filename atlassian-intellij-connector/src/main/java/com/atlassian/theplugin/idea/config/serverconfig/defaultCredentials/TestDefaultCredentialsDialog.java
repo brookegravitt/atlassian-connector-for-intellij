@@ -226,7 +226,7 @@ public class TestDefaultCredentialsDialog extends DialogWrapper {
 			refresh();
 		}
 
-		public void onError(final String errorMessage) {
+		public void onError(final String errorMessage, Throwable exception, String helpUrl) {
 			serverDataExt.setErrorMessage(errorMessage);
 			serverDataExt.setStatus(ConnectionStatus.FAILED);
 			refresh();

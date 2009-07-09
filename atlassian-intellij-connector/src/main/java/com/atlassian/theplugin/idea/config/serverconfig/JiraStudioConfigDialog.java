@@ -1,13 +1,24 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
 import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressManager;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
-import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.idea.TestConnectionTask;
+import com.atlassian.theplugin.idea.TestConnectionProcessor;
+import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.atlassian.theplugin.ConnectionWrapper;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -16,6 +27,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.*;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * User: kalamon
@@ -32,12 +46,17 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     private JButton testConnection;
     private JCheckBox useDefaultCredentials;
     private DocumentListener documentListener;
+    private Project project;
     private ServerTreePanel serverTree;
+    private UserCfg defaultUser;
 
-    protected JiraStudioConfigDialog(Project project, ServerTreePanel serverTree) {
+    protected JiraStudioConfigDialog(Project project, ServerTreePanel serverTree,
+                                     UserCfg defaultUser, Collection<ServerCfg> servers) {
         super(project, false);
+        this.project = project;
 
         this.serverTree = serverTree;
+        this.defaultUser = defaultUser;
 
         setTitle("Create JIRA Studio Server");
 
@@ -55,7 +74,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
             }
         };
 
-        serverName = new JTextField();
+        serverName = new JTextField(ServerNameUtil.suggestNewName(servers));
         serverName.getDocument().addDocumentListener(documentListener);
         serverUrl = new JTextField();
         serverUrl.getDocument().addDocumentListener(documentListener);
@@ -86,8 +105,82 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         init();
     }
 
+    private Map<String, Throwable> connectionErrors = new HashMap<String, Throwable>();
+
     private void testServerConnections() {
-        //To change body of created methods use File | Settings | File Templates.
+
+        TestConnectionProcessor processor = new TestConnectionProcessor() {
+            // kalamon: ok, I know, this counter is lame as hell. But so what,
+            // it is "the simplest thing that could ever work". And I challenge
+            // you to invent something more clever that does not result in
+            // overcomplication of the code
+            private int counter = 1;
+
+            public void setConnectionResult(ConnectionWrapper.ConnectionState result) {
+            }
+
+            public void onSuccess() {
+                if (counter-- > 0) {
+                    testCrucibleConnection(this);
+                } else {
+                    showResultDialog();
+                }
+            }
+
+            public void onError(String errorMessage, Throwable exception, String helpUrl) {
+                connectionErrors.put(errorMessage, exception);
+                if (counter-- > 0) {
+                    testCrucibleConnection(this);
+                } else {
+                    showResultDialog();
+                }
+            }
+        };
+
+        connectionErrors.clear();
+        testJiraConnection(processor);
+    }
+
+    private void showResultDialog() {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                if (connectionErrors.size() > 0) {
+                    List<IdeaUiMultiTaskExecutor.ErrorObject> errors = new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
+                    for (String error : connectionErrors.keySet()) {
+                        errors.add(new IdeaUiMultiTaskExecutor.ErrorObject(error, connectionErrors.get(error)));
+                    }
+                    DialogWithDetails.showExceptionDialog(rootPanel, errors);
+                } else {
+                    showMessageDialog(project, "Connected successfully", "Connection OK", Messages.getInformationIcon());
+                }
+            }
+        });
+    }
+
+    private void testJiraConnection(final TestConnectionProcessor processor) {
+        final Task.Modal testConnectionTask = new TestConnectionTask(project,
+                new ProductConnector(JIRAServerFacadeImpl.getInstance()),
+                new ServerData(generateJiraServerCfg(), defaultUser),
+                processor, "Testing JIRA Connection", true, false, false);
+        testConnectionTask.setCancelText("Stop");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ProgressManager.getInstance().run(testConnectionTask);
+            }
+        });
+    }
+
+    private void testCrucibleConnection(final TestConnectionProcessor processor) {
+        final Task.Modal testConnectionTask = new TestConnectionTask(project,
+                new ProductConnector(CrucibleServerFacadeImpl.getInstance()),
+                new ServerData(generateCrucibleServerCfg(), defaultUser),
+                processor, "Testing Crucible Connection", true, false, false);
+        testConnectionTask.setCancelText("Stop");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                ProgressManager.getInstance().run(testConnectionTask);
+            }
+        });
     }
 
     protected JComponent createCenterPanel() {
@@ -110,35 +203,48 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         super.doOKAction();
     }
 
-    private void generateAllStudioServers() {
+    private @NotNull JiraServerCfg generateJiraServerCfg() {
         ServerIdImpl idJira = new ServerIdImpl();
-        ServerIdImpl idCrucible = new ServerIdImpl();
 
         String name = serverName.getText().trim();
-        if (name.length() < 1) {
-            return;
-        }
         JiraServerCfg jira = new JiraServerCfg(true, name, idJira);
-        CrucibleServerCfg cru = new CrucibleServerCfg(true, name, idCrucible);
 
         jira.setUrl(serverUrl.getText());
-        cru.setUrl(serverUrl.getText() + "/source");
 
         String user = userName.getText();
         if (user.length() > 0) {
             jira.setUsername(user);
-            cru.setUsername(user);
         }
         jira.setPassword(new String(password.getPassword()));
-        cru.setPassword(new String(password.getPassword()));
         jira.setPasswordStored(rememberPassword.isSelected());
-        cru.setPasswordStored(rememberPassword.isSelected());
         jira.setUseDefaultCredentials(useDefaultCredentials.isSelected());
+
+        return jira;
+    }
+
+    private @NotNull CrucibleServerCfg generateCrucibleServerCfg() {
+        ServerIdImpl idCrucible = new ServerIdImpl();
+
+        String name = serverName.getText().trim();
+        CrucibleServerCfg cru = new CrucibleServerCfg(true, name, idCrucible);
+
+        cru.setUrl(serverUrl.getText() + "/source");
+
+        String user = userName.getText();
+        if (user.length() > 0) {
+            cru.setUsername(user);
+        }
+        cru.setPassword(new String(password.getPassword()));
+        cru.setPasswordStored(rememberPassword.isSelected());
         cru.setUseDefaultCredentials(useDefaultCredentials.isSelected());
         cru.setFisheyeInstance(true);
 
-        serverTree.addNewServerCfg(ServerType.JIRA_SERVER, jira);
-        serverTree.addNewServerCfg(ServerType.CRUCIBLE_SERVER, cru);
+        return cru;
+    }
+
+    private void generateAllStudioServers() {
+        serverTree.addNewServerCfg(ServerType.JIRA_SERVER, generateJiraServerCfg());
+        serverTree.addNewServerCfg(ServerType.CRUCIBLE_SERVER, generateCrucibleServerCfg());
     }
 
     private class ConfigPanel extends JPanel {
@@ -166,8 +272,8 @@ public class JiraStudioConfigDialog extends DialogWrapper {
 
     private void updateButtons() {
         boolean enabled =
-                serverName.getText().length() > 0
-                && serverUrl.getText().length() > 0;
+                serverName.getText().trim().length() > 0
+                && serverUrl.getText().trim().length() > 0;
         setOKActionEnabled(enabled);
         testConnection.setEnabled(enabled);
     }

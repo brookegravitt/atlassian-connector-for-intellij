@@ -80,7 +80,7 @@ public class TestConnectionThread extends Thread {
 			if (testConnector.getConnectionState() == ConnectionWrapper.ConnectionState.SUCCEEDED) {
 				testConnectionProcessor.onSuccess();
 			} else {
-				testConnectionProcessor.onError(testConnector.getErrorMessage());
+				testConnectionProcessor.onError(testConnector.getErrorMessage(), null, null);
 			}
 
 		}

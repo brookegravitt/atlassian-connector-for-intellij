@@ -134,7 +134,7 @@ public class TestDefaultCredentials {
 			public void onSuccess() {
 			}
 
-			public void onError(final String errorMessage) {
+			public void onError(final String errorMessage, Throwable exception, String helpUrl) {
 				errors.put(serverData, errorMessage);
 			}
 

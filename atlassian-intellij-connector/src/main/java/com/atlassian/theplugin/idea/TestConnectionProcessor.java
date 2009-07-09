@@ -23,5 +23,5 @@ public interface TestConnectionProcessor {
 
 	void onSuccess();
 
-	void onError(String errorMessage);
+	void onError(String errorMessage, Throwable exception, String helpUrl);
 }

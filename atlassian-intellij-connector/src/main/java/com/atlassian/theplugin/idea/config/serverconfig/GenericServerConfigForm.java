@@ -251,7 +251,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 	public void onSuccess() {
 	}
 
-	public void onError(final String errorMessage) {
+	public void onError(final String errorMessage, Throwable exception, String helpUrl) {
 	}
 
 	public void setConnectionResult(ConnectionWrapper.ConnectionState result) {

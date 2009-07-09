@@ -101,7 +101,8 @@ public class TestConnectionTask extends Task.Modal {
 									serverData.getName() + " : " + testConnector.getErrorMessage(),
 									testConnector.getException(), HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
 						}
-						processor.onError(testConnector.getErrorMessage());
+						processor.onError(testConnector.getErrorMessage(), testConnector.getException(), 
+                                HelpUrl.getHelpUrl(Constants.HELP_TEST_CONNECTION));
 					}
 				});
 				break;

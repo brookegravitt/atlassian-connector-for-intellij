@@ -69,7 +69,7 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 					public void onSuccess() {
 					}
 
-					public void onError(final String errorMessage) {
+					public void onError(final String errorMessage, Throwable exception, String helpUrl) {
 					}
 				}));
 	}
