@@ -22,10 +22,12 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.model.*;
 import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -36,11 +38,12 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.Collection;
 
 public final class ServerTreePanel extends JPanel implements TreeSelectionListener, DataProvider {
-	public static final String TOOLBAR_NAME = "ThePlugin.AddRemoveServerPopup";
-
 	private JTree serverTree;
 	private ServerTreeModel model;
 	private DefaultMutableTreeNode selectedNode;
@@ -50,9 +53,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 	private Collection<ServerCfg> servers;
-    private Project project;
+	private Project project;
 
-    /**
+	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
 	 *
 	 * @param serverConfigPanel panel to invoke storeServer() and showEmptyPanel() on.
@@ -64,8 +67,8 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	private ServerConfigPanel serverConfigPanel;
 
 	public ServerTreePanel(Project project) {
-        this.project = project;
-        initLayout();
+		this.project = project;
+		initLayout();
 	}
 
 	private void initLayout() {
@@ -98,7 +101,9 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 			final ServerTreeRenderer treeRenderer = new ServerTreeRenderer();
 			serverTree.setCellRenderer(treeRenderer);
-//			final ServerTreeMouseListener serverTreeMouseListener = new ServerTreeMouseListener(serverTree, TOOLBAR_NAME);
+//			final ServerTreeMouseListener serverTreeMouseListener =
+			new ServerTreeMouseListener(serverTree);
+
 		}
 		return serverTree;
 	}
@@ -117,11 +122,11 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		String name = ServerNameUtil.suggestNewName(servers);
 		ServerCfg newServer = createNewServer(serverType, name);
 
-        if (newServer == null) {
-            return null;
-        }
+		if (newServer == null) {
+			return null;
+		}
 
-        ServerNode child = addNewServerCfg(serverType, newServer);
+		ServerNode child = addNewServerCfg(serverType, newServer);
 
 		TreePath path = new TreePath(child.getPath());
 		serverTree.scrollPathToVisible(path);
@@ -131,16 +136,16 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		return newServer.getName();
 	}
 
-    public ServerNode addNewServerCfg(ServerType serverType, ServerCfg newServer) {
-        servers.add(newServer);
+	public ServerNode addNewServerCfg(ServerType serverType, ServerCfg newServer) {
+		servers.add(newServer);
 
-        ServerNode child = ServerNodeFactory.getServerNode(newServer);
-        ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
-        model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
-        return child;
-    }
+		ServerNode child = ServerNodeFactory.getServerNode(newServer);
+		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
+		model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
+		return child;
+	}
 
-    private ServerCfg createNewServer(final ServerType serverType, final String name) {
+	private ServerCfg createNewServer(final ServerType serverType, final String name) {
 		ServerIdImpl id = new ServerIdImpl();
 		// CHECKSTYLE:OFF
 		switch (serverType) {
@@ -153,13 +158,13 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 				return new JiraServerCfg(false, name, id);
 			case FISHEYE_SERVER:
 				return new FishEyeServerCfg(false, name, id);
-            case JIRA_STUDIO_SERVER:
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        new JiraStudioConfigDialog(project, ServerTreePanel.this).show();
-                    }
-                });
-                return null;
+			case JIRA_STUDIO_SERVER:
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						new JiraStudioConfigDialog(project, ServerTreePanel.this).show();
+					}
+				});
+				return null;
 		}
 		throw new RuntimeException("Unhandled server type [" + serverType + "]");
 	}
@@ -349,4 +354,44 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		}
 		return null;
 	}
+
+	public class ServerTreeMouseListener extends MouseAdapter implements MouseMotionListener {
+		private final JTree jtree;
+
+		public ServerTreeMouseListener(@NotNull JTree jtree) {
+			this.jtree = jtree;
+			jtree.addMouseListener(this);
+			jtree.addMouseMotionListener(this);
+//			jtree.addComponentListener(this);
+
+		}
+
+		public void mousePressed(final MouseEvent e) {
+			if (isHLinkHit(e)) {
+				TreePath treepath = jtree.getPathForLocation(e.getX(), e.getY());
+				if (treepath != null) {
+					final Object o = treepath.getLastPathComponent();
+					if (o instanceof ServerInfoNode) {
+						BrowserUtil.launchBrowser(((ServerInfoNode) o).getServerType().getInfoUrl());
+					}
+				}
+			}
+		}
+
+		public void mouseMoved(final MouseEvent e) {
+			jtree.setCursor(isHLinkHit(e) ? Cursor.getPredefinedCursor(Cursor.HAND_CURSOR) : Cursor.getDefaultCursor());
+		}
+
+		private boolean isHLinkHit(MouseEvent mouseevent) {
+			TreePath treepath = jtree.getPathForLocation(mouseevent.getX(), mouseevent.getY());
+			if (treepath != null) {
+				final Object o = treepath.getLastPathComponent();
+				if (o instanceof ServerInfoNode) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
 }
