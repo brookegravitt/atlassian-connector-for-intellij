@@ -40,7 +40,7 @@ public class BuildStatusChangedToolTip extends JPanel implements BambooStatusDis
 	private transient Project projectComponent;
 	private JEditorPane content;
 
-	public BuildStatusChangedToolTip(Project project, @NotNull final PluginToolWindow pluginToolWindow) {   //cccccccccccccccccccccc
+	public BuildStatusChangedToolTip(Project project, @NotNull final PluginToolWindow pluginToolWindow) {   //cccccccccccccccccccccccc
 
 		projectComponent = project;
 
