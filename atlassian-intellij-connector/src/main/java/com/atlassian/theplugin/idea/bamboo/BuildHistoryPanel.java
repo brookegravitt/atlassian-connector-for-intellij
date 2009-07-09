@@ -8,6 +8,7 @@ import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -59,14 +60,17 @@ public class BuildHistoryPanel extends JPanel {
                 return true;
             }
         };
+        buildList.setFixedCellWidth(ROW_HEIGHT);
         buildList.setModel(listModel);
         buildList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         buildList.setCellRenderer(new ListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
                 BambooBuild build = (BambooBuild) value;
-                RENDERER_PANEL.setBuild(new BambooBuildAdapterIdea(build));
+                BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
+                RENDERER_PANEL.setBuild(buildAdapter);
                 RENDERER_PANEL.setSelected(isSelected);
+                BuildTreeNode.addTooltipToPanel(buildAdapter, RENDERER_PANEL);
                 return RENDERER_PANEL;
             }
         });
@@ -183,10 +187,10 @@ public class BuildHistoryPanel extends JPanel {
         private SelectableLabel buildKey =
                 new SelectableLabel(true, true, "NOTHING YET", null, SwingConstants.TRAILING, ROW_HEIGHT);
         private SelectableLabel buildDate =
-                new SelectableLabel(true, true, "NEITHER HERE", ROW_HEIGHT, false, false);
+                new SelectableLabel(true, true, "NEITHER HERE", null, SwingConstants.TRAILING, ROW_HEIGHT);
 
         private RendererPanel() {
-            setLayout(new FormLayout("3dlu, pref, 1dlu, fill:pref:grow, right:pref", "pref"));
+            setLayout(new FormLayout("3dlu, pref, 1dlu, fill:pref:grow, right:pref, 3dlu", "pref"));
             CellConstraints cc = new CellConstraints();
             setOpaque(false);
             add(buildIcon, cc.xy(2, 1));
@@ -200,7 +204,7 @@ public class BuildHistoryPanel extends JPanel {
         public void setBuild(BambooBuildAdapterIdea build) {
             buildIcon.setIcon(build.getIcon());
             buildKey.setText(build.getPlanKey() + "-" + build.getBuildNumberAsString());
-            buildDate.setText(DateUtil.getRelativePastDate(build.getCompletionDate()) + "  ");
+            buildDate.setText(DateUtil.getRelativePastDate(build.getCompletionDate()));
         }
 
         public void setSelected(boolean selected) {
