@@ -27,7 +27,7 @@ import javax.swing.event.HyperlinkListener;
 import java.awt.*;
 
 public class NewVersionInfoForm extends DialogWrapper {
-    private static final String DOWNLOAD_TITLE = "Downloading new version of " + PluginUtil.getInstance().getName() + " plugin";
+    private static final String DOWNLOAD_TITLE = "Downloading new version of " + PluginUtil.getInstance().getName();
     private JPanel rootPane;
     private JLabel versionInfoLabel;
     private JPanel footerPanel;
