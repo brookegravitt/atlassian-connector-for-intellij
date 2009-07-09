@@ -213,6 +213,10 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 			return;
 		}
 
+		if (StringUtils.stripToEmpty(serverName.getText()).length() == 0) {
+			return;
+		}
+
 		serverCfg.setName(serverName.getText());
 		serverCfg.setUrl(serverUrl.getText());
 		serverCfg.setUsername(username.getText());
