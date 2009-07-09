@@ -97,6 +97,14 @@ public class JiraStudioConfigDialog extends DialogWrapper {
             }
         });
         useDefaultCredentials = new JCheckBox("Use Default Credentials");
+        useDefaultCredentials.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                boolean enabled = !useDefaultCredentials.isSelected();
+                userName.setEnabled(enabled);
+                password.setEnabled(enabled);
+                rememberPassword.setEnabled(enabled);
+            }
+        });
 
         rootPanel = new ConfigPanel();
 
