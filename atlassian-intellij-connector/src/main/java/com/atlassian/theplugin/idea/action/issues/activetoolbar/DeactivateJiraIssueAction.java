@@ -20,6 +20,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.*;
 
@@ -32,21 +33,29 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 	}
 
 	public static void runDeactivateTask(final AnActionEvent event) {
+
+		final JiraWorkspaceConfiguration conf =
+				IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
+
+		final Project currentProject = IdeaHelper.getCurrentProject(event);
+
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
 				ActiveIssueUtils.deactivate(event, new DeactivateIssueResultHandler() {
 					public void success() {
-						final JiraWorkspaceConfiguration conf =
-								IdeaHelper.getProjectComponent(event, JiraWorkspaceConfiguration.class);
-						conf.setActiveJiraIssuee(null);
+						if (conf != null) {
+							conf.setActiveJiraIssuee(null);
+						}
 					}
 
 					public void failure(final Throwable problem) {
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
-								DialogWithDetails.showExceptionDialog(
-										IdeaHelper.getCurrentProject(event), "Failed to Deactivate Issue", problem);
+								if (currentProject != null && !currentProject.isDisposed()) {
+									DialogWithDetails.showExceptionDialog(
+											currentProject, "Failed to Deactivate Issue", problem);
+								}
 							}
 						});
 					}
