@@ -68,7 +68,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 			final ServerData selectedServer, final boolean isDefaultCredentialsAsked) {
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
-		this.serverTreePanel = new ServerTreePanel(project);
+		this.serverTreePanel = new ServerTreePanel(project, defaultUser);
 		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();

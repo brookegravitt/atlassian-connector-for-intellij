@@ -53,7 +53,8 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 	public static final int HEIGHT = 250;
 	private static final int VISIBLE_ROW_COUNT = 7;
 	private Collection<ServerCfg> servers;
-	private Project project;
+    private Project project;
+    private UserCfg defaultUser;
 
 	/**
 	 * serverConfigPanel needs to be initialized outside of the constructor to avoid cyclic dependency.
@@ -66,9 +67,10 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 
 	private ServerConfigPanel serverConfigPanel;
 
-	public ServerTreePanel(Project project) {
-		this.project = project;
-		initLayout();
+	public ServerTreePanel(Project project, UserCfg defaultUser) {
+        this.project = project;
+        this.defaultUser = defaultUser;
+        initLayout();
 	}
 
 	private void initLayout() {
@@ -157,13 +159,13 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 				return new JiraServerCfg(false, name, id);
 			case FISHEYE_SERVER:
 				return new FishEyeServerCfg(false, name, id);
-			case JIRA_STUDIO_SERVER:
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						new JiraStudioConfigDialog(project, ServerTreePanel.this).show();
-					}
-				});
-				return null;
+            case JIRA_STUDIO_SERVER:
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        new JiraStudioConfigDialog(project, ServerTreePanel.this, defaultUser, servers).show();
+                    }
+                });
+                return null;
 		}
 		throw new RuntimeException("Unhandled server type [" + serverType + "]");
 	}
