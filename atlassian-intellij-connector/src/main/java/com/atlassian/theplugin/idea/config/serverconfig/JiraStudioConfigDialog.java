@@ -4,6 +4,10 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.ServerType;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -28,9 +32,13 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     private JButton testConnection;
     private JCheckBox useDefaultCredentials;
     private DocumentListener documentListener;
+    private ServerTreePanel serverTree;
 
-    protected JiraStudioConfigDialog(Project project) {
+    protected JiraStudioConfigDialog(Project project, ServerTreePanel serverTree) {
         super(project, false);
+
+        this.serverTree = serverTree;
+
         setTitle("Create JIRA Studio Server");
 
         documentListener = new DocumentListener() {
@@ -103,7 +111,34 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     }
 
     private void generateAllStudioServers() {
-        //To change body of created methods use File | Settings | File Templates.
+        ServerIdImpl idJira = new ServerIdImpl();
+        ServerIdImpl idCrucible = new ServerIdImpl();
+
+        String name = serverName.getText().trim();
+        if (name.length() < 1) {
+            return;
+        }
+        JiraServerCfg jira = new JiraServerCfg(true, name, idJira);
+        CrucibleServerCfg cru = new CrucibleServerCfg(true, name, idCrucible);
+
+        jira.setUrl(serverUrl.getText());
+        cru.setUrl(serverUrl.getText() + "/source");
+
+        String user = userName.getText();
+        if (user.length() > 0) {
+            jira.setUsername(user);
+            cru.setUsername(user);
+        }
+        jira.setPassword(new String(password.getPassword()));
+        cru.setPassword(new String(password.getPassword()));
+        jira.setPasswordStored(rememberPassword.isSelected());
+        cru.setPasswordStored(rememberPassword.isSelected());
+        jira.setUseDefaultCredentials(useDefaultCredentials.isSelected());
+        cru.setUseDefaultCredentials(useDefaultCredentials.isSelected());
+        cru.setFisheyeInstance(true);
+
+        serverTree.addNewServerCfg(ServerType.JIRA_SERVER, jira);
+        serverTree.addNewServerCfg(ServerType.CRUCIBLE_SERVER, cru);
     }
 
     private class ConfigPanel extends JPanel {

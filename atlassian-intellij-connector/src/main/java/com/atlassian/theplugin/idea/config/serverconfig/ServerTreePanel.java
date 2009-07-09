@@ -121,11 +121,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
             return null;
         }
 
-		servers.add(newServer);
-
-		ServerNode child = ServerNodeFactory.getServerNode(newServer);
-		ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
-		model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
+        ServerNode child = addNewServerCfg(serverType, newServer);
 
 		TreePath path = new TreePath(child.getPath());
 		serverTree.scrollPathToVisible(path);
@@ -135,7 +131,16 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 		return newServer.getName();
 	}
 
-	private ServerCfg createNewServer(final ServerType serverType, final String name) {
+    public ServerNode addNewServerCfg(ServerType serverType, ServerCfg newServer) {
+        servers.add(newServer);
+
+        ServerNode child = ServerNodeFactory.getServerNode(newServer);
+        ServerTypeNode serverTypeNode = model.getServerTypeNode(serverType);
+        model.insertNodeInto(child, serverTypeNode, serverTypeNode.getChildCount());
+        return child;
+    }
+
+    private ServerCfg createNewServer(final ServerType serverType, final String name) {
 		ServerIdImpl id = new ServerIdImpl();
 		// CHECKSTYLE:OFF
 		switch (serverType) {
@@ -151,7 +156,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
             case JIRA_STUDIO_SERVER:
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
-                        new JiraStudioConfigDialog(project).show();
+                        new JiraStudioConfigDialog(project, ServerTreePanel.this).show();
                     }
                 });
                 return null;
