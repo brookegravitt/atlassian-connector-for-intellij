@@ -75,6 +75,20 @@ public class CrucibleVcsContentProvider extends IdeaReviewFileContentProvider {
             return new IdeaReviewFileContent(file, content);
 
 		} catch (VcsException e) {
+            // PL-1678: kalamon - ugliest hack ever. On CVS, when a file is added on a branch, a revision 1.1
+            // gets created on a trunk anyway, but it is a deleted revision, so IDEA (probably correctly)
+            // claims it is unable to find it. The "proper" revision on the trunk has a rev. number
+            // 1.1.2.1 (or somesuch, depending on the branch revision number. Additionally, CRU _does_
+            // report that the file is added so in theory we don't need to retrieve rev. 1.1. Unfortunately,
+            // CRU sometimes mishandled moved files, claiming they have been added in one place and
+            // removed in the orther, so in practice, we need to treat this file as moved,
+            // as it has a "from" revision.
+            //
+            // But like I said - this is CVS-specific hack that is uglier than Motorhead's Lemmy
+            if ("CVS".equals(vcs.getDisplayName())
+                    && "Revision 1.1 does not exist in repository".equals(e.getMessage())) {
+                return null;
+            }
 			throw new ReviewFileContentException(e);
 		}
 	}

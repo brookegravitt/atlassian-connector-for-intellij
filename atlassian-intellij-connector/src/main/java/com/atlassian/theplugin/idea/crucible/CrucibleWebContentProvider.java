@@ -41,6 +41,9 @@ public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
             String serverUrl = review.getServerData().getUrl();
             String contentUrl = versionedVirtualFile.getContentUrl();
 
+            if (contentUrl == null) {
+                return null;
+            }
             String[] serverTokens = serverUrl.split("/");
             String[] contentTokens = contentUrl.split("/");
 
