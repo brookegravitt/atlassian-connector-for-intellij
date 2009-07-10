@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.intellij.openapi.util.IconLoader;
-import com.intellij.util.ui.AsyncProcessIcon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,14 +32,23 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/icn_plan_disabled.gif");
 
 	private static final Icon ICON_IS_IN_QUEUE = IconLoader.getIcon("/icons/cup.png");
-	private static final Icon ICON_IS_BUILDING = IconLoader.getIcon("/icons/bamboo_building.gif");
+	private static final Icon[] ICON_IS_BUILDING = {
+			IconLoader.getIcon("/icons/icn_building_1.gif"),
+			IconLoader.getIcon("/icons/icn_building_2.gif"),
+			IconLoader.getIcon("/icons/icn_building_3.gif"),
+			IconLoader.getIcon("/icons/icn_building_4.gif"),
+			IconLoader.getIcon("/icons/icn_building_5.gif"),
+			IconLoader.getIcon("/icons/icn_building_6.gif"),
+			IconLoader.getIcon("/icons/icn_building_7.gif"),
+			IconLoader.getIcon("/icons/icn_building_8.gif")};
 
 	private static final Icon ICON_MY_BUILD_RED = IconLoader.getIcon("/actions/lightning.png");
 	private static final Icon ICON_MY_BUILD_GREEN = IconLoader.getIcon("/icons/lightning_green.png");
+	private int iconBuildingIndex = 0;
+	private int iconTrickIndex = 0;
 
 	public BambooBuildAdapterIdea(BambooBuild build) {
 		super(build);
-
 	}
 
 	@Nullable
@@ -66,7 +74,13 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 				case UNKNOWN:
 					return ICON_GREY;
 				case BUILDING:
-					return ICON_IS_BUILDING;
+					// we need below trick (return the same icon twice)
+					// because for single tree node refresh the renderer is called twice
+					// the trick can be moved upper in case the method is used not only for build tree
+					iconBuildingIndex += ++iconTrickIndex % 2;
+					iconBuildingIndex %= ICON_IS_BUILDING.length;
+					// return next icon from the array
+					return ICON_IS_BUILDING[iconBuildingIndex];
 				case IN_QUEUE:
 					return ICON_IS_IN_QUEUE;
 				default:
@@ -98,29 +112,4 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 		return buildStatus != AdjustedBuildStatus.UNKNOWN && buildStatus != AdjustedBuildStatus.DISABLED;
 	}
 
-	public class BuildInProgressIcon extends AsyncProcessIcon {
-
-		private Icon[] icons;
-		private Icon passiveIcon;
-		private static final int CYCLE_LENGTH = 600; // whole animation single cycle lenght
-		private static final int CYCLE_GAP = 60; // break after every single cycle (best 'cycleLenght / number of frames')
-
-		public BuildInProgressIcon(@org.jetbrains.annotations.NonNls String name) {
-			super(name);
-
-			// comment that line if you want to use standard IDEA small progress circle
-//			initCustomLook();
-		}
-
-		private void initCustomLook() {
-			loadIcons();
-			init(icons, passiveIcon, CYCLE_LENGTH, CYCLE_GAP, -1);
-		}
-
-		private void loadIcons() {
-			icons = new Icon[]{ICON_GREEN, ICON_GREY};
-
-			passiveIcon = ICON_RED;
-		}
-	}
 }
