@@ -16,7 +16,6 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.idea.ui.UserTableContext;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianClickAction;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FolderNode;
@@ -40,20 +39,4 @@ public final class CrucibleConstants {
 	private CrucibleConstants() {
         // this is a utility class        
     }
-
-    public enum CrucibleTableState {
-		REVIEW_ADAPTER,
-		REVIEW_ITEM,
-		VERSIONED_COMMENTS,
-		SELECTED_VERSIONED_COMMENT;
-
-		public Object getValue(UserTableContext context) {
-			return context.getProperty(name());
-		}
-
-		public void setValue(UserTableContext context, Object value) {
-			context.setProperty(name(), value);
-		}
-	}
-
 }
