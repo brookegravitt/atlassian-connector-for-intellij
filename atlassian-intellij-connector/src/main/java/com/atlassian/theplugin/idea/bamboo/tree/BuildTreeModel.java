@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
@@ -22,7 +23,11 @@ import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author Jacek Jaroczynski
@@ -38,6 +43,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	private BuildNodeManipulator serverNodeManipulator;
 	private BuildNodeManipulator dateNodeManipulator;
 	private BuildNodeManipulator projectNodeManipulator;
+	private Timer timer = new Timer("animate building nodes");
 
 	public BuildTreeModel(final BuildListModel buildListModel) {
 		super(new DefaultMutableTreeNode());
@@ -55,6 +61,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	/**
 	 * Sets groupBy field used to group the tree and triggers tree to rebuild
 	 * Only tree should use that method.
+	 *
 	 * @param aGroupBy group by option
 	 */
 	public void groupBy(BuildGroupBy aGroupBy) {
@@ -70,6 +77,7 @@ public class BuildTreeModel extends DefaultTreeModel {
 	/**
 	 * Simple setter (does not trigger tree to rebuild)
 	 * Used when initializig tree (before first load of builds status)
+	 *
 	 * @param groupBy group by option
 	 */
 	public void setGroupBy(BuildGroupBy groupBy) {
@@ -160,8 +168,53 @@ public class BuildTreeModel extends DefaultTreeModel {
 //	}
 
 	public void update() {
+
+		timer.cancel();
+		timer = new Timer("animate building nodes");
+
 		getRoot().removeAllChildren();
 		nodeStructureChanged(getRoot());
+
+		// find nodes in 'building' state
+		final Collection<BuildTreeNode> nodes = getBuildingNodes();
+
+		// start timer to refresh 'building' nodes in the background (to animate them)
+		timer.schedule(new TimerTask() {
+			public void run() {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						for (BuildTreeNode node : nodes) {
+							nodeStructureChanged(node);
+						}
+					}
+				});
+			}
+		}, 10, 100);
+
+
+	}
+
+	private Collection<BuildTreeNode> getBuildingNodes() {
+		Collection<BuildTreeNode> nodes = new ArrayList<BuildTreeNode>();
+
+		collectBuildingNodes(getRoot(), nodes);
+
+		return nodes;
+	}
+
+	private void collectBuildingNodes(final DefaultMutableTreeNode node, Collection<BuildTreeNode> nodes) {
+		if (node instanceof BuildTreeNode) {
+			BuildTreeNode buildNode = (BuildTreeNode) node;
+			if (buildNode.getBuild().getStatus() == BuildStatus.BUILDING) {
+				nodes.add((BuildTreeNode) node);
+			}
+		}
+
+		for (int i = 0; i < getChildCount(node); ++i) {
+			if (getChild(node, i) instanceof DefaultMutableTreeNode) {
+				collectBuildingNodes((DefaultMutableTreeNode) getChild(node, i), nodes);
+			}
+		}
 	}
 
 	public BuildListModel getBuildListModel() {

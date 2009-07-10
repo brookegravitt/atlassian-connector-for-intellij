@@ -125,12 +125,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2 + 2, 1));
 
 
-        addTooltipToPanel(build, p);
+		addTooltipToPanel(build, p);
 
 		return p;
 	}
 
-    @NotNull
+	@NotNull
 	private static String getBuildReasonString(BambooBuildAdapterIdea build) {
 		StringBuilder sb = new StringBuilder();
 
@@ -255,13 +255,13 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return commiters.toString();
 	}
 
-    public static void addTooltipToPanel(BambooBuildAdapterIdea build, JPanel p) {
-        final JToolTip jToolTip = p.createToolTip();
-        jToolTip.setTipText(buildTolltip(build, 0));
-        final int prefWidth = jToolTip.getPreferredSize().width;
-        int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
-        p.setToolTipText(buildTolltip(build, width));
-    }
+	public static void addTooltipToPanel(BambooBuildAdapterIdea build, JPanel p) {
+		final JToolTip jToolTip = p.createToolTip();
+		jToolTip.setTipText(buildTolltip(build, 0));
+		final int prefWidth = jToolTip.getPreferredSize().width;
+		int width = prefWidth > MAX_TOOLTIP_WIDTH ? MAX_TOOLTIP_WIDTH : 0;
+		p.setToolTipText(buildTolltip(build, width));
+	}
 
 	private static String buildTolltip(BambooBuildAdapterIdea build, int width) {
 		StringBuilder sb = new StringBuilder(
