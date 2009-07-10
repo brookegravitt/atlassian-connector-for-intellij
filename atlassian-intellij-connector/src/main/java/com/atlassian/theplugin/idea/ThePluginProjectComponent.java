@@ -343,7 +343,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
         if (projectCfgManager.getDefaultFishEyeServer() == null && projectCfgManager.getAllFishEyeServerss().size() > 0) {
             if (text.length() > 0) {
-                text += " and FishEyer";
+                text += " and FishEye";
             } else {
                 text = "FishEye";
             }
