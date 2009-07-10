@@ -129,7 +129,6 @@ public class ProjectConfigurationPanel extends JPanel {
 		serverConfigPanel.saveData();
 		if (!projectConfiguration.isDefaultFishEyeServerValid()) {
 			projectConfiguration.setDefaultFishEyeServerId(null);
-			projectConfigurationBean.setDefaultFishEyeServerAsked(false);
 			Messages.showInfoMessage(this, "Default FishEye server settings have been cleared.", "Information");
 		}
 		if (!projectConfiguration.isDefaultCrucibleServerValid()) {
@@ -139,7 +138,6 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		if (!projectConfiguration.isDefaultJiraServerValid()) {
 			projectConfiguration.setDefaultJiraServerId(null);
-			projectConfigurationBean.setDefaultJiraServerAsked(false);
 			Messages.showInfoMessage(this, "Default JIRA server settings have been cleared.", "Information");
 		}
 

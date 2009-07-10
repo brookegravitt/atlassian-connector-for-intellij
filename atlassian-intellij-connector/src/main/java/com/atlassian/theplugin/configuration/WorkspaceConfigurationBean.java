@@ -33,29 +33,12 @@ public class WorkspaceConfigurationBean implements PersistentStateComponent<Work
 
 	private UserCfgBean defaultCredentials = new UserCfgBean();
 	private boolean defaultCredentialsAsked;
-    private boolean defaultJiraServerAsked;
-    private boolean defaultFishEyeServerAsked;
 
 
 	public WorkspaceConfigurationBean() {
 
 	}
 
-    public boolean isDefaultJiraServerAsked() {
-        return defaultJiraServerAsked;
-    }
-
-    public void setDefaultJiraServerAsked(boolean defaultJiraServerAsked) {
-        this.defaultJiraServerAsked = defaultJiraServerAsked;
-    }
-
-    public boolean isDefaultFishEyeServerAsked() {
-        return defaultFishEyeServerAsked;
-    }
-
-    public void setDefaultFishEyeServerAsked(boolean defaultFishEyeServerAsked) {
-        this.defaultFishEyeServerAsked = defaultFishEyeServerAsked;
-    }
 
     public BambooWorkspaceConfiguration getBambooConfiguration() {
 		return bambooConfiguration;
@@ -80,8 +63,6 @@ public class WorkspaceConfigurationBean implements PersistentStateComponent<Work
 		defaultCredentials = new UserCfgBean(state.defaultCredentials.getUsername(),
 				state.defaultCredentials.getEncodedPassword());
 		defaultCredentialsAsked = state.defaultCredentialsAsked;
-        defaultJiraServerAsked = state.defaultJiraServerAsked;
-        defaultFishEyeServerAsked = state.defaultFishEyeServerAsked;
 	}
 
 	public String getActiveToolWindowTab() {

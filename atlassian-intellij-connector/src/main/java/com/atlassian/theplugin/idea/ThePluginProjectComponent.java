@@ -335,36 +335,36 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	}
 
-	private void checkDefaultServerValues() {
-		final InformationDialogWithCheckBox jiraDialog = new InformationDialogWithCheckBox(project,
-				PluginUtil.PRODUCT_NAME,
-				"Please set up default JIRA server in order to get all "
-						+ "cool features of " + PluginUtil.PRODUCT_NAME);
-		if (projectCfgManager.getDefaultJiraServer() == null && !projectConfigurationBean.isDefaultJiraServerAsked()
-				&& projectCfgManager.getAllJiraServerss().size() > 0) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					jiraDialog.show();
-					projectConfigurationBean.setDefaultJiraServerAsked(jiraDialog.isDoNotShowChecked());
-				}
-			});
-		}
-		final InformationDialogWithCheckBox fishEyeDialog = new InformationDialogWithCheckBox(project,
-				PluginUtil.PRODUCT_NAME,
-				"Please set up default FishEye server in order to get all "
-						+ "cool features of " + PluginUtil.PRODUCT_NAME);
+    private void checkDefaultServerValues() {
+        String text = "";
+        if (projectCfgManager.getDefaultJiraServer() == null && projectCfgManager.getAllJiraServerss().size() > 0) {
+            text = "JIRA";
+        }
 
-		if (projectCfgManager.getDefaultFishEyeServer() == null
-				&& !projectConfigurationBean.isDefaultFishEyeServerAsked()
-				&& projectCfgManager.getAllFishEyeServerss().size() > 0) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					fishEyeDialog.show();
-					projectConfigurationBean.setDefaultFishEyeServerAsked(fishEyeDialog.isDoNotShowChecked());
-				}
-			});
-		}
-	}
+        if (projectCfgManager.getDefaultFishEyeServer() == null && projectCfgManager.getAllFishEyeServerss().size() > 0) {
+            if (text.length() > 0) {
+                text += " and FishEyer";
+            } else {
+                text = "FishEye";
+            }
+        }
+
+        if (text.length() > 0 && !pluginConfiguration.getGeneralConfigurationData().isAskedAboutDefaultServers()) {
+            final InformationDialogWithCheckBox dialog = new InformationDialogWithCheckBox(project,
+                    PluginUtil.PRODUCT_NAME,
+                    "Please set up default " + text + " server in order to get all "
+                            + "cool features of " + PluginUtil.PRODUCT_NAME);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    dialog.show();
+                    pluginConfiguration.getGeneralConfigurationData()
+                            .setAskedAboutDefaultServers(dialog.isDoNotShowChecked());
+                }
+            });
+        }
+
+
+    }
 
 	public FileEditorListenerImpl getFileEditorListener() {
 		return fileEditorListener;
