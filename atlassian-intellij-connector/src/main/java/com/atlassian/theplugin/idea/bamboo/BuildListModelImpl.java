@@ -43,10 +43,17 @@ public class BuildListModelImpl implements BuildListModel {
 	private Project project;
 	private ProjectCfgManager cfgManager;
 
-
 	public BuildListModelImpl(Project project, ProjectCfgManagerImpl cfgManager) {
 		this.project = project;
 		this.cfgManager = cfgManager;
+
+//		for (BambooBuildAdapterIdea build : allBuilds) {
+//			if (build.getServer().getServerId().equals(serverId)) {
+//				allBuilds.remove(build); // todo copy on write
+//				BambooBuild b = new BambooBuildInfo();
+//				allBuilds.add(new BambooBuildAdapterIdea())
+//			}
+//		}
 	}
 
 	// for unit tests only
@@ -146,7 +153,6 @@ public class BuildListModelImpl implements BuildListModel {
 		for (BuildListModelListener listener : listeners) {
 			notifier.notify(listener);
 		}
-
 	}
 
 }

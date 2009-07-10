@@ -252,7 +252,7 @@ public class BambooPlansForm extends JPanel {
 						for (SubscribedPlan sPlan : queryServer.getSubscribedPlans()) {
 							boolean exists = false;
 							for (BambooPlanItem bambooPlanItem : plansForServer) {
-								if (bambooPlanItem.getPlan().getPlanKey().equals(sPlan.getKey())) {
+								if (bambooPlanItem.getPlan().getKey().equals(sPlan.getKey())) {
 									exists = true;
 									break;
 								}
@@ -314,7 +314,7 @@ public class BambooPlansForm extends JPanel {
 				for (BambooPlanItem plan : plans) {
 					plan.setSelected(false);
 					for (SubscribedPlan sPlan : server.getSubscribedPlans()) {
-						if (sPlan.getKey().equals(plan.getPlan().getPlanKey())) {
+						if (sPlan.getKey().equals(plan.getPlan().getKey())) {
 							plan.setSelected(true);
 							break;
 						}
@@ -361,7 +361,7 @@ public class BambooPlansForm extends JPanel {
 					BambooPlanItem p = (BambooPlanItem) model.getElementAt(i);
 
 					if (p.isSelected()) {
-						SubscribedPlan spb = new SubscribedPlan(p.getPlan().getPlanKey());
+						SubscribedPlan spb = new SubscribedPlan(p.getPlan().getKey());
 						bambooServerCfg.getSubscribedPlans().add(spb);
 					}
 				}
