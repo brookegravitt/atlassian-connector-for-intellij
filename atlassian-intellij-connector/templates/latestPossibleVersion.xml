@@ -3,7 +3,7 @@
 		<number>${project.version}, SVN:${buildNumber}</number>
 		<downloadUrl>http://docs.atlassian.com/atlassian-idea-plugin/Downloads/atlassian-idea-plugin-${project.version}.zip</downloadUrl>
 		<releaseNotes><![CDATA[
-              <html><body  style="font-size:10px;">
+              <html><body>
 
         <p>
         With pleasure, Atlassian presents the Atlassian Connector for IntelliJ IDEA 2.2
