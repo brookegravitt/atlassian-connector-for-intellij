@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ public class PlanListCellRenderer implements ListCellRenderer {
 	private static final Icon DISABLED_ICON = IconLoader.getIcon("/icons/icn_plan_disabled-16.gif");
 
 	public Component getListCellRendererComponent(JList list, Object value, int index,
-												  boolean isSelected, boolean cellHasFocus) {
+			boolean isSelected, boolean cellHasFocus) {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		JLabel label = new JLabel();
@@ -39,11 +39,11 @@ public class PlanListCellRenderer implements ListCellRenderer {
 
 		if (value instanceof BambooPlanItem) {
 			BambooPlanItem pi = (BambooPlanItem) value;
-			JCheckBox checkBox = new JCheckBox(pi.getPlan().getPlanKey());
+			JCheckBox checkBox = new JCheckBox(pi.getPlan().getKey());
 			label.setIcon(pi.getPlan().isEnabled()
-					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON) 
+					? (pi.getPlan().isFavourite() ? FAVOURITE_ON_ICON : FAVOURITE_OFF_ICON)
 					: DISABLED_ICON);
-			checkBox.setText(pi.getPlan().getPlanKey());
+			checkBox.setText(pi.getPlan().getKey());
 			checkBox.setSelected(pi.isSelected());
 			panel.add(checkBox);
 

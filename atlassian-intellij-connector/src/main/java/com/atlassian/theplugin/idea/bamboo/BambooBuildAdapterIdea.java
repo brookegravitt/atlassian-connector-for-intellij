@@ -32,8 +32,8 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/icn_plan_passed.gif");
 	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/icn_plan_disabled.gif");
 
-	private static final Icon ICON_IS_IN_QUEUE = IconLoader.getIcon("/icons/bamboo_building.gif");
-	private static final Icon ICON_IS_BUILDING = IconLoader.getIcon("/icons/cup.png");
+	private static final Icon ICON_IS_IN_QUEUE = IconLoader.getIcon("/icons/cup.png");
+	private static final Icon ICON_IS_BUILDING = IconLoader.getIcon("/icons/bamboo_building.gif");
 
 	private static final Icon ICON_MY_BUILD_RED = IconLoader.getIcon("/actions/lightning.png");
 	private static final Icon ICON_MY_BUILD_GREEN = IconLoader.getIcon("/icons/lightning_green.png");
@@ -58,12 +58,6 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	public Icon getIcon() {
 		if (build.getEnabled()) {
 
-			if (build.isBuilding()) {
-				return ICON_IS_BUILDING;
-			} else if (build.isInQueue()) {
-				return ICON_IS_IN_QUEUE;
-			}
-
 			switch (getStatus()) {
 				case FAILURE:
 					return ICON_RED;
@@ -71,6 +65,10 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 					return ICON_GREEN;
 				case UNKNOWN:
 					return ICON_GREY;
+				case BUILDING:
+					return ICON_IS_BUILDING;
+				case IN_QUEUE:
+					return ICON_IS_IN_QUEUE;
 				default:
 					break;
 			}
