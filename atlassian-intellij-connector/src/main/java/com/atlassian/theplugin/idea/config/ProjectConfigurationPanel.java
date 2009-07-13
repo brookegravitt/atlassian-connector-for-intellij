@@ -152,7 +152,13 @@ public class ProjectConfigurationPanel extends JPanel {
 	}
 
 	public void askForDefaultCredentials() {
-		final ServerCfg serverCfg = serverConfigPanel.getSelectedServer();
+		final ServerCfg selectedServer = serverConfigPanel.getSelectedServer();
+
+        // PL-1703 - when adding a StAC server, there is no selected server,
+        // as two servers are added simultaneously 
+        if (selectedServer == null) {
+            return;
+        }
 
 		// PL-1617 - Ugly ugly. I am not sure why this is b0rked sometimes,
 		// but one of these seems to be null for apparent reason every once in a while
@@ -163,7 +169,7 @@ public class ProjectConfigurationPanel extends JPanel {
 
 		final boolean alreadyExists =
 				cfgMgr != null
-						&& cfgMgr.getServer(serverCfg.getServerId()) != null;
+						&& cfgMgr.getServer(selectedServer.getServerId()) != null;
 
 		ApplicationManager.getApplication().executeOnPooledThread(new Runnable() {
 			public void run() {
@@ -176,9 +182,9 @@ public class ProjectConfigurationPanel extends JPanel {
 								&& (defaultCredentials == null
 								|| (defaultCredentials.getPassword().equals("")
 								&& defaultCredentials.getPassword().equals(""))
-								&& serverCfg.getUserName().length() > 0)) {
+								&& selectedServer.getUserName().length() > 0)) {
 							int answer = Messages.showYesNoDialog(project,
-									"<html>Do you want to set server <b>" + serverCfg.getName()
+									"<html>Do you want to set server <b>" + selectedServer.getName()
 											+ "</b> <i>username</i> and <i>password</i>"
 											+ " as default credentials for the "
 											+ PluginUtil.PRODUCT_NAME + "?</html>",
@@ -188,8 +194,8 @@ public class ProjectConfigurationPanel extends JPanel {
 							ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
 
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
-								UserCfg credentials = new UserCfg(serverCfg.getUserName(),
-										serverCfg.getPassword(), true);
+								UserCfg credentials = new UserCfg(selectedServer.getUserName(),
+										selectedServer.getPassword(), true);
 								if (cfgMgr != null) {
 									cfgMgr.setDefaultCredentials(credentials);
 								}
