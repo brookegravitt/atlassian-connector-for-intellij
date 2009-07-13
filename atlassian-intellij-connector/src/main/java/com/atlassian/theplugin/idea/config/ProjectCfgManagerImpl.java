@@ -474,6 +474,21 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	}
 
+    public Collection<ServerData> getAllEnabledCrucibleServersContainingFisheye() {
+        Collection<ServerCfg> tmp = getAllEnabledServers();
+            Collection<ServerData> ret = new ArrayList<ServerData>();
+
+            for (ServerCfg serverCfg : tmp) {
+                if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER
+                        && serverCfg instanceof CrucibleServerCfg
+                        && ((CrucibleServerCfg)serverCfg).isFisheyeInstance()) {
+                    CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
+                    ret.add(getServerData(crucibleServerCfg));
+                }
+            }
+            return ret;
+
+    }
 	///////////////////////////////////////////////////////////////
 	///////////////////// DEFAULT SERVERS /////////////////////////
 	///////////////////////////////////////////////////////////////
