@@ -341,7 +341,9 @@ public class ThePluginProjectComponent implements ProjectComponent {
             text = "JIRA";
         }
 
-        if (projectCfgManager.getDefaultFishEyeServer() == null && projectCfgManager.getAllFishEyeServerss().size() > 0) {
+
+        if (projectCfgManager.getDefaultFishEyeServer() == null && (projectCfgManager.getAllFishEyeServerss().size() > 0
+                || projectCfgManager.getAllEnabledCrucibleServersContainingFisheye().size() > 0)) {
             if (text.length() > 0) {
                 text += " and FishEye";
             } else {
