@@ -481,7 +481,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
             for (ServerCfg serverCfg : tmp) {
                 if (serverCfg.getServerType() == ServerType.CRUCIBLE_SERVER
                         && serverCfg instanceof CrucibleServerCfg
-                        && ((CrucibleServerCfg)serverCfg).isFisheyeInstance()) {
+                        && ((CrucibleServerCfg) serverCfg).isFisheyeInstance()) {
                     CrucibleServerCfg crucibleServerCfg = (CrucibleServerCfg) serverCfg;
                     ret.add(getServerData(crucibleServerCfg));
                 }
