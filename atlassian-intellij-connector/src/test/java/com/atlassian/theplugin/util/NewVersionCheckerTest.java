@@ -1,12 +1,12 @@
 /**
  * Copyright (C) 2008 Atlassian
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *    http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -89,7 +89,6 @@ public class NewVersionCheckerTest extends TestCase {
 		Version newVersion = new Version(VERSION);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
-
 	}
 
 	public void testGetLatestBetaVersion() throws VersionServiceException, IncorrectVersionException {
@@ -100,7 +99,6 @@ public class NewVersionCheckerTest extends TestCase {
 		Version newVersion = new Version(VERSION);
 
 		assertFalse(versionInfo.getVersion().greater(newVersion));
-
 	}
 
 	public void testGetLatestSnapshotVersion() throws VersionServiceException, IncorrectVersionException {
@@ -196,7 +194,6 @@ public class NewVersionCheckerTest extends TestCase {
 	}
 
 
-
 	private class PingCallback implements JettyMockServer.Callback {
 		private final String version;
 		private final String releaseNotes;
@@ -214,7 +211,7 @@ public class NewVersionCheckerTest extends TestCase {
 
 		public void onExpectedRequest(String target, HttpServletRequest request, HttpServletResponse response)
 				throws Exception {
-			
+
 			response.setContentType("text/xml");
 			assertTrue(request.getPathInfo().endsWith(GET_LATEST_VERSION_URL));
 
