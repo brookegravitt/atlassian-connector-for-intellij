@@ -16,6 +16,8 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class RunBuildAction extends AbstractBuildListAction {
@@ -24,6 +26,12 @@ public class RunBuildAction extends AbstractBuildListAction {
 	public void actionPerformed(AnActionEvent event) {
 
 		runBuild(event);
+
+		final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(event);
+		if (panel != null) {
+			panel.refresh();
+		}
+
 	}
 
 }

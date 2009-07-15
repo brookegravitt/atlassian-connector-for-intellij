@@ -16,39 +16,18 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.ThePluginProjectComponent;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
-import org.jetbrains.annotations.NotNull;
 
 public class RefreshBambooPanelAction extends AnAction {
 
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
-		final ThePluginProjectComponent currentProject = IdeaHelper.getCurrentProjectComponent(e);
-		if (currentProject == null) {
-			return;
-		}
-
-		final BambooStatusChecker checker = currentProject.getBambooStatusChecker();
-
-		if (checker.canSchedule()) {
-
-			Task.Backgroundable refresh =
-					new Task.Backgroundable(IdeaHelper.getCurrentProject(e), "Refreshing Bamboo Panel", false) {
-
-				@Override
-				public void run(@NotNull final ProgressIndicator indicator) {
-					checker.newTimerTask().run();
-				}
-			};
-
-			ProgressManager.getInstance().run(refresh);
+		final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(e);
+		if (panel != null) {
+			panel.refresh();
 		}
 	}
 }
