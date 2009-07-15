@@ -30,6 +30,6 @@ public class ViewBuildAction extends AbstractBuildListAction {
 	public void update(final AnActionEvent event) {
 		super.update(event);
 		BambooBuildAdapterIdea build = getBuild(event);
-		event.getPresentation().setEnabled(build != null && build.getPlanKey() != null && build.isValid());
+		event.getPresentation().setEnabled(build != null && build.getPlanKey() != null && build.isEnabled());
 	}
 }

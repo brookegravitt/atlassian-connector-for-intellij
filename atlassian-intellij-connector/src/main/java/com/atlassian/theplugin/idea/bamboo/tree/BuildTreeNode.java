@@ -43,12 +43,14 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private static final String BODY_WITH_STYLE =
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
+
 	private BambooBuildAdapterIdea build;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
 	private double reasonWidth;
 	private double serverWidth;
 	private double dateWidth;
 	private static final int LABEL_PADDING = 5;
+	private boolean hover = false;
 
 	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapterIdea build) {
 		super(build.getPlanKey(), null, null);
@@ -102,7 +104,11 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		CellConstraints cc = new CellConstraints();
 
-		p.setBackground(UIUtil.getTreeTextBackground());
+		if (hover) {
+			p.setBackground(Color.BLACK);
+		} else {
+			p.setBackground(UIUtil.getTreeTextBackground());
+		}
 
 		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
@@ -322,4 +328,13 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		c.setMinimumSize(new Dimension(width, height));
 		c.setMaximumSize(new Dimension(width, height));
 	}
+
+	public void setHover(final boolean b) {
+		this.hover = b;
+	}
+
+	public boolean isHover() {
+		return hover;
+	}
+
 }

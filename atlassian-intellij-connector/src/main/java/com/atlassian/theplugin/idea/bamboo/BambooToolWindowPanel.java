@@ -15,19 +15,24 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
-import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
@@ -51,22 +56,22 @@ import java.util.Collection;
 public class BambooToolWindowPanel extends ThreePanePanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
-    private static final String SELECT_BUILD_TO_SHOW_HISTORY = "Select a build to show plan history";
+	private static final String SELECT_BUILD_TO_SHOW_HISTORY = "Select a build to show plan history";
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
-    private ProjectCfgManagerImpl projectCfgManager;
-    private final BuildTree buildTree;
+	private ProjectCfgManagerImpl projectCfgManager;
+	private final BuildTree buildTree;
 	private final BambooFilterList filterList;
 	private SearchTextField searchField = new SearchTextField();
 	private JComponent leftToolBar;
-    private JComponent rightToolBar;
+	private JComponent rightToolBar;
 	private BambooWorkspaceConfiguration bambooConfiguration;
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
 	private SearchBuildListModel searchBuildModel;
-    private BuildHistoryPanel buildHistoryPanel;
-    private JLabel planHistoryListLabel;
+	private BuildHistoryPanel buildHistoryPanel;
+	private JLabel planHistoryListLabel;
 
-    public BambooFilterType getBambooFilterType() {
+	public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
 	}
 
@@ -77,8 +82,8 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 		this.project = project;
 		this.bambooModel = bambooModel;
-        this.projectCfgManager = projectCfgManager;
-        this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
+		this.projectCfgManager = projectCfgManager;
+		this.bambooConfiguration = projectConfiguration.getBambooConfiguration();
 
 		filterList = new BambooFilterList(projectCfgManager, bambooModel);
 		projectCfgManager.addProjectConfigurationListener(new ConfigurationListenerAdapter() {
@@ -128,8 +133,8 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		searchBuildModel = new SearchBuildListModel(bambooModel);
 		buildTree = new BuildTree(groupBy, new BuildTreeModel(searchBuildModel), getRightScrollPane());
 		leftToolBar = createLeftToolBar();
-        rightToolBar = createRightToolBar();
-        buildHistoryPanel = new BuildHistoryPanel(project);
+		rightToolBar = createRightToolBar();
+		buildHistoryPanel = new BuildHistoryPanel(project);
 
 		init();
 		addBuildTreeListeners();
@@ -184,18 +189,18 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			}
 		});
 
-        buildTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent event) {
-                final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
-                if (buildDetailsInfo != null) {
-                    buildHistoryPanel.showHistoryForBuild(buildDetailsInfo.getBuild());
-                        planHistoryListLabel.setText("Build history for plan " + buildDetailsInfo.getPlanKey());
-                } else {
-                    buildHistoryPanel.clearBuildHistory();
-                    planHistoryListLabel.setText(SELECT_BUILD_TO_SHOW_HISTORY);
-                }
-            }
-        });
+		buildTree.addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent event) {
+				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+				if (buildDetailsInfo != null) {
+					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo.getBuild());
+					planHistoryListLabel.setText("Build history for plan " + buildDetailsInfo.getPlanKey());
+				} else {
+					buildHistoryPanel.clearBuildHistory();
+					planHistoryListLabel.setText(SELECT_BUILD_TO_SHOW_HISTORY);
+				}
+			}
+		});
 	}
 
 	private void launchContextMenu(MouseEvent e) {
@@ -221,10 +226,30 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
-    public BambooBuild getSelectedHistoryBuild() {
-        return buildHistoryPanel.getSelectedBuild();
-    }
-    
+	public void refresh() {
+		final ThePluginProjectComponent currentProject = IdeaHelper.getCurrentProjectComponent(project);
+		if (currentProject == null) {
+			return;
+		}
+
+		final BambooStatusChecker checker = currentProject.getBambooStatusChecker();
+
+		if (checker.canSchedule()) {
+			Task.Backgroundable refresh = new Task.Backgroundable(project, "Refreshing Bamboo Panel", false) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
+					checker.newTimerTask().run();
+				}
+			};
+
+			ProgressManager.getInstance().run(refresh);
+		}
+	}
+
+	public BambooBuild getSelectedHistoryBuild() {
+		return buildHistoryPanel.getSelectedBuild();
+	}
+
 	protected void addSearchBoxListener() {
 		searchField.addDocumentListener(new DocumentListener() {
 			public void insertUpdate(DocumentEvent e) {
@@ -264,15 +289,15 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return buildTree;
 	}
 
-    protected JComponent getRightMostPanel() {
-        return buildHistoryPanel;
-    }
+	protected JComponent getRightMostPanel() {
+		return buildHistoryPanel;
+	}
 
-    protected JComponent getRightMostToolBar() {
-        return rightToolBar;
-    }
+	protected JComponent getRightMostToolBar() {
+		return rightToolBar;
+	}
 
-    public Object getData(@NonNls final String dataId) {
+	public Object getData(@NonNls final String dataId) {
 		if (dataId.equals(Constants.SERVER)) {
 			// return server of selected build
 			if (buildTree.getSelectedBuild() != null) {
@@ -302,9 +327,9 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return null;
 	}
 
-    public Collection<BambooServerData> getServers() {
-        return projectCfgManager.getAllEnabledBambooServerss();
-    }
+	public Collection<BambooServerData> getServers() {
+		return projectCfgManager.getAllEnabledBambooServerss();
+	}
 
 	public void setGroupingType(@NonNls final BuildGroupBy groupingType) {
 		if (groupingType != null) {
@@ -354,23 +379,23 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return toolBarPanel;
 	}
 
-    private JComponent createRightToolBar() {
-        final JPanel toolBarPanel = new JPanel(new GridBagLayout());
+	private JComponent createRightToolBar() {
+		final JPanel toolBarPanel = new JPanel(new GridBagLayout());
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weighty = 0.0;
-        gbc.fill = GridBagConstraints.NONE;
-        planHistoryListLabel = new JLabel(SELECT_BUILD_TO_SHOW_HISTORY);
-        toolBarPanel.add(planHistoryListLabel);
-        gbc.gridx++;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), gbc);
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weighty = 0.0;
+		gbc.fill = GridBagConstraints.NONE;
+		planHistoryListLabel = new JLabel(SELECT_BUILD_TO_SHOW_HISTORY);
+		toolBarPanel.add(planHistoryListLabel);
+		gbc.gridx++;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), gbc);
 
-        return toolBarPanel;
-    }
+		return toolBarPanel;
+	}
 
 	@Nullable
 	private JComponent loadToolBar(final String toolbarName) {
