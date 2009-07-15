@@ -31,6 +31,9 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.Collection;
 import java.util.Set;
 
@@ -41,7 +44,6 @@ public class BuildTree extends AbstractTree {
 	private BuildTreeModel buildTreeModel;
 	private final TreeUISetup buildTreeUiSetup;
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
-	private BuildTree tree = this;
 
 	public BuildTree(final BuildGroupBy groupBy, final BuildTreeModel buildTreeModel,
 			@NotNull final JScrollPane parentScrollPane) {
@@ -56,6 +58,29 @@ public class BuildTree extends AbstractTree {
 
 		buildTreeModel.addTreeModelListener(new LocalTreeModelListener());
 		buildTreeModel.getBuildListModel().addListener(new LocalBuildListModelListener());
+
+		addMouseMotionListener(new MouseMotionListener() {
+			public void mouseDragged(final MouseEvent e) {
+			}
+
+			public void mouseMoved(final MouseEvent e) {
+				TreePath path = getPathForLocation(e.getX(), e.getY());
+				if (path != null) {
+					if (path.getLastPathComponent() instanceof BuildTreeNode) {
+						BuildTreeNode node = (BuildTreeNode) path.getLastPathComponent();
+						buildTreeModel.setHoeverNode(node);
+					} else {
+						buildTreeModel.setHoeverNode(null);
+					}
+				}
+			}
+		});
+
+		addMouseListener(new MouseAdapter() {
+			public void mouseExited(final MouseEvent e) {
+				buildTreeModel.setHoeverNode(null);
+			}
+		});
 	}
 
 	private void init() {

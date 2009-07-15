@@ -19,7 +19,7 @@ import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
-import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
+import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableHoverLabel;
 import com.atlassian.theplugin.util.Util;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -104,11 +104,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.setLayout(new FormLayout("pref, 1dlu, fill:min(pref;150px):grow, right:pref", "pref"));
 		CellConstraints cc = new CellConstraints();
 
-		if (hover) {
-			p.setBackground(Color.BLACK);
-		} else {
-			p.setBackground(UIUtil.getTreeTextBackground());
-		}
+		p.setBackground(UIUtil.getTreeTextBackground());
 
 		p.add(new JLabel(build.getIcon()), cc.xy(1, 1));
 
@@ -121,14 +117,12 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		if (build.getStatus() == BuildStatus.FAILURE) {
 			sb.append("    ")
 					.append(build.getTestsFailed())
-					.append("/")
-					.append(build.getTestsNumber())
 					.append(" Tests Failed");
 		}
-		p.add(new SelectableLabel(selected, enabled, sb.toString(), null,
+		p.add(new SelectableHoverLabel(selected, hover, enabled, sb.toString(), null,
 				SwingConstants.TRAILING, ICON_HEIGHT), cc.xy(2 + 1, 1));
 
-		p.add(createPanelForOtherBuildDetails(selected, enabled), cc.xy(2 + 2, 1));
+		p.add(createPanelForOtherBuildDetails(selected, hover, enabled), cc.xy(2 + 2, 1));
 
 
 		addTooltipToPanel(build, p);
@@ -154,7 +148,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return sb.toString();
 	}
 
-	private JPanel createPanelForOtherBuildDetails(boolean selected, boolean enabled) {
+	private JPanel createPanelForOtherBuildDetails(boolean selected, boolean aHover, boolean enabled) {
 		JPanel p = new JPanel(new GridBagLayout());
 
 		p.setLayout(new GridBagLayout());
@@ -166,7 +160,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.anchor = GridBagConstraints.LINE_END;
 
 		// gap
-		JLabel empty1 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty1 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(empty1, 2 * GAP, ICON_HEIGHT);
 		p.add(empty1, gbc);
@@ -175,7 +169,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel reason = new SelectableLabel(selected, enabled, getBuildReasonString(build), null,
+		JLabel reason = new SelectableHoverLabel(selected, aHover, enabled, getBuildReasonString(build), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(reason, Double.valueOf(reasonWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		reason.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -185,7 +179,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty2 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty2 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(empty2, 2 * GAP, ICON_HEIGHT);
 		p.add(empty2, gbc);
@@ -195,7 +189,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		gbc.anchor = GridBagConstraints.LINE_END;
-		JLabel server = new SelectableLabel(selected, enabled, getBuildServerString(build), null,
+		JLabel server = new SelectableHoverLabel(selected, aHover, enabled, getBuildServerString(build), null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(server, Double.valueOf(serverWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		server.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -205,7 +199,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.gridx++;
 		gbc.weightx = 0.0;
 		gbc.fill = GridBagConstraints.NONE;
-		JLabel empty3 = new SelectableLabel(selected, enabled, "", null,
+		JLabel empty3 = new SelectableHoverLabel(selected, aHover, enabled, "", null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(empty3, 2 * GAP, ICON_HEIGHT);
 		p.add(empty3, gbc);
@@ -216,7 +210,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		gbc.fill = GridBagConstraints.NONE;
 		gbc.anchor = GridBagConstraints.LINE_END;
 		String relativeBuildDate = getRelativeBuildTimeString(build);
-		JLabel date = new SelectableLabel(selected, enabled, relativeBuildDate, null,
+		JLabel date = new SelectableHoverLabel(selected, aHover, enabled, relativeBuildDate, null,
 				SwingConstants.LEADING, ICON_HEIGHT);
 		setFixedComponentSize(date, Double.valueOf(dateWidth).intValue() + LABEL_PADDING, ICON_HEIGHT);
 		date.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -230,8 +224,10 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		padding.setPreferredSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 		padding.setMinimumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
 		padding.setMaximumSize(new Dimension(RIGHT_PADDING, ICON_HEIGHT));
-		padding.setBackground(selected ? UIUtil.getTreeSelectionBackground() : UIUtil.getTreeTextBackground());
-		padding.setForeground(selected ? UIUtil.getTreeSelectionForeground() : UIUtil.getTreeTextForeground());
+
+		padding.setBackground(SelectableHoverLabel.getBgColor(selected, aHover));
+		padding.setForeground(SelectableHoverLabel.getFgColor(selected, enabled));
+
 		padding.setOpaque(true);
 		p.add(padding, gbc);
 

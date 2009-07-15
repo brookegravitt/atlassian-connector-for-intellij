@@ -220,4 +220,37 @@ public class BuildTreeModel extends DefaultTreeModel {
 	public BuildListModel getBuildListModel() {
 		return buildListModel;
 	}
+
+	/**
+	 * @param node Node to mark as hovered. Other nodes are cleared. If null all nodes are cleared.
+	 */
+	public void setHoeverNode(final BuildTreeNode node) {
+		Collection<DefaultMutableTreeNode> changedNodes = clearHoverNodes(getRoot());
+		for (DefaultMutableTreeNode changedNode : changedNodes) {
+			nodeStructureChanged(changedNode);
+		}
+		if (node != null) {
+			node.setHover(true);
+			nodeStructureChanged(node);
+		}
+	}
+
+	private Collection<DefaultMutableTreeNode> clearHoverNodes(final DefaultMutableTreeNode node) {
+		Collection<DefaultMutableTreeNode> ret = new ArrayList<DefaultMutableTreeNode>();
+		if (node instanceof BuildTreeNode) {
+			BuildTreeNode buildNode = (BuildTreeNode) node;
+			if (buildNode.isHover()) {
+				buildNode.setHover(false);
+				ret.add(node);
+			}
+		}
+
+		for (int i = 0; i < getChildCount(node); ++i) {
+			if (getChild(node, i) instanceof DefaultMutableTreeNode) {
+				ret.addAll(clearHoverNodes((DefaultMutableTreeNode) getChild(node, i)));
+			}
+		}
+
+		return ret;
+	}
 }
