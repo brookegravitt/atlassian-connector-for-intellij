@@ -41,6 +41,7 @@ public class BuildHistoryPanel extends JPanel {
     private JList buildList;
     private DefaultListModel listModel = new DefaultListModel();
     private JScrollPane scrollPane;
+    private String previousBuild;
 
     public BuildHistoryPanel(Project project) {
         this.project = project;
@@ -123,6 +124,18 @@ public class BuildHistoryPanel extends JPanel {
     // invoke from dispatch thread
     //
     public synchronized void showHistoryForBuild(@NotNull final BambooBuild build) {
+        try {
+            String currentBuild = build.getServerUrl() + ":" + build.getPlanKey() + "-" + build.getNumber();
+            if (previousBuild != null) {
+                if (currentBuild.equals(previousBuild)) {
+                    scrollPane.setViewportView(buildList);
+                    return;
+                }
+            }
+            previousBuild = currentBuild;
+        } catch (UnsupportedOperationException e) {
+            previousBuild = null;
+        }
 
         if (currentTask == null) {
             startThrobber();
@@ -144,6 +157,7 @@ public class BuildHistoryPanel extends JPanel {
                 synchronized (BuildHistoryPanel.this) {
                     if (currentTask == this) {
                         listModel.clear();
+                        scrollPane.setViewportView(buildList);
                         for (BambooBuild bambooBuild : builds) {
                             listModel.addElement(bambooBuild);
                         }
@@ -171,7 +185,8 @@ public class BuildHistoryPanel extends JPanel {
             currentTask = null;
             stopThrobber();
         }
-        listModel.clear();
+        scrollPane.setViewportView(null);
+//        listModel.clear();
     }
 
     public synchronized BambooBuild getSelectedBuild() {
