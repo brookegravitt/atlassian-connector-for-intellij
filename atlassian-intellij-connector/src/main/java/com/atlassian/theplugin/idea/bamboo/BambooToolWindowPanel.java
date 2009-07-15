@@ -36,6 +36,8 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.CellConstraints;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +58,7 @@ import java.util.Collection;
 public class BambooToolWindowPanel extends ThreePanePanel implements DataProvider {
 
 	public static final String PLACE_PREFIX = BambooToolWindowPanel.class.getSimpleName();
-	private static final String SELECT_BUILD_TO_SHOW_HISTORY = "Select a build to show plan history";
+	private static final String COMPLETED_BUILDS = "Completed Builds";
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
 	private ProjectCfgManagerImpl projectCfgManager;
@@ -71,7 +73,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private BuildHistoryPanel buildHistoryPanel;
 	private JLabel planHistoryListLabel;
 
-	public BambooFilterType getBambooFilterType() {
+    public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
 	}
 
@@ -194,10 +196,8 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 				if (buildDetailsInfo != null) {
 					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo.getBuild());
-					planHistoryListLabel.setText("Build history for plan " + buildDetailsInfo.getPlanKey());
 				} else {
 					buildHistoryPanel.clearBuildHistory();
-					planHistoryListLabel.setText(SELECT_BUILD_TO_SHOW_HISTORY);
 				}
 			}
 		});
@@ -380,20 +380,13 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 	private JComponent createRightToolBar() {
-		final JPanel toolBarPanel = new JPanel(new GridBagLayout());
+		final JPanel toolBarPanel = new JPanel(new FormLayout("pref, fill:pref:grow, 3dlu", "pref, 3dlu, pref, 3dlu"));
+        CellConstraints cc = new CellConstraints();
 
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridx = 0;
-		gbc.gridy = 0;
-		gbc.weighty = 0.0;
-		gbc.fill = GridBagConstraints.NONE;
-		planHistoryListLabel = new JLabel(SELECT_BUILD_TO_SHOW_HISTORY);
-		toolBarPanel.add(planHistoryListLabel);
-		gbc.gridx++;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.weightx = 1.0;
-		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), gbc);
-
+        toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), cc.xyw(1, 1, 2));
+        planHistoryListLabel = new JLabel(COMPLETED_BUILDS);
+        toolBarPanel.add(planHistoryListLabel, cc.xy(1, 3));
+        toolBarPanel.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xy(2, 3));
 		return toolBarPanel;
 	}
 
