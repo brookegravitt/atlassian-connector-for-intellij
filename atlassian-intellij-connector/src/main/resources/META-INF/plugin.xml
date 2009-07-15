@@ -233,7 +233,9 @@
 
         <action id="ThePlugin.AddStudioServerSetAction"
                 class="com.atlassian.theplugin.idea.config.serverconfig.action.AddStudioServerSetAction"
-                text="Add JIRA Studio Server" description="Add a new JIRA Studio Server Set" icon="/icons/jirastudio-blue-16.png"/>
+                text="Connect to JIRA Studio"
+                description="Add a new JIRA Studio Server Set"
+                icon="/icons/jirastudio-blue-16.png"/>
 
 		<group id="ThePlugin.ServerConfigToolBar" popup="false" text="">
 			<reference id="ThePlugin.AddServerAction"/>

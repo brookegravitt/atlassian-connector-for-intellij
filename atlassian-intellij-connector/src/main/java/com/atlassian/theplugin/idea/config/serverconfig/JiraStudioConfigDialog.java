@@ -49,6 +49,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     private Project project;
     private ServerTreePanel serverTree;
     private UserCfg defaultUser;
+    private static final String JIRA_STUDIO_SUFFIX = " (JIRA Studio)";
 
     protected JiraStudioConfigDialog(Project project, ServerTreePanel serverTree,
                                      UserCfg defaultUser, Collection<ServerCfg> servers) {
@@ -214,7 +215,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     private @NotNull JiraServerCfg generateJiraServerCfg() {
         ServerIdImpl idJira = new ServerIdImpl();
 
-        String name = serverName.getText().trim();
+        String name = serverName.getText().trim() + JIRA_STUDIO_SUFFIX;
         JiraServerCfg jira = new JiraServerCfg(true, name, idJira);
 
         jira.setUrl(serverUrl.getText());
@@ -233,7 +234,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
     private @NotNull CrucibleServerCfg generateCrucibleServerCfg() {
         ServerIdImpl idCrucible = new ServerIdImpl();
 
-        String name = serverName.getText().trim();
+        String name = serverName.getText().trim() + JIRA_STUDIO_SUFFIX;
         CrucibleServerCfg cru = new CrucibleServerCfg(true, name, idCrucible);
 
         cru.setUrl(serverUrl.getText() + "/source");
