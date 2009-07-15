@@ -138,7 +138,7 @@ public class BuildTree extends AbstractTree {
 		}
 
 		public void treeStructureChanged(final TreeModelEvent e) {
-			expandTree();
+//			expandTree();
 		}
 	}
 
