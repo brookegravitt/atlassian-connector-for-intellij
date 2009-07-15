@@ -11,7 +11,7 @@ import java.awt.*;
  * Time: 11:52:04 AM
  */
 
-public final class SelectableLabel extends JLabel {
+public class SelectableLabel extends JLabel {
 	private final int height;
 
 	private final boolean enabled;
