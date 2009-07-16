@@ -77,13 +77,18 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			handleOpenReviewRequest(parameters);
 		} else if (method.equals("build")) {
 			writeIcon(response);
-			handleOpenBuildRequest(parameters);
+			handleDirectClickThroughRequest(new OpenBuildRequest(parameters));
+//			handleOpenBuildRequest(parameters);
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
 		}
 
 		return response;
+	}
+
+	private void handleDirectClickThroughRequest(final DirectClickThroughRequest request) {
+		new Thread(request).start();
 	}
 
 	private void handleOpenReviewRequest(final Map<String, String> parameters) {
@@ -221,47 +226,71 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private void handleOpenBuildRequest(final Map<String, String> parameters) {
-		final String buildKey = parameters.get("build_key");
-		String buildNumber = parameters.get("build_number");
-		final String serverUrl = parameters.get("server_url");
+	private static class OpenBuildRequest extends DirectClickThroughRequest {
+		private Map<String, String> parameters;
 
-		int buildNumberInt = 0;
-
-		try {
-			buildNumberInt = Integer.valueOf(buildNumber);
-		} catch (NumberFormatException e) {
-			buildNumber = null;
+		private OpenBuildRequest(final Map<String, String> parameters) {
+			this.parameters = parameters;
 		}
 
-		final int buildNumberIntFinal = buildNumberInt;
+		public void run() {
+			final String buildKey = parameters.get("build_key");
+			String buildNumber = parameters.get("build_number");
+			final String serverUrl = parameters.get("server_url");
 
-		if (buildKey != null && buildKey.length() > 0
-				&& serverUrl != null && serverUrl.length() > 0
-				&& buildNumber != null && buildNumber.length() > 0) {
-			EventQueue.invokeLater(new Runnable() {
-				public void run() {
-					boolean found = false;
-					// try to open received build in all open projects
-					for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+			int buildNumberInt = 0;
 
-						final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
-						if (panel != null) {
-							bringIdeaToFront(project);
-							panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
+			try {
+				buildNumberInt = Integer.valueOf(buildNumber);
+			} catch (NumberFormatException e) {
+				buildNumber = null;
+			}
+
+			final int buildNumberIntFinal = buildNumberInt;
+
+			if (buildKey != null && buildKey.length() > 0
+					&& serverUrl != null && serverUrl.length() > 0
+					&& buildNumber != null && buildNumber.length() > 0) {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						boolean found = false;
+						// try to open received build in all open projects
+						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+
+							final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
+							if (panel != null) {
+								bringIdeaToFront(project);
+								panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
+							}
 						}
-
-					}
 
 //					if (!found) {
 //						Messages.showInfoMessage("Cannot find build " + buildKey + "-" + buildNumberIntFinal,
 //								PluginUtil.PRODUCT_NAME);
 //					}
-				}
-			});
-		} else {
-			PluginUtil.getLogger().warn("Cannot open build: build_key or build_number or server_url parameter is null");
+					}
+				});
+			} else {
+				reportProblem("Cannot open build. Incorrect call. "
+						+ "One of the params is not proveded: build_key, build_number, server_url");
+			}
 		}
+	}
+
+	private static void reportProblem(final String problem) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				PluginUtil.getLogger().warn(problem);
+
+				if (ProjectManager.getInstance().getOpenProjects().length > 0) {
+					Project project = ProjectManager.getInstance().getOpenProjects()[0];
+					bringIdeaToFront(project);
+					Messages.showInfoMessage(project, problem, PluginUtil.PRODUCT_NAME);
+				} else {
+					Messages.showInfoMessage(problem, PluginUtil.PRODUCT_NAME);
+				}
+			}
+		});
 	}
 
 	private static void bringIdeaToFront(final Project project) {
@@ -485,5 +514,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				bringIdeaToFront(project);
 			}
 		}
+	}
+
+	private static abstract class DirectClickThroughRequest implements Runnable {
 	}
 }
