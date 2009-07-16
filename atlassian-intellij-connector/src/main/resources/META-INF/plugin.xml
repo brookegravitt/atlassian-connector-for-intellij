@@ -537,11 +537,11 @@
 			<keyboard-shortcut first-keystroke="shift alt s" keymap="$default"/>
 		</action>
 
-		<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"
-				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"
-				text=""
-				>
-		</action>
+		<!--<action id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"-->
+				<!--class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveJiraIssueComboBox"-->
+				<!--text=""-->
+				<!-->-->
+		<!--</action>-->
 
 		<action id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.OpenActiveJiraIssue"
@@ -549,6 +549,7 @@
 				icon="/icons/jira-blue-16.png"
 				>
 		</action>
+
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Start/Stop Work"
@@ -583,6 +584,15 @@
 				text="Add Comment"
 				icon="/icons/icn_comment.gif">
 		</action>
+
+        <action id="ThePlugin.ActiveTaskBar.ActiveIssueBox"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueButtonAction">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction">
+        </action>
+
 
 		<action id="ThePlugin.JiraIssues.CreateIssue"
 				class="com.atlassian.theplugin.idea.action.issues.CreateIssueAction"
@@ -630,8 +640,8 @@
 			<reference id="ThePlugin.Reviews.QuickSearch"/>
             <reference id="ThePlugin.Bamboo.QuickSearch"/>
 			<separator/>
-			<reference id="ThePlugin.ActiveTaskBar.ShowActiveJiraIssue"/>
-			<reference id="ThePlugin.ActiveTaskBar.OpenActiveJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.ActiveIssueBox"/>
+            <reference id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
