@@ -15,11 +15,16 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.BambooWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.Constants;
@@ -28,7 +33,9 @@ import com.atlassian.theplugin.idea.ThePluginProjectComponent;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTree;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeModel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -36,8 +43,8 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +57,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -73,7 +81,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private BuildHistoryPanel buildHistoryPanel;
 	private JLabel planHistoryListLabel;
 
-    public BambooFilterType getBambooFilterType() {
+	public BambooFilterType getBambooFilterType() {
 		return filterList.getBambooFilterType();
 	}
 
@@ -223,6 +231,72 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
 				&& buildDetailsInfo.areActionsAllowed()) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
+		}
+	}
+
+
+	public boolean openBuild(final String buildKey, int buildNumber, final String serverUrl) {
+
+		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
+
+		ServerData server = CfgUtil.findServer(serverUrl, servers);
+
+		if (server != null && server instanceof BambooServerData) {
+			openBuild(buildKey, buildNumber, (BambooServerData) server);
+			return true;
+		}
+
+		return false;
+	}
+
+	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server) {
+		BambooBuildAdapterIdea build = null;
+
+		for (BambooBuildAdapterIdea b : bambooModel.getAllBuilds()) {
+			if (b.getBuild().getPlanKey().equals(buildKey)
+					&& b.getNumber() == buildNumber
+					&& b.getServer().getServerId().equals(server.getServerId())) {
+				build = b;
+				break;
+			}
+		}
+
+		if (build != null) {
+			openBuild(build);
+		} else {
+			Task.Backgroundable task = new Task.Backgroundable(project, "Fetching build " + buildKey, false) {
+				private BambooBuildAdapterIdea build;
+				private Throwable exception;
+
+				@Override
+				public void run(@NotNull ProgressIndicator progressIndicator) {
+					progressIndicator.setIndeterminate(true);
+					try {
+						build = new BambooBuildAdapterIdea(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+								getBuildForPlanAndNumber(server, buildKey, buildNumber, server.getTimezoneOffset()));
+					} catch (RemoteApiException e) {
+						exception = e;
+					} catch (ServerPasswordNotProvidedException e) {
+						exception = e;
+					}
+				}
+
+				@Override
+				public void onSuccess() {
+					if (getProject().isDisposed()) {
+						return;
+					}
+					if (exception != null) {
+						DialogWithDetails.showExceptionDialog(project, "Cannot fetch build "
+								+ buildKey + "-" + buildNumber + " from server " + server.getName(), exception);
+						return;
+					}
+					if (build != null) {
+						openBuild(build);
+					}
+				}
+			};
+			task.queue();
 		}
 	}
 
@@ -381,12 +455,12 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 	private JComponent createRightToolBar() {
 		final JPanel toolBarPanel = new JPanel(new FormLayout("pref, fill:pref:grow, 3dlu", "pref, 3dlu, pref, 3dlu"));
-        CellConstraints cc = new CellConstraints();
+		CellConstraints cc = new CellConstraints();
 
-        toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), cc.xyw(1, 1, 2));
-        planHistoryListLabel = new JLabel(COMPLETED_BUILDS);
-        toolBarPanel.add(planHistoryListLabel, cc.xy(1, 3));
-        toolBarPanel.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xy(2, 3));
+		toolBarPanel.add(loadToolBar("ThePlugin.Bamboo.RightToolBar"), cc.xyw(1, 1, 2));
+		planHistoryListLabel = new JLabel(COMPLETED_BUILDS);
+		toolBarPanel.add(planHistoryListLabel, cc.xy(1, 3));
+		toolBarPanel.add(new JSeparator(SwingConstants.HORIZONTAL), cc.xy(2, 3));
 		return toolBarPanel;
 	}
 

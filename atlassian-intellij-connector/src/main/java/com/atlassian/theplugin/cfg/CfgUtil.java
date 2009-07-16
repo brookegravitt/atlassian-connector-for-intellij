@@ -17,6 +17,7 @@ package com.atlassian.theplugin.cfg;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.util.PluginUtil;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -77,7 +78,7 @@ public final class CfgUtil {
 	 * @param servers   collection of servers
 	 * @return ServerData or null if not found
 	 */
-	public static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {
+	private static ServerData findServer(final URL serverUrl, final Collection<ServerData> servers) {
 
 		ServerData enabledServer = null;
 		ServerData disabledServer = null;
@@ -120,6 +121,7 @@ public final class CfgUtil {
 	/**
 	 * Finds server with specified url in collection of servers (exact String match).
 	 * It tries to find enabled server. If not found then tries to find disabled server.
+	 * If the above failed then it call {@link #findServer(java.net.URL, java.util.Collection)}
 	 *
 	 * @param serverUrl url of server
 	 * @param servers   collection of servers
@@ -146,6 +148,19 @@ public final class CfgUtil {
 			return enabledServer;
 		}
 
-		return disabledServer;
+		if (disabledServer != null) {
+			return disabledServer;
+		}
+
+		URL url;
+
+		try {
+			url = new URL(serverUrl);
+		} catch (MalformedURLException e) {
+			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + serverUrl + "]", e);
+			return null;
+		}
+
+		return findServer(url, servers);
 	}
 }
