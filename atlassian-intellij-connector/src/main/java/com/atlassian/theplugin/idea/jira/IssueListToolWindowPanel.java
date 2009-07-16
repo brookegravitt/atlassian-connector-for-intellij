@@ -63,8 +63,6 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -464,23 +462,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			return true;
 		}
 
-		// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
-		URL url;
-
-		try {
-			url = new URL(serverUrl);
-		} catch (MalformedURLException e) {
-			PluginUtil.getLogger().warn("Error opening issue. Invalid url [" + serverUrl + "]", e);
-			return false;
-		}
-
-		server = CfgUtil.findServer(url, projectCfgManager.getAllJiraServerss());
-
-		if (server != null) {
-			openIssue(issueKey, server);
-			return true;
-		}
-
 		return false;
 	}
 
@@ -678,9 +659,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 
 		if (!statusChanged) {
-            if (statusBarPane != null) {
-                statusBarPane.setErrorMessage("Available actions do not allow to change state to In Progress");
-            }		
+			if (statusBarPane != null) {
+				statusBarPane.setErrorMessage("Available actions do not allow to change state to In Progress");
+			}
 		}
 
 		setStatusInfoMessage("Refreshing issue");
@@ -701,8 +682,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return updatedIssue;
 	}
 
-	public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue, 
-                                               final StatusBarPane statusBarPane) {
+	public void startWorkingOnIssueAndActivate(@NotNull final JIRAIssue issue, final ActiveJiraIssue newActiveIssue,
+			final StatusBarPane statusBarPane) {
 
 		final boolean isOk = createChangeListAction(issue);
 

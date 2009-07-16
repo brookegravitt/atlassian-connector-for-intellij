@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
+import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -74,6 +75,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		} else if (method.equals("review")) {
 			writeIcon(response);
 			handleOpenReviewRequest(parameters);
+		} else if (method.equals("build")) {
+			writeIcon(response);
+			handleOpenBuildRequest(parameters);
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
@@ -114,55 +118,55 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		if (file != null) {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-                    openRequestedFile(path, file, vcsRoot, line);
+					openRequestedFile(path, file, vcsRoot, line);
 				}
 			});
 		}
 	}
 
-    private void openRequestedFile(String path, String file, String vcsRoot, String line) {
-        boolean found = false;
-        // try to open requested file in all open projects
-        for (Project project : ProjectManager.getInstance().getOpenProjects()) {
-            String filePath = (path == null ? file : path + "/" + file);
-            // find file by name (and path if provided)
-            Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
+	private void openRequestedFile(String path, String file, String vcsRoot, String line) {
+		boolean found = false;
+		// try to open requested file in all open projects
+		for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+			String filePath = (path == null ? file : path + "/" + file);
+			// find file by name (and path if provided)
+			Collection<PsiFile> psiFiles = CodeNavigationUtil.findPsiFiles(project, filePath);
 
-            // narrow found list of files by VCS
-            if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
-                Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
-                // if VCS narrowed to empty list then return without narrowing
-                // VCS could not match because of different configuration in IDE and web client (JIRA, FishEye, etc)
-                if (pf != null && pf.size() > 0) {
-                    psiFiles = pf;
-                }
-            }
-            // open file or show popup if more than one file found
-            if (psiFiles != null && psiFiles.size() > 0) {
-                found = true;
-                if (psiFiles.size() == 1) {
-                    openFile(project, psiFiles.iterator().next(), line);
-                } else if (psiFiles.size() > 1) {
-                    ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
-                            "Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
-                    popup.showCenteredInCurrentWindow(project);
-                }
-            }
-            bringIdeaToFront(project);
-        }
-        // message box showed only if the file was not found at all (in all project)
-        if (!found) {
-            String msg = "";
-            if (ProjectManager.getInstance().getOpenProjects().length > 0) {
-                msg = "Project does not contain requested file" + file;
-            } else {
-                msg = "Please open a project in order to indicate search path for file " + file;
-            }
-            Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
-        }
-    }
+			// narrow found list of files by VCS
+			if (psiFiles != null && psiFiles.size() > 0 && isDefined(vcsRoot)) {
+				Collection<PsiFile> pf = CodeNavigationUtil.findPsiFilesWithVcsUrl(psiFiles, vcsRoot, project);
+				// if VCS narrowed to empty list then return without narrowing
+				// VCS could not match because of different configuration in IDE and web client (JIRA, FishEye, etc)
+				if (pf != null && pf.size() > 0) {
+					psiFiles = pf;
+				}
+			}
+			// open file or show popup if more than one file found
+			if (psiFiles != null && psiFiles.size() > 0) {
+				found = true;
+				if (psiFiles.size() == 1) {
+					openFile(project, psiFiles.iterator().next(), line);
+				} else if (psiFiles.size() > 1) {
+					ListPopup popup = JBPopupFactory.getInstance().createListPopup(new FileListPopupStep(
+							"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
+					popup.showCenteredInCurrentWindow(project);
+				}
+			}
+			bringIdeaToFront(project);
+		}
+		// message box showed only if the file was not found at all (in all project)
+		if (!found) {
+			String msg = "";
+			if (ProjectManager.getInstance().getOpenProjects().length > 0) {
+				msg = "Project does not contain requested file" + file;
+			} else {
+				msg = "Please open a project in order to indicate search path for file " + file;
+			}
+			Messages.showInfoMessage(msg, PluginUtil.PRODUCT_NAME);
+		}
+	}
 
-    private static void openFile(final Project project, final PsiFile psiFile, final String line) {
+	private static void openFile(final Project project, final PsiFile psiFile, final String line) {
 		if (psiFile != null) {
 			psiFile.navigate(true);	// open file
 
@@ -214,6 +218,51 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			});
 		} else {
 			PluginUtil.getLogger().warn("Cannot open issue: issue_key or server_url parameter is null");
+		}
+	}
+
+	private void handleOpenBuildRequest(final Map<String, String> parameters) {
+		final String buildKey = parameters.get("build_key");
+		String buildNumber = parameters.get("build_number");
+		final String serverUrl = parameters.get("server_url");
+
+		int buildNumberInt = 0;
+
+		try {
+			buildNumberInt = Integer.valueOf(buildNumber);
+		} catch (NumberFormatException e) {
+			buildNumber = null;
+		}
+
+		final int buildNumberIntFinal = buildNumberInt;
+
+		if (buildKey != null && buildKey.length() > 0
+				&& serverUrl != null && serverUrl.length() > 0
+				&& buildNumber != null && buildNumber.length() > 0) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					boolean found = false;
+					// try to open received build in all open projects
+					for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+
+						final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
+						if (panel != null) {
+							if (panel.openBuild(buildKey, buildNumberIntFinal, serverUrl)) {
+								found = true;
+							}
+							bringIdeaToFront(project);
+						}
+
+					}
+
+					if (!found) {
+						Messages.showInfoMessage("Cannot find build " + buildKey + "-" + buildNumberIntFinal,
+								PluginUtil.PRODUCT_NAME);
+					}
+				}
+			});
+		} else {
+			PluginUtil.getLogger().warn("Cannot open build: build_key or build_number or server_url parameter is null");
 		}
 	}
 

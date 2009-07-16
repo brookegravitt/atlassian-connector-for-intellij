@@ -56,8 +56,6 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -494,20 +492,6 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	 */
 	public ReviewAdapter openReviewWithDetails(final String reviewKey, final String serverUrl) {
 		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllCrucibleServerss());
-
-		if (server == null) {
-			// server not found by exact url, trying to remove protocol from the address (http vs https) and slash at the end
-			URL url;
-
-			try {
-				url = new URL(serverUrl);
-			} catch (MalformedURLException e) {
-				PluginUtil.getLogger().warn("Error opening review. Invalid url [" + serverUrl + "]", e);
-				return null;
-			}
-
-			server = CfgUtil.findServer(url, projectCfgManager.getAllCrucibleServerss());
-		}
 
 		if (server != null) {
 			// todo uncomment that if local review contains details
