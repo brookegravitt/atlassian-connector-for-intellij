@@ -26,6 +26,7 @@ public class ActiveIssueDropDownAction extends ComboBoxAction {
     @Override
     public void update(AnActionEvent event) {
         event.getPresentation().setText("");
+        event.getPresentation().setDescription("Select issue to start work on");
     }
 
     @NotNull
