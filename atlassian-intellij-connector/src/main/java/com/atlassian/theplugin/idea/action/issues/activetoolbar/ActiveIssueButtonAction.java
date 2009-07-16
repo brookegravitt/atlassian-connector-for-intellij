@@ -103,17 +103,17 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         return new MyButtonWithText(this, presentation);
     }
 
-    private class MyButtonWithText extends ActionButtonWithText {
+    private final class MyButtonWithText extends ActionButtonWithText {
         private Presentation presentation;
 
         private class MySynchronizer implements PropertyChangeListener {
             public void propertyChange(PropertyChangeEvent event) {
                 String propertyName = event.getPropertyName();
-                if("text".equals(propertyName)) {
+                if ("text".equals(propertyName)) {
                     updateButtonSize();
-                } else if("description".equals(propertyName)) {
+                } else if ("description".equals(propertyName)) {
                     updateTooltipText((String) event.getNewValue());
-                } else if("icon".equals(propertyName)) {
+                } else if ("icon".equals(propertyName)) {
                     updateButtonSize();
                 }
             }
@@ -140,9 +140,8 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
             getParent().validate();
         }
 
-        public Dimension getBasePreferredSize()
-        {
-            if(presentation.getIcon() == null) {
+        public Dimension getBasePreferredSize() {
+            if (presentation.getIcon() == null) {
                 return MIN_SIZE;
             } else {
                 return new Dimension(
@@ -171,7 +170,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
         @Override
         public void addNotify() {
             super.addNotify();
-            if(synchronizer == null) {
+            if (synchronizer == null) {
                 synchronizer = new MySynchronizer();
                 presentation.addPropertyChangeListener(synchronizer);
             }
@@ -180,7 +179,7 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
 
         @Override
         public void removeNotify() {
-            if(synchronizer != null) {
+            if (synchronizer != null) {
                 presentation.removePropertyChangeListener(synchronizer);
                 synchronizer = null;
             }
