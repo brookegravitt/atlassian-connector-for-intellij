@@ -591,8 +591,7 @@
         </action>
 
         <action id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"
-                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction"
-                text="Active Issue Drop Down">
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction">
         </action>
 
 
