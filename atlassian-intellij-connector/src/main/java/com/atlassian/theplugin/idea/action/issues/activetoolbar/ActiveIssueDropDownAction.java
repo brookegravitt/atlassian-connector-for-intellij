@@ -23,6 +23,11 @@ import javax.swing.*;
  */
 public class ActiveIssueDropDownAction extends ComboBoxAction {
 
+    @Override
+    public void update(AnActionEvent event) {
+        event.getPresentation().setText("");
+    }
+
     @NotNull
     protected DefaultActionGroup createPopupActionGroup(JComponent jComponent) {
         final Project project = IdeaHelper
