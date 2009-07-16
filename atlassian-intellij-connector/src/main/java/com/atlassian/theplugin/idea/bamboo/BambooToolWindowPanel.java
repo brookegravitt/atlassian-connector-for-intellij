@@ -265,7 +265,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		if (build != null) {
 			openBuild(build);
 		} else {
-			Task.Backgroundable task = new Task.Backgroundable(project, "Fetching build " + buildKey, false) {
+			Task.Modal task = new Task.Modal(project, "Fetching build " + buildKey + "-" + buildNumber, false) {
 				private BambooBuildAdapterIdea build;
 				private Throwable exception;
 
