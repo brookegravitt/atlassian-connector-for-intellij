@@ -41,6 +41,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -235,7 +236,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 
-	public boolean openBuild(final String buildKey, int buildNumber, final String serverUrl) {
+	public void openBuild(final String buildKey, int buildNumber, final String serverUrl) {
 
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
 
@@ -243,10 +244,10 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 		if (server != null && server instanceof BambooServerData) {
 			openBuild(buildKey, buildNumber, (BambooServerData) server);
-			return true;
+		} else {
+			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
 
-		return false;
 	}
 
 	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server) {

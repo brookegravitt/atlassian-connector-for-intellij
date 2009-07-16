@@ -247,18 +247,16 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 
 						final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
 						if (panel != null) {
-							if (panel.openBuild(buildKey, buildNumberIntFinal, serverUrl)) {
-								found = true;
-							}
 							bringIdeaToFront(project);
+							panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
 						}
 
 					}
 
-					if (!found) {
-						Messages.showInfoMessage("Cannot find build " + buildKey + "-" + buildNumberIntFinal,
-								PluginUtil.PRODUCT_NAME);
-					}
+//					if (!found) {
+//						Messages.showInfoMessage("Cannot find build " + buildKey + "-" + buildNumberIntFinal,
+//								PluginUtil.PRODUCT_NAME);
+//					}
 				}
 			});
 		} else {
