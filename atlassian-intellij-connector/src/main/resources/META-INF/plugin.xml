@@ -586,11 +586,13 @@
 		</action>
 
         <action id="ThePlugin.ActiveTaskBar.ActiveIssueBox"
-                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueButtonAction">
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueButtonAction"
+                text="Active Issue">
         </action>
 
         <action id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"
-                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction">
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueDropDownAction"
+                text="Active Issue Drop Down">
         </action>
 
 
