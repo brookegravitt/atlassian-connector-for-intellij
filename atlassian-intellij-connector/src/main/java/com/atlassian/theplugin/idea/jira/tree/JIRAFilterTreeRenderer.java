@@ -100,7 +100,6 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         sb.append("</table>");
         sb.append(TOOLTOP_FOOTER_HTML);
         sb.append("</html>");
-        System.out.println(sb.toString());
         return sb.toString();
     }
 
