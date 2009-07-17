@@ -1025,6 +1025,16 @@
 		</group>
 
 
+        <!-- Manual Filter popup menu -->
+        <action id="ThePlugin.JiraIssues.EditManualFilter"
+                class="com.atlassian.theplugin.idea.action.EditManualFilterAction"
+                text="Edit Manual Filter"
+                description="Change manual filter details">
+         </action>
+        <group id="ThePlugin.JiraIssues.ManualFilterPopupGroup" popup="true">
+			<reference id="ThePlugin.JiraIssues.EditManualFilter"/>
+		</group>
+
 		<!-- JIRA tool window panel related actions -->
 		<action id="ThePlugin.JIRA.ShowHideJIRATab"
 				class="com.atlassian.theplugin.idea.action.jira.ShowHideJiraTabAction" text="Show/Hide Jira Tab"

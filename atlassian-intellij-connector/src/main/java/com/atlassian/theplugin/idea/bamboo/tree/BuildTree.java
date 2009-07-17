@@ -51,8 +51,8 @@ public class BuildTree extends AbstractTree {
 
 		this.buildTreeModel = buildTreeModel;
 		this.buildTreeModel.setGroupBy(groupBy);
-		buildTreeUiSetup = new TreeUISetup(TREE_RENDERER);
-		buildTreeUiSetup.initializeUI(this, parentScrollPane);
+        buildTreeUiSetup = new TreeUISetup(TREE_RENDERER);
+        buildTreeUiSetup.initializeUI(this, parentScrollPane);
 
 		init();
 

@@ -27,8 +27,10 @@ public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 
 	public JComponent getRenderer(final JComponent c, final boolean selected,
 			final boolean expanded, final boolean hasFocus) {
-		return new JLabel("Incorrect renderer");
+
+        return new JLabel("Invalid renderer");
 	}
+
 
 	public ServerData getJiraServerCfg() {
 		return jiraServerCfg;
@@ -37,4 +39,5 @@ public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 	public JIRAManualFilter getManualFilter() {
 		return manualFilter;
 	}
+    
 }
