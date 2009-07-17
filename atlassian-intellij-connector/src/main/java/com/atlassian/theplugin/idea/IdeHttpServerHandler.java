@@ -78,7 +78,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		} else if (method.equals("build")) {
 			writeIcon(response);
 			handleDirectClickThroughRequest(new OpenBuildRequest(parameters));
-//			handleOpenBuildRequest(parameters);
 		} else {
 			response.setNoContent();
 			PluginUtil.getLogger().warn("Unknown command received: [" + method + "]");
@@ -226,7 +225,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static class OpenBuildRequest extends DirectClickThroughRequest {
+	private static final class OpenBuildRequest extends DirectClickThroughRequest {
 		private Map<String, String> parameters;
 
 		private OpenBuildRequest(final Map<String, String> parameters) {
@@ -516,6 +515,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 	}
 
-	private static abstract class DirectClickThroughRequest implements Runnable {
+	private abstract static class DirectClickThroughRequest implements Runnable {
 	}
 }
