@@ -31,11 +31,10 @@ public class JIRAFilterTree extends AbstractTree {
 	private Collection<JiraFilterTreeSelectionListener> selectionListeners = new HashSet<JiraFilterTreeSelectionListener>();
 	private LocalTreeSelectionListener localSelectionListener = new LocalTreeSelectionListener();
 
-	public JIRAFilterTree(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
+   public JIRAFilterTree(@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
 			@NotNull final JIRAFilterListModel listModel) {
 
 		this.jiraWorkspaceConfiguration = jiraWorkspaceConfiguration;
-//		this.listModel = listModel;
 
 		listModel.addModelListener(new LocalFilterListModelListener());
 

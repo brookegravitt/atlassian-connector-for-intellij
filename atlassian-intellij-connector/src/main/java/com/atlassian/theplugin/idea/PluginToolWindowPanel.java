@@ -20,7 +20,7 @@ import java.util.Collection;
  */
 public abstract class PluginToolWindowPanel extends JPanel {
 	public static final float PANEL_SPLIT_RATIO = 0.3f;
-	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.5f;
+	protected static final float MANUAL_FILTER_PROPORTION_VISIBLE = 0.8f;
 	protected static final float MANUAL_FILTER_PROPORTION_HIDDEN = 0.9f;
 
 	protected Project project;

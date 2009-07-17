@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -171,6 +172,10 @@ public final class IdeaHelper {
 		return getProjectComponent(project, BuildToolWindow.class);
 	}
 
+    public static JiraWorkspaceConfiguration getJiraWorkspaceConfiguration(AnActionEvent e) {
+        return getProjectComponent(e, JiraWorkspaceConfiguration.class);
+
+    }
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
 		Project project = getCurrentProject(e.getDataContext());
 
