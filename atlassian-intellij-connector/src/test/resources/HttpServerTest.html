@@ -64,6 +64,11 @@
 		 onclick="this.src='http://localhost:51235/file?file=Test.java&path=src/main/java/com/atlassian/connector&line=10&vcs_root=https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 
+	No file param
+	<img src="http://localhost:51235/icon" alt="" title="Open file in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/file?file=&path=src/main/java/com/atlassian/connector&line=10&vcs_root=https://studio.atlassian.com/svn/PL/trunk/atlassian-intellij-connector/&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
 </p>
 
 <hr>
@@ -83,6 +88,14 @@
 	ACC-1
 	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
 		 onclick="this.src='http://localhost:51235/issue?issue_key=ACC-1&server_url=https://localhost:8443&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	No issue_key param
+	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/issue?issue_key=&server_url=https://localhost:8443&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	No server_url param
+	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/issue?issue_key=ACC-1&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 </p>
 
@@ -108,6 +121,16 @@
 	CR-PL-66 (general comment defined: should select general comment in the tree)
 	<img src="http://localhost:51235/icon" alt="" title="Open review in IDE" onerror="this.width=1"
 		 onclick="this.src='http://localhost:51235/review?review_key=CR-PL-66&server_url=https://svn.atlassian.com/atlaseye&comment_id=CMT:9899&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
+	No review_key param
+	<img src="http://localhost:51235/icon" alt="" title="Open review in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/review?server_url=https://svn.atlassian.com/atlaseye&comment_id=CMT:9899&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
+	No server_url param
+	<img src="http://localhost:51235/icon" alt="" title="Open review in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/review?review_key=CR-PL-66&server_url=&comment_id=CMT:9899&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 
 </p>
