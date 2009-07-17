@@ -162,7 +162,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 		manualFilterHelpPanel = new JPanel(new BorderLayout());
         manualFilterHelpPanel.setBorder(BorderFactory.createEtchedBorder());
-        manualFilterHelpPanel.add(new JLabel("<html><i>Right click to edit manual filter.<br>Tooltip shows filter details.</i></html>"));
+        final String labelText = 
+                "<html><i>Right click to edit manual filter.<br>Tooltip shows filter details.</i></html>";
+        manualFilterHelpPanel.add(new JLabel(labelText));
 				
 
 		getStatusBarPane().addMoreIssuesListener(new HyperlinkListener() {
