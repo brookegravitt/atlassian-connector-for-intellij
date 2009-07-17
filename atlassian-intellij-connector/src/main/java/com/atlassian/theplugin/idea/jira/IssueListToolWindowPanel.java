@@ -79,7 +79,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private JiraIssueGroupBy groupBy;
 	@NotNull
-	private final JPanel manualFilterHelpPanel;
 	private JIRAFilterTree jiraFilterTree;
 
 	private JIRAServerFacade jiraServerFacade;
@@ -159,13 +158,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 				}
 			}
 		});
-
-		manualFilterHelpPanel = new JPanel(new BorderLayout());
-        manualFilterHelpPanel.setBorder(BorderFactory.createEtchedBorder());
-        final String labelText = 
-                "<html><i>Right click to edit manual filter.<br>Tooltip shows filter details.</i></html>";
-        manualFilterHelpPanel.add(new JLabel(labelText));
-				
 
 		getStatusBarPane().addMoreIssuesListener(new HyperlinkListener() {
 			public void hyperlinkUpdate(HyperlinkEvent e) {
