@@ -21,7 +21,7 @@ import java.util.Map;
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
     private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
     private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
-    private static final String TOOLTOP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
+    private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
             + "color: 'black'; width: '100%'\">"
             + "<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p>";
 
@@ -82,7 +82,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         if (entries.size() == 0) {
 
             sb.append("No Custom Filter Defined");
-            sb.append(TOOLTOP_FOOTER_HTML);
+            sb.append(TOOLTIP_FOOTER_HTML);
         } else {
 
             sb.append("<html><table>");
@@ -97,7 +97,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
             }
             sb.append("</table>");
         }
-        sb.append(TOOLTOP_FOOTER_HTML);
+        sb.append(TOOLTIP_FOOTER_HTML);
         sb.append("</html>");
         return sb.toString();
     }
