@@ -21,6 +21,9 @@ import java.util.Map;
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 	private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
 	private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
+    private static final String TOOLTOP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
+            + "color: 'black'; width: '100%'\">"
+            + "<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p>";
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
@@ -58,7 +61,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 
 
      private String createManualFilterToolTipText(JIRAManualFilter manualFilter, ServerData server) {
-        StringBuffer sb = new StringBuffer();
+
         Collection<Entry> entries = MiscUtil.buildArrayList();
         Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = manualFilter.groupBy(true);
 		for (JIRAManualFilter.QueryElement element : map.keySet()) {
@@ -73,10 +76,15 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 				entries.add(new Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
 			}
 		}
-
+        StringBuffer sb = new StringBuffer();
         if (entries.size() == 0) {
-			return "No Custom Filter Defined";
+			sb.append("<html>");
+            sb.append("No Custom Filter Defined");
+            sb.append(TOOLTOP_FOOTER_HTML);
+            sb.append("</html>");
+            return sb.toString();
 		}
+
 
         sb.append("<html><table>");
         sb.append("<tr><td><font color=blue><b>").append(server.getName()).append("</b></td><td></td>");
@@ -89,10 +97,10 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
 
             sb.append(entry.getValue()).append("</td></tr>");
         }
-
-        sb.append("</table><hr style=\"height: '1'; text-align: 'left'; color: 'black'; width: '100%'\">");
-        sb.append("<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p></html>");
-
+        sb.append("</table>");
+        sb.append(TOOLTOP_FOOTER_HTML);
+        sb.append("</html>");
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
