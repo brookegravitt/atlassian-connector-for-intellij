@@ -283,5 +283,4 @@ public final class IdeaHelper {
 //		return null;
 		return getProjectComponent(project, JIRAServerModel.class);
 	}
-
 }

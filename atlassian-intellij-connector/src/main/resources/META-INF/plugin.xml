@@ -498,6 +498,14 @@
 			<!--<add-to-group group-id="DiffPanel.Toolbar" anchor="last"/>-->
 		</action>
 
+        <action id="ThePlugin.Crucible.Edit.ManualFilter"
+                class="com.atlassian.theplugin.idea.action.crucible.EditManualFilterAction"
+                text="Edit Manual Filter"
+                description="Change manual filter details">
+         </action>
+         <group id="ThePlugin.Crucible.ManualFilterPopupGroup" popup="true">
+			<reference id="ThePlugin.Crucible.Edit.ManualFilter"/>
+		</group>
 		<!--<action id="ThePlugin.Crucible.Create.Pre.COmmit.From.File"-->
 		<!--class="com.atlassian.theplugin.idea.action.crucible.review.PreCommitReviewFromEditor"-->
 		<!--text="Create Pre-commit Review"-->

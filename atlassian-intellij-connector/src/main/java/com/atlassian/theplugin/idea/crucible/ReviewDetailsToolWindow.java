@@ -92,6 +92,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 		if (ra != null) {
 			key = ra.getServerData().getServerId() + ra.getPermId().getId();
+            
 		}
 		return key;
 	}

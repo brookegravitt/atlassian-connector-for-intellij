@@ -196,6 +196,9 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			}
 		});
 
+        getSplitLeftPane().setOrientation(true);
+		getSplitLeftPane().setSecondComponent(null);
+
 	}
 
 	private void addJiraFilterTreeListeners() {
