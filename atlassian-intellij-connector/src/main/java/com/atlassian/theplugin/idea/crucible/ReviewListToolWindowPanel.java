@@ -68,6 +68,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 	public static final String PLACE_PREFIX = ReviewListToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
+    private Collection<CustomFilterChangeListener> customFilterChangeListeners = new ArrayList<CustomFilterChangeListener>();
 
 	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
@@ -76,18 +77,19 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 	private FilterTree filterTree;
-	private CrucibleCustomFilterDetailsPanel detailsPanel;
 	private SearchingCrucibleReviewListModel searchingReviewListModel;
 	private final ProjectCfgManagerImpl projectCfgManager;
-	private final UiTaskExecutor uiTaskExecutor;
+
+        private final UiTaskExecutor uiTaskExecutor;
 	private final CrucibleReviewListModel reviewListModel;
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
 	private CrucibleReviewListModel currentReviewListModel;
+    private static final String MANUAL_FILTER_MENU_PLACE = "crucible manual filter place";
 
 
-	public ReviewListToolWindowPanel(@NotNull final Project project,
+    public ReviewListToolWindowPanel(@NotNull final Project project,
 			@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final CrucibleReviewListModel reviewListModel,
@@ -101,16 +103,24 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		filterListModel = new CrucibleFilterListModel(
 				crucibleProjectConfiguration.getCrucibleFilters().getManualFilter(),
 				crucibleProjectConfiguration.getCrucibleFilters().getRecenltyOpenFilter());
-		filterTreeModel = new CrucibleFilterTreeModel(filterListModel, reviewListModel);
+		filterTreeModel = new CrucibleFilterTreeModel(project, filterListModel, reviewListModel);
 		this.reviewListModel = reviewListModel;
 		CrucibleReviewListModel sortingListModel = new SortingByKeyCrucibleReviewListModel(this.reviewListModel);
 		searchingReviewListModel = new SearchingCrucibleReviewListModel(sortingListModel);
 		currentReviewListModel = searchingReviewListModel;
 		init(Constants.DIALOG_MARGIN / 2);
 		this.reviewListModel.addListener(new LocalCrucibleReviewListModelListener());
-		filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
+        addFilterTreeListeners();
+        filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
+        ToolTipManager.sharedInstance().registerComponent(filterTree);
 	}
 
+
+    public void notifyCrucibleFilterListModelListeners(final CustomFilter customFilter) {
+        for (CustomFilterChangeListener listener : customFilterChangeListeners) {
+            listener.customFilterChanged(customFilter);
+        }
+    }
 	@Override
 	public void init(int margin) {
 		super.init(margin);
@@ -120,10 +130,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		initToolBar();
 
-		detailsPanel = new CrucibleCustomFilterDetailsPanel(
-				getProject(), projectCfgManager, crucibleProjectConfiguration,
-				filterTree, CrucibleServerFacadeImpl.getInstance(), uiTaskExecutor);
-		detailsPanel.addCustomFilterChangeListener(new CustomFilterChangeListener() {
+		customFilterChangeListeners.add(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
 				refresh(UpdateReason.FILTER_CHANGED);
 			}
@@ -134,12 +141,18 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		if (crucibleProjectConfiguration != null
 				&& crucibleProjectConfiguration.getCrucibleFilters().getManualFilter() != null
 				&& crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
-			showManualFilterPanel(true);
-		} else {
-			showManualFilterPanel(false);
 		}
-
 		addSearchBoxListener();
+
+        CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListenerAdapter() {
+
+                public void selectedCustomFilter(CustomFilter customFilter) {
+                    refresh(UpdateReason.REFRESH);
+                }
+            };
+
+         filterTree.addSelectionListener(listener);
+
 	}
 
 	private void setupReviewTree() {
@@ -167,7 +180,42 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	}
 
 
-	private void addReviewTreeListeners() {
+    private void addFilterTreeListeners() {
+        filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
+        filterTree.addMouseListener(new PopupAwareMouseAdapter() {
+
+            protected void onPopup(MouseEvent e) {
+
+                if (!(e.getComponent() instanceof FilterTree)) {
+                    return;
+                }
+                FilterTree tree = (FilterTree) e.getComponent();
+                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                if (path == null) {
+                    return;
+                }
+                tree.setSelectionPath(path);
+                Object o = path.getLastPathComponent();
+                if (!(o instanceof CrucibleCustomFilterTreeNode)) {
+                    return;
+                }
+
+                CustomFilter manualFilter = ((CrucibleCustomFilterTreeNode) o).getFilter();
+                if (manualFilter != null) {
+                    ActionManager aManager = ActionManager.getInstance();
+                    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.Crucible.ManualFilterPopupGroup");
+                    if (menu == null) {
+                        return;
+                    }
+                    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+                            .show(e.getComponent(), e.getX(), e.getY());
+                }
+            }
+        });
+    }
+
+
+    private void addReviewTreeListeners() {
 		reviewTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
@@ -326,6 +374,10 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	}
 
 
+    public UiTaskExecutor getUiTaskExecutor() {
+        return uiTaskExecutor;
+    }
+    
 	@Override
 	public String getActionPlaceName() {
 		return PLACE_PREFIX + this.getProject().getName();
@@ -342,7 +394,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		return groupBy;
 	}
 
-	protected void showManualFilterPanel(boolean visible) {
+	/*protected void showManualFilterPanel(boolean visible) {
 		getSplitLeftPane().setOrientation(true);
 
 		if (visible) {
@@ -353,7 +405,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 			getSplitLeftPane().setSecondComponent(null);
 			getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 		}
-	}
+	}*/
 
 	public void refresh(final UpdateReason reason) {
 		Task.Backgroundable refresh = new Task.Backgroundable(getProject(), "Refreshing Crucible Panel", false) {
@@ -532,19 +584,12 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		return null;
 	}
 
-	private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {
+    private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {
 		public void filterSelectionChanged() {
 			// restart checker
 			refresh(UpdateReason.FILTER_CHANGED);
 		}
 
-		public void selectedCustomFilter(CustomFilter customFilter) {
-			showManualFilterPanel(true);
-		}
-
-		public void unselectedCustomFilter() {
-			showManualFilterPanel(false);
-		}
 	}
 
 	private class LocalCrucibleReviewListModelListener extends CrucibleReviewListModelListenerAdapter {

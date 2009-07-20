@@ -3,6 +3,8 @@ package com.atlassian.theplugin.idea.crucible.tree;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.intellij.openapi.project.Project;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -13,13 +15,15 @@ import java.util.ArrayList;
  * User: pmaruszak
  */
 public class CrucibleFilterTreeModel extends DefaultTreeModel {
-	private CrucibleFilterListModel filterModel;
+    private Project project;
+    private CrucibleFilterListModel filterModel;
 	private final CrucibleReviewListModel reviewListModel;
 
 
-	public CrucibleFilterTreeModel(CrucibleFilterListModel filterModel, CrucibleReviewListModel reviewListModel) {
+	public CrucibleFilterTreeModel(Project project, CrucibleFilterListModel filterModel, CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode(), false);
-		this.filterModel = filterModel;
+        this.project = project;
+        this.filterModel = filterModel;
 		this.reviewListModel = reviewListModel;
 	}
 
@@ -45,7 +49,8 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
 				}
 
 				CrucibleCustomFilterTreeNode node =
-						new CrucibleCustomFilterTreeNode(filterModel.getCustomFilter(), reviewListModel);
+						new CrucibleCustomFilterTreeNode(IdeaHelper.getProjectCfgManager(project),
+                                filterModel.getCustomFilter(), reviewListModel);
 				p.add(node);
 				return node;
 			} else if (index == getNumberOfCustomFilters() + 1) {

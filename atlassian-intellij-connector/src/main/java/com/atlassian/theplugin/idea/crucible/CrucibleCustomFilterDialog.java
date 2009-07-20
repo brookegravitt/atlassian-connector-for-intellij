@@ -99,7 +99,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
 
-	CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
+	public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.projectCfgManager = cfgManager;

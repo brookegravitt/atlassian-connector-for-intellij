@@ -371,5 +371,4 @@ public class FilterTree extends JTree {
 		}
 
 	}
-
 }

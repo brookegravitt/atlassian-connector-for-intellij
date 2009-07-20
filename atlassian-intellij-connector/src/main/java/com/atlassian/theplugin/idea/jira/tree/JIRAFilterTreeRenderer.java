@@ -68,7 +68,6 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
             entries.add(new Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
         }
 
-
         if (entries.size() == 0) {
             // get also 'any' values
             map = manualFilter.groupBy(false);
