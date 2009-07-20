@@ -85,9 +85,18 @@
 		 onclick="this.src='http://localhost:51235/issue?issue_key=PL-1392&server_url=https://studio.atlassian.com&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 
+	non existing issue
+	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/issue?issue_key=PL-1392666&server_url=https://studio.atlassian.com&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
 	ACC-1
 	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
 		 onclick="this.src='http://localhost:51235/issue?issue_key=ACC-1&server_url=https://localhost:8443&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	incorrect server
+	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/issue?issue_key=ACC-1&server_url=https://sfsdgdgsdsfsd:8443&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 	No issue_key param
 	<img src="http://localhost:51235/icon" alt="" title="Open issue in IDE" onerror="this.width=1"
@@ -121,6 +130,11 @@
 	CR-PL-66 (general comment defined: should select general comment in the tree)
 	<img src="http://localhost:51235/icon" alt="" title="Open review in IDE" onerror="this.width=1"
 		 onclick="this.src='http://localhost:51235/review?review_key=CR-PL-66&server_url=https://svn.atlassian.com/atlaseye&comment_id=CMT:9899&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
+	incorrect server
+	<img src="http://localhost:51235/icon" alt="" title="Open review in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/review?review_key=CR-PL-66&server_url=https://svn.aaa.com/atlaseye&comment_id=CMT:9899&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 
 	No review_key param

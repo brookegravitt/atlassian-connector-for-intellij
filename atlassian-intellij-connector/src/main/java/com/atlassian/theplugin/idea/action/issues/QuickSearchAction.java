@@ -32,7 +32,7 @@ public class QuickSearchAction extends AnAction {
 				String query = dlg.getSearchQueryString();
 				if (query != null) {
 					if (query.toUpperCase().matches("[A-Z]+\\-\\d+")) {
-						panel.openIssue(query.toUpperCase(), server);
+						panel.openIssue(query.toUpperCase(), server, false);
 
 					} else {
 						BrowserUtil.launchBrowser(server.getUrl()

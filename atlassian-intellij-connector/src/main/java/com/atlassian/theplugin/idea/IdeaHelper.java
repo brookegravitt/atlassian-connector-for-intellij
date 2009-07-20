@@ -124,6 +124,7 @@ public final class IdeaHelper {
 		return getProjectComponent(event, IssueListToolWindowPanel.class);
 	}
 
+	@Nullable
 	public static IssueListToolWindowPanel getIssueListToolWindowPanel(@NotNull final Project project) {
 		return getProjectComponent(project, IssueListToolWindowPanel.class);
 	}
@@ -154,16 +155,16 @@ public final class IdeaHelper {
 		return getProjectComponent(project, ReviewListToolWindowPanel.class);
 	}
 
-    @Nullable
-    public static BambooToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
-        return getProjectComponent(event, BambooToolWindowPanel.class);
-    }
+	@Nullable
+	public static BambooToolWindowPanel getBambooToolWindowPanel(AnActionEvent event) {
+		return getProjectComponent(event, BambooToolWindowPanel.class);
+	}
 
-    @Nullable
-    public static BambooToolWindowPanel getBambooToolWindowPanel(@NotNull final Project project) {
-        return getProjectComponent(project, BambooToolWindowPanel.class);
-    }
-    
+	@Nullable
+	public static BambooToolWindowPanel getBambooToolWindowPanel(@NotNull final Project project) {
+		return getProjectComponent(project, BambooToolWindowPanel.class);
+	}
+
 	public static BuildToolWindow getBuildToolWindow(AnActionEvent event) {
 		return getProjectComponent(event, BuildToolWindow.class);
 	}
@@ -172,10 +173,11 @@ public final class IdeaHelper {
 		return getProjectComponent(project, BuildToolWindow.class);
 	}
 
-    public static JiraWorkspaceConfiguration getJiraWorkspaceConfiguration(AnActionEvent e) {
-        return getProjectComponent(e, JiraWorkspaceConfiguration.class);
+	public static JiraWorkspaceConfiguration getJiraWorkspaceConfiguration(AnActionEvent e) {
+		return getProjectComponent(e, JiraWorkspaceConfiguration.class);
 
-    }
+	}
+
 	public static ThePluginProjectComponent getCurrentProjectComponent(AnActionEvent e) {
 		Project project = getCurrentProject(e.getDataContext());
 

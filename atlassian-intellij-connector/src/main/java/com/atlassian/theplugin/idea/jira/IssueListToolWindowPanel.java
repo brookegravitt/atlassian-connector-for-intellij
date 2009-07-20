@@ -41,6 +41,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Pair;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -66,7 +67,7 @@ import java.util.List;
 public final class IssueListToolWindowPanel extends PluginToolWindowPanel implements DataProvider, IssueActionProvider {
 
 	public static final String PLACE_PREFIX = IssueListToolWindowPanel.class.getSimpleName();
-    public static final String MANUAL_FILTER_MENU_PLACE = "edit JIRa manual filter";
+	public static final String MANUAL_FILTER_MENU_PLACE = "edit JIRa manual filter";
 	private ProjectCfgManagerImpl projectCfgManager;
 	private final PluginConfiguration pluginConfiguration;
 	private JiraWorkspaceConfiguration jiraWorkspaceConfiguration;
@@ -101,7 +102,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	private static final int ONE_SECOND = 1000;
 
-    public IssueListToolWindowPanel(@NotNull final Project project,
+	public IssueListToolWindowPanel(@NotNull final Project project,
 			@NotNull final ProjectCfgManagerImpl projectCfgManager,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final JiraWorkspaceConfiguration jiraWorkspaceConfiguration,
@@ -174,7 +175,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		init(0);
 
 
-        addJiraFilterTreeListeners();
+		addJiraFilterTreeListeners();
 
 		jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
 			public void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
@@ -197,38 +198,38 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	}
 
-    private void addJiraFilterTreeListeners() {
-        jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
-        jiraFilterTree.addMouseListener(new PopupAwareMouseAdapter() {
+	private void addJiraFilterTreeListeners() {
+		jiraFilterTree.addSelectionListener(new LocalJiraFilterTreeSelectionListener());
+		jiraFilterTree.addMouseListener(new PopupAwareMouseAdapter() {
 
-            protected void onPopup(MouseEvent e) {
-                if (!(e.getComponent() instanceof JIRAFilterTree)) {
-						return;
-					}
-					JIRAFilterTree tree = (JIRAFilterTree) e.getComponent();
-					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-					if (path == null) {
-						return;
-					}
-					tree.setSelectionPath(path);
-					Object o = path.getLastPathComponent();
-					if (!(o instanceof JIRAManualFilterTreeNode)) {
-						return;
-					}
+			protected void onPopup(MouseEvent e) {
+				if (!(e.getComponent() instanceof JIRAFilterTree)) {
+					return;
+				}
+				JIRAFilterTree tree = (JIRAFilterTree) e.getComponent();
+				TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+				if (path == null) {
+					return;
+				}
+				tree.setSelectionPath(path);
+				Object o = path.getLastPathComponent();
+				if (!(o instanceof JIRAManualFilterTreeNode)) {
+					return;
+				}
 
-                    JIRAManualFilter manualFilter = ((JIRAManualFilterTreeNode) o).getManualFilter();
-                    if (manualFilter != null) {
-					    ActionManager aManager = ActionManager.getInstance();
-					    ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ManualFilterPopupGroup");
-					    if (menu == null) {
-						    return;
-					    }
-					    aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
+				JIRAManualFilter manualFilter = ((JIRAManualFilterTreeNode) o).getManualFilter();
+				if (manualFilter != null) {
+					ActionManager aManager = ActionManager.getInstance();
+					ActionGroup menu = (ActionGroup) aManager.getAction("ThePlugin.JiraIssues.ManualFilterPopupGroup");
+					if (menu == null) {
+						return;
+					}
+					aManager.createActionPopupMenu(MANUAL_FILTER_MENU_PLACE, menu).getComponent()
 							.show(e.getComponent(), e.getX(), e.getY());
-                    }
-            }
-        });
-    }
+				}
+			}
+		});
+	}
 
 //	protected void hideManualFilterPanel() {
 //		getSplitLeftPane().setOrientation(true);
@@ -419,7 +420,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		}
 	}
 
-	public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer) {
+	public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer, final boolean modal) {
 		JIRAIssue issue = null;
 		for (JIRAIssue i : baseIssueListModel.getIssues()) {
 			if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
@@ -431,59 +432,95 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		if (issue != null) {
 			openIssue(issue, true);
 		} else {
-			Task.Backgroundable task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
-				private JIRAIssue issue;
-				private Throwable exception;
+			Task task;
+			final IssueFetcher fetcher = new IssueFetcher(jiraServer, issueKey);
+			if (modal) {
+				task = new Task.Modal(getProject(), "Fetching JIRA issue " + issueKey, false) {
+					public void run(final ProgressIndicator indicator) {
+						indicator.setIndeterminate(true);
+						fetcher.run();
+					}
 
-				@Override
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					progressIndicator.setIndeterminate(true);
-					try {
-						if (jiraServer != null) {
-							issue = jiraServerFacade.getIssue(jiraServer, issueKey);
-							jiraIssueListModelBuilder.updateIssue(issue);
-//							recentlyOpenIssuesCache.addIssue(issue);
-						} else {
-							exception = new RuntimeException("No JIRA server defined!");
-						}
-					} catch (JIRAException e) {
-						exception = e;
+					public void onSuccess() {
+						fetcher.onSuccess();
 					}
-				}
+				};
+			} else {
+				task = new Task.Backgroundable(getProject(), "Fetching JIRA issue " + issueKey, false) {
+					public void run(final ProgressIndicator indicator) {
+						indicator.setIndeterminate(true);
+						fetcher.run();
+					}
 
-				@Override
-				public void onSuccess() {
-					if (getProject().isDisposed()) {
-						return;
+					public void onSuccess() {
+						fetcher.onSuccess();
 					}
-					if (exception != null) {
-						final String serverName = jiraServer != null ? jiraServer.getName() : "[UNDEFINED!]";
-						DialogWithDetails.showExceptionDialog(getProject(),
-								"Cannot fetch issue " + issueKey + " from server " + serverName, exception);
-						return;
-					}
-					if (issue != null) {
-						openIssue(issue, true);
-						if (jiraFilterTree.isRecentlyOpenSelected()) {
-							refreshRecenltyOpenIssues(false);
-						}
-					}
-				}
-			};
+				};
+			}
 			task.queue();
 		}
 	}
 
-	public boolean openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
+	private class IssueFetcher {
+		private JIRAIssue issue;
+		private Throwable exception;
+		private ServerData jiraServer;
+		private String issueKey;
+
+		public IssueFetcher(final ServerData jiraServer, final String issueKey) {
+			this.jiraServer = jiraServer;
+			this.issueKey = issueKey;
+		}
+
+		public void run() {
+			try {
+				if (jiraServer != null) {
+					issue = jiraServerFacade.getIssue(jiraServer, issueKey);
+					jiraIssueListModelBuilder.updateIssue(issue);
+				} else {
+					exception = new RuntimeException("No JIRA server defined!");
+				}
+			} catch (JIRAException e) {
+				exception = e;
+			}
+		}
+
+		public void onSuccess() {
+			if (getProject().isDisposed()) {
+				return;
+			}
+			if (exception != null) {
+				final String serverName = jiraServer != null ? jiraServer.getName() : "[UNDEFINED!]";
+				DialogWithDetails.showExceptionDialog(getProject(),
+						"Cannot fetch issue " + issueKey + " from server " + serverName, exception);
+				return;
+			}
+			if (issue != null) {
+				openIssue(issue, true);
+				if (jiraFilterTree.isRecentlyOpenSelected()) {
+					refreshRecenltyOpenIssues(false);
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * Tries to open issue. Shows message box in case server not found in the config.
+	 * Shows modal dialog when fetching issue
+	 *
+	 * @param issueKey
+	 * @param serverUrl
+	 */
+	public void openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
 		ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllJiraServerss());
 
 		if (server != null) {
-			openIssue(issueKey, server);
-			return true;
+			openIssue(issueKey, server, true);
+		} else {
+			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
-
-		return false;
 	}
 
 	public void assignIssueToMyself(@NotNull final JIRAIssue issue) {
@@ -883,7 +920,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 	public JIRAFilterListModel getJIRAFilterListModel() {
 		if (jiraFilterListModel == null) {
-			jiraFilterListModel = new JIRAFilterListModel();            
+			jiraFilterListModel = new JIRAFilterListModel();
 		}
 		return jiraFilterListModel;
 	}
@@ -917,13 +954,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.getLoadedRecenltyOpenIssues());
 	}
 
-    public JIRAManualFilter getSelectedManualFilter() {
-        return jiraFilterTree != null ? jiraFilterTree.getSelectedManualFilter() : null;
-    }
+	public JIRAManualFilter getSelectedManualFilter() {
+		return jiraFilterTree != null ? jiraFilterTree.getSelectedManualFilter() : null;
+	}
 
-    public JIRAServerModel getJiraServerModel() {
-        return jiraServerModel;
-    }
+	public JIRAServerModel getJiraServerModel() {
+		return jiraServerModel;
+	}
 
 //	public List<JIRAIssue> loadRecenltyOpenIssues() {
 //		return new ArrayList<JIRAIssue>(recentlyOpenIssuesCache.loadRecenltyOpenIssues());
@@ -1146,7 +1183,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	public JTree createLeftTree() {
 		if (jiraFilterTree == null) {
 			jiraFilterTree = new JIRAFilterTree(jiraWorkspaceConfiguration, getJIRAFilterListModel());
-            ToolTipManager.sharedInstance().registerComponent(jiraFilterTree);
+			ToolTipManager.sharedInstance().registerComponent(jiraFilterTree);
 		}
 
 		return jiraFilterTree;
@@ -1179,7 +1216,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			jiraIssueListModelBuilder.reset();
 		}
 
-		public void selectedRecentlyOpenNode() {			
+		public void selectedRecentlyOpenNode() {
 			// refresh issues view
 			refreshRecenltyOpenIssues(true);
 			jiraWorkspaceConfiguration.getView().setViewServerIdd(null);

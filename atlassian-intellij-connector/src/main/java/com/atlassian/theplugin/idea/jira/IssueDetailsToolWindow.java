@@ -128,8 +128,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 	public void closeToolWindow(AnActionEvent e) {
 		closeToolWindow(TOOL_WINDOW_TITLE, e);
 	}
-    
-    
+
 //	public boolean isServerEnabled(String key) {
 //		IssuePanel ip = getContentPanel(key);
 //		ServerCfg serverCfg = projectCfgManager.getServer(
@@ -228,23 +227,23 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		private Task.Backgroundable getSubTasksTask;
 		private DefaultListModel subtaskListModel;
 		private IssueDetailsToolWindow.IssuePanel.LocalModelListener modelListener;
-        private StatusBarPane statusBarPane;
+		private StatusBarPane statusBarPane;
 
 		public IssuePanel(IssueContentParameters params) {
 			this.params = params;
 
 			JTabbedPane tabs = new JTabbedPane();
 			detailsPanel = new DetailsPanel();
-            statusBarPane = new StatusBarPane(" ");
+			statusBarPane = new StatusBarPane(" ");
 			tabs.addTab("Details", detailsPanel);
 			descriptionAndCommentsPanel = new DescriptionAndCommentsPanel(tabs, 1);
 			tabs.addTab("Comments(0)", descriptionAndCommentsPanel);
 
 			summaryPanel = new SummaryPanel();
-            setLayout(new BorderLayout());
-            add(summaryPanel, BorderLayout.NORTH);
-            add(tabs, BorderLayout.CENTER);
-            add(statusBarPane, BorderLayout.SOUTH);
+			setLayout(new BorderLayout());
+			add(summaryPanel, BorderLayout.NORTH);
+			add(tabs, BorderLayout.CENTER);
+			add(statusBarPane, BorderLayout.SOUTH);
 
 			if (params.model != null) {
 				modelListener = new LocalModelListener();
@@ -278,7 +277,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		}
 
 		public void setStatusErrorMessage(final String error, final Throwable exception) {
-            statusBarPane.setErrorMessage(error, exception);
+			statusBarPane.setErrorMessage(error, exception);
 		}
 
 		public ServerData getSelectedServer() {
@@ -424,9 +423,9 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				return getJiraServerCfg();
 			}
 
-            if (dataId.equals(Constants.STATUS_BAR_PANE)) {
-                return statusBarPane;
-            }
+			if (dataId.equals(Constants.STATUS_BAR_PANE)) {
+				return statusBarPane;
+			}
 			return null;
 		}
 
@@ -543,7 +542,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 				if (o != null && o instanceof JIRAIssue) {
 					IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 					if (panel != null) {
-						panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer());
+						panel.openIssue(((JIRAIssue) o).getKey(), params.issue.getServer(), false);
 					}
 				}
 			}
@@ -631,7 +630,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
 							IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 							if (panel != null) {
-								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer());
+								panel.openIssue(params.issue.getParentIssueKey(), params.issue.getServer(), false);
 							}
 						}
 					}), gbc2);

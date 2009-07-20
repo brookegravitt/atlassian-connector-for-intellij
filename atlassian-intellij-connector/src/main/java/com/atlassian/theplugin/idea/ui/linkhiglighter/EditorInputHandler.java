@@ -93,7 +93,7 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 				IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
 				final ServerData jiraServer = projectCfgManager.getDefaultJiraServer();
 				if (jiraServer != null) {
-					panel.openIssue(hoverRange.getIssueKey(), jiraServer);
+					panel.openIssue(hoverRange.getIssueKey(), jiraServer, false);
 				}
 			}
 		}
