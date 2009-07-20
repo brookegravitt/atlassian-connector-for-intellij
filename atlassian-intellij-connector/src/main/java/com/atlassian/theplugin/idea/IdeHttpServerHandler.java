@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
+import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
@@ -176,6 +177,9 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							if (panel != null) {
 								bringIdeaToFront(project);
 								panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
+							} else {
+								PluginUtil.getLogger().warn(
+										"com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel is null");
 							}
 						}
 					}
@@ -200,18 +204,16 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			if (isDefined(issueKey) && isDefined(serverUrl)) {
 				EventQueue.invokeLater(new Runnable() {
 					public void run() {
-						boolean found = false;
 						// try to open received issueKey in all open projects
 						for (Project project : ProjectManager.getInstance().getOpenProjects()) {
 
-							if (IdeaHelper.getIssueListToolWindowPanel(project).openIssue(issueKey, serverUrl)) {
-								found = true;
+							final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
+							if (panel != null) {
+								bringIdeaToFront(project);
+								panel.openIssue(issueKey, serverUrl);
+							} else {
+								reportProblem("com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel is null");
 							}
-							bringIdeaToFront(project);
-						}
-
-						if (!found) {
-							Messages.showInfoMessage("Cannot find issue " + issueKey, PluginUtil.PRODUCT_NAME);
 						}
 					}
 				});
@@ -271,8 +273,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 								"Select File to Open", new ArrayList<PsiFile>(psiFiles), line, project));
 						popup.showCenteredInCurrentWindow(project);
 					}
+					bringIdeaToFront(project);
 				}
-				bringIdeaToFront(project);
 			}
 			// message box showed only if the file was not found at all (in all project)
 			if (!found) {
@@ -528,11 +530,6 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			}
 
 			public void onSuccess() {
-				if (review == null) {
-					Messages.showInfoMessage("Cannot find review " + reviewKey, PluginUtil.PRODUCT_NAME);
-				} else {
-					bringIdeaToFront(project);
-				}
 			}
 		}
 	}

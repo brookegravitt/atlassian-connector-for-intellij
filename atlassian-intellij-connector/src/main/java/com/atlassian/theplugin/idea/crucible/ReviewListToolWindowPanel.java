@@ -43,6 +43,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.TreeSpeedSearch;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -512,7 +513,21 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 				});
 
 				return ra;
+			} else {
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+						Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
+								PluginUtil.PRODUCT_NAME);
+					}
+				});
 			}
+		} else {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration",
+							PluginUtil.PRODUCT_NAME);
+				}
+			});
 		}
 		return null;
 	}
