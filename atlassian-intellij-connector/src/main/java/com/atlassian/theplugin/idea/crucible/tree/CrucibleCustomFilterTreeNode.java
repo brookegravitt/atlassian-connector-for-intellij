@@ -31,7 +31,8 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
             + "color: 'black'; width: '100%'\">"
             + "<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p>";
 
-    public CrucibleCustomFilterTreeNode(final ProjectCfgManager projectCfgManager, CustomFilter filter, CrucibleReviewListModel reviewListModel) {
+    public CrucibleCustomFilterTreeNode(final ProjectCfgManager projectCfgManager, CustomFilter filter,
+                                        CrucibleReviewListModel reviewListModel) {
         super(NAME, null, null);
         this.projectCfgManager = projectCfgManager;
         this.filter = filter;
@@ -50,7 +51,8 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 
     public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 
-        final SelectableLabel selectableLabel = new SelectableLabel(selected, c.isEnabled(), c.getFont(), "<html>" + toString(), ICON_HEIGHT);
+        final SelectableLabel selectableLabel = new SelectableLabel(selected, c.isEnabled(), c.getFont(),
+                "<html>" + toString(), ICON_HEIGHT);
         selectableLabel.setToolTipText(buildToolTipText());
         return selectableLabel;
     }
@@ -154,117 +156,4 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 			entriesToFill.add(new Entry(name, displayName != null ? displayName : username));
 		}
 	}
-
-
-  /*  class MyUiTask implements UiTask {
-
-	private Collection<ScrollableTwoColumnPanel.Entry> entries;
-	@Nullable
-	private final CustomFilterBean filter;
-	@NotNull
-	private final ScrollableTwoColumnPanel panel;
-	@NotNull
-	private final ProjectCfgManagerImpl projectCfgManager;
-	@NotNull
-	private final CrucibleServerFacade crucibleFacade;
-	private final Project project;
-
-	public MyUiTask(@Nullable CustomFilterBean filter, @NotNull final ScrollableTwoColumnPanel panel,
-			@NotNull ProjectCfgManagerImpl projectCfgManager, @NotNull final CrucibleServerFacade crucibleFacade,
-			@NotNull final Project project) {
-		this.filter = filter;
-		this.panel = panel;
-		this.projectCfgManager = projectCfgManager;
-		this.crucibleFacade = crucibleFacade;
-		this.project = project;
-		if (filter != null) {
-			panel.updateContent(getEntries(filter, false));
-		}
-	}
-
-	public void run() throws Exception {
-		entries = (filter != null) ? getEntries(filter, true) : MiscUtil.<ScrollableTwoColumnPanel.Entry>buildArrayList();
-	}
-
-	public void onSuccess() {
-		panel.updateContent(entries);
-	}
-
-	public void onError() {
-	}
-
-	public String getLastAction() {
-		return "resolving Crucible dictionary data";
-	}
-
-	public Component getComponent() {
-		return panel;
-	}
-
-	private Collection<ScrollableTwoColumnPanel.Entry> getEntries(@NotNull final CustomFilter customFilter,
-			boolean fetchRemoteData) {
-		final Collection<ScrollableTwoColumnPanel.Entry> myEntries = MiscUtil.buildArrayList();
-
-		final ServerId serverId = customFilter.getServerId();
-		final ServerData server = projectCfgManager.getCrucibleServerr(serverId);
-
-		myEntries.add(new ScrollableTwoColumnPanel.Entry("Server",
-				(server != null ? server.getName() : "Server Unknown or Removed"), server == null));
-		if (customFilter.getProjectKey() != null && customFilter.getProjectKey().length() > 0) {
-			String projectName = customFilter.getProjectKey() + " <i>(fetching full name...)</i>";
-			if (fetchRemoteData) {
-				try {
-					CrucibleProject crucibleProject = server != null
-							? crucibleFacade.getProject(server, customFilter.getProjectKey())
-							: null;
-					if (crucibleProject != null) {
-						projectName = crucibleProject.getName();
-					}
-				} catch (RemoteApiException e) {
-					// nothing here
-				} catch (ServerPasswordNotProvidedException e) {
-					// nothing here
-				}
-			}
-			myEntries.add(new ScrollableTwoColumnPanel.Entry("Project", projectName));
-		}
-
-		final State[] selStates = customFilter.getState();
-		if (selStates != null && selStates.length > 0) {
-			final StringBuilder states = new StringBuilder();
-			for (int i = 0; i < selStates.length; i++) {
-				states.append(selStates[i].getDisplayName());
-				if (i < selStates.length - 1) {
-					states.append(", ");
-				}
-			}
-			myEntries.add(new ScrollableTwoColumnPanel.Entry("State", states.toString()));
-		}
-		addIfNotEmpty(customFilter.getAuthor(), "Author", myEntries, server, fetchRemoteData);
-		addIfNotEmpty(customFilter.getModerator(), "Moderator", myEntries, server, fetchRemoteData);
-		addIfNotEmpty(customFilter.getCreator(), "Creator", myEntries, server, fetchRemoteData);
-		addIfNotEmpty(customFilter.getReviewer(), "Reviewer", myEntries, server, fetchRemoteData);
-
-		final Boolean reviewerStatus = (customFilter.getReviewer() != null && customFilter.getReviewer().length() > 0)
-				? customFilter.isComplete() : customFilter.isAllReviewersComplete();
-		if (reviewerStatus != null) {
-			myEntries.add(new ScrollableTwoColumnPanel.Entry("Reviewer Status", reviewerStatus ? "Complete" : "Incomplete"));
-		}
-
-		final Boolean orRoles = customFilter.isOrRoles();
-		myEntries.add(new ScrollableTwoColumnPanel.Entry("Match Roles", (orRoles == null || orRoles) ? "Any" : "All"));
-
-		return myEntries;
-	}
-
-	private void addIfNotEmpty(String username, String name, Collection<ScrollableTwoColumnPanel.Entry> entriesToFill,
-			ServerData serverCfg, boolean fetchRemoteData) {
-		if (username.length() > 0) {
-
-			final String displayName = fetchRemoteData
-					? serverCfg != null ? crucibleFacade.getDisplayName(serverCfg, username) : null
-					: username;
-			entriesToFill.add(new ScrollableTwoColumnPanel.Entry(name, displayName != null ? displayName : username));
-		}
-	}*/
 }
