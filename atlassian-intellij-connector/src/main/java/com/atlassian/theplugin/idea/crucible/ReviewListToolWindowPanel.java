@@ -138,10 +138,6 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 
-		if (crucibleProjectConfiguration != null
-				&& crucibleProjectConfiguration.getCrucibleFilters().getManualFilter() != null
-				&& crucibleProjectConfiguration.getCrucibleFilters().getManualFilter().isEnabled()) {
-		}
 		addSearchBoxListener();
 
         CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListenerAdapter() {
