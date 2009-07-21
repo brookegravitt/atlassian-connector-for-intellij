@@ -2,7 +2,10 @@ package com.atlassian.theplugin.idea;
 
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.RunProfile;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diff.BinaryContent;
 import com.intellij.openapi.editor.Editor;
@@ -39,7 +42,7 @@ public final class IdeaVersionFacade {
 	private static final int IDEA_8_0 = 8000;
 	private boolean isIdea8;
 	private static final int IDEA_8_0_1 = 9164;
-    private static final int IDEA_8_1_3 = 9886;
+	private static final int IDEA_8_1_3 = 9886;
 
 	private IdeaVersionFacade() {
 		String ver = ApplicationInfo.getInstance().getBuildNumber();
@@ -130,12 +133,12 @@ public final class IdeaVersionFacade {
 			}
 			String ver = ApplicationInfo.getInstance().getBuildNumber();
 			int v = Integer.parseInt(ver);
-            Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
-            Constructor[] constructors = browserClass.getConstructors();
-            if (v >= IDEA_8_1_3) {
-                return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
-                        changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
-            } else if (v > IDEA_8_0_1) {
+			Class browserClass = Class.forName("com.intellij.openapi.vcs.changes.ui.MultipleChangeListBrowser");
+			Constructor[] constructors = browserClass.getConstructors();
+			if (v >= IDEA_8_1_3) {
+				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
+						changeList, changeListManager.getDefaultChangeList(), true, true, null, null);
+			} else if (v > IDEA_8_0_1) {
 				return (MultipleChangeListBrowser) constructors[0].newInstance(project, changeListManager.getChangeLists(),
 						changeList, null, true, true, null);
 			} else {
@@ -154,15 +157,15 @@ public final class IdeaVersionFacade {
 		return null;
 	}
 
-    public void addActionToDiffGroup(@NotNull AnAction action) {
-        if (isIdea8) {
-            DefaultActionGroup diffToolbar =
-                    (DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
-            if (diffToolbar != null) {
-                diffToolbar.add(action);
-            }
-        }
-    }
+	public void addActionToDiffGroup(@NotNull AnAction action) {
+		if (isIdea8) {
+			DefaultActionGroup diffToolbar =
+					(DefaultActionGroup) ActionManager.getInstance().getAction("DiffPanel.Toolbar");
+			if (diffToolbar != null) {
+				diffToolbar.add(action);
+			}
+		}
+	}
 
 	public void showEditorHints(LightweightHint lightweightHint, Editor anEditor, Point point) {
 		try {
@@ -203,7 +206,7 @@ public final class IdeaVersionFacade {
 		}
 	}
 
-	public void runTests(RunnerAndConfigurationSettings settings, AnActionEvent ev, boolean debug) {
+	public void runTests(RunnerAndConfigurationSettings settings, DataContext dataContext, boolean debug) {
 		try {
 			if (isIdea8) {
 				Class executorClass = Class.forName("com.intellij.execution.Executor");
@@ -232,7 +235,7 @@ public final class IdeaVersionFacade {
 								"com.intellij.execution.runners.ExecutionEnvironment");
 						Constructor c = executionEnvironmentClass.getConstructor(
 								runnerClass, RunnerAndConfigurationSettings.class, DataContext.class);
-						Object executionEnvironment = c.newInstance(runner, settings, ev.getDataContext());
+						Object executionEnvironment = c.newInstance(runner, settings, dataContext);
 						Method execute = runnerClass.getMethod("execute", executorClass, executionEnvironmentClass);
 						execute.invoke(runner, executor, executionEnvironment);
 					} catch (Exception e) {
@@ -259,7 +262,7 @@ public final class IdeaVersionFacade {
 						RunnerAndConfigurationSettings.class, javaProgramRunnerClass, DataContext.class);
 
 				try {
-					execute.invoke(strategyInstance, settings, runner, ev.getDataContext());
+					execute.invoke(strategyInstance, settings, runner, dataContext);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

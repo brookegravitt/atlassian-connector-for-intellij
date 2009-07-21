@@ -66,7 +66,7 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 	}
 
 	public void fetchAndShowBuildLog(final BambooBuildAdapterIdea build, final ConsoleView consoleView) {
-		if (build.isValid() == false) {
+		if (!build.isValid()) {
 			Messages.showErrorDialog(project, "Cannot fetch build log for invalid build (without the number)!",
 					PluginUtil.PRODUCT_NAME);
 			return;
