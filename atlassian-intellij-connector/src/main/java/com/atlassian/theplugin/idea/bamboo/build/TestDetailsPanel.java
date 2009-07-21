@@ -233,8 +233,8 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			Object node = path.getLastPathComponent();
 			if (node instanceof TestNode) {
 				TestNode testNode = (TestNode) node;
-				if (testNode.getTestDetails().getTestMethodName().equals(testMethod) &&
-						testNode.getTestDetails().getTestClassName().equals(testClass)) {
+				if (testNode.getTestDetails().getTestMethodName().equals(testMethod)
+						&& testNode.getTestDetails().getTestClassName().equals(testClass)) {
 					tree.setSelectionPath(path);
 					return testNode.createTestConfiguration(configuration);
 				}
