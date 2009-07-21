@@ -135,10 +135,11 @@ public class BuildToolWindow extends MultiTabToolWindow {
 					}
 				}, false, testClass, testName);
 
-			} else {
-				// todo wait for notification that build details have been downloaded
-				// todo select test tab, select test node, run test
 			}
+//			else {
+//				// todo wait for notification that build details have been downloaded
+//				// todo select test tab, select test node, run test
+//			}
 		}
 	}
 
