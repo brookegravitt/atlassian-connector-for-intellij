@@ -1,11 +1,6 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
@@ -15,18 +10,13 @@ import com.atlassian.theplugin.idea.ui.tree.file.BambooFileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -62,35 +52,13 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 		this.project = project;
 		this.build = build;
-
-		Task.Backgroundable changesTask = new Task.Backgroundable(project, "Retrieving changed files", false) {
-			@Override
-			public void run(@NotNull final ProgressIndicator indicator) {
-				try {
-					BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getPlanKey(), build.getNumber());
-					final List<BambooChangeSet> commits = details.getCommitInfo();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							fillContent(commits);
-						}
-					});
-				} catch (ServerPasswordNotProvidedException e) {
-					showError(e);
-				} catch (RemoteApiException e) {
-					showError(e);
-				}
-			}
-		};
-		ProgressManager.getInstance().run(changesTask);
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		// ignore
 	}
 
-	private void showError(final Exception e) {
+	public void showError(final Exception e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				add(new JLabel("Failed to retrieve changed files: " + e.getMessage()));
@@ -148,7 +116,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 	private static final ChangeSetRendererPanel CHANGEST_RENDERER_PANEL = new ChangeSetRendererPanel();
 
-	private void fillContent(List<BambooChangeSet> commits) {
+	public void fillContent(List<BambooChangeSet> commits) {
 		if (commits == null || commits.size() == 0) {
 			add(new JLabel("No changes in " + build.getPlanKey() + "-" + build.getBuildNumberAsString()));
 			return;
@@ -179,7 +147,7 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 		});
 		changesList.setCellRenderer(new ListCellRenderer() {
 			public Component getListCellRendererComponent(JList list, Object value, int index,
-														  boolean isSelected, boolean cellHasFocus) {
+					boolean isSelected, boolean cellHasFocus) {
 				CHANGEST_RENDERER_PANEL.setChangeSet((BambooChangeSet) value);
 				CHANGEST_RENDERER_PANEL.setSelected(isSelected);
 				CHANGEST_RENDERER_PANEL.validate();

@@ -54,13 +54,7 @@ public abstract class MultiTabToolWindow {
 			itw = createNewToolWindow(project, title, icon);
 		}
 
-		ContentPanel contentPanel = null;
-		for (String s : panelMap.keySet()) {
-			if (s.equals(contentKey)) {
-				contentPanel = panelMap.get(contentKey);
-				break;
-			}
-		}
+		ContentPanel contentPanel = getContentPanel(contentKey);
 
 		if (singleTabMode) {
 			if (contentPanel != null) {
@@ -89,6 +83,17 @@ public abstract class MultiTabToolWindow {
 
 		return itw;
 	}
+
+//	private ContentPanel getContentPanel(final String contentKey) {
+//		ContentPanel contentPanel = null;
+//		for (String s : panelMap.keySet()) {
+//			if (s.equals(contentKey)) {
+//				contentPanel = panelMap.get(contentKey);
+//				break;
+//			}
+//		}
+//		return contentPanel;
+//	}
 
 	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
 			final String title, final Icon icon, final Icon tabIcon, final ContentManagerListener listener) {

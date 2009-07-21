@@ -235,22 +235,44 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
+	/**
+	 * Open build details window, selects 'Tests' tab and run SINGLE specified test.
+	 * It does not run all tests in the class nor all tests in the package.
+	 * In case one of the test params is not specified then it just opens build.
+	 *
+	 * @param buildDetailsInfo
+	 * @param testClass
+	 * @param testMethod
+	 */
+	public void openBuildAndRunTest(final BambooBuildAdapterIdea buildDetailsInfo,
+			final String testClass, final String testMethod) {
 
-	public void openBuild(final String buildKey, int buildNumber, final String serverUrl) {
+		if (testClass != null && testMethod != null) {
+			IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testClass, testMethod);
+		} else {
+			openBuild(buildDetailsInfo);
+		}
+	}
+
+
+	public void openBuild(final String buildKey, int buildNumber, final String serverUrl,
+			final String testClass, final String testName) {
 
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
 
 		ServerData server = CfgUtil.findServer(serverUrl, servers);
 
 		if (server != null && server instanceof BambooServerData) {
-			openBuild(buildKey, buildNumber, (BambooServerData) server);
+			openBuild(buildKey, buildNumber, (BambooServerData) server, testClass, testName);
 		} else {
 			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
 
 	}
 
-	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server) {
+	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server,
+			final String testClass, final String testMethod) {
+
 		BambooBuildAdapterIdea build = null;
 
 		for (BambooBuildAdapterIdea b : bambooModel.getAllBuilds()) {
@@ -263,7 +285,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 
 		if (build != null) {
-			openBuild(build);
+			openBuildAndRunTest(build, testClass, testMethod);
 		} else {
 			Task.Modal task = new Task.Modal(project, "Fetching build " + buildKey + "-" + buildNumber, false) {
 				private BambooBuildAdapterIdea build;
@@ -293,7 +315,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 						return;
 					}
 					if (build != null) {
-						openBuild(build);
+						openBuildAndRunTest(build, testClass, testMethod);
 					}
 				}
 			};

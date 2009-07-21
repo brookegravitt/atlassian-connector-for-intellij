@@ -1,17 +1,12 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.ColorToHtml;
-import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.execution.PsiLocation;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
@@ -24,9 +19,6 @@ import com.intellij.execution.junit.JUnitConfiguration;
 import com.intellij.execution.ui.ConsoleView;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
@@ -78,33 +70,10 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		this.contentKey = contentKey;
 		setLayout(new GridBagLayout());
 
-		final BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
 
-		Task.Backgroundable stackTraceTask = new Task.Backgroundable(project, "Retrieving Tests Results", false) {
-			@Override
-			public void run(@NotNull final ProgressIndicator indicator) {
-				try {
-					BuildDetails details = bambooFacade.getBuildDetails(
-							build.getServer(), build.getPlanKey(), build.getNumber());
-					failedTests = details.getFailedTestDetails();
-					succeededTests = details.getSuccessfulTestDetails();
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							fillContent();
-						}
-					});
-				} catch (ServerPasswordNotProvidedException e) {
-					showError(e);
-				} catch (RemoteApiException e) {
-					showError(e);
-				}
-			}
-		};
-
-		ProgressManager.getInstance().run(stackTraceTask);
 	}
 
-	private void showError(final Exception e) {
+	public void showError(final Exception e) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				add(new JLabel("Failed to retrieve test results: " + e.getMessage()));
@@ -112,7 +81,11 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		});
 	}
 
-	private void fillContent() {
+	public void fillContent(final BuildDetails buildDetails) {
+
+		failedTests = buildDetails.getFailedTestDetails();
+		succeededTests = buildDetails.getSuccessfulTestDetails();
+
 		if (failedTests.size() > 0 || succeededTests.size() > 0) {
 
 			Splitter split = new Splitter(false, SPLIT_RATIO);
@@ -227,7 +200,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		return p != null && ((AbstractTreeNode) p.getLastPathComponent()).createTestConfiguration(configuration);
 	}
 
-	public void runTests(AnActionEvent ev, boolean debug) {
+	public void runSelectedTests(DataContext dataContext, boolean debug) {
 		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
 		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
 		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
@@ -236,7 +209,39 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		IdeaVersionFacade.getInstance().runTests(settings, ev, debug);
+		IdeaVersionFacade.getInstance().runTests(settings, dataContext, debug);
+	}
+
+	public void runTests(DataContext dataContext, boolean debug,
+			@NotNull final String testClass, @NotNull final String testName) {
+		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
+		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
+		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
+
+		if (!createTestConfiguration(settings.getConfiguration(), testClass, testName)) {
+			return;
+		}
+
+		IdeaVersionFacade.getInstance().runTests(settings, dataContext, debug);
+	}
+
+	private boolean createTestConfiguration(final RunConfiguration configuration,
+			final String testClass, final String testMethod) {
+
+		for (int i = 0; i < tree.getRowCount(); ++i) {
+			final TreePath path = tree.getPathForRow(i);
+			Object node = path.getLastPathComponent();
+			if (node instanceof TestNode) {
+				TestNode testNode = (TestNode) node;
+				if (testNode.getTestDetails().getTestMethodName().equals(testMethod) &&
+						testNode.getTestDetails().getTestClassName().equals(testClass)) {
+					tree.setSelectionPath(path);
+					return testNode.createTestConfiguration(configuration);
+				}
+			}
+		}
+
+		return false;
 	}
 
 	public boolean canRunTests() {
@@ -378,19 +383,23 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private abstract class TestNode extends AbstractTreeNode {
-		protected TestDetails details;
+		protected TestDetails testDetails;
 
-		public TestNode(TestDetails details) {
-			super(details.getTestMethodName());
-			this.details = details;
+		public TestNode(TestDetails testDetails) {
+			super(testDetails.getTestMethodName());
+			this.testDetails = testDetails;
+		}
+
+		public TestDetails getTestDetails() {
+			return testDetails;
 		}
 
 		private PsiMethod getMethod() {
-			PsiClass cls = IdeaVersionFacade.getInstance().findClass(details.getTestClassName(), project);
+			PsiClass cls = IdeaVersionFacade.getInstance().findClass(testDetails.getTestClassName(), project);
 			if (cls == null) {
 				return null;
 			}
-			PsiMethod[] methods = cls.findMethodsByName(details.getTestMethodName(), false);
+			PsiMethod[] methods = cls.findMethodsByName(testDetails.getTestMethodName(), false);
 			if (methods.length == 0 || methods[0] == null) {
 				return null;
 			}
@@ -436,7 +445,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 		@Override
 		public void selected() {
-			print(details.getErrors());
+			print(testDetails.getErrors());
 		}
 
 		@Override
@@ -560,10 +569,10 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() >= 2) {
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-                    if (path != null) {
-                        AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
-                        jumpToSource(node);
-                    }
+					if (path != null) {
+						AbstractTreeNode node = (AbstractTreeNode) path.getLastPathComponent();
+						jumpToSource(node);
+					}
 				}
 			}
 
@@ -590,7 +599,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			AbstractTreeNode node = (AbstractTreeNode) p.getLastPathComponent();
 			return node != null && node.navigate(true);
 		}
-		return false;		
+		return false;
 	}
 
 	public void jumpToSource() {
@@ -621,7 +630,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	private static class MyDefaultTreeCellRenderer extends DefaultTreeCellRenderer {
 		@Override
 		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-													  boolean expanded, boolean leaf, int row, boolean hasFocus) {
+				boolean expanded, boolean leaf, int row, boolean hasFocus) {
 
 			Component c = super.getTreeCellRendererComponent(
 					tree, value, selected, expanded, leaf, row, hasFocus);

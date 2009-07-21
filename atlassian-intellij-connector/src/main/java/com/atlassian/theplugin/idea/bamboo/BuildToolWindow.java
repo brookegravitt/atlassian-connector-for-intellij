@@ -1,19 +1,27 @@
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.ActionGroup;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
@@ -30,19 +38,19 @@ import java.awt.event.ActionListener;
 public class BuildToolWindow extends MultiTabToolWindow {
 
 	private final Project project;
-    private PluginConfiguration pluginConfiguration;
-    private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
+	private PluginConfiguration pluginConfiguration;
+	private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
 
 	public BuildToolWindow(@NotNull final Project project, @NotNull final PluginConfiguration pluginConfiguration) {
 		super(false);
 		this.project = project;
-        this.pluginConfiguration = pluginConfiguration;
-    }
+		this.pluginConfiguration = pluginConfiguration;
+	}
 
 	public void runTests(AnActionEvent ev, boolean debug) {
 		BuildPanel bp = getContentPanel(ev.getPlace());
 		if (bp != null) {
-			bp.getTestDetailsPanel().runTests(ev, debug);
+			bp.getTestDetailsPanel().runSelectedTests(ev.getDataContext(), debug);
 		}
 	}
 
@@ -94,6 +102,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 	private final class BuildContentParameters implements ContentParameters {
 		private final BambooBuildAdapterIdea build;
+
 		private BuildContentParameters(BambooBuildAdapterIdea build) {
 			this.build = build;
 		}
@@ -101,8 +110,35 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 	public void showBuild(BambooBuildAdapterIdea build) {
 		if (build != null) {
-		   showToolWindow(project, new BuildContentParameters(build),
-				   TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON);
+			showToolWindow(project, new BuildContentParameters(build),
+					TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON);
+		}
+	}
+
+	public void showBuildAndRunTest(BambooBuildAdapterIdea build,
+			@NotNull final String testClass, @NotNull final String testName) {
+		if (build != null) {
+			final BuildContentParameters params = new BuildContentParameters(build);
+			final String contentKey = getContentKey(params);
+			if (getContentPanel(contentKey) != null) {
+				showToolWindow(project, params,
+						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON);
+				BuildPanel bp = getContentPanel(contentKey);
+				bp.selectTestTab();
+				bp.getTestDetailsPanel().runTests(new DataContext() {
+					@Nullable
+					public Object getData(@NonNls final String dataId) {
+						if (dataId.equalsIgnoreCase("project")) {
+							return project;
+						}
+						return null;
+					}
+				}, false, testClass, testName);
+
+			} else {
+				// todo wait for notification that build details have been downloaded
+				// todo select test tab, select test node, run test
+			}
 		}
 	}
 
@@ -114,7 +150,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 	@Override
 	protected ContentPanel createContentPanel(ContentParameters params) {
-        pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
+		pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
 		BuildContentParameters bcp = (BuildContentParameters) params;
 		return new BuildPanel(bcp);
 	}
@@ -149,7 +185,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private Timer timer;
 
-		public BuildPanel(BuildContentParameters params) {
+		public BuildPanel(final BuildContentParameters params) {
 			this.params = params;
 
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
@@ -186,6 +222,35 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			timer.setRepeats(true);
 			timer.setInitialDelay(ONE_MINUTE);
 			timer.start();
+
+			final BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+
+			ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving Build Details", false) {
+				@Override
+				public void run(@NotNull final ProgressIndicator indicator) {
+
+					BambooBuildAdapterIdea build = params.build;
+
+					try {
+						final BuildDetails details = bambooFacade.getBuildDetails(
+								build.getServer(), build.getPlanKey(), build.getNumber());
+
+						SwingUtilities.invokeLater(new Runnable() {
+							public void run() {
+								cdp.fillContent(details.getCommitInfo());
+								tdp.fillContent(details);
+							}
+						});
+					} catch (ServerPasswordNotProvidedException e) {
+						cdp.showError(e);
+						tdp.showError(e);
+					} catch (RemoteApiException e) {
+						cdp.showError(e);
+						tdp.showError(e);
+					}
+				}
+			});
+
 		}
 
 		public TestDetailsPanel getTestDetailsPanel() {
@@ -200,6 +265,10 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		@Override
 		public String getTitle() {
 			return params.build.getPlanKey() + "-" + params.build.getBuildNumberAsString();
+		}
+
+		public void selectTestTab() {
+			tabs.setSelectedComponent(tdp);
 		}
 
 		private class SummaryPanel extends JPanel {
