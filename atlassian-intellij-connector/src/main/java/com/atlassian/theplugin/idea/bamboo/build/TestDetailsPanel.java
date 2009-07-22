@@ -211,12 +211,12 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	public void runTests(DataContext dataContext, boolean debug,
-			@NotNull final String testClass, @NotNull final String testName) {
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 		RunManagerImpl runManager = (RunManagerImpl) RunManager.getInstance(project);
 		ConfigurationFactory factory = runManager.getFactory("JUnit", null);
 		RunnerAndConfigurationSettings settings = runManager.createRunConfiguration("test from bamboo", factory);
 
-		if (!createTestConfiguration(settings.getConfiguration(), testClass, testName)) {
+		if (!createTestConfiguration(settings.getConfiguration(), testPackage, testClass, testName)) {
 			return;
 		}
 
@@ -224,7 +224,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 	}
 
 	private boolean createTestConfiguration(final RunConfiguration configuration,
-			final String testClass, final String testMethod) {
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
 		for (int i = 0; i < tree.getRowCount(); ++i) {
 			final TreePath path = tree.getPathForRow(i);
@@ -232,7 +232,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 			if (node instanceof TestNode) {
 				TestNode testNode = (TestNode) node;
 				if (testNode.getTestDetails().getTestMethodName().equals(testMethod)
-						&& testNode.getTestDetails().getTestClassName().equals(testClass)) {
+						&& testNode.getTestDetails().getTestClassName().equals(testPackage + "." + testClass)) {
 					tree.setSelectionPath(path);
 					tree.scrollPathToVisible(path);
 					return testNode.createTestConfiguration(configuration);

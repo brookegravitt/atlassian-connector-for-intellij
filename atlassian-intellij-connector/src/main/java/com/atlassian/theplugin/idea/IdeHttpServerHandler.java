@@ -154,6 +154,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 			String buildNumber = parameters.get("build_number");
 			final String serverUrl = parameters.get("server_url");
 
+			final String testPackage = parameters.get("test_package");
 			final String testClass = parameters.get("test_class");
 			final String testMethod = parameters.get("test_method");
 
@@ -176,7 +177,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
 							if (panel != null) {
 								bringIdeaToFront(project);
-								panel.openBuild(buildKey, buildNumberIntFinal, serverUrl, testClass, testMethod);
+								panel.openBuild(buildKey, buildNumberIntFinal, serverUrl, testPackage, testClass, testMethod);
 							} else {
 								PluginUtil.getLogger().warn(
 										"com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel is null");
