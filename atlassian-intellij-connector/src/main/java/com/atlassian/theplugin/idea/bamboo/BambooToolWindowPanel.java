@@ -241,22 +241,44 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	 * In case one of the test params is not specified then it just opens build.
 	 *
 	 * @param buildDetailsInfo
+	 * @param testPackage
 	 * @param testClass
 	 * @param testMethod
 	 */
-	public void openBuildAndRunTest(final BambooBuildAdapterIdea buildDetailsInfo,
-			final String testPackage, final String testClass, final String testMethod) {
+	private void openBuildAndRunTest(final BambooBuildAdapterIdea buildDetailsInfo,
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
-		if (testPackage != null && testClass != null && testMethod != null) {
-			IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testPackage, testClass, testMethod);
+		IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testPackage, testClass, testMethod);
+	}
+
+	public void openBuild(@NotNull final String buildKey, final int buildNumber, @NotNull final String serverUrl) {
+		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
+
+		ServerData server = CfgUtil.findServer(serverUrl, servers);
+
+		if (server != null && server instanceof BambooServerData) {
+			openBuild(buildKey, buildNumber, (BambooServerData) server);
 		} else {
-			openBuild(buildDetailsInfo);
+			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
 	}
 
+	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server) {
+		BambooBuildAdapterIdea build = getBuildFromModel(buildKey, buildNumber, server);
 
-	public void openBuild(final String buildKey, int buildNumber, final String serverUrl,
-			final String testPackage, final String testClass, final String testName) {
+		if (build != null) {
+			openBuild(build);
+		} else {
+			new FetchingBuildTask(server, buildKey, buildNumber, new BuildLoadedHandler() {
+				public void buildLoaded(final BambooBuildAdapterIdea build) {
+					openBuild(build);
+				}
+			}).queue();
+		}
+	}
+
+	public void openBuild(@NotNull final String buildKey, int buildNumber, @NotNull final String serverUrl,
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
 
@@ -267,14 +289,27 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		} else {
 			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
-
 	}
 
-	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server,
-			final String testPackage, final String testClass, final String testMethod) {
+	private void openBuild(@NotNull final String buildKey, final int buildNumber, @NotNull final BambooServerData server,
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
+		BambooBuildAdapterIdea build = getBuildFromModel(buildKey, buildNumber, server);
+
+		if (build != null) {
+			openBuildAndRunTest(build, testPackage, testClass, testMethod);
+		} else {
+			new FetchingBuildTask(server, buildKey, buildNumber, new BuildLoadedHandler() {
+				public void buildLoaded(final BambooBuildAdapterIdea build) {
+					openBuildAndRunTest(build, testPackage, testClass, testMethod);
+				}
+			}).queue();
+		}
+	}
+
+	private BambooBuildAdapterIdea getBuildFromModel(final String buildKey, final int buildNumber,
+			final BambooServerData server) {
 		BambooBuildAdapterIdea build = null;
-
 		for (BambooBuildAdapterIdea b : bambooModel.getAllBuilds()) {
 			if (b.getBuild().getPlanKey().equals(buildKey)
 					&& b.getNumber() == buildNumber
@@ -283,44 +318,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 				break;
 			}
 		}
-
-		if (build != null) {
-			openBuildAndRunTest(build, testPackage, testClass, testMethod);
-		} else {
-			Task.Modal task = new Task.Modal(project, "Fetching build " + buildKey + "-" + buildNumber, false) {
-				private BambooBuildAdapterIdea build;
-				private Throwable exception;
-
-				@Override
-				public void run(@NotNull ProgressIndicator progressIndicator) {
-					progressIndicator.setIndeterminate(true);
-					try {
-						build = new BambooBuildAdapterIdea(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-								getBuildForPlanAndNumber(server, buildKey, buildNumber, server.getTimezoneOffset()));
-					} catch (RemoteApiException e) {
-						exception = e;
-					} catch (ServerPasswordNotProvidedException e) {
-						exception = e;
-					}
-				}
-
-				@Override
-				public void onSuccess() {
-					if (getProject().isDisposed()) {
-						return;
-					}
-					if (exception != null) {
-						DialogWithDetails.showExceptionDialog(project, "Cannot fetch build "
-								+ buildKey + "-" + buildNumber + " from server " + server.getName(), exception);
-						return;
-					}
-					if (build != null) {
-						openBuildAndRunTest(build, testPackage, testClass, testMethod);
-					}
-				}
-			};
-			task.queue();
-		}
+		return build;
 	}
 
 	public void refresh() {
@@ -506,5 +504,59 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 	public BambooBuildAdapterIdea getSelectedBuild() {
 		return buildTree.getSelectedBuild();
+	}
+
+	private class FetchingBuildTask extends Task.Modal {
+		private BambooServerData server;
+		private String buildKey;
+		private int buildNumber;
+		private BuildLoadedHandler handler;
+
+		private BambooBuildAdapterIdea build;
+		private Throwable exception;
+
+		public FetchingBuildTask(final BambooServerData server, final String buildKey, final int buildNumber,
+				BuildLoadedHandler handler) {
+			super(project, "Fetching build " + buildKey + "-" + buildNumber, false);
+			this.server = server;
+			this.buildKey = buildKey;
+			this.buildNumber = buildNumber;
+			this.handler = handler;
+		}
+
+		@Override
+		public void run(@NotNull ProgressIndicator progressIndicator) {
+			progressIndicator.setIndeterminate(true);
+			try {
+				build = new BambooBuildAdapterIdea(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+						getBuildForPlanAndNumber(server, buildKey, buildNumber, server.getTimezoneOffset()));
+			} catch (RemoteApiException e) {
+				exception = e;
+			} catch (ServerPasswordNotProvidedException e) {
+				exception = e;
+			}
+		}
+
+		@Override
+		public void onSuccess() {
+			if (getProject().isDisposed()) {
+				return;
+			}
+			if (exception != null) {
+				DialogWithDetails.showExceptionDialog(project, "Cannot fetch build "
+						+ buildKey + "-" + buildNumber + " from server " + server.getName(), exception);
+				return;
+			}
+			if (build != null) {
+				handler.buildLoaded(build);
+			} else {
+				Messages.showInfoMessage(project, "Build " + buildKey + "-" + buildNumber + " not found.",
+						PluginUtil.PRODUCT_NAME);
+			}
+		}
+	}
+
+	private interface BuildLoadedHandler {
+		void buildLoaded(final BambooBuildAdapterIdea build);
 	}
 }
