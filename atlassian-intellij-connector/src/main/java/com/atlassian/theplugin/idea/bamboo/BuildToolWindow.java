@@ -111,7 +111,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	public void showBuild(BambooBuildAdapterIdea build) {
 		if (build != null) {
 			showToolWindow(project, new BuildContentParameters(build),
-					TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON);
+					TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
 		}
 	}
 
@@ -120,26 +120,41 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		if (build != null) {
 			final BuildContentParameters params = new BuildContentParameters(build);
 			final String contentKey = getContentKey(params);
-			if (getContentPanel(contentKey) != null) {
-				showToolWindow(project, params,
-						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON);
-				BuildPanel bp = getContentPanel(contentKey);
-				bp.selectTestTab();
-				bp.getTestDetailsPanel().runTests(new DataContext() {
-					@Nullable
-					public Object getData(@NonNls final String dataId) {
-						if (dataId.equalsIgnoreCase("project")) {
-							return project;
-						}
-						return null;
-					}
-				}, false, testClass, testName);
 
+			final DataContext dataContext = new DataContext() {
+				@Nullable
+				public Object getData(@NonNls final String dataId) {
+					if (dataId.equalsIgnoreCase("project")) {
+						return project;
+					}
+					return null;
+				}
+			};
+
+			BuildPanel bp = getContentPanel(contentKey);
+
+			if (bp != null) {
+				showToolWindow(project, params,
+						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
+
+				bp.selectTestTab();
+				bp.getTestDetailsPanel().runTests(dataContext, false, testClass, testName);
+
+			} else {
+				showToolWindow(project, params,
+						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON,
+						new ToolWindowHandler() {
+
+							public void dataLoaded() {
+								BuildPanel bp2 = getContentPanel(contentKey);
+								if (bp2 != null) {
+									bp2.selectTestTab();
+									bp2.getTestDetailsPanel().runTests(dataContext, false, testClass, testName);
+								}
+
+							}
+						});
 			}
-//			else {
-//				// todo wait for notification that build details have been downloaded
-//				// todo select test tab, select test node, run test
-//			}
 		}
 	}
 
@@ -150,10 +165,10 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	}
 
 	@Override
-	protected ContentPanel createContentPanel(ContentParameters params) {
+	protected ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler) {
 		pluginConfiguration.getGeneralConfigurationData().bumpCounter("b");
 		BuildContentParameters bcp = (BuildContentParameters) params;
-		return new BuildPanel(bcp);
+		return new BuildPanel(bcp, handler);
 	}
 
 	public void closeToolWindow(AnActionEvent e) {
@@ -186,7 +201,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private Timer timer;
 
-		public BuildPanel(final BuildContentParameters params) {
+		public BuildPanel(final BuildContentParameters params, final ToolWindowHandler handler) {
 			this.params = params;
 
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
@@ -240,6 +255,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 							public void run() {
 								cdp.fillContent(details.getCommitInfo());
 								tdp.fillContent(details);
+								handler.dataLoaded();
 							}
 						});
 					} catch (ServerPasswordNotProvidedException e) {
@@ -270,6 +286,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		public void selectTestTab() {
 			tabs.setSelectedComponent(tdp);
+			setPassedTestsVisible(getContentKey(params), true);
 		}
 
 		private class SummaryPanel extends JPanel {

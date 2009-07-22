@@ -99,10 +99,10 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 		final IssueContentParameters issueContentParameters = new IssueContentParameters(issue, model);
 		showToolWindow(project, issueContentParameters,
 				TOOL_WINDOW_TITLE, Constants.JIRA_ISSUE_PANEL_ICON, Constants.JIRA_ISSUE_TAB_ICON,
-				new ContentListener(getContentKey(issueContentParameters)));
+				new ContentListener(getContentKey(issueContentParameters)), null);
 	}
 
-	protected ContentPanel createContentPanel(ContentParameters params) {
+	protected ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler) {
 		pluginConfiguration.getGeneralConfigurationData().bumpCounter("i");
 		selectedContent = new IssuePanel((IssueContentParameters) params);
 		return selectedContent;
