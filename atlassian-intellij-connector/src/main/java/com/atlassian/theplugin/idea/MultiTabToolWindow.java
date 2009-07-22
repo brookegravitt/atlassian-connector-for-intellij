@@ -36,7 +36,7 @@ public abstract class MultiTabToolWindow {
 
 	protected abstract String getContentKey(ContentParameters params);
 
-	protected abstract ContentPanel createContentPanel(ContentParameters params);
+	protected abstract ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler);
 
 	private boolean singleTabMode;
 
@@ -45,7 +45,7 @@ public abstract class MultiTabToolWindow {
 	}
 
 	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
-			final String title, final Icon icon, final Icon tabIcon) {
+			final String title, final Icon icon, final Icon tabIcon, final ToolWindowHandler toolWindowHandler) {
 		String contentKey = getContentKey(params);
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow itw = twm.getToolWindow(title);
@@ -65,13 +65,13 @@ public abstract class MultiTabToolWindow {
 				if (panelMap.size() > 0) {
 					itw.getContentManager().removeAllContents(true);
 				}
-				contentPanel = createContentPanel(params);
+				contentPanel = createContentPanel(params, toolWindowHandler);
 				panelMap.put(contentKey, contentPanel);
 				fillToolWindowContents(contentKey, contentPanel, tabIcon, itw);
 			}
 		} else {
 			if (contentPanel == null) {
-				contentPanel = createContentPanel(params);
+				contentPanel = createContentPanel(params, toolWindowHandler);
 				panelMap.put(contentKey, contentPanel);
 				fillToolWindowContents(contentKey, contentPanel, tabIcon, itw);
 			} else {
@@ -96,8 +96,9 @@ public abstract class MultiTabToolWindow {
 //	}
 
 	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
-			final String title, final Icon icon, final Icon tabIcon, final ContentManagerListener listener) {
-		ToolWindow toolWindow = showToolWindow(project, params, title, icon, tabIcon);
+			final String title, final Icon icon, final Icon tabIcon, final ContentManagerListener listener,
+			final ToolWindowHandler toolWindowHandler) {
+		ToolWindow toolWindow = showToolWindow(project, params, title, icon, tabIcon, toolWindowHandler);
 		toolWindow.getContentManager().addContentManagerListener(listener);
 		return toolWindow;
 	}
@@ -175,5 +176,9 @@ public abstract class MultiTabToolWindow {
 				}
 			}
 		}
+	}
+
+	protected interface ToolWindowHandler {
+		void dataLoaded();
 	}
 }

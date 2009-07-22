@@ -92,13 +92,13 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 		if (ra != null) {
 			key = ra.getServerData().getServerId() + ra.getPermId().getId();
-            
+
 		}
 		return key;
 	}
 
 	@Override
-	protected ContentPanel createContentPanel(ContentParameters params) {
+	protected ContentPanel createContentPanel(ContentParameters params, ToolWindowHandler handler) {
 		pluginConfiguration.getGeneralConfigurationData().bumpCounter("r");
 		contentPanel = new ReviewPanel((ReviewContentParameters) params);
 		return contentPanel;
@@ -161,7 +161,7 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		}
 		contentParams = new ReviewContentParameters(adapter, refreshDetails);
 		showToolWindow(project, contentParams, TOOL_WINDOW_TITLE,
-				Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON);
+				Constants.CRUCIBLE_REVIEW_PANEL_ICON, Constants.CRUCIBLE_REVIEW_TAB_ICON, null);
 	}
 
 	public AtlassianTreeWithToolbar getAtlassianTreeWithToolbar() {

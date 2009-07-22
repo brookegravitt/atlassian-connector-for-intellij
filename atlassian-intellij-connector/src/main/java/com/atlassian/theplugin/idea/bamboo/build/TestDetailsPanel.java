@@ -69,8 +69,6 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 		this.build = build;
 		this.contentKey = contentKey;
 		setLayout(new GridBagLayout());
-
-
 	}
 
 	public void showError(final Exception e) {
@@ -236,6 +234,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 				if (testNode.getTestDetails().getTestMethodName().equals(testMethod)
 						&& testNode.getTestDetails().getTestClassName().equals(testClass)) {
 					tree.setSelectionPath(path);
+					tree.scrollPathToVisible(path);
 					return testNode.createTestConfiguration(configuration);
 				}
 			}
