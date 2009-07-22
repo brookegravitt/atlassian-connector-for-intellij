@@ -116,7 +116,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	}
 
 	public void showBuildAndRunTest(BambooBuildAdapterIdea build,
-			@NotNull final String testClass, @NotNull final String testName) {
+			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 		if (build != null) {
 			final BuildContentParameters params = new BuildContentParameters(build);
 			final String contentKey = getContentKey(params);
@@ -138,7 +138,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 						TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
 
 				bp.selectTestTab();
-				bp.getTestDetailsPanel().runTests(dataContext, false, testClass, testName);
+				bp.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
 
 			} else {
 				showToolWindow(project, params,
@@ -149,7 +149,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 								BuildPanel bp2 = getContentPanel(contentKey);
 								if (bp2 != null) {
 									bp2.selectTestTab();
-									bp2.getTestDetailsPanel().runTests(dataContext, false, testClass, testName);
+									bp2.getTestDetailsPanel().runTests(dataContext, false, testPackage, testClass, testName);
 								}
 
 							}
@@ -201,7 +201,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private Timer timer;
 
-		public BuildPanel(final BuildContentParameters params, final ToolWindowHandler handler) {
+		public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
 			this.params = params;
 
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
@@ -255,7 +255,9 @@ public class BuildToolWindow extends MultiTabToolWindow {
 							public void run() {
 								cdp.fillContent(details.getCommitInfo());
 								tdp.fillContent(details);
-								handler.dataLoaded();
+								if (handler != null) {
+									handler.dataLoaded();
+								}
 							}
 						});
 					} catch (ServerPasswordNotProvidedException e) {
