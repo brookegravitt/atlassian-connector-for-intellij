@@ -186,6 +186,11 @@
 		 onclick="this.src='http://localhost:51235/build?build_key=ACC-CS&build_number=&server_url=http://gdansk.bamboo2.atlassian.com/&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
 
+	non existing build
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=AAA&build_number=666&server_url=http://gdansk.bamboo2.atlassian.com/&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
 
 <hr>
 
@@ -195,6 +200,43 @@
 	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
 		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
 		 style="cursor: pointer"><br/>
+	missing build key
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing build number
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing server
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	non existing server
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://blablaxxx.com&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing package
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing class
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing method
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	missing package, class, method (simple open build)
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=INT-TST&build_number=4669&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=&test_class=&test_method=&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+	non existing build
+	<img src="http://localhost:51235/icon" alt="" title="Open Build in IDE" onerror="this.width=1"
+		 onclick="this.src='http://localhost:51235/build?build_key=AAA&build_number=666&server_url=http://gdansk.bamboo2.atlassian.com/&test_package=com.atlassian.theplugin.configuration&test_class=ServerTreeModelTest&test_method=testDefaultValue&id=' + Math.floor(Math.random()*1000)"
+		 style="cursor: pointer"><br/>
+
 </p>
 
 </body>

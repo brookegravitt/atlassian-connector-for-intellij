@@ -177,7 +177,15 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							final BambooToolWindowPanel panel = IdeaHelper.getBambooToolWindowPanel(project);
 							if (panel != null) {
 								bringIdeaToFront(project);
-								panel.openBuild(buildKey, buildNumberIntFinal, serverUrl, testPackage, testClass, testMethod);
+								if (isDefined(testPackage) && isDefined(testClass) && isDefined(testMethod)) {
+									panel.openBuild(buildKey, buildNumberIntFinal, serverUrl, testPackage, testClass,
+											testMethod);
+								} else if (!isDefined(testPackage) && !isDefined(testClass) && !isDefined(testMethod)) {
+									panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
+								} else {
+									reportProblem("Cannot run test. At least one of the params is not provided: "
+											+ "test_package, test_class, test_method");
+								}
 							} else {
 								PluginUtil.getLogger().warn(
 										"com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel is null");
@@ -187,7 +195,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				});
 			} else {
 				reportProblem("Cannot open build. Incorrect call. "
-						+ "One of the params is not proveded: build_key, build_number, server_url");
+						+ "At least one of the params is not proveded: build_key, build_number, server_url");
 			}
 		}
 	}
