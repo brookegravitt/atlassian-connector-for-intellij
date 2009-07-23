@@ -121,6 +121,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
             listener.customFilterChanged(customFilter);
         }
     }
+
 	@Override
 	public void init(int margin) {
 		super.init(margin);
@@ -148,6 +149,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
             };
 
          filterTree.addSelectionListener(listener);
+         getSplitLeftPane().setSecondComponent(null);
+		 getSplitLeftPane().setProportion(MANUAL_FILTER_PROPORTION_HIDDEN);
 
 	}
 
