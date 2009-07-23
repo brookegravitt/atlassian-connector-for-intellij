@@ -47,36 +47,36 @@ public final class ChangeViewer {
 	}
 
 	public static void highlightChangesInEditor(final Project project, /*Editor editor,*/
-			Document referenceDoc, final Document displayDoc, final String fromRevision, final String toRevision) {
+			final Document referenceDoc, final Document displayDoc, final String fromRevision, final String toRevision) {
 
 		Collection<RangeHighlighter> registeredHighlighters = displayDoc.getUserData(CRUCIBLE_RANGES);
 
-		if (registeredHighlighters == null) {
-			displayDoc.addDocumentListener(new DocumentListener() {
-				public void beforeDocumentChange(final DocumentEvent event) {
-				}
+        if (registeredHighlighters == null) {
+            displayDoc.addDocumentListener(new DocumentListener() {
+                public void beforeDocumentChange(final DocumentEvent event) {
+                }
 
-				public void documentChanged(final DocumentEvent event) {
-					ApplicationManager.getApplication().invokeLater(new Runnable() {
-						public void run() {
-							ChangeViewer.removeHighlighters(project, displayDoc);
-						}
-					});
-				}
-			});
+                public void documentChanged(final DocumentEvent event) {
+                    ApplicationManager.getApplication().invokeLater(new Runnable() {
+                        public void run() {
+                            ChangeViewer.removeHighlighters(project, displayDoc);
+                        }
+                    });
+                }
+            });
 
-//			removeHighlighters(project, displayDoc);
-			List<Range> ranges = new RangesBuilder(displayDoc, referenceDoc).getRanges();
-			Collection<RangeHighlighter> rangeHighlighters = MiscUtil.buildArrayList();
-			for (Range range : ranges) {
-				if (!range.hasHighlighter()) {
-					final RangeHighlighter highligter = getRangeHighligter(project, ranges, range, referenceDoc, displayDoc,
-							fromRevision, toRevision);
-					rangeHighlighters.add(highligter);
-					range.setHighlighter(highligter);
-				}
-			}
-			displayDoc.putUserData(CRUCIBLE_RANGES, rangeHighlighters);
+        //removeHighlighters(project, displayDoc);
+        List<Range> ranges = new RangesBuilder(displayDoc, referenceDoc).getRanges();
+        Collection<RangeHighlighter> rangeHighlighters = MiscUtil.buildArrayList();
+        for (Range range : ranges) {
+            if (!range.hasHighlighter()) {
+                final RangeHighlighter highligter = getRangeHighligter(project, ranges, range, referenceDoc, displayDoc,
+                        fromRevision, toRevision);
+                rangeHighlighters.add(highligter);
+                range.setHighlighter(highligter);
+            }
+        }
+        displayDoc.putUserData(CRUCIBLE_RANGES, rangeHighlighters);
 		}
 	}
 

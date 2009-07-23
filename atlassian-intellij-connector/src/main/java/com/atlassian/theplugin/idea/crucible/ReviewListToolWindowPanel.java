@@ -132,9 +132,9 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 		customFilterChangeListeners.add(new CustomFilterChangeListener() {
 			public void customFilterChanged(CustomFilter customFilter) {
-				refresh(UpdateReason.FILTER_CHANGED);
-			}
-		});
+                        refresh(UpdateReason.FILTER_CHANGED);
+                    }
+                });
 
 		filterTreeModel.nodeChanged((DefaultMutableTreeNode) filterTreeModel.getRoot());
 

@@ -19,7 +19,7 @@ public class CrucibleFilterTreeModel extends DefaultTreeModel {
     private CrucibleFilterListModel filterModel;
 	private final CrucibleReviewListModel reviewListModel;
 
-
+    
 	public CrucibleFilterTreeModel(Project project, CrucibleFilterListModel filterModel,
                                    CrucibleReviewListModel reviewListModel) {
 		super(new DefaultMutableTreeNode(), false);

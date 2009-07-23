@@ -401,8 +401,8 @@ public final class CrucibleHelper {
 			IdeaReviewFileContentProvider provider = (IdeaReviewFileContentProvider) review.getContentProvider(fileInfo);
 
 			//get local file if not dirty and has the same revision as remote
-			if (provider != null && !provider.isLocalFileDirty()
-                    && content != null && provider.isContentIdentical(content.getContent())) {
+			if (provider != null  && content != null /*&& !provider.isLocalFileDirty()
+                   && provider.isContentIdentical(content.getContent())*/) {
 				VirtualFile providerVirtualFile = provider.getVirtualFile();
 				providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_URL, fileInfo.getAbsoluteUrl());
 				providerVirtualFile.putUserData(CommentHighlighter.REVIEW_FILE_REVISION, fileInfo.getRevision());
