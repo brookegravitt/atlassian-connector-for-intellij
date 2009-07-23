@@ -273,7 +273,7 @@ public final class CommentHighlighter {
 						endOffset--;
 					}
                     if (editor.getDocument().getModificationStamp() > 0) {
-                        int i=1;
+                        int i = 1;
                     }
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
 							HighlighterLayer.SELECTION - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
