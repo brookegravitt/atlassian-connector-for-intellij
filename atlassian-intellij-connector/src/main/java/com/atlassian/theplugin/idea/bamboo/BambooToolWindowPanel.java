@@ -238,12 +238,6 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	/**
 	 * Open build details window, selects 'Tests' tab and run SINGLE specified test.
 	 * It does not run all tests in the class nor all tests in the package.
-	 * In case one of the test params is not specified then it just opens build.
-	 *
-	 * @param buildDetailsInfo
-	 * @param testPackage
-	 * @param testClass
-	 * @param testMethod
 	 */
 	private void openBuildAndRunTest(final BambooBuildAdapterIdea buildDetailsInfo,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
@@ -277,7 +271,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
-	public void openBuild(@NotNull final String buildKey, int buildNumber, @NotNull final String serverUrl,
+	public void openBuildAndRunTest(@NotNull final String buildKey, int buildNumber, @NotNull final String serverUrl,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 
 		final Collection<ServerData> servers = new ArrayList<ServerData>(projectCfgManager.getAllBambooServerss());
@@ -285,13 +279,14 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		ServerData server = CfgUtil.findServer(serverUrl, servers);
 
 		if (server != null && server instanceof BambooServerData) {
-			openBuild(buildKey, buildNumber, (BambooServerData) server, testPackage, testClass, testName);
+			openBuildAndRunTest(buildKey, buildNumber, (BambooServerData) server, testPackage, testClass, testName);
 		} else {
 			Messages.showInfoMessage(project, "Server " + serverUrl + " not found in configuration.", PluginUtil.PRODUCT_NAME);
 		}
 	}
 
-	private void openBuild(@NotNull final String buildKey, final int buildNumber, @NotNull final BambooServerData server,
+	private void openBuildAndRunTest(@NotNull final String buildKey, final int buildNumber,
+			@NotNull final BambooServerData server,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
 		BambooBuildAdapterIdea build = getBuildFromModel(buildKey, buildNumber, server);

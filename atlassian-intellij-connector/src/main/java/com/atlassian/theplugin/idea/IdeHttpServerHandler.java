@@ -178,7 +178,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 							if (panel != null) {
 								bringIdeaToFront(project);
 								if (isDefined(testPackage) && isDefined(testClass) && isDefined(testMethod)) {
-									panel.openBuild(buildKey, buildNumberIntFinal, serverUrl, testPackage, testClass,
+									panel.openBuildAndRunTest(buildKey, buildNumberIntFinal, serverUrl, testPackage, testClass,
 											testMethod);
 								} else if (!isDefined(testPackage) && !isDefined(testClass) && !isDefined(testMethod)) {
 									panel.openBuild(buildKey, buildNumberIntFinal, serverUrl);
