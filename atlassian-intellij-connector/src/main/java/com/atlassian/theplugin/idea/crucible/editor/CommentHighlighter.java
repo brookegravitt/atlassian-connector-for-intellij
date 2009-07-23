@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigationAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
@@ -48,6 +49,7 @@ import java.util.Set;
 public final class CommentHighlighter {
 	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
+    public static final Color VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR = new Color(199, 200, 200);
 
 	// key injected into document when diff view is opened
 	private static final String CRUCIBLE_DATA_KEY_NAME = "CRUCIBLE_DATA_KEY";
@@ -109,7 +111,10 @@ public final class CommentHighlighter {
 							public void documentChanged(final DocumentEvent event) {
 								ApplicationManager.getApplication().invokeLater(new Runnable() {
 									public void run() {
-										removeHighlighters(editor.getDocument().getMarkupModel(project));
+                                        Document doc = editor.getDocument();
+			                            VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(doc);
+                                        virtualFile.refresh(true, true);
+                                        applyHighlighters(project, editor, review, reviewItem);
 									}
 								});
 							}
@@ -235,7 +240,13 @@ public final class CommentHighlighter {
 		removeHighlighters(markupModel);
 
 		TextAttributes textAttributes = new TextAttributes();
-		textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+        VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
+        if (!VcsIdeaHelper.isFileDirty(project, virtualFile)) {
+		    textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+        } else {
+            textAttributes.setBackgroundColor(VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR);
+        }
+        
 		for (VersionedComment comment : fileInfo.getVersionedComments()) {
 			int start = 0;
 			int stop = 0;
@@ -261,6 +272,9 @@ public final class CommentHighlighter {
 					if (startOffset < endOffset) {
 						endOffset--;
 					}
+                    if (editor.getDocument().getModificationStamp() > 0) {
+                        int i=1;
+                    }
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
 							HighlighterLayer.SELECTION - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
 //					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
