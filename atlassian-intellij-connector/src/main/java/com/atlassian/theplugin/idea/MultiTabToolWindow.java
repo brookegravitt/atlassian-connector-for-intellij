@@ -44,8 +44,8 @@ public abstract class MultiTabToolWindow {
 		this.singleTabMode = singleTabMode;
 	}
 
-	protected ToolWindow showToolWindow(final Project project, ContentParameters params,
-			final String title, final Icon icon, final Icon tabIcon, final ToolWindowHandler toolWindowHandler) {
+	protected ToolWindow showToolWindow(final Project project, ContentParameters params, final String title,
+			final Icon icon, final Icon tabIcon, final ToolWindowHandler toolWindowHandler) {
 		String contentKey = getContentKey(params);
 		final ToolWindowManager twm = ToolWindowManager.getInstance(project);
 		ToolWindow itw = twm.getToolWindow(title);

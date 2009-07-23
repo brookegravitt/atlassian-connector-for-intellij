@@ -16,7 +16,6 @@ import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
@@ -200,12 +199,13 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		private final BuildContentParameters params;
 
 		private Timer timer;
+		private CommitDetailsPanel cdp;
 
 		public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
 			this.params = params;
 
 			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
-			final CommitDetailsPanel cdp = new CommitDetailsPanel(project, params.build);
+			cdp = new CommitDetailsPanel(project, params.build);
 			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
 			final BuildLogPanel blp = new BuildLogPanel(project, params.build);
 			timer = new Timer(ONE_MINUTE, new ActionListener() {
@@ -239,37 +239,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			timer.setInitialDelay(ONE_MINUTE);
 			timer.start();
 
-			final BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
-
-			ProgressManager.getInstance().run(new Task.Backgroundable(project, "Retrieving Build Details", false) {
-				@Override
-				public void run(@NotNull final ProgressIndicator indicator) {
-
-					BambooBuildAdapterIdea build = params.build;
-
-					try {
-						final BuildDetails details = bambooFacade.getBuildDetails(
-								build.getServer(), build.getPlanKey(), build.getNumber());
-
-						SwingUtilities.invokeLater(new Runnable() {
-							public void run() {
-								cdp.fillContent(details.getCommitInfo());
-								tdp.fillContent(details);
-								if (handler != null) {
-									handler.dataLoaded();
-								}
-							}
-						});
-					} catch (ServerPasswordNotProvidedException e) {
-						cdp.showError(e);
-						tdp.showError(e);
-					} catch (RemoteApiException e) {
-						cdp.showError(e);
-						tdp.showError(e);
-					}
-				}
-			});
-
+			new BuildDetailsFetcher(handler).queue();
 		}
 
 		public TestDetailsPanel getTestDetailsPanel() {
@@ -347,6 +317,45 @@ public class BuildToolWindow extends MultiTabToolWindow {
 				summary.setText(txt);
 			}
 
+		}
+
+		private class BuildDetailsFetcher extends Task.Backgroundable {
+			private ToolWindowHandler handler;
+
+			public BuildDetailsFetcher(final ToolWindowHandler handler) {
+				super(project, "Retrieving Build Details", false);
+				this.handler = handler;
+			}
+
+			public void run(final ProgressIndicator indicator) {
+
+				indicator.setIndeterminate(true);
+
+				BambooBuildAdapterIdea build = params.build;
+
+				final BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+
+				try {
+					final BuildDetails details = bambooFacade.getBuildDetails(
+							build.getServer(), build.getPlanKey(), build.getNumber());
+
+					SwingUtilities.invokeLater(new Runnable() {
+						public void run() {
+							cdp.fillContent(details.getCommitInfo());
+							tdp.fillContent(details);
+							if (handler != null) {
+								handler.dataLoaded();
+							}
+						}
+					});
+				} catch (ServerPasswordNotProvidedException e) {
+					cdp.showError(e);
+					tdp.showError(e);
+				} catch (RemoteApiException e) {
+					cdp.showError(e);
+					tdp.showError(e);
+				}
+			}
 		}
 	}
 }
