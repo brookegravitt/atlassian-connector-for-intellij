@@ -128,6 +128,8 @@ public class BambooPlansForm extends JPanel {
 		serverPlans.remove(bambooServerCfg.getServerId());
 		serverPanel.saveData();
 		bambooServerCfg.setIsBamboo2(bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
+		bambooServerCfg.setIsBamboo2M9(bambooServerFacade.isBamboo2M9(
+				new BambooServerData(bambooServerCfg, defaultCredentials)));
 		retrievePlans(bambooServerCfg);
 	}
 
@@ -225,6 +227,9 @@ public class BambooPlansForm extends JPanel {
 
 				bambooServerCfg.setIsBamboo2(
 						bambooServerFacade.isBamboo2(new BambooServerData(bambooServerCfg, defaultCredentials)));
+
+				bambooServerCfg.setIsBamboo2M9(
+						bambooServerFacade.isBamboo2M9(new BambooServerData(bambooServerCfg, defaultCredentials)));
 
 				StringBuilder msg = new StringBuilder();
 				try {
@@ -354,7 +359,7 @@ public class BambooPlansForm extends JPanel {
 			return;
 		}
 		// move data only when we have fetched the data - otherwise we could overwrite user data due to e.g. network problems
-		if (serverPlans.containsKey(bambooServerCfg.getServerId()) == true) {
+		if (serverPlans.containsKey(bambooServerCfg.getServerId())) {
 			bambooServerCfg.clearSubscribedPlans();
 			for (int i = 0; i < model.getSize(); ++i) {
 				if (model.getElementAt(i) instanceof BambooPlanItem) {
