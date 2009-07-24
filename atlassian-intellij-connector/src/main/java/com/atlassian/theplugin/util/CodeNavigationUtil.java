@@ -50,21 +50,24 @@ public final class CodeNavigationUtil {
 
 		int difference = 0;
 
-		for (PsiFile psiFile : psifiles) {
-			// we use hard-coded '/' as separator in order to make string comparison platform independent
-			String absolutePath = psiFile.getVirtualFile().getUrl();
-			if (absolutePath == null) {
-				continue;
-			}
+		if (psifiles != null) {
 
-			int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
-					, StringUtils.reverse(absolutePath));
-			if (diff >= FilenameUtils.getName(absolutePath).length()
-					&& (diff > difference || absolutePath.equals(pathname))) {
-				difference = diff;
-				bestMatch = psiFile;
-				if (absolutePath.equals(pathname)) {
-					break;
+			for (PsiFile psiFile : psifiles) {
+				// we use hard-coded '/' as separator in order to make string comparison platform independent
+				String absolutePath = psiFile.getVirtualFile().getUrl();
+				if (absolutePath == null) {
+					continue;
+				}
+
+				int diff = StringUtils.indexOfDifference(StringUtils.reverse(pathname)
+						, StringUtils.reverse(absolutePath));
+				if (diff >= FilenameUtils.getName(absolutePath).length()
+						&& (diff > difference || absolutePath.equals(pathname))) {
+					difference = diff;
+					bestMatch = psiFile;
+					if (absolutePath.equals(pathname)) {
+						break;
+					}
 				}
 			}
 		}
