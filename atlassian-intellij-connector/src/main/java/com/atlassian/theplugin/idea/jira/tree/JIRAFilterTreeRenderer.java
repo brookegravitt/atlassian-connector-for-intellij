@@ -81,7 +81,6 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
         if (entries.size() == 0) {
 
             sb.append("No Custom Filter Defined");
-            sb.append(TOOLTIP_FOOTER_HTML);
         } else {
 
             sb.append("<html><table>");
