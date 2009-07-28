@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.action;
+package com.atlassian.theplugin.idea.action.ManualFilter;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -37,7 +37,7 @@ import java.util.List;
  * User: pmaruszak
  * Date: Jul 16, 2009
  */
-public class EditManualFilterAction extends AnAction {
+public class EditAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
