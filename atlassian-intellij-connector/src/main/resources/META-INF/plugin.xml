@@ -1042,7 +1042,8 @@
         <action id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"
                 class="com.atlassian.theplugin.idea.action.ManualFilter.ViewInBrowserAction"
                 text="View In Browser"
-                description="Opens Manual Filter In Browser">
+                icon="/icons/crucible/pin_viewinbrowser.png"
+                description="View In Browser">
          </action>
 
         <group id="ThePlugin.JiraIssues.ManualFilterPopupGroup" popup="true">
