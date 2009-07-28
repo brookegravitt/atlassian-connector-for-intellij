@@ -1036,7 +1036,7 @@
         <!-- Manual Filter popup menu -->
         <action id="ThePlugin.JiraIssues.ManualFilter.Edit"
                 class="com.atlassian.theplugin.idea.action.ManualFilter.EditAction"
-                text="Edit Manual Filter"
+                text="Edit"
                 icon="/actions/editSource.png"
                 description="Change manual filter details">
          </action>
