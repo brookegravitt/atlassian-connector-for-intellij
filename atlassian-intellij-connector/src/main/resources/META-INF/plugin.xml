@@ -1034,13 +1034,20 @@
 
 
         <!-- Manual Filter popup menu -->
-        <action id="ThePlugin.JiraIssues.EditManualFilter"
-                class="com.atlassian.theplugin.idea.action.EditManualFilterAction"
+        <action id="ThePlugin.JiraIssues.ManualFilter.Edit"
+                class="com.atlassian.theplugin.idea.action.ManualFilter.EditAction"
                 text="Edit Manual Filter"
                 description="Change manual filter details">
          </action>
+        <action id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"
+                class="com.atlassian.theplugin.idea.action.ManualFilter.ViewInBrowserAction"
+                text="View In Browser"
+                description="Opens Manual Filter In Browser">
+         </action>
+
         <group id="ThePlugin.JiraIssues.ManualFilterPopupGroup" popup="true">
-			<reference id="ThePlugin.JiraIssues.EditManualFilter"/>
+			<reference id="ThePlugin.JiraIssues.ManualFilter.Edit"/>
+            <reference id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"/>
 		</group>
 
 		<!-- JIRA tool window panel related actions -->
