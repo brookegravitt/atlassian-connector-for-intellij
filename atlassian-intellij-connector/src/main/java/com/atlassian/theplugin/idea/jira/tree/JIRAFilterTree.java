@@ -8,7 +8,6 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.sun.istack.internal.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.TreeSelectionEvent;
