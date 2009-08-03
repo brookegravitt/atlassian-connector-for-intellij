@@ -9,6 +9,7 @@ import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
