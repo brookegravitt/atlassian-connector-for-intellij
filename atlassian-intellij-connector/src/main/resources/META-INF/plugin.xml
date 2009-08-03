@@ -500,7 +500,8 @@
 
         <action id="ThePlugin.Crucible.Edit.ManualFilter"
                 class="com.atlassian.theplugin.idea.action.crucible.EditManualFilterAction"
-                text="Edit Manual Filter"
+                text="Edit"
+                icon="/actions/editSource.png"
                 description="Change manual filter details">
          </action>
          <group id="ThePlugin.Crucible.ManualFilterPopupGroup" popup="true">

@@ -39,6 +39,9 @@ public final class JIRAManualFilter {
 
 	}
 
+    public boolean isEmpty() {
+        return queryFragment == null || queryFragment.size() <= 0;
+    }
 	private List<JIRAQueryFragment> queryFragment;
 
 	private String name;

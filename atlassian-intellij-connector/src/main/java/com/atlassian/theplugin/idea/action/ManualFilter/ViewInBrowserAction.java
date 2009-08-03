@@ -13,6 +13,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * @author pmaruszak
  */
 public class ViewInBrowserAction extends AnAction {
+    @Override
+    public void update(AnActionEvent event) {
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
+        JIRAManualFilter manualFilter = panel != null ? panel.getSelectedManualFilter() : null;
+
+        boolean enabled =  (panel != null && manualFilter != null && !manualFilter.isEmpty());
+        event.getPresentation().setEnabled(enabled);
+
+    }
+
     public void actionPerformed(AnActionEvent event) {
           final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
