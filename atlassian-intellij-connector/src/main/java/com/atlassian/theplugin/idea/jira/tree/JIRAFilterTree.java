@@ -73,7 +73,7 @@ public class JIRAFilterTree extends AbstractTree {
     public DefaultMutableTreeNode getSelectedNode() {
         TreePath selectionPath = getSelectionModel().getSelectionPath();
 		if (selectionPath != null) {
-            return (DefaultMutableTreeNode)selectionPath.getLastPathComponent();
+            return (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
         }
 
         return null;
