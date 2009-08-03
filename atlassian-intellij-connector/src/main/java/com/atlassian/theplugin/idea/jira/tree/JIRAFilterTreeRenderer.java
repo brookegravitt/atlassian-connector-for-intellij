@@ -38,6 +38,12 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
             setToolTipText(createManualFilterToolTipText(filterTreeNode.getManualFilter(),
                     filterTreeNode.getJiraServerCfg()));
             ((JLabel) c).setIcon(JIRA_MANUAL_FILTER_ICON);
+
+            JIRAManualFilter filter = ((JIRAManualFilterTreeNode) value).getManualFilter();
+            if (filter != null && filter.isEmpty()) {
+                JLabel label = ((JLabel) c);
+                label.setText(label.getText() + " (not defined)");               
+            }
             return c;
             //return ((JIRAManualFilterTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
         }

@@ -1,4 +1,4 @@
-package com.atlassian.theplugin.idea.action.ManualFilter;
+package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 
 import com.atlassian.theplugin.commons.jira.api.JiraQueryUrl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;

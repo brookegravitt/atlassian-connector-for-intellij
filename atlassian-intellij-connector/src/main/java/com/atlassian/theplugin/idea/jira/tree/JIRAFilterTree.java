@@ -8,6 +8,7 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
 import com.atlassian.theplugin.jira.model.*;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.sun.istack.internal.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.TreeSelectionEvent;
@@ -68,30 +69,37 @@ public class JIRAFilterTree extends AbstractTree {
 		return null;
 	}
 
+    @Nullable
+    public DefaultMutableTreeNode getSelectedNode() {
+        TreePath selectionPath = getSelectionModel().getSelectionPath();
+		if (selectionPath != null) {
+            return (DefaultMutableTreeNode)selectionPath.getLastPathComponent();
+        }
+
+        return null;
+    }
+    
 	public JIRAManualFilter getSelectedManualFilter() {
-		TreePath selectionPath = getSelectionModel().getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRAManualFilterTreeNode) {
-			return ((JIRAManualFilterTreeNode) selectionPath.getLastPathComponent()).getManualFilter();
+		DefaultMutableTreeNode selectedNode = getSelectedNode();
+		if (selectedNode instanceof JIRAManualFilterTreeNode) {
+			return ((JIRAManualFilterTreeNode) selectedNode).getManualFilter();
 		}
 		return null;
 	}
 
 	public JIRASavedFilter getSelectedSavedFilter() {
-		TreePath selectionPath = getSelectionModel().getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JIRASavedFilterTreeNode) {
-			return ((JIRASavedFilterTreeNode) selectionPath.getLastPathComponent()).getSavedFilter();
+		DefaultMutableTreeNode selectedNode = getSelectedNode();
+		if (selectedNode != null && selectedNode instanceof JIRASavedFilterTreeNode) {
+			return ((JIRASavedFilterTreeNode) selectedNode).getSavedFilter();
 		}
 		return null;
 	}
 
 	public boolean isRecentlyOpenSelected() {
-		TreePath selectionPath = getSelectionModel().getSelectionPath();
-		if (selectionPath != null && selectionPath.getLastPathComponent() instanceof JiraRecentlyOpenTreeNode) {
-			return true;
-		}
+		DefaultMutableTreeNode selectedNode = getSelectedNode();
+        return selectedNode != null && selectedNode instanceof JiraRecentlyOpenTreeNode;
 
-		return false;
-	}
+    }
 
 	private void reCreateTree(final JIRAFilterListModel aListModel, final boolean fireSelectionChange) {
 		// off selection listener
