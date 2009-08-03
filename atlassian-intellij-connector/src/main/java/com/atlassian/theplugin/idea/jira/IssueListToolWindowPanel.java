@@ -79,7 +79,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 	private RecentlyOpenIssuesCache recentlyOpenIssuesCache;
 	private JIRAFilterListBuilder jiraFilterListModelBuilder;
 	private JiraIssueGroupBy groupBy;
-	@NotNull
+
+    @NotNull
 	private JIRAFilterTree jiraFilterTree;
 
 	private JIRAServerFacade jiraServerFacade;
@@ -251,6 +252,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 			}
 		});
 	}
+
+    @NotNull
+    public JIRAFilterTree getJiraFilterTree() {
+        return jiraFilterTree;
+    }
 
 	@Override
 	protected void addSearchBoxListener() {

@@ -1036,13 +1036,13 @@
 
         <!-- Manual Filter popup menu -->
         <action id="ThePlugin.JiraIssues.ManualFilter.Edit"
-                class="com.atlassian.theplugin.idea.action.ManualFilter.EditAction"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
                 text="Edit"
                 icon="/actions/editSource.png"
                 description="Change manual filter details">
          </action>
         <action id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"
-                class="com.atlassian.theplugin.idea.action.ManualFilter.ViewInBrowserAction"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.ViewInBrowserAction"
                 text="View In Browser"
                 icon="/icons/crucible/pin_viewinbrowser.png"
                 description="View In Browser">

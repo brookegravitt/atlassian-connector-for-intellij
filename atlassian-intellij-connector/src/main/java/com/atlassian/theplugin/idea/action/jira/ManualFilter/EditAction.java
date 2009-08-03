@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.atlassian.theplugin.idea.action.ManualFilter;
+package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
@@ -29,6 +29,7 @@ import com.atlassian.theplugin.jira.model.JIRAManualFilter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
+import javax.swing.tree.DefaultTreeModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,9 @@ public class EditAction extends AnAction {
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
                     }
 					jiraFilterListModel.fireManualFilterChanged(manualFilter, jiraServer);
+                    ((DefaultTreeModel)panel.getJiraFilterTree().getModel())
+                            .nodeStructureChanged(panel.getJiraFilterTree().getSelectedNode());
+
 				}
 
 			}
