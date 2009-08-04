@@ -22,6 +22,7 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.util.IconLoader;
 import org.joda.time.DateTime;
 
 /**
@@ -56,9 +57,11 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 		if (isSelectedIssueActive(event, selectedIssue)) {
 			event.getPresentation().setEnabled(true);
 			event.getPresentation().setText("Stop Work");
+            event.getPresentation().setIcon(IconLoader.getIcon("/icons/ico_inactiveissue.png"));
 		} else if (selectedIssue != null) {
 			event.getPresentation().setEnabled(true);
 			event.getPresentation().setText("Start Work");
+            event.getPresentation().setIcon(IconLoader.getIcon("/icons/ico_activateissue.png"));
 		} else {
 			event.getPresentation().setEnabled(false);
 		}

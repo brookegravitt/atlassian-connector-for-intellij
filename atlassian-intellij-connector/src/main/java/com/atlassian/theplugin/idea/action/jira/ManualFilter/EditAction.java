@@ -80,7 +80,7 @@ public class EditAction extends AnAction {
 									serializeFilter(jiraIssuesFilterPanel.getFilter()));
                     }
 					jiraFilterListModel.fireManualFilterChanged(manualFilter, jiraServer);
-                    ((DefaultTreeModel)panel.getJiraFilterTree().getModel())
+                    ((DefaultTreeModel) panel.getJiraFilterTree().getModel())
                             .nodeStructureChanged(panel.getJiraFilterTree().getSelectedNode());
 
 				}

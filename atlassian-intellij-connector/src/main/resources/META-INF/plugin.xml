@@ -562,24 +562,24 @@
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Start/Stop Work"
-				icon="/icons/pin_assignandstart.png">
+				icon="/icons/ico_activateissue.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActivateJiraIssueAction"
 				text="Start/Stop Work"
-				icon="/icons/pin_assignandstart.png">
+				icon="/icons/ico_activateissue.png">
 		</action>
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssueAction"
 				text="Stop Work"
-				icon="/actions/pause.png">
+				icon="/icons/ico_inactiveissue.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.DeactivateJiraIssuePopupAction"
 				text="Stop Work"
-				icon="/actions/pause.png">
+				icon="/actions/ico_inactiveissue.png">
 		</action>
 
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
