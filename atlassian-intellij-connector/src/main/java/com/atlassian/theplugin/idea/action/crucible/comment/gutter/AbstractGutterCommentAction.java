@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.crucible.comment.gutter;
 
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.intellij.openapi.actionSystem.AnAction;
 

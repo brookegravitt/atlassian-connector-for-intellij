@@ -16,14 +16,14 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.intellij.openapi.project.Project;
 
 public class CrucibleSetReviewersWorker implements Runnable {
-	private ReviewAdapter reviewInfo;
-	private Project project;
+	private final ReviewAdapter reviewInfo;
+	private final Project project;
 
 
 	public CrucibleSetReviewersWorker(Project project,
@@ -33,7 +33,7 @@ public class CrucibleSetReviewersWorker implements Runnable {
 	}
 
 	public void run() {
-		CrucibleServerFacade facade = CrucibleServerFacadeImpl.getInstance();
+		CrucibleServerFacade facade = IntelliJCrucibleServerFacade.getInstance();
 		final CrucibleSetReviewersForm setReviewersForm = new CrucibleSetReviewersForm(project, facade, reviewInfo);
 		setReviewersForm.show();
 	}

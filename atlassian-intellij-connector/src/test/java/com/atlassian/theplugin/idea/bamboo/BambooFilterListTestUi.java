@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
@@ -25,12 +26,12 @@ import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
-import com.intellij.openapi.project.Project;
 import org.easymock.EasyMock;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import java.awt.*;
+import com.intellij.openapi.project.Project;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
@@ -126,11 +127,12 @@ public final class BambooFilterListTestUi {
 				.completionTime(new Date())
 				.relativeBuildDate("55 seconds ago")
 				.build();
-		return new BambooBuildAdapterIdea(buildInfo);
+		return new BambooBuildAdapterIdea(buildInfo, new BambooServerData(serverCfg, new UserCfg()));
 	}
 
-	private static BambooServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new BambooServerData(serverCfg, new UserCfg(serverCfg.getUserName(), serverCfg.getPassword()));
+	private static ConnectionCfg getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+		return new ConnectionCfg(serverCfg.getServerId().getId(), serverCfg.getUrl(), serverCfg.getUserName(), serverCfg
+				.getPassword());
 	}
 
 }

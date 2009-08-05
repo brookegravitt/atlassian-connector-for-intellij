@@ -16,17 +16,19 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import java.util.*;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.Pair;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BuildListModelImpl implements BuildListModel {
@@ -40,8 +42,8 @@ public class BuildListModelImpl implements BuildListModel {
 	private final Collection<BambooBuildAdapterIdea> allBuilds = MiscUtil.buildArrayList();
 
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
-	private Project project;
-	private ProjectCfgManager cfgManager;
+	private final Project project;
+	private final ProjectCfgManager cfgManager;
 
 	public BuildListModelImpl(Project project, ProjectCfgManagerImpl cfgManager) {
 		this.project = project;
@@ -62,13 +64,13 @@ public class BuildListModelImpl implements BuildListModel {
 		allBuilds.addAll(builds);
 	}
 
-	public void update(Collection<BambooBuild> builds, final Collection<Exception> generalExceptions) {
+	public void update(Collection<BambooBuildAdapterIdea> builds, final Collection<Exception> generalExceptions) {
 
 		boolean haveErrors = false;
 		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
 		Date lastPollingTime = null;
 		final Collection<Pair<String, Throwable>> errors = MiscUtil.buildArrayList();
-		for (BambooBuild build : builds) {
+		for (BambooBuildAdapterIdea build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN && build.getErrorMessage() != null) {
 					errors.add(new Pair<String, Throwable>(build.getPlanKey() + ": " + build.getErrorMessage(),
@@ -79,11 +81,10 @@ public class BuildListModelImpl implements BuildListModel {
 			if (build.getPollingTime() != null) {
 				lastPollingTime = build.getPollingTime();
 			}
-			final BambooBuildAdapterIdea buildAdapterIdea = new BambooBuildAdapterIdea(build);
 			if (cfgManager != null && project != null) {
-				cfgManager.addProjectConfigurationListener(buildAdapterIdea);
+				cfgManager.addProjectConfigurationListener(build);
 			}
-			buildAdapters.add(buildAdapterIdea);
+			buildAdapters.add(build);
 		}
 		allBuilds.clear();
 		allBuilds.addAll(buildAdapters);

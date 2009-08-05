@@ -15,17 +15,31 @@
  */
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.Repository;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
+import com.atlassian.theplugin.commons.crucible.api.model.SvnRepository;
+import com.atlassian.theplugin.commons.crucible.api.model.User;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +83,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 		return null;
 	}
 
-	public void getDetailsForReview(final ReviewAdapter reviewItem)
+	public void fillDetailsForReview(final ReviewAdapter reviewItem)
 			throws RemoteApiException, ServerPasswordNotProvidedException {
 	}
 
@@ -261,7 +275,7 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	public void setCallback(final HttpSessionCallback callback) {
 	}
 
-	public void testServerConnection(final ServerData serverCfg) throws RemoteApiException {
+	public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
 	}
 
 	public ServerType getServerType() {

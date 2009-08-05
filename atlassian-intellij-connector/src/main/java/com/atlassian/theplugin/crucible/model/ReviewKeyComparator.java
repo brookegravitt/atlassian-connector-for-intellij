@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 
 import java.util.Comparator;
 

@@ -16,11 +16,11 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.intellij.openapi.project.Project;
@@ -52,12 +52,10 @@ public class CrucibleWebContentProvider extends IdeaReviewFileContentProvider {
                     contentUrl = contentUrl.substring(contentTokens[0].length(), contentUrl.length());
                 }
             }
-            byte[] content = CrucibleServerFacadeImpl.getInstance()
-                    .getFileContent(review.getServerData(), contentUrl);
+            byte[] content = IntelliJCrucibleServerFacade.getInstance().getFileContent(review.getServerData(), contentUrl);
 
             VirtualFile file = new VcsVirtualFile(versionedVirtualFile.getUrl(), content,
-                    versionedVirtualFile.getRevision(),
-                    virtualFile.getFileSystem());
+                    versionedVirtualFile.getRevision(), virtualFile.getFileSystem());
 
             return new IdeaReviewFileContent(file, content);
         } catch (RemoteApiException e) {

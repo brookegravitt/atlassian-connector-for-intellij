@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
@@ -42,7 +42,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		ConfigurationFactory.setConfiguration(new IdeaPluginConfigurationBean());
 
 		bambooPluginConfigurationForm = new BambooServerConfigForm(null, new UserCfg(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()));
+				IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()));
 	}
 
 	public void testBambooSetGetData() throws Exception {

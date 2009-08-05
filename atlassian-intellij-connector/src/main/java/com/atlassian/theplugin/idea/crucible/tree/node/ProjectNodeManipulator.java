@@ -15,8 +15,8 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree.node;
 
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;

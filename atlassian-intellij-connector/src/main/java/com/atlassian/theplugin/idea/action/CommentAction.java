@@ -16,6 +16,7 @@
 
 package com.atlassian.theplugin.idea.action;
 
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;

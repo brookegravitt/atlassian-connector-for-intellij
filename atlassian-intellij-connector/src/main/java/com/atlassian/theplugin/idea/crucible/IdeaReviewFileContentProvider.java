@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentProvider;
+import com.atlassian.connector.intellij.crucible.content.ReviewFileContentProvider;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.intellij.openapi.project.Project;

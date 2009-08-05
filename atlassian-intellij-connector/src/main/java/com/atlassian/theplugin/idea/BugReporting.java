@@ -16,11 +16,10 @@
 
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.util.UrlUtil;
-import com.atlassian.theplugin.util.PluginUtil;
-
 import java.util.HashMap;
 import java.util.Map;
+import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.util.PluginUtil;
 
 public final class BugReporting {
 
@@ -62,7 +61,7 @@ public final class BugReporting {
 		versionMap.put("2.0.0-beta-7", "10680");
 		versionMap.put("2.0.0-beta-8", "10770");
 		versionMap.put("2.0.0-beta-9", "10781");
-		versionMap.put("2.0.0-beta-10", "10782");
+		versionMap.put("2.0.0-beta-10", "10782-lni");
 		versionMap.put("2.0.0-beta-11", "10810");		
 		versionMap.put("2.0.0-beta-12", "10850");
 		versionMap.put("2.0.0", "10661");

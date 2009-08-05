@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
+import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.bamboo.BambooPopupInfo;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusDisplay;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.idea.PluginToolWindow;
 import com.atlassian.theplugin.idea.StatusBarPluginIcon;

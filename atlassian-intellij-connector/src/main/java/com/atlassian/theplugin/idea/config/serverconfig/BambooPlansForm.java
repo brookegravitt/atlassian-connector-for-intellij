@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;

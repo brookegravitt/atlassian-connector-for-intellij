@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;

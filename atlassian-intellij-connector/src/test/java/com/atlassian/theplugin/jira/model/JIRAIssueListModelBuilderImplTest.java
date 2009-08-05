@@ -15,19 +15,33 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.api.JIRAAction;
+import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
+import com.atlassian.theplugin.commons.jira.api.JIRAComment;
+import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAProject;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.api.*;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import junit.framework.TestCase;
 
 public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
@@ -75,10 +89,12 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
 	private ServerData createServerData() {
 		return new ServerData(new ServerCfg(true, "test", "", new ServerIdImpl()) {
+			@Override
 			public ServerType getServerType() {
 				return null;
 			}
 
+			@Override
 			public ServerCfg getClone() {
 				return null;
 			}
@@ -159,7 +175,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 	private class JIRATestServerFacade implements JIRAServerFacade {
 
 		private int idx;
-		private JIRAIssueBean proto = new JIRAIssueBean();
+		private final JIRAIssueBean proto = new JIRAIssueBean();
 
 		private List<JIRAIssue> createIssueList(int size) {
 			List<JIRAIssue> list = new ArrayList<JIRAIssue>();
@@ -172,10 +188,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			return list;
 		}
 
-		public void testServerConnection(String url, String userName, String password) throws RemoteApiException {
-		}
-
-		public void testServerConnection(final ServerData serverCfg) throws RemoteApiException {
+		public void testServerConnection(final ConnectionCfg serverCfg) throws RemoteApiException {
 		}
 
 		public ServerType getServerType() {

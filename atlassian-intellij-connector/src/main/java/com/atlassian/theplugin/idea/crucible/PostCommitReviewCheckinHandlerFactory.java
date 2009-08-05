@@ -1,32 +1,34 @@
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.configuration.CrucibleConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.GridBagLayoutConstraints;
 import com.atlassian.theplugin.idea.NullCheckinHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.vcs.CheckinProjectPanel;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.CommitExecutor;
 import com.intellij.openapi.vcs.checkin.CheckinHandler;
 import com.intellij.openapi.vcs.checkin.CheckinHandlerFactory;
 import com.intellij.openapi.vcs.ui.RefreshableOnComponent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory {
-	private CrucibleWorkspaceConfiguration config;
+	private final CrucibleWorkspaceConfiguration config;
 	private final ProjectCfgManagerImpl projectCfgManager;
-	private CrucibleConfigurationBean cruciblePluginConfig;
+	private final CrucibleConfigurationBean cruciblePluginConfig;
 
 	public PostCommitReviewCheckinHandlerFactory(@NotNull final WorkspaceConfigurationBean projectConfiguration,
 			@NotNull ProjectCfgManagerImpl cfgManager,
@@ -36,6 +38,7 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		cruciblePluginConfig = pluginCfg.getCrucibleConfigurationData();
 	}
 
+	@Override
 	@NotNull
 	public CheckinHandler createHandler(CheckinProjectPanel checkinProjectPanel) {
         // PL-1604 - the only way to detect that we are in the "Commit" dialog and not in the
@@ -47,10 +50,10 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 	}
 
 	private class Handler extends CheckinHandler {
-		private CheckinProjectPanel checkinProjectPanel;
-		private JCheckBox cbCreateReview = new JCheckBox("Create Crucible review");
+		private final CheckinProjectPanel checkinProjectPanel;
+		private final JCheckBox cbCreateReview = new JCheckBox("Create Crucible review");
 
-		private RefreshableOnComponent afterCheckinConfig = new AfterCheckinConfiguration();
+		private final RefreshableOnComponent afterCheckinConfig = new AfterCheckinConfiguration();
 		private CrucibleCreatePostCommitReviewDelayedForm form;
 
 		public Handler(CheckinProjectPanel checkinProjectPanel) {
@@ -75,10 +78,10 @@ public class PostCommitReviewCheckinHandlerFactory extends CheckinHandlerFactory
 		@Override
 		public ReturnResult beforeCheckin(@Nullable CommitExecutor commitExecutor) {
 			if (cbCreateReview.isSelected()) {
-				form = new CrucibleCreatePostCommitReviewDelayedForm(
-						checkinProjectPanel.getProject(), CrucibleServerFacadeImpl.getInstance(),
-						projectCfgManager, cruciblePluginConfig, checkinProjectPanel.getCommitMessage(),
-						checkinProjectPanel.getVirtualFiles());
+				form =
+						new CrucibleCreatePostCommitReviewDelayedForm(checkinProjectPanel.getProject(),
+								IntelliJCrucibleServerFacade.getInstance(), projectCfgManager, cruciblePluginConfig,
+								checkinProjectPanel.getCommitMessage(), checkinProjectPanel.getVirtualFiles());
 				form.show();
 			}
 			return ReturnResult.COMMIT;

@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.tree;
 
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListener;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
 import com.atlassian.theplugin.crucible.model.UpdateContext;

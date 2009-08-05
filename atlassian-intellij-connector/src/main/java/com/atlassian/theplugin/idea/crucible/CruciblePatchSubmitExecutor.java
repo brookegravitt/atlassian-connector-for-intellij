@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.changes.CommitExecutor;

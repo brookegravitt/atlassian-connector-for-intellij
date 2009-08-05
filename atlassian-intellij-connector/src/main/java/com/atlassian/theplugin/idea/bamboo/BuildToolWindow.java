@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -13,19 +13,30 @@ import com.atlassian.theplugin.idea.bamboo.build.BuildLogPanel;
 import com.atlassian.theplugin.idea.bamboo.build.CommitDetailsPanel;
 import com.atlassian.theplugin.idea.bamboo.build.TestDetailsPanel;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.ide.BrowserUtil;
-import com.intellij.openapi.actionSystem.*;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import com.intellij.ide.BrowserUtil;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.*;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -37,7 +48,7 @@ import java.awt.event.ActionListener;
 public class BuildToolWindow extends MultiTabToolWindow {
 
 	private final Project project;
-	private PluginConfiguration pluginConfiguration;
+	private final PluginConfiguration pluginConfiguration;
 	private static final String TOOL_WINDOW_TITLE = "Builds - Bamboo";
 
 	public BuildToolWindow(@NotNull final Project project, @NotNull final PluginConfiguration pluginConfiguration) {
@@ -193,13 +204,13 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private static final int ONE_MINUTE = 60000;
 
-		private TestDetailsPanel tdp;
+		private final TestDetailsPanel tdp;
 
-		private JTabbedPane tabs = new JTabbedPane();
+		private final JTabbedPane tabs = new JTabbedPane();
 		private final BuildContentParameters params;
 
-		private Timer timer;
-		private CommitDetailsPanel cdp;
+		private final Timer timer;
+		private final CommitDetailsPanel cdp;
 
 		public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
 			this.params = params;
@@ -263,7 +274,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private class SummaryPanel extends JPanel {
 
-			private JEditorPane summary;
+			private final JEditorPane summary;
 
 			public SummaryPanel() {
 				setLayout(new GridBagLayout());
@@ -320,20 +331,21 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		}
 
 		private class BuildDetailsFetcher extends Task.Backgroundable {
-			private ToolWindowHandler handler;
+			private final ToolWindowHandler handler;
 
 			public BuildDetailsFetcher(final ToolWindowHandler handler) {
 				super(project, "Retrieving Build Details", false);
 				this.handler = handler;
 			}
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 
 				indicator.setIndeterminate(true);
 
 				BambooBuildAdapterIdea build = params.build;
 
-				final BambooServerFacade bambooFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+				final BambooServerFacade bambooFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 
 				try {
 					final BuildDetails details = bambooFacade.getBuildDetails(

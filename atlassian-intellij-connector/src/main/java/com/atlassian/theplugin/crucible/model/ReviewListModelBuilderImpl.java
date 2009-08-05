@@ -1,15 +1,18 @@
 package com.atlassian.theplugin.crucible.model;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.MissingPasswordHandler;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.project.Project;
-
 import java.util.Collection;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ public class ReviewListModelBuilderImpl implements ReviewListModelBuilder {
 		this.project = project;
 		this.projectCfgManager = projectCfgManager;
 		this.crucibleProjectConfiguration = projectConfigurationBean.getCrucibleConfiguration();
-		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		this.missingPasswordHandler = new MissingPasswordHandler(crucibleServerFacade, projectCfgManager, project);
 	}
 

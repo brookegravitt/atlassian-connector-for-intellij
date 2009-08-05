@@ -16,11 +16,15 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.content.ReviewFileContentException;
 import com.atlassian.theplugin.commons.VersionedVirtualFile;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
-import com.atlassian.theplugin.commons.crucible.api.content.ReviewFileContentException;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -32,6 +36,9 @@ import com.atlassian.theplugin.idea.crucible.editor.OpenEditorDiffActionImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
@@ -51,11 +58,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.vcsUtil.VcsUtil;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
+import java.awt.EventQueue;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -245,7 +248,7 @@ public final class CrucibleHelper {
 
 		boolean contentUrlAvailable = false;
 		try {
-			contentUrlAvailable = CrucibleServerFacadeImpl.getInstance().checkContentUrlAvailable(
+			contentUrlAvailable = IntelliJCrucibleServerFacade.getInstance().checkContentUrlAvailable(
 					review.getServerData());
 		} catch (RemoteApiException e) {
 			// unable to get version

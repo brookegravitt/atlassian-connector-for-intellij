@@ -16,30 +16,42 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.FishEyeServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
+import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.config.serverconfig.action.AddServerAction;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Splitter;
 import com.intellij.openapi.util.IconLoader;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -69,11 +81,11 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		this.defaultUser = defaultUser;
 		this.serverCfgs = projectConfiguration != null ? projectConfiguration.getServers() : new ArrayList<ServerCfg>();
 		this.serverTreePanel = new ServerTreePanel(project, defaultUser);
-		final CrucibleServerFacade crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
-		final BambooServerFacade bambooServerFacade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		final CrucibleServerFacade crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
+		final BambooServerFacade bambooServerFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 		final JIRAServerFacade jiraServerFacade = JIRAServerFacadeImpl.getInstance();
 		this.isDefaultCredentialsAsked = isDefaultCredentialsAsked;
-		final FishEyeServerFacadeImpl fishEyeServerFacade = FishEyeServerFacadeImpl.getInstance();
+		final FishEyeServerFacade fishEyeServerFacade = IntelliJFishEyeServerFacade.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
 		jiraServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(jiraServerFacade));

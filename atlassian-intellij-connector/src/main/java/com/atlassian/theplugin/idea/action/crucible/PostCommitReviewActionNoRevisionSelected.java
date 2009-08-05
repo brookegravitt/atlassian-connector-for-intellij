@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.crucible;
 
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.reviews.AbstractCrucibleToolbarAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewForm;
@@ -23,8 +23,7 @@ public class PostCommitReviewActionNoRevisionSelected extends AbstractCrucibleTo
 			Messages.showErrorDialog(project, "Cannot fetch UI Task Executor", "Internal error");
 			return;
 		}
-		new CrucibleCreatePostCommitReviewForm(project, CrucibleServerFacadeImpl.getInstance(),
-				IdeaHelper.getProjectCfgManager(event),
-				uiTaskExecutor).show();
+		new CrucibleCreatePostCommitReviewForm(project, IntelliJCrucibleServerFacade.getInstance(), IdeaHelper
+				.getProjectCfgManager(event), uiTaskExecutor).show();
 	}
 }

@@ -28,7 +28,7 @@ public class ProductConnector implements Connector {
 	}
 
 	public void connect(ServerData serverData) throws RemoteApiException {
-		facade.testServerConnection(serverData);
+		facade.testServerConnection(serverData.toConnectionCfg());
 	}
 
 	public void onSuccess() {
