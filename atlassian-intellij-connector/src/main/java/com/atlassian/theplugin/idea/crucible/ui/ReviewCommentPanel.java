@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.idea.crucible.ui;
 
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.idea.ui.IconPaths;

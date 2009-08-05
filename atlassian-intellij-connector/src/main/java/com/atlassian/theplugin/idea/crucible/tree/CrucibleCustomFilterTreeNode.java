@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
@@ -14,16 +14,15 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.ui.Entry;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-
-import javax.swing.*;
+import javax.swing.JComponent;
 import java.util.Collection;
 
 /**
  * User: pmaruszak
  */
 public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
-    private ProjectCfgManager projectCfgManager;
-    private CustomFilter filter;
+    private final ProjectCfgManager projectCfgManager;
+    private final CustomFilter filter;
     private final CrucibleReviewListModel reviewListModel;
 
     private static final String NAME = "Custom Filter";
@@ -40,7 +39,8 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         int cnt = reviewListModel.getReviewCount(filter);
         String txt = NAME;
         if (cnt > -1) {
@@ -53,7 +53,8 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
         return txt;
     }
 
-    public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
+    @Override
+	public JComponent getRenderer(JComponent c, boolean selected, boolean expanded, boolean hasFocus) {
 
         final SelectableLabel selectableLabel = new SelectableLabel(selected, c.isEnabled(), c.getFont(),
                 "<html>" + toString(), ICON_HEIGHT);
@@ -107,7 +108,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 			if (fetchRemoteData) {
 				try {
 					CrucibleProject crucibleProject = server != null
-							? CrucibleServerFacadeImpl.getInstance().getProject(server, filter.getProjectKey())
+							? IntelliJCrucibleServerFacade.getInstance().getProject(server, filter.getProjectKey())
 							: null;
 					if (crucibleProject != null) {
 						projectName = crucibleProject.getName();
@@ -154,7 +155,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 		if (username.length() > 0) {
 
 			final String displayName = fetchRemoteData
-					? serverCfg != null ? CrucibleServerFacadeImpl.getInstance().getDisplayName(serverCfg, username) : null
+					? serverCfg != null ? IntelliJCrucibleServerFacade.getInstance().getDisplayName(serverCfg, username) : null
 					: username;
 			entriesToFill.add(new Entry(name, displayName != null ? displayName : username));
 		}

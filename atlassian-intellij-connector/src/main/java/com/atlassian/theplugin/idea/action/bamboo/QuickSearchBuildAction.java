@@ -1,8 +1,7 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -13,6 +12,7 @@ import com.atlassian.theplugin.idea.bamboo.SearchBuildDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -25,11 +25,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.ui.popup.ListPopup;
 import com.intellij.openapi.ui.popup.PopupStep;
 import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
-import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.util.IconLoader;
-import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
+import com.intellij.openapi.wm.WindowManager;
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +44,7 @@ public class QuickSearchBuildAction extends AnAction {
 					+ "your Bamboo server is older than version 2.3, the build may be too old.<br>"
 					+ "See the stack trace for detailed information.";
 
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		if (project == null) {
@@ -72,15 +71,15 @@ public class QuickSearchBuildAction extends AnAction {
 	}
 
 	private final class QuickSearchTask extends Task.Modal {
-		private List<BambooBuild> foundBuilds = new ArrayList<BambooBuild>();
+		private final List<BambooBuildAdapterIdea> foundBuilds = new ArrayList<BambooBuildAdapterIdea>();
 		private boolean failed = false;
-		private AnActionEvent event;
+		private final AnActionEvent event;
 		@NotNull
-		private Project project;
-		private Collection<BambooServerData> servers;
-		private String planKey;
-		private int buildNumber;
-		private BambooToolWindowPanel buildsWindow;
+		private final Project project;
+		private final Collection<BambooServerData> servers;
+		private final String planKey;
+		private final int buildNumber;
+		private final BambooToolWindowPanel buildsWindow;
 
 		private QuickSearchTask(AnActionEvent event, @NotNull Project project, Collection<BambooServerData> servers,
 				String planKey, int buildNumber, BambooToolWindowPanel buildsWindow) {
@@ -93,6 +92,7 @@ public class QuickSearchBuildAction extends AnAction {
 			this.buildsWindow = buildsWindow;
 		}
 
+		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
 
 			indicator.setFraction(0);
@@ -103,7 +103,8 @@ public class QuickSearchBuildAction extends AnAction {
 			// find serverReviews on all selected servers
 			for (BambooServerData server : servers) {
 				try {
-					BambooBuild build = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
+					BambooBuildAdapterIdea build =
+							IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger())
 							.getBuildForPlanAndNumber(server, planKey, buildNumber, server.getTimezoneOffset());
 					if (build != null) {
 						foundBuilds.add(build);
@@ -138,6 +139,7 @@ public class QuickSearchBuildAction extends AnAction {
 			problems.add(new IdeaUiMultiTaskExecutor.ErrorObject("Error getting build", e));
 		}
 
+		@Override
 		public void onSuccess() {
 			if (!failed) {
 				showPopup();
@@ -165,7 +167,7 @@ public class QuickSearchBuildAction extends AnAction {
 			if (foundBuilds.size() == 0) {
 				Messages.showInfoMessage(project, "Build not found.", PluginUtil.PRODUCT_NAME);
 			} else if (foundBuilds.size() == 1) {
-				buildsWindow.openBuild(new BambooBuildAdapterIdea(foundBuilds.iterator().next()));
+				buildsWindow.openBuild(foundBuilds.iterator().next());
 			} else if (foundBuilds.size() > 1) {
                 ListPopup popup = JBPopupFactory.getInstance().createListPopup(
                         new BuildListPopupStep("Found " + foundBuilds.size() + " builds"));
@@ -173,7 +175,7 @@ public class QuickSearchBuildAction extends AnAction {
 			}
 		}
 
-        public final class BuildListPopupStep extends BaseListPopupStep<BambooBuild> {
+		public final class BuildListPopupStep extends BaseListPopupStep<BambooBuildAdapterIdea> {
             private static final int LENGHT = 40;
 
             public BuildListPopupStep(final String title) {
@@ -182,7 +184,7 @@ public class QuickSearchBuildAction extends AnAction {
 
             @NotNull
             @Override
-            public String getTextFor(final BambooBuild value) {
+			public String getTextFor(final BambooBuildAdapterIdea value) {
                 StringBuilder text = new StringBuilder();
 
                 text.append(value.getPlanKey()).append('-').append(value.getNumber());
@@ -201,8 +203,9 @@ public class QuickSearchBuildAction extends AnAction {
             }
 
             @Override
-            public PopupStep onChosen(final BambooBuild selectedValue, final boolean finalChoice) {
-                buildsWindow.openBuild(new BambooBuildAdapterIdea(selectedValue));
+			public PopupStep<BambooBuildAdapterIdea> onChosen(final BambooBuildAdapterIdea selectedValue,
+					final boolean finalChoice) {
+				buildsWindow.openBuild(selectedValue);
                 return null;
             }
         }

@@ -15,10 +15,10 @@
  */
 package com.atlassian.theplugin.idea.action.reviews;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.PermId;
 import com.atlassian.theplugin.commons.crucible.api.model.Review;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -28,6 +28,8 @@ import com.atlassian.theplugin.idea.crucible.SearchReviewDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -42,10 +44,8 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.util.containers.HashSet;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.awt.*;
+import java.awt.Component;
+import java.awt.EventQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -61,6 +61,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 					+ "but it can also be cause by server misconfiguration.<br>"
 					+ "See the stack trace for detailed information.";
 
+	@Override
 	public void actionPerformed(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e.getDataContext());
 		if (project == null) {
@@ -94,15 +95,15 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	}
 
 	private final class QuickSearchTask extends Task.Modal {
-		private List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
+		private final List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
 		private boolean failed = false;
-		private AnActionEvent event;
+		private final AnActionEvent event;
 		@Nullable
-		private Project project;
-		private SearchReviewDialog dialog;
-		private List<ReviewAdapter> localReviews;
-		private Collection<ServerData> servers;
-		private ReviewListToolWindowPanel reviewsWindow;
+		private final Project project;
+		private final SearchReviewDialog dialog;
+		private final List<ReviewAdapter> localReviews;
+		private final Collection<ServerData> servers;
+		private final ReviewListToolWindowPanel reviewsWindow;
 
 		private QuickSearchTask(AnActionEvent event, @Nullable Project project, SearchReviewDialog dialog,
 				List<ReviewAdapter> localReviews, Collection<ServerData> servers,
@@ -116,6 +117,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			this.reviewsWindow = reviewsWindow;
 		}
 
+		@Override
 		public void run(@NotNull final ProgressIndicator indicator) {
 
 			indicator.setFraction(0);
@@ -126,7 +128,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			// find serverReviews on all selected servers
 			for (ServerData server : servers) {
 				try {
-					Review review = CrucibleServerFacadeImpl.getInstance().getReview(server,
+					Review review = IntelliJCrucibleServerFacade.getInstance().getReview(server,
 							new PermId(dialog.getSearchKey()));
 					if (review != null) {
 						serverReviews.add(new ReviewAdapter(review, server));
@@ -152,6 +154,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 			}
 		}
 
+		@Override
 		public void onSuccess() {
 			if (!failed) {
 				List<ReviewAdapter> reviews = mergeReviewList(localReviews, serverReviews);
@@ -203,7 +206,7 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 	}
 
 	public static final class ReviewListPopupStep extends BaseListPopupStep<ReviewAdapter> {
-		private ReviewListToolWindowPanel reviewsWindow;
+		private final ReviewListToolWindowPanel reviewsWindow;
 		private static final int LENGHT = 40;
 
 		public ReviewListPopupStep(final String title, final List<ReviewAdapter> reviews,

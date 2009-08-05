@@ -15,28 +15,23 @@
  */
 package com.atlassian.theplugin.idea.config;
 
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.fisheye.IntelliJFishEyeServerFacade;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.cfg.*;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.cfg.PrivateConfigurationDao;
+import com.atlassian.theplugin.commons.cfg.PrivateProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.PrivateServerCfgInfo;
+import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
+import com.atlassian.theplugin.commons.cfg.ServerCfgFactoryException;
 import com.atlassian.theplugin.commons.cfg.xstream.JDomProjectConfigurationDao;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.fisheye.FishEyeServerFacadeImpl;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.application.ApplicationManager;
-import com.intellij.openapi.components.ProjectComponent;
-import com.intellij.openapi.components.SettingsSavingComponent;
-import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.util.IconLoader;
-import com.intellij.openapi.vfs.VirtualFile;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -48,8 +43,18 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.components.SettingsSavingComponent;
+import com.intellij.openapi.options.Configurable;
+import com.intellij.openapi.options.ConfigurationException;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
+import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.vfs.VirtualFile;
+import javax.swing.Icon;
+import javax.swing.JComponent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -67,7 +72,7 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 			"Error while loading the configuration of " + PluginUtil.PRODUCT_NAME;
 	private static final Icon PLUGIN_SETTINGS_ICON = IconLoader.getIcon("/icons/ico_plugin.png");
 	private ProjectConfigurationPanel projectConfigurationPanel;
-	private LocalConfigurationListener configurationListener = new LocalConfigurationListener();
+	private final LocalConfigurationListener configurationListener = new LocalConfigurationListener();
 	/**
 	 * race condtions wrt to this variable are harmless as threads mutating it (via save) reset it from false to true
 	 * and then save configuration. So saving (if really needed) will not be skipped anyway even if two threads
@@ -355,10 +360,12 @@ public class ProjectConfigurationComponent implements ProjectComponent, Settings
 		}
 
         
-		projectConfigurationPanel = new ProjectConfigurationPanel(project, configuration.getClone(),
-				CrucibleServerFacadeImpl.getInstance(), FishEyeServerFacadeImpl.getInstance(),
-				BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()), JIRAServerFacadeImpl.getInstance(), uiTaskExecutor,
-				selectedServer, projectCfgManager.getDefaultCredentials().getClone(),
+		projectConfigurationPanel =
+				new ProjectConfigurationPanel(project, configuration.getClone(), IntelliJCrucibleServerFacade.getInstance(),
+						IntelliJFishEyeServerFacade.getInstance(), 
+						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
+						JIRAServerFacadeImpl.getInstance(), uiTaskExecutor, selectedServer, projectCfgManager
+								.getDefaultCredentials().getClone(),
 				projectCfgManager.isDefaultCredentialsAsked(), projectConfigurationBean);
 		return projectConfigurationPanel;
 	}

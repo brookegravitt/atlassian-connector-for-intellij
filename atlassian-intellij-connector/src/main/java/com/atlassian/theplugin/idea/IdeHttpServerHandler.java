@@ -15,9 +15,13 @@
  */
 package com.atlassian.theplugin.idea;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -26,6 +30,9 @@ import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.veryquick.embweb.HttpRequestHandler;
+import org.veryquick.embweb.Response;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -40,20 +47,19 @@ import com.intellij.openapi.ui.popup.util.BaseListPopupStep;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
-import org.jetbrains.annotations.NotNull;
-import org.veryquick.embweb.HttpRequestHandler;
-import org.veryquick.embweb.Response;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import javax.swing.Icon;
+import java.awt.EventQueue;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Jacek Jaroczynski
  */
 class IdeHttpServerHandler implements HttpRequestHandler {
-	private byte[] icon;
+	private final byte[] icon;
 
 	public IdeHttpServerHandler(final byte[] iconArray) {
 		this.icon = iconArray;
@@ -143,7 +149,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 	}
 
 	private static final class OpenBuildRequest extends DirectClickThroughRequest {
-		private Map<String, String> parameters;
+		private final Map<String, String> parameters;
 
 		private OpenBuildRequest(final Map<String, String> parameters) {
 			this.parameters = parameters;
@@ -201,7 +207,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 	}
 
 	private static class OpenIssueRequest extends DirectClickThroughRequest {
-		private Map<String, String> parameters;
+		private final Map<String, String> parameters;
 
 		public OpenIssueRequest(final Map<String, String> parameters) {
 			this.parameters = parameters;
@@ -233,7 +239,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 	}
 
 	private static class OpenFileRequest extends DirectClickThroughRequest {
-		private Map<String, String> parameters;
+		private final Map<String, String> parameters;
 
 		public OpenFileRequest(final Map<String, String> parameters) {
 			this.parameters = parameters;
@@ -322,8 +328,8 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 
 		private static class FileListPopupStep extends BaseListPopupStep<PsiFile> {
-			private String line;
-			private Project project;
+			private final String line;
+			private final Project project;
 
 			public FileListPopupStep(final String title, final List<PsiFile> psiFiles, final String line,
 					final Project project) {
@@ -332,11 +338,13 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				this.project = project;
 			}
 
+			@Override
 			public PopupStep onChosen(final PsiFile selectedValue, final boolean finalChoice) {
 				openFile(project, selectedValue, line);
 				return null;
 			}
 
+			@Override
 			@NotNull
 			public String getTextFor(final PsiFile value) {
 				String display = value.getName();
@@ -348,6 +356,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				return display;
 			}
 
+			@Override
 			public Icon getIconFor(final PsiFile value) {
 				final VirtualFile virtualFile = value.getVirtualFile();
 
@@ -361,7 +370,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 	}
 
 	private static class OpenReviewRequest extends DirectClickThroughRequest {
-		private Map<String, String> parameters;
+		private final Map<String, String> parameters;
 
 		public OpenReviewRequest(final Map<String, String> parameters) {
 			this.parameters = parameters;
@@ -392,11 +401,11 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 		}
 
 		private static class FindAndOpenReviewTask extends Task.Modal {
-			private Project project;
-			private String reviewKey;
-			private String serverUrl;
-			private String filePath;
-			private String commentId;
+			private final Project project;
+			private final String reviewKey;
+			private final String serverUrl;
+			private final String filePath;
+			private final String commentId;
 
 			private ReviewAdapter review;
 
@@ -413,6 +422,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				this.commentId = commentId;
 			}
 
+			@Override
 			public void run(final ProgressIndicator indicator) {
 				indicator.setIndeterminate(true);
 
@@ -422,7 +432,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				if (review != null && (isDefined(filePath) || isDefined(commentId))) {
 					try {
 						// get details for review (files and comments)
-						CrucibleServerFacadeImpl.getInstance().getDetailsForReview(review);
+						IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(review);
 					} catch (RemoteApiException e) {
 						PluginUtil.getLogger().warn("Error when retrieving review details", e);
 						return;
@@ -538,6 +548,7 @@ class IdeHttpServerHandler implements HttpRequestHandler {
 				}
 			}
 
+			@Override
 			public void onSuccess() {
 			}
 		}

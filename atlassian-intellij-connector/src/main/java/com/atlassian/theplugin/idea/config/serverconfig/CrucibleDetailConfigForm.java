@@ -16,8 +16,8 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.jetbrains.annotations.NotNull;

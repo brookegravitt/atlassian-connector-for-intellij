@@ -1,6 +1,7 @@
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleReviewListenerAdapter;
+import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.*;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;

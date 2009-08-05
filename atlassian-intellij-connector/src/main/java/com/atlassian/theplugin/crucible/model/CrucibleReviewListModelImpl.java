@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.crucible.model;
 
+import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewExceptionNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.NewReviewNotification;
@@ -14,8 +14,15 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.ReviewNotificationBean;
 import com.intellij.openapi.application.ApplicationManager;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -24,15 +31,15 @@ import java.util.concurrent.atomic.AtomicLong;
  * Time: 10:49:25 AM
  */
 public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
-	private List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
-	private Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
+	private final List<CrucibleReviewListModelListener> modelListeners = new ArrayList<CrucibleReviewListModelListener>();
+	private final Map<CrucibleFilter, Set<ReviewAdapter>> reviews = new HashMap<CrucibleFilter, Set<ReviewAdapter>>();
 	//	private ReviewAdapter selectedReview;
 	private final ReviewListModelBuilder reviewListModelBuilder;
-	private ProjectCfgManagerImpl projectCfgManager;
-	private CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
+	private final ProjectCfgManagerImpl projectCfgManager;
+	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	//private LocalConfigurationListenerAdapater configurationListenerAdapater = new LocalConfigurationListenerAdapater();
 
-	private AtomicLong epoch = new AtomicLong(0);
+	private final AtomicLong epoch = new AtomicLong(0);
 
 	public CrucibleReviewListModelImpl(final ReviewListModelBuilder reviewListModelBuilder,
 			final WorkspaceConfigurationBean projectConfigurationBean,
@@ -139,7 +146,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			}
 		} else {
 			getCollectionForFilter(reviews, crucibleFilter).add(review);
-			notifications.add(new NewReviewNotification(review));
+			notifications.add(new NewReviewNotification(review.getReview()));
 			notifyReviewAdded(new UpdateContext(updateReason, review, notifications));
 		}
 
@@ -150,7 +157,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 	/**
 	 * Add review to the model and fires start/finish update model notifications.
 	 * For params description see {@link #addReview(com.atlassian.theplugin.commons.crucible.api.model.CrucibleFilter,
-	 * com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter, UpdateReason)}
+	 * com.atlassian.connector.intellij.crucible.ReviewAdapter, UpdateReason)}
 	 *
 	 * @param reviewAdapter
 	 * @param updateReason
@@ -238,7 +245,7 @@ public class CrucibleReviewListModelImpl implements CrucibleReviewListModel {
 			if (reviews.get(filter).contains(review)) {
 				reviews.get(filter).remove(review);
 				List<CrucibleNotification> singleNotification = new ArrayList<CrucibleNotification>();
-				CrucibleNotification event = new NotVisibleReviewNotification(review);
+				CrucibleNotification event = new NotVisibleReviewNotification(review.getReview());
 				singleNotification.add(event);
 				notifications.add(event);
 				UpdateContext updateContext = new UpdateContext(updateReason, review, singleNotification);

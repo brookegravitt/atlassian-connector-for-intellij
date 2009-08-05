@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleFiltersBean;
+import com.atlassian.connector.intellij.crucible.CrucibleFiltersBean;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
 

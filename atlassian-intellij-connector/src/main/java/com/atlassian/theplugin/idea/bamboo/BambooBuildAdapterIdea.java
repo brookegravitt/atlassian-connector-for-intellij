@@ -16,15 +16,15 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooBuildAdapter;
+import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.intellij.openapi.util.IconLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import com.intellij.openapi.util.IconLoader;
+import javax.swing.Icon;
 
 public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private static final Icon ICON_RED = IconLoader.getIcon("/icons/icn_plan_failed.gif");
@@ -47,8 +47,8 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 	private int iconBuildingIndex = 0;
 	private int iconTrickIndex = 0;
 
-	public BambooBuildAdapterIdea(BambooBuild build) {
-		super(build);
+	public BambooBuildAdapterIdea(BambooBuild build, BambooServerData serverData) {
+		super(build, serverData);
 	}
 
 	@Nullable
@@ -111,5 +111,15 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 		final AdjustedBuildStatus buildStatus = getAdjustedStatus();
 		return buildStatus != AdjustedBuildStatus.UNKNOWN && buildStatus != AdjustedBuildStatus.DISABLED;
 	}
+
+	@Nullable
+	public String getErrorMessage() {
+		return build.getErrorMessage();
+	}
+
+	public Throwable getException() {
+		return build.getException();
+	}
+
 
 }

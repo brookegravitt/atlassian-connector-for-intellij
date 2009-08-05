@@ -1,6 +1,16 @@
 package com.atlassian.theplugin.idea.bamboo.build;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
@@ -27,15 +37,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiMethod;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * User: jgorycki
@@ -79,8 +80,9 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 			@Override
 			public void run(@NotNull final ProgressIndicator indicator) {
 				try {
-					final String log = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger())
-							.getBuildLogs(build.getServer(), build.getPlanKey(), build.getNumber());
+					final String log =
+							IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).getBuildLogs(build.getServer(),
+									build.getPlanKey(), build.getNumber());
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							consoleView.clear();

@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.tree;
 
+import com.atlassian.connector.intellij.crucible.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.PredefinedFilter;
-import com.atlassian.theplugin.commons.crucible.api.model.RecentlyOpenReviewsFilter;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;

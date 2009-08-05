@@ -15,11 +15,11 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UiTask;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilterBean;
 import com.atlassian.theplugin.commons.crucible.api.model.State;
@@ -29,6 +29,8 @@ import com.atlassian.theplugin.idea.config.CrucibleProjectWrapper;
 import com.atlassian.theplugin.idea.config.CrucibleServerCfgWrapper;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
@@ -36,13 +38,18 @@ import com.intellij.ui.components.panels.VerticalBox;
 import com.intellij.util.ui.UIUtil;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -72,7 +79,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private JCheckBox reviewNeedsFixingCheckBox;
 	private JComboBox serverComboBox;
 
-	private UserComboBoxItem CRUC_USER_ANY = new UserComboBoxItem(null) {
+	private final UserComboBoxItem CRUC_USER_ANY = new UserComboBoxItem(null) {
 		@Override
 		public String toString() {
 			return "Any";
@@ -98,7 +105,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_ANY = "Any";
 	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
-    private FilterActionClear clearFilterAction = new FilterActionClear();
+    private final FilterActionClear clearFilterAction = new FilterActionClear();
 
     public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
@@ -130,7 +137,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		final Boolean orRoles = filter.isOrRoles();
 		matchRoleComboBox.setSelectedIndex((orRoles == null || orRoles) ? 0 : 1);
 
-		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		fillInCrucibleServers();
 
         if (filter.isEmpty()) {

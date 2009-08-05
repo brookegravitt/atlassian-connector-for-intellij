@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.config.serverconfig;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.intellij.openapi.project.Project;

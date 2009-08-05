@@ -1,8 +1,8 @@
 package com.atlassian.theplugin.idea.crucible.editor;
 
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.CommitType;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.intellij.openapi.diff.FileContent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;

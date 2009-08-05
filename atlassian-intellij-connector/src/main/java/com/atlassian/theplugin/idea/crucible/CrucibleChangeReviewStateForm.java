@@ -16,11 +16,12 @@
 
 package com.atlassian.theplugin.idea.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleAction;
-import com.atlassian.theplugin.commons.crucible.api.model.ReviewAdapter;
 import com.atlassian.theplugin.commons.crucible.api.model.Reviewer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -28,6 +29,8 @@ import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -35,21 +38,34 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.ui.HyperlinkLabel;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import com.intellij.util.ui.UIUtil;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 
 
 public class CrucibleChangeReviewStateForm extends DialogWrapper {
@@ -62,17 +78,17 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
     private JCheckBox publishDraftsCheckBox;
     private JPanel publishPanel;
 
-    private ReviewAdapter review;
-    private CrucibleServerFacade crucibleServerFacade;
-    private CrucibleAction action;
+    private final ReviewAdapter review;
+    private final CrucibleServerFacade crucibleServerFacade;
+    private final CrucibleAction action;
     private DescriptionPanel descriptionPanel;
-    private Project project;
+    private final Project project;
 
     protected CrucibleChangeReviewStateForm(Project project, ReviewAdapter review, CrucibleAction action) {
         super(false);
         this.review = review;
         this.action = action;
-        this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+        this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
         this.project = project;
 
         $$$setupUI$$$();
@@ -186,7 +202,8 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
     protected void doOKAction() {
         Task.Backgroundable task = new Task.Backgroundable(project, "Changing review state") {
 
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
                     runTransition(descriptionPanel != null ? descriptionPanel.getText() : null);
                 } catch (RemoteApiException e) {

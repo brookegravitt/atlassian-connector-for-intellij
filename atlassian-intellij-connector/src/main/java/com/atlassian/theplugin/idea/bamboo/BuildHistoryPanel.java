@@ -1,28 +1,38 @@
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacade;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import org.jetbrains.annotations.NotNull;
+import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.util.PluginUtil;
-import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.ProgressAnimationProvider;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableLabel;
-import com.intellij.openapi.progress.Task;
+import com.atlassian.theplugin.util.PluginUtil;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Collection;
-import org.jetbrains.annotations.NotNull;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * User: kalamon
@@ -34,13 +44,13 @@ public class BuildHistoryPanel extends JPanel {
     private static final RendererPanel RENDERER_PANEL = new RendererPanel();
     protected static final int ROW_HEIGHT = 16;
 
-    private BambooServerFacade facade;
-    private Project project;
-    private ProgressAnimationProvider progressAnimator;
+    private final BambooServerFacade facade;
+    private final Project project;
+    private final ProgressAnimationProvider progressAnimator;
     private Task.Backgroundable currentTask;
-    private JList buildList;
-    private DefaultListModel listModel = new DefaultListModel();
-    private JScrollPane scrollPane;
+    private final JList buildList;
+    private final DefaultListModel listModel = new DefaultListModel();
+    private final JScrollPane scrollPane;
     private String previousBuild;
 
     public BuildHistoryPanel(Project project) {
@@ -49,7 +59,7 @@ public class BuildHistoryPanel extends JPanel {
         setBackground(UIUtil.getListBackground());
         setOpaque(true);
 
-        facade = BambooServerFacadeImpl.getInstance(PluginUtil.getLogger());
+		facade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 
         scrollPane = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -67,8 +77,7 @@ public class BuildHistoryPanel extends JPanel {
         buildList.setCellRenderer(new ListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
-                BambooBuild build = (BambooBuild) value;
-                BambooBuildAdapterIdea buildAdapter = new BambooBuildAdapterIdea(build);
+				BambooBuildAdapterIdea buildAdapter = (BambooBuildAdapterIdea) value;
                 RENDERER_PANEL.setBuild(buildAdapter);
                 RENDERER_PANEL.setSelected(isSelected);
                 BuildTreeNode.addTooltipToPanel(buildAdapter, RENDERER_PANEL);
@@ -88,7 +97,8 @@ public class BuildHistoryPanel extends JPanel {
 
     private void createListListeners() {
         buildList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            @Override
+			public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
                     openBuild();
                 }
@@ -113,19 +123,21 @@ public class BuildHistoryPanel extends JPanel {
         if (selected == null || selected.length == 0) {
             return;
         }
-        BambooBuild build = (BambooBuild) selected[0];
+		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) selected[0];
         final BambooToolWindowPanel buildsWindow = IdeaHelper.getBambooToolWindowPanel(project);
         if (buildsWindow != null) {
-            buildsWindow.openBuild(new BambooBuildAdapterIdea(build));
+			buildsWindow.openBuild(build);
         }
     }
 
     //
     // invoke from dispatch thread
     //
-    public synchronized void showHistoryForBuild(@NotNull final BambooBuild build) {
+	public synchronized void showHistoryForBuild(@NotNull final BambooBuildAdapterIdea buildDetailsInfo) {
         try {
-            String currentBuild = build.getServerUrl() + ":" + build.getPlanKey() + "-" + build.getNumber();
+			String currentBuild =
+					buildDetailsInfo.getServer().getUrl() + ":" + buildDetailsInfo.getPlanKey() + "-"
+							+ buildDetailsInfo.getNumber();
             if (previousBuild != null) {
                 if (currentBuild.equals(previousBuild)) {
                     scrollPane.setViewportView(buildList);
@@ -141,12 +153,15 @@ public class BuildHistoryPanel extends JPanel {
             startThrobber();
         }
 
-        currentTask = new Task.Backgroundable(project, "Getting build history for build " + build.getPlanKey(), false) {
-            private Collection<BambooBuild> builds;
-            public void run(@NotNull ProgressIndicator progressIndicator) {
+		currentTask =
+				new Task.Backgroundable(project, "Getting build history for build " + buildDetailsInfo.getPlanKey(), false) {
+			private Collection<BambooBuildAdapterIdea> builds;
+            @Override
+			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
-                    builds = facade.getRecentBuildsForPlans(build.getServer(), build.getPlanKey(),
-                            build.getServer().getTimezoneOffset());
+							builds =
+									facade.getRecentBuildsForPlans(buildDetailsInfo.getServer(), buildDetailsInfo.getPlanKey(),
+											buildDetailsInfo.getServer().getTimezoneOffset());
                 } catch (ServerPasswordNotProvidedException e) {
                     PluginUtil.getLogger().error(e);
                 }
@@ -158,7 +173,7 @@ public class BuildHistoryPanel extends JPanel {
                     if (currentTask == this) {
                         listModel.clear();
                         scrollPane.setViewportView(buildList);
-                        for (BambooBuild bambooBuild : builds) {
+						for (BambooBuildAdapterIdea bambooBuild : builds) {
                             listModel.addElement(bambooBuild);
                         }
                         stopThrobber();
@@ -189,19 +204,19 @@ public class BuildHistoryPanel extends JPanel {
 //        listModel.clear();
     }
 
-    public synchronized BambooBuild getSelectedBuild() {
+	public synchronized BambooBuildAdapterIdea getSelectedBuild() {
         Object[] selected = buildList.getSelectedValues();
         if (selected != null && selected.length > 0) {
-            return (BambooBuild) selected[0];
+			return (BambooBuildAdapterIdea) selected[0];
         }
         return null;
     }
 
     private static final class RendererPanel extends JPanel {
-        private JLabel buildIcon = new JLabel();
-        private SelectableLabel buildKey =
+        private final JLabel buildIcon = new JLabel();
+        private final SelectableLabel buildKey =
                 new SelectableLabel(true, true, "NOTHING YET", null, SwingConstants.TRAILING, ROW_HEIGHT);
-        private SelectableLabel buildDate =
+        private final SelectableLabel buildDate =
                 new SelectableLabel(true, true, "NEITHER HERE", null, SwingConstants.TRAILING, ROW_HEIGHT);
 
         private RendererPanel() {

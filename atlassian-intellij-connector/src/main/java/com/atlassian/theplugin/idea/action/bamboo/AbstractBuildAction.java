@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -24,6 +24,7 @@ import com.atlassian.theplugin.idea.bamboo.BuildCommentForm;
 import com.atlassian.theplugin.idea.bamboo.BuildLabelForm;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.util.PluginUtil;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -31,9 +32,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
-
-import java.awt.*;
+import java.awt.EventQueue;
 
 /**
  * @author Jacek Jaroczynski
@@ -83,8 +82,8 @@ public abstract class AbstractBuildAction extends AnAction {
 
 					try {
 						setStatusMessageUIThread(project, "Starting build on plan: " + build.getPlanKey());
-						BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-								executeBuild(build.getServer(), build.getPlanKey());
+						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).executeBuild(
+								build.getServer(), build.getPlanKey());
 						setStatusMessageUIThread(project, "Build executed on plan: " + build.getPlanKey());
 					} catch (ServerPasswordNotProvidedException e) {
 						setStatusErrorMessageUIThread(project, "Build not executed: Password not provided for server");
@@ -127,7 +126,7 @@ public abstract class AbstractBuildAction extends AnAction {
 			public void run(@NotNull final ProgressIndicator indicator) {
 				setStatusMessageUIThread(project, "Applying label on build...");
 				try {
-					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).
 							addLabelToBuild(build.getServer(), build.getPlanKey(),
 									build.getNumber(), label);
 					setStatusMessageUIThread(project, "Label applied on build");
@@ -165,7 +164,7 @@ public abstract class AbstractBuildAction extends AnAction {
 			public void run(@NotNull final ProgressIndicator indicator) {
 				setStatusMessageUIThread(project, "Adding comment label on build...");
 				try {
-					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
+					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).
 							addCommentToBuild(build.getServer(), build.getPlanKey(), build.getNumber(), commentText);
 					setStatusMessageUIThread(project, "Comment added to build");
 				} catch (ServerPasswordNotProvidedException e) {

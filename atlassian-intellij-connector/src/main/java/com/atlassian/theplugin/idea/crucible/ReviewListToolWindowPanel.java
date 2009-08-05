@@ -15,48 +15,77 @@
  */
 package com.atlassian.theplugin.idea.crucible;
 
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.UiTaskExecutor;
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.Review;
+import com.atlassian.theplugin.commons.crucible.api.model.ReviewRecentlyOpenBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
-import com.atlassian.theplugin.crucible.model.*;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
+import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListenerAdapter;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.CrucibleReviewListModelListenerAdapter;
+import com.atlassian.theplugin.crucible.model.SearchingCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.SortingByKeyCrucibleReviewListModel;
+import com.atlassian.theplugin.crucible.model.UpdateContext;
+import com.atlassian.theplugin.crucible.model.UpdateReason;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.PluginToolWindowPanel;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.filters.CustomFilterChangeListener;
-import com.atlassian.theplugin.idea.crucible.tree.*;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleCustomFilterTreeNode;
+import com.atlassian.theplugin.idea.crucible.tree.CrucibleFilterTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTree;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeModel;
+import com.atlassian.theplugin.idea.crucible.tree.ReviewTreeNode;
 import com.atlassian.theplugin.idea.crucible.tree.node.CrucibleReviewTreeNode;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.*;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.ui.TreeSpeedSearch;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
+import javax.swing.JPopupMenu;
+import javax.swing.JTree;
+import javax.swing.Timer;
+import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -68,16 +97,16 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 	public static final String PLACE_PREFIX = ReviewListToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
-    private Collection<CustomFilterChangeListener> customFilterChangeListeners = new ArrayList<CustomFilterChangeListener>();
+    private final Collection<CustomFilterChangeListener> customFilterChangeListeners = new ArrayList<CustomFilterChangeListener>();
 
 	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
-	private CrucibleFilterListModel filterListModel;
-	private CrucibleFilterTreeModel filterTreeModel;
+	private final CrucibleFilterListModel filterListModel;
+	private final CrucibleFilterTreeModel filterTreeModel;
 
 	private CrucibleReviewGroupBy groupBy = CrucibleReviewGroupBy.NONE;
 	private FilterTree filterTree;
-	private SearchingCrucibleReviewListModel searchingReviewListModel;
+	private final SearchingCrucibleReviewListModel searchingReviewListModel;
 	private final ProjectCfgManagerImpl projectCfgManager;
 
         private final UiTaskExecutor uiTaskExecutor;
@@ -85,7 +114,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	private Timer timer;
 
 	private static final int ONE_SECOND = 1000;
-	private CrucibleReviewListModel currentReviewListModel;
+	private final CrucibleReviewListModel currentReviewListModel;
     private static final String MANUAL_FILTER_MENU_PLACE = "crucible manual filter place";
 
 
@@ -143,7 +172,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
         CrucibleFilterSelectionListener listener = new CrucibleFilterSelectionListenerAdapter() {
 
-                public void selectedCustomFilter(CustomFilter customFilter) {
+                @Override
+				public void selectedCustomFilter(CustomFilter customFilter) {
                     refresh(UpdateReason.REFRESH);
                 }
             };
@@ -183,7 +213,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
         filterTree.addSelectionListener(new LocalCrucibleFilterListModelListener());
         filterTree.addMouseListener(new PopupAwareMouseAdapter() {
 
-            protected void onPopup(MouseEvent e) {
+            @Override
+			protected void onPopup(MouseEvent e) {
 
                 if (!(e.getComponent() instanceof FilterTree)) {
                     return;
@@ -480,7 +511,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermId(reviewKey));
+				Review r = IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
 				return new ReviewAdapter(r, server);
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
@@ -507,9 +538,9 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 		ServerData server = projectCfgManager.getEnabledCrucibleServerr(serverId);
 		if (server != null) {
 			try {
-				Review r = CrucibleServerFacadeImpl.getInstance().getReview(server, new PermId(reviewKey));
+				Review r = IntelliJCrucibleServerFacade.getInstance().getReview(server, new PermId(reviewKey));
 				ReviewAdapter ra = new ReviewAdapter(r, server);
-				CrucibleServerFacadeImpl.getInstance().getDetailsForReview(ra);
+				IntelliJCrucibleServerFacade.getInstance().fillDetailsForReview(ra);
 				return ra;
 			} catch (RemoteApiException e) {
 				PluginUtil.getLogger().warn("Exception thrown when retrieving review", e);
@@ -584,6 +615,7 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 	}
 
     private class LocalCrucibleFilterListModelListener extends CrucibleFilterSelectionListenerAdapter {
+		@Override
 		public void filterSelectionChanged() {
 			// restart checker
 			refresh(UpdateReason.FILTER_CHANGED);

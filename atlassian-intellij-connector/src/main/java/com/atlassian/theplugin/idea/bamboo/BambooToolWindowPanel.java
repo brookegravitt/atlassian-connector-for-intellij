@@ -15,11 +15,35 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JTree;
+import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.cfg.CfgUtil;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
-import com.atlassian.theplugin.commons.bamboo.BambooStatusChecker;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -36,7 +60,12 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.PluginUtil;
-import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.actionSystem.ActionGroup;
+import com.intellij.openapi.actionSystem.ActionManager;
+import com.intellij.openapi.actionSystem.ActionPopupMenu;
+import com.intellij.openapi.actionSystem.ActionToolbar;
+import com.intellij.openapi.actionSystem.DataProvider;
+import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -46,20 +75,6 @@ import com.intellij.openapi.util.Pair;
 import com.intellij.ui.SearchTextField;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.TreePath;
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * @author Wojciech Seliga
@@ -70,16 +85,16 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	private static final String COMPLETED_BUILDS = "Completed Builds";
 	private final Project project;
 	private final BuildListModelImpl bambooModel;
-	private ProjectCfgManagerImpl projectCfgManager;
+	private final ProjectCfgManagerImpl projectCfgManager;
 	private final BuildTree buildTree;
 	private final BambooFilterList filterList;
-	private SearchTextField searchField = new SearchTextField();
-	private JComponent leftToolBar;
-	private JComponent rightToolBar;
-	private BambooWorkspaceConfiguration bambooConfiguration;
+	private final SearchTextField searchField = new SearchTextField();
+	private final JComponent leftToolBar;
+	private final JComponent rightToolBar;
+	private final BambooWorkspaceConfiguration bambooConfiguration;
 	private BuildGroupBy groupBy = BuildGroupBy.NONE;
-	private SearchBuildListModel searchBuildModel;
-	private BuildHistoryPanel buildHistoryPanel;
+	private final SearchBuildListModel searchBuildModel;
+	private final BuildHistoryPanel buildHistoryPanel;
 	private JLabel planHistoryListLabel;
 
 	public BambooFilterType getBambooFilterType() {
@@ -204,7 +219,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			public void valueChanged(TreeSelectionEvent event) {
 				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
 				if (buildDetailsInfo != null) {
-					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo.getBuild());
+					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo);
 				} else {
 					buildHistoryPanel.clearBuildHistory();
 				}
@@ -336,7 +351,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
-	public BambooBuild getSelectedHistoryBuild() {
+	public BambooBuildAdapterIdea getSelectedHistoryBuild() {
 		return buildHistoryPanel.getSelectedBuild();
 	}
 
@@ -379,10 +394,12 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return buildTree;
 	}
 
+	@Override
 	protected JComponent getRightMostPanel() {
 		return buildHistoryPanel;
 	}
 
+	@Override
 	protected JComponent getRightMostToolBar() {
 		return rightToolBar;
 	}
@@ -502,10 +519,10 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 	private class FetchingBuildTask extends Task.Modal {
-		private BambooServerData server;
-		private String buildKey;
-		private int buildNumber;
-		private BuildLoadedHandler handler;
+		private final BambooServerData server;
+		private final String buildKey;
+		private final int buildNumber;
+		private final BuildLoadedHandler handler;
 
 		private BambooBuildAdapterIdea build;
 		private Throwable exception;
@@ -523,8 +540,9 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		public void run(@NotNull ProgressIndicator progressIndicator) {
 			progressIndicator.setIndeterminate(true);
 			try {
-				build = new BambooBuildAdapterIdea(BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()).
-						getBuildForPlanAndNumber(server, buildKey, buildNumber, server.getTimezoneOffset()));
+				build =
+						IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()).getBuildForPlanAndNumber(server,
+								buildKey, buildNumber, server.getTimezoneOffset());
 			} catch (RemoteApiException e) {
 				exception = e;
 			} catch (ServerPasswordNotProvidedException e) {

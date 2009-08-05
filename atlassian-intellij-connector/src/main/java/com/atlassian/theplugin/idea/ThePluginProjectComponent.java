@@ -16,18 +16,26 @@
 
 package com.atlassian.theplugin.idea;
 
+import com.atlassian.connector.intellij.bamboo.BambooPopupInfo;
+import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
+import com.atlassian.connector.intellij.bamboo.BambooStatusDisplay;
+import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
+import com.atlassian.connector.intellij.bamboo.BambooStatusTooltipListener;
+import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.*;
+import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacade;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
+import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
@@ -46,6 +54,7 @@ import com.atlassian.theplugin.notification.crucible.CrucibleReviewNotifier;
 import com.atlassian.theplugin.remoteapi.MissingPasswordHandlerQueue;
 import com.atlassian.theplugin.util.PluginUtil;
 import com.atlassian.theplugin.util.UsageStatisticsGenerator;
+import org.jetbrains.annotations.NotNull;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -65,9 +74,12 @@ import com.intellij.ui.content.ContentManagerAdapter;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import java.util.Collection;
@@ -95,7 +107,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 	private PluginUpdateIcon statusPluginUpdateIcon;
 	private BambooStatusChecker bambooStatusChecker;
 	private final BuildListModelImpl bambooModel;
-	private CrucibleStatusChecker crucibleStatusChecker;
+	private final CrucibleStatusChecker crucibleStatusChecker;
 
 	private BambooStatusTooltipListener tooltipBambooStatusListener;
 
@@ -103,14 +115,14 @@ public class ThePluginProjectComponent implements ProjectComponent {
 
 	private final ToolWindowManager toolWindowManager;
 	private boolean created;
-	private CrucibleReviewNotifier crucibleReviewNotifier;
+	private final CrucibleReviewNotifier crucibleReviewNotifier;
 	private final CrucibleReviewListModel crucibleReviewListModel;
 	private final JIRAIssueListModelBuilder jiraIssueListModelBuilder;
 	private final PluginConfiguration pluginConfiguration;
 
-	private IssueListToolWindowPanel issuesToolWindowPanel;
+	private final IssueListToolWindowPanel issuesToolWindowPanel;
 
-	private PluginToolWindow toolWindow;
+	private final PluginToolWindow toolWindow;
 
 	//	public static final Key<ReviewActionEventBroker> BROKER_KEY = Key.create("thePlugin.broker");
 	private ConfigurationListenerImpl configurationListener;
@@ -141,7 +153,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 		this.crucibleStatusChecker = crucibleStatusChecker;
 		this.crucibleReviewNotifier = crucibleReviewNotifier;
 		this.crucibleReviewListModel = crucibleReviewListModel;
-		this.crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
+		this.crucibleServerFacade = IntelliJCrucibleServerFacade.getInstance();
 		this.issuesToolWindowPanel = issuesToolWindowPanel;
 		this.toolWindow = pluginToolWindow;
 
@@ -238,10 +250,10 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			IdeaHelper.getAppComponent().getSchedulableCheckers().add(bambooStatusChecker);
 			// add tool window bamboo content listener to bamboo checker thread
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
-				public void updateBuildStatuses(final Collection<BambooBuild> buildStatuses,
-						final Collection<Exception> generalExceptions) {
-
-					bambooModel.update(buildStatuses, generalExceptions);
+				
+				
+				public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> builds, Collection<Exception> generalExceptions) {
+					bambooModel.update(builds, generalExceptions);
 				}
 
 				public void resetState() {
@@ -404,6 +416,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			setCancelButtonText("No");
 		}
 
+		@Override
 		protected JComponent createCenterPanel() {
 			JPanel p = new JPanel(new FormLayout("3dlu, p, 3dlu, p, 3dlu", "3dlu, p, 3dlu"));
 			CellConstraints cc = new CellConstraints();

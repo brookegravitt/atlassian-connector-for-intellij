@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePostCommitReviewFromChangeListForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,7 +33,7 @@ public class PostCommitReviewAction extends Crucible16MultiRevisionRepositoryAct
 			return;
 		}
 
-		new CrucibleCreatePostCommitReviewFromChangeListForm(project, CrucibleServerFacadeImpl.getInstance(),
+		new CrucibleCreatePostCommitReviewFromChangeListForm(project, IntelliJCrucibleServerFacade.getInstance(),
 				changes, IdeaHelper.getProjectCfgManager(event)).show();
 	}
 }

@@ -32,7 +32,7 @@ import java.util.TimerTask;
 
 /**
  * IDEA-specific class that uses
- * {@link com.atlassian.theplugin.commons.crucible.CrucibleServerFacade} to retrieve builds info and
+ * {@link com.atlassian.connector.intellij.crucible.CrucibleServerFacade} to retrieve builds info and
  * passes raw data to configured {@link CrucibleStatusListener}s.<p>
  * <p/>
  * Intended to be triggered by a {@link java.util.Timer} through the {@link #newTimerTask()}.<p>

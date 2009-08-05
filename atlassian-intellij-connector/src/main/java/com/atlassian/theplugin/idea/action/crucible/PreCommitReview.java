@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.crucible;
 
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.crucible.CrucibleCreatePreCommitUploadReviewForm;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -31,7 +31,7 @@ public class PreCommitReview extends Crucible16RepositoryAction {
 		if (project == null) {
 			return;
 		}
-		new CrucibleCreatePreCommitUploadReviewForm(project, CrucibleServerFacadeImpl.getInstance(), null,
+		new CrucibleCreatePreCommitUploadReviewForm(project, IntelliJCrucibleServerFacade.getInstance(), null,
 				IdeaHelper.getProjectCfgManager(event)).show();
 	}
 }

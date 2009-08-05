@@ -16,29 +16,28 @@
 
 package com.atlassian.theplugin.util;
 
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
-import com.atlassian.theplugin.commons.util.HttpClientFactory;
-import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import junit.framework.TestCase;
 import org.apache.commons.httpclient.HttpMethod;
 import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.mortbay.jetty.Server;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.SocketTimeoutException;
+import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
+import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
+import com.atlassian.theplugin.commons.util.HttpClientFactory;
+import com.atlassian.theplugin.configuration.IdeaPluginConfigurationBean;
 
 /**
  * @author lguminski
@@ -65,7 +64,7 @@ public class AbstractHttpSessionTest extends TestCase {
 		mockServer.expect(SOME_URL, new TimeoutingOnDataTransferCallback());
 		TestHttpSession session = new TestHttpSession(new com.atlassian.theplugin.commons.cfg.Server() {
 
-			private ServerIdImpl serverId = new ServerIdImpl();
+			private final ServerIdImpl serverId = new ServerIdImpl();
 
 			public ServerIdImpl getServerId() {
 				return serverId;
@@ -155,9 +154,9 @@ public class AbstractHttpSessionTest extends TestCase {
 
 	}
 
-
-	private ServerData getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+	private ConnectionCfg getServerData(final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
+		return new ConnectionCfg(serverCfg.getServerId().getId(), serverCfg.getUrl(), serverCfg.getUserName(), serverCfg
+				.getPassword());
 	}
 }
 
