@@ -16,47 +16,154 @@
 
 package com.atlassian.theplugin.idea.bamboo;
 
-import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.connector.intellij.bamboo.BambooBuildIcons;
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.intellij.openapi.util.IconLoader;
 import javax.swing.Icon;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
 
-public class BambooBuildAdapterIdea extends BambooBuildAdapter {
-	private static final Icon ICON_RED = IconLoader.getIcon("/icons/icn_plan_failed.gif");
-	private static final Icon ICON_GREEN = IconLoader.getIcon("/icons/icn_plan_passed.gif");
-	private static final Icon ICON_GREY = IconLoader.getIcon("/icons/icn_plan_disabled.gif");
+public class BambooBuildAdapterIdea extends ConfigurationListenerAdapter {
+	private final BambooBuild build;
+	public static final SimpleDateFormat BAMBOO_BUILD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final BambooServerData serverData;
 
-	private static final Icon ICON_IS_IN_QUEUE = IconLoader.getIcon("/icons/cup.png");
-	private static final Icon[] ICON_IS_BUILDING = {
-			IconLoader.getIcon("/icons/icn_building_1.gif"),
-			IconLoader.getIcon("/icons/icn_building_2.gif"),
-			IconLoader.getIcon("/icons/icn_building_3.gif"),
-			IconLoader.getIcon("/icons/icn_building_4.gif"),
-			IconLoader.getIcon("/icons/icn_building_5.gif"),
-			IconLoader.getIcon("/icons/icn_building_6.gif"),
-			IconLoader.getIcon("/icons/icn_building_7.gif"),
-			IconLoader.getIcon("/icons/icn_building_8.gif")};
+	public BambooBuildAdapterIdea(BambooBuild build, BambooServerData serverData) {
+		this.build = build;
+		this.serverData = serverData;
+	}
 
-	private static final Icon ICON_MY_BUILD_RED = IconLoader.getIcon("/actions/lightning.png");
-	private static final Icon ICON_MY_BUILD_GREEN = IconLoader.getIcon("/icons/lightning_green.png");
+	public BambooServerData getServer() {
+		return serverData;
+	}
+
+	public String getServerName() {
+		final ServerData server = getServer();
+		if (server != null) {
+			return server.getName() == null ? "" : server.getName();
+		} else {
+			return "";
+		}
+	}
+
+	public boolean isBamboo2() {
+//		final BambooServerCfg server = build.getServer();
+//		return server != null && server.isBamboo2();
+		//todo: implement
+		return true;
+	}
+
+	public Collection<String> getCommiters() {
+		return build.getCommiters();
+	}
+
+	public String getProjectName() {
+		return build.getProjectName() == null ? "" : build.getProjectName();
+	}
+
+	public String getBuildUrl() {
+		return build.getBuildUrl() == null ? "" : build.getBuildUrl();
+	}
+
+	public String getPlanName() {
+		return build.getPlanName() == null ? "" : build.getPlanName();
+	}
+
+	public String getPlanKey() {
+		return build.getPlanKey() == null ? "" : build.getPlanKey();
+	}
+
+	public boolean isEnabled() {
+		return build.getEnabled();
+	}
+
+	public int getNumber() throws UnsupportedOperationException {
+		return build.getNumber();
+	}
+
+	public boolean isValid() {
+		return build.isValid();
+	}
+
+	/**
+	 * @return build number as string (base 10) or empty string when this object does not represent successfully fetched build
+	 */
+	public String getBuildNumberAsString() {
+		return build.isValid() ? Integer.toString(build.getNumber()) : "";
+	}
+
+	public String getResultUrl() {
+		return build.getResultUrl() == null ? "" : build.getResultUrl();
+	}
+
+	public BuildStatus getStatus() {
+		return build.getStatus();
+	}
+
+	public int getTestsPassed() {
+		return build.getTestsPassed();
+	}
+
+	public int getTestsFailed() {
+		return build.getTestsFailed();
+	}
+
+	public int getTestsNumber() {
+		return build.getTestsPassed() + build.getTestsFailed();
+	}
+
+	public String getTestsPassedSummary() {
+		if (getStatus() == BuildStatus.UNKNOWN) {
+			return "-/-";
+		} else {
+			return getTestsFailed() + "/" + getTestsNumber();
+		}
+	}
+
+	public Date getCompletionDate() {
+		return build.getCompletionDate();
+	}
+
+	public Date getPollingTime() {
+		return build.getPollingTime();
+	}
+
+	public String getReason() {
+		return build.getReason() == null ? "" : build.getReason();
+	}
+
+	public BambooBuild getBuild() {
+		return build;
+	}
+
+	public boolean isMyBuild() {
+		return build.isMyBuild();
+	}
+
+	@Override
+	public void serverDataChanged(final ServerData serverData) {
+		// todo PL-1536 set new server for build (but build is immutable for some reason)
+
+	}
+
+
 	private int iconBuildingIndex = 0;
 	private int iconTrickIndex = 0;
 
-	public BambooBuildAdapterIdea(BambooBuild build, BambooServerData serverData) {
-		super(build, serverData);
-	}
 
 	@Nullable
 	public Icon getMyBuildIcon() {
 		if (getStatus() == BuildStatus.FAILURE && build.isMyBuild()) {
-			return ICON_MY_BUILD_RED;
+			return BambooBuildIcons.ICON_MY_BUILD_RED;
 		} else if (getStatus() == BuildStatus.SUCCESS && build.isMyBuild()) {
-			return ICON_MY_BUILD_GREEN;
+			return BambooBuildIcons.ICON_MY_BUILD_GREEN;
 		} else {
 			return null;
 		}
@@ -68,26 +175,26 @@ public class BambooBuildAdapterIdea extends BambooBuildAdapter {
 
 			switch (getStatus()) {
 				case FAILURE:
-					return ICON_RED;
+					return BambooBuildIcons.ICON_RED;
 				case SUCCESS:
-					return ICON_GREEN;
+					return BambooBuildIcons.ICON_GREEN;
 				case UNKNOWN:
-					return ICON_GREY;
+					return BambooBuildIcons.ICON_GREY;
 				case BUILDING:
 					// we need below trick (return the same icon twice)
 					// because for single tree node refresh the renderer is called twice
 					// the trick can be moved upper in case the method is used not only for build tree
 					iconBuildingIndex += ++iconTrickIndex % 2;
-					iconBuildingIndex %= ICON_IS_BUILDING.length;
+					iconBuildingIndex %= BambooBuildIcons.ICON_IS_BUILDING.length;
 					// return next icon from the array
-					return ICON_IS_BUILDING[iconBuildingIndex];
+					return BambooBuildIcons.ICON_IS_BUILDING[iconBuildingIndex];
 				case IN_QUEUE:
-					return ICON_IS_IN_QUEUE;
+					return BambooBuildIcons.ICON_IS_IN_QUEUE;
 				default:
 					break;
 			}
 		}
-		return ICON_GREY;
+		return BambooBuildIcons.ICON_GREY;
 	}
 
 	@NotNull
