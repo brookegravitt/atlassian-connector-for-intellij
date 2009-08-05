@@ -7,6 +7,7 @@ import com.atlassian.theplugin.configuration.CrucibleWorkspaceConfiguration;
 import com.atlassian.theplugin.crucible.model.CrucibleFilterSelectionListener;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeRenderer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -371,4 +372,15 @@ public class FilterTree extends JTree {
 		}
 
 	}
+
+    @Nullable
+     public DefaultMutableTreeNode getSelectedNode() {
+         TreePath selectionPath = getSelectionModel().getSelectionPath();
+         if (selectionPath != null) {
+             return (DefaultMutableTreeNode) selectionPath.getLastPathComponent();
+         }
+
+         return null;
+     }
+        
 }

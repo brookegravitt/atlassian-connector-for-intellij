@@ -98,8 +98,9 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private static final String REVIEWER_STATUS_ANY = "Any";
 	private static final String REVIEWER_STATUS_INCOMPLETE = "Incomplete";
 	private static final String REVIEWER_STATUS_COMPLETE = "Complete";
+    private FilterActionClear clearFilterAction = new FilterActionClear();
 
-	public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
+    public CrucibleCustomFilterDialog(@NotNull final Project project, @NotNull final ProjectCfgManagerImpl cfgManager,
 			@NotNull CustomFilterBean filter, @NotNull final UiTaskExecutor uiTaskExecutor) {
 		super(project, false);
 		this.projectCfgManager = cfgManager;
@@ -131,8 +132,14 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		crucibleServerFacade = CrucibleServerFacadeImpl.getInstance();
 		fillInCrucibleServers();
-		ServerData selectedServer = setSelectedServer(serverCfg);
-		fillServerRelatedCombos(selectedServer);
+
+        if (filter.isEmpty()) {
+            unSelectAllItems();            
+        } else {
+            ServerData selectedServer = setSelectedServer(serverCfg);
+            fillServerRelatedCombos(selectedServer);
+        }
+
 		setTitle("Configure Custom Filter");
 		getOKAction().putValue(Action.NAME, "Apply");
 
@@ -142,70 +149,102 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			}
 		});
 
+
 		init();
 		pack();
 	}
 
-	public CustomFilterBean getFilter() {
-		ServerData s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem()).getWrapped();
-		filter.setServerId((ServerIdImpl) s.getServerId());
+    @Override
+    protected Action[] createActions() {
+return new Action[] {
+                getOKAction(),
+                getClearFilterAction(),
+                getCancelAction()
+        };
+
+
+    }
+
+    public CustomFilterBean getFilter() {
+
+		CrucibleServerCfgWrapper s = ((CrucibleServerCfgWrapper) this.serverComboBox.getSelectedItem());
+		filter.setServerId(s != null ? (ServerIdImpl)(s.getWrapped()).getServerId() : null);
+        if (s != null) {
+            filter.setEmpty(false);
+        }
 
 		filter.setTitle("Custom Filter");
 		final CrucibleProjectWrapper o = (CrucibleProjectWrapper) projectComboBox.getSelectedItem();
 		if (o != null && o != CRUC_PROJECT_ANY && o.getWrapped() != null) {
 			filter.setProjectKey(o.getWrapped().getKey());
+            filter.setEmpty(false);
 		} else {
 			filter.setProjectKey("");
 		}
-		final User author = ((UserComboBoxItem) authorComboBox.getSelectedItem()).getWrapped();
+
+        User author = getUser(authorComboBox);
 		if (author != null) {
 			filter.setAuthor(author.getUserName());
+            filter.setEmpty(false);
 		} else {
 			filter.setAuthor("");
 		}
-		final User creator = ((UserComboBoxItem) creatorComboBox.getSelectedItem()).getWrapped();
-		if (creator != null) {
+
+        User creator = getUser(creatorComboBox);
+		if (creator !=null) {
 			filter.setCreator(creator.getUserName());
+            filter.setEmpty(false);
 		} else {
 			filter.setCreator("");
 		}
-		final User moderator = ((UserComboBoxItem) moderatorComboBox.getSelectedItem()).getWrapped();
+        User moderator = getUser(moderatorComboBox);
 		if (moderator != null) {
 			filter.setModerator(moderator.getUserName());
+            filter.setEmpty(false);
 		} else {
 			filter.setModerator("");
 		}
-		final User reviewer = ((UserComboBoxItem) reviewerComboBox.getSelectedItem()).getWrapped();
-		if (reviewer != null) {
+
+        User reviewer = getUser(reviewerComboBox);
+		if ( reviewer != null) {
 			filter.setReviewer(reviewer.getUserName());
+            filter.setEmpty(false);
 		} else {
 			filter.setReviewer("");
 		}
 
 		List<State> states = new ArrayList<State>();
 		if (draftCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.DRAFT);
 		}
 		if (pendingApprovalCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.APPROVAL);
 		}
 		if (summarizeCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.SUMMARIZE);
 		}
 		if (closedCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.CLOSED);
 		}
 		if (rejectedCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.REJECTED);
 		}
 		if (underReviewCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.REVIEW);
 		}
 		if (abandonedCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.ABANDONED);
 		}
 
 		if (reviewNeedsFixingCheckBox.isSelected()) {
+            filter.setEmpty(false);
 			states.add(State.UNKNOWN);
 		}
 
@@ -213,10 +252,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		filter.setState(states.toArray(new State[states.size()]));
 		// depending on whether reviewer is selected or not two flags below have will be set in a different manner
 		String completeSel = (String) reviewerStatusComboBox.getSelectedItem();
-		final Boolean complete = REVIEWER_STATUS_ANY.equals(completeSel) ? null : REVIEWER_STATUS_COMPLETE.equals(completeSel);
+                
+		final Boolean complete = REVIEWER_STATUS_ANY.equals(completeSel)  ? null : REVIEWER_STATUS_COMPLETE.equals(completeSel);
 		if (reviewer != null) {
 			filter.setComplete(complete);
 			filter.setAllReviewersComplete(null);
+             filter.setEmpty(false);
 		} else {
 			filter.setComplete(null);
 			filter.setAllReviewersComplete(complete);
@@ -224,26 +265,38 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 		String role = (String) matchRoleComboBox.getSelectedItem();
 		filter.setOrRoles(MATCH_ROLE_ANY.equals(role));
+        if (filter.isOrRoles()) {
+             filter.setEmpty(false);
+        }
 
 
 		return filter;
 	}
 
+    private User getUser(JComboBox userCbx) {
+        if (userCbx.getSelectedItem() != null && ((UserComboBoxItem)userCbx.getSelectedItem()).getWrapped() != null) {
+            return ((UserComboBoxItem) userCbx.getSelectedItem()).getWrapped();
+        }
+
+        return null;
+    }
 	private ServerData setSelectedServer(ServerData serverCfg) {
 
 		for (int i = 0; i < serverComboBox.getItemCount(); i++) {
-			if (serverComboBox.getItemAt(i) instanceof CrucibleServerCfgWrapper &&
-					((CrucibleServerCfgWrapper) serverComboBox.getItemAt(i)).getWrapped().equals(serverCfg)) {
-				serverComboBox.setSelectedItem(serverComboBox.getItemAt(i));
+            final Object wrapper = serverComboBox.getItemAt(i);
+            if (wrapper instanceof CrucibleServerCfgWrapper &&
+					((CrucibleServerCfgWrapper) wrapper).getWrapped().equals(serverCfg)) {
+				serverComboBox.setSelectedItem(wrapper);
 				return serverCfg;
 			}
 		}
 
 		if (serverComboBox.getItemCount() > 0) {
-			if (serverComboBox.getItemAt(0) instanceof CrucibleServerCfgWrapper) {
-				serverComboBox.setSelectedItem(serverComboBox.getItemAt(0));
-				return ((CrucibleServerCfgWrapper) serverComboBox.getItemAt(0)).getWrapped();
-			}
+            serverComboBox.setSelectedIndex(-1);
+//			if (serverComboBox.getItemAt(0) instanceof CrucibleServerCfgWrapper) {
+//				serverComboBox.setSelectedItem(serverComboBox.getItemAt(0));
+//				return ((CrucibleServerCfgWrapper) serverComboBox.getItemAt(0)).getWrapped();
+//			}
 		}
 
 		return null;
@@ -269,7 +322,7 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 	private void fillServerRelatedCombos(final ServerData server) {
 		final ServerData serverData = (server != null) ? server : getSelectedServer();
 
-		if (serverData != null) {
+         if (serverData != null) {
 			projectComboBox.setEnabled(false);
 			setStateForAllControls(false);
 
@@ -316,6 +369,26 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		return null;
 	}
 
+    private void unSelectAllItems() {
+        draftCheckBox.setSelected(false);
+        pendingApprovalCheckBox.setSelected(false);
+        underReviewCheckBox.setSelected(false);
+        summarizeCheckBox.setSelected(false);
+        closedCheckBox.setSelected(false);
+        abandonedCheckBox.setSelected(false);
+        rejectedCheckBox.setSelected(false);
+        reviewNeedsFixingCheckBox.setSelected(false);
+
+        setProject(null, projectComboBox);
+        setActiveUser(null, authorComboBox);
+        setActiveUser(null, moderatorComboBox);
+        setActiveUser(null, creatorComboBox);
+        setActiveUser(null, reviewerComboBox);
+        setSelectedServer(null);
+        reviewerStatusComboBox.setSelectedIndex(-1);
+        matchRoleComboBox.setSelectedIndex(-1);
+        filter.setEmpty(true);
+    }
 	private void updateServerRelatedCombos(List<CrucibleProject> projects, List<User> users) {
 
 		draftCheckBox.setSelected(false);
@@ -430,7 +503,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	private void setProject(String projectName, JComboBox combo) {
 		if (projectName == null) {
-			projectName = "";
+			combo.setSelectedIndex(-1);
+            return;
 		}
 		for (int i = 0; i < combo.getModel().getSize(); ++i) {
 			CrucibleProjectWrapper item = (CrucibleProjectWrapper) combo.getModel().getElementAt(i);
@@ -445,7 +519,8 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 
 	private void setActiveUser(String userName, JComboBox combo) {
 		if (userName == null) {
-			userName = "";
+            combo.setSelectedIndex(-1);
+			return;
 		}
 		for (int i = 0; i < combo.getModel().getSize(); ++i) {
 			final UserComboBoxItem item = (UserComboBoxItem) combo.getModel().getElementAt(i);
@@ -549,8 +624,12 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 		statesPanel.add(reviewNeedsFixingCheckBox);
 	}
 
+    public Action getClearFilterAction() {
+        return this.clearFilterAction;
+    }
 
-	private static class UserComboBoxItem extends GenericComboBoxItemWrapper<User> {
+
+    private static class UserComboBoxItem extends GenericComboBoxItemWrapper<User> {
 
 		public UserComboBoxItem(User user) {
 			super(user);
@@ -564,5 +643,21 @@ public class CrucibleCustomFilterDialog extends DialogWrapper {
 			return "None";
 		}
 	}
+
+       private final class FilterActionClear extends AbstractAction {
+        private static final String CLEAR_FILTER = "Clear filter";
+
+        private FilterActionClear() {
+            putValue(Action.NAME, CLEAR_FILTER);
+        }
+
+        public void actionPerformed(ActionEvent event) {
+            unSelectAllItems();
+//            if (filterListModel != null) {
+//                initialFilter.clear();
+//                ApplicationManager.getApplication().executeOnPooledThread(new SyncViewWithModelRunnable());
+//            }
+        }
+    }
 
 }

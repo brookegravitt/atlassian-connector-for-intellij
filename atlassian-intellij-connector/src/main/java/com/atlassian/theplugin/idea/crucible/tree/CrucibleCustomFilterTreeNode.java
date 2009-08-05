@@ -46,6 +46,10 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
         if (cnt > -1) {
             txt += " (" + cnt + ")";
         }
+
+        if (filter.isEmpty()) {
+            txt += " (not defined)";
+        }
         return txt;
     }
 
@@ -68,7 +72,7 @@ public class CrucibleCustomFilterTreeNode extends AbstractTreeNode {
 
         entries = getEntries(true);
 
-        if (entries.size() == 0) {
+        if (filter.isEmpty()) {
 
             sb.append("No Custom Filter Defined");
         } else {

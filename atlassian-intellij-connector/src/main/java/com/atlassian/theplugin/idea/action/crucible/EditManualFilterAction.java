@@ -7,9 +7,12 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.crucible.CrucibleCustomFilterDialog;
 import com.atlassian.theplugin.idea.crucible.ReviewListToolWindowPanel;
+import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * @author pmaruszak
@@ -32,6 +35,8 @@ public class EditManualFilterAction extends AnAction {
         if (dialog.getExitCode() == 0 && dialog.getFilter() != null) {
             final CustomFilterBean newFilter = dialog.getFilter();
             projectCrucibleCfg.getCrucibleFilters().setManualFilter(newFilter);
+            final FilterTree tree = (FilterTree)reviewListToolWindowPanel.getLeftTree();
+            ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(tree.getSelectedNode());
             // refresh reviews panel
             reviewListToolWindowPanel.notifyCrucibleFilterListModelListeners(newFilter);
         }
