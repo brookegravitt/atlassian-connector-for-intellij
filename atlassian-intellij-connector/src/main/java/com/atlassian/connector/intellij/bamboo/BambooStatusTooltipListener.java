@@ -19,17 +19,23 @@ package com.atlassian.connector.intellij.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
+import com.atlassian.theplugin.commons.util.TimeExpiringCache;
 import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This listener fires crucible tooltip if bamboo build has changes status between SUCCEED and FAILED
  */
 public class BambooStatusTooltipListener implements BambooStatusListener {
+private static final int CACHE_ITEM_TTL = 60 * 60 * 1000;
+    private static final int CACHE_ACCESS_INTERVAL = 20 * 60 * 1000;
+    private TimeExpiringCache<String, BambooBuildAdapterIdea> prevBuildStatusesCache =
+            new TimeExpiringCache<String, BambooBuildAdapterIdea>(CACHE_ITEM_TTL,
+                    CACHE_ACCESS_INTERVAL,
+                    TimeExpiringCache.DEFAULT_MAXIMUM_CACHE_CAPACITY,
+                    TimeExpiringCache.DEFAULT_TIMER_INTERVAL);
 
-	private final Map<String, BambooBuildAdapterIdea> prevBuildStatuses = new HashMap<String, BambooBuildAdapterIdea>(0);
 	private final BambooStatusDisplay display;
 	private final PluginConfiguration pluginConfiguration;
 	private final BambooPopupInfo popupInfo = new BambooPopupInfo();
@@ -70,8 +76,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 					switch (currentBuild.getStatus()) {
 						case FAILURE:
-						BambooBuildAdapterIdea prevBuild = prevBuildStatuses.get(getBuildMapKey(currentBuild));
-							if (prevBuildStatuses.containsKey(getBuildMapKey(currentBuild))) {
+						BambooBuildAdapterIdea prevBuild = prevBuildStatusesCache.get(getBuildMapKey(currentBuild));
+							if (prevBuildStatusesCache.containsKey(getBuildMapKey(currentBuild))) {
 								if (prevBuild.getStatus() == BuildStatus.SUCCESS
 										|| (prevBuild.getStatus() == BuildStatus.FAILURE
 										&& currentBuild.isValid() && prevBuild.isValid()
@@ -88,7 +94,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 								}
 							}
 
-							prevBuildStatuses.put(getBuildMapKey(currentBuild), currentBuild);
+							prevBuildStatusesCache.put(getBuildMapKey(currentBuild), currentBuild);
 							break;
 						case UNKNOWN:
 						case BUILDING:
@@ -97,8 +103,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 							break;
 						case SUCCESS:
 
-							if (prevBuildStatuses.containsKey(getBuildMapKey(currentBuild))) {
-								if (prevBuildStatuses.get(getBuildMapKey(currentBuild)).getStatus()
+							if (prevBuildStatusesCache.containsKey(getBuildMapKey(currentBuild))) {
+								if (prevBuildStatusesCache.get(getBuildMapKey(currentBuild)).getStatus()
 										== BuildStatus.FAILURE) {
 									// build has changed status from FAILED to SUCCEED
 									fireTooltip = true;
@@ -110,7 +116,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 								}
 							}
 
-							prevBuildStatuses.put(getBuildMapKey(currentBuild), currentBuild);
+							prevBuildStatusesCache.put(getBuildMapKey(currentBuild), currentBuild);
 							break;
 						default:
 							throw new IllegalStateException("Unexpected build status encountered");

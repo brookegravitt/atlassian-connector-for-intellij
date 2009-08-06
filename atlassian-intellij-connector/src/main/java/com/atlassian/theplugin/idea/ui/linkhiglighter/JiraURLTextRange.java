@@ -69,7 +69,8 @@ public class JiraURLTextRange {
 	}
 
 	public String getBrowserUrl() {
-		return getDefaultJiraServerUrl() + "/browse/" + issueKey;
+        final String serverUrl = getDefaultJiraServerUrl();
+        return serverUrl.length() > 0 ? serverUrl + "/browse/" + issueKey : "";
 	}
 
 	public String getIssueKey() {
