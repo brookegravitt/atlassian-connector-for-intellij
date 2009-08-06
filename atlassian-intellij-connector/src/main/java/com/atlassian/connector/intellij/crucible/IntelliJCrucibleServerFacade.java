@@ -270,4 +270,18 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		facade.testServerConnection(connectionCfg);
 	}
 
+    public void markCommentRead(ServerData server, PermId reviewId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markCommentRead(server.toConnectionCfg(), reviewId, commentId);
+    }
+
+    public void markCommentLeaveUnread(ServerData server, PermId reviewId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markCommentLeaveUnread(server.toConnectionCfg(), reviewId, commentId);
+    }
+
+    public void markAllCommentsRead(ServerData server, PermId reviewId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markAllCommentsRead(server.toConnectionCfg(), reviewId);
+    }
 }

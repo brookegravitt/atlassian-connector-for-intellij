@@ -281,4 +281,16 @@ public class MockCrucibleFacadeAdapter implements CrucibleServerFacade {
 	public ServerType getServerType() {
 		return null;
 	}
+
+    public void markCommentRead(ServerData server, PermId reviewId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+    }
+
+    public void markCommentLeaveUnread(ServerData server, PermId reviewId, PermId commentId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+    }
+
+    public void markAllCommentsRead(ServerData server, PermId reviewId)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+    }
 }

@@ -108,7 +108,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return null;
 			}
 
-			public List<GeneralComment> getReplies2() {
+            public ReadState getReadState() {
+                return ReadState.READ;
+            }
+
+            public List<GeneralComment> getReplies2() {
 				return reply != null ? MiscUtil.buildArrayList(reply) : MiscUtil.<GeneralComment>buildArrayList();
 			}
 		};
