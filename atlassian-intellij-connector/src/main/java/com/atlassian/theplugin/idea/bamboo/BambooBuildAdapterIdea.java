@@ -148,7 +148,7 @@ public class BambooBuildAdapterIdea extends ConfigurationListenerAdapter {
 	}
 
 	@Override
-	public void serverDataChanged(final ServerData serverData) {
+	public void serverDataChanged(final ServerData newServerData) {
 		// todo PL-1536 set new server for build (but build is immutable for some reason)
 
 	}

@@ -46,7 +46,8 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		this.pluginConfiguration = pluginConfiguration;
 	}
 
-	public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> newBuildStatuses, Collection<Exception> generalExceptions) {
+	public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> newBuildStatuses,
+			Collection<Exception> generalExceptions) {
 
 		popupInfo.clear();
 

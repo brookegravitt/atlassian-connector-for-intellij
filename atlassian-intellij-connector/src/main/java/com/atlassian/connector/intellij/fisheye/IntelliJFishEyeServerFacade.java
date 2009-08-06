@@ -10,12 +10,15 @@ import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import java.util.Collection;
 
 
-public class IntelliJFishEyeServerFacade implements FishEyeServerFacade{
+public final class IntelliJFishEyeServerFacade implements FishEyeServerFacade {
 	
 	private final FishEyeServerFacade2 facade = FishEyeServerFacadeImpl.getInstance();
 	
 	private static IntelliJFishEyeServerFacade instance;
-	
+
+	private IntelliJFishEyeServerFacade() {
+	}
+
 	public static synchronized FishEyeServerFacade getInstance() {
 		if (instance == null) {
 			instance = new IntelliJFishEyeServerFacade();

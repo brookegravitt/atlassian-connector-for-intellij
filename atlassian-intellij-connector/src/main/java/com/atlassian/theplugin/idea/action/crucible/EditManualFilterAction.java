@@ -38,7 +38,7 @@ public class EditManualFilterAction extends AnAction {
             final CustomFilterBean newFilter =
                     projectCrucibleCfg.getCrucibleFilters().getManualFilter().copy(dialog.getFilter());
             projectCrucibleCfg.getCrucibleFilters().setManualFilter(newFilter);
-            final FilterTree tree = (FilterTree)reviewListToolWindowPanel.getLeftTree();
+            final FilterTree tree = (FilterTree) reviewListToolWindowPanel.getLeftTree();
             ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(tree.getSelectedNode());
             // refresh reviews panel
             reviewListToolWindowPanel.notifyCrucibleFilterListModelListeners(newFilter);

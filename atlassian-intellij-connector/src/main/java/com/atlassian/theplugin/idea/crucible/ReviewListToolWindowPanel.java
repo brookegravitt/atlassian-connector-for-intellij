@@ -97,7 +97,8 @@ public class ReviewListToolWindowPanel extends PluginToolWindowPanel implements 
 
 	public static final String PLACE_PREFIX = ReviewListToolWindowPanel.class.getSimpleName();
 	private static final TreeCellRenderer TREE_RENDERER = new TreeRenderer();
-    private final Collection<CustomFilterChangeListener> customFilterChangeListeners = new ArrayList<CustomFilterChangeListener>();
+    private final Collection<CustomFilterChangeListener> customFilterChangeListeners
+			= new ArrayList<CustomFilterChangeListener>();
 
 	private final CrucibleWorkspaceConfiguration crucibleProjectConfiguration;
 	private ReviewTree reviewTree;
