@@ -252,7 +252,8 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
 				
 				
-				public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> builds, Collection<Exception> generalExceptions) {
+				public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> builds,
+						Collection<Exception> generalExceptions) {
 					bambooModel.update(builds, generalExceptions);
 				}
 

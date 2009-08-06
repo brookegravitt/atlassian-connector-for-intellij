@@ -23,11 +23,12 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
+public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 
 	private final CrucibleServerFacade2 facade = CrucibleServerFacadeImpl.getInstance();
 	private static IntelliJCrucibleServerFacade instance;
@@ -43,7 +44,8 @@ public class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 
 	}
 
-	public Review abandonReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public Review abandonReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.abandonReview(server.toConnectionCfg(), permId);
 	}
 
@@ -87,7 +89,8 @@ public class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 		return facade.addVersionedCommentReply(server.toConnectionCfg(), id, cId, comment);
 	}
 
-	public Review approveReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public Review approveReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.approveReview(server.toConnectionCfg(), permId);
 	}
 
@@ -217,7 +220,8 @@ public class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 		facade.publishComment(server.toConnectionCfg(), reviewId, commentId);
 	}
 
-	public Review recoverReview(ServerData server, PermId permId) throws RemoteApiException, ServerPasswordNotProvidedException {
+	public Review recoverReview(ServerData server, PermId permId)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		return facade.recoverReview(server.toConnectionCfg(), permId);
 	}
 

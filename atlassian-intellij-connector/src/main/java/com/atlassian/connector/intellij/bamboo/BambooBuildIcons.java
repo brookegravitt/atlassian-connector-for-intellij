@@ -3,7 +3,7 @@ package com.atlassian.connector.intellij.bamboo;
 import com.intellij.openapi.util.IconLoader;
 import javax.swing.Icon;
 
-final public class BambooBuildIcons {
+public final class BambooBuildIcons {
 	private BambooBuildIcons() {
 		
 	}
