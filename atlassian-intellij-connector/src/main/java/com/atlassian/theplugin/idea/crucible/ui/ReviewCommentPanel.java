@@ -98,7 +98,7 @@ public class ReviewCommentPanel extends JPanel {
 		final boolean fontChanged = !newFont.equals(font);
 		if (fontChanged) {
 			font = newFont;
-			reviewerAndAuthorLabel.setFont(font);
+			reviewerAndAuthorLabel.setFont(isCommentUnread(comment) ? font.deriveFont(Font.BOLD) : font);
 			messageBody.setFont(font);
 			moreLabel.setFont(font);
 			singleLineLabel.setFont(font);
@@ -106,7 +106,8 @@ public class ReviewCommentPanel extends JPanel {
 		defectIconLabel.setVisible(comment.isDefectRaised());
 		final int defIconPrefWidth = defectIconLabel.getPreferredSize().width;
 		int defectIconWidth = defectIconLabel.isVisible() ? defIconPrefWidth + HORIZONTAL_MARGIN : 0;
-		reviewerAndAuthorLabel.setText(getAuthorText(comment) + ", " + getDateText(comment));
+        String boldif = isCommentUnread(comment) ? "<html><b>" : "";
+		reviewerAndAuthorLabel.setText(boldif + getAuthorText(comment) + ", " + getDateText(comment));
 		reviewerAndAuthorLabel.setForeground(getTextColor(isSelected));
 		final int otherColumnsWidth = defectIconWidth + 2 * HORIZONTAL_MARGIN;
 		final int lastColumnWidth = getLastColumnWidth(width, reviewerAndAuthorLabel.getPreferredSize().width,
@@ -310,7 +311,9 @@ public class ReviewCommentPanel extends JPanel {
 		}
 		final String message = StringUtil.getFirstLine(comment.getMessage());
 
-		singleLineLabel.append(message + " ", new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN,
+		singleLineLabel.append(message + " ", new SimpleTextAttributes(
+                comment.getReadState() == Comment.ReadState.UNREAD || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD ?
+                        SimpleTextAttributes.STYLE_BOLD : SimpleTextAttributes.STYLE_PLAIN,
 				isSelected ? UIUtil.getTreeSelectionForeground() : null));
 		singleLineLabel
 				.append(" " + getRankingString(review, comment), new SimpleTextAttributes(SimpleTextAttributes.STYLE_ITALIC,
@@ -335,8 +338,13 @@ public class ReviewCommentPanel extends JPanel {
 				doc.insertString(doc.getLength(), "(" + lineInfoLabel + ") ",
 						doc.getStyle(isSelected ? "line-selected" : "line"));
 			}
+
+            boolean unread = isCommentUnread(vc);
+
 			doc.insertString(doc.getLength(), vc.getMessage() + " ",
-					doc.getStyle(isSelected ? "regular-selected" : "regular"));
+					doc.getStyle(isSelected ? 
+                            (unread ? "unread-selected" : "regular-selected")
+                            : (unread ? "unread" : "regular")));
 			doc.insertString(doc.getLength(), " " + getRankingString(review, vc),
 					doc.getStyle(isSelected ? "defect-selected" : "defect"));
 			if (vc.isDraft()) {
@@ -353,7 +361,14 @@ public class ReviewCommentPanel extends JPanel {
 		}
 	}
 
-	private static void addStylesToDocument(StyledDocument doc) {
+    private boolean isCommentUnread(Comment vc) {
+        boolean unread =
+                (vc.getReadState() == Comment.ReadState.LEAVE_UNREAD)
+                || (vc.getReadState() == Comment.ReadState.UNREAD);
+        return unread;
+    }
+
+    private static void addStylesToDocument(StyledDocument doc) {
 		//Initialize some styles.
 		Style def = StyleContext.getDefaultStyleContext().getStyle(StyleContext.DEFAULT_STYLE);
 
@@ -361,8 +376,14 @@ public class ReviewCommentPanel extends JPanel {
 		StyleConstants.setFontFamily(def, "SansSerif");
 
 		Style s = doc.addStyle("regular-selected", regular);
+        s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
 
-		s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
+        s = doc.addStyle("unread", regular);
+        StyleConstants.setBold(s, true);
+
+        s = doc.addStyle("unread-selected", regular);
+        StyleConstants.setBold(s, true);
+        s.addAttribute(StyleConstants.ColorConstants.Foreground, UIUtil.getTreeSelectionForeground());
 
 		s = doc.addStyle("defect", regular);
 		s.addAttribute(StyleConstants.ColorConstants.Foreground, Color.GRAY);
