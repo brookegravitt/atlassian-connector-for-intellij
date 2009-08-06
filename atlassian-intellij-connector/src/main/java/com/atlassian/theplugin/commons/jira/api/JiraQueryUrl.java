@@ -26,15 +26,17 @@ import java.util.List;
  */
 
 public final class JiraQueryUrl {
+    private static final int NOT_INITIALIZED = -10;
     private static final String ISSUE_NAVIGATOR =
             "/secure/IssueNavigator.jspa?refreshFilter=false&reset=update&show=View+%3E%3E";
     private static final String ISSUE_RSS = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml?";
+    private static final String ISSUES_SAVED_FILTER = "/sr/jira.issueviews:searchrequest-xml/";
     private String serverUrl = null;
     private List<JIRAQueryFragment> queryFragments = null;
     private String sortBy = null;
     private String sortOrder = null;
-    private int start = -1;
-    private int max = -1;
+    private int start = NOT_INITIALIZED;
+    private int max = NOT_INITIALIZED;
     private String userName = null;
 
 
@@ -85,19 +87,64 @@ public final class JiraQueryUrl {
         public JiraQueryUrl build() {
             return new JiraQueryUrl(this);
         }
+
+        public Builder queryFragment(JIRAQueryFragment fragment) {
+            if (queryFragments == null) {
+                queryFragments = new ArrayList<JIRAQueryFragment>();
+            }
+            queryFragments.add(fragment);
+            return this;
+        }
     }
 
     public String buildRssSearchUrl() {
-        return buildUrl(ISSUE_RSS);        
+        StringBuffer sb = new StringBuffer();
+        sb.append(buildQueryFragment());
+        sb.append("&").append(buildOptions());
+
+        if (serverUrl != null) {
+               sb.insert(0, ISSUE_RSS);
+               sb.insert(0, serverUrl);
+        }
+
+        return sb.toString();
     }
 
     public String buildIssueNavigatorUrl() {
-        return buildUrl(ISSUE_NAVIGATOR);
+       StringBuffer sb = new StringBuffer();
+        sb.append(buildQueryFragment());
+        sb.append("&").append(buildOptions());
+
+        if (serverUrl != null) {
+               sb.insert(0, ISSUE_NAVIGATOR);
+               sb.insert(0, serverUrl);
+        }
+
+        return sb.toString();
     }
 
-    
-    private String buildUrl(String method) {
 
+    public String buildSavedFilterUrl() {
+        JIRAQueryFragment query = queryFragments != null && queryFragments.size() > 0 ? queryFragments.get(0) : null;
+
+        StringBuffer sb = new StringBuffer();
+         if (serverUrl != null) {
+             sb.append(serverUrl);
+             sb.append(ISSUES_SAVED_FILTER);
+        }
+
+        if (query != null) {
+			sb.append(query.getQueryStringFragment())
+			  .append("/SearchRequest-")
+			  .append(query.getQueryStringFragment())
+			  .append(".xml");
+		}
+        sb.append("?");
+        sb.append(buildOptions());
+
+        return sb.toString();
+    }
+    private String buildQueryFragment() {
         StringBuilder sb = new StringBuilder();
 
         List<JIRAQueryFragment> fragmentsWithoutAnys = new ArrayList<JIRAQueryFragment>();
@@ -109,9 +156,17 @@ public final class JiraQueryUrl {
 
         for (JIRAQueryFragment fragment : fragmentsWithoutAnys) {
             if (fragment.getQueryStringFragment() != null) {
-                sb.append("&").append(fragment.getQueryStringFragment());
+                sb.append("&");
+                sb.append(fragment.getQueryStringFragment());
             }
         }
+
+
+        return sb.toString();
+    }
+
+    private String buildOptions() {
+        StringBuffer sb = new StringBuffer();
 
         if (sortBy != null) {
             sb.append("&sorter/field=").append(sortBy);
@@ -119,11 +174,11 @@ public final class JiraQueryUrl {
         if (sortOrder != null) {
             sb.append("&sorter/order=").append(sortOrder);
         }
-        if (start >= 0) {
+        if (start != NOT_INITIALIZED) {
             sb.append("&pager/start=").append(start);
         }
 
-        if (max >= 0) {
+        if (max != NOT_INITIALIZED) {
             sb.append("&tempMax=").append(max);
         }
 
@@ -131,11 +186,9 @@ public final class JiraQueryUrl {
             sb.append(appendAuthentication(false, userName));
         }
 
-        if (serverUrl != null) {
-               sb.insert(0, method);
-               sb.insert(0, serverUrl);
+        if (sb.length() > 0) {
+            sb.deleteCharAt(0); //remove &
         }
-        
         return sb.toString();
     }
 
