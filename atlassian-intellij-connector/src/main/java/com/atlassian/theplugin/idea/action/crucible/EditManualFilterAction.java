@@ -11,6 +11,7 @@ import com.atlassian.theplugin.idea.crucible.tree.FilterTree;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.DialogWrapper;
 
 import javax.swing.tree.DefaultTreeModel;
 
@@ -25,15 +26,17 @@ public class EditManualFilterAction extends AnAction {
         final CrucibleWorkspaceConfiguration projectCrucibleCfg = reviewListToolWindowPanel.getCrucibleConfiguration();
         final CustomFilterBean filter = projectCrucibleCfg.getCrucibleFilters().getManualFilter();
         final UiTaskExecutor uiTaskExecutor = IdeaHelper.getReviewListToolWindowPanel(project).getUiTaskExecutor();
-        
+
+        final CustomFilterBean filter1 = new CustomFilterBean(projectCrucibleCfg.getCrucibleFilters().getManualFilter());
         final CrucibleCustomFilterDialog dialog = new CrucibleCustomFilterDialog(
-                project, projectCfgManager, projectCrucibleCfg.getCrucibleFilters().getManualFilter(),
+                project, projectCfgManager, filter1,
                 uiTaskExecutor);
 
         dialog.show();
 
-        if (dialog.getExitCode() == 0 && dialog.getFilter() != null) {
-            final CustomFilterBean newFilter = dialog.getFilter();
+        if (dialog.getExitCode() == DialogWrapper.OK_EXIT_CODE && dialog.getFilter() != null) {
+            final CustomFilterBean newFilter =
+                    projectCrucibleCfg.getCrucibleFilters().getManualFilter().copy(dialog.getFilter());
             projectCrucibleCfg.getCrucibleFilters().setManualFilter(newFilter);
             final FilterTree tree = (FilterTree)reviewListToolWindowPanel.getLeftTree();
             ((DefaultTreeModel) tree.getModel()).nodeStructureChanged(tree.getSelectedNode());
