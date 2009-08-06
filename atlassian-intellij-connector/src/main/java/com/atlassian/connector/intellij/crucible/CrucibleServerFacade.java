@@ -201,4 +201,13 @@ public interface CrucibleServerFacade extends ProductServerFacade {
 			throws RemoteApiException, ServerPasswordNotProvidedException;
 
 	void fillDetailsForReview(final ReviewAdapter reviewItem) throws RemoteApiException, ServerPasswordNotProvidedException;
+
+    void markCommentRead(ServerData server, PermId reviewId, PermId commentId)  throws RemoteApiException,
+			ServerPasswordNotProvidedException;
+
+    void markCommentLeaveUnread(ServerData server, PermId reviewId, PermId commentId)  throws RemoteApiException,
+			ServerPasswordNotProvidedException;
+
+    void markAllCommentsRead(ServerData server, PermId reviewId)  throws RemoteApiException,
+			ServerPasswordNotProvidedException;
 }

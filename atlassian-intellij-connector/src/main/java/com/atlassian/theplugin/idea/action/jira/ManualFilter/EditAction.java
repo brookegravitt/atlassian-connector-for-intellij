@@ -67,8 +67,7 @@ public class EditAction extends AnAction {
 				jiraIssuesFilterPanel.show();
 
 				if (jiraIssuesFilterPanel.getExitCode() == 0) {
-					JIRAManualFilter jiraManualFilter = manualFilter;
-					jiraFilterListModel.clearManualFilter(jiraServer);
+                    jiraFilterListModel.clearManualFilter(jiraServer);
 					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
 					jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
