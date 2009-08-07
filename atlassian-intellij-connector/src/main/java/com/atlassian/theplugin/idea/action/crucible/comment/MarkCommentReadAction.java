@@ -1,26 +1,24 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
-import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
-import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
+import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 
 /**
  * User: kalamon
@@ -35,7 +33,7 @@ public class MarkCommentReadAction extends AbstractCommentAction {
         if (panel != null && node != null && (node instanceof CommentTreeNode)) {
             final CommentTreeNode commentNode = (CommentTreeNode) node;
             Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking comment as read", true) {
-                Throwable error = null;
+                private Throwable error = null;
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 

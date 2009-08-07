@@ -219,7 +219,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
     private void markCommentRead(final CommentTreeNode node) {
         Task.Backgroundable task = new Task.Backgroundable(project, "Marking comment as read", true) {
-            Throwable error = null;
+            private Throwable error = null;
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
