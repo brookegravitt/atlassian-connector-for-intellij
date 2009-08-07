@@ -45,7 +45,7 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
         final ServerData serverDataFinal = serverData;
         final JTree tree = getTree(event);
         Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking all comments as read", true) {
-            Throwable error = null;
+            private Throwable error = null;
             public void run(@NotNull ProgressIndicator progressIndicator) {
                 CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 

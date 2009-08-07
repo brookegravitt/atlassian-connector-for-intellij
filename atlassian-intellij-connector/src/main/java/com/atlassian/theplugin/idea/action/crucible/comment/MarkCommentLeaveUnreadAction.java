@@ -34,7 +34,7 @@ public class MarkCommentLeaveUnreadAction extends AbstractCommentAction {
         if (panel != null && node != null && (node instanceof CommentTreeNode)) {
             final CommentTreeNode commentNode = (CommentTreeNode) node;
             Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Leaving comment unread", true) {
-                Throwable error = null;
+                private Throwable error = null;
                 public void run(@NotNull ProgressIndicator progressIndicator) {
                     CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
