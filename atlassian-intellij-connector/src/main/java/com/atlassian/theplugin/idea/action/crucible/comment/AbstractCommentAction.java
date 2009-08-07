@@ -130,4 +130,12 @@ public abstract class AbstractCommentAction extends AnAction {
 	private boolean isUserAnAuthor(Comment comment, ReviewAdapter review) {
 		return review.getServerData().getUserName().equals(comment.getAuthor().getUserName());
 	}
+
+    protected boolean shouldSkipComment(AnActionEvent e, Comment comment) {
+        ReviewDetailsToolWindow ctw = IdeaHelper.getReviewDetailsToolWindow(e);
+        if (ctw != null && !ctw.getToggleOnlyUnreadCommentsNavigation()) {
+            return false;
+        }
+        return comment.getReadState() == Comment.ReadState.READ;
+    }
 }
