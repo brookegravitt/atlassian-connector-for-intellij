@@ -50,7 +50,7 @@ public class NextCommentAction extends AbstractCommentAction {
 	}
 
 	private AtlassianTreeNode getNextCommentNode(AnActionEvent event, AtlassianTreeNode node) {
-        AtlassianTree tree =(AtlassianTree) getTree(event);
+        AtlassianTree tree = (AtlassianTree) getTree(event);
         if (tree == null) {
             return null;
         }

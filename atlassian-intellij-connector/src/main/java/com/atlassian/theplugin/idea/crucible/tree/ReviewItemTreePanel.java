@@ -15,19 +15,16 @@ package com.atlassian.theplugin.idea.crucible.tree;
  * limitations under the License.
  */
 
-import com.atlassian.connector.intellij.crucible.CrucibleReviewListener;
-import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.ReviewAdapter;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
-import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -43,6 +40,7 @@ import com.atlassian.theplugin.idea.crucible.editor.CommentHighlighter;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentRenderer;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewDetailsTreeMouseListener;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTree;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
@@ -54,6 +52,11 @@ import com.atlassian.theplugin.idea.ui.tree.file.FileNode;
 import com.atlassian.theplugin.idea.ui.tree.file.FileTreeModelBuilder;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.TreeUISetup;
 import com.atlassian.theplugin.util.PluginUtil;
+import com.atlassian.connector.intellij.crucible.ReviewAdapter;
+import com.atlassian.connector.intellij.crucible.CrucibleReviewListener;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
+import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,9 +65,16 @@ import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.DataProvider;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -157,6 +167,25 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 
 			new ReviewDetailsTreeMouseListener(reviewFilesAndCommentsTree.getTreeComponent(), renderer, treeUISetup);
 			reviewFilesAndCommentsTree.setRootVisible(false);
+            reviewFilesAndCommentsTree.getTreeComponent().getSelectionModel().addTreeSelectionListener(
+                    new TreeSelectionListener() {
+                        public void valueChanged(TreeSelectionEvent event) {
+                            TreePath path = event.getNewLeadSelectionPath();
+                            if (path == null) {
+                                return;
+                            }
+                            Object o = path.getLastPathComponent();
+                            if (o instanceof CommentTreeNode) {
+                                CommentTreeNode node = (CommentTreeNode) o;
+                                Comment.ReadState state = node.getComment().getReadState();
+                                if (state != Comment.ReadState.UNREAD) {
+                                    return;
+                                }
+                                markCommentRead(node);
+                            }
+                        }
+                    }
+            );
 			reviewFilesAndCommentsTree.getTreeComponent().addMouseListener(new PopupAwareMouseAdapter() {
 
 				@Override
@@ -188,7 +217,37 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		return reviewFilesAndCommentsTree;
 	}
 
-	private void setCommentsState(AtlassianTreeWithToolbar.ViewState state) {
+    private void markCommentRead(final CommentTreeNode node) {
+        Task.Backgroundable task = new Task.Backgroundable(project, "Marking comment as read", true) {
+            Throwable error = null;
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
+
+                try {
+                    f.markCommentRead(node.getReview().getServerData(),
+                            node.getReview().getPermId(), node.getComment().getPermId());
+                } catch (RemoteApiException e) {
+                    error = e;
+                } catch (ServerPasswordNotProvidedException e) {
+                    error = e;
+                }
+            }
+
+            @Override
+            public void onSuccess() {
+                if (error != null) {
+                    DialogWithDetails.showExceptionDialog(
+                            getAtlassianTreeWithToolbar(), "Marking comment as read failed", error);
+                } else {
+                    ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
+                    ((DefaultTreeModel) reviewFilesAndCommentsTree.getTreeComponent().getModel()).nodeChanged(node);
+                }
+            }
+        };
+        ProgressManager.getInstance().run(task);
+    }
+
+    private void setCommentsState(AtlassianTreeWithToolbar.ViewState state) {
 		// ok, this shit should be banned by international conventions,
 		// as it is both cruel and harmful. Gaaah, my eyes hurt. Whoever
 		// invented Swing, should be taken out and shot - and then really
