@@ -1,35 +1,49 @@
 package com.atlassian.theplugin.idea.config.serverconfig;
 
+import static com.intellij.openapi.ui.Messages.showMessageDialog;
+import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
+import com.atlassian.theplugin.ConnectionWrapper;
+import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.idea.TestConnectionProcessor;
+import com.atlassian.theplugin.idea.TestConnectionTask;
+import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
+import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
-import static com.intellij.openapi.ui.Messages.showMessageDialog;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressManager;
-import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.CellConstraints;
-import com.atlassian.theplugin.commons.cfg.*;
-import com.atlassian.theplugin.commons.ServerType;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
-import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
-import com.atlassian.theplugin.idea.TestConnectionTask;
-import com.atlassian.theplugin.idea.TestConnectionProcessor;
-import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.config.serverconfig.util.ServerNameUtil;
-import com.atlassian.theplugin.ConnectionWrapper;
-
-import javax.swing.*;
-import javax.swing.event.DocumentListener;
+import com.jgoodies.forms.layout.FormLayout;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
-import java.awt.event.ActionListener;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.*;
-
-import org.jetbrains.annotations.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * User: kalamon
@@ -37,18 +51,18 @@ import org.jetbrains.annotations.NotNull;
  * Time: 3:03:34 PM
  */
 public class JiraStudioConfigDialog extends DialogWrapper {
-    private ConfigPanel rootPanel;
-    private JTextField serverName;
-    private JTextField serverUrl;
-    private JTextField userName;
-    private JPasswordField password;
-    private JCheckBox rememberPassword;
-    private JButton testConnection;
-    private JCheckBox useDefaultCredentials;
-    private DocumentListener documentListener;
-    private Project project;
-    private ServerTreePanel serverTree;
-    private UserCfg defaultUser;
+    private final ConfigPanel rootPanel;
+    private final JTextField serverName;
+    private final JTextField serverUrl;
+    private final JTextField userName;
+    private final JPasswordField password;
+    private final JCheckBox rememberPassword;
+    private final JButton testConnection;
+    private final JCheckBox useDefaultCredentials;
+    private final DocumentListener documentListener;
+    private final Project project;
+    private final ServerTreePanel serverTree;
+    private final UserCfg defaultUser;
     private static final String JIRA_STUDIO_SUFFIX = " (JIRA Studio)";
 
     protected JiraStudioConfigDialog(Project project, ServerTreePanel serverTree,
@@ -114,7 +128,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         init();
     }
 
-    private Map<String, Throwable> connectionErrors = new HashMap<String, Throwable>();
+    private final Map<String, Throwable> connectionErrors = new HashMap<String, Throwable>();
 
     private void testServerConnections() {
 
@@ -181,7 +195,7 @@ public class JiraStudioConfigDialog extends DialogWrapper {
 
     private void testCrucibleConnection(final TestConnectionProcessor processor) {
         final Task.Modal testConnectionTask = new TestConnectionTask(project,
-                new ProductConnector(CrucibleServerFacadeImpl.getInstance()),
+                new ProductConnector(IntelliJCrucibleServerFacade.getInstance()),
                 new ServerData(generateCrucibleServerCfg(), defaultUser),
                 processor, "Testing Crucible Connection", true, false, false);
         testConnectionTask.setCancelText("Stop");
@@ -192,7 +206,8 @@ public class JiraStudioConfigDialog extends DialogWrapper {
         });
     }
 
-    protected JComponent createCenterPanel() {
+    @Override
+	protected JComponent createCenterPanel() {
         return rootPanel;
     }
 
