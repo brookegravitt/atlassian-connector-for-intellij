@@ -475,6 +475,11 @@
 				icon="/icons/moveUp-cru.png">
 			<keyboard-shortcut keymap="$default" first-keystroke="shift control alt PAGE_UP"/>
 		</action>
+        <action id="ThePlugin.Crucible.Comment.OnlyUnread"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.OnlyNavigateToUnreadAction"
+                text="Skip read comments"
+                icon="/icons/crucible-unread-comment.png"/>
+
 		<action id="ThePlugin.Crucible.Comment.NextDiff"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
 				text="Next Difference"
@@ -717,6 +722,8 @@
 			<separator/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+            <reference id="ThePlugin.Crucible.Comment.OnlyUnread"/>
+            <separator/>
 			<reference id="ThePlugin.Crucible.Comment.PrevDiff"/>
 			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
 			<separator/>

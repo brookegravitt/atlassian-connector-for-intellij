@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.crucible.ValueNotYetInitialized;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.RepositoryType;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.idea.VcsIdeaHelper;
 import com.atlassian.theplugin.idea.action.crucible.comment.AbstractDiffNavigationAction;
 import com.atlassian.theplugin.idea.crucible.CrucibleHelper;
@@ -47,7 +48,8 @@ import java.awt.*;
 import java.util.Set;
 
 public final class CommentHighlighter {
-	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(255, 219, 90);
+	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(0xf2, 0xd0, 0x55);
+    public static final Color VERSIONED_READ_COMMENT_BACKGROUND_COLOR = new Color(0xffe897);
 	private static final Color VERSIONED_COMMENT_STRIP_MARK_COLOR = VERSIONED_COMMENT_BACKGROUND_COLOR;
     public static final Color VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR = new Color(199, 200, 200);
 
@@ -239,12 +241,15 @@ public final class CommentHighlighter {
 		final MarkupModel markupModel = editor.getDocument().getMarkupModel(project);
 		removeHighlighters(markupModel);
 
-		TextAttributes textAttributes = new TextAttributes();
+		TextAttributes unreadTextAttributes = new TextAttributes();
+        TextAttributes readTextAttributes = new TextAttributes();
         VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(editor.getDocument());
         if (!VcsIdeaHelper.isFileDirty(project, virtualFile)) {
-		    textAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+		    unreadTextAttributes.setBackgroundColor(VERSIONED_COMMENT_BACKGROUND_COLOR);
+            readTextAttributes.setBackgroundColor(VERSIONED_READ_COMMENT_BACKGROUND_COLOR);
         } else {
-            textAttributes.setBackgroundColor(VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR);
+            unreadTextAttributes.setBackgroundColor(VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR);
+            readTextAttributes.setBackgroundColor(VERSIONED_DIRTY_COMMENT_BACKGROUND_COLOR);
         }
         
 		for (VersionedComment comment : fileInfo.getVersionedComments()) {
@@ -275,12 +280,17 @@ public final class CommentHighlighter {
                     if (editor.getDocument().getModificationStamp() > 0) {
                         int i = 1;
                     }
+                    boolean unread = comment.getReadState() == Comment.ReadState.UNREAD
+                            || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD;
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
-							HighlighterLayer.SELECTION - 1, textAttributes, HighlighterTargetArea.LINES_IN_RANGE);
+							HighlighterLayer.SELECTION - 1, unread ? unreadTextAttributes : readTextAttributes,
+                            HighlighterTargetArea.LINES_IN_RANGE);
 //					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
 //							+ ":</b> " + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-					rh.setGutterIconRenderer(new CrucibleGutterIconRenderer(editor, review, fileInfo, comment));
+					rh.setGutterIconRenderer(unread
+                            ? new UnreadCrucibleGutterIconRenderer(editor, review, fileInfo, comment)
+                            : new ReadCrucibleGutterIconRenderer(editor, review, fileInfo, comment));
 					rh.putUserData(COMMENT_DATA_KEY, true);
 					rh.putUserData(VERSIONED_COMMENT_DATA_KEY, comment);
 				} catch (Exception e) {

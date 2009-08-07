@@ -133,6 +133,7 @@ public final class Constants {
 	public static final Icon BAMBOO_COMMITS_ICON = IconLoader.getIcon("/icons/bamboo-commits.png");
 	public static final Icon CRUCIBLE_REVIEW_TAB_ICON = IconLoader.getIcon("/icons/tab_crucible-white.png");
 	public static final Icon CRUCIBLE_REVIEW_PANEL_ICON = IconLoader.getIcon("/icons/tab_crucible.png");
+    public static final Icon CRUCIBLE_UNREAD_COMMENT_ICON = IconLoader.getIcon("/icons/crucible-unread-comment.png");
 
 	public static final String ACTIVE_TOOLBAR_NAME = "ThePlugin.ActiveToolbar";
 	public static final String ACTIVE_JIRA_ISSUE_ACTION = "ThePlugin.ActiveTaskBar.ShowActiveJiraIssue";
