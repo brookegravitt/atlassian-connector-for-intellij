@@ -477,9 +477,22 @@
 		</action>
         <action id="ThePlugin.Crucible.Comment.OnlyUnread"
                 class="com.atlassian.theplugin.idea.action.crucible.comment.OnlyNavigateToUnreadAction"
-                text="Skip read comments"
+                text="Skip Read Comments"
                 icon="/icons/crucible-unread-comment.png"/>
-
+        <action id="ThePlugin.Crucible.Comment.MarkAllRead"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkAllCommentsReadAction"
+                text="Mark All Comments Read"
+                icon="/icons/ico_crucible_green.png"/>
+        <action id="ThePlugin.Crucible.Comment.MarkRead"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentReadAction"
+                text="Mark Read"
+                icon="/icons/ico_crucible_orange.png"/>
+                />
+        <action id="ThePlugin.Crucible.Comment.MarkLeaveUnread"
+                class="com.atlassian.theplugin.idea.action.crucible.comment.MarkCommentLeaveUnreadAction"
+                text="Leave Unread"
+                icon="/icons/ico_crucible_red.png"/>
+                />
 		<action id="ThePlugin.Crucible.Comment.NextDiff"
 				class="com.atlassian.theplugin.idea.action.crucible.comment.NextDiffAction"
 				text="Next Difference"
@@ -723,6 +736,7 @@
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
             <reference id="ThePlugin.Crucible.Comment.OnlyUnread"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkAllRead"/>
             <separator/>
 			<reference id="ThePlugin.Crucible.Comment.PrevDiff"/>
 			<reference id="ThePlugin.Crucible.Comment.NextDiff"/>
@@ -800,6 +814,8 @@
 			<reference id="ThePlugin.Crucible.Comment.AddGeneralComment"/>
 			<reference id="ThePlugin.Crucible.Comment.PrevComment"/>
 			<reference id="ThePlugin.Crucible.Comment.NextComment"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkRead"/>
+            <reference id="ThePlugin.Crucible.Comment.MarkLeaveUnread"/>
 		</group>
 
 		<group id="ThePlugin.Crucible.PostCommit" popup="false" text="">
