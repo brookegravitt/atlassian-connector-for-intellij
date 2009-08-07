@@ -72,9 +72,10 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 
 	private ReviewPanel contentPanel;
 	private ReviewContentParameters contentParams;
+    private boolean toggleOnlyUnreadCommentsNavigation;
 
 
-	protected ReviewDetailsToolWindow(@NotNull final Project project,
+    protected ReviewDetailsToolWindow(@NotNull final Project project,
 			@NotNull final ThePluginProjectComponent pluginProjectComponent,
 			@NotNull final PluginConfiguration pluginConfiguration,
 			@NotNull final WorkspaceConfigurationBean workspaceConfiguration) {
@@ -144,7 +145,15 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 		}
 	}
 
-	private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
+    public boolean getToggleOnlyUnreadCommentsNavigation() {
+        return toggleOnlyUnreadCommentsNavigation;
+    }
+
+    public void setToggleOnlyUnreadCommentsNavigation(boolean toggleOnlyUnreadCommentsNavigation) {
+        this.toggleOnlyUnreadCommentsNavigation = toggleOnlyUnreadCommentsNavigation;
+    }
+
+    private final class ReviewContentParameters implements MultiTabToolWindow.ContentParameters {
 		private final ReviewAdapter reviewAdapter;
 		private boolean refreshDetails;
 
