@@ -28,7 +28,7 @@ public class PrevCommentAction extends AbstractCommentAction {
 
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTree tree = (AtlassianTree) getTree(e);
-		AtlassianTreeNode prevNode = getPrevCommentNode(getSelectedNode(e));
+		AtlassianTreeNode prevNode = getPrevCommentNode(e, getSelectedNode(e));
 		if (tree != null && prevNode != null) {
 			TreePath path = new TreePath(prevNode.getPath());
 			tree.scrollPathToVisible(path);
@@ -43,12 +43,12 @@ public class PrevCommentAction extends AbstractCommentAction {
 	public void update(final AnActionEvent e) {
 
 		AtlassianTreeNode node = getSelectedNode(e);
-		boolean enabled = getPrevCommentNode(node) != null;
+		boolean enabled = getPrevCommentNode(e, node) != null;
 
 		e.getPresentation().setEnabled(enabled);
 	}
 
-	private AtlassianTreeNode getPrevCommentNode(AtlassianTreeNode node) {
+	private AtlassianTreeNode getPrevCommentNode(AnActionEvent event, AtlassianTreeNode node) {
 		if (node == null) {
 			return null;
 		}
@@ -56,7 +56,7 @@ public class PrevCommentAction extends AbstractCommentAction {
 		while (n != null) {
 			if (n instanceof CommentTreeNode) {
 				CommentTreeNode ctn = (CommentTreeNode) n;
-				if (!ctn.getComment().isReply()) {
+				if (!ctn.getComment().isReply() && !shouldSkipComment(event, ctn.getComment())) {
 					return n;
 				}
 			}

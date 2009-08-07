@@ -29,7 +29,7 @@ public class NextCommentAction extends AbstractCommentAction {
 	
 	public void actionPerformed(final AnActionEvent e) {
 		AtlassianTree tree = (AtlassianTree) getTree(e);
-		AtlassianTreeNode nextNode = getNextCommentNode(tree, getSelectedNode(e));
+		AtlassianTreeNode nextNode = getNextCommentNode(e, getSelectedNode(e));
 		if (tree != null && nextNode != null) {
 			TreePath path = new TreePath(nextNode.getPath());
 			tree.scrollPathToVisible(path);
@@ -44,16 +44,17 @@ public class NextCommentAction extends AbstractCommentAction {
 	public void update(final AnActionEvent e) {
 
 		AtlassianTreeNode node = getSelectedNode(e);
-		boolean enabled = getNextCommentNode((AtlassianTree) getTree(e), node) != null;
+		boolean enabled = getNextCommentNode(e, node) != null;
 
 		e.getPresentation().setEnabled(enabled);
 	}
 
-	private AtlassianTreeNode getNextCommentNode(AtlassianTree tree, AtlassianTreeNode node) {
+	private AtlassianTreeNode getNextCommentNode(AnActionEvent event, AtlassianTreeNode node) {
+        AtlassianTree tree =(AtlassianTree) getTree(event);
+        if (tree == null) {
+            return null;
+        }
 		DefaultMutableTreeNode start = node;
-		if (tree == null) {
-			return null;
-		}
 		if (start == null) {
 			start = (DefaultMutableTreeNode) tree.getModel().getRoot();
 		}
@@ -62,7 +63,7 @@ public class NextCommentAction extends AbstractCommentAction {
 			while (n != null) {
 				if (n instanceof CommentTreeNode) {
 					CommentTreeNode ctn = (CommentTreeNode) n;
-					if (!ctn.getComment().isReply()) {
+					if (!ctn.getComment().isReply() && !shouldSkipComment(event, ctn.getComment())) {
 						return n;
 					}
 				}
