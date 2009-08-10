@@ -1,9 +1,6 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -18,7 +15,6 @@ import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 
 /**
  * User: kalamon
@@ -35,12 +31,8 @@ public class MarkCommentReadAction extends AbstractCommentAction {
             Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking comment as read", true) {
                 private Throwable error = null;
                 public void run(@NotNull ProgressIndicator progressIndicator) {
-//                    CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
-
                     try {
                         commentNode.getReview().markCommentRead(commentNode.getComment());
-//                        f.markCommentRead(commentNode.getReview().getServerData(),
-//                                commentNode.getReview().getPermId(), commentNode.getComment().getPermId());
                     } catch (RemoteApiException e) {
                         error = e;
                     } catch (ServerPasswordNotProvidedException e) {
@@ -53,9 +45,6 @@ public class MarkCommentReadAction extends AbstractCommentAction {
                     if (error != null) {
                         DialogWithDetails.showExceptionDialog(
                                 panel.getAtlassianTreeWithToolbar(), "Marking comment as read failed", error);
-                    } else {
-//                        ((CommentBean) commentNode.getComment()).setReadState(Comment.ReadState.READ);
-//                        ((DefaultTreeModel) tree.getModel()).nodeChanged(commentNode);
                     }
                 }
             };

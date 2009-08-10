@@ -1,31 +1,21 @@
 package com.atlassian.theplugin.idea.action.crucible.comment;
 
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.openapi.progress.ProgressManager;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.idea.IdeaHelper;
+import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
+import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeNode;
 import com.atlassian.theplugin.idea.ui.tree.comment.CommentTreeNode;
-import com.atlassian.theplugin.idea.ui.DialogWithDetails;
-import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
-import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.PermId;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.*;
-
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * User: kalamon
@@ -35,44 +25,15 @@ import java.util.ArrayList;
 public class MarkAllCommentsReadAction extends AbstractCommentAction {
     public void actionPerformed(AnActionEvent event) {
         final ReviewDetailsToolWindow panel = IdeaHelper.getReviewDetailsToolWindow(event);
-//        PermId reviewId = null;
-//        ServerData serverData = null;
         if (panel == null || panel.getReview() == null) {
             return;
-//            serverData = panel.getReview().getServerData();
-//            reviewId = panel.getReview().getPermId();
         }
-//        if (reviewId == null || serverData == null) {
-//            return;
-//        }
-//        final PermId reviewIdFinal = reviewId;
-//        final ServerData serverDataFinal = serverData;
-//        final JTree tree = getTree(event);
-
-//        final List<Comment> leaveUnreadComments = new ArrayList<Comment>();
-//        traverseCommentsInTree(tree, new TraverseTreeListener() {
-//            public boolean execute(CommentTreeNode node) {
-//                if (node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-//                    leaveUnreadComments.add(node.getComment());
-//                }
-//                return false;
-//            }
-//        });
 
         Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking all comments as read", true) {
             private Throwable error = null;
             public void run(@NotNull ProgressIndicator progressIndicator) {
-//                CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
-
                 try {
                     panel.getReview().markAllCommentsRead();
-//                    f.markAllCommentsRead(serverDataFinal, reviewIdFinal);
-
-                    // LEAVE_UNREAD comments are not modified by "markAllAsRead" REST API,
-                    // but web UI marks _all_ comments read anyway, so let's be consistent with that
-//                    for (Comment comment : leaveUnreadComments) {
-//                        f.markCommentRead(serverDataFinal, reviewIdFinal, comment.getPermId());
-//                    }
                 } catch (RemoteApiException e) {
                     error = e;
                 } catch (ServerPasswordNotProvidedException e) {
@@ -85,18 +46,6 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
                 if (error != null) {
                     DialogWithDetails.showExceptionDialog(
                             panel.getAtlassianTreeWithToolbar(), "Marking all comments as read failed", error);
-                } else {
-//                    traverseCommentsInTree(tree, new TraverseTreeListener() {
-//                        public boolean execute(CommentTreeNode node) {
-//                             todo: fime? Shouldn't we be doing this on the model itself? Not sure
-//                            if (node.getComment().getReadState() == Comment.ReadState.UNREAD
-//                                || node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-//                                ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
-//                            }
-//                            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-//                            return false;
-//                        }
-//                    });
                 }
             }
         };
