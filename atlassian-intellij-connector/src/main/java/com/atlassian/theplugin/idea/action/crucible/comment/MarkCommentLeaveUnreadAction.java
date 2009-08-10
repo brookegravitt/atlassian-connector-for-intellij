@@ -10,14 +10,10 @@ import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.crucible.ReviewDetailsToolWindow;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
-import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
-import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
-import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -36,11 +32,12 @@ public class MarkCommentLeaveUnreadAction extends AbstractCommentAction {
             Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Leaving comment unread", true) {
                 private Throwable error = null;
                 public void run(@NotNull ProgressIndicator progressIndicator) {
-                    CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
+//                    CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
                     try {
-                        f.markCommentLeaveUnread(commentNode.getReview().getServerData(),
-                                commentNode.getReview().getPermId(), commentNode.getComment().getPermId());
+                        commentNode.getReview().markCommentLeaveUnread(commentNode.getComment());
+//                        f.markCommentLeaveUnread(commentNode.getReview().getServerData(),
+//                                commentNode.getReview().getPermId(), commentNode.getComment().getPermId());
                     } catch (RemoteApiException e) {
                         error = e;
                     } catch (ServerPasswordNotProvidedException e) {
@@ -54,8 +51,8 @@ public class MarkCommentLeaveUnreadAction extends AbstractCommentAction {
                         DialogWithDetails.showExceptionDialog(
                                 panel.getAtlassianTreeWithToolbar(), "Leaving comment unread failed", error);
                     } else {
-                        ((CommentBean) commentNode.getComment()).setReadState(Comment.ReadState.LEAVE_UNREAD);
-                        ((DefaultTreeModel) tree.getModel()).nodeChanged(commentNode);
+//                        ((CommentBean) commentNode.getComment()).setReadState(Comment.ReadState.LEAVE_UNREAD);
+//                        ((DefaultTreeModel) tree.getModel()).nodeChanged(commentNode);
                     }
                 }
             };

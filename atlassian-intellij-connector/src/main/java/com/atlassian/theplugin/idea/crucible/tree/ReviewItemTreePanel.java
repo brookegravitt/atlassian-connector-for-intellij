@@ -69,12 +69,12 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -399,7 +399,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 		}
 	}
 
-	private class MyRunnable implements Runnable {
+    private class MyRunnable implements Runnable {
 
 		private final ReviewAdapter review;
 
@@ -546,6 +546,28 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
 				final List<CrucibleNotification> notifications) {
 			refreshView(review);
 		}
-	}
+
+        public void commentReadStateChanged(final ReviewAdapter review, final Comment comment) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    AtlassianTree tree = reviewFilesAndCommentsTree.getTreeComponent();
+                    DefaultMutableTreeNode start =
+                            (DefaultMutableTreeNode) tree.getModel().getRoot();
+
+                    AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
+                    while (n != null) {
+                        if (n instanceof CommentTreeNode) {
+                            CommentTreeNode ctn = (CommentTreeNode) n;
+                            if (ctn.getComment().getPermId().equals(comment.getPermId())) {
+                                ((CommentBean) ctn.getComment()).setReadState(comment.getReadState());
+                                ((DefaultTreeModel) tree.getModel()).nodeChanged(ctn);
+                            }
+                        }
+                        n = (AtlassianTreeNode) n.getNextNode();
+                    }
+                }
+            });
+        }
+    }
 
 }
