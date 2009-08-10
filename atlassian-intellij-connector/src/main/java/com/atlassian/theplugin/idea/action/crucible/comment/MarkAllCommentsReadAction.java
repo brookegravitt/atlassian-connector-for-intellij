@@ -24,6 +24,9 @@ import javax.swing.*;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * User: kalamon
  * Date: Aug 7, 2009
@@ -44,6 +47,17 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
         final PermId reviewIdFinal = reviewId;
         final ServerData serverDataFinal = serverData;
         final JTree tree = getTree(event);
+
+        final List<Comment> leaveUnreadComments = new ArrayList<Comment>();
+        traverseCommentsInTree(tree, new TraverseTreeListener() {
+            public boolean execute(CommentTreeNode node) {
+                if (node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                    leaveUnreadComments.add(node.getComment());
+                }
+                return false;
+            }
+        });
+
         Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking all comments as read", true) {
             private Throwable error = null;
             public void run(@NotNull ProgressIndicator progressIndicator) {
@@ -51,6 +65,12 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
 
                 try {
                     f.markAllCommentsRead(serverDataFinal, reviewIdFinal);
+
+                    // LEAVE_UNREAD comments are not modified by "markAllAsRead" REST API,
+                    // but web UI mareks _all_ comments read anyway, so let's be consistent with that 
+                    for (Comment comment : leaveUnreadComments) {
+                        f.markCommentRead(serverDataFinal, reviewIdFinal, comment.getPermId());
+                    }
                 } catch (RemoteApiException e) {
                     error = e;
                 } catch (ServerPasswordNotProvidedException e) {
@@ -67,7 +87,8 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
                     traverseCommentsInTree(tree, new TraverseTreeListener() {
                         public boolean execute(CommentTreeNode node) {
                             // todo: fime? Shouldn't we be doing this on the model itself? Not sure
-                            if (node.getComment().getReadState() == Comment.ReadState.UNREAD) {
+                            if (node.getComment().getReadState() == Comment.ReadState.UNREAD
+                                || node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
                                 ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
                             }
                             ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
