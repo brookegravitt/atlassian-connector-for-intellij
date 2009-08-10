@@ -17,9 +17,10 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.commons.UIActionScheduler;
+import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
+import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
@@ -30,13 +31,13 @@ import com.atlassian.theplugin.commons.util.Logger;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.ddsteps.mock.httpserver.JettyMockServer;
 import org.easymock.EasyMock;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.TimerTask;
 
 /**
@@ -49,7 +50,7 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	private static final String PLAN_ID = "TP-DEF"; // always the same - mock does the logic
 
-	private Logger logger;
+	private IntelliJBambooServerFacade facade;
 
 	public BambooStatusCheckerTest(String name) {
 		super(name);
@@ -58,19 +59,21 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		logger = EasyMock.createMock(Logger.class);
+		final Logger logger = EasyMock.createMock(Logger.class);
 		ConfigurationFactory.setConfiguration(new PluginConfigurationBean());
+		facade = IntelliJBambooServerFacade.getInstance(
+				logger);
 	}
 
 	public void testGetInterval() throws Exception {
 		BambooStatusChecker checker = new BambooStatusChecker(
 //				null, MockBambooCfgManager.createBambooTestConfiguration(),
-				null, Mockito.mock(ProjectCfgManager.class), new PluginConfigurationBean(), null, logger);
+				null, Mockito.mock(ProjectCfgManager.class), new PluginConfigurationBean(), null, facade);
 		assertEquals(1000 * 60 * 10, checker.getInterval());
 	}
 
 	public void testNewTimerTask() {
-		BambooStatusChecker checker = new BambooStatusChecker(null, null, null, null, logger);
+		BambooStatusChecker checker = new BambooStatusChecker(null, null, null, null, facade);
 		TimerTask t1 = checker.newTimerTask();
 		TimerTask t2 = checker.newTimerTask();
 
@@ -79,12 +82,18 @@ public class BambooStatusCheckerTest extends TestCase {
 	}
 
 	public void testLogic() throws Exception {
-		// perform no-operation
-
 		ProjectCfgManager cfg = Mockito.mock(ProjectCfgManager.class);
+		final String mockBaseUrl = "http://localhost";
+		final BambooServerCfg s = getServer(mockBaseUrl);
+		final BambooServerData server = new BambooServerData(s, new UserCfg(s.getUserName(), s.getPassword()));
+		final BambooBuildInfo build = new BambooBuildInfo.Builder("TP-DEF", null, server.toConnectionCfg(), "a project", 140, BuildStatus.SUCCESS).testsFailedCount(10).testsPassedCount(30).build();
+
+		IntelliJBambooServerFacade mockFacade = Mockito.mock(IntelliJBambooServerFacade.class);
+		Mockito.when(mockFacade.getSubscribedPlansResults(server, server.getPlans(), server.isUseFavourites(),
+				server.getTimezoneOffset())).thenReturn(Collections.singleton(new BambooBuildAdapter(build, server)));
 
 		EasyInvoker invoker = new EasyInvoker();
-		BambooStatusChecker checker = new BambooStatusChecker(null, cfg, null, null, logger);
+		BambooStatusChecker checker = new BambooStatusChecker(null, cfg, null, null, mockFacade);
 
 		checker.setActionScheduler(invoker);
 		checker.updateConfiguration(cfg);
@@ -122,61 +131,16 @@ public class BambooStatusCheckerTest extends TestCase {
 		assertNotNull(r2.getLastAndClear());
 
 		assertFalse(checker.canSchedule()); // config empty
-
-		/************************************************************************/
-		org.mortbay.jetty.Server httpServer = new org.mortbay.jetty.Server(0);
-		httpServer.start();
-
-		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
-
-		JettyMockServer mockServer = new JettyMockServer(httpServer);
-//		addServer(config, mockBaseUrl);
-		final BambooServerCfg s = getServer(mockBaseUrl);
-		final BambooServerData server = new BambooServerData(s, new UserCfg(s.getUserName(), s.getPassword()));
 		Mockito.when(cfg.getAllEnabledBambooServerss()).thenReturn(Arrays.asList(server));
-
 		assertTrue(checker.canSchedule()); // config not empty
 
-		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
-		mockServer.expect("/api/rest/getLatestBuildResults.action", new LatestBuildResultCallback());
 
 		task.run();
 		assertEquals(1, r2.lastStatuses.size());
 
-		mockServer.verify();
-		httpServer.stop();
 	}
 
-	public void testLoginNew() throws Exception {
-		ProjectCfgManager cfg = Mockito.mock(ProjectCfgManager.class);
-		BambooStatusChecker checker = new BambooStatusChecker(null, cfg, null, null, logger);
-		TimerTask task = checker.newTimerTask();
 
-		org.mortbay.jetty.Server httpServer = new org.mortbay.jetty.Server(0);
-		httpServer.start();
-
-		String mockBaseUrl = "http://localhost:" + httpServer.getConnectors()[0].getLocalPort();
-
-		JettyMockServer mockServer = new JettyMockServer(httpServer);
-		final BambooServerCfg s = getServer(mockBaseUrl);
-		final BambooServerData server = new BambooServerData(s, new UserCfg(s.getUserName(), s.getPassword()));
-		s.setIsBamboo2M9(true);
-		Mockito.when(cfg.getAllEnabledBambooServerss()).thenReturn(Arrays.asList(server));
-
-		assertTrue(checker.canSchedule()); // config not empty
-
-		mockServer.expect("/api/rest/login.action", new LoginCallback(USER_NAME, PASSWORD));
-		mockServer.expect("/api/rest/listBuildNames.action", new PlanListCallback());
-		mockServer.expect("/api/rest/getLatestUserBuilds.action", new FavouritePlanListCallback());
-		mockServer.expect("/rest/api/latest/plan/TP-DEF", new LatestBuildResultCallbackNew());
-
-		task.run();
-		mockServer.verify();
-
-		httpServer.stop();
-	}
 
 	private static BambooServerCfg getServer(String url) {
 		BambooServerCfg server = new BambooServerCfg("TestServer", new ServerIdImpl());
