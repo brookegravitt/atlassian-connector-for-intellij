@@ -19,6 +19,7 @@ import javax.swing.SwingConstants;
 import org.jetbrains.annotations.NotNull;
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -77,7 +78,7 @@ public class BuildHistoryPanel extends JPanel {
         buildList.setCellRenderer(new ListCellRenderer() {
             public Component getListCellRendererComponent(JList list, Object value, int index,
                                                       boolean isSelected, boolean cellHasFocus) {
-				BambooBuildAdapterIdea buildAdapter = (BambooBuildAdapterIdea) value;
+				BambooBuildAdapter buildAdapter = (BambooBuildAdapter) value;
                 RENDERER_PANEL.setBuild(buildAdapter);
                 RENDERER_PANEL.setSelected(isSelected);
                 BuildTreeNode.addTooltipToPanel(buildAdapter, RENDERER_PANEL);
@@ -123,7 +124,7 @@ public class BuildHistoryPanel extends JPanel {
         if (selected == null || selected.length == 0) {
             return;
         }
-		BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) selected[0];
+		BambooBuildAdapter build = (BambooBuildAdapter) selected[0];
         final BambooToolWindowPanel buildsWindow = IdeaHelper.getBambooToolWindowPanel(project);
         if (buildsWindow != null) {
 			buildsWindow.openBuild(build);
@@ -131,9 +132,9 @@ public class BuildHistoryPanel extends JPanel {
     }
 
     //
-    // invoke from dispatch thread
+    // getBuilds from dispatch thread
     //
-	public synchronized void showHistoryForBuild(@NotNull final BambooBuildAdapterIdea buildDetailsInfo) {
+	public synchronized void showHistoryForBuild(@NotNull final BambooBuildAdapter buildDetailsInfo) {
         try {
 			String currentBuild =
 					buildDetailsInfo.getServer().getUrl() + ":" + buildDetailsInfo.getPlanKey() + "-"
@@ -155,7 +156,7 @@ public class BuildHistoryPanel extends JPanel {
 
 		currentTask =
 				new Task.Backgroundable(project, "Getting build history for build " + buildDetailsInfo.getPlanKey(), false) {
-			private Collection<BambooBuildAdapterIdea> builds;
+			private Collection<BambooBuildAdapter> builds;
             @Override
 			public void run(@NotNull ProgressIndicator progressIndicator) {
                 try {
@@ -173,7 +174,7 @@ public class BuildHistoryPanel extends JPanel {
                     if (currentTask == this) {
                         listModel.clear();
                         scrollPane.setViewportView(buildList);
-						for (BambooBuildAdapterIdea bambooBuild : builds) {
+						for (BambooBuildAdapter bambooBuild : builds) {
                             listModel.addElement(bambooBuild);
                         }
                         stopThrobber();
@@ -204,10 +205,10 @@ public class BuildHistoryPanel extends JPanel {
 //        listModel.clear();
     }
 
-	public synchronized BambooBuildAdapterIdea getSelectedBuild() {
+	public synchronized BambooBuildAdapter getSelectedBuild() {
         Object[] selected = buildList.getSelectedValues();
         if (selected != null && selected.length > 0) {
-			return (BambooBuildAdapterIdea) selected[0];
+			return (BambooBuildAdapter) selected[0];
         }
         return null;
     }
@@ -231,7 +232,7 @@ public class BuildHistoryPanel extends JPanel {
             add(buildDate, cc.xy(2 + 2 + 1, 1));
         }
 
-        public void setBuild(BambooBuildAdapterIdea build) {
+        public void setBuild(BambooBuildAdapter build) {
             buildIcon.setIcon(build.getIcon());
             buildKey.setText(build.getPlanKey() + "-" + build.getBuildNumberAsString());
             buildDate.setText(DateUtil.getRelativePastDate(build.getCompletionDate()));

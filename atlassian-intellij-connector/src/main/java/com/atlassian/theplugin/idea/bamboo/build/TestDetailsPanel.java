@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.TestDetails;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.ui.PopupAwareMouseAdapter;
 import com.atlassian.theplugin.util.ColorToHtml;
 import com.intellij.execution.PsiLocation;
@@ -52,7 +52,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 	private List<TestDetails> succeededTests;
 	private final Project project;
-	private final BambooBuildAdapterIdea build;
+	private final BambooBuildAdapter build;
 	private final String contentKey;
 	private List<TestDetails> failedTests;
 
@@ -64,7 +64,7 @@ public class TestDetailsPanel extends JPanel implements ActionListener {
 
 	private static final boolean PASSED_TESTS_VISIBLE_DEFAULT = false;
 
-	public TestDetailsPanel(Project project, final BambooBuildAdapterIdea build, String contentKey) {
+	public TestDetailsPanel(Project project, final BambooBuildAdapter build, String contentKey) {
 		this.project = project;
 		this.build = build;
 		this.contentKey = contentKey;

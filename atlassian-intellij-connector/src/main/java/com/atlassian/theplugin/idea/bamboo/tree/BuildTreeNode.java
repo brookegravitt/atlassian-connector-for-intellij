@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.SelectableHoverLabel;
 import com.atlassian.theplugin.util.Util;
@@ -44,7 +44,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 			"<body style=\"font-size:12pt ; font-family: arial, helvetica, sans-serif\">";
 
 
-	private BambooBuildAdapterIdea build;
+	private BambooBuildAdapter build;
 	public static final String CODE_HAS_CHANGED = "Code has changed";
 	private double reasonWidth;
 	private double serverWidth;
@@ -52,7 +52,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	private static final int LABEL_PADDING = 5;
 	private boolean hover = false;
 
-	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapterIdea build) {
+	public BuildTreeNode(final BuildListModel buildModel, final BambooBuildAdapter build) {
 		super(build.getPlanKey(), null, null);
 
 		this.build = build;
@@ -67,7 +67,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		serverWidth = 0.0;
 		dateWidth = 0.0;
 
-		for (BambooBuildAdapterIdea b : buildModel.getBuilds()) {
+		for (BambooBuildAdapter b : buildModel.getBuilds()) {
 			// PL-1202 - argument to TextLayout must be a non-empty string
 			String reason = getBuildReasonString(b);
 			TextLayout layoutStatus = new TextLayout(reason.length() > 0 ? reason : ".",
@@ -85,7 +85,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@Override
-	public BambooBuildAdapterIdea getBuild() {
+	public BambooBuildAdapter getBuild() {
 		return build;
 	}
 
@@ -131,7 +131,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@NotNull
-	private static String getBuildReasonString(BambooBuildAdapterIdea build) {
+	private static String getBuildReasonString(BambooBuildAdapter build) {
 		StringBuilder sb = new StringBuilder();
 
 		String commiters = getCommiters(build);
@@ -235,16 +235,16 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 	}
 
 	@NotNull
-	private static String getRelativeBuildTimeString(BambooBuildAdapterIdea build) {
+	private static String getRelativeBuildTimeString(BambooBuildAdapter build) {
 		return DateUtil.getRelativePastDate(build.getCompletionDate());
 	}
 
 	@NotNull
-	private static String getBuildServerString(BambooBuildAdapterIdea build) {
+	private static String getBuildServerString(BambooBuildAdapter build) {
 		return "(" + build.getServer().getName() + ")";
 	}
 
-	private static String getCommiters(BambooBuildAdapterIdea build) {
+	private static String getCommiters(BambooBuildAdapter build) {
 		StringBuilder commiters = new StringBuilder();
 
 		Collection<String> c = build.getCommiters();
@@ -257,7 +257,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		return commiters.toString();
 	}
 
-	public static void addTooltipToPanel(BambooBuildAdapterIdea build, JPanel p) {
+	public static void addTooltipToPanel(BambooBuildAdapter build, JPanel p) {
 		final JToolTip jToolTip = p.createToolTip();
 		jToolTip.setTipText(buildTolltip(build, 0));
 		final int prefWidth = jToolTip.getPreferredSize().width;
@@ -265,7 +265,7 @@ public class BuildTreeNode extends AbstractBuildTreeNode {
 		p.setToolTipText(buildTolltip(build, width));
 	}
 
-	private static String buildTolltip(BambooBuildAdapterIdea build, int width) {
+	private static String buildTolltip(BambooBuildAdapter build, int width) {
 		StringBuilder sb = new StringBuilder(
 				"<html>"
 						+ BODY_WITH_STYLE);

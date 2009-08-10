@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -111,21 +112,21 @@ public class BuildToolWindow extends MultiTabToolWindow {
 	}
 
 	private final class BuildContentParameters implements ContentParameters {
-		private final BambooBuildAdapterIdea build;
+		private final BambooBuildAdapter build;
 
-		private BuildContentParameters(BambooBuildAdapterIdea build) {
+		private BuildContentParameters(BambooBuildAdapter build) {
 			this.build = build;
 		}
 	}
 
-	public void showBuild(BambooBuildAdapterIdea build) {
+	public void showBuild(BambooBuildAdapter build) {
 		if (build != null) {
 			showToolWindow(project, new BuildContentParameters(build),
 					TOOL_WINDOW_TITLE, Constants.BAMBOO_BUILD_PANEL_ICON, Constants.BAMBOO_BUILD_TAB_ICON, null);
 		}
 	}
 
-	public void showBuildAndRunTest(BambooBuildAdapterIdea build,
+	public void showBuildAndRunTest(BambooBuildAdapter build,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testName) {
 		if (build != null) {
 			final BuildContentParameters params = new BuildContentParameters(build);
@@ -192,7 +193,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 		}
 	}
 
-	public BambooBuildAdapterIdea getBuild(String key) {
+	public BambooBuildAdapter getBuild(String key) {
 		BuildPanel p = getContentPanel(key);
 		if (p != null) {
 			return p.params.build;
@@ -339,11 +340,11 @@ public class BuildToolWindow extends MultiTabToolWindow {
 			}
 
 			@Override
-			public void run(final ProgressIndicator indicator) {
+			public void run(@NotNull final ProgressIndicator indicator) {
 
 				indicator.setIndeterminate(true);
 
-				BambooBuildAdapterIdea build = params.build;
+				BambooBuildAdapter build = params.build;
 
 				final BambooServerFacade bambooFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 

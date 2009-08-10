@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -65,7 +65,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForProject(p.getProject(), index);
+			BambooBuildAdapter build = getBuildForProject(p.getProject(), index);
 			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
@@ -78,7 +78,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 	private List<String> getDistinctProjects() {
 		Set<String> projects = new TreeSet<String>(COMPARATOR);
 
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			projects.add(build.getProjectName());
 		}
 
@@ -93,7 +93,7 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 
 	private int gentNumOfBuildsForProject(String projectName) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getProjectName().equals(projectName)) {
 				++ret;
 			}
@@ -102,11 +102,11 @@ public class ProjectBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForProject(String projectName, int index) {
-		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
+	private BambooBuildAdapter getBuildForProject(String projectName, int index) {
+		List<BambooBuildAdapter> array = new ArrayList<BambooBuildAdapter>();
 
 		// get all builds for server
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getProjectName().equals(projectName)) {
 				array.add(build);
 			}

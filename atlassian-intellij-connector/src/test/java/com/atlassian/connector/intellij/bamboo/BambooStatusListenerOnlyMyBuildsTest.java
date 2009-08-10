@@ -26,7 +26,6 @@ import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.configuration.BambooConfigurationBean;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import org.easymock.EasyMock;
 import java.util.Arrays;
 import java.util.Date;
@@ -86,12 +85,12 @@ public class BambooStatusListenerOnlyMyBuildsTest extends TestCase {
 		bean.setOnlyMyBuilds(true);
 		tooltipListener = new BambooStatusTooltipListener(displayMock, conf);
 
-		BambooBuildAdapterIdea buildOK_JJ = generateBuildInfo(BuildStatus.SUCCESS, 1, LOGGED_USER_JJ);
-		BambooBuildAdapterIdea buildFail_JJ = generateBuildInfo(BuildStatus.FAILURE, 2, LOGGED_USER_JJ);
-		BambooBuildAdapterIdea buildFail_US = generateBuildInfo(BuildStatus.FAILURE, 3, LOGGED_USER_US);
-		BambooBuildAdapterIdea buildOK_US = generateBuildInfo(BuildStatus.SUCCESS, 4, LOGGED_USER_US);
-		BambooBuildAdapterIdea buildFail_UN = generateBuildInfo(BuildStatus.FAILURE, 5, LOGGED_USER_UN);
-		BambooBuildAdapterIdea buildOK_UN = generateBuildInfo(BuildStatus.SUCCESS, 6, LOGGED_USER_UN);
+		BambooBuildAdapter buildOK_JJ = generateBuildInfo(BuildStatus.SUCCESS, 1, LOGGED_USER_JJ);
+		BambooBuildAdapter buildFail_JJ = generateBuildInfo(BuildStatus.FAILURE, 2, LOGGED_USER_JJ);
+		BambooBuildAdapter buildFail_US = generateBuildInfo(BuildStatus.FAILURE, 3, LOGGED_USER_US);
+		BambooBuildAdapter buildOK_US = generateBuildInfo(BuildStatus.SUCCESS, 4, LOGGED_USER_US);
+		BambooBuildAdapter buildFail_UN = generateBuildInfo(BuildStatus.FAILURE, 5, LOGGED_USER_UN);
+		BambooBuildAdapter buildOK_UN = generateBuildInfo(BuildStatus.SUCCESS, 6, LOGGED_USER_UN);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
@@ -113,12 +112,12 @@ public class BambooStatusListenerOnlyMyBuildsTest extends TestCase {
 		bean.setOnlyMyBuilds(false);
 		tooltipListener = new BambooStatusTooltipListener(displayMock, conf);
 
-		BambooBuildAdapterIdea buildOK_JJ = generateBuildInfo(BuildStatus.SUCCESS, 1, LOGGED_USER_JJ);
-		BambooBuildAdapterIdea buildFail_JJ = generateBuildInfo(BuildStatus.FAILURE, 2, LOGGED_USER_JJ);
-		BambooBuildAdapterIdea buildFail_US = generateBuildInfo(BuildStatus.FAILURE, 3, LOGGED_USER_US);
-		BambooBuildAdapterIdea buildOK_US = generateBuildInfo(BuildStatus.SUCCESS, 4, LOGGED_USER_US);
-		BambooBuildAdapterIdea buildFail_UN = generateBuildInfo(BuildStatus.FAILURE, 5, LOGGED_USER_UN);
-		BambooBuildAdapterIdea buildOK_UN = generateBuildInfo(BuildStatus.SUCCESS, 6, LOGGED_USER_UN);
+		BambooBuildAdapter buildOK_JJ = generateBuildInfo(BuildStatus.SUCCESS, 1, LOGGED_USER_JJ);
+		BambooBuildAdapter buildFail_JJ = generateBuildInfo(BuildStatus.FAILURE, 2, LOGGED_USER_JJ);
+		BambooBuildAdapter buildFail_US = generateBuildInfo(BuildStatus.FAILURE, 3, LOGGED_USER_US);
+		BambooBuildAdapter buildOK_US = generateBuildInfo(BuildStatus.SUCCESS, 4, LOGGED_USER_US);
+		BambooBuildAdapter buildFail_UN = generateBuildInfo(BuildStatus.FAILURE, 5, LOGGED_USER_UN);
+		BambooBuildAdapter buildOK_UN = generateBuildInfo(BuildStatus.SUCCESS, 6, LOGGED_USER_UN);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), EasyMock.isA(BambooPopupInfo.class));
@@ -138,7 +137,7 @@ public class BambooStatusListenerOnlyMyBuildsTest extends TestCase {
 		tooltipListener.updateBuildStatuses(Arrays.asList(buildOK_US), null);
 	}
 
-	public static BambooBuildAdapterIdea generateBuildInfo(BuildStatus status, int buildNumber, String loggedUser) {
+	public static BambooBuildAdapter generateBuildInfo(BuildStatus status, int buildNumber, String loggedUser) {
 		BambooBuildInfo.Builder builder =
 				new BambooBuildInfo.Builder(DEFAULT_PLAN_KEY, DEFAULT_BUILD_NAME,
 						new ConnectionCfg("name", "", loggedUser, ""),
@@ -156,7 +155,7 @@ public class BambooStatusListenerOnlyMyBuildsTest extends TestCase {
 			break;
 		}
 
-		return new BambooBuildAdapterIdea(builder.build(), new BambooServerData(new BambooServerCfg(true, "mybamboo",
+		return new BambooBuildAdapter(builder.build(), new BambooServerData(new BambooServerCfg(true, "mybamboo",
 				new ServerIdImpl()), new UserCfg("", "")));
 	}
 

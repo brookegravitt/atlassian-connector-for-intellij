@@ -25,7 +25,7 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,7 +94,7 @@ public final class BambooStatusChecker implements SchedulableChecker {
 			final List<Exception> generalProblems = new ArrayList<Exception>();
 
 			// collect build info from each server
-			final Collection<BambooBuildAdapterIdea> newServerBuildsStatus = new ArrayList<BambooBuildAdapterIdea>();
+			final Collection<BambooBuildAdapter> newServerBuildsStatus = new ArrayList<BambooBuildAdapter>();
 			for (BambooServerData server : cfgManager.getAllEnabledBambooServerss()) {
 				try {
 
@@ -107,13 +107,8 @@ public final class BambooStatusChecker implements SchedulableChecker {
 							.append(dateFormat.format((newRun.getTime() - lastActionRun.getTime())));
 					LoggerImpl.getInstance().debug(sb.toString());
 
-					if (server.isBamboo2M9()) {
-						newServerBuildsStatus.addAll(bambooServerFacade.getSubscribedPlansResultsNew(server, server.getPlans(),
+					newServerBuildsStatus.addAll(bambooServerFacade.getSubscribedPlansResults(server, server.getPlans(),
 								server.isUseFavourites(), server.getTimezoneOffset()));
-					} else {
-						newServerBuildsStatus.addAll(bambooServerFacade.getSubscribedPlansResults(server,
-								server.getPlans(), server.isUseFavourites(), server.getTimezoneOffset()));
-					}
 
 					lastActionRun = newRun;
 

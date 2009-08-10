@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.bamboo.onebuild;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.bamboo.AbstractBuildAction;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildToolWindow;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -30,7 +30,7 @@ import com.intellij.openapi.project.Project;
 public abstract class AbstractBuildDetailsAction extends AbstractBuildAction {
 
 	@Override
-	protected BambooBuildAdapterIdea getBuild(final AnActionEvent e) {
+	protected BambooBuildAdapter getBuild(final AnActionEvent e) {
 		BuildToolWindow btw = IdeaHelper.getBuildToolWindow(e);
 		if (btw != null) {
 			return btw.getBuild(e.getPlace());

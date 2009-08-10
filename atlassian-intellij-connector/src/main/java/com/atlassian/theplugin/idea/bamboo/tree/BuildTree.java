@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelListener;
 import com.atlassian.theplugin.idea.ui.tree.AbstractTree;
@@ -90,7 +90,7 @@ public class BuildTree extends AbstractTree {
 		getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 	}
 
-	public BambooBuildAdapterIdea getSelectedBuild() {
+	public BambooBuildAdapter getSelectedBuild() {
 		final TreePath selectionPath = getSelectionPath();
 		if (selectionPath != null && selectionPath.getLastPathComponent() != null && selectionPath
 				.getLastPathComponent() instanceof BuildTreeNode) {
@@ -101,7 +101,7 @@ public class BuildTree extends AbstractTree {
 		}
 	}
 
-	private void selectBuildNode(BambooBuildAdapterIdea build) {
+	private void selectBuildNode(BambooBuildAdapter build) {
 		if (build == null) {
 			clearSelection();
 			return;
@@ -161,7 +161,7 @@ public class BuildTree extends AbstractTree {
 			try {
 				buildTreeUiSetup.setTreeRebuilding(true);
 				Set<TreePath> collapsedPaths = getCollapsedPaths();
-				BambooBuildAdapterIdea build = getSelectedBuild();
+				BambooBuildAdapter build = getSelectedBuild();
 
 				// rebuild the tree
 				buildTreeModel.update();

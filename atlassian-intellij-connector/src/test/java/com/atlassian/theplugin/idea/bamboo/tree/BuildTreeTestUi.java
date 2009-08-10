@@ -15,11 +15,12 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BambooFilterListTestUi;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
+
 import javax.swing.JScrollPane;
 import java.util.Collection;
 
@@ -83,7 +84,7 @@ public final class BuildTreeTestUi {
 		//uiSetup.initializeUI(tree, jScrollPane);
 		jScrollPane.setViewportView(tree);
 //		tree.setUI(ui);
-		Collection<BambooBuildAdapterIdea> buildAdapters = BambooFilterListTestUi.getBuilds();
+		Collection<BambooBuildAdapter> buildAdapters = BambooFilterListTestUi.getBuilds();
 		buildListModel.update(buildAdapters, null);
 		SwingAppRunner.run(jScrollPane);
 	}

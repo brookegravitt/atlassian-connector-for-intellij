@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+
 import java.util.Collection;
 
 class BambooCompositeOrFilter implements BambooBuildFilter {
@@ -28,7 +30,7 @@ class BambooCompositeOrFilter implements BambooBuildFilter {
 		return filters;
 	}
 
-	public boolean doesMatch(final BambooBuildAdapterIdea build) {
+	public boolean doesMatch(final BambooBuildAdapter build) {
 		for (BambooBuildFilter filter : filters) {
 			if (filter.doesMatch(build)) {
 				return true;

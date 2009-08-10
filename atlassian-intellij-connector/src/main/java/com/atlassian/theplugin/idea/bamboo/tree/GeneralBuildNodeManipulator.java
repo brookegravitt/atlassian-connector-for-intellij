@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,7 +40,7 @@ public class GeneralBuildNodeManipulator extends BuildNodeManipulator {
 	@Override
 	public Object getChild(Object parent, int index) {
 		if (parent == rootNode) {
-			BambooBuildAdapterIdea build = (BambooBuildAdapterIdea) buildModel.getBuilds().toArray()[index];
+			BambooBuildAdapter build = (BambooBuildAdapter) buildModel.getBuilds().toArray()[index];
 			if (build != null) {
 				DefaultMutableTreeNode p = (DefaultMutableTreeNode) parent;
 				if (index < p.getChildCount()) {

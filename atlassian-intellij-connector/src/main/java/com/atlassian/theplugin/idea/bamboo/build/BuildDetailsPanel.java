@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.tree.BuildTreeNode;
 import com.atlassian.theplugin.idea.ui.BoldLabel;
 import com.atlassian.theplugin.idea.util.Html2text;
@@ -20,12 +20,12 @@ import java.util.Collection;
  */
 public class BuildDetailsPanel extends JPanel implements ActionListener {
 
-	private final BambooBuildAdapterIdea build;
+	private final BambooBuildAdapter build;
 
 	private JLabel relativeBuildTime = new JLabel();
 	private static final int MAX_NR_OF_COMMITTERS_TO_LIST_IN_A_DETAILED_WAY = 3;
 
-	public BuildDetailsPanel(BambooBuildAdapterIdea build) {
+	public BuildDetailsPanel(BambooBuildAdapter build) {
 		this.build = build;
 		setLayout(new GridBagLayout());
 

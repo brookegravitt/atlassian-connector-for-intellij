@@ -19,7 +19,6 @@ package com.atlassian.connector.intellij.bamboo;
 import static org.easymock.EasyMock.and;
 import static org.easymock.EasyMock.createStrictMock;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import org.easymock.EasyMock;
 import org.easymock.IArgumentMatcher;
 import java.util.Arrays;
@@ -48,7 +47,7 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildFailed() {
-		BambooBuildAdapterIdea buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
 
 		EasyMock.replay(displayMock);
 
@@ -58,7 +57,7 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildSucceed() {
-		BambooBuildAdapterIdea build = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter build = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
 
 		EasyMock.replay(displayMock);
 
@@ -68,7 +67,7 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildUnknown() {
-		BambooBuildAdapterIdea build = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter build = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
 
 		EasyMock.replay(displayMock);
 
@@ -107,8 +106,8 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildOK2Failed() {
-		BambooBuildAdapterIdea buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), findPopupInfo(".*red.*failed.*"));
 
@@ -121,8 +120,8 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildFailed2OK() {
-		BambooBuildAdapterIdea buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFail = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.SUCCESS), findPopupInfo(".*green.*succeed.*"));
 
@@ -135,9 +134,9 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleBuildSequence() {
-		BambooBuildAdapterIdea buildUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildSucceeded = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildSucceeded = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
 
 		EasyMock.replay(displayMock);
 
@@ -187,13 +186,13 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testMultipleOK2Failed() {
-		BambooBuildAdapterIdea buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
-		BambooBuildAdapterIdea buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
 
-		BambooBuildAdapterIdea buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
+		BambooBuildAdapter buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), findPopupInfo(".*red.*failed.*"));
 		EasyMock.replay(displayMock);
@@ -205,13 +204,13 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testMultipleFailed2OK() {
-		BambooBuildAdapterIdea buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
-		BambooBuildAdapterIdea buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
 
-		BambooBuildAdapterIdea buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
+		BambooBuildAdapter buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.SUCCESS), findPopupInfo(".*green.*succeed.*"));
 		EasyMock.replay(displayMock);
@@ -223,13 +222,13 @@ public class BambooStatusListenerTest extends TestCase {
 	}
 
 	public void testMultiple() {
-		BambooBuildAdapterIdea buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
-		BambooBuildAdapterIdea buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildFirstUnknown = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildFirstFailed = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.FAILURE);
+		BambooBuildAdapter buildFirstOK = HtmlBambooStatusListenerTest.generateBuildInfo(BuildStatus.SUCCESS);
 
-		BambooBuildAdapterIdea buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
-		BambooBuildAdapterIdea buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
+		BambooBuildAdapter buildSecondUnknown = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildSecondOK = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildSecondFailed = HtmlBambooStatusListenerTest.generateBuildInfo2(BuildStatus.FAILURE);
 
 		displayMock.updateBambooStatus(EasyMock.eq(BuildStatus.FAILURE), and(findPopupInfo(".*green.*succeed.*"), findPopupInfo(".*red.*failed.*")));
 		EasyMock.replay(displayMock);

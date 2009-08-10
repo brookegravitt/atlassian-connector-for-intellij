@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.idea.action.bamboo;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class LabelBuildAction extends AbstractBuildListAction {
@@ -30,7 +30,7 @@ public class LabelBuildAction extends AbstractBuildListAction {
 	public void update(final AnActionEvent event) {
 		super.update(event);
 
-		final BambooBuildAdapterIdea build = getBuild(event);
+		final BambooBuildAdapter build = getBuild(event);
 		boolean isBamboo2 = false;
 		if (build != null) {
 			isBamboo2 = isBamboo2(event, build.getServer());			

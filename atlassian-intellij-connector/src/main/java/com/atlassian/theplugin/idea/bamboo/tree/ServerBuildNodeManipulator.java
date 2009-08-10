@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -70,7 +70,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForServer(p.getServer().getServerId(), index);
+			BambooBuildAdapter build = getBuildForServer(p.getServer().getServerId(), index);
 			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
@@ -83,7 +83,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 	private List<ServerData> getDistinctServers() {
 		Set<ServerData> servers = new TreeSet<ServerData>(COMPARATOR);
 
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			servers.add(build.getServer());
 		}
 
@@ -98,7 +98,7 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 
 	private int gentNumOfBuildsForServer(ServerId serverId) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getServer().getServerId().equals(serverId)) {
 				++ret;
 			}
@@ -107,11 +107,11 @@ public class ServerBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForServer(ServerId serverId, int index) {
-		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
+	private BambooBuildAdapter getBuildForServer(ServerId serverId, int index) {
+		List<BambooBuildAdapter> array = new ArrayList<BambooBuildAdapter>();
 
 		// get all builds for server
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getServer().getServerId().equals(serverId)) {
 				array.add(build);
 			}

@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -66,7 +66,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForDate(p.getDate(), index);
+			BambooBuildAdapter build = getBuildForDate(p.getDate(), index);
 			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
@@ -79,7 +79,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 	private List<DatePeriod> getDistinctDates() {
 		Set<DatePeriod> dates = new TreeSet<DatePeriod>(COMPARATOR);
 
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			dates.add(DatePeriod.getBuilDate(build.getCompletionDate()));
 		}
 
@@ -94,7 +94,7 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 
 	private int gentNumOfBuildsForDate(DatePeriod date) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (DatePeriod.getBuilDate(build.getCompletionDate()) == date) {
 				++ret;
 			}
@@ -103,11 +103,11 @@ public class DateBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForDate(DatePeriod date, int index) {
-		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
+	private BambooBuildAdapter getBuildForDate(DatePeriod date, int index) {
+		List<BambooBuildAdapter> array = new ArrayList<BambooBuildAdapter>();
 
 		// get all builds for date
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (DatePeriod.getBuilDate(build.getCompletionDate()) == date) {
 				array.add(build);
 			}

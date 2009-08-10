@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.bamboo.BambooChangeSet;
 import com.atlassian.theplugin.idea.Constants;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.crucible.tree.AtlassianTreeWithToolbar;
 import com.atlassian.theplugin.idea.crucible.tree.ModelProvider;
 import com.atlassian.theplugin.idea.ui.tree.AtlassianTreeModel;
@@ -43,11 +43,11 @@ public class CommitDetailsPanel extends JPanel implements DataProvider, ActionLi
 
 	private AtlassianTreeWithToolbar fileTree = new AtlassianTreeWithToolbar(TOOLBAR_NAME, (TreeUISetup) null, null);
 	private final Project project;
-	private final BambooBuildAdapterIdea build;
+	private final BambooBuildAdapter build;
 
 	private static final String TOOLBAR_NAME = "ThePlugin.Bamboo.CommitListToolBar";
 
-	public CommitDetailsPanel(Project project, final BambooBuildAdapterIdea build) {
+	public CommitDetailsPanel(Project project, final BambooBuildAdapter build) {
 		setLayout(new GridBagLayout());
 
 		this.project = project;

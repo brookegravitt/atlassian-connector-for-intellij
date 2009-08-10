@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import org.easymock.EasyMock;
 import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import com.gargoylesoftware.htmlunit.html.HtmlTableRow;
@@ -108,11 +107,11 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		EasyMock.replay(mockDisplay);
 
 		// test: empty builds (error connection) should be considered as unknown builds
-		Collection<BambooBuildAdapterIdea> builds = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> builds = new ArrayList<BambooBuildAdapter>();
 		final BambooBuildInfo buildUnknown =
 				new BambooBuildInfo.Builder("whatever", null, CONNECTION_CFG, null, null,
 				BuildStatus.UNKNOWN).build();
-		builds.add(new BambooBuildAdapterIdea(buildUnknown, BAMBOO));
+		builds.add(new BambooBuildAdapter(buildUnknown, BAMBOO));
 		bambooListener.updateBuildStatuses(builds, null);
 
 		EasyMock.verify(mockDisplay);
@@ -121,8 +120,8 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	public void testUpdateDisplayUnknownSuccessful() {
 
-		BambooBuildAdapterIdea buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
-		BambooBuildAdapterIdea buildSuccessful = generateBuildInfo2(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildSuccessful = generateBuildInfo2(BuildStatus.SUCCESS);
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
@@ -133,7 +132,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		EasyMock.replay(mockDisplay);
 
 		// test: unknown and successful build should generate green (successful) state
-		Collection<BambooBuildAdapterIdea> builds = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> builds = new ArrayList<BambooBuildAdapter>();
 		builds.add(buildSuccessful);
 		builds.add(buildUnknown);
 		bambooListener.updateBuildStatuses(builds, null);
@@ -143,7 +142,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	public void testUpdateDisplaySuccessful() {
 
-		BambooBuildAdapterIdea buildSuccessful = generateBuildInfo(BuildStatus.SUCCESS);
+		BambooBuildAdapter buildSuccessful = generateBuildInfo(BuildStatus.SUCCESS);
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
@@ -161,7 +160,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 
 	public void testUpdateDisplayUnknown() {
 
-		BambooBuildAdapterIdea buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
+		BambooBuildAdapter buildUnknown = generateBuildInfo(BuildStatus.UNKNOWN);
 
 		// create mock display and tested listener
 		BambooStatusDisplay mockDisplay = EasyMock.createMock(BambooStatusDisplay.class);
@@ -187,7 +186,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testEmptyStatusCollection() throws Exception {
-		testedListener.updateBuildStatuses(new ArrayList<BambooBuildAdapterIdea>(), null);
+		testedListener.updateBuildStatuses(new ArrayList<BambooBuildAdapter>(), null);
 		assertEquals(1, output.count);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
 //        assertEquals(
@@ -196,7 +195,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleSuccessResult() throws Exception {
-		Collection<BambooBuildAdapterIdea> buildInfo = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> buildInfo = new ArrayList<BambooBuildAdapter>();
 
 		buildInfo.add(generateBuildInfo(BuildStatus.SUCCESS));
 		testedListener.updateBuildStatuses(buildInfo, null);
@@ -211,7 +210,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleSuccessResultForDisabledBuild() throws Exception {
-		Collection<BambooBuildAdapterIdea> buildInfo = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> buildInfo = new ArrayList<BambooBuildAdapter>();
 
 		buildInfo.add(generateDisabledBuildInfo(BuildStatus.SUCCESS));
 		testedListener.updateBuildStatuses(buildInfo, null);
@@ -227,7 +226,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleFailedResult() throws Exception {
-		Collection<BambooBuildAdapterIdea> buildInfo = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> buildInfo = new ArrayList<BambooBuildAdapter>();
 		buildInfo.add(generateBuildInfo(BuildStatus.FAILURE));
 		testedListener.updateBuildStatuses(buildInfo, null);
 
@@ -242,7 +241,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleFailedResultForDisabledBuild() throws Exception {
-		Collection<BambooBuildAdapterIdea> buildInfo = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> buildInfo = new ArrayList<BambooBuildAdapter>();
 		buildInfo.add(generateDisabledBuildInfo(BuildStatus.FAILURE));
 		testedListener.updateBuildStatuses(buildInfo, null);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
@@ -255,7 +254,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}
 
 	public void testSingleErrorResult() throws Exception {
-		Collection<BambooBuildAdapterIdea> buildInfo = new ArrayList<BambooBuildAdapterIdea>();
+		Collection<BambooBuildAdapter> buildInfo = new ArrayList<BambooBuildAdapter>();
 		buildInfo.add(generateBuildInfo(BuildStatus.UNKNOWN));
 		testedListener.updateBuildStatuses(buildInfo, null);
 		assertSame(BuildStatus.UNKNOWN, output.buildStatus);
@@ -343,7 +342,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 		assertEquals("", cells.get(2).asText().trim());
 	}
 
-	public static BambooBuildAdapterIdea generateBuildInfo(BuildStatus status) {
+	public static BambooBuildAdapter generateBuildInfo(BuildStatus status) {
 		BambooBuildInfo.Builder builder =
 				new BambooBuildInfo.Builder(DEFAULT_PLAN_KEY, DEFAULT_PLAN_NAME, CONNECTION_CFG,
 				DEFAULT_PROJECT_NAME, DEFAULT_BUILD_NO, status).enabled(true).pollingTime(new Date());
@@ -360,10 +359,10 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 			break;
 		}
 
-		return new BambooBuildAdapterIdea(builder.build(), BAMBOO);
+		return new BambooBuildAdapter(builder.build(), BAMBOO);
 	}
 
-	public static BambooBuildAdapterIdea generateDisabledBuildInfo(BuildStatus status) {
+	public static BambooBuildAdapter generateDisabledBuildInfo(BuildStatus status) {
 		BambooBuildInfo.Builder builder =
 				new BambooBuildInfo.Builder(DEFAULT_PLAN_KEY, DEFAULT_PLAN_NAME, CONNECTION_CFG,
 				DEFAULT_PROJECT_NAME, DEFAULT_BUILD_NO, status).enabled(false).pollingTime(new Date());
@@ -382,10 +381,10 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 			break;
 		}
 
-		return new BambooBuildAdapterIdea(builder.build(), BAMBOO);
+		return new BambooBuildAdapter(builder.build(), BAMBOO);
 	}
 
-	public static BambooBuildAdapterIdea generateBuildInfo2(BuildStatus status) {
+	public static BambooBuildAdapter generateBuildInfo2(BuildStatus status) {
 		BambooBuildInfo.Builder builder =
 				new BambooBuildInfo.Builder(DEFAULT_PLAN_KEY_2, DEFAULT_PLAN_NAME, CONNECTION_CFG,
 				DEFAULT_PROJECT_NAME, DEFAULT_BUILD_NO, status).pollingTime(new Date());
@@ -404,7 +403,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 			break;
 		}
 
-		return new BambooBuildAdapterIdea(builder.build(), BAMBOO);
+		return new BambooBuildAdapter(builder.build(), BAMBOO);
 	}
 
 	public static Test suite() {

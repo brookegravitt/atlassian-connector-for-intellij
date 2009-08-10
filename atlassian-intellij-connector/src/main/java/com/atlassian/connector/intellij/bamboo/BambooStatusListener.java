@@ -17,9 +17,8 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.theplugin.commons.StatusListener;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import java.util.Collection;
 
 public interface BambooStatusListener extends StatusListener {
-	void updateBuildStatuses(Collection<BambooBuildAdapterIdea> builds, Collection<Exception> generalExceptions);
+	void updateBuildStatuses(Collection<BambooBuildAdapter> builds, Collection<Exception> generalExceptions);
 }

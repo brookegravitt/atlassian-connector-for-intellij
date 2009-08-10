@@ -20,6 +20,7 @@ import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -33,7 +34,7 @@ public class BuildLabelForm extends DialogWrapper {
     private JTextField buildNumberKey;
     private JTextField labelField;
 
-    public BuildLabelForm(BambooBuildAdapterIdea build) {
+    public BuildLabelForm(BambooBuildAdapter build) {
         super(false);
         init();
         pack();

@@ -15,6 +15,8 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+
 interface BambooBuildFilter {
-	boolean doesMatch(BambooBuildAdapterIdea build);
+	boolean doesMatch(BambooBuildAdapter build);
 }
