@@ -189,7 +189,8 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 	}
 
 	private interface SubscribedPlansProvider {
-		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer, final Collection<SubscribedPlan> plans, final boolean isUseFavourities,
-				final int timezoneOffset) throws ServerPasswordNotProvidedException, RemoteApiLoginException;
+		ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
+				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
+				throws ServerPasswordNotProvidedException, RemoteApiLoginException;
 	}
 }
