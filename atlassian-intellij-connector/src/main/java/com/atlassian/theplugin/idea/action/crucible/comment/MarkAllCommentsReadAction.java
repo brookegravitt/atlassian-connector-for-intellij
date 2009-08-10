@@ -35,42 +35,44 @@ import java.util.ArrayList;
 public class MarkAllCommentsReadAction extends AbstractCommentAction {
     public void actionPerformed(AnActionEvent event) {
         final ReviewDetailsToolWindow panel = IdeaHelper.getReviewDetailsToolWindow(event);
-        PermId reviewId = null;
-        ServerData serverData = null;
-        if (panel != null && panel.getReview() != null) {
-            serverData = panel.getReview().getServerData();
-            reviewId = panel.getReview().getPermId();
-        }
-        if (reviewId == null || serverData == null) {
+//        PermId reviewId = null;
+//        ServerData serverData = null;
+        if (panel == null || panel.getReview() == null) {
             return;
+//            serverData = panel.getReview().getServerData();
+//            reviewId = panel.getReview().getPermId();
         }
-        final PermId reviewIdFinal = reviewId;
-        final ServerData serverDataFinal = serverData;
-        final JTree tree = getTree(event);
+//        if (reviewId == null || serverData == null) {
+//            return;
+//        }
+//        final PermId reviewIdFinal = reviewId;
+//        final ServerData serverDataFinal = serverData;
+//        final JTree tree = getTree(event);
 
-        final List<Comment> leaveUnreadComments = new ArrayList<Comment>();
-        traverseCommentsInTree(tree, new TraverseTreeListener() {
-            public boolean execute(CommentTreeNode node) {
-                if (node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-                    leaveUnreadComments.add(node.getComment());
-                }
-                return false;
-            }
-        });
+//        final List<Comment> leaveUnreadComments = new ArrayList<Comment>();
+//        traverseCommentsInTree(tree, new TraverseTreeListener() {
+//            public boolean execute(CommentTreeNode node) {
+//                if (node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+//                    leaveUnreadComments.add(node.getComment());
+//                }
+//                return false;
+//            }
+//        });
 
         Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking all comments as read", true) {
             private Throwable error = null;
             public void run(@NotNull ProgressIndicator progressIndicator) {
-                CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
+//                CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
                 try {
-                    f.markAllCommentsRead(serverDataFinal, reviewIdFinal);
+                    panel.getReview().markAllCommentsRead();
+//                    f.markAllCommentsRead(serverDataFinal, reviewIdFinal);
 
                     // LEAVE_UNREAD comments are not modified by "markAllAsRead" REST API,
-                    // but web UI mareks _all_ comments read anyway, so let's be consistent with that 
-                    for (Comment comment : leaveUnreadComments) {
-                        f.markCommentRead(serverDataFinal, reviewIdFinal, comment.getPermId());
-                    }
+                    // but web UI marks _all_ comments read anyway, so let's be consistent with that
+//                    for (Comment comment : leaveUnreadComments) {
+//                        f.markCommentRead(serverDataFinal, reviewIdFinal, comment.getPermId());
+//                    }
                 } catch (RemoteApiException e) {
                     error = e;
                 } catch (ServerPasswordNotProvidedException e) {
@@ -84,17 +86,17 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
                     DialogWithDetails.showExceptionDialog(
                             panel.getAtlassianTreeWithToolbar(), "Marking all comments as read failed", error);
                 } else {
-                    traverseCommentsInTree(tree, new TraverseTreeListener() {
-                        public boolean execute(CommentTreeNode node) {
-                            // todo: fime? Shouldn't we be doing this on the model itself? Not sure
-                            if (node.getComment().getReadState() == Comment.ReadState.UNREAD
-                                || node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
-                                ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
-                            }
-                            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
-                            return false;
-                        }
-                    });
+//                    traverseCommentsInTree(tree, new TraverseTreeListener() {
+//                        public boolean execute(CommentTreeNode node) {
+//                             todo: fime? Shouldn't we be doing this on the model itself? Not sure
+//                            if (node.getComment().getReadState() == Comment.ReadState.UNREAD
+//                                || node.getComment().getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+//                                ((CommentBean) node.getComment()).setReadState(Comment.ReadState.READ);
+//                            }
+//                            ((DefaultTreeModel) tree.getModel()).nodeChanged(node);
+//                            return false;
+//                        }
+//                    });
                 }
             }
         };

@@ -34,6 +34,8 @@ import com.atlassian.theplugin.commons.crucible.api.model.State;
 import com.atlassian.theplugin.commons.crucible.api.model.User;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.crucible.api.model.VersionedCommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.CrucibleNotification;
 import com.atlassian.theplugin.commons.crucible.api.model.notification.ReviewDifferenceProducer;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
@@ -414,7 +416,77 @@ public class ReviewAdapter {
 		}
 	}
 
-	public void publishGeneralComment(final GeneralComment comment) throws RemoteApiException,
+    public void markCommentRead(final Comment comment)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
+
+        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+            ((CommentBean) comment).setReadState(Comment.ReadState.READ);
+            for (CrucibleReviewListener listener : getListeners()) {
+                listener.commentReadStateChanged(this, comment);
+            }
+        }
+    }
+
+    public void markCommentLeaveUnread(final Comment comment)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markCommentLeaveUnread(getServerData(), getPermId(), comment.getPermId());
+
+        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+            ((CommentBean) comment).setReadState(Comment.ReadState.LEAVE_UNREAD);
+            for (CrucibleReviewListener listener : getListeners()) {
+                listener.commentReadStateChanged(this, comment);
+            }
+        }
+    }
+
+    public void markAllCommentsRead() throws RemoteApiException, ServerPasswordNotProvidedException {
+        facade.markAllCommentsRead(getServerData(), getPermId());
+
+        try {
+            List<GeneralComment> gcs = getGeneralComments();
+            for (Comment generalComment : gcs) {
+                markLeaveUnreadCommentRead(generalComment);
+            }
+            Set<CrucibleFileInfo> files = getFiles();
+            for (CrucibleFileInfo file : files) {
+                for (VersionedComment versionedComment : file.getVersionedComments()) {
+                    markLeaveUnreadCommentRead(versionedComment);
+                }
+            }
+        } catch (ValueNotYetInitialized valueNotYetInitialized) {
+            throw new RuntimeException(valueNotYetInitialized);
+        }
+    }
+
+    private void markLeaveUnreadCommentRead(Comment comment)
+            throws RemoteApiException, ServerPasswordNotProvidedException {
+        if (comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+            facade.markCommentRead(getServerData(), getPermId(), comment.getPermId());
+        }
+        List<Comment> replies = comment.getReplies();
+        for (Comment reply : replies) {
+            if (reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                facade.markCommentRead(getServerData(), getPermId(), reply.getPermId());
+            }
+        }
+        if (comment.getReadState() != Comment.ReadState.UNKNOWN) {
+            ((CommentBean) comment).setReadState(Comment.ReadState.READ);
+            for (CrucibleReviewListener listener : listeners) {
+                listener.commentReadStateChanged(this, comment);
+            }
+            for (Comment reply : replies) {
+                if (reply.getReadState() != Comment.ReadState.UNKNOWN) {
+                    ((CommentBean) reply).setReadState(Comment.ReadState.READ);
+                    for (CrucibleReviewListener listener : listeners) {
+                        listener.commentReadStateChanged(this, reply);
+                    }
+                }
+            }
+        }
+    }
+
+    public void publishGeneralComment(final GeneralComment comment) throws RemoteApiException,
 			ServerPasswordNotProvidedException {
 		facade.publishComment(getServerData(), getPermId(), comment.getPermId());
 

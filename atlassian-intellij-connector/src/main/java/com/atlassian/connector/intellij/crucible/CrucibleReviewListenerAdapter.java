@@ -50,4 +50,7 @@ public class CrucibleReviewListenerAdapter implements CrucibleReviewListener {
 	public void reviewChanged(final ReviewAdapter reviewAdapter,
 			final List<CrucibleNotification> notifications) {
 	}
+
+    public void commentReadStateChanged(ReviewAdapter review, Comment comment) {
+    }
 }

@@ -294,7 +294,10 @@ public class ReviewDetailsToolWindow extends MultiTabToolWindow implements DataP
 			detailsPanel.refresh();
 		}
 
-		public void selectVersionedComment(final CrucibleFileInfo file, final Comment comment) {
+        public void commentReadStateChanged(final ReviewAdapter review, final Comment comment) {
+        }
+
+        public void selectVersionedComment(final CrucibleFileInfo file, final Comment comment) {
 			// select tab
 			tabs.setSelectedComponent(commentsPanel);
 

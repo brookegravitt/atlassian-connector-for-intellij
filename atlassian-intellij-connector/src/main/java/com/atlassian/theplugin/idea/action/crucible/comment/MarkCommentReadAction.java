@@ -35,11 +35,12 @@ public class MarkCommentReadAction extends AbstractCommentAction {
             Task.Modal task = new Task.Modal(IdeaHelper.getCurrentProject(event), "Marking comment as read", true) {
                 private Throwable error = null;
                 public void run(@NotNull ProgressIndicator progressIndicator) {
-                    CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
+//                    CrucibleServerFacade f = IntelliJCrucibleServerFacade.getInstance();
 
                     try {
-                        f.markCommentRead(commentNode.getReview().getServerData(),
-                                commentNode.getReview().getPermId(), commentNode.getComment().getPermId());
+                        commentNode.getReview().markCommentRead(commentNode.getComment());
+//                        f.markCommentRead(commentNode.getReview().getServerData(),
+//                                commentNode.getReview().getPermId(), commentNode.getComment().getPermId());
                     } catch (RemoteApiException e) {
                         error = e;
                     } catch (ServerPasswordNotProvidedException e) {
@@ -53,8 +54,8 @@ public class MarkCommentReadAction extends AbstractCommentAction {
                         DialogWithDetails.showExceptionDialog(
                                 panel.getAtlassianTreeWithToolbar(), "Marking comment as read failed", error);
                     } else {
-                        ((CommentBean) commentNode.getComment()).setReadState(Comment.ReadState.READ);
-                        ((DefaultTreeModel) tree.getModel()).nodeChanged(commentNode);
+//                        ((CommentBean) commentNode.getComment()).setReadState(Comment.ReadState.READ);
+//                        ((DefaultTreeModel) tree.getModel()).nodeChanged(commentNode);
                     }
                 }
             };

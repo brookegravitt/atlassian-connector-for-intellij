@@ -51,4 +51,6 @@ public interface CrucibleReviewListener {
 	 */
 	void reviewChanged(final ReviewAdapter reviewAdapter,
 			final List<CrucibleNotification> notifications);
+
+    void commentReadStateChanged(ReviewAdapter review, Comment comment);
 }
