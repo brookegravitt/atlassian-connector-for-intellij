@@ -25,7 +25,6 @@ import com.atlassian.connector.intellij.bamboo.StatusIconBambooListener;
 import com.atlassian.connector.intellij.crucible.CrucibleServerFacade;
 import com.atlassian.connector.intellij.crucible.IntelliJCrucibleServerFacade;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
@@ -36,6 +35,7 @@ import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
@@ -215,7 +215,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 					new CruciblePatchSubmitExecutor(project, crucibleServerFacade, projectCfgManager));
 
 			final MissingPasswordHandler pwdHandler = new MissingPasswordHandler(
-					BambooServerFacadeImpl.getInstance(PluginUtil.getLogger()),
+					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()),
 					projectCfgManager,
 					project);
 
@@ -228,7 +228,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 							MissingPasswordHandlerQueue.addHandler(pwdHandler);
 						}
 					},
-					PluginUtil.getLogger());
+					IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger()));
 
 			// DependencyValidationManager.getHolder(project, "", )
 

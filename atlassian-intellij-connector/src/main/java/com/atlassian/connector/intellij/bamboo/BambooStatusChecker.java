@@ -23,7 +23,6 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.util.DateUtil;
-import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 
 import java.text.SimpleDateFormat;
@@ -64,13 +63,12 @@ public final class BambooStatusChecker implements SchedulableChecker {
 
 	public BambooStatusChecker(UIActionScheduler actionScheduler,
 			ProjectCfgManager cfgManager, final PluginConfiguration pluginConfiguration,
-			Runnable missingPasswordHandler, Logger logger) {
+			Runnable missingPasswordHandler, final IntelliJBambooServerFacade facade) {
 		this.actionScheduler = actionScheduler;
 		this.cfgManager = cfgManager;
 		this.pluginConfiguration = pluginConfiguration;
 		this.missingPasswordHandler = missingPasswordHandler;
-
-		this.bambooServerFacade = IntelliJBambooServerFacade.getInstance(logger);
+		this.bambooServerFacade = facade;
 	}
 
 	public void registerListener(BambooStatusListener listener) {
