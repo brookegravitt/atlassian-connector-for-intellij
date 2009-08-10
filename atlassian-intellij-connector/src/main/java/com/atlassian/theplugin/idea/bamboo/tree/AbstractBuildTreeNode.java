@@ -15,7 +15,7 @@
  */
 package com.atlassian.theplugin.idea.bamboo.tree;
 
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 
 import javax.swing.*;
@@ -28,5 +28,5 @@ public abstract class AbstractBuildTreeNode extends AbstractTreeNode {
 		super(name, icon, disabledIcon);
 	}
 
-	public abstract BambooBuildAdapterIdea getBuild();
+	public abstract BambooBuildAdapter getBuild();
 }

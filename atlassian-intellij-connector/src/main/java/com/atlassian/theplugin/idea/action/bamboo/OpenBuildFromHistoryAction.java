@@ -1,7 +1,7 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -16,7 +16,7 @@ public class OpenBuildFromHistoryAction extends AnAction {
 	public void actionPerformed(AnActionEvent event) {
         final BambooToolWindowPanel buildsWindow = IdeaHelper.getBambooToolWindowPanel(event);
         if (buildsWindow != null) {
-			BambooBuildAdapterIdea build = buildsWindow.getSelectedHistoryBuild();
+			BambooBuildAdapter build = buildsWindow.getSelectedHistoryBuild();
             if (build != null) {
 				buildsWindow.openBuild(build);
             }

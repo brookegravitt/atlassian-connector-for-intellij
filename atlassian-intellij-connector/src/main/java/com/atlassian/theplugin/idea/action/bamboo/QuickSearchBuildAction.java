@@ -1,12 +1,12 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.atlassian.theplugin.idea.bamboo.SearchBuildDialog;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -71,7 +71,7 @@ public class QuickSearchBuildAction extends AnAction {
 	}
 
 	private final class QuickSearchTask extends Task.Modal {
-		private final List<BambooBuildAdapterIdea> foundBuilds = new ArrayList<BambooBuildAdapterIdea>();
+		private final List<BambooBuildAdapter> foundBuilds = new ArrayList<BambooBuildAdapter>();
 		private boolean failed = false;
 		private final AnActionEvent event;
 		@NotNull
@@ -103,7 +103,7 @@ public class QuickSearchBuildAction extends AnAction {
 			// find serverReviews on all selected servers
 			for (BambooServerData server : servers) {
 				try {
-					BambooBuildAdapterIdea build =
+					BambooBuildAdapter build =
 							IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger())
 							.getBuildForPlanAndNumber(server, planKey, buildNumber, server.getTimezoneOffset());
 					if (build != null) {
@@ -154,6 +154,7 @@ public class QuickSearchBuildAction extends AnAction {
 							new ArrayList<IdeaUiMultiTaskExecutor.ErrorObject>();
 
 					for (IdeaUiMultiTaskExecutor.ErrorObject problem : problems) {
+						//noinspection ThrowableResultOfMethodCallIgnored
 						PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
 						errorObjects.add(problem);
 					}
@@ -175,7 +176,7 @@ public class QuickSearchBuildAction extends AnAction {
 			}
 		}
 
-		public final class BuildListPopupStep extends BaseListPopupStep<BambooBuildAdapterIdea> {
+		public final class BuildListPopupStep extends BaseListPopupStep<BambooBuildAdapter> {
             private static final int LENGHT = 40;
 
             public BuildListPopupStep(final String title) {
@@ -184,7 +185,7 @@ public class QuickSearchBuildAction extends AnAction {
 
             @NotNull
             @Override
-			public String getTextFor(final BambooBuildAdapterIdea value) {
+			public String getTextFor(final BambooBuildAdapter value) {
                 StringBuilder text = new StringBuilder();
 
                 text.append(value.getPlanKey()).append('-').append(value.getNumber());
@@ -203,7 +204,7 @@ public class QuickSearchBuildAction extends AnAction {
             }
 
             @Override
-			public PopupStep<BambooBuildAdapterIdea> onChosen(final BambooBuildAdapterIdea selectedValue,
+			public PopupStep<BambooBuildAdapter> onChosen(final BambooBuildAdapter selectedValue,
 					final boolean finalChoice) {
 				buildsWindow.openBuild(selectedValue);
                 return null;

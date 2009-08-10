@@ -369,7 +369,7 @@ public final class IdeaVersionFacade {
 						}
 					};
 					System.out.println("message = " + message);
-					notifyByBalloon.invoke(toolWindowManager,
+					notifyByBalloon.getBuilds(toolWindowManager,
 							new Object[]{PluginToolWindow.TOOL_WINDOW_NAME,
 									messageTypeClass.getField(status.toString()).get(null),
 									message, IconLoader.getIcon(iconName), listener});

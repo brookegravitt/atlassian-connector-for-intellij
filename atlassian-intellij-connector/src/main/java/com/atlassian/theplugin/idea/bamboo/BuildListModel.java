@@ -15,13 +15,15 @@
  */
 package com.atlassian.theplugin.idea.bamboo;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+
 import java.util.Collection;
 
 /**
  * @author Jacek Jaroczynski
  */
 public interface BuildListModel {
-	Collection<BambooBuildAdapterIdea> getBuilds();
+	Collection<BambooBuildAdapter> getBuilds();
 
 	void addListener(BuildListModelListener listener);
 }

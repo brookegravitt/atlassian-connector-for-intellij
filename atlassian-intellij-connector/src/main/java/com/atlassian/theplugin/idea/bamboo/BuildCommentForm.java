@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.bamboo;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ public class BuildCommentForm extends DialogWrapper {
     private JTextArea commentArea;
     private JPanel mainPanel;
 
-    public BuildCommentForm(BambooBuildAdapterIdea build) {
+    public BuildCommentForm(BambooBuildAdapter build) {
         super(false);
         init();
         pack();

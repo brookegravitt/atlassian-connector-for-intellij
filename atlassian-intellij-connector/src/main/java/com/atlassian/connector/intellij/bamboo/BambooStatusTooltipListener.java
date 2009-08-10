@@ -19,7 +19,6 @@ package com.atlassian.connector.intellij.bamboo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.configuration.BambooTooltipOption;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import java.util.Map;
  */
 public class BambooStatusTooltipListener implements BambooStatusListener {
 
-	private final Map<String, BambooBuildAdapterIdea> prevBuildStatuses = new HashMap<String, BambooBuildAdapterIdea>(0);
+	private final Map<String, BambooBuildAdapter> prevBuildStatuses = new HashMap<String, BambooBuildAdapter>(0);
 	private final BambooStatusDisplay display;
 	private final PluginConfiguration pluginConfiguration;
 	private final BambooPopupInfo popupInfo = new BambooPopupInfo();
@@ -46,7 +45,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		this.pluginConfiguration = pluginConfiguration;
 	}
 
-	public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> newBuildStatuses,
+	public void updateBuildStatuses(Collection<BambooBuildAdapter> newBuildStatuses,
 			Collection<Exception> generalExceptions) {
 
 		popupInfo.clear();
@@ -63,7 +62,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 		if (newBuildStatuses != null && newBuildStatuses.size() > 0) {
 
-			for (BambooBuildAdapterIdea currentBuild : newBuildStatuses) {
+			for (BambooBuildAdapter currentBuild : newBuildStatuses) {
 
 				if (pluginConfiguration == null || !pluginConfiguration.getBambooConfigurationData().isOnlyMyBuilds()
 						|| (pluginConfiguration.getBambooConfigurationData().isOnlyMyBuilds() && currentBuild.isMyBuild())) {
@@ -72,7 +71,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 
 					switch (currentBuild.getStatus()) {
 						case FAILURE:
-						BambooBuildAdapterIdea prevBuild = prevBuildStatuses.get(getBuildMapKey(currentBuild));
+						BambooBuildAdapter prevBuild = prevBuildStatuses.get(getBuildMapKey(currentBuild));
 							if (prevBuildStatuses.containsKey(getBuildMapKey(currentBuild))) {
 								if (prevBuild.getStatus() == BuildStatus.SUCCESS
 										|| (prevBuild.getStatus() == BuildStatus.FAILURE
@@ -126,7 +125,7 @@ public class BambooStatusTooltipListener implements BambooStatusListener {
 		}
 	}
 
-	private static String getBuildMapKey(BambooBuildAdapterIdea build) {
+	private static String getBuildMapKey(BambooBuildAdapter build) {
 		String serverId = "none";
 		if (build.getServer() != null) {
 			serverId = build.getServer().getServerId().toString();

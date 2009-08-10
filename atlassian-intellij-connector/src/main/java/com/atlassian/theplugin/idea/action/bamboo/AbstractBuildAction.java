@@ -16,10 +16,10 @@
 package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.idea.bamboo.BuildCommentForm;
 import com.atlassian.theplugin.idea.bamboo.BuildLabelForm;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
@@ -67,12 +67,12 @@ public abstract class AbstractBuildAction extends AnAction {
 
 	protected abstract void setStatusErrorMessage(final Project project, final String message);
 
-	protected abstract BambooBuildAdapterIdea getBuild(final AnActionEvent event);
+	protected abstract BambooBuildAdapter getBuild(final AnActionEvent event);
 
 
 	protected void runBuild(AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e);
-		final BambooBuildAdapterIdea build = getBuild(e);
+		final BambooBuildAdapter build = getBuild(e);
 
 		if (project != null && build != null && build.getPlanKey() != null) {
 
@@ -99,7 +99,7 @@ public abstract class AbstractBuildAction extends AnAction {
 	}
 
     protected void openBuildInBrowser(final AnActionEvent e) {
-		final BambooBuildAdapterIdea build = getBuild(e);
+		final BambooBuildAdapter build = getBuild(e);
 
 		if (build != null) {
 			BrowserUtil.launchBrowser(build.getResultUrl());
@@ -108,7 +108,7 @@ public abstract class AbstractBuildAction extends AnAction {
 
 	protected void labelBuild(final AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e);
-		final BambooBuildAdapterIdea build = getBuild(e);
+		final BambooBuildAdapter build = getBuild(e);
 
 		if (project != null && build != null) {
 			BuildLabelForm buildLabelForm = new BuildLabelForm(build);
@@ -119,7 +119,7 @@ public abstract class AbstractBuildAction extends AnAction {
 		}
 	}
 
-	private void labelBuild(@NotNull final Project project, @NotNull final BambooBuildAdapterIdea build, final String label) {
+	private void labelBuild(@NotNull final Project project, @NotNull final BambooBuildAdapter build, final String label) {
 
 		Task.Backgroundable labelTask = new Task.Backgroundable(project, "Labeling Build", false) {
 			@Override
@@ -145,7 +145,7 @@ public abstract class AbstractBuildAction extends AnAction {
 
 	protected void commentBuild(AnActionEvent e) {
 		final Project project = IdeaHelper.getCurrentProject(e);
-		final BambooBuildAdapterIdea build = getBuild(e);
+		final BambooBuildAdapter build = getBuild(e);
 
 		if (project != null && build != null) {
 			BuildCommentForm buildCommentForm = new BuildCommentForm(build);
@@ -157,7 +157,7 @@ public abstract class AbstractBuildAction extends AnAction {
 	}
 
 	private void commentBuild(@NotNull final Project project,
-			@NotNull final BambooBuildAdapterIdea build, final String commentText) {
+			@NotNull final BambooBuildAdapter build, final String commentText) {
 
 		Task.Backgroundable commentTask = new Task.Backgroundable(project, "Commenting Build", false) {
 			@Override

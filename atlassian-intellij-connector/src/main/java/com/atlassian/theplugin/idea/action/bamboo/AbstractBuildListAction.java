@@ -17,7 +17,7 @@ package com.atlassian.theplugin.idea.action.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BambooToolWindowPanel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
@@ -32,13 +32,13 @@ public abstract class AbstractBuildListAction extends AbstractBuildAction {
 	@Override
 	public void update(AnActionEvent event) {
 		super.update(event);
-		BambooBuildAdapterIdea build = getBuild(event);
+		BambooBuildAdapter build = getBuild(event);
 		event.getPresentation().setEnabled(build != null
 				&& build.isEnabled() && build.getPlanKey() != null && build.isValid());
 	}
 
 	@Override
-	protected BambooBuildAdapterIdea getBuild(final AnActionEvent event) {
+	protected BambooBuildAdapter getBuild(final AnActionEvent event) {
 		BambooToolWindowPanel panel = IdeaHelper.getProjectComponent(event, BambooToolWindowPanel.class);
 		if (panel != null) {
 			return panel.getSelectedBuild();

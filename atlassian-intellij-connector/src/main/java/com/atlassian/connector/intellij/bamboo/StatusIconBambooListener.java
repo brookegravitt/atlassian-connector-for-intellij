@@ -17,7 +17,7 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,21 +35,21 @@ public class StatusIconBambooListener implements BambooStatusListener {
 		this.display = aDisplay;
 	}
 
-	public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> buildStatuses, Collection<Exception> generalExceptions) {
+	public void updateBuildStatuses(Collection<BambooBuildAdapter> buildStatuses, Collection<Exception> generalExceptions) {
 
 		BuildStatus status = BuildStatus.UNKNOWN;
 
 		if (buildStatuses == null || buildStatuses.size() == 0) {
 			status = BuildStatus.UNKNOWN;
 		} else {
-			List<BambooBuildAdapterIdea> sortedStatuses = new ArrayList<BambooBuildAdapterIdea>(buildStatuses);
-			Collections.sort(sortedStatuses, new Comparator<BambooBuildAdapterIdea>() {
-				public int compare(BambooBuildAdapterIdea b1, BambooBuildAdapterIdea b2) {
+			List<BambooBuildAdapter> sortedStatuses = new ArrayList<BambooBuildAdapter>(buildStatuses);
+			Collections.sort(sortedStatuses, new Comparator<BambooBuildAdapter>() {
+				public int compare(BambooBuildAdapter b1, BambooBuildAdapter b2) {
 					return b1.getServer().getUrl().compareTo(b2.getServer().getUrl());
 				}
 			});
 
-			for (BambooBuildAdapterIdea buildInfo : buildStatuses) {
+			for (BambooBuildAdapter buildInfo : buildStatuses) {
 				if (buildInfo.isEnabled()) {
 					switch (buildInfo.getStatus()) {
 						case FAILURE:
@@ -78,6 +78,6 @@ public class StatusIconBambooListener implements BambooStatusListener {
 
 	public void resetState() {
 		// set empty list of builds
-		updateBuildStatuses(new ArrayList<BambooBuildAdapterIdea>(), null);
+		updateBuildStatuses(new ArrayList<BambooBuildAdapter>(), null);
 	}
 }

@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.cfg.CfgUtil;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.ConfigurationListenerAdapter;
@@ -184,7 +185,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		buildTree.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
 				if (e.getKeyCode() == KeyEvent.VK_ENTER && buildDetailsInfo != null) {
 					openBuild(buildDetailsInfo);
 				}
@@ -195,7 +196,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 			@Override
 			public void mouseClicked(final MouseEvent e) {
-				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
 				if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2 && buildDetailsInfo != null) {
 					openBuild(buildDetailsInfo);
 				}
@@ -207,7 +208,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 				TreePath selPath = buildTree.getPathForLocation(e.getX(), e.getY());
 				if (selRow != -1 && selPath != null) {
 					buildTree.setSelectionPath(selPath);
-					final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+					final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
 					if (buildDetailsInfo != null) {
 						launchContextMenu(e);
 					}
@@ -217,7 +218,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 
 		buildTree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent event) {
-				final BambooBuildAdapterIdea buildDetailsInfo = buildTree.getSelectedBuild();
+				final BambooBuildAdapter buildDetailsInfo = buildTree.getSelectedBuild();
 				if (buildDetailsInfo != null) {
 					buildHistoryPanel.showHistoryForBuild(buildDetailsInfo);
 				} else {
@@ -243,7 +244,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return PLACE_PREFIX + project.getName();
 	}
 
-	public void openBuild(final BambooBuildAdapterIdea buildDetailsInfo) {
+	public void openBuild(final BambooBuildAdapter buildDetailsInfo) {
 		if (buildDetailsInfo != null && buildDetailsInfo.isBamboo2()
 				&& buildDetailsInfo.areActionsAllowed()) {
 			IdeaHelper.getBuildToolWindow(project).showBuild(buildDetailsInfo);
@@ -254,7 +255,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	 * Open build details window, selects 'Tests' tab and run SINGLE specified test.
 	 * It does not run all tests in the class nor all tests in the package.
 	 */
-	private void openBuildAndRunTest(final BambooBuildAdapterIdea buildDetailsInfo,
+	private void openBuildAndRunTest(final BambooBuildAdapter buildDetailsInfo,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
 		IdeaHelper.getBuildToolWindow(project).showBuildAndRunTest(buildDetailsInfo, testPackage, testClass, testMethod);
@@ -273,13 +274,13 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 	private void openBuild(final String buildKey, final int buildNumber, final BambooServerData server) {
-		BambooBuildAdapterIdea build = getBuildFromModel(buildKey, buildNumber, server);
+		BambooBuildAdapter build = getBuildFromModel(buildKey, buildNumber, server);
 
 		if (build != null) {
 			openBuild(build);
 		} else {
 			new FetchingBuildTask(server, buildKey, buildNumber, new BuildLoadedHandler() {
-				public void buildLoaded(final BambooBuildAdapterIdea build) {
+				public void buildLoaded(final BambooBuildAdapter build) {
 					openBuild(build);
 				}
 			}).queue();
@@ -304,23 +305,23 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 			@NotNull final BambooServerData server,
 			@NotNull final String testPackage, @NotNull final String testClass, @NotNull final String testMethod) {
 
-		BambooBuildAdapterIdea build = getBuildFromModel(buildKey, buildNumber, server);
+		BambooBuildAdapter build = getBuildFromModel(buildKey, buildNumber, server);
 
 		if (build != null) {
 			openBuildAndRunTest(build, testPackage, testClass, testMethod);
 		} else {
 			new FetchingBuildTask(server, buildKey, buildNumber, new BuildLoadedHandler() {
-				public void buildLoaded(final BambooBuildAdapterIdea build) {
+				public void buildLoaded(final BambooBuildAdapter build) {
 					openBuildAndRunTest(build, testPackage, testClass, testMethod);
 				}
 			}).queue();
 		}
 	}
 
-	private BambooBuildAdapterIdea getBuildFromModel(final String buildKey, final int buildNumber,
+	private BambooBuildAdapter getBuildFromModel(final String buildKey, final int buildNumber,
 			final BambooServerData server) {
-		BambooBuildAdapterIdea build = null;
-		for (BambooBuildAdapterIdea b : bambooModel.getAllBuilds()) {
+		BambooBuildAdapter build = null;
+		for (BambooBuildAdapter b : bambooModel.getAllBuilds()) {
 			if (b.getBuild().getPlanKey().equals(buildKey)
 					&& b.getNumber() == buildNumber
 					&& b.getServer().getServerId().equals(server.getServerId())) {
@@ -351,7 +352,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		}
 	}
 
-	public BambooBuildAdapterIdea getSelectedHistoryBuild() {
+	public BambooBuildAdapter getSelectedHistoryBuild() {
 		return buildHistoryPanel.getSelectedBuild();
 	}
 
@@ -514,7 +515,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		return groupBy;
 	}
 
-	public BambooBuildAdapterIdea getSelectedBuild() {
+	public BambooBuildAdapter getSelectedBuild() {
 		return buildTree.getSelectedBuild();
 	}
 
@@ -524,7 +525,7 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 		private final int buildNumber;
 		private final BuildLoadedHandler handler;
 
-		private BambooBuildAdapterIdea build;
+		private BambooBuildAdapter build;
 		private Throwable exception;
 
 		public FetchingBuildTask(final BambooServerData server, final String buildKey, final int buildNumber,
@@ -570,6 +571,6 @@ public class BambooToolWindowPanel extends ThreePanePanel implements DataProvide
 	}
 
 	private interface BuildLoadedHandler {
-		void buildLoaded(final BambooBuildAdapterIdea build);
+		void buildLoaded(final BambooBuildAdapter build);
 	}
 }

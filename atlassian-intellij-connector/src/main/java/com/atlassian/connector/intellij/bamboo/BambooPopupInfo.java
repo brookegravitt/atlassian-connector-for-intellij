@@ -17,7 +17,7 @@
 package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +29,9 @@ public class BambooPopupInfo {
 	private static final String ICON_PLAN_PASSED = "icn_plan_passed.gif";
 	private static final String ICON_PLAN_FAILED = "icn_plan_failed.gif";
 
-	private final List<BambooBuildAdapterIdea> bambooBuilds = new ArrayList<BambooBuildAdapterIdea>();
+	private final List<BambooBuildAdapter> bambooBuilds = new ArrayList<BambooBuildAdapter>();
 
-	public void add(BambooBuildAdapterIdea bambooBuild) {
+	public void add(BambooBuildAdapter bambooBuild) {
 		bambooBuilds.add(bambooBuild);
 
 	}
@@ -44,7 +44,7 @@ public class BambooPopupInfo {
 
 		StringBuilder htmlContent = new StringBuilder();
 
-		for (BambooBuildAdapterIdea build : bambooBuilds) {
+		for (BambooBuildAdapter build : bambooBuilds) {
 			htmlContent.append(createHtmlRow(
 					build.getPlanKey(), build.isValid() ? build.getNumber() : null,
 					build.getResultUrl(),
@@ -103,7 +103,7 @@ public class BambooPopupInfo {
 		return sb.toString();
 	}
 
-	public List<BambooBuildAdapterIdea> getBambooBuilds() {
+	public List<BambooBuildAdapter> getBambooBuilds() {
 		return bambooBuilds;
 	}
 

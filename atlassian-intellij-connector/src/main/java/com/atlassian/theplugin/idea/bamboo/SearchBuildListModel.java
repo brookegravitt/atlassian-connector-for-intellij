@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
+
 /**
  * @author Jacek Jaroczynski
  */
@@ -35,17 +37,17 @@ public class SearchBuildListModel extends AbstractBuildListModelDecorator {
     }
 
     @Override
-	public Collection<BambooBuildAdapterIdea> getBuilds() {
+	public Collection<BambooBuildAdapter> getBuilds() {
 		return search(parent.getBuilds());
 	}
 
 
-	private Collection<BambooBuildAdapterIdea> search(Collection<BambooBuildAdapterIdea> col) {
+	private Collection<BambooBuildAdapter> search(Collection<BambooBuildAdapter> col) {
 		if (searchTerm.length() == 0) {
 			return col;
 		}
-		List<BambooBuildAdapterIdea> list = new ArrayList<BambooBuildAdapterIdea>();
-		for (BambooBuildAdapterIdea r : col) {
+		List<BambooBuildAdapter> list = new ArrayList<BambooBuildAdapter>();
+		for (BambooBuildAdapter r : col) {
 			if ((r.getPlanKey() + "-" + r.getBuildNumberAsString()).toLowerCase().indexOf(searchTerm) > -1) {
 				list.add(r);
 			}

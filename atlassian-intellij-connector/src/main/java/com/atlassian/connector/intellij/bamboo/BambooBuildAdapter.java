@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.idea.bamboo;
+package com.atlassian.connector.intellij.bamboo;
 
-import com.atlassian.connector.intellij.bamboo.BambooBuildIcons;
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -30,12 +29,12 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
-public class BambooBuildAdapterIdea extends ConfigurationListenerAdapter {
+public class BambooBuildAdapter extends ConfigurationListenerAdapter {
 	private final BambooBuild build;
 	public static final SimpleDateFormat BAMBOO_BUILD_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final BambooServerData serverData;
 
-	public BambooBuildAdapterIdea(BambooBuild build, BambooServerData serverData) {
+	public BambooBuildAdapter(BambooBuild build, BambooServerData serverData) {
 		this.build = build;
 		this.serverData = serverData;
 	}

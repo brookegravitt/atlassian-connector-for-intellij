@@ -21,6 +21,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.GenericComboBoxItemWrapper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.intellij.ui.ListSpeedSearch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -71,7 +72,7 @@ public class BambooFilterList extends JList {
 		repaint();
 	}
 
-	private void updateModel(@NotNull final Collection<BambooBuildAdapterIdea> buildStatuses) {
+	private void updateModel(@NotNull final Collection<BambooBuildAdapter> buildStatuses) {
 
 		final DefaultListModel listModel = (DefaultListModel) getModel();
 		if (!listModel.contains(allFilterWrapper)) {
@@ -83,7 +84,7 @@ public class BambooFilterList extends JList {
 		switch (bambooFilterType) {
 			case PROJECT:
 				Set<String> uniqueBambooProjects = new LinkedHashSet<String>();
-				for (BambooBuildAdapterIdea buildStatuse : buildStatuses) {
+				for (BambooBuildAdapter buildStatuse : buildStatuses) {
 					uniqueBambooProjects.add(buildStatuse.getProjectName());
 				}
 				for (String bambooProject : uniqueBambooProjects) {
@@ -148,7 +149,7 @@ public class BambooFilterList extends JList {
 			return bambooServerCfg;
 		}
 
-		public boolean doesMatch(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapter build) {
 			return bambooServerCfg.getServerId().equals(build.getServer().getServerId());
 		}
 
@@ -179,7 +180,7 @@ public class BambooFilterList extends JList {
 	}
 
 	private static final BambooBuildFilter ALL_FILTER = new BambooBuildFilter() {
-		public boolean doesMatch(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapter build) {
 			return true;
 		}
 	};
@@ -192,7 +193,7 @@ public class BambooFilterList extends JList {
 			this.projectName = projectName;
 		}
 
-		public boolean doesMatch(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapter build) {
 			return projectName.equals(build.getProjectName());
 		}
 
@@ -231,7 +232,7 @@ public class BambooFilterList extends JList {
 		}
 
 
-		public boolean doesMatch(final BambooBuildAdapterIdea build) {
+		public boolean doesMatch(final BambooBuildAdapter build) {
 			return status == build.getAdjustedStatus();
 		}
 
@@ -271,7 +272,7 @@ public class BambooFilterList extends JList {
 
 		protected int getCount() {
 			int i = 0;
-			for (BambooBuildAdapterIdea build : model.getAllBuilds()) {
+			for (BambooBuildAdapter build : model.getAllBuilds()) {
 				if (wrapped.doesMatch(build)) {
 					i++;
 				}

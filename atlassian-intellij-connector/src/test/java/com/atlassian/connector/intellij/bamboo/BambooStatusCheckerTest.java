@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package com.atlassian.theplugin.commons.bamboo;
+package com.atlassian.connector.intellij.bamboo;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.connector.intellij.bamboo.BambooStatusChecker;
-import com.atlassian.connector.intellij.bamboo.BambooStatusListener;
 import com.atlassian.theplugin.bamboo.api.bamboomock.*;
 import com.atlassian.theplugin.commons.UIActionScheduler;
-import com.atlassian.theplugin.commons.bamboo.BambooBuild;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.BambooServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
@@ -30,7 +27,6 @@ import com.atlassian.theplugin.commons.cfg.UserCfg;
 import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.configuration.PluginConfigurationBean;
 import com.atlassian.theplugin.commons.util.Logger;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -203,14 +199,14 @@ public class BambooStatusCheckerTest extends TestCase {
 
 	private class MockReceiver implements BambooStatusListener {
 
-		private Collection<BambooBuildAdapterIdea> lastStatuses;
+		private Collection<BambooBuildAdapter> lastStatuses;
 
-		public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> buildStatuses, Collection<Exception> generalExceptions) {
+		public void updateBuildStatuses(Collection<BambooBuildAdapter> buildStatuses, Collection<Exception> generalExceptions) {
 			lastStatuses = buildStatuses;
 		}
 
-		Collection<BambooBuildAdapterIdea> getLastAndClear() {
-			Collection<BambooBuildAdapterIdea> ret = lastStatuses;
+		Collection<BambooBuildAdapter> getLastAndClear() {
+			Collection<BambooBuildAdapter> ret = lastStatuses;
 			lastStatuses = null;
 			return ret;
 		}

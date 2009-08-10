@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -39,7 +40,7 @@ public class BuildListModelImpl implements BuildListModel {
 
 	private final Collection<BuildListModelListener> listeners = new CopyOnWriteArrayList<BuildListModelListener>();
 
-	private final Collection<BambooBuildAdapterIdea> allBuilds = MiscUtil.buildArrayList();
+	private final Collection<BambooBuildAdapter> allBuilds = MiscUtil.buildArrayList();
 
 	private static final DateTimeFormatter TIME_DF = DateTimeFormat.forPattern("hh:mm a");
 	private final Project project;
@@ -49,30 +50,31 @@ public class BuildListModelImpl implements BuildListModel {
 		this.project = project;
 		this.cfgManager = cfgManager;
 
-//		for (BambooBuildAdapterIdea build : allBuilds) {
+//		for (BambooBuildAdapter build : allBuilds) {
 //			if (build.getServer().getServerId().equals(serverId)) {
 //				allBuilds.remove(build); // todo copy on write
 //				BambooBuild b = new BambooBuildInfo();
-//				allBuilds.add(new BambooBuildAdapterIdea())
+//				allBuilds.add(new BambooBuildAdapter())
 //			}
 //		}
 	}
 
 	// for unit tests only
-	void setBuilds(Collection<BambooBuildAdapterIdea> builds) {
+	void setBuilds(Collection<BambooBuildAdapter> builds) {
 		allBuilds.clear();
 		allBuilds.addAll(builds);
 	}
 
-	public void update(Collection<BambooBuildAdapterIdea> builds, final Collection<Exception> generalExceptions) {
+	public void update(Collection<BambooBuildAdapter> builds, final Collection<Exception> generalExceptions) {
 
 		boolean haveErrors = false;
-		List<BambooBuildAdapterIdea> buildAdapters = new ArrayList<BambooBuildAdapterIdea>();
+		List<BambooBuildAdapter> buildAdapters = new ArrayList<BambooBuildAdapter>();
 		Date lastPollingTime = null;
 		final Collection<Pair<String, Throwable>> errors = MiscUtil.buildArrayList();
-		for (BambooBuildAdapterIdea build : builds) {
+		for (BambooBuildAdapter build : builds) {
 			if (!haveErrors) {
 				if (build.getStatus() == BuildStatus.UNKNOWN && build.getErrorMessage() != null) {
+					//noinspection ThrowableResultOfMethodCallIgnored
 					errors.add(new Pair<String, Throwable>(build.getPlanKey() + ": " + build.getErrorMessage(),
 							build.getException()));
 					haveErrors = true;
@@ -108,18 +110,18 @@ public class BuildListModelImpl implements BuildListModel {
 		});
 	}
 
-	public Collection<BambooBuildAdapterIdea> getAllBuilds() {
+	public Collection<BambooBuildAdapter> getAllBuilds() {
 		return allBuilds;
 	}
 
 
 	@NotNull
-	public Collection<BambooBuildAdapterIdea> getBuilds() {
+	public Collection<BambooBuildAdapter> getBuilds() {
 		if (filter == null) {
 			return allBuilds;
 		}
-		Collection<BambooBuildAdapterIdea> res = MiscUtil.buildArrayList();
-		for (BambooBuildAdapterIdea build : allBuilds) {
+		Collection<BambooBuildAdapter> res = MiscUtil.buildArrayList();
+		for (BambooBuildAdapter build : allBuilds) {
 			if (filter.doesMatch(build)) {
 				res.add(build);
 			}

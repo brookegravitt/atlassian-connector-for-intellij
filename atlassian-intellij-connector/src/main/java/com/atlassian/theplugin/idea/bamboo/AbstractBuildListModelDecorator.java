@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.intellij.openapi.util.Pair;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public abstract class AbstractBuildListModelDecorator implements BuildListModel,
 		parent.addListener(this);
 	}
 
-	public Collection<BambooBuildAdapterIdea> getBuilds() {
+	public Collection<BambooBuildAdapter> getBuilds() {
 		return parent.getBuilds();
 	}
 

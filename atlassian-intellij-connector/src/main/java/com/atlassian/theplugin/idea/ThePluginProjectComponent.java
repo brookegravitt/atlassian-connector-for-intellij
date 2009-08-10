@@ -35,7 +35,7 @@ import com.atlassian.theplugin.configuration.WorkspaceConfigurationBean;
 import com.atlassian.theplugin.crucible.model.CrucibleReviewListModel;
 import com.atlassian.theplugin.idea.autoupdate.ConfirmPluginUpdateHandler;
 import com.atlassian.theplugin.idea.autoupdate.PluginUpdateIcon;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BambooStatusIcon;
 import com.atlassian.theplugin.idea.bamboo.BuildListModelImpl;
 import com.atlassian.theplugin.idea.bamboo.BuildStatusChangedToolTip;
@@ -252,7 +252,7 @@ public class ThePluginProjectComponent implements ProjectComponent {
 			bambooStatusChecker.registerListener(new BambooStatusListener() {
 				
 				
-				public void updateBuildStatuses(Collection<BambooBuildAdapterIdea> builds,
+				public void updateBuildStatuses(Collection<BambooBuildAdapter> builds,
 						Collection<Exception> generalExceptions) {
 					bambooModel.update(builds, generalExceptions);
 				}

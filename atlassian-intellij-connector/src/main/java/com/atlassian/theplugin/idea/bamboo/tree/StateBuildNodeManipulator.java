@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.bamboo.AdjustedBuildStatus;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -65,7 +65,7 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 				return p.getChildAt(index);
 			}
 
-			BambooBuildAdapterIdea build = getBuildForState(p.getStatus(), index);
+			BambooBuildAdapter build = getBuildForState(p.getStatus(), index);
 			BuildTreeNode node = new BuildTreeNode(buildModel, build);
 			p.add(node);
 
@@ -78,7 +78,7 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 	private List<AdjustedBuildStatus> getDistinctStates() {
 		Set<AdjustedBuildStatus> states = new TreeSet<AdjustedBuildStatus>(COMPARATOR);
 
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			states.add(build.getAdjustedStatus());
 		}
 
@@ -93,7 +93,7 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 
 	private int gentNumOfBuildsForState(AdjustedBuildStatus buildStatus) {
 		int ret = 0;
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getAdjustedStatus() == buildStatus) {
 				++ret;
 			}
@@ -102,11 +102,11 @@ public class StateBuildNodeManipulator extends BuildNodeManipulator {
 		return ret;
 	}
 
-	private BambooBuildAdapterIdea getBuildForState(AdjustedBuildStatus buildStatus, int index) {
-		List<BambooBuildAdapterIdea> array = new ArrayList<BambooBuildAdapterIdea>();
+	private BambooBuildAdapter getBuildForState(AdjustedBuildStatus buildStatus, int index) {
+		List<BambooBuildAdapter> array = new ArrayList<BambooBuildAdapter>();
 
 		// get all builds for server
-		for (BambooBuildAdapterIdea build : buildModel.getBuilds()) {
+		for (BambooBuildAdapter build : buildModel.getBuilds()) {
 			if (build.getAdjustedStatus() == buildStatus) {
 				array.add(build);
 			}

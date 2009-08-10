@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
@@ -67,7 +68,7 @@ public final class BambooFilterListTestUi {
 				final JButton update = new JButton("Update");
 				update.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
-						final java.util.List<BambooBuildAdapterIdea> ideas = MiscUtil.buildArrayList(getBuilds());
+						final java.util.List<BambooBuildAdapter> ideas = MiscUtil.buildArrayList(getBuilds());
 						ideas.add(createBambooBuild("B7", "PR5", "Project Five", getState(), B3));
 						model.setBuilds(ideas);
 						bambooFilterList.update();
@@ -108,7 +109,7 @@ public final class BambooFilterListTestUi {
 		return state ? BuildStatus.SUCCESS : BuildStatus.FAILURE;
 	}
 
-	public static java.util.List<BambooBuildAdapterIdea> getBuilds() {
+	public static java.util.List<BambooBuildAdapter> getBuilds() {
 		return Arrays.asList(createBambooBuild("B1", "PR1", "Project One", getState(), B1),
 				createBambooBuild("B2", "PR2", "Project Two", getState(), B2),
 				createBambooBuild("B3", "PR3", "Project Three", getState(), B3),
@@ -118,7 +119,7 @@ public final class BambooFilterListTestUi {
 						new Random().nextBoolean() ? B1 : B2), createBambooBuild("B7", "PR4", "Project Four", getState(), B2));
 	}
 
-	private static BambooBuildAdapterIdea createBambooBuild(String buildKey, String projectKey, String name, BuildStatus state,
+	private static BambooBuildAdapter createBambooBuild(String buildKey, String projectKey, String name, BuildStatus state,
 			BambooServerCfg serverCfg) {
 		final BambooBuildInfo buildInfo = new BambooBuildInfo.Builder(buildKey, null,
 				getServerData(serverCfg), name, 123, state)
@@ -127,7 +128,7 @@ public final class BambooFilterListTestUi {
 				.completionTime(new Date())
 				.relativeBuildDate("55 seconds ago")
 				.build();
-		return new BambooBuildAdapterIdea(buildInfo, new BambooServerData(serverCfg, new UserCfg()));
+		return new BambooBuildAdapter(buildInfo, new BambooServerData(serverCfg, new UserCfg()));
 	}
 
 	private static ConnectionCfg getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {

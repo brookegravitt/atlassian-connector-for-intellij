@@ -11,10 +11,10 @@ import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.idea.IdeaVersionFacade;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 import com.atlassian.theplugin.util.ClassMatcher;
 import com.atlassian.theplugin.util.CodeNavigationUtil;
 import com.atlassian.theplugin.util.PluginUtil;
@@ -46,7 +46,7 @@ import com.intellij.psi.PsiMethod;
 public class BuildLogPanel extends JPanel implements ActionListener {
 	private final Project project;
 
-	public BuildLogPanel(Project project, BambooBuildAdapterIdea build) {
+	public BuildLogPanel(Project project, BambooBuildAdapter build) {
 		this.project = project;
 		setLayout(new BorderLayout());
 		final ConsoleView console = setupConsole();
@@ -66,7 +66,7 @@ public class BuildLogPanel extends JPanel implements ActionListener {
 		return console;
 	}
 
-	public void fetchAndShowBuildLog(final BambooBuildAdapterIdea build, final ConsoleView consoleView) {
+	public void fetchAndShowBuildLog(final BambooBuildAdapter build, final ConsoleView consoleView) {
 		if (!build.isValid()) {
 			Messages.showErrorDialog(project, "Cannot fetch build log for invalid build (without the number)!",
 					PluginUtil.PRODUCT_NAME);

@@ -27,7 +27,6 @@ import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedExcept
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
 
 public interface BambooServerFacade extends ProductServerFacade {
 	Collection<BambooProject> getProjectList(BambooServerData bambooServer)
@@ -36,7 +35,7 @@ public interface BambooServerFacade extends ProductServerFacade {
 	Collection<BambooPlan> getPlanList(BambooServerData bambooServer)
 			throws ServerPasswordNotProvidedException, RemoteApiException;
 
-	Collection<BambooBuildAdapterIdea> getSubscribedPlansResults(BambooServerData bambooServer,
+	Collection<BambooBuildAdapter> getSubscribedPlansResults(BambooServerData bambooServer,
 			final Collection<SubscribedPlan> plans,
 			boolean isUseFavourities, int timezoneOffset)
 			throws ServerPasswordNotProvidedException;
@@ -74,7 +73,7 @@ public interface BambooServerFacade extends ProductServerFacade {
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	Collection<BambooBuildAdapterIdea> getRecentBuildsForPlans(BambooServerData bambooServer, String planKey,
+	Collection<BambooBuildAdapter> getRecentBuildsForPlans(BambooServerData bambooServer, String planKey,
 			final int timezoneOffset)
 			throws ServerPasswordNotProvidedException;
 
@@ -91,18 +90,14 @@ public interface BambooServerFacade extends ProductServerFacade {
 	 * @throws com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException
 	 *          when invoked for Server that has not had the password set yet
 	 */
-	Collection<BambooBuildAdapterIdea> getRecentBuildsForUser(BambooServerData bambooServer, final int timezoneOffset)
+	Collection<BambooBuildAdapter> getRecentBuildsForUser(BambooServerData bambooServer, final int timezoneOffset)
 			throws ServerPasswordNotProvidedException;
 
-	BambooBuildAdapterIdea getBuildForPlanAndNumber(BambooServerData bambooServer, @NotNull String planKey,
+	BambooBuildAdapter getBuildForPlanAndNumber(BambooServerData bambooServer, @NotNull String planKey,
 			final int buildNumber, final int timezoneOffset)
 			throws ServerPasswordNotProvidedException, RemoteApiException;
 
 	boolean isBamboo2(BambooServerData serverData);
 
 	boolean isBamboo2M9(final BambooServerData bambooServerData);
-
-	Collection<BambooBuildAdapterIdea> getSubscribedPlansResultsNew(BambooServerData bambooServer,
-			Collection<SubscribedPlan> plans, boolean isUseFavourities, int timezoneOffset)
-			throws ServerPasswordNotProvidedException;
 }

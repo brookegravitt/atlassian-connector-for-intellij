@@ -16,7 +16,7 @@
 package com.atlassian.theplugin.idea.bamboo.tree;
 
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
-import com.atlassian.theplugin.idea.bamboo.BambooBuildAdapterIdea;
+import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.idea.bamboo.BuildGroupBy;
 import com.atlassian.theplugin.idea.bamboo.BuildListModel;
 
@@ -154,15 +154,15 @@ public class BuildTreeModel extends DefaultTreeModel {
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent == getRoot()) {
 			if (child instanceof BuildTreeNode) {
-				BambooBuildAdapterIdea build = ((BuildTreeNode) child).getBuild();
-				return new ArrayList<BambooBuildAdapterIdea>(buildListModel.getBuilds()).indexOf(build);
+				BambooBuildAdapter build = ((BuildTreeNode) child).getBuild();
+				return new ArrayList<BambooBuildAdapter>(buildListModel.getBuilds()).indexOf(build);
 			}
 		}
 
 		return -1;
 	}
 
-//	public void update(final Collection<BambooBuildAdapterIdea> buildStatuses) {
+//	public void update(final Collection<BambooBuildAdapter> buildStatuses) {
 //		buildListModel.setBuilds(buildStatuses);
 //		update();
 //	}
