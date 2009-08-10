@@ -88,8 +88,6 @@ public abstract class CommentTooltipPanel extends JPanel {
             popup.showInScreenCoordinates(owner, location);
         } else if (event != null) {
 		    popup.showInBestPositionFor(event.getDataContext());
-//        } else {
-//            System.out.println("owner=" + owner + " location=" + location + " event=" + event);
         }
 	}
 
@@ -922,7 +920,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         }
 
         @Override
-        public void commentReadStateChanged(ReviewAdapter review, Comment comment) {
+        public void commentReadStateChanged(ReviewAdapter r, Comment comment) {
             System.out.println("commentReadStateChanged - implement me");
         }
 
