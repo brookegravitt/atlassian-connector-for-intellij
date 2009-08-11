@@ -29,6 +29,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 /**
  * User: jgorycki
@@ -148,6 +149,12 @@ public abstract class CommentTooltipPanel extends JPanel {
 		wrap.add(statusLabel, cc.xy(1, 1));
 		add(wrap, BorderLayout.SOUTH);
 
+        List<Comment> commentsToMarkRead = new ArrayList<Comment>();
+
+        if (rootComment.getReadState() == Comment.ReadState.UNREAD) {
+            commentsToMarkRead.add(rootComment);
+        }
+
 		final CommentPanel cmtPanel = new CommentPanel(review, rootComment, false,
                 parent == null && mode != Mode.SHOW,
                 parent == null && mode == Mode.ADD);
@@ -162,10 +169,17 @@ public abstract class CommentTooltipPanel extends JPanel {
                 if (sel) {
                     selectedPanel = replyPanel;
                 }
+
+                if (reply.getReadState() == Comment.ReadState.UNREAD) {
+                    commentsToMarkRead.add(reply);
+                }
 				commentsPanel.add(replyPanel);
 				commentPanelList.add(replyPanel);
 			}
 		}
+
+        markCommentsRead(commentsToMarkRead);
+
         if (parent != null && mode == Mode.ADD) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -266,6 +280,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private static final String APPLY_DRAFT = "Post as Draft";
 		private static final String PUBLISH = "Publish";
 		private static final String DELETE = "Remove";
+        private static final String MARK_UNREAD = "Leave Unread";
+        private static final String MARK_READ = "Mark Read";
 
 		private Comment comment;
         private boolean selectedPanel;
@@ -281,6 +297,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private HyperlinkLabel btnDelete;
 		private HyperlinkLabel btnPublish;
 		private HyperlinkLabel btnSaveDraft;
+        private HyperlinkLabel btnMarkRead;
+        private HyperlinkLabel btnMarkUnread;
 		private JLabel draftLabel;
 		private JPanel defectClassificationPanel;
 		private JCheckBox boxIsDefect;
@@ -299,6 +317,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 		private static final int CANCEL_POS = 15;
 		private static final int PUBLISH_POS = 16;
 		private static final int DELETE_POS = 17;
+        private static final int MARK_READ_POS = 18;
+        private static final int MARK_UNREAD_POS = 19;
 		private static final int WIDTH_INDENTED = 15;
 		private static final int WIDTH_ALL = 16;
         private JLabel underConstruction;
@@ -324,7 +344,8 @@ public abstract class CommentTooltipPanel extends JPanel {
             indent = comment == null || comment.isReply();
 
 			setLayout(new FormLayout(
-					"max(8dlu;p), max(8dlu;d), d, 2dlu, d, 2dlu, d, 2dlu, d, 2dlu, d, r:p:g, r:p, r:p, r:p, r:p, r:p",
+					"max(8dlu;p), max(8dlu;d), d, 2dlu, d, 2dlu, d, 2dlu, d, 2dlu, d,"
+                            + " r:p:g, r:p, r:p, r:p, r:p, r:p, r:p, r:p",
 					"p, p:g, p"
 			));
 			CellConstraints cc = new CellConstraints();
@@ -341,6 +362,9 @@ public abstract class CommentTooltipPanel extends JPanel {
                     }
                 }
             });
+            if (comment != null && comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                commentBody.setFont(commentBody.getFont().deriveFont(Font.BOLD));
+            }
 			btnShowHide = new ShowHideButton(commentBody, this, useTextTwixie);
 			HeaderListener headerListener = new HeaderListener();
 
@@ -374,6 +398,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 				createDeleteButton(cc);
 			}
 
+            if (comment != null && !isOwner(comment)) {
+                createReadUnreadButtons(cc);
+            }
+
 			createCommentBody(cc);
 			addAltEnterKeyListener();
 
@@ -385,7 +413,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			validate();
 		}
 
-		private void addAltEnterKeyListener() {
+        private void addAltEnterKeyListener() {
 			commentBody.addKeyListener(new KeyListener() {
 				private int previousKey;
 
@@ -528,6 +556,25 @@ public abstract class CommentTooltipPanel extends JPanel {
 			return review.getServerData().getUserName().equals(cmt.getAuthor().getUserName());
 		}
 
+        public void updateReadUnreadButtonState(Comment cmt) {
+            final Comment.ReadState state = cmt.getReadState();
+            ((CommentBean) comment).setReadState(state);
+            if (btnMarkUnread != null && btnMarkRead != null
+                    && (state == Comment.ReadState.READ || state == Comment.ReadState.LEAVE_UNREAD)) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        btnMarkUnread.setVisible(state == Comment.ReadState.READ);
+                        btnMarkRead.setVisible(state == Comment.ReadState.LEAVE_UNREAD);
+                        if (state == Comment.ReadState.LEAVE_UNREAD) {
+                            commentBody.setFont(commentBody.getFont().deriveFont(Font.BOLD));
+                        } else {
+                            commentBody.setFont(commentBody.getFont().deriveFont(Font.PLAIN));
+                        }
+                    }
+                });
+            }
+        }
+
 		private void createPublishButtons(CellConstraints cc) {
 			btnPublish = new HyperlinkLabel(PUBLISH);
 			btnPublish.setOpaque(false);
@@ -538,6 +585,33 @@ public abstract class CommentTooltipPanel extends JPanel {
 			});
 			add(btnPublish, cc.xy(PUBLISH_POS, 1));
 		}
+
+        private void createReadUnreadButtons(CellConstraints cc) {
+            final Comment.ReadState state = comment.getReadState();
+            btnMarkUnread = new HyperlinkLabel(MARK_UNREAD);
+            btnMarkRead = new HyperlinkLabel(MARK_READ);
+
+            btnMarkRead.setOpaque(false);
+            btnMarkUnread.setOpaque(false);
+            btnMarkRead.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                    btnMarkRead.setVisible(false);
+                    List<Comment> list = new ArrayList<Comment>();
+                    list.add(comment);
+                    markCommentsRead(list);
+                }
+            });
+            btnMarkUnread.addHyperlinkListener(new HyperlinkListener() {
+                public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
+                    btnMarkUnread.setVisible(false);
+                    markCommentLeaveUnread(comment);
+                }
+            });
+            add(btnMarkRead, cc.xy(MARK_READ_POS, 1));
+            add(btnMarkUnread, cc.xy(MARK_UNREAD_POS, 1));
+            btnMarkRead.setVisible(state == Comment.ReadState.LEAVE_UNREAD);
+            btnMarkUnread.setVisible(state == Comment.ReadState.READ); 
+        }
 
 		private void createDeleteButton(CellConstraints cc) {
 			btnDelete = new HyperlinkLabel(DELETE);
@@ -857,6 +931,10 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 	protected abstract void publishComment(Comment comment);
 
+    protected abstract void markCommentsRead(Collection<Comment> comments);
+
+    protected abstract void markCommentLeaveUnread(Comment comment);
+
 	private class MyReviewListener extends CrucibleReviewListenerAdapter {
 
         @Override
@@ -898,7 +976,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 							return;
 						}
 					}
-                    removeUnderConstructionPanel(comment);
+                    removeUnderConstructionPanel();
 					setStatusText("Comment reply added", false);
 					setAllButtonsVisible();
 					addCommentReplyPanel(review, comment, false);
@@ -906,7 +984,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			});
 		}
 
-        private void removeUnderConstructionPanel(Comment comment) {
+        private void removeUnderConstructionPanel() {
             CommentPanel underConstructionPanel = null;
             for (CommentPanel panel : commentPanelList) {
                 if (panel.panelForNewComment) {
@@ -920,8 +998,12 @@ public abstract class CommentTooltipPanel extends JPanel {
         }
 
         @Override
-        public void commentReadStateChanged(ReviewAdapter r, Comment comment) {
-            System.out.println("commentReadStateChanged - implement me");
+        public void commentReadStateChanged(ReviewAdapter r, Comment cmt) {
+            for (CommentPanel panel : commentPanelList) {
+                if (panel.comment != null && panel.comment.getPermId().equals(cmt.getPermId())) {
+                    panel.updateReadUnreadButtonState(cmt);
+                }
+            }
         }
 
         @Override
@@ -952,7 +1034,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                             CommentPanel panel = commentPanelList.get(0);
                             if (comment.getMessage().equals(panel.getComment().getMessage())) {
                                 setStatusText("Comment aded", false);
-                                removeUnderConstructionPanel(comment);
+                                removeUnderConstructionPanel();
                                 addCommentPanel(rev, comment);
                                 setAllButtonsVisible();
                                 mode = Mode.SHOW;
