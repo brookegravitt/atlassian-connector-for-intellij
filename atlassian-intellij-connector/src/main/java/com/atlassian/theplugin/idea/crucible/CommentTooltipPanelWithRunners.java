@@ -10,6 +10,7 @@ import com.intellij.openapi.progress.Task;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Date;
+import java.util.Collection;
 
 /**
  * User: kalamon
@@ -22,6 +23,8 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     private static final String UPDATING_COMMENT_FAILED = "Updating comment failed: ";
     private static final String REMOVING_COMMENT_FAILED = "Removing comment failed: ";
     private static final String PUBLISHING_COMMENT_FAILED = "Publishing comment failed: ";
+    private static final String MARKING_COMMENTS_READ_FAILED = "Marking comment as read failed: ";
+    private static final String MARKING_COMMENT_LEAVE_UNREAD_FAILED = "Leaving comments unread failed: ";
 
     public CommentTooltipPanelWithRunners(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo fileInfo,
                                           VersionedComment comment, VersionedComment parent) {
@@ -86,6 +89,42 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     protected void publishComment(Comment aComment) {
         runPublishCommentTask(aComment, this);
+    }
+
+    protected void markCommentsRead(final Collection<Comment> comments) {
+        runMarkCommentsReadTask(comments, this);
+    }
+
+    protected void markCommentLeaveUnread(final Comment comment) {
+        runMarkCommentLeaveUnreadTask(comment, this);
+    }
+
+    private void runMarkCommentsReadTask(final Collection<Comment> comments, final CommentTooltipPanel panel) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Marking comments as read", false) {
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                try {
+                    for (Comment comment : comments) {
+                        getReview().markCommentRead(comment);
+                    }
+                } catch (Exception e) {
+                    panel.setStatusText(MARKING_COMMENTS_READ_FAILED + e.getMessage(), true);
+                }
+            }
+        };
+        ProgressManager.getInstance().run(task);
+    }
+
+    private void runMarkCommentLeaveUnreadTask(final Comment comment, final CommentTooltipPanel panel) {
+        Task.Backgroundable task = new Task.Backgroundable(getProject(), "Leaving comment unread", false) {
+            public void run(@NotNull ProgressIndicator progressIndicator) {
+                try {
+                    getReview().markCommentLeaveUnread(comment);
+                } catch (Exception e) {
+                    panel.setStatusText(MARKING_COMMENT_LEAVE_UNREAD_FAILED + e.getMessage(), true);
+                }
+            }
+        };
+        ProgressManager.getInstance().run(task);
     }
 
     private void runRemoveCommentTask(final Comment comment, final CommentTooltipPanel panel) {

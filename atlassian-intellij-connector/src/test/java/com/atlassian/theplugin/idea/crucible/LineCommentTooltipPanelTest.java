@@ -12,6 +12,7 @@ import com.atlassian.theplugin.crucible.model.MockCrucibleFacadeAdapter;
 import com.atlassian.theplugin.idea.ui.SwingAppRunner;
 
 import java.util.Date;
+import java.util.Collection;
 
 /**
  * User: kalamon
@@ -88,7 +89,13 @@ public class LineCommentTooltipPanelTest {
 				}
 			}
 
-			@Override
+            protected void markCommentsRead(Collection<Comment> comments) {
+            }
+
+            protected void markCommentLeaveUnread(Comment comment) {
+            }
+
+            @Override
 			protected void updateComment(Comment comment, String text) {
 				try {
 					CommentBean vcb = (CommentBean) comment;
@@ -130,6 +137,7 @@ public class LineCommentTooltipPanelTest {
 				}
 			}
 		}, "test cru tooltip", FRAME_WIDTH, FRAME_HEIGHT);
+
 	}
 
 	private static CommentBean createReply(Comment parent, String txt) {
