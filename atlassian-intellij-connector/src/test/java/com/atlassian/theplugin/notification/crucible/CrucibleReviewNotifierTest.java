@@ -211,7 +211,11 @@ public class CrucibleReviewNotifierTest extends TestCase {
 				return 0;
 			}
 
-			public int getNumberOfComments(final String userName) {
+            public int getNumberOfUnreadComments() {
+                return 0;
+            }
+
+            public int getNumberOfComments(final String userName) {
 				return 0;
 			}
 

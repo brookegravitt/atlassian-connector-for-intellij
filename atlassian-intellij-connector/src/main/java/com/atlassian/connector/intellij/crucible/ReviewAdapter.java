@@ -660,6 +660,10 @@ public class ReviewAdapter {
 		return review.getNumberOfVersionedCommentsDrafts(userName);
 	}
 
+    public int getNumberOfUnreadComments() throws ValueNotYetInitialized {
+        return review.getNumberOfUnreadComments();
+    }
+
 	public List<CustomFieldDef> getMetricDefinitions() {
 		return metricDefinitions;
 	}
