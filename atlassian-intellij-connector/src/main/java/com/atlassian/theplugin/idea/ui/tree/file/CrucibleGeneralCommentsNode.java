@@ -38,7 +38,10 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 	}
 
 	protected String getText() {
-		return "General Comments (" + getNumberOfGeneralComments() + ")";
+        int n = getNumberOfUnreadGeneralComments();
+        String unreadCount = n > 0 ? ", " + n + " unread" : "";
+
+		return "General Comments (" + getNumberOfGeneralComments() + " comments" + unreadCount + ")";
 	}
 
 	public AtlassianTreeNode getClone() {
@@ -66,6 +69,30 @@ public class CrucibleGeneralCommentsNode extends CrucibleContainerNode {
 		}
 		return n;
 	}
+
+    private int getNumberOfUnreadGeneralComments() {
+        int n = 0;
+
+        try {
+            for (GeneralComment comment : getReview().getGeneralComments()) {
+                if (comment.getReadState() == Comment.ReadState.UNREAD
+                        || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                    ++n;
+                }
+            }
+            for (GeneralComment gc : getReview().getGeneralComments()) {
+                for (Comment reply : gc.getReplies()) {
+                    if (reply.getReadState() == Comment.ReadState.UNREAD
+                        || reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                        ++n;
+                    }
+                }
+            }
+        } catch (ValueNotYetInitialized e) {
+            return 0;
+        }
+        return n;
+    }
 
 	@Override
 	public boolean isCompactable() {

@@ -146,6 +146,7 @@ public class CrucibleFileNode extends FileNode {
 			}
 
 			int noOfComments = node.getFile().getNumberOfComments();
+            int noOfUnreadComments = node.getFile().getNumberOfUnreadComments();
 			if (noOfComments > 0) {
 				int noOfDefects = node.getFile().getNumberOfCommentsDefects();
 				append(" ",
@@ -156,9 +157,13 @@ public class CrucibleFileNode extends FileNode {
 				if (noOfComments != 1) {
 					append("s", TEXT_ITALIC);
 				}
-
+                if (noOfUnreadComments > 0 ) {
+                    append(", ", TEXT_ITALIC);
+                    append(String.valueOf(noOfUnreadComments), TEXT_ITALIC);
+                    append(" unread", TEXT_ITALIC);
+                }
 				if (noOfDefects > 0) {
-					append(" (", TEXT_ITALIC);
+					append(", ", TEXT_ITALIC);
 					append(String.valueOf(noOfDefects),
 							RED_ITALIC);
 					append(" defect",
@@ -167,7 +172,6 @@ public class CrucibleFileNode extends FileNode {
 						append("s",
 								RED_ITALIC);
 					}
-					append(")", TEXT_ITALIC);
 				}
 			}
 

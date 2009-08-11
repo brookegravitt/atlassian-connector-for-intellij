@@ -81,31 +81,28 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 				int noOfComments = node.getReview().getNumberOfGeneralComments() 
 						+ node.getReview().getNumberOfVersionedComments();
 
-//				for (GeneralComment comment : generalComments) {
-//					noOfComments += comment.getReplies().size();
-//					if (comment.isDefectRaised()) {
-//						++noOfDefects;
-//					}
-//				}
-//				for (VersionedComment vComment : versionedComments) {
-//					if (vComment.isDefectRaised()) {
-//						++noOfDefects;
-//					}
-//				}
+                int noOfUnreadComments = node.getReview().getNumberOfUnreadComments();
+
 				append(" ",	TEXT_ITALIC);
 				append(String.valueOf(noOfComments), TEXT_ITALIC);
 				append(" comment", TEXT_ITALIC);
 				if (noOfComments != 1) {
 					append("s", TEXT_ITALIC);
 				}
+
+                if (noOfUnreadComments > 0 ) {
+                    append(", ", TEXT_ITALIC);
+                    append(String.valueOf(noOfUnreadComments), TEXT_ITALIC);
+                    append(" unread", TEXT_ITALIC);
+                }
+
 				if (noOfDefects > 0) {
-					append(" (", TEXT_ITALIC);
+					append(", ", TEXT_ITALIC);
 					append(String.valueOf(noOfDefects),	RED_ITALIC);
 					append(" defect", RED_ITALIC);
 					if (noOfDefects != 1) {
 						append("s", RED_ITALIC);
 					}
-					append(")", TEXT_ITALIC);
 				}
 			} catch (ValueNotYetInitialized valueNotYetInitialized) {
 				// ignore

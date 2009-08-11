@@ -75,6 +75,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -561,6 +562,10 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
                             if (ctn.getComment().getPermId().equals(comment.getPermId())) {
                                 ((CommentBean) ctn.getComment()).setReadState(comment.getReadState());
                                 ((DefaultTreeModel) tree.getModel()).nodeChanged(ctn);
+                                TreeNode[] path = n.getPath();
+                                for (TreeNode treeNode : path) {
+                                    ((DefaultTreeModel) tree.getModel()).nodeChanged(treeNode);
+                                }
                             }
                         }
                         n = (AtlassianTreeNode) n.getNextNode();
