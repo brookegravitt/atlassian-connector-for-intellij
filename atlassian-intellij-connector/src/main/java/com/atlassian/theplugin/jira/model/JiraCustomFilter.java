@@ -3,18 +3,15 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * User: pmaruszak
  */
-public final class JIRAManualFilter {
+public final class JiraCustomFilter {
 	private static final int HASH_NUMBER = 31;
 
-	public enum QueryElement {
+    public enum QueryElement {
 		PROJECT("Project"),
 		ISSUE_TYPE("Issue Type"),
 		FIX_FOR("Fix For"),
@@ -42,12 +39,19 @@ public final class JIRAManualFilter {
     public boolean isEmpty() {
         return queryFragment == null || queryFragment.size() <= 0;
     }
-	private List<JIRAQueryFragment> queryFragment;
+	private List<JIRAQueryFragment> queryFragment = new ArrayList<JIRAQueryFragment>();
 
 	private String name;
+    private String uid;
 
-	JIRAManualFilter(final String name, List<JIRAQueryFragment> queryFragment) {
-		this.name = name;
+    public JiraCustomFilter(){
+         this.uid = UUID.randomUUID().toString();
+         this.name = "Custom Filter";
+    }
+
+	JiraCustomFilter(final String uid, final String name, List<JIRAQueryFragment> queryFragment) {
+        this.uid = uid;
+        this.name = name;
 		this.queryFragment = queryFragment;
 	}
 
@@ -59,7 +63,16 @@ public final class JIRAManualFilter {
 		this.name = name;
 	}
 
-	public List<JIRAQueryFragment> getQueryFragment() {
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public List<JIRAQueryFragment> getQueryFragment() {
 		return queryFragment;
 	}
 
@@ -120,7 +133,7 @@ public final class JIRAManualFilter {
 			return false;
 		}
 
-		JIRAManualFilter that = (JIRAManualFilter) o;
+		JiraCustomFilter that = (JiraCustomFilter) o;
 
 		return !(name != null ? !name.equals(that.name) : that.name != null)
 				&& !(queryFragment != null ? !queryFragment.equals(that.queryFragment) : that.queryFragment != null);

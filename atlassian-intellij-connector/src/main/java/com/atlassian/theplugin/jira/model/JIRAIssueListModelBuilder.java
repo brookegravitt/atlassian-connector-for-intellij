@@ -1,9 +1,9 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.intellij.openapi.project.Project;
 
 import java.util.Collection;
@@ -13,7 +13,7 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 
 	JIRAIssueListModel getModel();
 
-	void addIssuesToModel(final JIRAManualFilter manualFilter, final ServerData jiraServerCfg, int size, boolean reload)
+	void addIssuesToModel(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg, int size, boolean reload)
 			throws JIRAException;
 
 	void addIssuesToModel(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, int size, boolean reload)

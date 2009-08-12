@@ -1,13 +1,10 @@
 package com.atlassian.theplugin.jira.model;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * User: pmaruszak
@@ -34,20 +31,26 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public void clearManualFilter(final ServerData jiraServer) {
-		if (serversFilters.containsKey(jiraServer)) {
-			serversFilters.get(jiraServer).getManualFilter().getQueryFragment().clear();
+	public void clearManualFilter(final ServerData jiraServer, final JiraCustomFilter filter) {
+		if (serversFilters.containsKey(jiraServer)
+                && serversFilters.get(jiraServer).getManualFilters().contains(filter)) {
+			for (JiraCustomFilter f : serversFilters.get(jiraServer).getManualFilters()) {
+                    if (filter.equals(f)) {
+                        f.getQueryFragment().clear();
+                    }
+            }
 		}
 
 	}
 
-	public void setManualFilter(final ServerData jiraServer, @NotNull final JIRAManualFilter filter) {
+	public void addManualFilter(final ServerData jiraServer, @NotNull final JiraCustomFilter filter) {
 
 		if (serversFilters.containsKey(jiraServer)) {
-			serversFilters.get(jiraServer).setManualFilter(filter);
+
+			    serversFilters.get(jiraServer).getManualFilters().add(filter);
 		} else {
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
-			serverFilters.setManualFilter(filter);
+			serverFilters.getManualFilters().add(filter);
 			serversFilters.put(jiraServer, serverFilters);
 		}
 	}
@@ -63,9 +66,9 @@ public class JIRAFilterListModel implements FrozenModel {
 		return null;
 	}
 
-	public JIRAManualFilter getManualFilter(final ServerData jiraServer) {
+	public Set<JiraCustomFilter> getManualFilter(final ServerData jiraServer) {
 		if (serversFilters.containsKey(jiraServer)) {
-			return serversFilters.get(jiraServer).getManualFilter();
+			return serversFilters.get(jiraServer).getManualFilters();
 		}
 
 		return null;
@@ -95,11 +98,23 @@ public class JIRAFilterListModel implements FrozenModel {
 		}
 	}
 
-	public void fireManualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
+	public void fireManualFilterChanged(final JiraCustomFilter manualFilter, final ServerData jiraServer) {
 		for (JIRAFilterListModelListener listener : listeners) {
 			listener.manualFilterChanged(manualFilter, jiraServer);
 		}
 	}
+
+    public void fireManualFilterAdded(final JiraCustomFilter filter, final ServerData jiraServer) {
+        	for (JIRAFilterListModelListener listener : listeners) {
+			listener.manualFilterAdded(this, filter, jiraServer.getServerId());
+		}
+    }
+
+     public void fireManualFilterRemoved(final JiraCustomFilter filter, final ServerData jiraServer) {
+        	for (JIRAFilterListModelListener listener : listeners) {
+			listener.manualFilterRemoved(this, filter, jiraServer.getServerId());
+		}
+     }
 
 	public void addModelListener(JIRAFilterListModelListener listener) {
 		listeners.add(listener);
@@ -136,4 +151,15 @@ public class JIRAFilterListModel implements FrozenModel {
 			listener.modelFrozen(this, this.modelFrozen);
 		}
 	}
+
+    public void removeManualFilter(ServerData jiraServer, JiraCustomFilter filter) {
+        JiraCustomFilter filterToRemove = null;
+        if (serversFilters.containsKey(jiraServer)) {
+            serversFilters.get(jiraServer).getManualFilters().remove(filter);           
+        }
+
+
+
+
+    }
 }

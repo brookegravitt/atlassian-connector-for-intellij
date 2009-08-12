@@ -18,7 +18,9 @@ package com.atlassian.theplugin.configuration;
 
 import java.util.HashMap;
 
-public class JiraFilterEntryBean {
+
+public class JiraFilterEntryBean {    
+    private String name;
 	private HashMap<String, String> filterEntry = new HashMap<String, String>();
 
 	public JiraFilterEntryBean() {
@@ -35,4 +37,12 @@ public class JiraFilterEntryBean {
 	public void setFilterEntry(HashMap<String, String> filterEntry) {
 		this.filterEntry = filterEntry;
 	}
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

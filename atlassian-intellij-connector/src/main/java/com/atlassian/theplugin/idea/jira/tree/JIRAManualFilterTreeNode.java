@@ -2,7 +2,7 @@ package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 
 import javax.swing.*;
 
@@ -10,11 +10,11 @@ import javax.swing.*;
  * User: pmaruszak
  */
 public class JIRAManualFilterTreeNode extends AbstractTreeNode {
-	private JIRAManualFilter manualFilter;
+	private JiraCustomFilter manualFilter;
 	private ServerData jiraServerCfg;
 	//private JIRAFilterListModel listModel;
 
-	public JIRAManualFilterTreeNode(final JIRAManualFilter manualFilter, ServerData jiraServerCfg) {
+	public JIRAManualFilterTreeNode(final JiraCustomFilter manualFilter, ServerData jiraServerCfg) {
 		super(manualFilter.getName(), null, null);
 		this.manualFilter = manualFilter;
 
@@ -36,7 +36,7 @@ public class JIRAManualFilterTreeNode extends AbstractTreeNode {
 		return jiraServerCfg;
 	}
 
-	public JIRAManualFilter getManualFilter() {
+	public JiraCustomFilter getManualFilter() {
 		return manualFilter;
 	}
     

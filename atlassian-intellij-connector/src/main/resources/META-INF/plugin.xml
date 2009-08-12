@@ -870,13 +870,22 @@
 				text="Collapse All Servers"
 				icon="/actions/collapseall.png"/>
 
+
+          <!-- JIRA Server Popup -->
+        <action id="ThePlugin.JiraIssues.CustomFilter.AddAction"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.AddAction"
+                text="Add Custom Filter"
+                icon="/general/add.png"
+                description="Custom filter for selected server">
+         </action>
+        
 		<group id="ThePlugin.JiraServers.ServersToolBar" popup="false">
 			<reference id="ThePlugin.ShowSettingsGroup"/>
 			<reference id="ThePlugin.JiraIssues.RefreshServers"/>
 			<reference id="ThePlugin.JiraIssues.ExpandServers"/>
 			<reference id="ThePlugin.JiraIssues.CollapseServers"/>
 			<separator/>
-
+            <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
 		</group>
 		<!-- [END] Issues window related actions -->
 
@@ -1057,14 +1066,26 @@
 		</group>
 
 
+
+
+        <group id="ThePlugin.JiraIssues.ServerPopupGroup" popup="true">
+               <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+        </group>
+
         <!-- Manual Filter popup menu -->
-        <action id="ThePlugin.JiraIssues.ManualFilter.Edit"
+        <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
+                text="Remove"
+                icon="/general/remove.png"
+                description="Remove Custom filter">
+        </action>
+        <action id="ThePlugin.JiraIssues.CustomFilter.Edit"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
                 text="Edit"
                 icon="/actions/editSource.png"
                 description="Change manual filter details">
          </action>
-        <action id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"
+        <action id="ThePlugin.JIRAIssues.CustomFilter.ViewInBrowser"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.ViewInBrowserAction"
                 text="View In Browser"
                 icon="/icons/crucible/pin_viewinbrowser.png"
@@ -1072,8 +1093,9 @@
          </action>
 
         <group id="ThePlugin.JiraIssues.ManualFilterPopupGroup" popup="true">
-			<reference id="ThePlugin.JiraIssues.ManualFilter.Edit"/>
-            <reference id="ThePlugin.JIRAIssues.ManualFilter.ViewInBrowser"/>
+			<reference id="ThePlugin.JiraIssues.CustomFilter.Edit"/>
+            <reference id="ThePlugin.JIRAIssues.CustomFilter.ViewInBrowser"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.Remove"/>
 		</group>
 
 		<!-- JIRA tool window panel related actions -->

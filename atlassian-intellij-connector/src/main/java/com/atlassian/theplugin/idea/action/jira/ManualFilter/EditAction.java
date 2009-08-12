@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.configuration.JiraCustomFilterMap;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
@@ -25,7 +26,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssuesFilterPanel;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -46,7 +47,7 @@ public class EditAction extends AnAction {
             return;
         }
 
-        JIRAManualFilter manualFilter = panel.getSelectedManualFilter();
+        JiraCustomFilter manualFilter = panel.getSelectedManualFilter();
         ServerData jiraServer = panel.getSelectedServer();
         JIRAServerModel jiraServerModel = panel.getJiraServerModel();
         JIRAFilterListModel jiraFilterListModel = panel.getJIRAFilterListModel();
@@ -63,20 +64,26 @@ public class EditAction extends AnAction {
 							listClone.add(fragment.getClone());
 						}
 					}
-					jiraIssuesFilterPanel.setFilter(listClone);
+					jiraIssuesFilterPanel.setFilter(manualFilter.getName(), listClone);
 				jiraIssuesFilterPanel.show();
 
 				if (jiraIssuesFilterPanel.getExitCode() == 0) {
-                    jiraFilterListModel.clearManualFilter(jiraServer);
+                    jiraFilterListModel.clearManualFilter(jiraServer, manualFilter);
 					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
-					jiraFilterListModel.setManualFilter(jiraServer, manualFilter);
+					jiraFilterListModel.addManualFilter(jiraServer, manualFilter);
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
 					JiraWorkspaceConfiguration jiraProjectCfg = IdeaHelper.getJiraWorkspaceConfiguration(event);
                     if (jiraProjectCfg != null) {
-                        jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId())
-							.setManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER,
-									serializeFilter(jiraIssuesFilterPanel.getFilter()));
+                        JiraCustomFilterMap filterMap =
+                                jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId());
+
+                        for (JiraFilterConfigurationBean bean : filterMap.getCustomFilters().values()) {
+                            if (bean.getUid().equals(manualFilter.getUid())) {
+                                bean.setManualFilter(serializeFilter(jiraIssuesFilterPanel.getFilter()));    
+                            }
+
+                        }
                     }
 					jiraFilterListModel.fireManualFilterChanged(manualFilter, jiraServer);
                     ((DefaultTreeModel) panel.getJiraFilterTree().getModel())

@@ -20,28 +20,16 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
-import com.atlassian.theplugin.commons.jira.api.JIRAAction;
-import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
-import com.atlassian.theplugin.commons.jira.api.JIRAComment;
-import com.atlassian.theplugin.commons.jira.api.JIRAComponentBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAConstant;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
-import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAPriorityBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAProject;
-import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
-import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import junit.framework.TestCase;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import junit.framework.TestCase;
+import java.util.UUID;
 
 public class JIRAIssueListModelBuilderImplTest extends TestCase {
 
@@ -61,7 +49,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		ServerData server = createServerData();
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		try {
-			builder.addIssuesToModel(new JIRAManualFilter("manual filter", query), server, 2, true);
+			builder.addIssuesToModel(
+                    new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query), server, 2, true);
 			assertEquals(0, model.getIssues().size());
 //			builder.setServer(server);
 			assertEquals(0, model.getIssues().size());
@@ -110,7 +99,7 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 		ServerData server = createServerData();
 		List<JIRAQueryFragment> query = new ArrayList<JIRAQueryFragment>();
 		query.add(new JIRAProjectBean());
-		JIRAManualFilter manualFilter = new JIRAManualFilter("manual filter", query);
+		JiraCustomFilter manualFilter = new JiraCustomFilter(UUID.randomUUID().toString(), "manual filter", query);
 		try {
 			builder.addIssuesToModel(manualFilter, server, 25, true);
 			builder.addIssuesToModel(manualFilter, server, 25, false);
@@ -145,7 +134,8 @@ public class JIRAIssueListModelBuilderImplTest extends TestCase {
 			}
 		});
 		try {
-			builder.addIssuesToModel(new JIRAManualFilter("manula filter", query), server, 25, true);
+			builder.addIssuesToModel(
+                    new JiraCustomFilter(UUID.randomUUID().toString(), "manula filter", query), server, 25, true);
 		} catch (JIRAException e) {
 			fail("JIRA exception? How come?");
 		}

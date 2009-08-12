@@ -16,36 +16,47 @@
 
 package com.atlassian.theplugin.configuration;
 
-import com.intellij.util.xmlb.annotations.Transient;
-
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public class JiraFilterConfigurationBean {
 	public static final String MANUAL_FILTER = "manualFilter";
 	public static final String RECENTLY_OPEN_FILTER = "recenltyOpen";
+    public static final String SAVED_FILTER = "savedFilter";
+    
+    private String uid;
+    private String name;
 
-	private Map<String, List<JiraFilterEntryBean>> manualFilter = new HashMap<String, List<JiraFilterEntryBean>>();
+	private List<JiraFilterEntryBean> manualFilter = new ArrayList<JiraFilterEntryBean>();
 
-	public JiraFilterConfigurationBean() {
+
+    public JiraFilterConfigurationBean() {
+        this.uid = UUID.randomUUID().toString();
+        this.name = "Custom Filter";
 	}
 
-	public Map<String, List<JiraFilterEntryBean>> getManualFilter() {
+	public List<JiraFilterEntryBean> getManualFilter() {
 		return manualFilter;
 	}
 
-	public void setManualFilter(Map<String, List<JiraFilterEntryBean>> manualFilter) {
+	public void setManualFilter(List<JiraFilterEntryBean> manualFilter) {
 		this.manualFilter = manualFilter;
 	}
 
-	@Transient
-	public List<JiraFilterEntryBean> getManualFilterForName(String name) {
-		return manualFilter.get(name);
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	@Transient
-	public void setManualFilterForName(String name, List<JiraFilterEntryBean> filter) {
-		manualFilter.put(name, filter);
-	}
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

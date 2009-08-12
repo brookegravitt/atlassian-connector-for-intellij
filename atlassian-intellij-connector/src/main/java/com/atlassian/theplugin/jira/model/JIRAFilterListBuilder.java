@@ -1,14 +1,15 @@
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
+import com.atlassian.theplugin.configuration.JiraCustomFilterMap;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
 import com.atlassian.theplugin.configuration.JiraFilterEntryBean;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
-import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
-import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
 import com.atlassian.theplugin.util.PluginUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +77,6 @@ public class JIRAFilterListBuilder {
 	private void loadServerSavedFilter(final ServerData jiraServer,
 			final JIRAServerModel jiraServerModel) throws JIRAException {
 
-//		List<JIRAQueryFragment> filters = jiraServerFacade.getSavedFilters(jiraServer);
 		if (jiraServerModel != null) {
 			List<JIRAQueryFragment> filters = jiraServerModel.getSavedFilters(jiraServer);
 
@@ -99,22 +99,23 @@ public class JIRAFilterListBuilder {
 
 		if (jiraWorkspaceCfg != null) {
 
-			List<JiraFilterEntryBean> filter =
-					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServer.getServerId())
-							.getManualFilterForName(JiraFilterConfigurationBean.MANUAL_FILTER);
+			JiraCustomFilterMap filterMap =
+					jiraWorkspaceCfg.getJiraFilterConfiguaration(jiraServer.getServerId());
 
-			List<JIRAQueryFragment> query;
-			if (filter != null) {
-				query = getFragments(filter);
-			} else {
-				//nothing found in configuration == create empty, clear filter
-				query = new ArrayList<JIRAQueryFragment>();
-			}
 
-			final JIRAManualFilter jiraManualFilter = new JIRAManualFilter("Custom Filter", query);
-			listModel.setManualFilter(jiraServer, jiraManualFilter);
-		}
-	}
+
+            for (JiraFilterConfigurationBean bean : filterMap.getCustomFilters().values()) {
+            List<JIRAQueryFragment> query;
+
+				query = getFragments(bean.getManualFilter());
+
+
+			final JiraCustomFilter jiraManualFilter = new JiraCustomFilter(bean.getUid(), bean.getName(), query);
+                listModel.addManualFilter(jiraServer, jiraManualFilter);
+            }
+        }
+    }
+
 
 	public boolean isModelFrozen() {
 		return listModel.isModelFrozen();
@@ -133,7 +134,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query) {
+	public static List<JIRAQueryFragment> getFragments(List<JiraFilterEntryBean> query) {
 		List<JIRAQueryFragment> fragments = new ArrayList<JIRAQueryFragment>();
 
 		for (JiraFilterEntryBean filterMapBean : query) {

@@ -72,6 +72,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	private JLabel resolutionsLabel;
 	private JLabel prioritiesLabel;
 	private JLabel affectsVersionsLabel;
+    private JTextField filterName;
 
 
 	private final JIRAServerModel jiraServerModel;
@@ -148,7 +149,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 	 */
 	private void $$$setupUI$$$() {
 		rootPanel = new JPanel();
-		rootPanel.setLayout(new GridLayoutManager(2, 3, new Insets(10, 10, 10, 10), -1, -1));
+        rootPanel.setLayout(new GridLayoutManager(4, 3, new Insets(10, 10, 10, 10), -1, -1));
 		rootPanel.setFocusCycleRoot(false);
 		rootPanel.setMaximumSize(new Dimension(-1, -1));
 		final JLabel label1 = new JLabel();
@@ -335,11 +336,15 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 				false));
 		final JLabel label5 = new JLabel();
 		label5.setText("Project/ Issue");
-		rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        rootPanel.add(label5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        filterName = new JTextField();
+        rootPanel.add(filterName, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        final JLabel label6 = new JLabel();
+        label6.setText("Filter Name:");
+        rootPanel.add(label6, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 		fixForLabel.setLabelFor(fixForScrollPane);
+        componentsLabel.setLabelFor(componentsScrollPane);
 		componentsLabel.setNextFocusableComponent(componentsScrollPane);
-		componentsLabel.setLabelFor(componentsScrollPane);
 		affectsVersionsLabel.setLabelFor(affectVersionScrollPane);
 		reporterLabel.setLabelFor(reporterComboBox);
 		assigneeLabel.setLabelFor(assigneeComboBox);
@@ -348,6 +353,7 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		prioritiesLabel.setLabelFor(prioritiesScrollPane);
 		label3.setLabelFor(issueTypeScrollPane);
 		label4.setLabelFor(projectScrollPane);
+        label6.setLabelFor(filterName);
 	}
 
 	/**
@@ -357,7 +363,11 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		return rootPanel;
 	}
 
-	// CHECKSTYLE:ON
+    public String getFilterName() {
+        return filterName.getText();
+    }
+
+    // CHECKSTYLE:ON
 
 	private final class FilterActionClear extends AbstractAction {
 		private static final String CLEAR_FILTER = "Clear filter";
@@ -498,7 +508,8 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 		});
 	}
 
-	public void setFilter(final List<JIRAQueryFragment> advancedQuery) {
+	public void setFilter(String name, final List<JIRAQueryFragment> advancedQuery) {
+        filterName.setText(name);
 		this.initialFilter = advancedQuery;
 	}
 
