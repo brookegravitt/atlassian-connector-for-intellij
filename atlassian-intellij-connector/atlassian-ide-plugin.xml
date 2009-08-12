@@ -1,4 +1,4 @@
-ssian-ide-plugin>
+<atlassian-ide-plugin>
   <project-configuration>
     <servers>
       <bamboo>
