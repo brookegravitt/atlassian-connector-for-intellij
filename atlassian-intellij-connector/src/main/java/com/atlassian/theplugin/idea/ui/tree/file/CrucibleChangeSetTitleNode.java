@@ -90,7 +90,7 @@ public class CrucibleChangeSetTitleNode extends FileNode {
 					append("s", TEXT_ITALIC);
 				}
 
-                if (noOfUnreadComments > 0 ) {
+                if (noOfUnreadComments > 0) {
                     append(", ", TEXT_ITALIC);
                     append(String.valueOf(noOfUnreadComments), TEXT_ITALIC);
                     append(" unread", TEXT_ITALIC);
