@@ -36,8 +36,9 @@ public class RemoveAction extends AnAction {
 
             JiraWorkspaceConfiguration jiraProjectCfg = IdeaHelper.getJiraWorkspaceConfiguration(event);
             if (jiraProjectCfg != null
-                    && jiraProjectCfg.getFiltersMap().containsKey((ServerIdImpl)jiraServer.getServerId())) {
-                jiraProjectCfg.getFiltersMap().get((ServerIdImpl)jiraServer.getServerId()).getCustomFilters().remove(manualFilter.getUid());
+                    && jiraProjectCfg.getFiltersMap().containsKey((ServerIdImpl) jiraServer.getServerId())) {
+                jiraProjectCfg.getFiltersMap().get((ServerIdImpl) jiraServer.getServerId()).getCustomFilters()
+                        .remove(manualFilter.getUid());
             }
 
             jiraFilterListModel.removeManualFilter(jiraServer, manualFilter);

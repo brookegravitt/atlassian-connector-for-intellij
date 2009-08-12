@@ -32,7 +32,9 @@ public interface JIRAFilterListModelListener {
 
 	void serverNameChanged(final JIRAFilterListModel jiraFilterListModel);
 
-    void manualFilterAdded(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter, ServerId serverId);
+    void manualFilterAdded(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter,
+                           ServerId serverId);
 
-    void manualFilterRemoved(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter, ServerId serverId);
+    void manualFilterRemoved(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter,
+                             ServerId serverId);
 }
