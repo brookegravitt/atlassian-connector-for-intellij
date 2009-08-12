@@ -196,11 +196,11 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             public void serverNameChanged(final JIRAFilterListModel filterListModel) {
             }
 
-            public void manualFilterAdded(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter,
+            public void manualFilterAdded(JIRAFilterListModel filterListModel, JiraCustomFilter manualFilter,
                                           ServerId serverId) {
             }
 
-            public void manualFilterRemoved(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter,
+            public void manualFilterRemoved(JIRAFilterListModel filterListModel, JiraCustomFilter manualFilter,
                                             ServerId serverId) {
 
             }
