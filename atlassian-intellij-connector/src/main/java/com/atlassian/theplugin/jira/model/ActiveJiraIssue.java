@@ -32,4 +32,5 @@ public interface ActiveJiraIssue {
 
 	long recalculateTimeSpent();
 
+    boolean isPaused();
 }

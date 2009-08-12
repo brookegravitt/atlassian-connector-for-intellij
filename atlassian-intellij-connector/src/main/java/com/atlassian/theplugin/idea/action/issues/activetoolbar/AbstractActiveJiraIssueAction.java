@@ -16,7 +16,10 @@
 package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +46,22 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	public ServerData getActiveJiraServerData(AnActionEvent event) {
 		return ActiveIssueUtils.getJiraServer(event);
 	}
+
+    protected static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
+        final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
+
+        ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
+
+        if (selectedIssue != null && activeIssue != null && projectCfgManager != null
+                && projectCfgManager.getJiraServerr(activeIssue.getServerId()) != null) {
+
+            final ServerData selectedServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
+
+            return selectedIssue.getKey().equals(activeIssue.getIssueKey())
+                    && selectedServer.getServerId().equals(activeIssue.getServerId());
+        }
+        return false;
+    }
 
 //	protected void refreshLabel(ActiveJiraIssue issue) {
 //		ActionManager aManager = ActionManager.getInstance();
