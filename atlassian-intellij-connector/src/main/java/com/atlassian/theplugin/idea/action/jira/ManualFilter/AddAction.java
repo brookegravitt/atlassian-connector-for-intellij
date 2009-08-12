@@ -69,7 +69,7 @@ public class AddAction extends AnAction {
                           bean.setUid(newCustomFilter.getUid());
 
                           jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId())
-                                  .getCustomFilters().put(bean.getUid(),bean);
+                                  .getCustomFilters().put(bean.getUid(), bean);
                       }
 
                       jiraFilterListModel.fireManualFilterAdded(newCustomFilter, jiraServer);

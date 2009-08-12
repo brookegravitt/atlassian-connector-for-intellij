@@ -370,7 +370,8 @@ public class JIRAFilterTree extends AbstractTree {
 			rebuildTree(jiraFilterListModel, false);
 		}
 
-        public void manualFilterAdded(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter, ServerId serverId) {
+        public void manualFilterAdded(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter,
+                                      ServerId serverId) {
             rebuildTree(jiraFilterListModel, false);
             setSelectionManualFilter(serverId, manualFilter.getUid());
         }
