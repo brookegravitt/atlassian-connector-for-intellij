@@ -4,12 +4,14 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * User: pmaruszak
@@ -97,7 +99,7 @@ public class JIRAFilterListModelTest extends TestCase {
 		assertEquals(10, notifiedServerAdded);
 		assertEquals(10, notifiedServerNameChanged);
 
-		//@uncommentlistModel.addManualFilter(jServer, serverFilter1.getManualFilters());
+		listModel.addManualFilter(jServer, serverFilter1.getManualFilters().iterator().next());
 		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
 
 
@@ -113,19 +115,18 @@ public class JIRAFilterListModelTest extends TestCase {
 	public void testAddSavedManualFilter() {
 
 		JIRAServerFiltersBean serverFilter1 = new JIRAServerFiltersBean();
-		//final JiraCustomFilter manual = new JiraCustomFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
+		final JiraCustomFilter manual = new JiraCustomFilter(UUID.randomUUID().toString(),
+                "Custom filter", new ArrayList<JIRAQueryFragment>());
 
 
 		fillInServerFiltersBean(serverFilter1, 3);
-        //uncomment
-//		serverFilter1.setManualFilter(manual);
-//
-//		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
-//		listModel.addManualFilter(jServer, serverFilter1.getManualFilter());
+
+		serverFilter1.getManualFilters().add(manual);
+
+		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
+		listModel.setManualFilters(jServer, serverFilter1.getManualFilters());
 
 		assertEquals(listModel.getSavedFilters(jServer).size(), 3);
-	//	assertEquals(listModel.getManualFilter(jServer), manual);
-
 	}
 
 	private void fillInServerFiltersBean(JIRAServerFiltersBean bean, int savedFiltersNo) {
@@ -135,8 +136,9 @@ public class JIRAFilterListModelTest extends TestCase {
 			savedFilters.add(filter);
 		}
 		bean.setSavedFilters(savedFilters);
-		//JiraCustomFilter manual = new JiraCustomFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
-	//	bean.setManualFilter(manual);
+		JiraCustomFilter manual = new JiraCustomFilter(UUID.randomUUID().toString(),
+                "Custom filter", new ArrayList<JIRAQueryFragment>());
+		bean.getManualFilters().add(manual);
 
 	}
 }

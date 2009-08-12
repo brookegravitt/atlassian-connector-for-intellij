@@ -162,4 +162,10 @@ public class JIRAFilterListModel implements FrozenModel {
 
 
     }
+
+    public void setManualFilters(ServerData jServer, Set<JiraCustomFilter> manualFilters) {
+        for (JiraCustomFilter filter : manualFilters) {
+            addManualFilter(jServer, filter);
+        }
+    }
 }
