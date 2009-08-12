@@ -16,8 +16,6 @@
 
 package com.atlassian.connector.intellij.bamboo;
 
-import java.util.Collection;
-import org.jetbrains.annotations.NotNull;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
@@ -26,7 +24,9 @@ import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 public interface BambooServerFacade extends ProductServerFacade {
 	Collection<BambooProject> getProjectList(BambooServerData bambooServer)
@@ -54,8 +54,6 @@ public interface BambooServerFacade extends ProductServerFacade {
 
 	String getBuildLogs(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
 			throws ServerPasswordNotProvidedException, RemoteApiException;
-
-	void setCallback(HttpSessionCallback callback);
 
 	/**
 	 * List build history for provided plan.

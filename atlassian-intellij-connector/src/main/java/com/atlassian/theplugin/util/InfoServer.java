@@ -16,9 +16,9 @@
 
 package com.atlassian.theplugin.util;
 
+import com.atlassian.connector.intellij.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.exception.HttpProxySettingsException;
 import com.atlassian.theplugin.commons.exception.IncorrectVersionException;
-import com.atlassian.theplugin.commons.util.HttpClientFactory;
 import com.atlassian.theplugin.commons.util.Version;
 import com.atlassian.theplugin.exception.VersionServiceException;
 import org.apache.commons.httpclient.HttpClient;

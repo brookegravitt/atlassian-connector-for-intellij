@@ -17,6 +17,7 @@
 package com.atlassian.theplugin.commons.jira;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.Server;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
@@ -42,8 +43,8 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import com.atlassian.theplugin.commons.util.Logger;
+
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 import java.util.Calendar;
@@ -57,7 +58,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private static Logger logger;
 
 	private JIRAServerFacadeImpl() {
-		this.callback = new HttpSessionCallbackImpl();
+		this.callback = new IntelliJHttpSessionCallback();
 	}
 
 	public static synchronized JIRAServerFacade getInstance() {
