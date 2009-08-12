@@ -1,76 +1,49 @@
-<atlassian-ide-plugin>
+ssian-ide-plugin>
   <project-configuration>
     <servers>
-      <crucible>
-        <server-id>95cc8936-85c8-4c09-a88e-cc18469a00b3</server-id>
-        <name>AtlasEye</name>
-        <url>https://svn.atlassian.com/atlaseye</url>
-        <isFisheyeInstance>true</isFisheyeInstance>
-      </crucible>
-      <fisheye>
-        <server-id>1820c366-06fc-4db6-96a5-a7350708f260</server-id>
-        <name>Studio</name>
-        <url>https://studio.atlassian.com/source</url>
-      </fisheye>
-      <fisheye>
-        <server-id>bd79ba71-9f3d-4602-8b30-acc0f77c967f</server-id>
-        <name>lech</name>
-        <url>http://lech:8045/crucible-1.6</url>
-      </fisheye>
+      <bamboo>
+        <server-id>7dea32ca-7ea9-4220-9dbe-7db95349be1c</server-id>
+        <name>Hosted</name>
+        <url>https://gdansk.bamboo2.atlassian.com</url>
+        <use-favourites>true</use-favourites>
+        <bamboo2>true</bamboo2>
+        <plans>
+          <plan key="ACC-CS" />
+          <plan key="ACC-CLO" />
+          <plan key="ACC-DPL" />
+          <plan key="INT-FAIL2" />
+          <plan key="INT-FAIL3" />
+          <plan key="INT-FAIL" />
+        </plans>
+      </bamboo>
       <jira>
-        <server-id>fabd6a88-4c52-4be6-9463-58dc9ed2740d</server-id>
-        <name>StAC</name>
+        <server-id>d5b71692-3679-474f-bc0a-28165fd8f69b</server-id>
+        <name>Studio</name>
         <url>https://studio.atlassian.com</url>
       </jira>
       <crucible>
-        <server-id>531d263b-aae8-4d99-9aac-a60f5a86d95c</server-id>
-        <name>Crucible 2.0</name>
-        <url>http://lech:8020/crucible-2.0</url>
+        <server-id>f398acb6-3be9-43b4-8985-485b57a146b9</server-id>
+        <name>Atlaseye</name>
+        <url>https://svn.atlassian.com/atlaseye</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <crucible>
-        <server-id>3ef86b17-6e72-446e-86d7-26fcb6a55469</server-id>
-        <name>Studio</name>
-        <url>https://studio.atlassian.com/source</url>
+        <server-id>962d5cd2-1c2a-47cc-963e-6c54966f65b2</server-id>
+        <name>EAC Cru</name>
+        <url>https://extranet.atlassian.com/crucible</url>
         <isFisheyeInstance>true</isFisheyeInstance>
       </crucible>
       <jira>
-        <server-id>2dc632dc-6521-43d4-a72d-c6fe24442f45</server-id>
-        <name>loft</name>
-        <url>https://loft.spartez.com/jira-demo</url>
+        <server-id>14aefac9-ac40-4461-a396-0b8e4ff46a85</server-id>
+        <name>local</name>
+        <url>https://localhost:8443</url>
       </jira>
-      <bamboo>
-        <server-id>ffebf7b7-6f75-48ea-9ce3-86f063232c6d</server-id>
-        <name>gdansk</name>
-        <url>https://gdansk.bamboo2.atlassian.com</url>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <isBamboo2M9>true</isBamboo2M9>
-        <plans>
-          <plan key="ACC-CS" />
-          <plan key="ACC-TST" />
-          <plan key="ECL-COM" />
-          <plan key="ECL-TST" />
-          <plan key="INT-CS" />
-          <plan key="INT-DPL" />
-          <plan key="INT-TST" />
-        </plans>
-      </bamboo>
-      <bamboo>
-        <server-id>ee620ccb-fae4-4387-afbd-9d255bd72a38</server-id>
-        <name>Unnamed_1</name>
-        <url>https://gdansk.bamboo2.atlassian.com</url>
-        <use-favourites>false</use-favourites>
-        <bamboo2>true</bamboo2>
-        <isBamboo2M9>false</isBamboo2M9>
-        <plans>
-          <plan key="ACC-CS" />
-          <plan key="ACC-TST" />
-          <plan key="INT-CS" />
-          <plan key="INT-TST" />
-        </plans>
-      </bamboo>
     </servers>
-    <fisheye-project-path>trunk/atlassian-intellij-connector</fisheye-project-path>
+    <default-crucible-server>f398acb6-3be9-43b4-8985-485b57a146b9</default-crucible-server>
+    <default-crucible-project>CR-PL</default-crucible-project>
+    <default-crucible-repo>connector-intellij</default-crucible-repo>
+    <default-fisheye-server>f398acb6-3be9-43b4-8985-485b57a146b9</default-fisheye-server>
+    <default-fisheye-repo>connector-intellij</default-fisheye-repo>
+    <default-jira-server>d5b71692-3679-474f-bc0a-28165fd8f69b</default-jira-server>
   </project-configuration>
 </atlassian-ide-plugin>
