@@ -28,6 +28,7 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 	private DateTime lastStartTime = new DateTime();
 	private long secondsSpent;
 	private boolean active = false;
+    private boolean paused = false;
 
 	public ActiveJiraIssueBean() {
 	}
@@ -75,4 +76,12 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 	public boolean isActive() {
 		return active;
 	}
+
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
 }

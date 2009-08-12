@@ -66,20 +66,4 @@ public class ActivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 			event.getPresentation().setEnabled(false);
 		}
 	}
-
-	private static boolean isSelectedIssueActive(final AnActionEvent event, JIRAIssue selectedIssue) {
-		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
-
-		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
-
-		if (selectedIssue != null && activeIssue != null && projectCfgManager != null
-				&& projectCfgManager.getJiraServerr(activeIssue.getServerId()) != null) {
-
-			final ServerData selectedServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
-
-			return selectedIssue.getKey().equals(activeIssue.getIssueKey())
-					&& selectedServer.getServerId().equals(activeIssue.getServerId());
-		}
-		return false;
-	}
 }

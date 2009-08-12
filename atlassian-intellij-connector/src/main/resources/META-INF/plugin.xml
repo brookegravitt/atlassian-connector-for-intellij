@@ -600,6 +600,24 @@
 				icon="/actions/ico_inactiveissue.png">
 		</action>
 
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssue"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueDetails"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueDetailsAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
+        <action id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"
+                class="com.atlassian.theplugin.idea.action.issues.activetoolbar.PauseResumeJiraIssueInToolbarAction"
+                text="Pause/Resume Work"
+                icon="/icons/ico_pauseissue.png">
+        </action>
+
 		<action id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"
 				class="com.atlassian.theplugin.idea.action.issues.activetoolbar.ActiveIssueLogWorkAction"
 				text="Log Work"
@@ -672,6 +690,7 @@
             <reference id="ThePlugin.ActiveTaskBar.ActiveIssueBox"/>
             <reference id="ThePlugin.ActiveTaskBar.ActiveIssueDrop"/>
 			<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssue"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueInToolbar"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueLogWork"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActiveIssueComment"/>
 			<add-to-group group-id="MainToolBar" anchor="last"/>
@@ -1013,7 +1032,7 @@
 		<group id="ThePlugin.JiraIssues.IssuePopupMenu" popup="true">
 			<reference id="ThePlugin.JiraIssues.OpenIssue"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssue"/>
-			<!--<reference id="ThePlugin.ActiveTaskBar.DeactivateJiraIssuePopup"/>-->
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssue"/>
 			<reference id="ThePlugin.JiraIssues.ViewIssue"/>
 			<reference id="ThePlugin.JiraIssues.EditIssue"/>
 			<separator/>
@@ -1046,6 +1065,7 @@
 			<reference id="ThePlugin.JiraIssues.AssignIssueToMyself"/>
 			<reference id="ThePlugin.JiraIssues.AssignIssueToUser"/>
 			<reference id="ThePlugin.ActiveTaskBar.ActivateJiraIssueDetails"/>
+            <reference id="ThePlugin.ActiveTaskBar.PauseResumeJiraIssueDetails"/>
 
 			<!--<separator/>-->
 			<reference id="ThePlugin.JiraIssues.CopyToClipboardGroup"/>
