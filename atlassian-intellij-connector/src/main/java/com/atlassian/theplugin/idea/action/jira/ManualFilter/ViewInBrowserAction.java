@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.jira.api.JiraQueryUrl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -16,7 +16,7 @@ public class ViewInBrowserAction extends AnAction {
     @Override
     public void update(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-        JIRAManualFilter manualFilter = panel != null ? panel.getSelectedManualFilter() : null;
+        JiraCustomFilter manualFilter = panel != null ? panel.getSelectedManualFilter() : null;
 
         boolean enabled =  (panel != null && manualFilter != null && !manualFilter.isEmpty());
         event.getPresentation().setEnabled(enabled);
@@ -30,7 +30,7 @@ public class ViewInBrowserAction extends AnAction {
             return;
         }
 
-        JIRAManualFilter manualFilter = panel.getSelectedManualFilter();
+        JiraCustomFilter manualFilter = panel.getSelectedManualFilter();
         ServerData jiraServer = panel.getSelectedServer();
         if (manualFilter != null && jiraServer != null) {
             JiraQueryUrl queryUrl = new JiraQueryUrl.Builder()

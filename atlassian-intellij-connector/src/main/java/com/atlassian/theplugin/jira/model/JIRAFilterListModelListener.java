@@ -15,6 +15,7 @@
  */
 package com.atlassian.theplugin.jira.model;
 
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 /**
@@ -23,11 +24,15 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 public interface JIRAFilterListModelListener {
 	void modelChanged(JIRAFilterListModel listModel);
 
-	void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer);
+	void manualFilterChanged(final JiraCustomFilter manualFilter, final ServerData jiraServer);
 
 	void serverRemoved(final JIRAFilterListModel jiraFilterListModel);
 
 	void serverAdded(final JIRAFilterListModel jiraFilterListModel);
 
 	void serverNameChanged(final JIRAFilterListModel jiraFilterListModel);
+
+    void manualFilterAdded(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter, ServerId serverId);
+
+    void manualFilterRemoved(final JIRAFilterListModel jiraFilterListModel, final JiraCustomFilter manualFilter, ServerId serverId);
 }

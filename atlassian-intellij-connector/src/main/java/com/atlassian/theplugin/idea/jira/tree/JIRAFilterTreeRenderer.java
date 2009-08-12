@@ -4,7 +4,7 @@ import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.ui.Entry;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
-import com.atlassian.theplugin.jira.model.JIRAManualFilter;
+import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 import com.intellij.openapi.util.IconLoader;
 import org.apache.commons.lang.StringUtils;
 
@@ -39,7 +39,7 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
                     filterTreeNode.getJiraServerCfg()));
             ((JLabel) c).setIcon(JIRA_MANUAL_FILTER_ICON);
 
-            JIRAManualFilter filter = ((JIRAManualFilterTreeNode) value).getManualFilter();
+            JiraCustomFilter filter = ((JIRAManualFilterTreeNode) value).getManualFilter();
             if (filter != null && filter.isEmpty()) {
                 JLabel label = ((JLabel) c);
                 label.setText(label.getText() + " (not defined)");               
@@ -66,18 +66,18 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
     }
 
 
-    private String createManualFilterToolTipText(JIRAManualFilter manualFilter, ServerData server) {
+    private String createManualFilterToolTipText(JiraCustomFilter manualFilter, ServerData server) {
 
         Collection<Entry> entries = MiscUtil.buildArrayList();
-        Map<JIRAManualFilter.QueryElement, ArrayList<String>> map = manualFilter.groupBy(true);
-        for (JIRAManualFilter.QueryElement element : map.keySet()) {
+        Map<JiraCustomFilter.QueryElement, ArrayList<String>> map = manualFilter.groupBy(true);
+        for (JiraCustomFilter.QueryElement element : map.keySet()) {
             entries.add(new Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
         }
 
         if (entries.size() == 0) {
             // get also 'any' values
             map = manualFilter.groupBy(false);
-            for (JIRAManualFilter.QueryElement element : map.keySet()) {
+            for (JiraCustomFilter.QueryElement element : map.keySet()) {
                 entries.add(new Entry(element.getName(), StringUtils.join(map.get(element), ", ")));
             }
         }

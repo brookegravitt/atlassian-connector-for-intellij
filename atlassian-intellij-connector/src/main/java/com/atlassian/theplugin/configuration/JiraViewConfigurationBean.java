@@ -35,8 +35,9 @@ public class JiraViewConfigurationBean {
 	// selected projects per server in the Issue Crea+te Dialog
 	private HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean> serverDefaultss =
 			new HashMap<ServerIdImpl, JiraProjectDefaultComponentsBean>();
+    private String viewFilterType;
 
-	public JiraViewConfigurationBean() {
+    public JiraViewConfigurationBean() {
 	}
 
 	public ServerIdImpl getViewServerIdd() {
@@ -87,4 +88,12 @@ public class JiraViewConfigurationBean {
 
 		serverDefaultss.put((ServerIdImpl) jiraServer, tmp);
 	}
+
+    public String getViewFilterType() {
+        return viewFilterType;
+    }
+
+    public void setViewFilterType(String viewFilterType) {
+        this.viewFilterType = viewFilterType;
+    }
 }

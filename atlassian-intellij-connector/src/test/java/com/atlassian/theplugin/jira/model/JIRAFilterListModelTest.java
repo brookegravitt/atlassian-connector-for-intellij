@@ -2,8 +2,8 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
+import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -57,7 +57,7 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedModelChanged++;
 			}
 
-			public void manualFilterChanged(final JIRAManualFilter manualFilter, final ServerData jiraServer) {
+			public void manualFilterChanged(final JiraCustomFilter manualFilter, final ServerData jiraServer) {
 				notifiedManualFilterChanged++;
 			}
 
@@ -73,7 +73,15 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedServerNameChanged++;
 			}
 
-		});
+            public void manualFilterAdded(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter, ServerId serverId) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+            public void manualFilterRemoved(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter, ServerId serverId) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+
+        });
 
 		for (int i = 0; i < 10; i++) {
 			listModel.fireModelChanged();
@@ -89,7 +97,7 @@ public class JIRAFilterListModelTest extends TestCase {
 		assertEquals(10, notifiedServerAdded);
 		assertEquals(10, notifiedServerNameChanged);
 
-		listModel.setManualFilter(jServer, serverFilter1.getManualFilter());
+		//@uncommentlistModel.addManualFilter(jServer, serverFilter1.getManualFilters());
 		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
 
 
@@ -105,17 +113,18 @@ public class JIRAFilterListModelTest extends TestCase {
 	public void testAddSavedManualFilter() {
 
 		JIRAServerFiltersBean serverFilter1 = new JIRAServerFiltersBean();
-		final JIRAManualFilter manual = new JIRAManualFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
+		//final JiraCustomFilter manual = new JiraCustomFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
 
 
 		fillInServerFiltersBean(serverFilter1, 3);
-		serverFilter1.setManualFilter(manual);
-
-		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
-		listModel.setManualFilter(jServer, serverFilter1.getManualFilter());
+        //uncomment
+//		serverFilter1.setManualFilter(manual);
+//
+//		listModel.setSavedFilters(jServer, serverFilter1.getSavedFilters());
+//		listModel.addManualFilter(jServer, serverFilter1.getManualFilter());
 
 		assertEquals(listModel.getSavedFilters(jServer).size(), 3);
-		assertEquals(listModel.getManualFilter(jServer), manual);
+	//	assertEquals(listModel.getManualFilter(jServer), manual);
 
 	}
 
@@ -126,8 +135,8 @@ public class JIRAFilterListModelTest extends TestCase {
 			savedFilters.add(filter);
 		}
 		bean.setSavedFilters(savedFilters);
-		JIRAManualFilter manual = new JIRAManualFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
-		bean.setManualFilter(manual);
+		//JiraCustomFilter manual = new JiraCustomFilter("Custom filter", new ArrayList<JIRAQueryFragment>());
+	//	bean.setManualFilter(manual);
 
 	}
 }

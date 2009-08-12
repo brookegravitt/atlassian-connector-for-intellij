@@ -33,7 +33,9 @@ import java.util.Map;
 @State(name = "atlassian-ide-plugin-workspace-issues",
 		storages = {@Storage(id = "atlassian-ide-plugin-workspace-issues-id", file = "$WORKSPACE_FILE$")})
 public class JiraWorkspaceConfiguration implements PersistentStateComponent<JiraWorkspaceConfiguration> {
-	private Map<ServerIdImpl, JiraFilterConfigurationBean> filterss = new HashMap<ServerIdImpl, JiraFilterConfigurationBean>();
+    public static final String RECENTLY_OPEN_FILTER_ID = "recentlyOpenFilterId";
+
+	private Map<ServerIdImpl, JiraCustomFilterMap> filtersMap = new HashMap<ServerIdImpl, JiraCustomFilterMap>();
 	private JiraViewConfigurationBean view = new JiraViewConfigurationBean();
 	private LinkedList<IssueRecentlyOpenBean> recentlyOpenIssuess = new LinkedList<IssueRecentlyOpenBean>();
 	public static final int RECENLTY_OPEN_ISSUES_LIMIT = 10;
@@ -46,11 +48,11 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	private boolean logWorkOnCommit;
 	private RemainingEstimateUpdateMode remainingEstimateUpdateMode;
 
-	public JiraWorkspaceConfiguration() {
+    public JiraWorkspaceConfiguration() {
 	}
 
 	public void copyConfiguration(JiraWorkspaceConfiguration jiraConfiguration) {
-		this.filterss = jiraConfiguration.filterss;
+		this.filtersMap = jiraConfiguration.filtersMap;
 		this.view = jiraConfiguration.view;
 		this.recentlyOpenIssuess = jiraConfiguration.recentlyOpenIssuess;
 		this.activeJiraIssuee = jiraConfiguration.activeJiraIssuee;
@@ -63,12 +65,12 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 		this.remainingEstimateUpdateMode = jiraConfiguration.remainingEstimateUpdateMode;
 	}
 
-	public Map<ServerIdImpl, JiraFilterConfigurationBean> getFilterss() {
-		return filterss;
+	public Map<ServerIdImpl, JiraCustomFilterMap> getFiltersMap() {
+		return filtersMap;
 	}
-
-	public void setFilterss(final Map<ServerIdImpl, JiraFilterConfigurationBean> filterss) {
-		this.filterss = filterss;
+    
+	public void setFiltersMap(final Map<ServerIdImpl, JiraCustomFilterMap> filtersMap) {
+		this.filtersMap = filtersMap;
 	}
 
 	public JiraViewConfigurationBean getView() {
@@ -167,18 +169,18 @@ public class JiraWorkspaceConfiguration implements PersistentStateComponent<Jira
 	}
 
 	@Transient
-	public JiraFilterConfigurationBean getJiraFilterConfiguaration(ServerId id) {
-		JiraFilterConfigurationBean filter = filterss.get((ServerIdImpl) id);
-		if (filter == null) {
-			filter = new JiraFilterConfigurationBean();
-			filterss.put((ServerIdImpl) id, filter);
+	public JiraCustomFilterMap getJiraFilterConfiguaration(ServerId id) {
+		JiraCustomFilterMap filterMap = filtersMap.get((ServerIdImpl) id);
+		if (filterMap == null) {
+			filterMap = new JiraCustomFilterMap();
+			filtersMap.put((ServerIdImpl) id, filterMap);
 		}
-		return filter;
+		return filterMap;
 	}
 
 //	@Transient
 //	public void setFilterConfigurationBean(String serverId, JiraFilterConfigurationBean filterConfiguration) {
-//		filterss.put(serverId, filterConfiguration);
+//		filtersMap.put(serverId, filterConfiguration);
 //	}
 
 	public JiraWorkspaceConfiguration getState() {

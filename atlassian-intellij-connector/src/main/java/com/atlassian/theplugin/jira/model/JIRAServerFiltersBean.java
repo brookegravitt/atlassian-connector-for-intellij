@@ -3,22 +3,26 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * User: pmaruszak
+ * @author pmaruszak
  */
 public class JIRAServerFiltersBean {
-	private JIRAManualFilter manualFilter;
+	private Set<JiraCustomFilter> manualFilters = new HashSet<JiraCustomFilter>();
 	private List<JIRASavedFilter> savedFilters = new ArrayList<JIRASavedFilter>();
 
-	public JIRAManualFilter getManualFilter() {
-		return manualFilter;
-	}
 
-	public void setManualFilter(final JIRAManualFilter manualFilter) {
-		this.manualFilter = manualFilter;
-	}
+    public Set<JiraCustomFilter> getManualFilters() {
+        return manualFilters;
+    }
+
+    public void setManualFilters(Set<JiraCustomFilter> manualFilters) {
+        this.manualFilters = manualFilters;
+    }
+
 
 	public List<JIRASavedFilter> getSavedFilters() {
 		return savedFilters;
