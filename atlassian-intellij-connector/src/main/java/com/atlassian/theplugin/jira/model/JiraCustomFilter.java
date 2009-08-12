@@ -44,7 +44,7 @@ public final class JiraCustomFilter {
 	private String name;
     private String uid;
 
-    public JiraCustomFilter(){
+    public JiraCustomFilter() {
          this.uid = UUID.randomUUID().toString();
          this.name = "Custom Filter";
     }

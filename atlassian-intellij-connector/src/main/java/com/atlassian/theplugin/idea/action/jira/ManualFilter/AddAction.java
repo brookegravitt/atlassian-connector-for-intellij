@@ -60,8 +60,7 @@ public class AddAction extends AnAction {
                       newCustomFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
                       newCustomFilter.setName(jiraIssuesFilterPanel.getFilterName());
                       jiraFilterListModel.addManualFilter(jiraServer, newCustomFilter);
-//					listModel.selectManualFilter(jiraServer, newCustomFilter, true);
-                      // store filter in project workspace
+                      
                       JiraWorkspaceConfiguration jiraProjectCfg = IdeaHelper.getJiraWorkspaceConfiguration(event);
                       if (jiraProjectCfg != null) {
                           JiraFilterConfigurationBean bean = new JiraFilterConfigurationBean();
