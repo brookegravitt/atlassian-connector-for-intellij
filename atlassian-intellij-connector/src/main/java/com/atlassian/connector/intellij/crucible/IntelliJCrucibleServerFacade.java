@@ -2,12 +2,14 @@ package com.atlassian.connector.intellij.crucible;
 
 import com.atlassian.connector.commons.api.ConnectionCfg;
 import com.atlassian.connector.commons.crucible.CrucibleServerFacade2;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.crucible.CrucibleServerFacadeImpl;
 import com.atlassian.theplugin.commons.crucible.api.UploadItem;
 import com.atlassian.theplugin.commons.crucible.api.model.Comment;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
 import com.atlassian.theplugin.commons.crucible.api.model.CrucibleProject;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleUserCacheImpl;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
 import com.atlassian.theplugin.commons.crucible.api.model.CustomFilter;
 import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
@@ -22,7 +24,7 @@ import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +32,8 @@ import java.util.Set;
 
 public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade {
 
-	private final CrucibleServerFacade2 facade = CrucibleServerFacadeImpl.getInstance();
+	private final CrucibleServerFacade2 facade = new CrucibleServerFacadeImpl(new CrucibleUserCacheImpl(),
+			new IntelliJHttpSessionCallback());
 	private static IntelliJCrucibleServerFacade instance;
 
 	public static synchronized IntelliJCrucibleServerFacade getInstance() {
@@ -239,12 +242,8 @@ public final class IntelliJCrucibleServerFacade implements CrucibleServerFacade 
 		return facade.reopenReview(server.toConnectionCfg(), permId);
 	}
 
-	public void setCallback(HttpSessionCallback callback) {
-		facade.setCallback(callback);
-	}
-
-	public void setReviewers(ServerData server, PermId permId, Collection<String> usernames) throws RemoteApiException,
-			ServerPasswordNotProvidedException {
+	public void setReviewers(@NotNull ServerData server, @NotNull PermId permId, @NotNull Collection<String> usernames)
+			throws RemoteApiException, ServerPasswordNotProvidedException {
 		facade.setReviewers(server.toConnectionCfg(), permId, usernames);
 	}
 

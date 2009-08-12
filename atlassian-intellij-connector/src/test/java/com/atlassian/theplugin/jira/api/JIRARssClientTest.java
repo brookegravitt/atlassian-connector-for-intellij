@@ -16,17 +16,17 @@
 
 package com.atlassian.theplugin.jira.api;
 
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
+import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
-import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
-import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallbackImpl;
 import junit.framework.TestCase;
 import org.jdom.Document;
 import org.jdom.JDOMException;
@@ -73,7 +73,7 @@ public class JIRARssClientTest extends TestCase {
 			}
 		}, "", "");
 
-		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -106,7 +106,7 @@ public class JIRARssClientTest extends TestCase {
 			}
 		}, "", "");
 
-		JIRARssClient c = new JIRARssClient(server, new HttpSessionCallbackImpl()) {
+		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
 			protected Document retrieveGetResponse(String urlString)
 					throws IOException, JDOMException, RemoteApiSessionExpiredException {
@@ -142,7 +142,7 @@ public class JIRARssClientTest extends TestCase {
 				return null;
 			}
 		}, userName, password);
-		return new JIRARssClient(server, new HttpSessionCallbackImpl()) {
+		return new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {
 				mostRecentUrl = url;

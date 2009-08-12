@@ -11,29 +11,29 @@
 
 package com.atlassian.connector.intellij.bamboo;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-
 import com.atlassian.connector.commons.api.BambooServerFacade2;
 import com.atlassian.connector.commons.api.ConnectionCfg;
+import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.bamboo.BambooBuild;
+import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
-import com.atlassian.theplugin.commons.bamboo.BambooBuildInfo;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.util.Logger;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * Provides simple wrapper around IDE-independent {@link BambooServerFacade} for use by IntelliJ Connector (it's mostly about
@@ -67,7 +67,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 	};
 
 	public IntelliJBambooServerFacade(Logger logger) {
-		facade = BambooServerFacadeImpl.getInstance(logger);
+		facade = new BambooServerFacadeImpl(logger, new IntelliJHttpSessionCallback());
 	}
 
 	public static synchronized IntelliJBambooServerFacade getInstance(Logger logger) {
@@ -173,10 +173,6 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	public boolean isBamboo2M9(BambooServerData bambooServerData) {
 		return facade.isBamboo2M9(bambooServerData.toConnectionCfg());
-	}
-
-	public void setCallback(HttpSessionCallback callback) {
-		facade.setCallback(callback);
 	}
 
 	public ServerType getServerType() {
