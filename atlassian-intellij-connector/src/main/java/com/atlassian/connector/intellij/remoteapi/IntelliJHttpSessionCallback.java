@@ -12,7 +12,7 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
  * @author Wojciech Seliga
  */
 public class IntelliJHttpSessionCallback extends HttpSessionCallbackImpl {
-	private static final String USER_AGENT = "Atlassian Connector for IntelliJ, version " + BugReporting.getVersionString();
+	private static final String USER_AGENT = "Atlassian Connector for IntelliJ/" + BugReporting.getVersionString();
 
 	public HttpClient getHttpClient(ConnectionCfg server) throws HttpProxySettingsException {
 		final HttpClient client = HttpClientFactory.getClient();
