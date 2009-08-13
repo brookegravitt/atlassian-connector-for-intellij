@@ -891,6 +891,13 @@
 
 
           <!-- JIRA Server Popup -->
+         <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
+                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
+                text="Remove"
+                icon="/general/remove.png"
+                description="Remove Custom filter">
+        </action>
+
         <action id="ThePlugin.JiraIssues.CustomFilter.AddAction"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.AddAction"
                 text="Add Custom Filter"
@@ -905,6 +912,7 @@
 			<reference id="ThePlugin.JiraIssues.CollapseServers"/>
 			<separator/>
             <reference id="ThePlugin.JiraIssues.CustomFilter.AddAction"/>
+            <reference id="ThePlugin.JiraIssues.CustomFilter.Remove"/>
 		</group>
 		<!-- [END] Issues window related actions -->
 
@@ -1093,12 +1101,6 @@
         </group>
 
         <!-- Manual Filter popup menu -->
-        <action id="ThePlugin.JiraIssues.CustomFilter.Remove"
-                class="com.atlassian.theplugin.idea.action.jira.ManualFilter.RemoveAction"
-                text="Remove"
-                icon="/general/remove.png"
-                description="Remove Custom filter">
-        </action>
         <action id="ThePlugin.JiraIssues.CustomFilter.Edit"
                 class="com.atlassian.theplugin.idea.action.jira.ManualFilter.EditAction"
                 text="Edit"

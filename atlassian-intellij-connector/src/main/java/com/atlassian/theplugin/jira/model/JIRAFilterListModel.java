@@ -51,6 +51,7 @@ public class JIRAFilterListModel implements FrozenModel {
 		} else {
 			JIRAServerFiltersBean serverFilters = new JIRAServerFiltersBean();
 			serverFilters.getManualFilters().add(filter);
+            
 			serversFilters.put(jiraServer, serverFilters);
 		}
 	}
