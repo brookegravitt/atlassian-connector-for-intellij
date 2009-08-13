@@ -291,7 +291,7 @@ public class JIRAFilterTree extends AbstractTree {
 				prevRecentlyOpen = false;
 				prevServer = serverCfg;
 				fireSelectedSavedFilterNode(savedFilter, serverCfg);
-			} else if (serverCfg != null) {
+			} else if (!recentlyOpenSelected && serverCfg != null) {
 				// server selected: do not fire notification (we must ignore that action)
 				getSelectionModel().removeTreeSelectionListener(localSelectionListener);
 
