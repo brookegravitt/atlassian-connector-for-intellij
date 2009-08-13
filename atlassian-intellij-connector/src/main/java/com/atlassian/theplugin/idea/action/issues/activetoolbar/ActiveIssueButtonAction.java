@@ -73,7 +73,9 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
 
         if (activeIssue != null) {
             text = activeIssue.getIssueKey();
-
+            if (activeIssue.isPaused()) {
+                text = text + " (paused)";
+            }
             if (cache != null) {
                 issue = cache.getLoadedRecenltyOpenIssue(activeIssue.getIssueKey(), activeIssue.getServerId());
 
