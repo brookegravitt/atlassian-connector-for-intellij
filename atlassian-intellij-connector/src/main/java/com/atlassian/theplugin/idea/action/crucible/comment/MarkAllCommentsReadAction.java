@@ -73,6 +73,9 @@ public class MarkAllCommentsReadAction extends AbstractCommentAction {
             return;
         }
         DefaultMutableTreeNode start = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        if (start == null) {
+            return;
+        }
         AtlassianTreeNode n = (AtlassianTreeNode) start.getNextNode();
         while (n != null) {
             if (n instanceof CommentTreeNode) {
