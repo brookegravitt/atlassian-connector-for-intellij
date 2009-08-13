@@ -17,6 +17,20 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  * @date Aug 10, 2009
  */
 public class RemoveAction extends AnAction {
+    @Override
+    public void update(AnActionEvent event) {
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
+        JiraCustomFilter manualFilter =
+                panel != null ? ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter() : null;
+        if (panel != null && manualFilter != null) {
+            event.getPresentation().setEnabled(true);
+        } else {
+            event.getPresentation().setEnabled(false);
+        }
+
+
+    }
+
     public void actionPerformed(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 

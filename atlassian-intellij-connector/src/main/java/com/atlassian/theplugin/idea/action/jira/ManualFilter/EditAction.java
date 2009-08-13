@@ -70,6 +70,7 @@ public class EditAction extends AnAction {
 				if (jiraIssuesFilterPanel.getExitCode() == 0) {
                     jiraFilterListModel.clearManualFilter(jiraServer, manualFilter);
 					manualFilter.getQueryFragment().addAll(jiraIssuesFilterPanel.getFilter());
+                    manualFilter.setName(jiraIssuesFilterPanel.getFilterName());
 					jiraFilterListModel.addManualFilter(jiraServer, manualFilter);
 //					listModel.selectManualFilter(jiraServer, manualFilter, true);
 					// store filter in project workspace
