@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
-import java.util.Set;
+import java.util.*;
 
 public final class CommentHighlighter {
 	public static final Color VERSIONED_COMMENT_BACKGROUND_COLOR = new Color(0xf2, 0xd0, 0x55);
@@ -280,15 +280,26 @@ public final class CommentHighlighter {
                     if (editor.getDocument().getModificationStamp() > 0) {
                         int i = 1;
                     }
+                    boolean haveUnreadReplies = false;
                     boolean unread = comment.getReadState() == Comment.ReadState.UNREAD
                             || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD;
+                    java.util.List<Comment> replies = comment.getReplies();
+                    if (replies != null) {
+                        for (Comment reply : replies) {
+                            if (reply.getReadState() == Comment.ReadState.UNREAD
+                                || reply.getReadState() == Comment.ReadState.LEAVE_UNREAD) {
+                                haveUnreadReplies = true;
+                                break;
+                            }
+                        }
+                    }
 					RangeHighlighter rh = markupModel.addRangeHighlighter(startOffset, endOffset,
 							HighlighterLayer.SELECTION - 1, unread ? unreadTextAttributes : readTextAttributes,
                             HighlighterTargetArea.LINES_IN_RANGE);
 //					rh.setErrorStripeTooltip("<html><b>" + comment.getAuthor().getDisplayName()
 //							+ ":</b> " + comment.getMessage());
 					rh.setErrorStripeMarkColor(VERSIONED_COMMENT_STRIP_MARK_COLOR);
-					rh.setGutterIconRenderer(unread
+					rh.setGutterIconRenderer(unread || haveUnreadReplies
                             ? new UnreadCrucibleGutterIconRenderer(editor, review, fileInfo, comment)
                             : new ReadCrucibleGutterIconRenderer(editor, review, fileInfo, comment));
 					rh.putUserData(COMMENT_DATA_KEY, true);
