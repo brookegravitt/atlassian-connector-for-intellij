@@ -570,6 +570,7 @@ public final class ReviewItemTreePanel extends JPanel implements DataProvider {
                         }
                         n = (AtlassianTreeNode) n.getNextNode();
                     }
+                    CommentHighlighter.updateCommentsInEditors(project, review);
                 }
             });
         }
