@@ -151,7 +151,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
         List<Comment> commentsToMarkRead = new ArrayList<Comment>();
 
-        if (rootComment.getReadState() == Comment.ReadState.UNREAD) {
+        if (rootComment != null && rootComment.getReadState() == Comment.ReadState.UNREAD) {
             commentsToMarkRead.add(rootComment);
         }
 
