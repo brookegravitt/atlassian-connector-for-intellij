@@ -51,11 +51,12 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
 
 
 	public long recalculateTimeSpent() {
-
-		DateTime now = new DateTime();
-		Period nextPeriod = new Period(lastStartTime, now, PeriodType.seconds());
-		secondsSpent = secondsSpent + nextPeriod.getSeconds();
-		lastStartTime = now;
+        DateTime now = new DateTime();
+        if (!paused) {
+            Period nextPeriod = new Period(lastStartTime, now, PeriodType.seconds());
+            secondsSpent = secondsSpent + nextPeriod.getSeconds();
+        }
+        lastStartTime = now;
 		return secondsSpent;
 	}
 
@@ -82,6 +83,7 @@ public class ActiveJiraIssueBean extends IssueRecentlyOpenBean implements Active
     }
 
     public void setPaused(boolean paused) {
+        recalculateTimeSpent();
         this.paused = paused;
     }
 }

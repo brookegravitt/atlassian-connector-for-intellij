@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.util.IconLoader;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
+import com.atlassian.theplugin.jira.model.ActiveJiraIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 
 /**
@@ -21,7 +22,16 @@ public class PauseResumeJiraIssueAction extends AbstractActiveJiraIssueAction {
     }
 
     public void actionPerformed(AnActionEvent event) {
-        // todo
+        JIRAIssue selectedIssue = ActiveIssueUtils.getSelectedJiraIssue(event);
+        if (selectedIssue != null && isSelectedIssueActive(event, selectedIssue)) {
+            setIssuePaused(ActiveIssueUtils.getActiveJiraIssue(event));
+        }
+    }
+
+    protected void setIssuePaused(ActiveJiraIssue issue) {
+        if (issue != null) {
+            ((ActiveJiraIssueBean) issue).setPaused(!issue.isPaused());
+        }
     }
 
     protected void updateState(boolean selectedIssueActive, AnActionEvent event) {

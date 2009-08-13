@@ -12,4 +12,9 @@ public class PauseResumeJiraIssueInToolbarAction extends PauseResumeJiraIssueAct
     public void onUpdate(AnActionEvent event, boolean enabled) {
         updateState(true, event);
     }
+
+    @Override
+    public void actionPerformed(AnActionEvent event) {
+        setIssuePaused(ActiveIssueUtils.getActiveJiraIssue(event));
+    }
 }
