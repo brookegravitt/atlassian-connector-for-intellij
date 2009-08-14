@@ -9,27 +9,15 @@ import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.ui.Messages;
 
 /**
  * @author pmaruszak
  * @date Aug 10, 2009
  */
-public class RemoveAction extends AnAction {
-    @Override
-    public void update(AnActionEvent event) {
-        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-        JiraCustomFilter manualFilter =
-                panel != null ? ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter() : null;
-        if (panel != null && manualFilter != null) {
-            event.getPresentation().setEnabled(true);
-        } else {
-            event.getPresentation().setEnabled(false);
-        }
+public class RemoveAction extends AbstractFilterAction {
 
-
-    }
 
     public void actionPerformed(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
@@ -46,7 +34,17 @@ public class RemoveAction extends AnAction {
 
         if (jiraServer != null && jiraServerModel != null && jiraFilterListModel != null) {
 
+
             JiraCustomFilter manualFilter = ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter();
+
+            int response = Messages.showYesNoDialog(
+						"Are you sure you want to delete the selected customm filter (" + manualFilter.getName() + ") ?",
+						"Confirm server delete",
+						Messages.getQuestionIcon());
+
+				if (response != 0) {
+					return;
+				}
 
             JiraWorkspaceConfiguration jiraProjectCfg = IdeaHelper.getJiraWorkspaceConfiguration(event);
             if (jiraProjectCfg != null
@@ -61,4 +59,10 @@ public class RemoveAction extends AnAction {
 
     }
 
+    boolean isEnabled(AnActionEvent event) {
+           final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
+        JiraCustomFilter manualFilter =
+                     panel != null ? ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter() : null;
+        return manualFilter != null;
+    }
 }

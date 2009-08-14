@@ -29,10 +29,7 @@ public final class CrucibleConstants {
 	public static final String CRUCIBLE_AUTH_COLOR = "green";
 
 	public static final String CRUCIBLE_MOD_COLOR = "#FEA02C";
-	public static final String CRUCIBLE_MESSAGE_NOT_UNDER_VCS
-			= "You can use this action only if VCS is enabled for this project";
-	public static final String CRUCIBLE_TITLE_NOT_UNDER_VCS = "Action not available";
-	//	private static final String TOOLBAR_ID = "ThePlugin.Crucible.Comment.ToolBar";
+		;
 	public static final String MENU_PLACE = "menu comments";
 	public static final AtlassianTreeNode ROOT = new FolderNode("/", AtlassianClickAction.EMPTY_ACTION);
 

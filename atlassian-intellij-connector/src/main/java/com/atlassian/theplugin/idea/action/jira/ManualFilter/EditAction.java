@@ -25,9 +25,9 @@ import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.JiraIssuesFilterPanel;
+import com.atlassian.theplugin.idea.jira.tree.JIRAFilterTree;
 import com.atlassian.theplugin.jira.model.JIRAFilterListModel;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
-import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 import javax.swing.tree.DefaultTreeModel;
@@ -39,7 +39,9 @@ import java.util.List;
  * User: pmaruszak
  * Date: Jul 16, 2009
  */
-public class EditAction extends AnAction {
+public class EditAction extends AbstractFilterAction {
+
+
     public void actionPerformed(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
@@ -79,13 +81,17 @@ public class EditAction extends AnAction {
                         JiraCustomFilterMap filterMap =
                                 jiraProjectCfg.getJiraFilterConfiguaration(jiraServer.getServerId());
 
+
                         for (JiraFilterConfigurationBean bean : filterMap.getCustomFilters().values()) {
                             if (bean.getUid().equals(manualFilter.getUid())) {
-                                bean.setManualFilter(serializeFilter(jiraIssuesFilterPanel.getFilter()));    
+                                bean.setManualFilter(serializeFilter(jiraIssuesFilterPanel.getFilter()));
+                                bean.setName(manualFilter.getName());
                             }
 
                         }
                     }
+
+
 					jiraFilterListModel.fireManualFilterChanged(manualFilter, jiraServer);
                     ((DefaultTreeModel) panel.getJiraFilterTree().getModel())
                             .nodeStructureChanged(panel.getJiraFilterTree().getSelectedNode());
@@ -104,4 +110,11 @@ public class EditAction extends AnAction {
 		}
 		return query;
 	}
+
+    boolean isEnabled(AnActionEvent event) {
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
+        JiraCustomFilter manualFilter =
+                     panel != null ? ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter() : null;
+        return manualFilter != null;
+    }
 }

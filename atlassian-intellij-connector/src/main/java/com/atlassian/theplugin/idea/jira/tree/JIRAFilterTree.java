@@ -105,6 +105,11 @@ public class JIRAFilterTree extends AbstractTree {
 
     }
 
+    public boolean isServerNodeSelected() {
+        DefaultMutableTreeNode selectedNode = getSelectedNode();
+        return selectedNode != null && selectedNode instanceof JIRAServerTreeNode;
+    }
+
 	private void reCreateTree(final JIRAFilterListModel aListModel, final boolean fireSelectionChange) {
 		// off selection listener
 		getSelectionModel().removeTreeSelectionListener(localSelectionListener);
@@ -291,23 +296,28 @@ public class JIRAFilterTree extends AbstractTree {
 				prevRecentlyOpen = false;
 				prevServer = serverCfg;
 				fireSelectedSavedFilterNode(savedFilter, serverCfg);
-			} else if (!recentlyOpenSelected && serverCfg != null) {
+			} else if (isServerNodeSelected()) {
 				// server selected: do not fire notification (we must ignore that action)
-				getSelectionModel().removeTreeSelectionListener(localSelectionListener);
+				//getSelectionModel().removeTreeSelectionListener(localSelectionListener);
 
 				// remove server selection
 				//clearSelection();
 
 				// restore previous selection
-				if (prevManualFilter != null) {
-                    setSelectionManualFilter(prevServer.getServerId(), prevManualFilter.getUid().toString());
-				} else if (prevSavedFilter != null) {
-					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId());
-				} else if (prevRecentlyOpen) {
-					setSelectionRecentlyOpen();
-				}
+//				if (prevManualFilter != null) {
+//                    setSelectionManualFilter(prevServer.getServerId(), prevManualFilter.getUid().toString());
+//				} else if (prevSavedFilter != null) {
+//					setSelectionSavedFilter(prevSavedFilter.getId(), prevServer.getServerId());
+//				} else if (prevRecentlyOpen) {
+//					setSelectionRecentlyOpen();
+//				}
 
-				getSelectionModel().addTreeSelectionListener(localSelectionListener);
+                prevSavedFilter = null;
+                prevManualFilter = null;
+                fireSelectionCleared();
+
+
+				//getSelectionModel().addTreeSelectionListener(localSelectionListener);
 
 			} else if (recentlyOpenSelected) {
 				prevSavedFilter = null;
@@ -377,9 +387,9 @@ public class JIRAFilterTree extends AbstractTree {
         }
 
         public void manualFilterRemoved(JIRAFilterListModel jiraFilterListModel, JiraCustomFilter manualFilter,
-                                        ServerId serverId) {
-            setSelectionManualFilter(serverId, "");
+                                        ServerId serverId) {            
             rebuildTree(jiraFilterListModel, true);
+            clearSelection();
 
         }
 
