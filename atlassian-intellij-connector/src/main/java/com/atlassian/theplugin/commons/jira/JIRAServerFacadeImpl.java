@@ -73,7 +73,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 	private static JIRAServerFacadeImpl instance;
 
 	private String getSoapSessionKey(ServerData server) {
-		return server.getUserName() + server.getUrl() + server.getPassword();
+		return server.getUsername() + server.getUrl() + server.getPassword();
 	}
 
 	private synchronized JIRASession getSoapSession(ServerData server) throws RemoteApiException {
@@ -90,7 +90,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			}
 
 
-			session.login(server.getUserName(), server.getPassword());
+			session.login(server.getUsername(), server.getPassword());
 			soapSessions.put(key, session);
 		}
 		return session;
@@ -98,7 +98,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 
 	private synchronized JIRARssClient getRssSession(ServerData server) throws RemoteApiException {
 		// @todo old server will stay on map - remove them !!!
-		String key = server.getUserName() + server.getUrl() + server.getPassword();
+		String key = server.getUsername() + server.getUrl() + server.getPassword();
 		JIRARssClient session = rssSessions.get(key);
 		if (session == null) {
 			session = new JIRARssClient(server, callback);
@@ -118,8 +118,8 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 				return true;
 			}
 			
-			public String getUserName() {
-				return serverCfg.getUserName();
+			public String getUsername() {
+				return serverCfg.getUsername();
 			}
 			
 			public String getUrl() {
@@ -141,7 +141,7 @@ public final class JIRAServerFacadeImpl implements JIRAServerFacade {
 			public String getName() {
 				return "unknown name";
 			}
-		}, new UserCfg()) , serverCfg.getUserName(), serverCfg.getPassword());
+		}, new UserCfg()) , serverCfg.getUsername(), serverCfg.getPassword());
 	}
 
 	private void testServerConnection(ServerData server, String userName, String password) throws RemoteApiException {

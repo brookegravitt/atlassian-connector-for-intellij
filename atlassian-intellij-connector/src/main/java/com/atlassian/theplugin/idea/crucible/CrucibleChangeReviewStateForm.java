@@ -465,7 +465,7 @@ public class CrucibleChangeReviewStateForm extends DialogWrapper {
             gbc1.gridy = 0;
             gbc2.gridy = 0;
 
-            String userName = review.getServerData().getUserName();
+            String userName = review.getServerData().getUsername();
 
             String totalComments;
             try {

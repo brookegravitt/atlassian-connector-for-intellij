@@ -191,7 +191,7 @@ return new Action[] {
 
         User author = getUser(authorComboBox);
 		if (author != null) {
-			filter.setAuthor(author.getUserName());
+			filter.setAuthor(author.getUsername());
             filter.setEmpty(false);
 		} else {
 			filter.setAuthor("");
@@ -199,14 +199,14 @@ return new Action[] {
 
         User creator = getUser(creatorComboBox);
 		if (creator !=null) {
-			filter.setCreator(creator.getUserName());
+			filter.setCreator(creator.getUsername());
             filter.setEmpty(false);
 		} else {
 			filter.setCreator("");
 		}
         User moderator = getUser(moderatorComboBox);
 		if (moderator != null) {
-			filter.setModerator(moderator.getUserName());
+			filter.setModerator(moderator.getUsername());
             filter.setEmpty(false);
 		} else {
 			filter.setModerator("");
@@ -214,7 +214,7 @@ return new Action[] {
 
         User reviewer = getUser(reviewerComboBox);
 		if ( reviewer != null) {
-			filter.setReviewer(reviewer.getUserName());
+			filter.setReviewer(reviewer.getUsername());
             filter.setEmpty(false);
 		} else {
 			filter.setReviewer("");
@@ -532,7 +532,7 @@ return new Action[] {
 		for (int i = 0; i < combo.getModel().getSize(); ++i) {
 			final UserComboBoxItem item = (UserComboBoxItem) combo.getModel().getElementAt(i);
 			final User user = item.getWrapped();
-			if (user != null && userName.equals(user.getUserName()) || userName.length() == 0 && user == null) {
+			if (user != null && userName.equals(user.getUsername()) || userName.length() == 0 && user == null) {
 				combo.setSelectedItem(item);
 				break;
 			}

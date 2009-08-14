@@ -132,7 +132,7 @@ public final class BambooFilterListTestUi {
 	}
 
 	private static ConnectionCfg getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ConnectionCfg(serverCfg.getServerId().getId(), serverCfg.getUrl(), serverCfg.getUserName(), serverCfg
+		return new ConnectionCfg(serverCfg.getServerId().getId(), serverCfg.getUrl(), serverCfg.getUsername(), serverCfg
 				.getPassword());
 	}
 

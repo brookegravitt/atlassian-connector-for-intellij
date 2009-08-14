@@ -46,7 +46,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
         final CommentBean reply = parent instanceof VersionedComment
                 ? new VersionedCommentBean() : new GeneralCommentBean();
         reply.setMessage(text);
-        reply.setAuthor(new User(getReview().getServerData().getUserName()));
+        reply.setAuthor(new User(getReview().getServerData().getUsername()));
         reply.setDefectRaised(false);
         reply.setDefectApproved(false);
         reply.setDeleted(false);
@@ -57,7 +57,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
     private CommentBean createCommentBean(Comment comment) {
         final CommentBean bean = comment instanceof VersionedComment
                 ? new VersionedCommentBean((VersionedComment) comment) : new GeneralCommentBean((GeneralComment) comment);
-        bean.setAuthor(new User(getReview().getServerData().getUserName()));
+        bean.setAuthor(new User(getReview().getServerData().getUsername()));
         bean.setCreateDate(new Date());
 
         return bean;

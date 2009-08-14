@@ -231,7 +231,7 @@ public class ReviewCommentPanel extends JPanel {
 
 	private static String getAuthorText(Comment comment) {
 		return "".equals(comment.getAuthor().getDisplayName())
-				? comment.getAuthor().getUserName()
+				? comment.getAuthor().getUsername()
 				: comment.getAuthor().getDisplayName();
 	}
 

@@ -101,7 +101,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 
 	void setDefaultCredentials(@NotNull final UserCfg defaultCredentials) {
 		workspaceConfiguration.setDefaultCredentials(
-				new UserCfgBean(defaultCredentials.getUserName(),
+				new UserCfgBean(defaultCredentials.getUsername(),
 						StringUtil.encode(defaultCredentials.getPassword())));
 	}
 
@@ -723,7 +723,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 				return false;
 			}
 
-			return !oldServer.getUserName().equals(newServer.getUserName())
+			return !oldServer.getUsername().equals(newServer.getUsername())
 					|| !oldServer.getPassword().equals(newServer.getPassword())
 					|| oldServer.isUseDefaultCredentials() != newServer.isUseDefaultCredentials();
 

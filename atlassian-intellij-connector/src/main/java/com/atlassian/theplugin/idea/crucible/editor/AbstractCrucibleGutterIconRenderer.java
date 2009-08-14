@@ -116,7 +116,7 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 	}
 
 	protected boolean checkIfUserAnAuthor() {
-		return review.getServerData().getUserName().equals(comment.getAuthor().getUserName());
+		return review.getServerData().getUsername().equals(comment.getAuthor().getUsername());
 	}
 
 	protected boolean checkIfAuthorized() {

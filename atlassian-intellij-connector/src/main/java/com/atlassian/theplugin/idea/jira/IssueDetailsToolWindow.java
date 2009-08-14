@@ -115,7 +115,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 
 	protected String getContentKey(JIRAIssue issue) {
 		ServerData server = issue.getServer();
-		return server != null ? server.getUrl() + server.getUserName() + issue.getKey() : "";
+		return server != null ? server.getUrl() + server.getUsername() + issue.getKey() : "";
 	}
 
 	public void setCommentsExpanded(String key, boolean expanded) {

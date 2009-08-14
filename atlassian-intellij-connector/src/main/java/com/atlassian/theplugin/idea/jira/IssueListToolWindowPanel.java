@@ -557,7 +557,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         try {
             ServerData jiraServer = getSelectedServer();
             if (jiraServer != null) {
-                assignIssue(issue, jiraServer.getUserName());
+                assignIssue(issue, jiraServer.getUsername());
             }
         } catch (NullPointerException ex) {
             // todo remove NPE catch
@@ -701,10 +701,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         JIRAIssue updatedIssue = issue;
         final ServerData server = issue.getServer();
 
-        if (!issue.getAssigneeId().equals(server.getUserName())) {
+        if (!issue.getAssigneeId().equals(server.getUsername())) {
             setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
             try {
-                jiraServerFacade.setAssignee(server, issue, server.getUserName());
+                jiraServerFacade.setAssignee(server, issue, server.getUsername());
             } catch (JIRAException e) {
                 final String msg = "Error starting progress on issue. Assigning failed: ";
                 setStatusErrorMessage(msg + e.getMessage(), e);

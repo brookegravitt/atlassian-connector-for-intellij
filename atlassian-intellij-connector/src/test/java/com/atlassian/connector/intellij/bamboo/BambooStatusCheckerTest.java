@@ -85,7 +85,7 @@ public class BambooStatusCheckerTest extends TestCase {
 		ProjectCfgManager cfg = Mockito.mock(ProjectCfgManager.class);
 		final String mockBaseUrl = "http://localhost";
 		final BambooServerCfg s = getServer(mockBaseUrl);
-		final BambooServerData server = new BambooServerData(s, new UserCfg(s.getUserName(), s.getPassword()));
+		final BambooServerData server = new BambooServerData(s, new UserCfg(s.getUsername(), s.getPassword()));
 		final BambooBuildInfo build = new BambooBuildInfo.Builder("TP-DEF", null, server.toConnectionCfg(), "a project", 140, BuildStatus.SUCCESS).testsFailedCount(10).testsPassedCount(30).build();
 
 		IntelliJBambooServerFacade mockFacade = Mockito.mock(IntelliJBambooServerFacade.class);

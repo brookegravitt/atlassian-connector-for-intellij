@@ -92,7 +92,7 @@ public class CfgManagerNotificationTest extends TestCase {
 	}
 
 	private ServerData getServerData(final ServerCfg serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
 	}
 
 

@@ -21,7 +21,7 @@ public class AssignIssueToMyselfAction extends JIRAAbstractAction {
 		ServerData server = event.getData(Constants.SERVER_KEY);
 
 		if (server != null && issue != null) {
-			if (issue.getAssigneeId().equals(server.getUserName())) {
+			if (issue.getAssigneeId().equals(server.getUsername())) {
 				event.getPresentation().setEnabled(false);
 			}
 		}

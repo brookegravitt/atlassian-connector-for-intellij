@@ -58,7 +58,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	private JComboBox defaultFishEyeRepositoryCombo = new JComboBox();
 	private JComboBox defaultJiraServerCombo = new JComboBox();
 	private JTextField pathToProjectEdit = new JTextField();
-	private JTextField defaultUserName = new JTextField();
+	private JTextField defaultUsername = new JTextField();
 	private JButton defaultCredentialsTestButton = new JButton("Test Connections");
 	private JPasswordField defaultPassword = new JPasswordField();
 	private final Project project;
@@ -314,7 +314,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		defaultCredentialsLabel.setFont(defaultCredentialsLabel.getFont().deriveFont(10.0f));
 		builder.add(defaultCredentialsLabel, cc.xyw(2, 31, ALL_COLUMNS - 1));
 		builder.addLabel("Username:", cc.xy(3, 33));
-		builder.add(defaultUserName, cc.xy(5, 33));
+		builder.add(defaultUsername, cc.xy(5, 33));
 		builder.addLabel("Password:", cc.xy(3, 35));
 		builder.add(defaultPassword, cc.xy(5, 35));
 		JPanel panel = new JPanel(new BorderLayout());
@@ -377,21 +377,21 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 			}
 		});
 
-		defaultUserName.getDocument().addDocumentListener(new DocumentListener() {
+		defaultUsername.getDocument().addDocumentListener(new DocumentListener() {
 			public void insertUpdate(final DocumentEvent e) {
-				setUserName();
+				setUsername();
 			}
 
 			public void removeUpdate(final DocumentEvent e) {
-				setUserName();
+				setUsername();
 			}
 
 			public void changedUpdate(final DocumentEvent e) {
-				setUserName();
+				setUsername();
 			}
 
-			private void setUserName() {
-				defaultCredentials.setUserName(defaultUserName.getText());
+			private void setUsername() {
+				defaultCredentials.setUsername(defaultUsername.getText());
 			}
 		});
 
@@ -442,7 +442,7 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		pathToProjectEdit.setText(projectConfiguration.getFishEyeProjectPath());
 
 		defaultJiraServerCombo.setModel(new JiraServerComboBoxModel());
-		defaultUserName.setText(defaultCredentials.getUserName());
+		defaultUsername.setText(defaultCredentials.getUsername());
 		defaultPassword.setText(defaultCredentials.getPassword());
 	}
 
@@ -453,9 +453,9 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 	}
 
 	public void setDefaultCredentials(final UserCfg userCfg) {
-		defaultCredentials.setUserName(userCfg.getUserName());
+		defaultCredentials.setUsername(userCfg.getUsername());
 		defaultCredentials.setPassword(userCfg.getPassword());
-		defaultUserName.setText(defaultCredentials.getUserName());
+		defaultUsername.setText(defaultCredentials.getUsername());
 		defaultPassword.setText(defaultCredentials.getPassword());
 	}
 

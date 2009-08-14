@@ -127,7 +127,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPassword());
 		assertEquals("http://url", outServer.getUrl());
-		assertEquals("userName", outServer.getUserName());
+		assertEquals("userName", outServer.getUsername());
 	}
 
 	public static Test suite() {
@@ -141,7 +141,7 @@ public class BambooServerConfigurationFormTest extends TestCase {
 		BambooServerCfg outServer = bambooPluginConfigurationForm.getBambooServerCfg();
 		assertEquals("", outServer.getName());
 		assertEquals("", outServer.getUrl());
-		assertEquals("", outServer.getUserName());
+		assertEquals("", outServer.getUsername());
 		assertEquals("", outServer.getPassword());
 		assertEquals(0, outServer.getSubscribedPlans().size());
 

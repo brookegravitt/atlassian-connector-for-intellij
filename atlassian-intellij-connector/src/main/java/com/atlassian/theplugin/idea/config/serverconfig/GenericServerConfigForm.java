@@ -195,7 +195,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 
 		serverName.setText(server.getName());
 		serverUrl.setText(server.getUrl());
-		username.setText(server.getUserName());
+		username.setText(server.getUsername());
 		chkPasswordRemember.setSelected(server.isPasswordStored());
 		password.setText(server.getPassword());
 		cbEnabled.setSelected(server.isEnabled());
@@ -240,7 +240,7 @@ public class GenericServerConfigForm implements TestConnectionProcessor {
 		return serverUrl.getText();
 	}
 
-	public String getUserName() {
+	public String getUsername() {
 		return username.getText();
 	}
 

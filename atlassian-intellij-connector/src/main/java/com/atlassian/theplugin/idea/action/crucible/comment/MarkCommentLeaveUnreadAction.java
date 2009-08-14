@@ -61,7 +61,7 @@ public class MarkCommentLeaveUnreadAction extends AbstractCommentAction {
 
             Comment comment = n.getComment();
             Comment.ReadState currentState = comment.getReadState();
-            if (!comment.getAuthor().getUserName().equals(n.getReview().getServerData().getUserName())
+            if (!comment.getAuthor().getUsername().equals(n.getReview().getServerData().getUsername())
                     && currentState != Comment.ReadState.UNKNOWN
                     && currentState != Comment.ReadState.LEAVE_UNREAD) {
                 enabled = true;

@@ -80,7 +80,7 @@ public class HtmlBambooStatusListenerTest extends TestCase {
 	}, new UserCfg("username", "password"));
 
 	private static final ConnectionCfg CONNECTION_CFG = new ConnectionCfg(BAMBOO.getServerId().getId(), BAMBOO.getUrl(),
-							BAMBOO.getUserName(), BAMBOO.getPassword());
+							BAMBOO.getUsername(), BAMBOO.getPassword());
 
 	@Override
 	protected void tearDown() throws Exception {
