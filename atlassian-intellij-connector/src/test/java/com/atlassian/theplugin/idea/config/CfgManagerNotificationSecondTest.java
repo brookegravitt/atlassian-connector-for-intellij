@@ -94,7 +94,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	}
 
 	private ServerData getServerData(final ServerCfg serverCfg) {
-		return new ServerData(serverCfg, new UserCfg(serverCfg.getUserName(), serverCfg.getPassword()));
+		return new ServerData(serverCfg, new UserCfg(serverCfg.getUsername(), serverCfg.getPassword()));
 	}
 
 	public void testServerRemoved() {
@@ -214,7 +214,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testServerConnectionDataChanged() {
 
 		newConf.getServerCfg(bamboo1.getServerId()).setUrl(bamboo1.getUrl() + SUFFIX);
-		newConf.getServerCfg(crucible1.getServerId()).setUsername(crucible1.getUserName() + SUFFIX);
+		newConf.getServerCfg(crucible1.getServerId()).setUsername(crucible1.getUsername() + SUFFIX);
 		newConf.getServerCfg(jira1.getServerId()).setPassword(jira1.getPassword() + SUFFIX);
 		newConf.getServerCfg(fisheye1.getServerId()).setPassword(fisheye1.getPassword() + SUFFIX);
 
@@ -292,7 +292,7 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	public void testDefaultCredentials() {
 		UserCfg userCfg = new UserCfg("userName", "secretPAssword");
 		ServerData srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
-		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+		assertEquals(srvData1.getUsername(), bamboo1.getUsername());
 		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
 		assertFalse(projectCfgManager.isDefaultCredentialsAsked());
@@ -300,13 +300,13 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 		assertFalse(bamboo1.isUseDefaultCredentials());
 		srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
 		assertTrue(projectCfgManager.isDefaultCredentialsAsked());
-		assertEquals(srvData1.getUserName(), bamboo1.getUserName());
+		assertEquals(srvData1.getUsername(), bamboo1.getUsername());
 		assertEquals(srvData1.getPassword(), bamboo1.getPassword());
 
 		bamboo1.setUseDefaultCredentials(true);
 		assertTrue(bamboo1.isUseDefaultCredentials());
 		srvData1 = projectCfgManager.getServerr(bamboo1.getServerId());
-		assertEquals(srvData1.getUserName(), userCfg.getUserName());
+		assertEquals(srvData1.getUsername(), userCfg.getUsername());
 		assertEquals(srvData1.getPassword(), userCfg.getPassword());
 
 

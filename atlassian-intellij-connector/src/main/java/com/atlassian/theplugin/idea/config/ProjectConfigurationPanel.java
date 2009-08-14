@@ -182,7 +182,7 @@ public class ProjectConfigurationPanel extends JPanel {
 								&& (defaultCredentials == null
 								|| (defaultCredentials.getPassword().equals("")
 								&& defaultCredentials.getPassword().equals(""))
-								&& selectedServer.getUserName().length() > 0)) {
+								&& selectedServer.getUsername().length() > 0)) {
 							int answer = Messages.showYesNoDialog(project,
 									"<html>Do you want to set server <b>" + selectedServer.getName()
 											+ "</b> <i>username</i> and <i>password</i>"
@@ -194,7 +194,7 @@ public class ProjectConfigurationPanel extends JPanel {
 							ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
 
 							if (answer == DialogWrapper.OK_EXIT_CODE) {
-								UserCfg credentials = new UserCfg(selectedServer.getUserName(),
+								UserCfg credentials = new UserCfg(selectedServer.getUsername(),
 										selectedServer.getPassword(), true);
 								if (cfgMgr != null) {
 									cfgMgr.setDefaultCredentials(credentials);

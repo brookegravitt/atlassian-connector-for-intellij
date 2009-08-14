@@ -245,7 +245,7 @@ public final class ActiveIssueUtils {
 				ProgressManager.getInstance().run(new Task.Backgroundable(project, "Checking active issue state") {
 					public void run(final ProgressIndicator indicator) {
 
-						if (!issue.getServer().getUserName().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
+						if (!issue.getServer().getUsername().equals(issue.getAssigneeId()) /*|| !isInProgress(issue)*/) {
 
 							SwingUtilities.invokeLater(new Runnable() {
 								public void run() {
@@ -315,7 +315,7 @@ public final class ActiveIssueUtils {
 
 			public void onSuccess() {
 				if (isOk && panel != null && jiraIssue != null && jiraServerCfg != null) {
-					if (!jiraServerCfg.getUserName().equals(jiraIssue.getAssigneeId())
+					if (!jiraServerCfg.getUsername().equals(jiraIssue.getAssigneeId())
 							&& !"-1".equals(jiraIssue.getAssigneeId())) {
 						isOk = Messages.showYesNoDialog(IdeaHelper.getCurrentProject(event),
 								"Issue " + jiraIssue.getKey() + " is already assigned to " + jiraIssue.getAssignee()

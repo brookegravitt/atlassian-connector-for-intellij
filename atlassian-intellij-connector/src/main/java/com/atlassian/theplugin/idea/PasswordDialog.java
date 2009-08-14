@@ -53,7 +53,7 @@ public class PasswordDialog extends JDialog implements TestConnectionListener.Se
 		});
 		lblCommand.setText("<html><p>Please provide password to connect \"" + this.server.getName() + "\" server:</p> <p><i>"
 				+ this.server.getUrl() + "</i></p></html>");
-		userName.setText(server.getUserName());
+		userName.setText(server.getUsername());
 // call onCancel() on ESCAPE
 		passwordPanel.registerKeyboardAction(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

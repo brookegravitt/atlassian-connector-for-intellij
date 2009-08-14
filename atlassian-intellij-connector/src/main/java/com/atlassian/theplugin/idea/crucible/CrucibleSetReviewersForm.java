@@ -149,12 +149,12 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 		actualReviewers = reviewers;
 		if (!users.isEmpty()) {
 			for (User user : users) {
-				if (!user.getUserName().equals(server.getUserName())
-						&& !user.getUserName().equals(reviewData.getAuthor().getUserName())
-						&& !user.getUserName().equals(reviewData.getModerator().getUserName())) {
+				if (!user.getUsername().equals(server.getUsername())
+						&& !user.getUsername().equals(reviewData.getAuthor().getUsername())
+						&& !user.getUsername().equals(reviewData.getModerator().getUsername())) {
 					boolean rev = false;
 					for (Reviewer reviewer : reviewers) {
-						if (reviewer.getUserName().equals(user.getUserName())) {
+						if (reviewer.getUsername().equals(user.getUsername())) {
 							rev = true;
 						}
 					}
@@ -189,11 +189,11 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 
 		for (int i = 0; i < model.getSize(); ++i) {
 			UserListItem item = (UserListItem) model.get(i);
-			String username = item.getUser().getUserName();
+			String username = item.getUser().getUsername();
 			boolean found = false;
 			if (item.isSelected()) {
 				for (Reviewer actualReviewer : actualReviewers) {
-					if (username.equals(actualReviewer.getUserName())) {
+					if (username.equals(actualReviewer.getUsername())) {
 						found = true;
 						break;
 					}
@@ -203,7 +203,7 @@ public class CrucibleSetReviewersForm extends DialogWrapper {
 				}
 			} else {
 				for (Reviewer actualReviewer : actualReviewers) {
-					if (username.equals(actualReviewer.getUserName())) {
+					if (username.equals(actualReviewer.getUsername())) {
 						found = true;
 						break;
 					}

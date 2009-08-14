@@ -243,7 +243,7 @@ final class ServerDataProvider {
 	}
 
 	public static ServerData getServerData(final Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
 	}
 }
 

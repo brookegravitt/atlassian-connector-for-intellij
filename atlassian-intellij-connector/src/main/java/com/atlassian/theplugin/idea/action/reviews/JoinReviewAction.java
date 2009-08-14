@@ -36,20 +36,20 @@ public class JoinReviewAction extends AnAction {
 		} else {
 			if (review.isAllowReviewerToJoin()) {
 				try {
-					String userName = review.getServerData().getUserName();
-					if (review.getAuthor().getUserName().equals(userName)) {
+					String userName = review.getServerData().getUsername();
+					if (review.getAuthor().getUsername().equals(userName)) {
 						event.getPresentation().setVisible(false);
 						event.getPresentation().setEnabled(false);
 						return;
 					}
-					if (review.getModerator().getUserName().equals(userName)) {
+					if (review.getModerator().getUsername().equals(userName)) {
 						event.getPresentation().setVisible(false);
 						event.getPresentation().setEnabled(false);
 						return;
 					}
 
 					for (Reviewer reviewer : review.getReviewers()) {
-						if (userName.equals(reviewer.getUserName())) {
+						if (userName.equals(reviewer.getUsername())) {
 							event.getPresentation().setVisible(false);
 							event.getPresentation().setEnabled(false);
 							return;

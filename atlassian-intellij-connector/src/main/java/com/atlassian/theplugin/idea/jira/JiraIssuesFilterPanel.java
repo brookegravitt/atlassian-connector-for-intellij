@@ -582,12 +582,12 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
 
                 reporterComboBox.removeAllItems();
                 reporterComboBox.addItem(new JIRAReporterBean(JIRAServerCache.ANY_ID, "Any User", null));
-                reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUserName()));
+                reporterComboBox.addItem(new JIRAReporterBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
                 assigneeComboBox.removeAllItems();
                 assigneeComboBox.addItem(new JIRAAssigneeBean(JIRAServerCache.ANY_ID, "Any User", ""));
                 assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Unassigned", "unassigned"));
-                assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUserName()));
+                assigneeComboBox.addItem(new JIRAAssigneeBean((long) -1, "Current User", jiraServerCfg.getUsername()));
 
 
                 if (!isWindowClosed()) {

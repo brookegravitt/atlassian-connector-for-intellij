@@ -197,6 +197,6 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 
 
 	private static ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
-		return new ServerData(serverCfg, serverCfg.getUserName(), serverCfg.getPassword());
+		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
 	}
 }

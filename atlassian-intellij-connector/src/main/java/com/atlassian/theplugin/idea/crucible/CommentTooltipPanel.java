@@ -553,7 +553,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 		}
 
 		private boolean isOwner(Comment cmt) {
-			return review.getServerData().getUserName().equals(cmt.getAuthor().getUserName());
+			return review.getServerData().getUsername().equals(cmt.getAuthor().getUsername());
 		}
 
         public void updateReadUnreadButtonState(Comment cmt) {

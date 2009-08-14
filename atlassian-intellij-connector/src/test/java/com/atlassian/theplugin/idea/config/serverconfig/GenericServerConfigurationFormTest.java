@@ -75,7 +75,7 @@ public class GenericServerConfigurationFormTest extends TestCase {
 		assertEquals("name", outServer.getName());
 		assertEquals("password", outServer.getPassword());
 		assertEquals("http://url", outServer.getUrl());
-		assertEquals("userName", outServer.getUserName());
+		assertEquals("userName", outServer.getUsername());
 	}
 
 	public static Test suite() {
