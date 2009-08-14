@@ -139,7 +139,10 @@ public class ActiveIssueButtonAction extends AnAction implements CustomComponent
             dimension.width += fontmetrics.stringWidth(s);
             setPreferredSize(dimension);
             setSize(dimension);
-            getParent().validate();
+            Component parent = getParent();
+            if (parent != null) {
+                parent.validate();
+            }
         }
 
         public Dimension getBasePreferredSize() {
