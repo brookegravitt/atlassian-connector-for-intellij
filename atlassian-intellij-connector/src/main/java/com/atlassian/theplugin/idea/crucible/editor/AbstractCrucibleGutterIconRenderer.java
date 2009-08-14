@@ -40,19 +40,33 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 				.append(comment.getAuthor().getDisplayName())
 				.append("</b> said <i>on ")
 				.append(CommentDateUtil.getDateText(comment.getCreateDate()))
-				.append("</i>:<br>")
-				.append(comment.getMessage().replace("\n", "<br>"));
+				.append("</i>:<br>");
+		renderCommentBody(s, comment);
+        
 		for (Comment versionedComment : comment.getReplies()) {
 			s.append("<br>&nbsp;&nbsp;&nbsp;&nbsp;<b>")
 					.append(versionedComment.getAuthor().getDisplayName())
 					.append("</b> replied <i> on ")
 					.append(CommentDateUtil.getDateText(versionedComment.getCreateDate()))
-					.append("</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;")
-					.append(versionedComment.getMessage().replace("\n", "<br>"));
+					.append("</i>:<br>&nbsp;&nbsp;&nbsp;&nbsp;");
+            renderCommentBody(s, versionedComment);
 		}
 		s.append("</html>");
 		return s.toString();
 	}
+
+    private void renderCommentBody(StringBuilder s, Comment comment) {
+        boolean boldify =
+                comment.getReadState() == Comment.ReadState.UNREAD
+                || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD;
+        if (boldify) {
+            s.append("<b>");
+        }
+        s.append(comment.getMessage().replace("\n", "<br>"));
+        if (boldify) {
+            s.append("</b>");
+        }
+    }
 
 /*	@Override
 	public ActionGroup getPopupMenuActions() {
