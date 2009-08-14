@@ -21,6 +21,8 @@ import java.util.Map;
 public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
     private static final Icon JIRA_MANUAL_FILTER_ICON = IconLoader.getIcon("/actions/showViewer.png");
     private static final Icon JIRA_SAVED_FILTER_ICON = IconLoader.getIcon("/actions/showSource.png");
+    private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
+	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
     private static final String TOOLTIP_FOOTER_HTML = "<hr style=\"height: '1'; text-align: 'left'; "
             + "color: 'black'; width: '100%'\">"
             + "<p style=\"font-size:'90%'; color:'grey'\">right click on filter node to edit</p>";
@@ -59,6 +61,13 @@ public class JIRAFilterTreeRenderer extends DefaultTreeCellRenderer {
             return c;
         }
 
+        if (value instanceof JIRAServerTreeNode && c instanceof JLabel) {
+            ((JLabel) c).setIcon(JIRA_SERVER_ENABLED_ICON);
+            ((JLabel) c).setDisabledIcon(JIRA_SERVER_DISABLED_ICON);
+            ((JLabel) c).setBorder(BorderFactory.createEmptyBorder());
+            return c;
+        }
+        
         if (value instanceof AbstractTreeNode) {
             return ((AbstractTreeNode) value).getRenderer(c, selected, expanded, hasFocus);
         }
