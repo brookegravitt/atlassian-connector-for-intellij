@@ -29,7 +29,6 @@ public final class CrucibleConstants {
 	public static final String CRUCIBLE_AUTH_COLOR = "green";
 
 	public static final String CRUCIBLE_MOD_COLOR = "#FEA02C";
-		;
 	public static final String MENU_PLACE = "menu comments";
 	public static final AtlassianTreeNode ROOT = new FolderNode("/", AtlassianClickAction.EMPTY_ACTION);
 
