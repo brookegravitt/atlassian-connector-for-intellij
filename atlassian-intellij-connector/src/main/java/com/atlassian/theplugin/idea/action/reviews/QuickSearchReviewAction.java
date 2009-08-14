@@ -94,7 +94,19 @@ public class QuickSearchReviewAction extends AbstractCrucibleToolbarAction {
 		}
 	}
 
-	private final class QuickSearchTask extends Task.Modal {
+
+    @Override
+    protected boolean onUpdate(AnActionEvent e) {
+        final ReviewListToolWindowPanel reviewsWindow = IdeaHelper.getReviewListToolWindowPanel(e);
+
+        if (reviewsWindow == null) {
+            return false;
+        }
+        Collection<ServerData> servers = reviewsWindow.getServers();
+        return servers != null && servers.size() > 0;
+    }
+
+    private final class QuickSearchTask extends Task.Modal {
 		private final List<ReviewAdapter> serverReviews = new ArrayList<ReviewAdapter>();
 		private boolean failed = false;
 		private final AnActionEvent event;

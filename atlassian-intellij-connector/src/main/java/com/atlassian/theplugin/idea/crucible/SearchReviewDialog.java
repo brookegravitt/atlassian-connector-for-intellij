@@ -25,8 +25,8 @@ public class SearchReviewDialog extends DialogWrapper {
 	private JPanel rootPane;
 	private JTextField ctrlReviewSearch;
 	private JPanel ctrlServersPanel;
-	private JLabel ctrlLocalInfoLabel;
-	private Collection<ServerData> selectedServers = new HashSet<ServerData>();
+    private JLabel serversLabel;
+    private Collection<ServerData> selectedServers = new HashSet<ServerData>();
 	private CrucibleViewConfigurationBean crucibleViewConfiguration;
 
 	public Collection<ServerData> getSelectedServers() {
@@ -47,24 +47,21 @@ public class SearchReviewDialog extends DialogWrapper {
 		getOKAction().setEnabled(false);
 
 		addServersCheckboxes(servers);
-		if (selectedServers.size() != 0) {
-			ctrlLocalInfoLabel.setVisible(false);
-		}
 
 		ctrlReviewSearch.addKeyListener(new KeyAdapter() {
 			public void keyReleased(final KeyEvent e) {
-				if (ctrlReviewSearch.getText().length() == 0) {
-					getOKAction().setEnabled(false);
-				} else {
-					getOKAction().setEnabled(true);
-				}
+                updateOkActionState();
 			}
 		});
 		KeyPressGobbler.gobbleKeyPress(ctrlReviewSearch);
-		setOKActionEnabled(false);
+        updateOkActionState();
 	}
 
-	protected void doOKAction() {
+    private void updateOkActionState() {
+        setOKActionEnabled(selectedServers.size() > 0 && ctrlReviewSearch.getText().length() > 0);
+    }
+
+    protected void doOKAction() {
 
 		if (crucibleViewConfiguration != null) {
 
@@ -89,28 +86,25 @@ public class SearchReviewDialog extends DialogWrapper {
 		ctrlServersPanel.setLayout(new BoxLayout(ctrlServersPanel, BoxLayout.Y_AXIS));
 
 		if (servers != null) {
+            serversLabel.setText(servers.size() > 1 ? "Servers" : "Server");
 			for (final ServerData server : servers) {
 				final CrucibleServerCheckbox checkbox = new CrucibleServerCheckbox(server);
 				ctrlServersPanel.add(checkbox);
 
 				if (crucibleViewConfiguration != null && crucibleViewConfiguration.getSearchServerss() != null
 						&& crucibleViewConfiguration.getSearchServerss().contains((ServerIdImpl) server.getServerId())) {
-					checkbox.setSelected(true);
 					selectedServers.add(server);
+                    checkbox.setSelected(true);
 				}
 
 				checkbox.addActionListener(new ActionListener() {
 					public void actionPerformed(final ActionEvent e) {
 						if (checkbox.isSelected()) {
 							selectedServers.add(server);
-							ctrlLocalInfoLabel.setVisible(false);
 						} else {
 							selectedServers.remove(server);
-							if (selectedServers.size() == 0) {
-								ctrlLocalInfoLabel.setVisible(true);
-								pack();
-							}
 						}
+                        updateOkActionState();
 					}
 				});
 			}
@@ -170,11 +164,6 @@ public class SearchReviewDialog extends DialogWrapper {
 		panel1.add(ctrlServersPanel, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
 				GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-		ctrlLocalInfoLabel = new JLabel();
-		ctrlLocalInfoLabel.setText("No selection. Only local list of reviews will be searched");
-		ctrlLocalInfoLabel.setVerticalAlignment(0);
-		rootPane.add(ctrlLocalInfoLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-				GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
 	}
 
 	/**
