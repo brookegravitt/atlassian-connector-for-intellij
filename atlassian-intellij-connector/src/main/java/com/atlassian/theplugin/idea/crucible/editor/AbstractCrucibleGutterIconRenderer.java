@@ -55,14 +55,14 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 		return s.toString();
 	}
 
-    private void renderCommentBody(StringBuilder s, Comment comment) {
+    private void renderCommentBody(StringBuilder s, Comment cmt) {
         boolean boldify =
-                comment.getReadState() == Comment.ReadState.UNREAD
-                || comment.getReadState() == Comment.ReadState.LEAVE_UNREAD;
+                cmt.getReadState() == Comment.ReadState.UNREAD
+                || cmt.getReadState() == Comment.ReadState.LEAVE_UNREAD;
         if (boldify) {
             s.append("<b>");
         }
-        s.append(comment.getMessage().replace("\n", "<br>"));
+        s.append(cmt.getMessage().replace("\n", "<br>"));
         if (boldify) {
             s.append("</b>");
         }
