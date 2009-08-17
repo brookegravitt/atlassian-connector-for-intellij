@@ -110,7 +110,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 				.setCancelOnClickOutside(false)
 				.setCancelOnOtherWindowOpen(false)
                 .setTitleIcon(new ActiveIcon(new EmptyIcon(1)))
-                .setCancelButton(new IconButton("Close", IconLoader.getIcon("/actions/close.png")))
+                .setCancelButton(new IconButton("Close", IconLoader.getIcon("/actions/cross.png")))
 				.setMovable(true)
 				.setTitle("Comment")
 				.setResizable(true)
