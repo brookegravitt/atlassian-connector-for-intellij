@@ -2,8 +2,15 @@ package com.atlassian.theplugin.idea.crucible;
 
 import com.atlassian.connector.intellij.crucible.CrucibleReviewListenerAdapter;
 import com.atlassian.connector.intellij.crucible.ReviewAdapter;
-import com.atlassian.theplugin.commons.crucible.api.model.*;
+import com.atlassian.theplugin.commons.crucible.api.model.Comment;
+import com.atlassian.theplugin.commons.crucible.api.model.CommentBean;
+import com.atlassian.theplugin.commons.crucible.api.model.CrucibleFileInfo;
+import com.atlassian.theplugin.commons.crucible.api.model.CustomFieldDef;
+import com.atlassian.theplugin.commons.crucible.api.model.GeneralComment;
+import com.atlassian.theplugin.commons.crucible.api.model.PermId;
+import com.atlassian.theplugin.commons.crucible.api.model.VersionedComment;
 import com.atlassian.theplugin.idea.Constants;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.action.crucible.comment.RemoveCommentConfirmation;
 import com.atlassian.theplugin.idea.crucible.ui.ReviewCommentPanel;
 import com.atlassian.theplugin.idea.ui.ScrollablePanel;
@@ -14,9 +21,15 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.VerticalFlowLayout;
+import com.intellij.openapi.ui.popup.ActiveIcon;
+import com.intellij.openapi.ui.popup.IconButton;
 import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.util.Computable;
+import com.intellij.openapi.util.IconLoader;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.ui.HyperlinkLabel;
+import com.intellij.util.ui.EmptyIcon;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +39,17 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.StyledEditorKit;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: jgorycki
@@ -67,15 +87,38 @@ public abstract class CommentTooltipPanel extends JPanel {
         ADD
     }
 
-    public static void showCommentTooltipPopup(AnActionEvent event, CommentTooltipPanel lctp,
-                                               Component owner, Point location) {
-		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
+    public static void showCommentTooltipPopup(
+            final AnActionEvent event, final CommentTooltipPanel lctp, final Component owner) {
+        showCommentTooltipPopup(event, null, lctp, owner, null);
+    }
+
+    private static void showCommentTooltipPopup(final Project project, final CommentTooltipPanel lctp,
+                                               final Component owner, Point location) {
+        showCommentTooltipPopup(null, project, lctp, owner, location);
+    }
+
+    private static void showCommentTooltipPopup(final AnActionEvent event, final Project project, 
+                                               final CommentTooltipPanel lctp,
+                                               final Component owner, Point location) {
+
+        if (event == null && project == null) {
+            return;
+        }
+		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, (JComponent) owner)
 				.setRequestFocus(true)
-				.setCancelOnClickOutside(true)
+				.setCancelOnClickOutside(false)
 				.setCancelOnOtherWindowOpen(false)
+                .setTitleIcon(new ActiveIcon(new EmptyIcon(1)))
+                .setCancelButton(new IconButton("Close", IconLoader.getIcon("/actions/close.png")))
 				.setMovable(true)
 				.setTitle("Comment")
 				.setResizable(true)
+                .setCancelCallback(new Computable<Boolean>() {
+                    public Boolean compute() {
+                        Project proj = project != null ? project : IdeaHelper.getCurrentProject(event);
+                        return WindowManager.getInstance().getFrame(proj).isActive();
+                    }
+                })
 				.setCancelKeyEnabled(true)
 				.createPopup();
 
@@ -96,10 +139,6 @@ public abstract class CommentTooltipPanel extends JPanel {
         return project;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
     public Component getPopupOwner() {
         return popupOwner;
     }
@@ -108,18 +147,20 @@ public abstract class CommentTooltipPanel extends JPanel {
         this.popupOwner = popupOwner;
     }
 
-	public CommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file, Comment comment, Comment parent) {
-		this(review, file, comment, parent, Mode.SHOW);
+	public CommentTooltipPanel(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo file, Comment comment, Comment parent) {
+		this(event, review, file, comment, parent, Mode.SHOW);
 	}
 
-    public CommentTooltipPanel(ReviewAdapter review, CrucibleFileInfo file,
+    public CommentTooltipPanel(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo file,
                                Comment comment, Comment parent, Mode mode) {
-        this(review, file, comment, parent, mode, false);
+        this(event, review, file, comment, parent, mode, false);
     }
 
-	public CommentTooltipPanel(final ReviewAdapter review, CrucibleFileInfo file,
+	public CommentTooltipPanel(AnActionEvent event, final ReviewAdapter review, CrucibleFileInfo file,
                                Comment comment, Comment parent, Mode mode, boolean useTextTwixie) {
 		super(new BorderLayout());
+
+        project = IdeaHelper.getCurrentProject(event);
 
 		this.fileInfo = file;
         this.mode = mode;
@@ -619,9 +660,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
                     Point location = popup.getContent().getLocationOnScreen();
-					popup.cancel();
+                    popup.cancel();
 					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
-					showCommentTooltipPopup(null, CommentTooltipPanel.this, getPopupOwner(), location);
+					showCommentTooltipPopup(project, CommentTooltipPanel.this, getPopupOwner(), location);
 					if (agreed) {
 						removeComment(comment);
 					}
@@ -844,8 +885,6 @@ public abstract class CommentTooltipPanel extends JPanel {
 			pane.selectAll();
 		}
 		pane.setBackground(editable ? EDITABLE_BACKGROUND_COLOR : Color.WHITE);
-//        pane.setBackground(editable ? new Color(0xd0, 0xd0, 0xd0) : Color.WHITE);
-
 
 		if (commentPanel.defectClassificationPanel != null) {
 			commentPanel.defectClassificationPanel.setVisible(editable);

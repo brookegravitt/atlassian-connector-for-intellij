@@ -165,6 +165,6 @@ public class CommentAction extends AnAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD),
-                null, null);
+                null);
 	}
 }
