@@ -79,8 +79,6 @@ public class AddAction extends AbstractFilterAction {
 
     public boolean isEnabled(AnActionEvent event) {
         final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-        JiraCustomFilter manualFilter =
-                panel != null ? ((JIRAFilterTree) panel.getLeftTree()).getSelectedManualFilter() : null;
-        return manualFilter != null;
+        return panel != null && panel.getSelectedServer() != null;
     }
 }

@@ -11,13 +11,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
  */
 public abstract class AbstractFilterAction extends AnAction {
 
-
     abstract boolean isEnabled(AnActionEvent event);
 
     @Override
-        public void update(AnActionEvent event) {
-          final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
-
+    public void update(AnActionEvent event) {
+        final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(event);
 
         if (panel != null && panel.getSelectedServer() != null
                 && !panel.getJiraFilterTree().isRecentlyOpenSelected() && isEnabled(event)) {
@@ -25,8 +23,5 @@ public abstract class AbstractFilterAction extends AnAction {
         } else {
             event.getPresentation().setEnabled(false);
         }
-
-
-
-        }          
+    }
 }
