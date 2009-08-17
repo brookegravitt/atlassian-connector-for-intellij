@@ -121,7 +121,7 @@ public abstract class AbstractCrucibleGutterIconRenderer extends GutterIconRende
 			CommentTooltipPanel lctp = new CommentTooltipPanelWithRunners(e, review, fileInfo, comment, null);
             e.getPresentation().putClientProperty(CommentTooltipPanel.JBPOPUP_PARENT_COMPONENT, editor.getComponent());
 
-            CommentTooltipPanel.showCommentTooltipPopup(e, lctp, lctp, null);
+            CommentTooltipPanel.showCommentTooltipPopup(e, lctp, lctp);
         }
 	}
 

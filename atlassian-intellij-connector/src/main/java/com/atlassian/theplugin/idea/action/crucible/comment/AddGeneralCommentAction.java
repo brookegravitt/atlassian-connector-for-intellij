@@ -79,6 +79,6 @@ public class AddGeneralCommentAction extends AbstractCommentAction {
 		CommentTooltipPanel.showCommentTooltipPopup(
 				event,
 				new CommentTooltipPanelWithRunners(event, review, null, newComment, null, CommentTooltipPanel.Mode.ADD),
-				null, null);
+				null);
 	}
 }

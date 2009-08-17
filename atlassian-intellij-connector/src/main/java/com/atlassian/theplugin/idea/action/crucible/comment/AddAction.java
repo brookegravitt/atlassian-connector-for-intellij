@@ -140,7 +140,7 @@ public class AddAction extends AbstractCommentAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, file, newComment, null, CommentTooltipPanel.Mode.ADD),
-                null, null);
+                null);
 	}
 
 	private void addReplyToVersionedComment(final AnActionEvent event, final ReviewAdapter review,
@@ -160,7 +160,7 @@ public class AddAction extends AbstractCommentAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, file, newComment, comment, CommentTooltipPanel.Mode.ADD),
-                null, null);
+                null);
 	}
 
 	private void addReplyToGeneralComment(final AnActionEvent event, final ReviewAdapter review,
@@ -176,6 +176,6 @@ public class AddAction extends AbstractCommentAction {
                 event,
                 new CommentTooltipPanelWithRunners(event, review, null, newComment,
                         parentComment, CommentTooltipPanel.Mode.ADD),
-                null, null);
+                null);
 	}
 }

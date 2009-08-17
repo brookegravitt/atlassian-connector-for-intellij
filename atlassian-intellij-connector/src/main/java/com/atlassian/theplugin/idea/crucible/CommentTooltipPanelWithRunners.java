@@ -38,8 +38,7 @@ public class CommentTooltipPanelWithRunners extends CommentTooltipPanel {
 
     public CommentTooltipPanelWithRunners(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo fileInfo,
                                           Comment comment, Comment parent, Mode mode) {
-        super(review, fileInfo, comment, parent, mode);
-        setProject(IdeaHelper.getCurrentProject(event));
+        super(event, review, fileInfo, comment, parent, mode);
     }
 
     private CommentBean createReplyBean(Comment parent, String text) {

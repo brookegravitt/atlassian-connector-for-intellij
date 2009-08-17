@@ -76,7 +76,7 @@ public class EditAction extends AbstractCommentAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, null, comment, parent, CommentTooltipPanel.Mode.EDIT),
-                null, null);
+                null);
 	}
 
 	private void editVersionedComment(AnActionEvent event, final ReviewAdapter review,
@@ -85,6 +85,6 @@ public class EditAction extends AbstractCommentAction {
         CommentTooltipPanel.showCommentTooltipPopup(
                 event,
                 new CommentTooltipPanelWithRunners(event, review, file, comment, parent, CommentTooltipPanel.Mode.EDIT),
-                null, null);
+                null);
 	}
 }
