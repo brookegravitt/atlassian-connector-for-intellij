@@ -80,6 +80,7 @@ public abstract class CommentTooltipPanel extends JPanel {
     private Component popupOwner;
     private static final int MAX_HREF_LINK_LENGTH = 40;
     private static final Color EDITABLE_BACKGROUND_COLOR = new Color(0xd0, 0xd0, 0xd0);
+    private boolean doneWithThisPanel;
 
     public enum Mode {
         SHOW,
@@ -104,7 +105,7 @@ public abstract class CommentTooltipPanel extends JPanel {
         if (event == null && project == null) {
             return;
         }
-		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, (JComponent) owner)
+		JBPopup popup = JBPopupFactory.getInstance().createComponentPopupBuilder(lctp, lctp)
 				.setRequestFocus(true)
 				.setCancelOnClickOutside(false)
 				.setCancelOnOtherWindowOpen(false)
@@ -115,6 +116,9 @@ public abstract class CommentTooltipPanel extends JPanel {
 				.setResizable(true)
                 .setCancelCallback(new Computable<Boolean>() {
                     public Boolean compute() {
+                        if (lctp.doneWithThisPanel) {
+                            return true;
+                        }
                         Project proj = project != null ? project : IdeaHelper.getCurrentProject(event);
                         return WindowManager.getInstance().getFrame(proj).isActive();
                     }
@@ -147,7 +151,8 @@ public abstract class CommentTooltipPanel extends JPanel {
         this.popupOwner = popupOwner;
     }
 
-	public CommentTooltipPanel(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo file, Comment comment, Comment parent) {
+	public CommentTooltipPanel(AnActionEvent event, ReviewAdapter review, CrucibleFileInfo file,
+                               Comment comment, Comment parent) {
 		this(event, review, file, comment, parent, Mode.SHOW);
 	}
 
@@ -171,6 +176,8 @@ public abstract class CommentTooltipPanel extends JPanel {
 		this.useTextTwixie = useTextTwixie;
 		listener = new MyReviewListener();
 		this.review = review;
+
+        doneWithThisPanel = false;
 
 		commentsPanel.setLayout(new VerticalFlowLayout());
 		commentsPanel.setOpaque(true);
@@ -241,6 +248,11 @@ public abstract class CommentTooltipPanel extends JPanel {
 		});
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
 	}
+
+    private void closePopup() {
+        doneWithThisPanel = true;
+        popup.cancel();
+    }
 
     private void addCommentPanel(ReviewAdapter aReview, Comment comment) {
         CommentPanel cmt = new CommentPanel(aReview, comment, false, false, false);
@@ -660,7 +672,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 			btnDelete.addHyperlinkListener(new HyperlinkListener() {
 				public void hyperlinkUpdate(HyperlinkEvent e) {
                     Point location = popup.getContent().getLocationOnScreen();
-                    popup.cancel();
+                    closePopup();
 					final boolean agreed = RemoveCommentConfirmation.userAgreed(null);
 					showCommentTooltipPopup(project, CommentTooltipPanel.this, getPopupOwner(), location);
 					if (agreed) {
@@ -748,7 +760,7 @@ public abstract class CommentTooltipPanel extends JPanel {
             } else {
                 removeCommentPanel(this);
                 if (commentPanelList.size() == 0 && project != null) {
-                    popup.cancel();
+                    closePopup();
                 }
             }
             setStatusText(" ", false);
@@ -1012,6 +1024,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 							setStatusText("Comment reply updated", false);
 							setAllButtonsVisible();
 							panel.setComment(comment);
+                            closePopup();
 							return;
 						}
 					}
@@ -1019,6 +1032,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 					setStatusText("Comment reply added", false);
 					setAllButtonsVisible();
 					addCommentReplyPanel(review, comment, false);
+                    closePopup();
 				}
 			});
 		}
@@ -1088,6 +1102,7 @@ public abstract class CommentTooltipPanel extends JPanel {
                             setAllButtonsVisible();
                             panel.setComment(comment);
                         }
+                        closePopup();
 					} else {
                         createdOrEditedCommentReply(rev, file, rootComment, comment);
 					}
@@ -1104,7 +1119,7 @@ public abstract class CommentTooltipPanel extends JPanel {
 
 					if (!comment.isReply()) {
 						if (isTheSameComment(rootComment, comment)) {
-							popup.cancel();
+                            closePopup();
 						}
 						return;
 					}
