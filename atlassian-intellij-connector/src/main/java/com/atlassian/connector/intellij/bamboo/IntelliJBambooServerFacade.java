@@ -23,6 +23,7 @@ import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerFacadeImpl;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
 import com.atlassian.theplugin.commons.bamboo.BuildStatus;
+import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
@@ -160,7 +161,13 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		}
 	}
 
-	private BambooBuild constructBuildErrorInfo(ConnectionCfg server, @NotNull String planKey, String planName,
+    public Collection<BuildIssue> getIssuesForBuild(BambooServerData bambooServer,
+                                                    @NotNull String planKey, int buildNumber)
+            throws ServerPasswordNotProvidedException, RemoteApiException {
+        return facade.getIssuesForBuild(bambooServer.toConnectionCfg(), planKey, buildNumber);
+    }
+
+    private BambooBuild constructBuildErrorInfo(ConnectionCfg server, @NotNull String planKey, String planName,
 			String message, Throwable exception) {
 		return new BambooBuildInfo.Builder(planKey, null, server, planName, null, BuildStatus.UNKNOWN).errorMessage(
 				message, exception).pollingTime(new Date()).build();

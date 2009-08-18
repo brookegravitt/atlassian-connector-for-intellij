@@ -4,9 +4,11 @@ import com.atlassian.connector.intellij.bamboo.BambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.IntelliJBambooServerFacade;
 import com.atlassian.connector.intellij.bamboo.BambooBuildAdapter;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
+import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.theplugin.commons.remoteapi.RemoteApiBadServerVersionException;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.MultiTabToolWindow;
 import com.atlassian.theplugin.idea.bamboo.build.BuildDetailsPanel;
@@ -40,6 +42,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collection;
 
 /**
  * User: jgorycki
@@ -352,6 +355,16 @@ public class BuildToolWindow extends MultiTabToolWindow {
 					final BuildDetails details = bambooFacade.getBuildDetails(
 							build.getServer(), build.getPlanKey(), build.getNumber());
 
+                    try {
+                        final Collection<BuildIssue> issues = bambooFacade.getIssuesForBuild(
+                                build.getServer(), build.getPlanKey(), build.getNumber());
+                        for (BuildIssue issue : issues) {
+                            System.out.println(issue.getIssueUrl());
+                        }
+                    } catch (RemoteApiBadServerVersionException e) {
+                        // ignore. Bamboo build 1401 or newer required for getting issues
+                    }
+                    
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							cdp.fillContent(details.getCommitInfo());
@@ -361,6 +374,7 @@ public class BuildToolWindow extends MultiTabToolWindow {
 							}
 						}
 					});
+
 				} catch (ServerPasswordNotProvidedException e) {
 					cdp.showError(e);
 					tdp.showError(e);

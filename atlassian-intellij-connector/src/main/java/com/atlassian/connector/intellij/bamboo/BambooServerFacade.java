@@ -20,10 +20,12 @@ import com.atlassian.theplugin.commons.bamboo.BambooPlan;
 import com.atlassian.theplugin.commons.bamboo.BambooProject;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.bamboo.BuildDetails;
+import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
+import com.atlassian.connector.commons.api.ConnectionCfg;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -98,4 +100,8 @@ public interface BambooServerFacade extends ProductServerFacade {
 	boolean isBamboo2(BambooServerData serverData);
 
 	boolean isBamboo2M9(final BambooServerData bambooServerData);
+
+    Collection<BuildIssue> getIssuesForBuild(BambooServerData bambooServer, @NotNull String planKey, int buildNumber)
+            throws ServerPasswordNotProvidedException, RemoteApiException;
+
 }
