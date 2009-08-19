@@ -25,7 +25,6 @@ import com.atlassian.theplugin.commons.cfg.SubscribedPlan;
 import com.atlassian.theplugin.commons.exception.ServerPasswordNotProvidedException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.connector.commons.api.ConnectionCfg;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
