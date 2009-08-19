@@ -965,7 +965,6 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             return projectCfgManager.getDefaultJiraServer();
         }
 
-
         return null;
     }
 

@@ -215,11 +215,12 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 		private final Timer timer;
 		private final CommitDetailsPanel cdp;
+        private final BuildDetailsPanel bdp;
 
-		public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
+        public BuildPanel(final BuildContentParameters params, @Nullable final ToolWindowHandler handler) {
 			this.params = params;
 
-			final BuildDetailsPanel bdp = new BuildDetailsPanel(params.build);
+            bdp = new BuildDetailsPanel(project, params.build);
 			cdp = new CommitDetailsPanel(project, params.build);
 			tdp = new TestDetailsPanel(project, params.build, getContentKey(params));
 			final BuildLogPanel blp = new BuildLogPanel(project, params.build);
@@ -351,22 +352,21 @@ public class BuildToolWindow extends MultiTabToolWindow {
 
 				final BambooServerFacade bambooFacade = IntelliJBambooServerFacade.getInstance(PluginUtil.getLogger());
 
+                Collection<BuildIssue> issues = null;
 				try {
 					final BuildDetails details = bambooFacade.getBuildDetails(
 							build.getServer(), build.getPlanKey(), build.getNumber());
 
                     try {
-                        final Collection<BuildIssue> issues = bambooFacade.getIssuesForBuild(
-                                build.getServer(), build.getPlanKey(), build.getNumber());
-                        for (BuildIssue issue : issues) {
-                            System.out.println(issue.getIssueUrl());
-                        }
+                        issues = bambooFacade.getIssuesForBuild(build.getServer(), build.getPlanKey(), build.getNumber());
                     } catch (RemoteApiBadServerVersionException e) {
                         // ignore. Bamboo build 1401 or newer required for getting issues
                     }
-                    
-					SwingUtilities.invokeLater(new Runnable() {
+
+                    final Collection<BuildIssue> issuesFinal = issues;
+                    SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
+                            bdp.setIssues(issuesFinal);
 							cdp.fillContent(details.getCommitInfo());
 							tdp.fillContent(details);
 							if (handler != null) {
@@ -376,9 +376,11 @@ public class BuildToolWindow extends MultiTabToolWindow {
 					});
 
 				} catch (ServerPasswordNotProvidedException e) {
+                    bdp.setIssues(null);
 					cdp.showError(e);
 					tdp.showError(e);
 				} catch (RemoteApiException e) {
+                    bdp.setIssues(null);
 					cdp.showError(e);
 					tdp.showError(e);
 				}
