@@ -592,7 +592,10 @@ public class JIRASessionImpl implements JIRASession {
 			return commentsList;
 		} catch (RemoteException e) {
 			throw new RemoteApiException(e.toString(), e);
-		}
+		} catch (IllegalArgumentException e) {
+            // PL-1756
+            throw new RemoteApiException(e.toString(), e);
+        }
 	}
 
 	public JIRAUserBean getUser(String loginName) throws RemoteApiException, JiraUserNotFoundException {
