@@ -502,6 +502,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 				return getServerData(jiraServer);
 			}
 		}
+
+        // PL-1697
+        Collection<ServerData> allServers = getAllEnabledJiraServerss();
+        if (allServers != null && allServers.size() == 1) {
+            return allServers.iterator().next();
+        }
+
 		return null;
 	}
 
@@ -514,6 +521,13 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 				return getServerData(crucibleServer);
 			}
 		}
+
+        // PL-1697
+        Collection<ServerData> allServers = getAllEnabledCrucibleServerss();
+        if (allServers != null && allServers.size() == 1) {
+            return allServers.iterator().next();
+        }
+
 		return null;
 	}
 
@@ -526,13 +540,30 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 				return getServerData(fishEyeServer);
 			}
 		}
+
+        // PL-1697
+        Collection<ServerData> allFisheyeServers = getAllEnabledServerss(ServerType.FISHEYE_SERVER);
+        if (allFisheyeServers == null || allFisheyeServers.size() == 0) {
+            allFisheyeServers = getAllEnabledCrucibleServersContainingFisheye();
+        }
+        if (allFisheyeServers != null && allFisheyeServers.size() == 1) {
+            return allFisheyeServers.iterator().next();
+        }
+
 		return null;
 	}
 
 
 	public boolean isDefaultJiraServerValid() {
-		return getProjectConfiguration().isDefaultJiraServerValid();
-	}
+        boolean defaultValid = getProjectConfiguration().isDefaultJiraServerValid();
+        if (defaultValid) {
+            return true;
+        }
+
+        // PL-1697
+        Collection<ServerData> allServers = getAllEnabledJiraServerss();
+        return allServers != null && allServers.size() == 1;
+    }
 
 	public String getDefaultCrucibleRepo() {
 		return getProjectConfiguration().getDefaultCrucibleRepo();
