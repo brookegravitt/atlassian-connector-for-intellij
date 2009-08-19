@@ -47,7 +47,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 
 	private static IntelliJBambooServerFacade instance;
 	private final BambooServerFacade2 facade;
-	private final SubscribedPlansProvider oldSubscribedPlansProvider = new SubscribedPlansProvider() {
+	private final SubscribedPlansProvider newSubscribedPlansProvider = new SubscribedPlansProvider() {
 		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities,
 				final int timezoneOffset) throws ServerPasswordNotProvidedException, RemoteApiLoginException {
@@ -57,7 +57,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		}
 	};
 
-	private final SubscribedPlansProvider newSubscribedPlansProvider = new SubscribedPlansProvider() {
+	private final SubscribedPlansProvider oldSubscribedPlansProvider = new SubscribedPlansProvider() {
 
 		public ArrayList<BambooBuildAdapter> getBuilds(final BambooServerData bambooServer,
 				final Collection<SubscribedPlan> plans, final boolean isUseFavourities, final int timezoneOffset)
@@ -67,7 +67,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 		}
 	};
 
-	public IntelliJBambooServerFacade(Logger logger) {
+    public IntelliJBambooServerFacade(Logger logger) {
 		facade = new BambooServerFacadeImpl(logger, new IntelliJHttpSessionCallback());
 	}
 
@@ -147,7 +147,7 @@ public class IntelliJBambooServerFacade implements BambooServerFacade {
 			throws ServerPasswordNotProvidedException {
 
 		SubscribedPlansProvider provider = (bambooServer.isBamboo2M9())
-				? oldSubscribedPlansProvider : newSubscribedPlansProvider;
+				? newSubscribedPlansProvider : oldSubscribedPlansProvider;
 		try {
 			return provider.getBuilds(bambooServer, plans, isUseFavourities, timezoneOffset);
 		} catch (RemoteApiLoginException e) {
