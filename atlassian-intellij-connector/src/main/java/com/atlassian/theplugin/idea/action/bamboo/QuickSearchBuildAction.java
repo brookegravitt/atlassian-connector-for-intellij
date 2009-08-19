@@ -40,9 +40,11 @@ import java.util.List;
 public class QuickSearchBuildAction extends AnAction {
 	private static final String NOT_FOUND_TEXT =
 			"Unable to find build <b>%1$2s</b> on server <b>%2$2s</b>.<br>"
-					+ "This most likely means that the build does not exist on this server, or if<br>"
-					+ "your Bamboo server is older than version 2.3, the build may be too old.<br>"
-					+ "See the stack trace for detailed information.";
+            + "This is probably because the build is not on this server.<br>"
+            + "However, if your Bamboo server's version is earlier than 2.3,<br>"
+            + "it could be because the build is too old for the search to find.<br>"
+            + "(Bamboo 2.3 offers an improved search API.)<br>"
+            + "Click 'Show Details' to see the stack trace.";
 
 	@Override
 	public void actionPerformed(final AnActionEvent e) {
@@ -158,8 +160,14 @@ public class QuickSearchBuildAction extends AnAction {
 						PluginUtil.getLogger().warn(problem.getMessage(), problem.getException());
 						errorObjects.add(problem);
 					}
-
-					DialogWithDetails.showExceptionDialog(WindowManager.getInstance().getFrame(project), errorObjects);
+                    if (problems.size() > 1) {
+					    DialogWithDetails.showExceptionDialog(
+                                WindowManager.getInstance().getFrame(project), errorObjects);
+                    } else {
+                        DialogWithDetails.showExceptionDialog(
+                                project, "<html>" + problems.get(0).getMessage(),
+                                DialogWithDetails.getExceptionString(problems.get(0).getException()));
+                    }
 				}
 			});
 		}
