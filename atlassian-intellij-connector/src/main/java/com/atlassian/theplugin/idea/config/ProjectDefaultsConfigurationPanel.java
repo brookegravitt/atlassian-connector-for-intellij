@@ -30,6 +30,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.idea.config.serverconfig.defaultCredentials.TestDefaultCredentialsDialog;
+import com.atlassian.theplugin.idea.IdeaHelper;
 import com.intellij.openapi.project.Project;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -141,10 +142,18 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 
 	private CrucibleServerCfg getCurrentCrucibleServerCfg() {
-		if (projectConfiguration.getDefaultCrucibleServerId() == null) {
-			return null;
+        ServerId serverId = projectConfiguration.getDefaultCrucibleServerId();
+		if (serverId == null) {
+            ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+            ServerData cruServer = cfgMgr.getDefaultCrucibleServer();
+            if (cruServer != null) {
+                serverId = cruServer.getServerId();
+            }
 		}
-		return (CrucibleServerCfg) projectConfiguration.getServerCfg(projectConfiguration.getDefaultCrucibleServerId());
+        if (serverId == null) {
+            return null;
+        }
+		return (CrucibleServerCfg) projectConfiguration.getServerCfg(serverId);
 	}
 
 	private final MyModel<CrucibleRepoWrapper, Repository, CrucibleServerCfg> crucRepoModel
@@ -210,10 +219,15 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		@Override
 		protected FishEyeServer getCurrentServer() {
-			if (projectConfiguration.getDefaultFishEyeServerId() == null) {
-				return null;
-			}
-			return projectConfiguration.getServerCfg(projectConfiguration.getDefaultFishEyeServerId()).asFishEyeServer();
+            FishEyeServer server = projectConfiguration.getDefaultFishEyeServer();
+            if (server == null) {
+                ProjectCfgManagerImpl cfgMgr = IdeaHelper.getProjectCfgManager(project);
+                ServerData fshServer = cfgMgr.getDefaultFishEyeServer();
+                if (fshServer != null) {
+                    server = projectConfiguration.getServerCfg(fshServer.getServerId()).asFishEyeServer();
+                }
+            }
+            return server;
 		}
 
 		@Override
@@ -506,7 +520,8 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 
 		public Object getSelectedItem() {
 			for (CrucibleServerCfgWrapper server : getServers()) {
-				final ServerId defaultCrucibleServerId = projectConfiguration.getDefaultCrucibleServerId();
+                ServerData defaultCru = IdeaHelper.getProjectCfgManager(project).getDefaultCrucibleServer();
+				final ServerId defaultCrucibleServerId = defaultCru != null ? defaultCru.getServerId() : null;
 				if (server.getWrapped().getServerId().equals(
 						defaultCrucibleServerId != null ? defaultCrucibleServerId : null)) {
 					return server;
@@ -572,8 +587,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
+            ServerData defaultFsh = IdeaHelper.getProjectCfgManager(project).getDefaultFishEyeServer();
+            final ServerId defaultFisheyeServerId = defaultFsh != null ? defaultFsh.getServerId() : null;
+
 			for (FishEyeServerWrapper server : getServers()) {
-				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultFishEyeServerId())) {
+				if (server.getWrapped().getServerId().equals(defaultFisheyeServerId)) {
 					return server;
 				}
 			}
@@ -637,8 +655,11 @@ public class ProjectDefaultsConfigurationPanel extends JPanel {
 		}
 
 		public Object getSelectedItem() {
+            ServerData defaultJira = IdeaHelper.getProjectCfgManager(project).getDefaultJiraServer();
+            final ServerId defaultJiraServerId = defaultJira != null ? defaultJira.getServerId() : null;
+
 			for (JiraServerCfgWrapper server : getServers()) {
-				if (server.getWrapped().getServerId().equals(projectConfiguration.getDefaultJiraServerId())) {
+				if (server.getWrapped().getServerId().equals(defaultJiraServerId)) {
 					return server;
 				}
 			}
