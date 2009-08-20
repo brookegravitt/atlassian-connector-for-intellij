@@ -2,7 +2,6 @@ package com.atlassian.theplugin.idea.bamboo.build;
 
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;

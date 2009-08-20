@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;

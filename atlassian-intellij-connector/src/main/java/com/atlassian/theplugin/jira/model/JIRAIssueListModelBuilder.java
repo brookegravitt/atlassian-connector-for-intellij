@@ -4,7 +4,6 @@ import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.intellij.openapi.project.Project;
 
 import java.util.Collection;
