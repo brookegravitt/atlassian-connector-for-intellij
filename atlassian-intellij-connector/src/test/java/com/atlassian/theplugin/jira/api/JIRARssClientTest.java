@@ -65,7 +65,8 @@ public class JIRARssClientTest extends TestCase {
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", new ServerIdImpl(), true) {
+		final JiraServerData server =
+                new JiraServerData(new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
@@ -98,7 +99,8 @@ public class JIRARssClientTest extends TestCase {
 	}
 
 	public void testBugPl941() throws Exception {
-		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", new ServerIdImpl(), true) {
+		final JiraServerData server =
+                new JiraServerData(new JiraServerCfg(true, "jira", "file://test", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
