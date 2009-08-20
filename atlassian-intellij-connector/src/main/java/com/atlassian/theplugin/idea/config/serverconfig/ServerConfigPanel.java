@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.cfg.CrucibleServerCfg;
 import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.UserCfg;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -69,7 +70,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 
 	private Collection<ServerCfg> serverCfgs;
 	private final BambooServerConfigForm bambooServerConfigForm;
-	private final GenericServerConfigForm jiraServerConfigForm;
+	private final JiraServerConfigForm jiraServerConfigForm;
 	private final CrucibleServerConfigForm crucibleServerConfigForm;
 	private final GenericServerConfigForm fisheyeServerConfigFrom;
 	private final UserCfg defaultUser;
@@ -88,7 +89,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 		final FishEyeServerFacade fishEyeServerFacade = IntelliJFishEyeServerFacade.getInstance();
 		/* required due to circular dependency unhandled by pico */
 		this.serverTreePanel.setServerConfigPanel(this);
-		jiraServerConfigForm = new GenericServerConfigForm(project, defaultUser, new ProductConnector(jiraServerFacade));
+		jiraServerConfigForm = new JiraServerConfigForm(project, defaultUser, jiraServerFacade);
 		crucibleServerConfigForm = new CrucibleServerConfigForm(project, defaultUser, crucibleServerFacade,
 				fishEyeServerFacade);
 		bambooServerConfigForm = new BambooServerConfigForm(project, defaultUser, bambooServerFacade);
@@ -242,7 +243,7 @@ public class ServerConfigPanel extends JPanel implements DataProvider {
 				break;
 			case JIRA_SERVER:
 				jiraServerConfigForm.saveData();
-				jiraServerConfigForm.setData(serverCfg);
+				jiraServerConfigForm.setData((JiraServerCfg) serverCfg);
 				break;
 			case FISHEYE_SERVER:
 				fisheyeServerConfigFrom.saveData();

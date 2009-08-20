@@ -59,7 +59,7 @@ public class JIRARssClient extends AbstractHttpSession {
 
 	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
-        if (serverData.isUseBasicAuth()) {
+        if (!serverData.isDontUseBasicAuth()) {
 		    method.addRequestHeader(new Header("Authorization", getAuthBasicHeaderValue()));
         }
 	}
@@ -234,12 +234,12 @@ public class JIRARssClient extends AbstractHttpSession {
 	private String appendAuthentication(boolean firstItem) {
 		final String username = getUsername();
 		if (username != null) {
-            if (serverData.isUseBasicAuth()) {
-			    return (firstItem ? "?" : "&") + "os_authType=basic";
+            if (serverData.isDontUseBasicAuth()) {
+                return (firstItem ? "?" : "&")
+                        + "os_username=" + encodeUrl(username)
+                        + "&os_password=" + encodeUrl(getPassword());
             } else {
-                 return (firstItem ? "?" : "&")
-                         + "os_username=" + encodeUrl(username)
-                         + "&os_password=" + encodeUrl(getPassword());
+                return (firstItem ? "?" : "&") + "os_authType=basic";
             }
 		}
 		return "";
