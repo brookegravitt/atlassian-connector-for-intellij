@@ -11,6 +11,7 @@ import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JiraActionFieldType;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAActionField;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
@@ -72,7 +73,7 @@ public class RunIssueActionAction extends AnAction {
 
 			showInfo("Retrieving fields for action \"" + action.getName() + "\" in issue " + issue.getKey() + "...");
 
-			final ServerData server = issue.getServer();
+			final JiraServerData server = issue.getServer();
 
 			if (server != null) {
 				final List<JIRAActionField> fields;
@@ -145,7 +146,7 @@ public class RunIssueActionAction extends AnAction {
 	 * @param server
 	 * @throws JIRAException
 	 */
-	private void performPostActionActivity(final ServerData server) throws JIRAException {
+	private void performPostActionActivity(final JiraServerData server) throws JIRAException {
 		if (action.getId() == Constants.JiraActionId.START_PROGRESS.getId()) {
 			JIRAIssueProgressTimestampCache.getInstance().setTimestamp(server, issue);
 		} else if (action.getId() == Constants.JiraActionId.STOP_PROGRESS.getId()) {
@@ -164,11 +165,13 @@ public class RunIssueActionAction extends AnAction {
 		private Project project;
 		private JIRAIssue detailedIssue;
 		private List<JIRAActionField> preFilleddfields;
-		private ServerData server;
+		private JiraServerData server;
         private DeactivateIssueResultHandler resultHandler;
 
-        public LocalDisplayActionDialogRunnable(final Project project, final JIRAIssue detailedIssue,
-                                                final List<JIRAActionField> preFilleddfields, final ServerData server,
+        public LocalDisplayActionDialogRunnable(final Project project,
+                                                final JIRAIssue detailedIssue,
+                                                final List<JIRAActionField> preFilleddfields,
+                                                final JiraServerData server,
                                                 DeactivateIssueResultHandler resultHandler) {
 			this.project = project;
 			this.detailedIssue = detailedIssue;

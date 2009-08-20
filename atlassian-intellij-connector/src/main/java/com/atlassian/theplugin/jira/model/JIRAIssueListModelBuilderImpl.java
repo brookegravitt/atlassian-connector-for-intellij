@@ -2,6 +2,7 @@ package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
@@ -48,8 +49,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	}
 
 
-	public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg, int size,
-			boolean reload) throws JIRAException {
+	public synchronized void addIssuesToModel(final JiraCustomFilter manualFilter,
+                                              final JiraServerData jiraServerCfg, int size,
+                                              boolean reload) throws JIRAException {
 		List<JIRAIssue> l = null;
 		try {
 			model.setModelFrozen(true);
@@ -85,8 +87,9 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 		}
 	}
 
-	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, int size,
-			boolean reload) throws JIRAException {
+	public synchronized void addIssuesToModel(final JIRASavedFilter savedFilter,
+                                              final JiraServerData jiraServerCfg, int size,
+                                              boolean reload) throws JIRAException {
 		List<JIRAIssue> l = null;
 		try {
 			model.setModelFrozen(true);
@@ -160,7 +163,8 @@ public final class JIRAIssueListModelBuilderImpl implements JIRAIssueListModelBu
 	 * @param jiraServerCfg server
 	 * @throws JIRAException
 	 */
-	public synchronized void reloadIssue(final String issueKey, final ServerData jiraServerCfg) throws JIRAException {
+	public synchronized void reloadIssue(final String issueKey,
+                                         final JiraServerData jiraServerCfg) throws JIRAException {
 		if (model == null || jiraServerCfg == null) {
 			return;
 		}

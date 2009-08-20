@@ -10,6 +10,7 @@ import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
@@ -119,7 +120,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			btnChange.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent actionEvent) {
 					ActiveJiraIssue ai = ActiveIssueUtils.getActiveJiraIssue(checkinProjectPanel.getProject());
-					ServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
+					JiraServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
 					if (ai != null && server != null) {
 						try {
 							JIRAIssue issue = ActiveIssueUtils.getJIRAIssue(server, ai);
@@ -199,7 +200,7 @@ public class LogTimeCheckinHandlerFactory extends CheckinHandlerFactory {
 			final Calendar cal = Calendar.getInstance();
 
 			final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(checkinProjectPanel.getProject());
-			final ServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
+			final JiraServerData server = ActiveIssueUtils.getJiraServer(checkinProjectPanel.getProject());
 			if (activeIssue != null && server != null) {
 				try {
 					// ok, this sucks a bit. I am creating a phony dialog just to

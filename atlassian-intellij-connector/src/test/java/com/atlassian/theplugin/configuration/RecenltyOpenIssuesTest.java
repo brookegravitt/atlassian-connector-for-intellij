@@ -3,29 +3,31 @@ package com.atlassian.theplugin.configuration;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
 
 
 public class RecenltyOpenIssuesTest extends TestCase {
 	private JiraWorkspaceConfiguration conf;
-	private ServerData server;
+	private JiraServerData server;
 	private JIRAIssueBean issue1;
 	private JIRAIssueBean issue2;
 	private JIRAIssueBean issue3;
 
 	public void setUp() throws Exception {
 		conf = new JiraWorkspaceConfiguration();
-		server = new ServerData(new ServerCfg(true, "server", "", new ServerIdImpl()) {
+		server = new JiraServerData(new JiraServerCfg(true, "server", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
 
-			public ServerCfg getClone() {
+			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		}, "", "", true);
 
 		issue1 = new JIRAIssueBean(server);
 		issue1.setKey("1");

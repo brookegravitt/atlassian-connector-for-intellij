@@ -16,7 +16,7 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import org.jdom.Element;
 
 import java.text.DateFormat;
@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class JIRAIssueBean implements JIRAIssue {
-	private ServerData server;
+	private JiraServerData server;
 	private Long id;
 	private String key;
 	private String summary;
@@ -69,7 +69,7 @@ public class JIRAIssueBean implements JIRAIssue {
 	public JIRAIssueBean() {
 	}
 
-	public JIRAIssueBean(ServerData server) {
+	public JIRAIssueBean(JiraServerData server) {
 		this.server = server;
 	}
 
@@ -110,7 +110,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		timeSpentInSeconds = issue.getTimeSpentInSeconds();
 	}
 
-	public JIRAIssueBean(ServerData server, Element e) {
+	public JIRAIssueBean(JiraServerData server, Element e) {
 		this.server = server;
 		this.summary = getTextSafely(e, "summary");
 		this.key = getTextSafely(e, "key");
@@ -198,7 +198,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		this.priorityConstant = priority;
 	}
 
-	public JIRAIssueBean(ServerData server, Map params) {
+	public JIRAIssueBean(JiraServerData server, Map params) {
 		this.server = server;
 		this.summary = (String) params.get("summary");
 		this.status = (String) params.get("status");
@@ -258,7 +258,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		return server.getUrl() + "/browse/" + getKey();
 	}
 
-	public void setServer(final ServerData server) {
+	public void setServer(final JiraServerData server) {
 		this.server = server;
 	}
 
@@ -520,7 +520,7 @@ public class JIRAIssueBean implements JIRAIssue {
 		return commentsList;
 	}
 
-	public ServerData getServer() {
+	public JiraServerData getServer() {
 		return server;
 	}
 

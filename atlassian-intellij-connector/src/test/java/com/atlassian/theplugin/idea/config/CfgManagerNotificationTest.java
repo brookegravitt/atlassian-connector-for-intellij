@@ -44,7 +44,7 @@ public class CfgManagerNotificationTest extends TestCase {
 	}
 
 	private final BambooServerCfg bamboo1 = new BambooServerCfg("bamboo1", new ServerIdImpl());
-	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl());
+	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl(), true);
 
 	private void populateServerCfgs() {
 //		cfgManager.addGlobalServer(bamboo);

@@ -36,7 +36,7 @@ public class ServerTreeModelTest extends TestCase {
 
 		root = new RootNode();
 		stm = new ServerTreeModel(root);
-		jiraServerCfg = new JiraServerCfg("jiraServer", new ServerIdImpl());
+		jiraServerCfg = new JiraServerCfg("jiraServer", new ServerIdImpl(), true);
 		fiahEyeServerCfg = new FishEyeServerCfg("fishEyeServer", new ServerIdImpl());
 		crucibleServerCfg = new CrucibleServerCfg("crucibleServer", new ServerIdImpl());
 		bambooServerCfg = new BambooServerCfg("bambooServer", new ServerIdImpl());

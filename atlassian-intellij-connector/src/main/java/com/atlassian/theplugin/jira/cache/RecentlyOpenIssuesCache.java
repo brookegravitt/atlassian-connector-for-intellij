@@ -26,6 +26,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.util.PluginUtil;
 
 import java.util.*;
@@ -149,7 +150,7 @@ public class RecentlyOpenIssuesCache {
 		if (recentServer == null) {
 			return null;
 		}
-		final ServerData jiraServer = projectCfgManager.getEnabledServerr(recentServer);
+		final JiraServerData jiraServer = projectCfgManager.getEnabledJiraServerr(recentServer);
 		if (jiraServer != null) {
 			return JIRAServerFacadeImpl.getInstance().getIssue(jiraServer, recentlyOpen.getIssueKey());
 		}
@@ -158,7 +159,8 @@ public class RecentlyOpenIssuesCache {
 
     public static final class JIRAUserNameCache {
 
-        private Map<ServerData, Map<String, JIRAUserBean>> serverMap = new HashMap<ServerData, Map<String, JIRAUserBean>>();
+        private Map<ServerData, Map<String, JIRAUserBean>> serverMap =
+                new HashMap<ServerData, Map<String, JIRAUserBean>>();
         private JIRAServerFacade facade;
 
         private JIRAUserNameCache() {
@@ -171,7 +173,8 @@ public class RecentlyOpenIssuesCache {
             return instance;
         }
 
-        public JIRAUserBean getUser(ServerData server, String userId) throws JIRAException, JiraUserNotFoundException {
+        public JIRAUserBean getUser(JiraServerData server, String userId)
+                throws JIRAException, JiraUserNotFoundException {
             Map<String, JIRAUserBean> userMap = serverMap.get(server);
             if (userMap == null) {
                 userMap = new HashMap<String, JIRAUserBean>();

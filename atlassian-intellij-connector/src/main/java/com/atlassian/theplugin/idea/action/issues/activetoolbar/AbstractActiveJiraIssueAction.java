@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.jira.model.ActiveJiraIssue;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
 import com.atlassian.theplugin.idea.IdeaHelper;
@@ -43,7 +44,7 @@ public abstract class AbstractActiveJiraIssueAction extends AnAction {
 	}
 
 	@Nullable
-	public ServerData getActiveJiraServerData(AnActionEvent event) {
+	public JiraServerData getActiveJiraServerData(AnActionEvent event) {
 		return ActiveIssueUtils.getJiraServer(event);
 	}
 

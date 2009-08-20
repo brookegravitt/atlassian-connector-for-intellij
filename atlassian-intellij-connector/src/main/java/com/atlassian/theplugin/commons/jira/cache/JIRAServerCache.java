@@ -28,6 +28,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAStatusBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
@@ -47,7 +48,7 @@ public class JIRAServerCache {
 	public static final int UNKNOWN_COMPONENT_ID = -1;
 	private static final int UNRESOLVED_ID = -1;
 
-	private final ServerData server;
+	private final JiraServerData server;
 	private boolean validServer;
 	private String errorMessage;
 
@@ -67,7 +68,7 @@ public class JIRAServerCache {
 
 	private final JIRAServerFacade jiraServerFacade;
 
-	public JIRAServerCache(ServerData server, JIRAServerFacade jiraServerFacade) {
+	public JIRAServerCache(JiraServerData server, JIRAServerFacade jiraServerFacade) {
 		this.jiraServerFacade = jiraServerFacade;
 		this.issueTypesCache = new HashMap<String, List<JIRAConstant>>();
 		this.subtaskIssueTypesCache = new HashMap<String, List<JIRAConstant>>();

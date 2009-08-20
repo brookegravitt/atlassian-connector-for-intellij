@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.config;
 
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -58,9 +59,9 @@ public class ProjectCfgManagerImplTest extends TestCase {
 			new UserCfg("", ""));
 	private final LocalServerData crucible2 = new LocalServerData(new CrucibleServerCfg("crucible2", new ServerIdImpl()),
 			new UserCfg("", ""));
-	private final LocalServerData jira1 = new LocalServerData(new JiraServerCfg("jira1", new ServerIdImpl()),
+	private final LocalJiraServerData jira1 = new LocalJiraServerData(new JiraServerCfg("jira1", new ServerIdImpl(), true),
 			new UserCfg("", ""));
-	private final LocalServerData jira2 = new LocalServerData(new JiraServerCfg("jira2", new ServerIdImpl()),
+	private final LocalJiraServerData jira2 = new LocalJiraServerData(new JiraServerCfg("jira2", new ServerIdImpl(), true),
 			new UserCfg("", ""));
 
 	public void testGetAllServers() {
@@ -234,6 +235,16 @@ public class ProjectCfgManagerImplTest extends TestCase {
 			return (ServerCfg) getServer();
 		}
 	}
+
+    private class LocalJiraServerData extends JiraServerData {
+        public LocalJiraServerData(final ServerCfg serverCfg, final UserCfg userCfg) {
+            super(serverCfg, userCfg, true);
+        }
+
+        public JiraServerCfg getServerr() {
+            return (JiraServerCfg) getServer();
+        }
+    }
 
 	private class LocalBambooServerData extends BambooServerData {
 		public LocalBambooServerData(final ServerCfg serverCfg, final UserCfg userCfg) {

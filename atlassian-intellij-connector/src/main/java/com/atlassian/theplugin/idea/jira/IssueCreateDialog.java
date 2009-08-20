@@ -27,6 +27,7 @@ import com.atlassian.theplugin.idea.ui.DialogWithDetails;
 import com.atlassian.theplugin.idea.util.IdeaUiMultiTaskExecutor;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.api.*;
@@ -67,14 +68,14 @@ public class IssueCreateDialog extends DialogWrapper {
 	private JList componentsList;
 	private JList versionsList;
 	private JList fixVersionsList;
-	private final ServerData jiraServer;
+	private final JiraServerData jiraServer;
 	private IssueListToolWindowPanel issueListToolWindowPanel;
 	private Project project;
 	private final JIRAServerModel model;
 	private JiraWorkspaceConfiguration jiraConfiguration;
 
 	public IssueCreateDialog(@NotNull IssueListToolWindowPanel issueListToolWindowPanel,
-			@NotNull Project project, JIRAServerModel model, ServerData server,
+			@NotNull Project project, JIRAServerModel model, JiraServerData server,
 			@NotNull final JiraWorkspaceConfiguration jiraProjectCfg) {
 		super(false);
 		this.issueListToolWindowPanel = issueListToolWindowPanel;

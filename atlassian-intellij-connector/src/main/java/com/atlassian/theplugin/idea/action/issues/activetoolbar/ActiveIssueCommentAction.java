@@ -5,6 +5,7 @@ import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 /**
@@ -25,7 +26,7 @@ public class ActiveIssueCommentAction extends AbstractActiveJiraIssueAction {
 			return;
 		}
 		if (IdeaHelper.getProjectCfgManager(event) != null) {
-			ServerData jira = ActiveIssueUtils.getJiraServer(event);
+			JiraServerData jira = ActiveIssueUtils.getJiraServer(event);
 			if (jira != null) {
 				panel.addCommentToIssue(issue.getKey(), jira);
 			}

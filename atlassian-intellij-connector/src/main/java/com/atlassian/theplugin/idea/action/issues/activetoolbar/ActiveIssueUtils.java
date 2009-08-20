@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
@@ -117,7 +118,7 @@ public final class ActiveIssueUtils {
 
 	//invokeLater necessary
 	public static JIRAIssue getJIRAIssue(final Project project) throws JIRAException {
-		ServerData jiraServer = getJiraServer(project);
+		JiraServerData jiraServer = getJiraServer(project);
 		if (jiraServer != null) {
 			final ActiveJiraIssue issue = getActiveJiraIssue(project);
 			return getJIRAIssue(jiraServer, issue);
@@ -125,7 +126,7 @@ public final class ActiveIssueUtils {
 		return null;
 	}
 
-	public static JIRAIssue getJIRAIssue(final ServerData jiraServer, final ActiveJiraIssue activeIssue)
+	public static JIRAIssue getJIRAIssue(final JiraServerData jiraServer, final ActiveJiraIssue activeIssue)
 			throws JIRAException {
 		if (jiraServer != null && activeIssue != null) {
 
@@ -142,19 +143,19 @@ public final class ActiveIssueUtils {
 	}
 
 
-	public static ServerData getJiraServer(final AnActionEvent event) {
+	public static JiraServerData getJiraServer(final AnActionEvent event) {
 		return getJiraServer(IdeaHelper.getCurrentProject(event));
 
 	}
 
-	public static ServerData getJiraServer(final Project project) {
+	public static JiraServerData getJiraServer(final Project project) {
 		final ActiveJiraIssue issue = getActiveJiraIssue(project);
 		return getJiraServer(project, issue);
 	}
 
-	public static ServerData getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
+	public static JiraServerData getJiraServer(final Project project, final ActiveJiraIssue activeIssue) {
 		final IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
-		ServerData jiraServer = null;
+		JiraServerData jiraServer = null;
 
 		if (panel != null && activeIssue != null) {
 			jiraServer = panel.getProjectCfgManager().getJiraServerr(activeIssue.getServerId());
@@ -163,7 +164,7 @@ public final class ActiveIssueUtils {
 	}
 
 	public static void activateIssue(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-			final ServerData jiraServerCfg) {
+			final JiraServerData jiraServerCfg) {
 
 		final ActiveJiraIssue activeIssue = ActiveIssueUtils.getActiveJiraIssue(event);
 		boolean isAlreadyActive = activeIssue != null;
@@ -203,7 +204,7 @@ public final class ActiveIssueUtils {
 
 		if (actions == null) {
 
-			ServerData jiraServer = issue.getServer();
+			JiraServerData jiraServer = issue.getServer();
 
 			if (jiraServer != null) {
 				try {
@@ -286,7 +287,7 @@ public final class ActiveIssueUtils {
 	 * @param jiraServerCfg  server
 	 */
 	private static void activate(final AnActionEvent event, final ActiveJiraIssue newActiveIssue,
-			final ServerData jiraServerCfg) {
+			final JiraServerData jiraServerCfg) {
 		final Project project = IdeaHelper.getCurrentProject(event);
 
 		if (project == null) {
@@ -346,7 +347,7 @@ public final class ActiveIssueUtils {
 					final JIRAIssue jiraIssue = ActiveIssueUtils.getJIRAIssue(project);
 					if (panel != null && jiraIssue != null) {
 						boolean isOk;
-						final ServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
+						final JiraServerData jiraServer = ActiveIssueUtils.getJiraServer(project);
 
 						isOk = panel.logWorkOrDeactivateIssue(jiraIssue, jiraServer,
 								StringUtil.generateJiraLogTimeString(activeIssue.recalculateTimeSpent()),

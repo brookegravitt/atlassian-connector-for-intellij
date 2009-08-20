@@ -27,6 +27,7 @@ import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.MiscUtil;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.JIRAProject;
 import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
@@ -52,8 +53,8 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 		final CrucibleServerCfg crucibleServerCfg3 = new CrucibleServerCfg("Cruc Server 3", new ServerIdImpl());
 		final FishEyeServerCfg fishEyeServerCfg0 = new FishEyeServerCfg("FishEye Server 0", new ServerIdImpl());
 		final FishEyeServerCfg fishEyeServerCfg1 = new FishEyeServerCfg("FishEye Server 1", new ServerIdImpl());
-		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerIdImpl());
-		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerIdImpl());
+		final JiraServerCfg jiraServerCfg1 = new JiraServerCfg("Jira Server 1", new ServerIdImpl(), true);
+		final JiraServerCfg jiraServerCfg2 = new JiraServerCfg("Jira Server 2", new ServerIdImpl(), true);
 		final ProjectConfiguration projectConfiguration = new ProjectConfiguration(MiscUtil.buildArrayList(
 				crucibleServerCfg2,
 				new BambooServerCfg("Bamboo Server 1", new ServerIdImpl()),
@@ -199,4 +200,9 @@ public class ProjectDefaultsConfigurationPanelTestUi {
 	private static ServerData getServerData(@NotNull final com.atlassian.theplugin.commons.cfg.Server serverCfg) {
 		return new ServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword());
 	}
+
+    private static JiraServerData getServerData(@NotNull final JiraServerCfg serverCfg) {
+        return new JiraServerData(serverCfg, serverCfg.getUsername(), serverCfg.getPassword(), true);
+    }
+
 }

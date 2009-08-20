@@ -2,6 +2,7 @@ package com.atlassian.theplugin.idea.action.issues;
 
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.UrlUtil;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.atlassian.theplugin.idea.jira.SearchIssueDialog;
@@ -24,7 +25,7 @@ public class QuickSearchAction extends AnAction {
 			return;
 		}
 
-		final ServerData server = panel.getSelectedServer();
+		final JiraServerData server = panel.getSelectedServer();
 		if (server != null) {
 			SearchIssueDialog dlg = new SearchIssueDialog(project);
 			dlg.show();

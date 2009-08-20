@@ -4,9 +4,11 @@ import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerId;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilterBean;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import junit.framework.TestCase;
 
@@ -20,15 +22,16 @@ public class JIRAFilterListModelTest extends TestCase {
 	JIRAFilterListModel listModel;
 	private int notifiedModelChanged = 0;
 	private int notifiedManualFilterChanged = 0;
-	private final ServerData jServer = new ServerData(new ServerCfg(true, "DZira serwer", "", new ServerIdImpl()) {
+	private final JiraServerData jServer = new JiraServerData(
+            new JiraServerCfg(true, "DZira serwer", new ServerIdImpl(), true) {
 		public ServerType getServerType() {
 			return null;
 		}
 
-		public ServerCfg getClone() {
+		public JiraServerCfg getClone() {
 			return null;
 		}
-	}, "", "");
+	}, "", "", true);
 	private int notifiedServerRemoved;
 	private int notifiedServerAdded;
 	private int notifiedServerNameChanged;
@@ -59,7 +62,7 @@ public class JIRAFilterListModelTest extends TestCase {
 				notifiedModelChanged++;
 			}
 
-			public void manualFilterChanged(final JiraCustomFilter manualFilter, final ServerData jiraServer) {
+			public void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServer) {
 				notifiedManualFilterChanged++;
 			}
 

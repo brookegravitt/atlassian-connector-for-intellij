@@ -156,7 +156,7 @@ public final class ServerTreePanel extends JPanel implements TreeSelectionListen
 			case CRUCIBLE_SERVER:
 				return new CrucibleServerCfg(false, name, id);
 			case JIRA_SERVER:
-				return new JiraServerCfg(false, name, id);
+				return new JiraServerCfg(false, name, id, true);
 			case FISHEYE_SERVER:
 				return new FishEyeServerCfg(false, name, id);
 			case JIRA_STUDIO_SERVER:
