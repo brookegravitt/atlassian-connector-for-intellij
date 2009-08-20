@@ -621,7 +621,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
     private JiraServerData getServerData(@NotNull JiraServerCfg serverCfg) {
-        return new JiraServerData(serverCfg, getDefaultCredentials(), serverCfg.isUseBasicAuth());
+        return new JiraServerData(serverCfg, getDefaultCredentials(), serverCfg.isDontUseBasicAuth());
     }
 
 	//////////////////////////////////////////////////////////////////
