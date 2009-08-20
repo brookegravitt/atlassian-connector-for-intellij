@@ -26,11 +26,11 @@ import static com.atlassian.theplugin.commons.util.UrlUtil.encodeUrl;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssueBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.remoteapi.rest.HttpSessionCallback;
 import com.atlassian.theplugin.commons.util.StringUtil;
@@ -49,24 +49,27 @@ public class JIRARssClient extends AbstractHttpSession {
 	
 	/** this is dirty hack to finish 1st phase of refactoring faster. Remove it one day! */
 	@Deprecated
-	private final ServerData serverData;
+	private final JiraServerData serverData;
 	
-	public JIRARssClient(final ServerData server, final HttpSessionCallback callback) throws RemoteApiMalformedUrlException {
+	public JIRARssClient(final JiraServerData server, final HttpSessionCallback callback)
+            throws RemoteApiMalformedUrlException {
 		super(server.toConnectionCfg(), callback);
 		serverData = server;
 	}
 
 	@Override
 	protected void adjustHttpHeader(HttpMethod method) {
-		method.addRequestHeader(new Header("Authorization", getAuthHeaderValue()));
+        if (serverData.isUseBasicAuth()) {
+		    method.addRequestHeader(new Header("Authorization", getAuthBasicHeaderValue()));
+        }
 	}
 
 	@Override
 	protected void preprocessResult(Document doc) throws JDOMException, RemoteApiSessionExpiredException {
 	}
 
-	private String getAuthHeaderValue() {
-		return "Basic " + StringUtil.encode(getUsername() + ":" + getPassword());
+	private String getAuthBasicHeaderValue() {
+        return "Basic " + StringUtil.encode(getUsername() + ":" + getPassword());
 	}
 
 	public List<JIRAIssue> getIssues(List<JIRAQueryFragment> fragments,
@@ -231,7 +234,13 @@ public class JIRARssClient extends AbstractHttpSession {
 	private String appendAuthentication(boolean firstItem) {
 		final String username = getUsername();
 		if (username != null) {
-			return (firstItem ? "?" : "&") + "os_authType=basic";
+            if (serverData.isUseBasicAuth()) {
+			    return (firstItem ? "?" : "&") + "os_authType=basic";
+            } else {
+                 return (firstItem ? "?" : "&")
+                         + "os_username=" + encodeUrl(username)
+                         + "&os_password=" + encodeUrl(getPassword());
+            }
 		}
 		return "";
 	}

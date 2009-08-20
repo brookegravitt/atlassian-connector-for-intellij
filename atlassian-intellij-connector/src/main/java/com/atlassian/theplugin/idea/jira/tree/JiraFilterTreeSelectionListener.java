@@ -16,6 +16,7 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.jira.model.JiraCustomFilter;
 
@@ -24,9 +25,9 @@ import com.atlassian.theplugin.jira.model.JiraCustomFilter;
  */
 public interface JiraFilterTreeSelectionListener {
 
-	void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg);
+	void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerCfg);
 
-	void selectedManualFilterNode(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg);
+	void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerCfg);
 
 	void selectionCleared();
 

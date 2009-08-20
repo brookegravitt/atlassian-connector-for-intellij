@@ -53,8 +53,8 @@ public class CfgManagerNotificationSecondTest extends TestCase {
 	private final BambooServerCfg bamboo2 = new BambooServerCfg("bamboo2", new ServerIdImpl());
 	private final CrucibleServerCfg crucible1 = new CrucibleServerCfg("crucible1", new ServerIdImpl());
 	private final CrucibleServerCfg crucible2 = new CrucibleServerCfg("crucible2", new ServerIdImpl());
-	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl());
-	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerIdImpl());
+	private final JiraServerCfg jira1 = new JiraServerCfg("jira1", new ServerIdImpl(), true);
+	private final JiraServerCfg jira2 = new JiraServerCfg("jira2", new ServerIdImpl(), true);
 	private final FishEyeServerCfg fisheye1 = new FishEyeServerCfg("fisheye1", new ServerIdImpl());
 	private final FishEyeServerCfg fisheye2 = new FishEyeServerCfg("fisheye2", new ServerIdImpl());
 

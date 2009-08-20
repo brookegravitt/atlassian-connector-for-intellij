@@ -19,71 +19,70 @@ package com.atlassian.theplugin.commons.jira;
 import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.remoteapi.ProductServerFacade;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.Calendar;
 import java.util.List;
 
 public interface JIRAServerFacade extends ProductServerFacade {    
-	List<JIRAIssue> getIssues(ServerData server, List<JIRAQueryFragment> query,
+	List<JIRAIssue> getIssues(JiraServerData server, List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
 			int start,
 			int size) throws JIRAException;
 
-	List<JIRAIssue> getSavedFilterIssues(ServerData server,
+	List<JIRAIssue> getSavedFilterIssues(JiraServerData server,
 			List<JIRAQueryFragment> query,
 			String sort,
 			String sortOrder,
 			int start,
 			int size) throws JIRAException;
 
-	List<JIRAProject> getProjects(ServerData server) throws JIRAException;
+	List<JIRAProject> getProjects(JiraServerData server) throws JIRAException;
 
-	List<JIRAConstant> getStatuses(ServerData server) throws JIRAException;
+	List<JIRAConstant> getStatuses(JiraServerData server) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypes(ServerData server) throws JIRAException;
+	List<JIRAConstant> getIssueTypes(JiraServerData server) throws JIRAException;
 
-	List<JIRAConstant> getIssueTypesForProject(ServerData server, String project) throws JIRAException;
+	List<JIRAConstant> getIssueTypesForProject(JiraServerData server, String project) throws JIRAException;
 
-	List<JIRAConstant> getSubtaskIssueTypes(ServerData server) throws JIRAException;
+	List<JIRAConstant> getSubtaskIssueTypes(JiraServerData server) throws JIRAException;
 
-	List<JIRAConstant> getSubtaskIssueTypesForProject(ServerData server, String project) throws JIRAException;
+	List<JIRAConstant> getSubtaskIssueTypesForProject(JiraServerData server, String project) throws JIRAException;
 
-	List<JIRAQueryFragment> getSavedFilters(ServerData server) throws JIRAException;
+	List<JIRAQueryFragment> getSavedFilters(JiraServerData server) throws JIRAException;
 
-	List<JIRAComponentBean> getComponents(ServerData server, String projectKey) throws JIRAException;
+	List<JIRAComponentBean> getComponents(JiraServerData server, String projectKey) throws JIRAException;
 
-	List<JIRAVersionBean> getVersions(ServerData server, String projectKey) throws JIRAException;
+	List<JIRAVersionBean> getVersions(JiraServerData server, String projectKey) throws JIRAException;
 
-	List<JIRAPriorityBean> getPriorities(ServerData server) throws JIRAException;
+	List<JIRAPriorityBean> getPriorities(JiraServerData server) throws JIRAException;
 
-	List<JIRAResolutionBean> getResolutions(ServerData server) throws JIRAException;
+	List<JIRAResolutionBean> getResolutions(JiraServerData server) throws JIRAException;
 
-	List<JIRAAction> getAvailableActions(ServerData server, JIRAIssue issue) throws JIRAException;
+	List<JIRAAction> getAvailableActions(JiraServerData server, JIRAIssue issue) throws JIRAException;
 
-	List<JIRAActionField> getFieldsForAction(ServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+	List<JIRAActionField> getFieldsForAction(JiraServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
-	void progressWorkflowAction(ServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException;
+	void progressWorkflowAction(JiraServerData server, JIRAIssue issue, JIRAAction action) throws JIRAException;
 
-	void progressWorkflowAction(ServerData server, JIRAIssue issue,
+	void progressWorkflowAction(JiraServerData server, JIRAIssue issue,
 			JIRAAction action, List<JIRAActionField> fields) throws JIRAException;
 
-	void addComment(ServerData server, String issueKey, String comment) throws JIRAException;
+	void addComment(JiraServerData server, String issueKey, String comment) throws JIRAException;
 
-	JIRAIssue createIssue(ServerData server, JIRAIssue issue) throws JIRAException;
+	JIRAIssue createIssue(JiraServerData server, JIRAIssue issue) throws JIRAException;
 
-	JIRAIssue getIssue(ServerData server, String key) throws JIRAException;
+	JIRAIssue getIssue(JiraServerData server, String key) throws JIRAException;
 
-	JIRAIssue getIssueDetails(ServerData server, JIRAIssue issue) throws JIRAException;
+	JIRAIssue getIssueDetails(JiraServerData server, JIRAIssue issue) throws JIRAException;
 
-	void logWork(ServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
+	void logWork(JiraServerData server, JIRAIssue issue, String timeSpent, Calendar startDate,
 			String comment, boolean updateEstimate, String newEstimate)
 			throws JIRAException;
 
-	void setAssignee(ServerData server, JIRAIssue issue, String assignee) throws JIRAException;
+	void setAssignee(JiraServerData server, JIRAIssue issue, String assignee) throws JIRAException;
 
-	JIRAUserBean getUser(ServerData server, String loginName) throws JIRAException, JiraUserNotFoundException;
+	JIRAUserBean getUser(JiraServerData server, String loginName) throws JIRAException, JiraUserNotFoundException;
 
-	List<JIRAComment> getComments(ServerData server, JIRAIssue issue) throws JIRAException;
+	List<JIRAComment> getComments(JiraServerData server, JIRAIssue issue) throws JIRAException;
 }

@@ -3,6 +3,7 @@ package com.atlassian.theplugin.idea.bamboo.build;
 import com.atlassian.theplugin.commons.util.DateUtil;
 import com.atlassian.theplugin.commons.bamboo.BuildIssue;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
@@ -170,7 +171,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
             if (issues.size() == 0) {
                 issuesPanel.add(new JLabel("No issues associated with this build"));
             } else {
-                ServerData server = null;
+                JiraServerData server = null;
                 String selectedJiraServerUrl = null;
                 final IssueListToolWindowPanel issueListToolWindowPanel = IdeaHelper.getIssueListToolWindowPanel(project);
                 if (issueListToolWindowPanel != null) {
@@ -188,7 +189,7 @@ public class BuildDetailsPanel extends JPanel implements ActionListener {
                         label.setToolTipText("Click to open in IDEA");
                     }
                     final String jiraServerUrlFinal = selectedJiraServerUrl;
-                    final ServerData serverFinal = server;
+                    final JiraServerData serverFinal = server;
                     label.addHyperlinkListener(new HyperlinkListener() {
                         public void hyperlinkUpdate(HyperlinkEvent hyperlinkEvent) {
                             if (jiraServerUrlFinal == null || !jiraServerUrlFinal.equals(issue.getServerUrl())) {

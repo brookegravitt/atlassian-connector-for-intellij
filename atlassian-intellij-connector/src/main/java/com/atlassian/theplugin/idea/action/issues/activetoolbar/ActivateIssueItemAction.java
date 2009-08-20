@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.issues.activetoolbar;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.config.ProjectCfgManagerImpl;
@@ -74,7 +75,7 @@ public class ActivateIssueItemAction extends AnAction {
 	public void actionPerformed(final AnActionEvent event) {
 		ProjectCfgManagerImpl projectCfgManager = IdeaHelper.getProjectCfgManager(event);
 		if (projectCfgManager != null) {
-			ServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
+			JiraServerData jiraServer = projectCfgManager.getJiraServerr(activeIssue.getServerId());
 			if (jiraServer != null) {
 				activeIssue.resetTimeSpent();
 				ActiveIssueUtils.activateIssue(event, activeIssue, jiraServer);

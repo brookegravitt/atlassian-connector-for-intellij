@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.action.jira.ManualFilter;
 
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.configuration.JiraCustomFilterMap;
 import com.atlassian.theplugin.configuration.JiraFilterConfigurationBean;
@@ -50,7 +51,7 @@ public class EditAction extends AbstractFilterAction {
         }
 
         JiraCustomFilter manualFilter = panel.getSelectedManualFilter();
-        ServerData jiraServer = panel.getSelectedServer();
+        JiraServerData jiraServer = panel.getSelectedServer();
         JIRAServerModel jiraServerModel = panel.getJiraServerModel();
         JIRAFilterListModel jiraFilterListModel = panel.getJIRAFilterListModel();
 

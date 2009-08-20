@@ -4,6 +4,7 @@ import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.LoggerImpl;
 import com.atlassian.theplugin.configuration.JiraCustomFilterMap;
@@ -42,9 +43,9 @@ public class JIRAFilterListBuilder {
 			listModel.setModelFrozen(true);
 			listModel.clearAllServerFilters();
 			JIRAServerFiltersBuilderException e = new JIRAServerFiltersBuilderException();
-			Collection<ServerData> serversToAdd = new ArrayList<ServerData>();
+			Collection<JiraServerData> serversToAdd = new ArrayList<JiraServerData>();
 
-			for (ServerData jiraServer : jiraServerModel.getServers()) {
+			for (JiraServerData jiraServer : jiraServerModel.getServers()) {
 				try {
 					if (jiraServerModel.getServers().contains(jiraServer)) {
 						loadServerSavedFilter(jiraServer, jiraServerModel);
@@ -57,7 +58,7 @@ public class JIRAFilterListBuilder {
 				loadManualFilter(jiraServer);
 			}
 			//add non existing servers
-			for (ServerData newServer : serversToAdd) {
+			for (JiraServerData newServer : serversToAdd) {
 				try {
 					loadServerSavedFilter(newServer, jiraServerModel);
 				} catch (JIRAException e1) {
@@ -74,7 +75,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadServerSavedFilter(final ServerData jiraServer,
+	private void loadServerSavedFilter(final JiraServerData jiraServer,
 			final JIRAServerModel jiraServerModel) throws JIRAException {
 
 		if (jiraServerModel != null) {
@@ -95,7 +96,7 @@ public class JIRAFilterListBuilder {
 		}
 	}
 
-	private void loadManualFilter(final ServerData jiraServer) {
+	private void loadManualFilter(final JiraServerData jiraServer) {
 
 		if (jiraWorkspaceCfg != null) {
 

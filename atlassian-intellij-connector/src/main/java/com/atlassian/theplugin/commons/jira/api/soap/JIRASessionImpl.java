@@ -20,9 +20,9 @@ import com.atlassian.theplugin.commons.configuration.ConfigurationFactory;
 import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.soap.axis.*;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiLoginException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.remoteapi.rest.AbstractHttpSession;
 import com.atlassian.theplugin.commons.util.HttpConfigurableAdapter;
 import com.atlassian.theplugin.commons.util.Logger;
@@ -42,7 +42,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	private String token;
 	private JiraSoapService service;
-	private ServerData server;
+	private JiraServerData server;
 
     public static final int ONE_DAY_AGO = -24;
 
@@ -119,7 +119,7 @@ public class JIRASessionImpl implements JIRASession {
 
 	}
 
-	public JIRASessionImpl(Logger logger, ServerData server) throws ServiceException, MalformedURLException {
+	public JIRASessionImpl(Logger logger, JiraServerData server) throws ServiceException, MalformedURLException {
         this.logger = logger;
         URL portAddress = new URL(server.getUrl() + "/rpc/soap/jirasoapservice-v2");
 		JiraSoapServiceServiceLocator loc = new JiraSoapServiceServiceLocator();

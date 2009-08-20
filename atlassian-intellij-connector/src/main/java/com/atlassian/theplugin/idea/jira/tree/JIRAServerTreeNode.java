@@ -1,6 +1,6 @@
 package com.atlassian.theplugin.idea.jira.tree;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.ui.tree.paneltree.AbstractTreeNode;
 import com.intellij.openapi.util.IconLoader;
 
@@ -12,9 +12,9 @@ import javax.swing.*;
 public class JIRAServerTreeNode extends AbstractTreeNode {
 	private static final Icon JIRA_SERVER_ENABLED_ICON = IconLoader.getIcon("/icons/jira-blue-16.png");
 	private static final Icon JIRA_SERVER_DISABLED_ICON = IconLoader.getIcon("/icons/jira-grey-16.png");
-	private ServerData jiraServer;
+	private JiraServerData jiraServer;
 
-	public JIRAServerTreeNode(ServerData jiraServer) {
+	public JIRAServerTreeNode(JiraServerData jiraServer) {
 		super(jiraServer.getName(), null, null);
 		this.jiraServer = jiraServer;
 
@@ -44,7 +44,7 @@ public class JIRAServerTreeNode extends AbstractTreeNode {
 
 	}
 
-	public ServerData getJiraServer() {
+	public JiraServerData getJiraServer() {
 		return jiraServer;
 	}
 }

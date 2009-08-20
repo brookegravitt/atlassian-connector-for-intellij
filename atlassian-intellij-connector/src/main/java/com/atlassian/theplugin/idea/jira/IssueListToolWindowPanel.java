@@ -7,6 +7,7 @@ import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRAProject;
@@ -179,7 +180,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         addJiraFilterTreeListeners();
 
         jiraFilterListModel.addModelListener(new JIRAFilterListModelListener() {
-            public void manualFilterChanged(final JiraCustomFilter manualFilter, final ServerData jiraServer) {
+            public void manualFilterChanged(final JiraCustomFilter manualFilter, final JiraServerData jiraServer) {
                 // refresh issue list
                 refreshIssues(manualFilter, jiraServer, true);
             }
@@ -397,7 +398,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 @Override
                 public void run() {
                     try {
-                        ServerData jiraServer = issue.getServer();
+                        JiraServerData jiraServer = issue.getServer();
 
                         if (jiraServer != null) {
                             final List<JIRAAction> actions = jiraServerFacade.getAvailableActions(jiraServer, issue);
@@ -446,7 +447,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public void openIssue(@NotNull final String issueKey, @NotNull final ServerData jiraServer, final boolean modal) {
+    public void openIssue(@NotNull final String issueKey, @NotNull final JiraServerData jiraServer, final boolean modal) {
         JIRAIssue issue = null;
         for (JIRAIssue i : baseIssueListModel.getIssues()) {
             if (i.getKey().equals(issueKey) && i.getServer().getServerId().equals(jiraServer.getServerId())) {
@@ -490,10 +491,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private class IssueFetcher {
         private JIRAIssue issue;
         private Throwable exception;
-        private ServerData jiraServer;
+        private JiraServerData jiraServer;
         private String issueKey;
 
-        public IssueFetcher(final ServerData jiraServer, final String issueKey) {
+        public IssueFetcher(final JiraServerData jiraServer, final String issueKey) {
             this.jiraServer = jiraServer;
             this.issueKey = issueKey;
         }
@@ -540,7 +541,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
      */
     public void openIssue(@NotNull final String issueKey, @NotNull final String serverUrl) {
 
-        ServerData server = CfgUtil.findServer(serverUrl, projectCfgManager.getAllJiraServerss());
+        JiraServerData server = (JiraServerData) CfgUtil.findServer(serverUrl, projectCfgManager.getAllJiraServerss());
 
         if (server != null) {
             openIssue(issueKey, server, true);
@@ -555,7 +556,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             return;
         }
         try {
-            ServerData jiraServer = getSelectedServer();
+            JiraServerData jiraServer = getSelectedServer();
             if (jiraServer != null) {
                 assignIssue(issue, jiraServer.getUsername());
             }
@@ -589,7 +590,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 setStatusInfoMessage("Assigning issue " + issue.getKey() + " to " + assignee + "...");
                 try {
 
-                    ServerData jiraServer = getSelectedServer();
+                    JiraServerData jiraServer = getSelectedServer();
                     if (jiraServer != null) {
                         jiraServerFacade.setAssignee(jiraServer, issue, assignee);
                         setStatusInfoMessage("Assigned issue " + issue.getKey() + " to " + assignee);
@@ -639,7 +640,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public void addCommentToIssue(final String issueKey, final ServerData jiraServer) {
+    public void addCommentToIssue(final String issueKey, final JiraServerData jiraServer) {
         final IssueCommentDialog issueCommentDialog = new IssueCommentDialog(issueKey);
         issueCommentDialog.show();
         if (issueCommentDialog.isOK()) {
@@ -674,7 +675,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final ServerData jiraServer, String initialLog,
+    public boolean logWorkOrDeactivateIssue(final JIRAIssue issue, final JiraServerData jiraServer, String initialLog,
                                             final boolean deactivateIssue, DeactivateIssueResultHandler resultHandler) {
         if (issue != null) {
             final WorkLogCreateAndMaybeDeactivateDialog dialog =
@@ -699,7 +700,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
      */
     private JIRAIssue assignIssueAndPutInProgress(@NotNull final JIRAIssue issue, StatusBarPane statusBarPane) {
         JIRAIssue updatedIssue = issue;
-        final ServerData server = issue.getServer();
+        final JiraServerData server = issue.getServer();
 
         if (!issue.getAssigneeId().equals(server.getUsername())) {
             setStatusInfoMessage("Assigning issue " + issue.getKey() + " to me...");
@@ -810,7 +811,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     public void refreshIssues(final boolean reload) {
         JiraCustomFilter manualFilter = jiraFilterTree.getSelectedManualFilter();
         JIRASavedFilter savedFilter = jiraFilterTree.getSelectedSavedFilter();
-        ServerData serverCfg = getSelectedServer();
+        JiraServerData serverCfg = getSelectedServer();
         if (savedFilter != null) {
             refreshIssues(savedFilter, serverCfg, reload);
         } else if (manualFilter != null) {
@@ -820,7 +821,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
     }
 
-    private void refreshIssues(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg, final boolean reload) {
+    private void refreshIssues(final JiraCustomFilter manualFilter,
+                               final JiraServerData jiraServerCfg, final boolean reload) {
         if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
             return;
         }
@@ -839,7 +841,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         ProgressManager.getInstance().run(task);
     }
 
-    private void refreshIssues(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, final boolean reload) {
+    private void refreshIssues(final JIRASavedFilter savedFilter,
+                               final JiraServerData jiraServerCfg, final boolean reload) {
         if (WindowManager.getInstance().getIdeFrame(getProject()) == null) {
             return;
         }
@@ -915,7 +918,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             return;
         }
 
-        final ServerData server = getSelectedServer();
+        final JiraServerData server = getSelectedServer();
 
         if (server != null) {
             final IssueCreateDialog issueCreateDialog =
@@ -951,8 +954,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         return jiraFilterListModel;
     }
 
-    public ServerData getSelectedServer() {
-        ServerData server = jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
+    public JiraServerData getSelectedServer() {
+        JiraServerData server = jiraFilterTree != null ? jiraFilterTree.getSelectedServer() : null;
         if (server != null) {
             return server;
         }
@@ -993,7 +996,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
 
     private class MetadataFetcherBackgroundableTask extends Task.Backgroundable {
-        private Collection<ServerData> servers = null;
+        private Collection<JiraServerData> servers = null;
         private boolean refreshIssueList = false;
 
         /**
@@ -1007,8 +1010,8 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
         }
 
         private void fillServerData() {
-            servers = new ArrayList<ServerData>();
-            for (ServerData serverCfg : projectCfgManager.getAllEnabledJiraServerss()) {
+            servers = new ArrayList<JiraServerData>();
+            for (JiraServerData serverCfg : projectCfgManager.getAllEnabledJiraServerss()) {
                 servers.add(serverCfg);
             }
         }
@@ -1019,7 +1022,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
          * @param server           server added to the model with all fetched data
          * @param refreshIssueList refresh issue list
          */
-        public MetadataFetcherBackgroundableTask(final ServerData server, boolean refreshIssueList) {
+        public MetadataFetcherBackgroundableTask(final JiraServerData server, boolean refreshIssueList) {
             super(IssueListToolWindowPanel.this.getProject(), "Retrieving JIRA information", false);
             this.servers = Arrays.asList(server);
             this.refreshIssueList = refreshIssueList;
@@ -1031,7 +1034,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             try {
                 ((JIRAServerModelIdea) jiraServerModel).setModelFrozen(true);
 
-                for (ServerData server : servers) {
+                for (JiraServerData server : servers) {
                     try {
                         //returns false if no cfg is available or login failed
                         Boolean serverCheck = jiraServerModel.checkServer(server);
@@ -1096,7 +1099,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverConnectionDataChanged(final ServerId serverId) {
-            ServerData server = projectCfgManager.getServerr(serverId);
+            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
             if (server.getServerType() == ServerType.JIRA_SERVER) {
                 jiraServerModel.clear(server.getServerId());
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, true);
@@ -1106,7 +1109,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverNameChanged(final ServerId serverId) {
-            ServerData server = projectCfgManager.getJiraServerr(serverId);
+            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
             jiraServerModel.replace(server);
             refreshFilterModel();
             jiraFilterListModel.fireServerNameChanged();
@@ -1114,7 +1117,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverDisabled(final ServerId serverId) {
-            ServerData server = projectCfgManager.getServerr(serverId);
+            JiraServerData server = projectCfgManager.getJiraServerr(serverId);
             if (server.getServerType() == ServerType.JIRA_SERVER) {
                 removeServer(serverId, recenltyViewedAffected(server));
             }
@@ -1129,15 +1132,15 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverEnabled(final ServerData serverData) {
-            addServer(serverData, recenltyViewedAffected(serverData));
+            addServer((JiraServerData) serverData, recenltyViewedAffected(serverData));
         }
 
         @Override
         public void serverAdded(final ServerData newServer) {
-            addServer(newServer, false);
+            addServer((JiraServerData) newServer, false);
         }
 
-        private void addServer(final ServerData server, boolean refreshIssueList) {
+        private void addServer(final JiraServerData server, boolean refreshIssueList) {
             if (server.getServerType() == ServerType.JIRA_SERVER) {
                 Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, refreshIssueList);
                 ProgressManager.getInstance().run(task);
@@ -1221,14 +1224,14 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
     private class LocalJiraFilterTreeSelectionListener implements JiraFilterTreeSelectionListener {
 
-        public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg) {
+        public void selectedSavedFilterNode(final JIRASavedFilter savedFilter, final JiraServerData jiraServerCfg) {
             refreshIssues(savedFilter, jiraServerCfg, true);
             jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerCfg.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterId(Long.toString(savedFilter.getId()));
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.SAVED_FILTER);
         }
 
-        public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg) {
+        public void selectedManualFilterNode(final JiraCustomFilter manualFilter, final JiraServerData jiraServerCfg) {
             jiraWorkspaceConfiguration.getView().setViewServerIdd((ServerIdImpl) jiraServerCfg.getServerId());
             jiraWorkspaceConfiguration.getView().setViewFilterType(JiraFilterConfigurationBean.MANUAL_FILTER);
             jiraWorkspaceConfiguration.getView().setViewFilterId(manualFilter.getUid());
@@ -1254,13 +1257,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
     private class LogWorkWorkerTask extends Task.Backgroundable {
         private final JIRAIssue issue;
         private final WorkLogCreateAndMaybeDeactivateDialog dialog;
-        private final ServerData jiraServer;
+        private final JiraServerData jiraServer;
         private final boolean deactivateIssue;
         private DeactivateIssueResultHandler resultHandler;
         private boolean commitSuccess;
 
         public LogWorkWorkerTask(JIRAIssue issue, WorkLogCreateAndMaybeDeactivateDialog dialog,
-                                 ServerData jiraServer, boolean deactivateIssue,
+                                 JiraServerData jiraServer, boolean deactivateIssue,
                                  DeactivateIssueResultHandler resultHandler) {
 
             super(IssueListToolWindowPanel.this.getProject(),
@@ -1484,13 +1487,13 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
                 }
 
                 JiraIssueAdapter.clearCache();
-                ServerData srvcfg = getSelectedServer();
+                JiraServerData srvcfg = getSelectedServer();
                 if (srvcfg == null && !isRecentlyOpenFilterSelected()) {
                     setStatusInfoMessage("Nothing selected");
                     issueTreeBuilder.rebuild(getRightTree(), getRightScrollPane());
                 } else if (srvcfg == null && isRecentlyOpenFilterSelected()) {
                     Map<Pair<String, ServerId>, String> projects = new HashMap<Pair<String, ServerId>, String>();
-                    for (ServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
+                    for (JiraServerData server : projectCfgManager.getAllEnabledJiraServerss()) {
                         try {
                             for (JIRAProject p : jiraServerModel.getProjects(server)) {
                                 projects.put(new Pair<String, ServerId>(p.getKey(), server.getServerId()), p.getName());

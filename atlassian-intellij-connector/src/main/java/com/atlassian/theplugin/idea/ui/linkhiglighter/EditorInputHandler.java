@@ -17,6 +17,7 @@ package com.atlassian.theplugin.idea.ui.linkhiglighter;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.IssueListToolWindowPanel;
 import com.intellij.openapi.editor.Editor;
@@ -91,7 +92,7 @@ class EditorInputHandler extends KeyAdapter implements EditorMouseMotionListener
 					jiraEditorLinkParser.getJiraURLTextRange(editor, file, event.getMouseEvent().getPoint());
 			if (hoverRange != null && hoverRange.isActive()) {
 				IssueListToolWindowPanel panel = IdeaHelper.getIssueListToolWindowPanel(project);
-				final ServerData jiraServer = projectCfgManager.getDefaultJiraServer();
+				final JiraServerData jiraServer = projectCfgManager.getDefaultJiraServer();
 				if (jiraServer != null) {
 					panel.openIssue(hoverRange.getIssueKey(), jiraServer, false);
 				}

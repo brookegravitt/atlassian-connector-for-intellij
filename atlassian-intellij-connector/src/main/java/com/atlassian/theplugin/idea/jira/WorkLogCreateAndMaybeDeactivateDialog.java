@@ -19,6 +19,7 @@ package com.atlassian.theplugin.idea.jira;
 import com.atlassian.theplugin.commons.jira.JIRAIssueProgressTimestampCache;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
@@ -153,7 +154,7 @@ public class WorkLogCreateAndMaybeDeactivateDialog extends DialogWrapper {
                 @Override
                 public void run() {
                     try {
-                        ServerData jiraServer = issue.getServer();
+                        JiraServerData jiraServer = issue.getServer();
 
                         if (jiraServer != null) {
                             final List<JIRAAction> actions = facade.getAvailableActions(jiraServer, issue);

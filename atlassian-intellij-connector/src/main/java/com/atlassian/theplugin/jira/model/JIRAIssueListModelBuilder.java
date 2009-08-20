@@ -3,6 +3,7 @@ package com.atlassian.theplugin.jira.model;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.JIRASavedFilter;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.intellij.openapi.project.Project;
 
@@ -13,15 +14,15 @@ public interface JIRAIssueListModelBuilder extends FrozenModel {
 
 	JIRAIssueListModel getModel();
 
-	void addIssuesToModel(final JiraCustomFilter manualFilter, final ServerData jiraServerCfg, int size, boolean reload)
-			throws JIRAException;
+	void addIssuesToModel(final JiraCustomFilter manualFilter,
+                          final JiraServerData jiraServerCfg, int size, boolean reload)	throws JIRAException;
 
-	void addIssuesToModel(final JIRASavedFilter savedFilter, final ServerData jiraServerCfg, int size, boolean reload)
-			throws JIRAException;
+	void addIssuesToModel(final JIRASavedFilter savedFilter,
+                          final JiraServerData jiraServerCfg, int size, boolean reload)	throws JIRAException;
 
 	void addRecenltyOpenIssuesToModel(boolean reload) throws JIRAException;
 
-	void reloadIssue(String issueKey, ServerData jiraServerCfg) throws JIRAException;
+	void reloadIssue(String issueKey, JiraServerData jiraServerCfg) throws JIRAException;
 
 	void updateIssue(final JIRAIssue issue);
 

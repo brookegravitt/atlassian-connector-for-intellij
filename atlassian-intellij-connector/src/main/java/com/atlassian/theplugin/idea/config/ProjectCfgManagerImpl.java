@@ -18,6 +18,7 @@ package com.atlassian.theplugin.idea.config;
 import com.atlassian.connector.cfg.ProjectCfgManager;
 import com.atlassian.connector.intellij.configuration.UserCfgBean;
 import com.atlassian.theplugin.commons.ServerType;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.bamboo.BambooServerData;
 import com.atlassian.theplugin.commons.cfg.*;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -154,7 +155,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public ServerData getJiraServerr(final ServerId serverId) {
+	public JiraServerData getJiraServerr(final ServerId serverId) {
 		for (JiraServerCfg server : getAllJiraServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return getServerData(server);
@@ -163,7 +164,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		return null;
 	}
 
-	public ServerData getEnabledJiraServerr(final ServerId serverId) {
+	public JiraServerData getEnabledJiraServerr(final ServerId serverId) {
 		for (JiraServerCfg server : getAllEnabledJiraServers()) {
 			if (serverId != null && server.getServerId().equals(serverId)) {
 				return getServerData(server);
@@ -430,9 +431,9 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	}
 
 
-	public Collection<ServerData> getAllEnabledJiraServerss() {
+	public Collection<JiraServerData> getAllEnabledJiraServerss() {
 		Collection<ServerCfg> tmp = getAllEnabledServers();
-		Collection<ServerData> ret = new ArrayList<ServerData>();
+		Collection<JiraServerData> ret = new ArrayList<JiraServerData>();
 
 		for (ServerCfg serverCfg : tmp) {
 			if (serverCfg.getServerType() == ServerType.JIRA_SERVER && serverCfg instanceof JiraServerCfg) {
@@ -494,7 +495,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	///////////////////////////////////////////////////////////////
 
 	@Nullable
-	public ServerData getDefaultJiraServer() {
+	public JiraServerData getDefaultJiraServer() {
 		ProjectConfiguration prjCfg = getProjectConfiguration();
 		if (prjCfg != null) {
 			JiraServerCfg jiraServer = prjCfg.getDefaultJiraServer();
@@ -504,7 +505,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 		}
 
         // PL-1697
-        Collection<ServerData> allServers = getAllEnabledJiraServerss();
+        Collection<JiraServerData> allServers = getAllEnabledJiraServerss();
         if (allServers != null && allServers.size() == 1) {
             return allServers.iterator().next();
         }
@@ -561,7 +562,7 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
         }
 
         // PL-1697
-        Collection<ServerData> allServers = getAllEnabledJiraServerss();
+        Collection<JiraServerData> allServers = getAllEnabledJiraServerss();
         return allServers != null && allServers.size() == 1;
     }
 
@@ -618,6 +619,10 @@ public class ProjectCfgManagerImpl implements ProjectCfgManager {
 	private BambooServerData getServerData(@NotNull BambooServerCfg serverCfg) {
 		return new BambooServerData(serverCfg, getDefaultCredentials());
 	}
+
+    private JiraServerData getServerData(@NotNull JiraServerCfg serverCfg) {
+        return new JiraServerData(serverCfg, getDefaultCredentials(), serverCfg.isUseBasicAuth());
+    }
 
 	//////////////////////////////////////////////////////////////////
 	///////////////////// ADD REMOVE SERVERS /////////////////////////

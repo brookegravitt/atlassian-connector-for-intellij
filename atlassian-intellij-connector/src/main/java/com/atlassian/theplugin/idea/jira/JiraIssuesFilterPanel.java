@@ -20,6 +20,7 @@ import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerCache;
 import com.atlassian.theplugin.commons.jira.cache.JIRAServerModel;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAConstantListRenderer;
 import com.atlassian.theplugin.idea.jira.renderers.JIRAQueryFragmentListRenderer;
@@ -78,13 +79,13 @@ public class JiraIssuesFilterPanel extends DialogWrapper {
     private final JIRAServerModel jiraServerModel;
     private final JIRAFilterListModel filterListModel;
     private JIRAProject currentJiraProject;
-    private ServerData jiraServerCfg;
+    private JiraServerData jiraServerCfg;
     private FilterActionClear clearFilterAction = new FilterActionClear();
     private List<JIRAQueryFragment> initialFilter = new ArrayList<JIRAQueryFragment>();
     private boolean windowClosed;
 
     public JiraIssuesFilterPanel(final Project project, final JIRAServerModel jiraServerModel,
-                                 final JIRAFilterListModel filterListModel, final ServerData jiraServerCfg) {
+                                 final JIRAFilterListModel filterListModel, final JiraServerData jiraServerCfg) {
 
         super(project, false);
         this.jiraServerModel = jiraServerModel;

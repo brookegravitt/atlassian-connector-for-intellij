@@ -6,6 +6,7 @@ import com.atlassian.theplugin.commons.cfg.ProjectConfiguration;
 import com.atlassian.theplugin.commons.configuration.PluginConfiguration;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacade;
 import com.atlassian.theplugin.commons.jira.JIRAServerFacadeImpl;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.cache.CachedIconLoader;
@@ -292,7 +293,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 			projectCfgManager.removeProjectConfigurationListener(configurationListener);
 		}
 
-		private ServerData getJiraServerCfg() {
+		private JiraServerData getJiraServerCfg() {
 			if (params != null && params.issue != null) {
 				if (params.issue.getServer() != null) {
 					return params.issue.getServer();
@@ -377,7 +378,7 @@ public final class IssueDetailsToolWindow extends MultiTabToolWindow {
 						@Override
 						public void run() {
 							try {
-								ServerData jiraServer =
+								JiraServerData jiraServer =
 										params != null && params.issue != null ? params.issue.getServer() : null;
 
 								if (jiraServer != null) {

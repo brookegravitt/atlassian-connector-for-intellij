@@ -20,10 +20,12 @@ import com.atlassian.connector.intellij.remoteapi.IntelliJHttpSessionCallback;
 import com.atlassian.theplugin.commons.ServerType;
 import com.atlassian.theplugin.commons.cfg.ServerCfg;
 import com.atlassian.theplugin.commons.cfg.ServerIdImpl;
+import com.atlassian.theplugin.commons.cfg.JiraServerCfg;
 import com.atlassian.theplugin.commons.jira.api.JIRAProjectBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAQueryFragment;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiMalformedUrlException;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiSessionExpiredException;
 import com.atlassian.theplugin.commons.remoteapi.ServerData;
@@ -63,15 +65,15 @@ public class JIRARssClientTest extends TestCase {
 
 	// for testing PL-863
 	public void testBugPl863() throws Exception {
-		final ServerData server = new ServerData(new ServerCfg(true, "jira", "file://test", new ServerIdImpl()) {
+		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
 
-			public ServerCfg getClone() {
+			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		}, "", "", true);
 
 		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
@@ -96,15 +98,15 @@ public class JIRARssClientTest extends TestCase {
 	}
 
 	public void testBugPl941() throws Exception {
-		final ServerData server = new ServerData(new ServerCfg(true, "jira", "file://test", new ServerIdImpl()) {
+		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
 
-			public ServerCfg getClone() {
+			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, "", "");
+		}, "", "", true);
 
 		JIRARssClient c = new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			@Override
@@ -133,15 +135,15 @@ public class JIRARssClientTest extends TestCase {
 	// make a simple mock rss client that overrides URL loading with loading from a file
 	private JIRARssClient getClasspathJIRARssClient(String url, String userName, String password, final String file)
 			throws RemoteApiMalformedUrlException {
-		final ServerData server = new ServerData(new ServerCfg(true, "jira", url, new ServerIdImpl()) {
+		final JiraServerData server = new JiraServerData(new JiraServerCfg(true, "jira", url, new ServerIdImpl(), true) {
 			public ServerType getServerType() {
 				return null;
 			}
 
-			public ServerCfg getClone() {
+			public JiraServerCfg getClone() {
 				return null;
 			}
-		}, userName, password);
+		}, userName, password, true);
 		return new JIRARssClient(server, new IntelliJHttpSessionCallback()) {
 			// protected so that we can easily write tests by simply returning XML from a file instead of a URL!
 			protected InputStream getUrlAsStream(String url) throws IOException {

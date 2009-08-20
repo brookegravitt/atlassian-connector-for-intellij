@@ -16,7 +16,8 @@
 
 package com.atlassian.theplugin.commons.jira.api;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
+import com.atlassian.theplugin.commons.jira.JiraServerData;
+
 import java.util.List;
 
 public interface JIRAIssue {
@@ -114,7 +115,7 @@ public interface JIRAIssue {
 
 	List<JIRAComment> getComments();
 
-	ServerData getServer();
+	JiraServerData getServer();
 
 	Object getRawSoapIssue();
 
