@@ -35,7 +35,6 @@ import com.atlassian.theplugin.commons.jira.api.JIRAResolutionBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAUserBean;
 import com.atlassian.theplugin.commons.jira.api.JIRAVersionBean;
 import com.atlassian.theplugin.commons.jira.api.JiraUserNotFoundException;
-import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRARssClient;
 import com.atlassian.theplugin.commons.jira.api.soap.JIRASession;

@@ -21,7 +21,6 @@ import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.jira.api.JIRAAction;
 import com.atlassian.theplugin.commons.jira.api.JIRAIssue;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.Constants;

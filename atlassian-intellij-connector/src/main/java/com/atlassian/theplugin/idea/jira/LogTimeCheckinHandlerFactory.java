@@ -1,7 +1,6 @@
 package com.atlassian.theplugin.idea.jira;
 
 import com.atlassian.connector.cfg.ProjectCfgManager;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.StringUtil;
 import com.atlassian.theplugin.configuration.JiraWorkspaceConfiguration;
 import com.atlassian.theplugin.idea.NullCheckinHandler;

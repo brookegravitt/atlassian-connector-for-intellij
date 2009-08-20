@@ -16,7 +16,6 @@
 package com.atlassian.theplugin.jira.model;
 
 import com.atlassian.theplugin.commons.cfg.ServerId;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 
 /**

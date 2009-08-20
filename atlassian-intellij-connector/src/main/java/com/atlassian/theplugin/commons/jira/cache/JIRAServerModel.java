@@ -5,7 +5,6 @@ import com.atlassian.theplugin.commons.jira.api.*;
 import com.atlassian.theplugin.commons.jira.api.rss.JIRAException;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.commons.remoteapi.RemoteApiException;
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 
 import java.util.Collection;
 import java.util.List;

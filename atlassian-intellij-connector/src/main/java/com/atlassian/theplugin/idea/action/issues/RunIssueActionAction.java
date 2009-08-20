@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.idea.Constants;
 import com.atlassian.theplugin.idea.IdeaHelper;
 import com.atlassian.theplugin.idea.jira.DeactivateIssueResultHandler;

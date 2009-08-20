@@ -1,6 +1,5 @@
 package com.atlassian.theplugin.idea.action.issues;
 
-import com.atlassian.theplugin.commons.remoteapi.ServerData;
 import com.atlassian.theplugin.commons.util.UrlUtil;
 import com.atlassian.theplugin.commons.jira.JiraServerData;
 import com.atlassian.theplugin.idea.IdeaHelper;
