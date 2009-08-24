@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using System.Xml.XPath;
 
-namespace VSJira
+namespace PaZu
 {
     public class JiraIssue
     {

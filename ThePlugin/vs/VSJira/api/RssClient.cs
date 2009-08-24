@@ -7,7 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Xml.XPath;
 
-namespace VSJira.api
+namespace PaZu.api
 {
     class RssClient
     {

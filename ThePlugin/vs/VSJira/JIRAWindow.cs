@@ -5,143 +5,153 @@ using System.Drawing;
 using System.Data;
 using System.Text;
 using System.Windows.Forms;
-using VSJira.api;
+using PaZu.api;
 
-namespace VSJira
+namespace PaZu
 {
     public partial class JiraWindow : UserControl
     {
-        private JiraServerFacade facade = new JiraServerFacade();
-        private JiraServer server;
+    //    private JiraServerFacade facade = new JiraServerFacade();
+    //    private JiraServer server;
 
-        private BindingSource issueSource = new BindingSource(); 
+    //    private BindingSource issueSource = new BindingSource(); 
 
         public JiraWindow()
         {
             InitializeComponent();
-            setupIssueTable();
-            url.Text = "https://studio.atlassian.com";
-            statusMessage.Text = "Login to a JIRA server";
+    //        setupIssueTable();
+    //        url.Text = "https://studio.atlassian.com";
+    //        statusMessage.Text = "Login to a JIRA server";
         }
 
-        private void JIRAWindow_Load(object sender, EventArgs e)
+        private void buttonProjectProperties_Click(object sender, EventArgs e)
         {
-            login.Enabled = false;
+            new ProjectConfiguration(JiraServerModel.Instance).ShowDialog();
         }
 
-        private class SavedFilterMenuEntry : ToolStripButton
+        private void buttonAbout_Click(object sender, EventArgs e)
         {
-            public JiraSavedFilter filter;
-
-            public SavedFilterMenuEntry(JiraSavedFilter f): base(f.Name)
-            {
-                DisplayStyle = ToolStripItemDisplayStyle.Text;
-                filter = f;
-            }
+            new About().ShowDialog();
         }
 
-        private void projects_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            getSavedFilters();
-        }
+    //    private void JIRAWindow_Load(object sender, EventArgs e)
+    //    {
+    //        login.Enabled = false;
+    //    }
 
-        private void savedFilters_SelectedIndexChanged(object sender, EventArgs e)
-        {
-        }
+    //    private class SavedFilterMenuEntry : ToolStripButton
+    //    {
+    //        public JiraSavedFilter filter;
 
-        private void url_TextChanged(object sender, EventArgs e)
-        {
-            updateLoginButton();
-        }
+    //        public SavedFilterMenuEntry(JiraSavedFilter f): base(f.Name)
+    //        {
+    //            DisplayStyle = ToolStripItemDisplayStyle.Text;
+    //            filter = f;
+    //        }
+    //    }
 
-        private void login_Click(object sender, EventArgs e)
-        {
-            server = new JiraServer(url.Text, userName.Text, password.Text);
-            getSavedFilters();
-            statusMessage.Text = "Select saved filter from the menu";
-            //getProjects();
-        }
+    //    private void projects_SelectedIndexChanged(object sender, EventArgs e)
+    //    {
+    //        getSavedFilters();
+    //    }
 
-        private void userName_TextChanged(object sender, EventArgs e)
-        {
-            updateLoginButton();
-        }
+    //    private void savedFilters_SelectedIndexChanged(object sender, EventArgs e)
+    //    {
+    //    }
 
-        private void updateLoginButton()
-        {
-            login.Enabled = (url.Text.Length > 0) && (userName.Text.Length > 0);
-        }
+    //    private void url_TextChanged(object sender, EventArgs e)
+    //    {
+    //        updateLoginButton();
+    //    }
 
-        private void savedFiltersMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-            string tooltip = savedFiltersMenu.ToolTipText;
-            savedFiltersMenu.Text = e.ClickedItem.Text;
-            savedFiltersMenu.ToolTipText = tooltip;
+    //    private void login_Click(object sender, EventArgs e)
+    //    {
+    //        server = new JiraServer(url.Text, userName.Text, password.Text);
+    //        getSavedFilters();
+    //        statusMessage.Text = "Select saved filter from the menu";
+    //        //getProjects();
+    //    }
 
-            getFiteredIssues(((SavedFilterMenuEntry)e.ClickedItem).filter);
-        }
+    //    private void userName_TextChanged(object sender, EventArgs e)
+    //    {
+    //        updateLoginButton();
+    //    }
 
-        private void setupIssueTable()
-        {
-            issueTable.AutoGenerateColumns = false;
-            issueTable.AutoSize = true;
+    //    private void updateLoginButton()
+    //    {
+    //        login.Enabled = (url.Text.Length > 0) && (userName.Text.Length > 0);
+    //    }
 
-            issueTable.DataSource = issueSource;
+    //    private void savedFiltersMenu_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
+    //    {
+    //        string tooltip = savedFiltersMenu.ToolTipText;
+    //        savedFiltersMenu.Text = e.ClickedItem.Text;
+    //        savedFiltersMenu.ToolTipText = tooltip;
 
-            DataGridViewColumn column = new DataGridViewTextBoxColumn();
-            column.DataPropertyName = "Key";
-            column.Name = "key";
-            column.Width = 50;
-            issueTable.Columns.Add(column);
-            column = new DataGridViewTextBoxColumn();
-            column.DataPropertyName = "Summary";
-            column.Name = "summary";
-            column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            issueTable.Columns.Add(column);
-        }
+    //        getFiteredIssues(((SavedFilterMenuEntry)e.ClickedItem).filter);
+    //    }
 
-        private void getProjects()
-        {
-            try
-            {
-                List<JiraProject> list = facade.getProjects(server);
-                foreach (JiraProject p in list)
-                {
-                    projects.Items.Add(p);
-                }
-                projects.SelectedIndex = 0;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
+    //    private void setupIssueTable()
+    //    {
+    //        issueTable.AutoGenerateColumns = false;
+    //        issueTable.AutoSize = true;
 
-        private void getSavedFilters()
-        {
-            try
-            {
-                List<JiraSavedFilter> list = facade.getSavedFilters(server);
-                foreach (JiraSavedFilter f in list)
-                {
-                    savedFiltersMenu.DropDown.Items.Add(new SavedFilterMenuEntry(f));
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-        }
+    //        issueTable.DataSource = issueSource;
 
-        private void getFiteredIssues(JiraSavedFilter f)
-        {
-            issueSource.Clear();
-            List<JiraIssue> list = facade.getSavedFilterIssues(server, f);
-            foreach (JiraIssue issue in list)
-            {
-                issueSource.Add(issue);
-            }
-            statusMessage.Text = "Loaded " + list.Count + " issues";
-        }
+    //        DataGridViewColumn column = new DataGridViewTextBoxColumn();
+    //        column.DataPropertyName = "Key";
+    //        column.Name = "key";
+    //        column.Width = 50;
+    //        issueTable.Columns.Add(column);
+    //        column = new DataGridViewTextBoxColumn();
+    //        column.DataPropertyName = "Summary";
+    //        column.Name = "summary";
+    //        column.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+    //        issueTable.Columns.Add(column);
+    //    }
+
+    //    private void getProjects()
+    //    {
+    //        try
+    //        {
+    //            List<JiraProject> list = facade.getProjects(server);
+    //            foreach (JiraProject p in list)
+    //            {
+    //                projects.Items.Add(p);
+    //            }
+    //            projects.SelectedIndex = 0;
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            MessageBox.Show(ex.Message);
+    //        }
+    //    }
+
+    //    private void getSavedFilters()
+    //    {
+    //        try
+    //        {
+    //            List<JiraSavedFilter> list = facade.getSavedFilters(server);
+    //            foreach (JiraSavedFilter f in list)
+    //            {
+    //                savedFiltersMenu.DropDown.Items.Add(new SavedFilterMenuEntry(f));
+    //            }
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            MessageBox.Show(ex.Message);
+    //        }
+    //    }
+
+    //    private void getFiteredIssues(JiraSavedFilter f)
+    //    {
+    //        issueSource.Clear();
+    //        List<JiraIssue> list = facade.getSavedFilterIssues(server, f);
+    //        foreach (JiraIssue issue in list)
+    //        {
+    //            issueSource.Add(issue);
+    //        }
+    //        statusMessage.Text = "Loaded " + list.Count + " issues";
+    //    }
     }
 }

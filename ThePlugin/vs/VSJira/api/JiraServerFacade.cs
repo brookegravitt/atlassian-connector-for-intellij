@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSJira.api.soap;
+using PaZu.api.soap;
 
-namespace VSJira.api
+namespace PaZu.api
 {
     public class JiraServerFacade
     {
