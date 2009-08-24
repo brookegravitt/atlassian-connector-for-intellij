@@ -7,6 +7,8 @@ using System.Text;
 using System.Windows.Forms;
 using PaZu.api;
 
+using Aga.Controls.Tree;
+
 namespace PaZu
 {
     public partial class JiraWindow : UserControl
@@ -16,12 +18,27 @@ namespace PaZu
 
     //    private BindingSource issueSource = new BindingSource(); 
 
+        TreeViewAdv issuesTree;
+
         public JiraWindow()
         {
             InitializeComponent();
+
+            initIssuesTree();
     //        setupIssueTable();
     //        url.Text = "https://studio.atlassian.com";
     //        statusMessage.Text = "Login to a JIRA server";
+        }
+
+        private void initIssuesTree()
+        {
+            issuesTree = new TreeViewAdv();
+            this.jiraSplitter.Panel2.Controls.Add(issuesTree);
+            this.issuesTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.issuesTree.Location = new System.Drawing.Point(0, 0);
+            this.issuesTree.Name = "issuesTree";
+            this.issuesTree.Size = new System.Drawing.Size(182, 215);
+            this.issuesTree.TabIndex = 0;
         }
 
         private void buttonProjectProperties_Click(object sender, EventArgs e)
