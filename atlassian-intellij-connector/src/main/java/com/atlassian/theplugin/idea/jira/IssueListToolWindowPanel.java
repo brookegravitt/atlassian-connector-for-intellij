@@ -1132,7 +1132,7 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
 
         @Override
         public void serverEnabled(final ServerData serverData) {
-            addServer((JiraServerData) serverData, recenltyViewedAffected(serverData));
+            addServer(serverData, recenltyViewedAffected(serverData));
         }
 
         @Override
@@ -1140,9 +1140,10 @@ public final class IssueListToolWindowPanel extends PluginToolWindowPanel implem
             addServer((JiraServerData) newServer, false);
         }
 
-        private void addServer(final JiraServerData server, boolean refreshIssueList) {
+        private void addServer(final ServerData server, boolean refreshIssueList) {
             if (server.getServerType() == ServerType.JIRA_SERVER) {
-                Task.Backgroundable task = new MetadataFetcherBackgroundableTask(server, refreshIssueList);
+                JiraServerData jiraServer = projectCfgManager.getJiraServerr(server.getServerId());
+                Task.Backgroundable task = new MetadataFetcherBackgroundableTask(jiraServer, refreshIssueList);
                 ProgressManager.getInstance().run(task);
 
             }
