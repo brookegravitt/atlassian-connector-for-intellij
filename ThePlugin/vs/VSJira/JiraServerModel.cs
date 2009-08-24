@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EnvDTE;
 
 namespace PaZu
 {
@@ -26,6 +27,10 @@ namespace PaZu
         public ICollection<JiraServer> getAllServers()
         {
             return serverMap.Values;
+        }
+
+        public void reload(Globals globals)
+        {
         }
 
         public void addServer(JiraServer server)

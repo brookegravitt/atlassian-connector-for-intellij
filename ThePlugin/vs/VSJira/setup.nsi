@@ -65,16 +65,16 @@ Section "PaZu (required)"
   
   ; Put file there
   File "bin\release\pazunet.dll"  
-  File "bin\release\pazunet.resources.dll"
+  ;File "bin\release\pazunet.resources.dll"
 
   File "pazunet.AddIn"
   CreateDirectory $APPDATA\Microsoft\MSEnvShared\AddIns
   CopyFiles $INSTDIR\pazunet.dll $APPDATA\Microsoft\MSEnvShared\AddIns
   IfErrors 0 +2
 	Abort "Unable to copy pazunet.dll file to the Visual Studio Add-in directory"
-  CopyFiles $INSTDIR\pazunet.resources.dll $APPDATA\Microsoft\MSEnvShared\AddIns
-  IfErrors 0 +2
-	Abort "Unable to copy pazunet.resources.dll file to the Visual Studio Add-in directory"
+  ;CopyFiles $INSTDIR\pazunet.resources.dll $APPDATA\Microsoft\MSEnvShared\AddIns
+  ;IfErrors 0 +2
+	;Abort "Unable to copy pazunet.resources.dll file to the Visual Studio Add-in directory"
   CopyFiles $INSTDIR\pazunet.AddIn $APPDATA\Microsoft\MSEnvShared\AddIns
   IfErrors 0 +2
 	Abort "Unable to copy pazunet.AddIn file to the Visual Studio Add-in directory"
@@ -104,10 +104,10 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete $INSTDIR\pazunet.dll
-  Delete $INSTDIR\pazunet.resources.dll
+  ;Delete $INSTDIR\pazunet.resources.dll
   Delete $INSTDIR\pazunet.AddIn
   Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.dll
-  Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.resources.dll
+  ;Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.resources.dll
   Delete $APPDATA\Microsoft\MSEnvShared\AddIns\pazunet.AddIn
   Delete $INSTDIR\uninstall.exe
 
