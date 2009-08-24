@@ -356,7 +356,8 @@ public final class ActiveIssueUtils {
 					}
 				} catch (JIRAException e) {
 					if (panel != null) {
-						panel.setStatusErrorMessage("Issue stopped locally. Error stopping remotely work on issue: " + e.getMessage(), e);
+						panel.setStatusErrorMessage(
+                                "Issue stopped locally. Error stopping remotely work on issue: " + e.getMessage(), e);
 					}
 				}
 			}
