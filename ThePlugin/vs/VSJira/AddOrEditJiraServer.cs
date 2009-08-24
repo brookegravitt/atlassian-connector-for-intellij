@@ -48,14 +48,6 @@ namespace PaZu
 
         private void buttonAddOrEdit_Click(object sender, EventArgs e)
         {
-            foreach (JiraServer s in jiraServerModel.getAllServers())
-            {
-                if (!editing && s.Name.Equals(name.Text))
-                {
-                    MessageBox.Show("JIRA Server with this name already exists", "Error");
-                    return;
-                }
-            }
             server.Name = name.Text;
             server.Url = url.Text;
             server.UserName = user.Text;

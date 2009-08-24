@@ -38,12 +38,13 @@
             this.url = new System.Windows.Forms.TextBox();
             this.user = new System.Windows.Forms.TextBox();
             this.password = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(375, 142);
+            this.buttonCancel.Location = new System.Drawing.Point(375, 176);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 0;
@@ -52,7 +53,7 @@
             // 
             // buttonAddOrEdit
             // 
-            this.buttonAddOrEdit.Location = new System.Drawing.Point(294, 142);
+            this.buttonAddOrEdit.Location = new System.Drawing.Point(294, 176);
             this.buttonAddOrEdit.Name = "buttonAddOrEdit";
             this.buttonAddOrEdit.Size = new System.Drawing.Size(75, 23);
             this.buttonAddOrEdit.TabIndex = 1;
@@ -128,12 +129,23 @@
             this.password.Size = new System.Drawing.Size(320, 20);
             this.password.TabIndex = 9;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(36, 143);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(390, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Warning!!! - passwords are stored unencrypted in registry. This will be fixed sho" +
+                "rtly";
+            // 
             // AddOrEditJiraServer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 177);
+            this.ClientSize = new System.Drawing.Size(462, 211);
             this.ControlBox = false;
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.password);
             this.Controls.Add(this.user);
             this.Controls.Add(this.url);
@@ -164,5 +176,6 @@
         private System.Windows.Forms.TextBox url;
         private System.Windows.Forms.TextBox user;
         private System.Windows.Forms.TextBox password;
+        private System.Windows.Forms.Label label5;
     }
 }

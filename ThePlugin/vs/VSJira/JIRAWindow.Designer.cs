@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JiraWindow));
             this.mainContainer = new System.Windows.Forms.ToolStripContainer();
             this.productTabs = new System.Windows.Forms.TabControl();
             this.tabJira = new System.Windows.Forms.TabPage();
@@ -64,7 +63,7 @@
             // mainContainer.ContentPanel
             // 
             this.mainContainer.ContentPanel.Controls.Add(this.productTabs);
-            this.mainContainer.ContentPanel.Size = new System.Drawing.Size(685, 294);
+            this.mainContainer.ContentPanel.Size = new System.Drawing.Size(677, 294);
             this.mainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // mainContainer.LeftToolStripPanel
@@ -83,7 +82,7 @@
             this.productTabs.Location = new System.Drawing.Point(0, 0);
             this.productTabs.Name = "productTabs";
             this.productTabs.SelectedIndex = 0;
-            this.productTabs.Size = new System.Drawing.Size(685, 294);
+            this.productTabs.Size = new System.Drawing.Size(677, 294);
             this.productTabs.TabIndex = 0;
             // 
             // tabJira
@@ -92,7 +91,7 @@
             this.tabJira.Location = new System.Drawing.Point(4, 22);
             this.tabJira.Name = "tabJira";
             this.tabJira.Padding = new System.Windows.Forms.Padding(3);
-            this.tabJira.Size = new System.Drawing.Size(677, 268);
+            this.tabJira.Size = new System.Drawing.Size(669, 268);
             this.tabJira.TabIndex = 0;
             this.tabJira.Text = "Issues - JIRA";
             this.tabJira.UseVisualStyleBackColor = true;
@@ -107,11 +106,11 @@
             // jiraContainer.ContentPanel
             // 
             this.jiraContainer.ContentPanel.Controls.Add(this.jiraSplitter);
-            this.jiraContainer.ContentPanel.Size = new System.Drawing.Size(671, 215);
+            this.jiraContainer.ContentPanel.Size = new System.Drawing.Size(663, 215);
             this.jiraContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.jiraContainer.Location = new System.Drawing.Point(3, 3);
             this.jiraContainer.Name = "jiraContainer";
-            this.jiraContainer.Size = new System.Drawing.Size(671, 262);
+            this.jiraContainer.Size = new System.Drawing.Size(663, 262);
             this.jiraContainer.TabIndex = 0;
             this.jiraContainer.Text = "toolStripContainer1";
             // 
@@ -126,7 +125,7 @@
             this.jiraStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 0);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(671, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(663, 22);
             this.statusStrip1.TabIndex = 0;
             // 
             // jiraStatus
@@ -144,8 +143,8 @@
             // jiraSplitter.Panel1
             // 
             this.jiraSplitter.Panel1.Controls.Add(this.filterTree);
-            this.jiraSplitter.Size = new System.Drawing.Size(671, 215);
-            this.jiraSplitter.SplitterDistance = 182;
+            this.jiraSplitter.Size = new System.Drawing.Size(663, 215);
+            this.jiraSplitter.SplitterDistance = 179;
             this.jiraSplitter.TabIndex = 0;
             // 
             // filterTree
@@ -153,7 +152,7 @@
             this.filterTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.filterTree.Location = new System.Drawing.Point(0, 0);
             this.filterTree.Name = "filterTree";
-            this.filterTree.Size = new System.Drawing.Size(182, 215);
+            this.filterTree.Size = new System.Drawing.Size(179, 215);
             this.filterTree.TabIndex = 0;
             // 
             // toolStrip1
@@ -169,7 +168,7 @@
             // buttonJiraFilterRefresh
             // 
             this.buttonJiraFilterRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonJiraFilterRefresh.Image = ((System.Drawing.Image)(resources.GetObject("buttonJiraFilterRefresh.Image")));
+            this.buttonJiraFilterRefresh.Image = global::PaZu.Properties.Resources.refresh;
             this.buttonJiraFilterRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonJiraFilterRefresh.Name = "buttonJiraFilterRefresh";
             this.buttonJiraFilterRefresh.Size = new System.Drawing.Size(23, 22);
@@ -183,26 +182,26 @@
             this.buttonAbout});
             this.globalToolBar.Location = new System.Drawing.Point(0, 3);
             this.globalToolBar.Name = "globalToolBar";
-            this.globalToolBar.Size = new System.Drawing.Size(24, 55);
+            this.globalToolBar.Size = new System.Drawing.Size(32, 74);
             this.globalToolBar.TabIndex = 0;
             // 
             // buttonProjectProperties
             // 
             this.buttonProjectProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonProjectProperties.Image = ((System.Drawing.Image)(resources.GetObject("buttonProjectProperties.Image")));
+            this.buttonProjectProperties.Image = global::PaZu.Properties.Resources.projectsettings;
             this.buttonProjectProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonProjectProperties.Name = "buttonProjectProperties";
-            this.buttonProjectProperties.Size = new System.Drawing.Size(22, 20);
+            this.buttonProjectProperties.Size = new System.Drawing.Size(30, 20);
             this.buttonProjectProperties.Text = "Project Configuration";
             this.buttonProjectProperties.Click += new System.EventHandler(this.buttonProjectProperties_Click);
             // 
             // buttonAbout
             // 
             this.buttonAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.buttonAbout.Image = ((System.Drawing.Image)(resources.GetObject("buttonAbout.Image")));
+            this.buttonAbout.Image = global::PaZu.Properties.Resources.about;
             this.buttonAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.buttonAbout.Name = "buttonAbout";
-            this.buttonAbout.Size = new System.Drawing.Size(22, 20);
+            this.buttonAbout.Size = new System.Drawing.Size(30, 20);
             this.buttonAbout.Text = "About";
             this.buttonAbout.Click += new System.EventHandler(this.buttonAbout_Click);
             // 

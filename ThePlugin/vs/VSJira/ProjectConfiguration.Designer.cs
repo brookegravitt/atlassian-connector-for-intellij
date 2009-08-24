@@ -41,6 +41,7 @@
             // 
             this.serverTree.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
+            this.serverTree.HideSelection = false;
             this.serverTree.Location = new System.Drawing.Point(12, 41);
             this.serverTree.Name = "serverTree";
             this.serverTree.Size = new System.Drawing.Size(224, 438);

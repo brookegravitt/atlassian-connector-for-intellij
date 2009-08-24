@@ -179,12 +179,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="config\pazunet-for-testing.AddIn" />
+    <Content Include="icons\about.png" />
     <Content Include="icons\atlassian-538x235.png" />
     <Content Include="icons\atlassian-installer.png" />
     <Content Include="icons\Atlassian.png" />
     <Content Include="icons\ide_plugin_300.png" />
     <Content Include="icons\ide_plugin_32.ico" />
     <Content Include="icons\pazu.bmp" />
+    <Content Include="icons\projectsettings.png" />
+    <Content Include="icons\refresh.png" />
     <Content Include="pazunet.AddIn" />
     <Content Include="third party\treeviewadv\Aga.Controls.dll" />
     <Content Include="third party\treeviewadv\license.txt" />

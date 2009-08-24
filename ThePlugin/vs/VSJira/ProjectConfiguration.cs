@@ -63,8 +63,8 @@ namespace PaZu
         private void serverTree_AfterSelect(object sender, TreeViewEventArgs e)
         {
             bool jiraRootSelected = serverTree.SelectedNode.Equals(jiraRoot);
-            buttonAdd.Enabled = jiraRootSelected;
             bool jiraServerSelected = serverTree.SelectedNode is JiraServerTreeNode;
+            buttonAdd.Enabled = jiraRootSelected || jiraServerSelected;
             buttonEdit.Enabled = jiraServerSelected;
             buttonDelete.Enabled = jiraServerSelected;
             if (jiraServerSelected)
@@ -94,8 +94,10 @@ namespace PaZu
             if (result == DialogResult.OK)
             {
                 jiraServerModel.addServer(dialog.Server);
-                jiraRoot.Nodes.Add(new JiraServerTreeNode(dialog.Server));
+                JiraServerTreeNode newNode = new JiraServerTreeNode(dialog.Server);
+                jiraRoot.Nodes.Add(newNode);
                 serverTree.ExpandAll();
+                serverTree.SelectedNode = newNode;
             }
         }
 
@@ -106,18 +108,19 @@ namespace PaZu
             DialogResult result = dialog.ShowDialog();
             if (result == DialogResult.OK)
             {
-                jiraServerModel.removeServer(selectedNode.Server.Name);
+                jiraServerModel.removeServer(selectedNode.Server.GUID);
                 jiraServerModel.addServer(dialog.Server);
                 selectedNode.Server = dialog.Server;
                 serverTree.ExpandAll();
                 serverDetails.Text = createServerSummaryText(selectedNode.Server);
+                serverTree.SelectedNode = selectedNode;
             }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
             JiraServerTreeNode selectedNode = (JiraServerTreeNode)serverTree.SelectedNode;
-            jiraServerModel.removeServer(selectedNode.Server.Name);
+            jiraServerModel.removeServer(selectedNode.Server.GUID);
             selectedNode.Remove();
             serverTree.ExpandAll();
             serverDetails.Text = "";

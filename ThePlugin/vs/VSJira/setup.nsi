@@ -22,7 +22,6 @@ LicenseData LICENSE
 OutFile "bin\release\atlassian-vs-connector-setup.exe"
 
 ; The default installation directory
-;InstallDir $APPDATA\Microsoft\MSEnvShared\AddIns
 InstallDir "$PROGRAMFILES\Atlassian\Visual Studio Connector"
 
 ; Registry key to check for directory (so if you install again, it will 
