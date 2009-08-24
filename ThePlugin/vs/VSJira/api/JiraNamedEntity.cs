@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PaZu
+namespace PaZu.api
 {
     public abstract class JiraNamedEntity
     {

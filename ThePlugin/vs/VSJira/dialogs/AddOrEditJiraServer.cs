@@ -5,8 +5,10 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using PaZu.api;
+using PaZu.models;
 
-namespace PaZu
+namespace PaZu.dialogs
 {
     public partial class AddOrEditJiraServer : Form
     {

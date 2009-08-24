@@ -1,4 +1,4 @@
-﻿namespace PaZu
+﻿namespace PaZu.dialogs
 {
     partial class ProjectConfiguration
     {

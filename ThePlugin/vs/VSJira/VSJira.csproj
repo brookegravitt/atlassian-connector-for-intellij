@@ -46,16 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="About.cs">
+    <Compile Include="dialogs\About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="About.Designer.cs">
+    <Compile Include="dialogs\About.Designer.cs">
       <DependentUpon>About.cs</DependentUpon>
     </Compile>
-    <Compile Include="AddOrEditJiraServer.cs">
+    <Compile Include="dialogs\AddOrEditJiraServer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AddOrEditJiraServer.Designer.cs">
+    <Compile Include="dialogs\AddOrEditJiraServer.Designer.cs">
       <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
     </Compile>
     <Compile Include="api\JiraServerFacade.cs" />
@@ -71,22 +71,22 @@
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="JiraIssue.cs" />
-    <Compile Include="JiraNamedEntity.cs" />
-    <Compile Include="JiraProject.cs" />
-    <Compile Include="JiraSavedFilter.cs" />
-    <Compile Include="JiraServer.cs" />
-    <Compile Include="JiraServerModel.cs" />
-    <Compile Include="JIRAWindow.cs">
+    <Compile Include="api\JiraIssue.cs" />
+    <Compile Include="api\JiraNamedEntity.cs" />
+    <Compile Include="api\JiraProject.cs" />
+    <Compile Include="api\JiraSavedFilter.cs" />
+    <Compile Include="api\JiraServer.cs" />
+    <Compile Include="models\JiraServerModel.cs" />
+    <Compile Include="PaZuWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="JIRAWindow.Designer.cs">
-      <DependentUpon>JIRAWindow.cs</DependentUpon>
+    <Compile Include="PaZuWindow.Designer.cs">
+      <DependentUpon>PaZuWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="ProjectConfiguration.cs">
+    <Compile Include="dialogs\ProjectConfiguration.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ProjectConfiguration.Designer.cs">
+    <Compile Include="dialogs\ProjectConfiguration.Designer.cs">
       <DependentUpon>ProjectConfiguration.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -108,11 +108,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="About.resx">
+    <EmbeddedResource Include="dialogs\About.resx">
       <DependentUpon>About.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="AddOrEditJiraServer.resx">
+    <EmbeddedResource Include="dialogs\AddOrEditJiraServer.resx">
       <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -121,11 +121,11 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="JIRAWindow.resx">
-      <DependentUpon>JIRAWindow.cs</DependentUpon>
+    <EmbeddedResource Include="PaZuWindow.resx">
+      <DependentUpon>PaZuWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ProjectConfiguration.resx">
+    <EmbeddedResource Include="dialogs\ProjectConfiguration.resx">
       <DependentUpon>ProjectConfiguration.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>

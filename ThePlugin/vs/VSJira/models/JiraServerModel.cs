@@ -4,8 +4,9 @@ using System.Text;
 using EnvDTE;
 using System.Diagnostics;
 using Microsoft.Win32;
+using PaZu.api;
 
-namespace PaZu
+namespace PaZu.models
 {
     public class JiraServerModel
     {

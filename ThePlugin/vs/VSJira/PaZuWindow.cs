@@ -6,12 +6,14 @@ using System.Data;
 using System.Text;
 using System.Windows.Forms;
 using PaZu.api;
+using PaZu.dialogs;
+using PaZu.models;
 
 using Aga.Controls.Tree;
 
 namespace PaZu
 {
-    public partial class JiraWindow : UserControl
+    public partial class PaZuWindow : UserControl
     {
     //    private JiraServerFacade facade = new JiraServerFacade();
     //    private JiraServer server;
@@ -20,7 +22,7 @@ namespace PaZu
 
         TreeViewAdv issuesTree;
 
-        public JiraWindow()
+        public PaZuWindow()
         {
             InitializeComponent();
 
