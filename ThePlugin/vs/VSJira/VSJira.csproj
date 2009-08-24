@@ -31,6 +31,10 @@
     <IncrementalBuild>false</IncrementalBuild>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aga.Controls, Version=1.7.0.0, Culture=neutral, PublicKeyToken=fcc90fbf924463a3, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>third party\treeviewadv\Aga.Controls.dll</HintPath>
+    </Reference>
     <Reference Include="Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -182,6 +186,8 @@
     <Content Include="icons\ide_plugin_32.ico" />
     <Content Include="icons\pazu.bmp" />
     <Content Include="pazunet.AddIn" />
+    <Content Include="third party\treeviewadv\Aga.Controls.dll" />
+    <Content Include="third party\treeviewadv\license.txt" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
