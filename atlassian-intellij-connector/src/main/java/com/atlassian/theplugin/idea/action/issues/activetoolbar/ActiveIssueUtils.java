@@ -356,10 +356,14 @@ public final class ActiveIssueUtils {
 					}
 				} catch (JIRAException e) {
 					if (panel != null) {
-						panel.setStatusErrorMessage("Error stopping work on issue: " + e.getMessage(), e);
+						panel.setStatusErrorMessage("Issue stopped locally. Error stopping remotely work on issue: " + e.getMessage(), e);
 					}
 				}
-			} else if (resultHandler != null) {
+			}
+
+
+            //always allow to activate issue even if remote de-activation fails
+            if (resultHandler != null) {
 				resultHandler.success();
 			}
 		}

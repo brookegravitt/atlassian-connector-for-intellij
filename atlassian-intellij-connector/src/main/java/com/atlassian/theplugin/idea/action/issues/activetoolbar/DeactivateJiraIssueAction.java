@@ -50,11 +50,14 @@ public class DeactivateJiraIssueAction extends AbstractActiveJiraIssueAction {
 					}
 
 					public void failure(final Throwable problem) {
+                        if (conf != null) {
+							conf.setActiveJiraIssuee(null);
+						}
 						SwingUtilities.invokeLater(new Runnable() {
 							public void run() {
 								if (currentProject != null && !currentProject.isDisposed()) {
 									DialogWithDetails.showExceptionDialog(
-											currentProject, "Failed to Deactivate Issue", problem);
+											currentProject, "Issue Deactivated Locally but Failed to Deactivate Issue remotely.", problem);
 								}
 							}
 						});
