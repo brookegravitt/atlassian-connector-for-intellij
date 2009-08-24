@@ -2,43 +2,56 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VSJira
+namespace PaZu
 {
     public class JiraServer
     {
+        private string name;
         private string url;
         private string userName;
         private string password;
 
-        public JiraServer(string url, string userName, string password)
+        public JiraServer(string name, string url, string userName, string password)
         {
+            this.name = name;
             this.url = url;
             this.userName = userName;
             this.password = password;
         }
 
-        public string Url
+        public JiraServer(JiraServer other)
         {
-            get
+            if (other != null)
             {
-                return url;
+                this.name = other.name;
+                this.url = other.url;
+                this.userName = other.userName;
+                this.password = other.password;
             }
         }
 
-        public string UserName
-        {
-            get
-            {
-                return userName;
+        public string Name 
+            { 
+                get { return name; } 
+                set { name = value; } 
             }
-        }
 
-        public string Password
-        {
-            get
-            {
-                return password;
+        public string Url 
+            { 
+                get { return url; } 
+                set { url = value; } 
             }
-        }
+
+        public string UserName 
+            { 
+                get { return userName; }
+                set { userName = value; }
+            }
+
+        public string Password 
+            { 
+                get { return password; }
+                set { password = value; }
+            }
     }
 }

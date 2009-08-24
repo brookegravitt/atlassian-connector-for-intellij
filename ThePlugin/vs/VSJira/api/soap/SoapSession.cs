@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using VSJira.JIRA;
+using PaZu.JIRA;
 
-namespace VSJira.api.soap
+namespace PaZu.api.soap
 {
     public class SoapSession
     {

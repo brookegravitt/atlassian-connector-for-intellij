@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace VSJira
+namespace PaZu
 {
     public class JiraSavedFilter : JiraNamedEntity
     {

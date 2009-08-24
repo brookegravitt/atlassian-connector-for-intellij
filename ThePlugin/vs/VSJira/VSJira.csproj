@@ -2,15 +2,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D770DABA-3EB6-4D07-BD4F-D96D2DFE6729}</ProjectGuid>
     <OutputType>Library</OutputType>
     <StartupObject>
     </StartupObject>
     <NoStandardLibraries>false</NoStandardLibraries>
-    <AssemblyName>vsjira</AssemblyName>
-    <RootNamespace>VSJira</RootNamespace>
+    <AssemblyName>pazunet</AssemblyName>
+    <RootNamespace>PaZu</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,10 +42,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AddOrEditJiraServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddOrEditJiraServer.Designer.cs">
+      <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
+    </Compile>
     <Compile Include="api\JiraServerFacade.cs" />
     <Compile Include="api\soap\SoapSession.cs" />
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CommandBar.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CommandBar.resx</DependentUpon>
     </Compile>
     <Compile Include="Connect.cs">
       <SubType>Code</SubType>
@@ -55,11 +72,23 @@
     <Compile Include="JiraProject.cs" />
     <Compile Include="JiraSavedFilter.cs" />
     <Compile Include="JiraServer.cs" />
+    <Compile Include="JiraServerModel.cs" />
     <Compile Include="JIRAWindow.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="JIRAWindow.Designer.cs">
       <DependentUpon>JIRAWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectConfiguration.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProjectConfiguration.Designer.cs">
+      <DependentUpon>ProjectConfiguration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -67,6 +96,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="api\RssClient.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Web References\JIRA\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -74,11 +104,30 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="About.resx">
+      <DependentUpon>About.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddOrEditJiraServer.resx">
+      <DependentUpon>AddOrEditJiraServer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="CommandBar.resx">
       <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="JIRAWindow.resx">
       <DependentUpon>JIRAWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectConfiguration.resx">
+      <DependentUpon>ProjectConfiguration.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -125,8 +174,14 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="config\VSJira - For Testing.AddIn" />
-    <Content Include="VSJira.AddIn" />
+    <Content Include="config\pazunet-for-testing.AddIn" />
+    <Content Include="icons\atlassian-538x235.png" />
+    <Content Include="icons\atlassian-installer.png" />
+    <Content Include="icons\Atlassian.png" />
+    <Content Include="icons\ide_plugin_300.png" />
+    <Content Include="icons\ide_plugin_32.ico" />
+    <Content Include="icons\pazu.bmp" />
+    <Content Include="pazunet.AddIn" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
@@ -150,81 +205,82 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="setup.nsi" />
     <None Include="Web References\JIRA\jirasoapservice-v2.wsdl" />
     <None Include="Web References\JIRA\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
-    <None Include="Web References\JIRA\RemoteAttachment1.datasource">
+    <None Include="Web References\JIRA\RemoteAttachment.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteComment1.datasource">
+    <None Include="Web References\JIRA\RemoteComment.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteComponent1.datasource">
+    <None Include="Web References\JIRA\RemoteComponent.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteConfiguration1.datasource">
+    <None Include="Web References\JIRA\RemoteConfiguration.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteField1.datasource">
+    <None Include="Web References\JIRA\RemoteField.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteFilter1.datasource">
+    <None Include="Web References\JIRA\RemoteFilter.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteGroup1.datasource">
+    <None Include="Web References\JIRA\RemoteGroup.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteIssue1.datasource">
+    <None Include="Web References\JIRA\RemoteIssue.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteIssueType1.datasource">
+    <None Include="Web References\JIRA\RemoteIssueType.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteNamedObject1.datasource">
+    <None Include="Web References\JIRA\RemoteNamedObject.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemotePermission1.datasource">
+    <None Include="Web References\JIRA\RemotePermission.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemotePermissionScheme1.datasource">
+    <None Include="Web References\JIRA\RemotePermissionScheme.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemotePriority1.datasource">
+    <None Include="Web References\JIRA\RemotePriority.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteProject1.datasource">
+    <None Include="Web References\JIRA\RemoteProject.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteProjectRole1.datasource">
+    <None Include="Web References\JIRA\RemoteProjectRole.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteProjectRoleActors1.datasource">
+    <None Include="Web References\JIRA\RemoteProjectRoleActors.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteResolution1.datasource">
+    <None Include="Web References\JIRA\RemoteResolution.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteRoleActors1.datasource">
+    <None Include="Web References\JIRA\RemoteRoleActors.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteScheme1.datasource">
+    <None Include="Web References\JIRA\RemoteScheme.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteServerInfo1.datasource">
+    <None Include="Web References\JIRA\RemoteServerInfo.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteStatus1.datasource">
+    <None Include="Web References\JIRA\RemoteStatus.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteUser1.datasource">
+    <None Include="Web References\JIRA\RemoteUser.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteVersion1.datasource">
+    <None Include="Web References\JIRA\RemoteVersion.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
-    <None Include="Web References\JIRA\RemoteWorklog1.datasource">
+    <None Include="Web References\JIRA\RemoteWorklog.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </None>
   </ItemGroup>
@@ -232,8 +288,7 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>"c:\Program Files\NSIS\makensis.exe" $(ProjectDir)\setup.nsi</PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

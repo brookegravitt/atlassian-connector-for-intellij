@@ -1,4 +1,4 @@
-﻿namespace VSJira
+﻿namespace PaZu
 {
     partial class JiraWindow
     {
@@ -29,243 +29,247 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(JiraWindow));
-            this.projects = new System.Windows.Forms.ComboBox();
-            this.login = new System.Windows.Forms.Button();
-            this.url = new System.Windows.Forms.TextBox();
-            this.userName = new System.Windows.Forms.TextBox();
-            this.password = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.statusMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mainContainer = new System.Windows.Forms.ToolStripContainer();
+            this.productTabs = new System.Windows.Forms.TabControl();
+            this.tabJira = new System.Windows.Forms.TabPage();
+            this.jiraContainer = new System.Windows.Forms.ToolStripContainer();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.jiraStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.jiraSplitter = new System.Windows.Forms.SplitContainer();
+            this.filterTree = new System.Windows.Forms.TreeView();
+            this.issueTree = new System.Windows.Forms.TreeView();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.refreshButton = new System.Windows.Forms.ToolStripButton();
-            this.savedFiltersMenu = new System.Windows.Forms.ToolStripDropDownButton();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.issueTable = new System.Windows.Forms.DataGridView();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.statusBar.SuspendLayout();
+            this.buttonJiraFilterRefresh = new System.Windows.Forms.ToolStripButton();
+            this.globalToolBar = new System.Windows.Forms.ToolStrip();
+            this.buttonProjectProperties = new System.Windows.Forms.ToolStripButton();
+            this.buttonAbout = new System.Windows.Forms.ToolStripButton();
+            this.mainContainer.ContentPanel.SuspendLayout();
+            this.mainContainer.LeftToolStripPanel.SuspendLayout();
+            this.mainContainer.SuspendLayout();
+            this.productTabs.SuspendLayout();
+            this.tabJira.SuspendLayout();
+            this.jiraContainer.BottomToolStripPanel.SuspendLayout();
+            this.jiraContainer.ContentPanel.SuspendLayout();
+            this.jiraContainer.TopToolStripPanel.SuspendLayout();
+            this.jiraContainer.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.jiraSplitter.Panel1.SuspendLayout();
+            this.jiraSplitter.Panel2.SuspendLayout();
+            this.jiraSplitter.SuspendLayout();
             this.toolStrip1.SuspendLayout();
-            this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.issueTable)).BeginInit();
-            this.panel2.SuspendLayout();
+            this.globalToolBar.SuspendLayout();
             this.SuspendLayout();
             // 
-            // projects
+            // mainContainer
             // 
-            this.projects.Enabled = false;
-            this.projects.FormattingEnabled = true;
-            this.projects.Location = new System.Drawing.Point(201, 108);
-            this.projects.Name = "projects";
-            this.projects.Size = new System.Drawing.Size(165, 21);
-            this.projects.TabIndex = 6;
-            this.projects.SelectedIndexChanged += new System.EventHandler(this.projects_SelectedIndexChanged);
             // 
-            // login
+            // mainContainer.ContentPanel
             // 
-            this.login.Location = new System.Drawing.Point(297, 66);
-            this.login.Name = "login";
-            this.login.Size = new System.Drawing.Size(69, 26);
-            this.login.TabIndex = 4;
-            this.login.Text = "Login";
-            this.login.UseVisualStyleBackColor = true;
-            this.login.Click += new System.EventHandler(this.login_Click);
+            this.mainContainer.ContentPanel.Controls.Add(this.productTabs);
+            this.mainContainer.ContentPanel.Size = new System.Drawing.Size(685, 294);
+            this.mainContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
-            // url
+            // mainContainer.LeftToolStripPanel
             // 
-            this.url.Location = new System.Drawing.Point(81, 9);
-            this.url.Name = "url";
-            this.url.Size = new System.Drawing.Size(285, 20);
-            this.url.TabIndex = 1;
-            this.url.TextChanged += new System.EventHandler(this.url_TextChanged);
+            this.mainContainer.LeftToolStripPanel.Controls.Add(this.globalToolBar);
+            this.mainContainer.Location = new System.Drawing.Point(0, 0);
+            this.mainContainer.Name = "mainContainer";
+            this.mainContainer.Size = new System.Drawing.Size(709, 319);
+            this.mainContainer.TabIndex = 2;
+            this.mainContainer.Text = "toolStripContainer1";
             // 
-            // userName
+            // productTabs
             // 
-            this.userName.Location = new System.Drawing.Point(81, 41);
-            this.userName.Name = "userName";
-            this.userName.Size = new System.Drawing.Size(100, 20);
-            this.userName.TabIndex = 2;
-            this.userName.TextChanged += new System.EventHandler(this.userName_TextChanged);
+            this.productTabs.Controls.Add(this.tabJira);
+            this.productTabs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.productTabs.Location = new System.Drawing.Point(0, 0);
+            this.productTabs.Name = "productTabs";
+            this.productTabs.SelectedIndex = 0;
+            this.productTabs.Size = new System.Drawing.Size(685, 294);
+            this.productTabs.TabIndex = 0;
             // 
-            // password
+            // tabJira
             // 
-            this.password.Location = new System.Drawing.Point(81, 72);
-            this.password.Name = "password";
-            this.password.PasswordChar = '*';
-            this.password.Size = new System.Drawing.Size(100, 20);
-            this.password.TabIndex = 3;
-            this.password.UseSystemPasswordChar = true;
+            this.tabJira.Controls.Add(this.jiraContainer);
+            this.tabJira.Location = new System.Drawing.Point(4, 22);
+            this.tabJira.Name = "tabJira";
+            this.tabJira.Padding = new System.Windows.Forms.Padding(3);
+            this.tabJira.Size = new System.Drawing.Size(677, 268);
+            this.tabJira.TabIndex = 0;
+            this.tabJira.Text = "Issues - JIRA";
+            this.tabJira.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // jiraContainer
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 44);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 13);
-            this.label1.TabIndex = 5;
-            this.label1.Text = "User Name";
             // 
-            // label2
+            // jiraContainer.BottomToolStripPanel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 75);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 13);
-            this.label2.TabIndex = 6;
-            this.label2.Text = "Password";
+            this.jiraContainer.BottomToolStripPanel.Controls.Add(this.statusStrip1);
             // 
-            // label3
+            // jiraContainer.ContentPanel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(13, 12);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Address";
+            this.jiraContainer.ContentPanel.Controls.Add(this.jiraSplitter);
+            this.jiraContainer.ContentPanel.Size = new System.Drawing.Size(671, 215);
+            this.jiraContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jiraContainer.Location = new System.Drawing.Point(3, 3);
+            this.jiraContainer.Name = "jiraContainer";
+            this.jiraContainer.Size = new System.Drawing.Size(671, 262);
+            this.jiraContainer.TabIndex = 0;
+            this.jiraContainer.Text = "toolStripContainer1";
             // 
-            // statusBar
+            // jiraContainer.TopToolStripPanel
             // 
-            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusMessage});
-            this.statusBar.Location = new System.Drawing.Point(0, 662);
-            this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(542, 22);
-            this.statusBar.SizingGrip = false;
-            this.statusBar.TabIndex = 9;
-            this.statusBar.Text = "statusStrip1";
+            this.jiraContainer.TopToolStripPanel.Controls.Add(this.toolStrip1);
             // 
-            // statusMessage
+            // statusStrip1
             // 
-            this.statusMessage.Name = "statusMessage";
-            this.statusMessage.Size = new System.Drawing.Size(61, 17);
-            this.statusMessage.Text = "Select filter";
+            this.statusStrip1.Dock = System.Windows.Forms.DockStyle.None;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.jiraStatus});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 0);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(671, 22);
+            this.statusStrip1.TabIndex = 0;
+            // 
+            // jiraStatus
+            // 
+            this.jiraStatus.Name = "jiraStatus";
+            this.jiraStatus.Size = new System.Drawing.Size(38, 17);
+            this.jiraStatus.Text = "Ready";
+            // 
+            // jiraSplitter
+            // 
+            this.jiraSplitter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.jiraSplitter.Location = new System.Drawing.Point(0, 0);
+            this.jiraSplitter.Name = "jiraSplitter";
+            // 
+            // jiraSplitter.Panel1
+            // 
+            this.jiraSplitter.Panel1.Controls.Add(this.filterTree);
+            // 
+            // jiraSplitter.Panel2
+            // 
+            this.jiraSplitter.Panel2.Controls.Add(this.issueTree);
+            this.jiraSplitter.Size = new System.Drawing.Size(671, 215);
+            this.jiraSplitter.SplitterDistance = 182;
+            this.jiraSplitter.TabIndex = 0;
+            // 
+            // filterTree
+            // 
+            this.filterTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.filterTree.Location = new System.Drawing.Point(0, 0);
+            this.filterTree.Name = "filterTree";
+            this.filterTree.Size = new System.Drawing.Size(182, 215);
+            this.filterTree.TabIndex = 0;
+            // 
+            // issueTree
+            // 
+            this.issueTree.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.issueTree.Location = new System.Drawing.Point(0, 0);
+            this.issueTree.Name = "issueTree";
+            this.issueTree.Size = new System.Drawing.Size(485, 215);
+            this.issueTree.TabIndex = 0;
             // 
             // toolStrip1
             // 
+            this.toolStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.refreshButton,
-            this.savedFiltersMenu});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 0);
+            this.buttonJiraFilterRefresh});
+            this.toolStrip1.Location = new System.Drawing.Point(3, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(542, 25);
-            this.toolStrip1.TabIndex = 10;
-            this.toolStrip1.Text = "toolStrip1";
+            this.toolStrip1.Size = new System.Drawing.Size(64, 25);
+            this.toolStrip1.TabIndex = 0;
             // 
-            // refreshButton
+            // buttonJiraFilterRefresh
             // 
-            this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.refreshButton.Image = ((System.Drawing.Image)(resources.GetObject("refreshButton.Image")));
-            this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(23, 22);
-            this.refreshButton.Text = "Refresh";
+            this.buttonJiraFilterRefresh.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonJiraFilterRefresh.Image = ((System.Drawing.Image)(resources.GetObject("buttonJiraFilterRefresh.Image")));
+            this.buttonJiraFilterRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonJiraFilterRefresh.Name = "buttonJiraFilterRefresh";
+            this.buttonJiraFilterRefresh.Size = new System.Drawing.Size(23, 22);
+            this.buttonJiraFilterRefresh.Text = "Refresh All";
             // 
-            // savedFiltersMenu
+            // globalToolBar
             // 
-            this.savedFiltersMenu.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.savedFiltersMenu.Image = ((System.Drawing.Image)(resources.GetObject("savedFiltersMenu.Image")));
-            this.savedFiltersMenu.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.savedFiltersMenu.Name = "savedFiltersMenu";
-            this.savedFiltersMenu.Size = new System.Drawing.Size(109, 22);
-            this.savedFiltersMenu.Text = "Select Saved Filter";
-            this.savedFiltersMenu.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.savedFiltersMenu_DropDownItemClicked);
+            this.globalToolBar.Dock = System.Windows.Forms.DockStyle.None;
+            this.globalToolBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.buttonProjectProperties,
+            this.buttonAbout});
+            this.globalToolBar.Location = new System.Drawing.Point(0, 3);
+            this.globalToolBar.Name = "globalToolBar";
+            this.globalToolBar.Size = new System.Drawing.Size(24, 55);
+            this.globalToolBar.TabIndex = 0;
             // 
-            // panel1
+            // buttonProjectProperties
             // 
-            this.panel1.Controls.Add(this.issueTable);
-            this.panel1.Controls.Add(this.panel2);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 25);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(542, 637);
-            this.panel1.TabIndex = 11;
+            this.buttonProjectProperties.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonProjectProperties.Image = ((System.Drawing.Image)(resources.GetObject("buttonProjectProperties.Image")));
+            this.buttonProjectProperties.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonProjectProperties.Name = "buttonProjectProperties";
+            this.buttonProjectProperties.Size = new System.Drawing.Size(22, 20);
+            this.buttonProjectProperties.Text = "Project Configuration";
+            this.buttonProjectProperties.Click += new System.EventHandler(this.buttonProjectProperties_Click);
             // 
-            // issueTable
+            // buttonAbout
             // 
-            this.issueTable.AllowUserToAddRows = false;
-            this.issueTable.AllowUserToDeleteRows = false;
-            this.issueTable.AllowUserToResizeRows = false;
-            this.issueTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.issueTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.issueTable.Location = new System.Drawing.Point(0, 146);
-            this.issueTable.Name = "issueTable";
-            this.issueTable.ReadOnly = true;
-            this.issueTable.RowHeadersVisible = false;
-            this.issueTable.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.issueTable.Size = new System.Drawing.Size(542, 491);
-            this.issueTable.TabIndex = 10;
-            // 
-            // panel2
-            // 
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel2.Controls.Add(this.label4);
-            this.panel2.Controls.Add(this.userName);
-            this.panel2.Controls.Add(this.label1);
-            this.panel2.Controls.Add(this.projects);
-            this.panel2.Controls.Add(this.password);
-            this.panel2.Controls.Add(this.label3);
-            this.panel2.Controls.Add(this.url);
-            this.panel2.Controls.Add(this.label2);
-            this.panel2.Controls.Add(this.login);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(542, 146);
-            this.panel2.TabIndex = 9;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(136, 111);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(45, 13);
-            this.label4.TabIndex = 8;
-            this.label4.Text = "Projects";
+            this.buttonAbout.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.buttonAbout.Image = ((System.Drawing.Image)(resources.GetObject("buttonAbout.Image")));
+            this.buttonAbout.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.buttonAbout.Name = "buttonAbout";
+            this.buttonAbout.Size = new System.Drawing.Size(22, 20);
+            this.buttonAbout.Text = "About";
+            this.buttonAbout.Click += new System.EventHandler(this.buttonAbout_Click);
             // 
             // JiraWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.statusBar);
+            this.Controls.Add(this.mainContainer);
             this.Name = "JiraWindow";
-            this.Size = new System.Drawing.Size(542, 684);
-            this.Load += new System.EventHandler(this.JIRAWindow_Load);
-            this.statusBar.ResumeLayout(false);
-            this.statusBar.PerformLayout();
+            this.Size = new System.Drawing.Size(709, 319);
+            this.mainContainer.ContentPanel.ResumeLayout(false);
+            this.mainContainer.LeftToolStripPanel.ResumeLayout(false);
+            this.mainContainer.LeftToolStripPanel.PerformLayout();
+            this.mainContainer.ResumeLayout(false);
+            this.mainContainer.PerformLayout();
+            this.productTabs.ResumeLayout(false);
+            this.tabJira.ResumeLayout(false);
+            this.jiraContainer.BottomToolStripPanel.ResumeLayout(false);
+            this.jiraContainer.BottomToolStripPanel.PerformLayout();
+            this.jiraContainer.ContentPanel.ResumeLayout(false);
+            this.jiraContainer.TopToolStripPanel.ResumeLayout(false);
+            this.jiraContainer.TopToolStripPanel.PerformLayout();
+            this.jiraContainer.ResumeLayout(false);
+            this.jiraContainer.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.jiraSplitter.Panel1.ResumeLayout(false);
+            this.jiraSplitter.Panel2.ResumeLayout(false);
+            this.jiraSplitter.ResumeLayout(false);
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.issueTable)).EndInit();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
+            this.globalToolBar.ResumeLayout(false);
+            this.globalToolBar.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ComboBox projects;
-        private System.Windows.Forms.Button login;
-        private System.Windows.Forms.TextBox url;
-        private System.Windows.Forms.TextBox userName;
-        private System.Windows.Forms.TextBox password;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.StatusStrip statusBar;
+        private System.Windows.Forms.ToolStripContainer mainContainer;
+        private System.Windows.Forms.ToolStripContainer jiraContainer;
+        private System.Windows.Forms.TabControl productTabs;
+        private System.Windows.Forms.TabPage tabJira;
+        private System.Windows.Forms.ToolStrip globalToolBar;
+        private System.Windows.Forms.ToolStripButton buttonProjectProperties;
+        private System.Windows.Forms.SplitContainer jiraSplitter;
+        private System.Windows.Forms.TreeView filterTree;
+        private System.Windows.Forms.TreeView issueTree;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel jiraStatus;
         private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView issueTable;
-        private System.Windows.Forms.ToolStripButton refreshButton;
-        private System.Windows.Forms.ToolStripDropDownButton savedFiltersMenu;
-        private System.Windows.Forms.ToolStripStatusLabel statusMessage;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripButton buttonJiraFilterRefresh;
+        private System.Windows.Forms.ToolStripButton buttonAbout;
     }
 }
