@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace PaZu
+namespace PaZu.dialogs
 {
     public partial class About : Form
     {

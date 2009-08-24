@@ -1,6 +1,6 @@
 ﻿namespace PaZu
 {
-    partial class JiraWindow
+    partial class PaZuWindow
     {
         /// <summary> 
         /// Required designer variable.
